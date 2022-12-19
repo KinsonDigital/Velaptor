@@ -9,6 +9,6 @@ using Velaptor.Content;
 /// <summary>
 /// Used to test the abstract <see cref="ContentPathResolver"/> class.
 /// </summary>
-internal class ContentPathResolverFake : ContentPathResolver
+internal sealed class ContentPathResolverFake : ContentPathResolver
 {
 }

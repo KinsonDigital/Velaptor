@@ -13,7 +13,7 @@ using Velaptor.Reactables.ReactableData;
 /// <summary>
 /// Used to test the abstract class <see cref="ShaderProgram"/>.
 /// </summary>
-internal class ShaderProgramFake : ShaderProgram
+internal sealed class ShaderProgramFake : ShaderProgram
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgramFake"/> class for the purpose of testing.

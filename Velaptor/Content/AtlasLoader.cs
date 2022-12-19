@@ -138,7 +138,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
             name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
 
-            dirPath = this.path.GetDirectoryName(contentNameOrPath)
+            dirPath = (this.path.GetDirectoryName(contentNameOrPath) ?? string.Empty)
                 .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
         }
         else

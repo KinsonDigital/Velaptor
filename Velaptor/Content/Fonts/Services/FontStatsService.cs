@@ -131,7 +131,7 @@ internal sealed class FontStatsService : IFontStatsService
         var contentFontDirPath = this.contentFontPathResolver.ResolveDirPath().ToLower();
         var sysFontDirPath = this.sysFontPathResolver.ResolveDirPath().ToLower();
 
-        fileOrDirPath = this.path.GetDirectoryName(fileOrDirPath).ToLower();
+        fileOrDirPath = (this.path.GetDirectoryName(fileOrDirPath) ?? string.Empty).ToLower();
 
         if (fileOrDirPath != contentFontDirPath && fileOrDirPath != sysFontDirPath)
         {
