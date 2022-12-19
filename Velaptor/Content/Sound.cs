@@ -20,6 +20,7 @@ public sealed class Sound : ISound
 {
     private readonly CASLSound sound;
     private readonly IDisposable disposeUnsubscriber;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sound"/> class.
@@ -32,7 +33,7 @@ public sealed class Sound : ISound
         Id = SoundFactory.GetNewId(filePath);
         this.sound = new CASLSound(filePath);
         this.disposeUnsubscriber =
-            disposeReactor.Subscribe(new Reactor<DisposeSoundData>(Dispose));
+            disposeReactor.Subscribe(new Reactor<DisposeSoundData>(DisposeNotification));
     }
 
     /// <summary>
@@ -44,7 +45,7 @@ public sealed class Sound : ISound
     internal Sound(IReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
         this.disposeUnsubscriber =
-            disposeReactable.Subscribe(new Reactor<DisposeSoundData>(Dispose));
+            disposeReactable.Subscribe(new Reactor<DisposeSoundData>(DisposeNotification));
         this.sound = new CASLSound(filePath);
         Id = soundId;
     }
@@ -104,11 +105,15 @@ public sealed class Sound : ISound
         set => this.sound.PlaySpeed = value;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the name of the sound.
+    /// </summary>
     public string Name => this.sound.Name;
 
-    /// <inheritdoc/>
-    public string FilePath => this.sound.Path;
+    /// <summary>
+    /// Gets the fully qualified path to the sound file.
+    /// </summary>
+    public string FilePath => this.sound.FilePath;
 
     /// <summary>
     /// Advances the sound forward by the given amount of <paramref name="seconds"/>.
@@ -152,7 +157,7 @@ public sealed class Sound : ISound
     /// <remarks>This will set the time position back to the beginning.</remarks>
     public void Stop()
     {
-        if (this.sound.Unloaded)
+        if (this.isDisposed)
         {
             return;
         }
@@ -161,17 +166,41 @@ public sealed class Sound : ISound
     }
 
     /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void Dispose() => Dispose(true);
+
+    /// <summary>
     /// Disposes of this <see cref="Sound"/> if the ID to dispose matches this sound's <see cref="Id"/>.
     /// </summary>
     /// <param name="data">The data to use to dispose of the sound.</param>
-    private void Dispose(DisposeSoundData data)
+    private void DisposeNotification(DisposeSoundData data)
     {
         if (Id != data.SoundId)
         {
             return;
         }
 
-        this.sound.Dispose();
-        this.disposeUnsubscriber.Dispose();
+        Dispose(true);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// </summary>
+    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.sound.Dispose();
+            this.disposeUnsubscriber.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 }
