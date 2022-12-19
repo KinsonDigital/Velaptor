@@ -90,7 +90,7 @@ As with all software, there is always a chance for issues and bugs, especially f
     - These types are not meant to be part of the public-facing API.
 17. Changed the `GPUBufferBase<TData>` type from `public` to `internal`.
     - These types are not meant to be part of the public-facing API.
-18. Change all of the resolve types below from `public` to `internal`.
+18. Changed all of the resolve types below from `public` to `internal`.
     - These types are not meant to be part of the public-facing API:
       - `ContentPathResolver`
       - `FontPathResolver`

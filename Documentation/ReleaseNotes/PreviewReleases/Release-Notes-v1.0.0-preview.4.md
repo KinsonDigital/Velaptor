@@ -63,7 +63,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 9. Changed the positioning of the _`Velaptor.UI.Button`_ and _`Velaptor.UI.Label`_ controls to be relative of the top right corner to the center of the control.
 10. Changed the positioning of rendering text to be based off of the center of the text instead of the top right corner.
 11. Changed the _`IWindowActions.WinResize`_ property from the type _`Action?`_ to _`Action<SizeU>`_ type.
-12. Changed the data type of the properties below for the _`GlyphMetrics`_ class.
+12. Changed the data type for the _`GlyphMetrics`_ class of the properties below:
     - _`GlyphBounds`_ from _`Rectangle`_ to _`RectangleF`_
     - _`Ascender`_ from _`int`_ to _`float`_
     - _`Descender`_ from _`int`_ to _`float`_
@@ -87,5 +87,5 @@ As with all software, there is always a chance for issues and bugs, especially f
 2. Improved text rendering performance.
 3. Changed the **Velaptor Testing Application** window size from **1020 x 800** to **1500 x 800**.
 4. Moved embedded GLSL shader files from the **_~/Velaptor/OpenGL/_** project directory to the **_~/Velaptor/OpenGL/Shaders/_** project directory.
-5. Large code refactoring for code style conventions and cleanup.
+5. Refactored coding style conventions and cleanup.
 6. Increased code coverage by 99%.
