@@ -87,5 +87,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 2. Improved text rendering performance.
 3. Changed the **Velaptor Testing Application** window size from **1020 x 800** to **1500 x 800**.
 4. Moved embedded GLSL shader files from the **_~/Velaptor/OpenGL/_** project directory to the **_~/Velaptor/OpenGL/Shaders/_** project directory.
-5. Refactored coding style conventions and cleanup.
-6. Increased code coverage by 99%.
+5. Refactored large amounts of the code base.

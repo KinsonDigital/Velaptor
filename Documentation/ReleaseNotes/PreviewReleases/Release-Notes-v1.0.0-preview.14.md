@@ -14,7 +14,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#154](https://github.com/KinsonDigital/Velaptor/issues/154) - Added the ability to render 2D line primitives with the following features.
-   > **💡**  To render a line, use the new render methods added to `IRenderer` interface.
+   > 💡 To render a line, use the new render methods added to `IRenderer` interface.
    - Simple 2D line primitive rendering.
    - Line colors.
    - Line thickness.
@@ -30,7 +30,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. [#154](https://github.com/KinsonDigital/Velaptor/issues/154) - Removed public constant named `BatchSize` from the `IRenderer` interface.
-   > **💡** This breaking change is very low impact.  This constant was only used internally within the library and did not hold any value for outside users.
+   > 💡 This breaking change is very low impact.  This constant was only used internally within the library and did not hold any value for outside users.
 
 ---
 

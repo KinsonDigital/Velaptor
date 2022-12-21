@@ -14,9 +14,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Added a new method named `EndNotifications()` to `IReactable<TData>` interface and `Reactable<TData>` class to end notifications to subscribed `IReactor` implementations.
-   - Previously, there was no way for the `Reactor.OnCompleted()` method implementation to be invoked.  When invoking the `IReactable<TData>.EndNotifications()` method, all subscribed `IReactor<T>` implementations will be completed.
-      > 💡 After `OnCompleted()` is invoked, `OnNext()` will never be invoked again.  This follows the observable pattern. No matter how many times `OnCompleted()` is invoked, the on completed `Action` will only be invoked the first time `OnCompleted()` is called.
-2. Added a new method named `IsAnyAltKeyDown()`.
+      > 💡 Previously, there was no way for the `Reactor.OnCompleted()` method implementation to be invoked.  When invoking the `IReactable<TData>.EndNotifications()` method, all subscribed `IReactor<T>` implementations will be completed.
+      > After `OnCompleted()` is invoked, `OnNext()` will never be invoked again.  This follows the observable pattern. No matter how many times `OnCompleted()` is invoked, the `OnCompleted()` `Action` will only be invoked the first time `OnCompleted()` is called.
+1. Added a new method named `IsAnyAltKeyDown()`.
 
 ---
 
@@ -38,12 +38,12 @@ As with all software, there is always a chance for issues and bugs, especially f
 2. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored the `IRenderer.BeginBatch()` method to `IRenderer.Begin()`.
    - This was done for the same reason as in item **_#1_** above.
       >💡 The `Renderer` class used to be named `ISpriteBatch`.
-1. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored the `IRenderer.EndBatch()` method to `IRenderer.End()`.
+3. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored the `IRenderer.EndBatch()` method to `IRenderer.End()`.
    - This was done for the same reason as in item **_#1_** above.
       >💡 The `Renderer` class used to be named `ISpriteBatch`.
-1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Refactored `afterUnloadAction` to `afterUnload` parameter for `IWindow.ShowAsync()` and `Window.ShowAsync()` methods.
+4. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Refactored `afterUnloadAction` to `afterUnload` parameter for `IWindow.ShowAsync()` and `Window.ShowAsync()` methods.
    - This was done to simplify naming as well as internal naming of class fields and to follow coding standards.
-2. [#239](https://github.com/KinsonDigital/Velaptor/issues/239) - Removed method parameter from `IReactable` interface and the abstract `Reactable` class.
+5. [#239](https://github.com/KinsonDigital/Velaptor/issues/239) - Removed method parameter from `IReactable` interface and the abstract `Reactable` class.
    - Removed the parameter named `unsubscribeAfterProcessing` from the `PushNotification()` method.
 
 ---
