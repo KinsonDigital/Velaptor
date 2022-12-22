@@ -109,7 +109,6 @@ internal static class IoC
         IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<BatchSizeData>, BatchSizeReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(KeyCode key, bool isDown)>, KeyboardStateReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(int, int)>, MousePositionReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(MouseButton, bool)>, MouseButtonReactable>(Lifestyle.Singleton);

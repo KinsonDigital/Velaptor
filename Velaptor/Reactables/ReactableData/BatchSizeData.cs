@@ -1,4 +1,4 @@
-﻿// <copyright file="BatchSizeData.cs" company="KinsonDigital">
+// <copyright file="BatchSizeData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ using Carbonate;
 /// <summary>
 /// Holds data for the <see cref="Reactable"/> reactable.
 /// </summary>
-internal class BatchSizeData
+internal record BatchSizeData
 {
     /// <summary>
     /// Gets the data.
