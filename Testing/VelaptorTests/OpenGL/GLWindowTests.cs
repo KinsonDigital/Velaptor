@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -1105,7 +1105,7 @@ public class GLWindowTests
         // Assert
         Assert.False(sutUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
         this.mockReactable.VerifyNever(m
-            => m.Push(It.IsAny<MouseStateData>(), NotificationIds.MouseId));
+            => m.PushData(It.IsAny<MouseStateData>(), NotificationIds.MouseId));
     }
 
     [Fact]
@@ -1121,7 +1121,7 @@ public class GLWindowTests
         var sutUpdateInvoked = false;
 
         MouseStateData? actual = null;
-        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+        this.mockReactable.Setup(m => m.PushData(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
             .Callback((ref MouseStateData data, Guid _) => { actual = data; });
 
         var sut = CreateSystemUnderTest();
@@ -1142,7 +1142,7 @@ public class GLWindowTests
 
         // Assert
         Assert.True(sutUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
-        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1295,7 +1295,7 @@ public class GLWindowTests
 
         MouseStateData? actual = null;
 
-        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+        this.mockReactable.Setup(m => m.PushData(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
             .Callback((ref MouseStateData data, Guid _) => { actual = data; });
 
         var sut = CreateSystemUnderTest();
@@ -1308,7 +1308,7 @@ public class GLWindowTests
 
         // Assert
         this.mockReactable.VerifyOnce(m =>
-            m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+            m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1327,7 +1327,7 @@ public class GLWindowTests
         MockWindowLoadEvent();
 
         MouseStateData? actual = null;
-        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+        this.mockReactable.Setup(m => m.PushData(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
             .Callback((ref MouseStateData data, Guid _) => { actual = data; });
 
         var sut = CreateSystemUnderTest();
@@ -1339,7 +1339,7 @@ public class GLWindowTests
             SilkMouseButton.Right);
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1361,7 +1361,7 @@ public class GLWindowTests
         MockWindowLoadEvent();
 
         MouseStateData? actual = null;
-        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+        this.mockReactable.Setup(m => m.PushData(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
             .Callback((ref MouseStateData data, Guid _) => { actual = data; });
 
         var sut = CreateSystemUnderTest();
@@ -1373,7 +1373,7 @@ public class GLWindowTests
             new ScrollWheel(0, wheelValue));
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expectedStateData);
@@ -1388,7 +1388,7 @@ public class GLWindowTests
 
         MouseStateData? actual = null;
 
-        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+        this.mockReactable.Setup(m => m.PushData(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
             .Callback((ref MouseStateData data, Guid _) => { actual = data; });
 
         var sut = CreateSystemUnderTest();
@@ -1400,7 +1400,7 @@ public class GLWindowTests
             new SysVector2(11f, 22f));
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);

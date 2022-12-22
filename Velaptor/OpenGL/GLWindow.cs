@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -447,7 +447,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ScrollDirection = MouseScrollDirection.None;
         this.mouseStateData.ScrollWheelValue = 0;
 
-        this.reactable.Push(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = true;
 
-        this.reactable.Push(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
     }
 
     /// <summary>
@@ -526,7 +526,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = false;
 
-        this.reactable.Push(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
     }
 
     /// <summary>
@@ -544,7 +544,7 @@ internal sealed class GLWindow : VelaptorIWindow
             _ => MouseScrollDirection.None
         };
 
-        this.reactable.Push(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
     }
 
     /// <summary>
@@ -557,7 +557,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.X = (int)position.X;
         this.mouseStateData.Y = (int)position.Y;
 
-        this.reactable.Push(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
     }
 
     /// <summary>

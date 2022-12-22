@@ -111,7 +111,7 @@ internal sealed class Renderer : IRenderer
 
         var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        reactable.Push(batchSizeData, NotificationIds.BatchSizeId);
+        reactable.PushData(batchSizeData, NotificationIds.BatchSizeId);
         reactable.Unsubscribe(NotificationIds.BatchSizeId);
 
         SetupPropertyCaches();

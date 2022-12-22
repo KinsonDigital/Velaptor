@@ -300,7 +300,7 @@ public class RendererTests
         _ = CreateSystemUnderTest();
 
         // Assert
-        this.mockReactable.Verify(m => m.Push(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeId), Times.Once);
+        this.mockReactable.Verify(m => m.PushData(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeId), Times.Once);
         this.mockReactable.Verify(m => m.Unsubscribe(NotificationIds.BatchSizeId), Times.Once);
     }
     #endregion
