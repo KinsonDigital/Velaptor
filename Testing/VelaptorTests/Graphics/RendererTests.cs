@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Carbonate;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -49,7 +50,7 @@ public class RendererTests
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly char[] glyphChars =
     {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -119,7 +120,7 @@ public class RendererTests
                 this.shutDownReactor = reactor;
             });
 
-        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+        this.mockReactable = new Mock<IReactable>();
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -145,7 +146,7 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -163,7 +164,7 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
@@ -181,7 +182,7 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderManager')");
     }
 
@@ -199,7 +200,7 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'bufferManager')");
     }
 
@@ -217,7 +218,7 @@ public class RendererTests
                 null,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'batchServiceManager')");
     }
 
@@ -235,7 +236,7 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 null,
                 this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInitReactable')");
     }
 
@@ -253,12 +254,12 @@ public class RendererTests
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 null,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
     }
 
     [Fact]
-    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -277,7 +278,7 @@ public class RendererTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
@@ -299,9 +300,8 @@ public class RendererTests
         _ = CreateSystemUnderTest();
 
         // Assert
-        this.mockBatchSizeReactable.Verify(m => m.PushNotification(new BatchSizeData(1000u)), Times.Once);
-        this.mockBatchSizeReactable.Verify(m => m.EndNotifications(), Times.Once);
-        this.mockBatchSizeReactable.Verify(m => m.UnsubscribeAll(), Times.Once);
+        this.mockReactable.Verify(m => m.Push(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeId), Times.Once);
+        this.mockReactable.Verify(m => m.Unsubscribe(NotificationIds.BatchSizeId), Times.Once);
     }
     #endregion
 
@@ -1785,7 +1785,7 @@ public class RendererTests
             this.mockBatchServiceManager.Object,
             this.mockGLInitReactable.Object,
             this.mockShutDownReactable.Object,
-            this.mockBatchSizeReactable.Object);
+            this.mockReactable.Object);
 
         return result;
     }

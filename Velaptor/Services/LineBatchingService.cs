@@ -8,9 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Carbonate;
+using Exceptions;
 using Guards;
 using OpenGL;
-using Reactables.Core;
 using Reactables.ReactableData;
 
 /// <summary>
@@ -24,17 +25,27 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingService"/> class.
     /// </summary>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    public LineBatchingService(IReactable<BatchSizeData> batchSizeReactable)
+    /// <param name="reactable">Receives a push notification about the batch size.</param>
+    public LineBatchingService(IReactable reactable)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            NotificationIds.BatchSizeId,
+            onNext: msg =>
             {
+                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+
+                if (batchSize is null)
+                {
+                    throw new PushNotificationException(
+                        $"{nameof(LineBatchingService)}.Constructor()",
+                        NotificationIds.BatchSizeId);
+                }
+
                 var items = new List<LineBatchItem>();
 
-                for (var i = 0u; i < data.BatchSize; i++)
+                for (var i = 0u; i < batchSize; i++)
                 {
                     items.Add(default);
                 }

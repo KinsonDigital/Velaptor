@@ -5,6 +5,7 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL.Buffers;
@@ -44,7 +45,7 @@ public static class RendererFactory
         var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
         var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         renderer = new Renderer(
             glInvoker,
@@ -54,7 +55,7 @@ public static class RendererFactory
             batchServiceManager,
             glInitReactable,
             shutDownReactable,
-            batchSizeReactable);
+            reactable);
 
         renderer.RenderSurfaceWidth = renderSurfaceWidth;
         renderer.RenderSurfaceHeight = renderSurfaceHeight;

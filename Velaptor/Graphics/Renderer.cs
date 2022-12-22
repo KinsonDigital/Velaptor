@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Carbonate;
 using Content;
 using Content.Fonts;
 using Guards;
@@ -52,7 +53,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
     /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
-    /// <param name="batchSizeReactable">Sends a push notification of the batch size.</param>
+    /// <param name="reactable">Sends push notifications.</param>
     /// <remarks>
     ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
@@ -65,7 +66,7 @@ internal sealed class Renderer : IRenderer
         IBatchServiceManager batchServiceManager,
         IReactable<GLInitData> glInitReactable,
         IReactable<ShutDownData> shutDownReactable,
-        IReactable<BatchSizeData> batchSizeReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -74,7 +75,7 @@ internal sealed class Renderer : IRenderer
         EnsureThat.ParamIsNotNull(batchServiceManager);
         EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
         this.gl = gl;
         this.openGLService = openGLService;
@@ -108,10 +109,10 @@ internal sealed class Renderer : IRenderer
                 this.shutDownUnsubscriber?.Dispose();
             }));
 
-        var batchSizeData = new BatchSizeData(BatchSize);
-        batchSizeReactable.PushNotification(batchSizeData);
-        batchSizeReactable.EndNotifications();
-        batchSizeReactable.UnsubscribeAll();
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
+
+        reactable.Push(batchSizeData, NotificationIds.BatchSizeId);
+        reactable.Unsubscribe(NotificationIds.BatchSizeId);
 
         SetupPropertyCaches();
     }

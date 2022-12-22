@@ -5,11 +5,13 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Services;
 using Reactables.Core;
 using Reactables.ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// A shader used to render text of a particular font.
@@ -27,7 +29,7 @@ internal sealed class FontShader : ShaderProgram
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
     /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
+    /// <param name="reactable">Receives a push notification about the batch size.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
@@ -37,16 +39,24 @@ internal sealed class FontShader : ShaderProgram
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
         IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
+        IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, shaderLoaderService, glInitReactable, shutDownReactable)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            NotificationIds.BatchSizeId,
+            onNext: msg =>
             {
-                BatchSize = data.BatchSize;
+                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+
+                if (batchSize is null)
+                {
+                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", NotificationIds.BatchSizeId);
+                }
+
+                BatchSize = batchSize.Value;
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
     }

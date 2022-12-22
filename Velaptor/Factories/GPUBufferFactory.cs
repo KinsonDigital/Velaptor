@@ -5,6 +5,7 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
@@ -33,14 +34,14 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         textureBuffer = new TextureGPUBuffer(
             glInvoker,
             glInvokerExtensions,
             glInitReactor,
-            batchSizeReactable,
+            reactable,
             shutDownReactor);
 
         return textureBuffer;
@@ -57,14 +58,14 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         fontBuffer = new FontGPUBuffer(
             glInvoker,
             glInvokerExtensions,
             glInitReactor,
-            batchSizeReactable,
+            reactable,
             shutDownReactor);
 
         return fontBuffer;
@@ -81,14 +82,14 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         rectBuffer = new RectGPUBuffer(
             glInvoker,
             glInvokerExtensions,
             glInitReactor,
-            batchSizeReactable,
+            reactable,
             shutDownReactor);
 
         return rectBuffer;
@@ -105,14 +106,14 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         lineBuffer = new LineGPUBuffer(
             glInvoker,
             glInvokerExtensions,
             glInitReactor,
-            batchSizeReactable,
+            reactable,
             shutDownReactor);
 
         return lineBuffer;

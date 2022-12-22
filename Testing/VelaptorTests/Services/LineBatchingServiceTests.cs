@@ -9,11 +9,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
 using FluentAssertions;
 using Moq;
 using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.OpenGL;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Xunit;
@@ -23,9 +24,9 @@ using Xunit;
 /// </summary>
 public class LineBatchingServiceTests
 {
-    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReactor<BatchSizeData>? reactor;
+    private IReactor? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingServiceTests"/> class.
@@ -34,15 +35,15 @@ public class LineBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>(reactorObj => this.reactor = reactorObj)
+        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    public void Ctor_WithReactableNullParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -53,32 +54,67 @@ public class LineBatchingServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
-        // Arrange & Act
+        // Arrange
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = 4u });
+
         var sut = CreateSystemUnderTest();
-        this.reactor.OnNext(new BatchSizeData(4u));
+
+        // Act
+        this.reactor.OnNext(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
     }
 
     [Fact]
-    public void Ctor_WhenEndNotificationsIsInvoked_UnsubscribesFromReactable()
+    public void Ctor_WhenReactableUnsubscribes_InvokesUnsubscriber()
     {
         // Arrange
         _ = CreateSystemUnderTest();
 
         // Act
-        this.reactor.OnCompleted();
-        this.reactor.OnCompleted();
+        this.reactor.OnComplete();
+        this.reactor.OnComplete();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
+    }
+
+    [Fact]
+    public void Ctor_WhenReactableNotificationHasAnIssue_ThrowsException()
+    {
+        // Arrange
+        var expectedMsg = $"There was an issue with the '{nameof(LineBatchingService)}.Constructor()' subscription source";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull("it is required for unit testing.");
+
+                this.reactor = reactorObj;
+            });
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => this.reactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expectedMsg);
     }
     #endregion
 
@@ -119,8 +155,14 @@ public class LineBatchingServiceTests
         var batchItem1 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 1);
         var batchItem2 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 2);
 
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = 1u });
+
         var sut = CreateSystemUnderTest();
-        this.reactor.OnNext(new BatchSizeData(1u));
+
+        this.reactor.OnNext(mockMessage.Object);
+
         sut.Add(batchItem1);
 
         using var monitor = sut.Monitor();
@@ -139,8 +181,14 @@ public class LineBatchingServiceTests
         var batchItem1 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 1);
         var batchItem2 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 2);
 
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = 2u });
+
         var sut = CreateSystemUnderTest();
-        this.reactor.OnNext(new BatchSizeData(2u));
+
+        this.reactor.OnNext(mockMessage.Object);
+
         sut.Add(batchItem1);
         sut.Add(batchItem2);
 
@@ -159,8 +207,14 @@ public class LineBatchingServiceTests
         var batchItem1 = default(LineBatchItem);
         var batchItem2 = default(LineBatchItem);
 
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = 2u });
+
         var sut = CreateSystemUnderTest();
-        this.reactor.OnNext(new BatchSizeData(2u));
+
+        this.reactor.OnNext(mockMessage.Object);
+
         sut.BatchItems = new List<LineBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
@@ -176,5 +230,5 @@ public class LineBatchingServiceTests
     /// Creates a new instance of <see cref="LineBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private LineBatchingService CreateSystemUnderTest() => new (this.mockBatchSizeReactable.Object);
+    private LineBatchingService CreateSystemUnderTest() => new (this.mockReactable.Object);
 }

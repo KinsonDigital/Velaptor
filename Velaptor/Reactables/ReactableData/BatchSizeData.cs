@@ -4,19 +4,15 @@
 
 namespace Velaptor.Reactables.ReactableData;
 
-/// <summary>
-/// Holds data for the <see cref="BatchSizeReactable"/> reactable.
-/// </summary>
-internal readonly struct BatchSizeData
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BatchSizeData"/> struct.
-    /// </summary>
-    /// <param name="batchSize">The size of a batch.</param>
-    public BatchSizeData(in uint batchSize) => BatchSize = batchSize;
+using Carbonate;
 
+/// <summary>
+/// Holds data for the <see cref="Reactable"/> reactable.
+/// </summary>
+internal class BatchSizeData
+{
     /// <summary>
     /// Gets the data.
     /// </summary>
-    public uint BatchSize { get; }
+    public uint BatchSize { get; init; }
 }

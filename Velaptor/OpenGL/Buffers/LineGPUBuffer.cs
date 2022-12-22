@@ -7,12 +7,14 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Carbonate;
 using Exceptions;
 using GPUData;
 using Guards;
 using NativeInterop.OpenGL;
 using Reactables.Core;
 using Reactables.ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Updates data in the line GPU buffer.
@@ -29,7 +31,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
+    /// <param name="reactable">Receives a push notification about the batch size.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
@@ -38,16 +40,24 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
+        IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, glInitReactable, shutDownReactable)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            NotificationIds.BatchSizeId,
+            onNext: msg =>
             {
-                BatchSize = data.BatchSize;
+                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+
+                if (batchSize is null)
+                {
+                    throw new PushNotificationException($"{nameof(LineGPUBuffer)}.Constructor()", NotificationIds.BatchSizeId);
+                }
+
+                BatchSize = batchSize.Value;
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
     }

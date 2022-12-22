@@ -13,12 +13,12 @@ using Xunit;
 /// </summary>
 public class BatchSizeDataTests
 {
-    #region Constructor Tests
+    #region Prop Tests
     [Fact]
-    public void Ctor_WhenInvoked_SetsBatchSizeProperty()
+    public void BatchSize_WhenSettingValue_ReturnsCorrectResult4()
     {
         // Arrange & Act
-        var data = new BatchSizeData(123u);
+        var data = new BatchSizeData { BatchSize = 123u };
         var actual = data.BatchSize;
 
         // Assert
