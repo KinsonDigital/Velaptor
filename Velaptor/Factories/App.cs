@@ -5,6 +5,7 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Input;
 using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
@@ -57,8 +58,6 @@ public static class App
             IoC.Container.GetInstance<IReactable<GLContextData>>(),
             IoC.Container.GetInstance<IReactable<GLInitData>>(),
             IoC.Container.GetInstance<IReactable<(KeyCode, bool)>>(),
-            IoC.Container.GetInstance<IReactable<(int, int)>>(),
-            IoC.Container.GetInstance<IReactable<(MouseButton, bool)>>(),
-            IoC.Container.GetInstance<IReactable<(MouseScrollDirection, int)>>(),
+            IoC.Container.GetInstance<IReactable>(),
             IoC.Container.GetInstance<IReactable<ShutDownData>>());
 }

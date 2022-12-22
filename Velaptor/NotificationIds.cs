@@ -16,4 +16,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications for batch sizes.
     /// </summary>
     public static Guid BatchSizeId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for the push notifications of the mouse position.
+    /// </summary>
+    public static Guid MouseId { get; } = new ("b63c2dcd-3ce4-475e-b574-8951413ff381");
 }

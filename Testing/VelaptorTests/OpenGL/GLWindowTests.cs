@@ -7,6 +7,8 @@ namespace VelaptorTests.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Carbonate;
+using FluentAssertions;
 using Moq;
 using Silk.NET.Core.Contexts;
 using Silk.NET.Input;
@@ -54,9 +56,7 @@ public class GLWindowTests
     private readonly Mock<IReactable<GLContextData>> mockContextReactable;
     private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IReactable<(KeyCode key, bool isDown)>> mockKeyboardReactable;
-    private readonly Mock<IReactable<(int x, int y)>> mockMousePosReactable;
-    private readonly Mock<IReactable<(VelaptorMouseButton button, bool isDown)>> mockMouseBtnReactable;
-    private readonly Mock<IReactable<(MouseScrollDirection scrollDirection, int wheelValue)>> mockMouseWheelReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
     private readonly Mock<IWindowFactory> mockWindowFactory;
@@ -90,9 +90,7 @@ public class GLWindowTests
         this.mockContextReactable = new Mock<IReactable<GLContextData>>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
         this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
-        this.mockMousePosReactable = new Mock<IReactable<(int x, int y)>>();
-        this.mockMouseBtnReactable = new Mock<IReactable<(VelaptorMouseButton button, bool isDown)>>();
-        this.mockMouseWheelReactable = new Mock<IReactable<(MouseScrollDirection scrollDirection, int wheelValue)>>();
+        this.mockReactable = new Mock<IReactable>();
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
@@ -118,9 +116,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'windowFactory')");
     }
@@ -146,9 +142,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
     }
@@ -174,9 +168,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInvoker')");
     }
@@ -202,9 +194,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glfwInvoker')");
     }
@@ -230,9 +220,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'systemMonitorService')");
     }
@@ -258,9 +246,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
@@ -286,9 +272,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'taskService')");
     }
@@ -314,9 +298,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'contentLoader')");
     }
@@ -342,9 +324,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'renderer')");
     }
@@ -370,9 +350,7 @@ public class GLWindowTests
                 null,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glContextReactable')");
     }
@@ -398,9 +376,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 null,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInitReactable')");
     }
@@ -426,15 +402,13 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 null,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'keyboardReactable')");
     }
 
     [Fact]
-    public void Ctor_WithNullMousePosReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -455,66 +429,8 @@ public class GLWindowTests
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 null,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
                 this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'mousePosReactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullMouseBtnReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                this.mockRenderer.Object,
-                this.mockContextReactable.Object,
-                this.mockGLInitReactable.Object,
-                this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                null,
-                this.mockMouseWheelReactable.Object,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'mouseBtnReactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullMouseWheelReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                this.mockRenderer.Object,
-                this.mockContextReactable.Object,
-                this.mockGLInitReactable.Object,
-                this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                null,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'mouseWheelReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
@@ -538,9 +454,7 @@ public class GLWindowTests
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
-                this.mockMousePosReactable.Object,
-                this.mockMouseBtnReactable.Object,
-                this.mockMouseWheelReactable.Object,
+                this.mockReactable.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
     }
@@ -1190,16 +1104,26 @@ public class GLWindowTests
 
         // Assert
         Assert.False(sutUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
-        this.mockMouseWheelReactable.VerifyNever(m
-            => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>()));
+        this.mockReactable.VerifyNever(m
+            => m.Push(It.IsAny<MouseStateData>(), NotificationIds.MouseId));
     }
 
     [Fact]
     public void GLWindow_WhileUpdatingWhenNotShuttingDown_PerformsUpdate()
     {
         // Arrange
-        var expectedWheelData = (MouseScrollDirection.None, 0);
+        var expected = new MouseStateData
+        {
+            ScrollDirection = MouseScrollDirection.None,
+            ScrollWheelValue = 0,
+        };
+
         var sutUpdateInvoked = false;
+
+        MouseStateData? actual = null;
+        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((ref MouseStateData data, Guid _) => { actual = data; });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
         sut.Update = time =>
@@ -1218,8 +1142,10 @@ public class GLWindowTests
 
         // Assert
         Assert.True(sutUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
-        this.mockMouseWheelReactable.VerifyOnce(m
-            => m.PushNotification(expectedWheelData));
+        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+
+        actual.Should().NotBeNull();
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -1311,9 +1237,7 @@ public class GLWindowTests
         // Assert
         Assert.True(uninitializeInvoked);
 
-        this.mockMouseBtnReactable.VerifyOnce(m => m.EndNotifications());
-        this.mockMousePosReactable.VerifyOnce(m => m.EndNotifications());
-        this.mockMouseWheelReactable.VerifyOnce(m => m.EndNotifications());
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.MouseId));
 
         this.mockShutDownReactable.Verify(m => m.PushNotification(default), Times.Once);
         this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
@@ -1361,8 +1285,19 @@ public class GLWindowTests
     public void GLWindow_WhenMouseButtonIsPressedDown_UpdatesMouseInputState()
     {
         // Arrange
-        var expectedButtonState = (VelaptorMouseButton.LeftButton, true);
+        var expected = new MouseStateData
+        {
+            Button = VelaptorMouseButton.LeftButton,
+            ButtonIsDown = true,
+        };
+
         MockWindowLoadEvent();
+
+        MouseStateData? actual = null;
+
+        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((ref MouseStateData data, Guid _) => { actual = data; });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
@@ -1372,16 +1307,29 @@ public class GLWindowTests
             SilkMouseButton.Left);
 
         // Assert
-        this.mockMouseBtnReactable.VerifyOnce(m
-            => m.PushNotification(expectedButtonState));
+        this.mockReactable.VerifyOnce(m =>
+            m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+
+        actual.Should().NotBeNull();
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void GLWindow_WhenMouseButtonIsReleased_UpdatesMouseInputState()
     {
         // Arrange
-        var expectedButtonState = (VelaptorMouseButton.RightButton, false);
+        var expected = new MouseStateData
+        {
+            Button = VelaptorMouseButton.RightButton,
+            ButtonIsDown = false,
+        };
+
         MockWindowLoadEvent();
+
+        MouseStateData? actual = null;
+        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((ref MouseStateData data, Guid _) => { actual = data; });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
@@ -1391,8 +1339,10 @@ public class GLWindowTests
             SilkMouseButton.Right);
 
         // Assert
-        this.mockMouseBtnReactable.VerifyOnce(m
-            => m.PushNotification(expectedButtonState));
+        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+
+        actual.Should().NotBeNull();
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
@@ -1402,29 +1352,45 @@ public class GLWindowTests
     public void GLWindow_WhenMouseIsScrolled_UpdatesMouseInputState(int wheelValue, MouseScrollDirection expected)
     {
         // Arrange
-        var expectedMouseWheelState = (expected, wheelValue);
-        var wheelData = new ScrollWheel(0, wheelValue);
+        var expectedStateData = new MouseStateData
+        {
+            ScrollDirection = expected,
+            ScrollWheelValue = wheelValue,
+        };
 
         MockWindowLoadEvent();
+
+        MouseStateData? actual = null;
+        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((ref MouseStateData data, Guid _) => { actual = data; });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
         // Act
         this.mockSilkMouse.Raise(e => e.Scroll += It.IsAny<Action<IMouse, ScrollWheel>>(),
             null,
-            wheelData);
+            new ScrollWheel(0, wheelValue));
 
         // Assert
-        this.mockMouseWheelReactable.VerifyOnce(m
-            => m.PushNotification(expectedMouseWheelState));
+        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+
+        actual.Should().NotBeNull();
+        actual.Should().BeEquivalentTo(expectedStateData);
     }
 
     [Fact]
     public void GLWindow_WhenMouseMoves_UpdatesMouseInputState()
     {
         // Arrange
-        var expectedMousePosition = (11, 22);
+        var expected = new MouseStateData { X = 11, Y = 22 };
         MockWindowLoadEvent();
+
+        MouseStateData? actual = null;
+
+        this.mockReactable.Setup(m => m.Push(It.Ref<MouseStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((ref MouseStateData data, Guid _) => { actual = data; });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
@@ -1434,8 +1400,10 @@ public class GLWindowTests
             new SysVector2(11f, 22f));
 
         // Assert
-        this.mockMousePosReactable.VerifyOnce(m
-            => m.PushNotification(expectedMousePosition));
+        this.mockReactable.VerifyOnce(m => m.Push(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+
+        actual.Should().NotBeNull();
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -1475,9 +1443,7 @@ public class GLWindowTests
             this.mockContextReactable.Object,
             this.mockGLInitReactable.Object,
             this.mockKeyboardReactable.Object,
-            this.mockMousePosReactable.Object,
-            this.mockMouseBtnReactable.Object,
-            this.mockMouseWheelReactable.Object,
+            this.mockReactable.Object,
             this.mockShutDownReactable.Object);
 
     private void MockWindowLoadEvent()

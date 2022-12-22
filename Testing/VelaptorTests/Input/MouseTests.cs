@@ -5,10 +5,12 @@
 namespace VelaptorTests.Input;
 
 using System;
+using Carbonate;
+using FluentAssertions;
 using Moq;
 using Velaptor.Input;
-using Velaptor.Reactables.Core;
 using Helpers;
+using Velaptor.Reactables.ReactableData;
 using Xunit;
 
 /// <summary>
@@ -16,21 +18,29 @@ using Xunit;
 /// </summary>
 public class MouseTests
 {
-    private readonly Mock<IReactable<(int x, int y)>> mockMousePosReactable;
-    private readonly Mock<IReactable<(MouseButton button, bool isDown)>> mockMouseBtnReactable;
-    private readonly Mock<IReactable<(MouseScrollDirection wheelDirection, int mouseWheelValue)>> mockMouseWheelReactable;
+    private readonly Mock<IReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseTests"/> class.
     /// </summary>
-    public MouseTests()
-    {
-        this.mockMousePosReactable = new Mock<IReactable<(int x, int y)>>();
-        this.mockMouseBtnReactable = new Mock<IReactable<(MouseButton button, bool isDown)>>();
-        this.mockMouseWheelReactable = new Mock<IReactable<(MouseScrollDirection wheelDirection, int mouseWheelValue)>>();
-    }
+    public MouseTests() => this.mockReactable = new Mock<IReactable>();
 
     #region Method Tests
+    [Fact]
+    public void Ctor_WithNullReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Mouse(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+    }
+
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToReactables()
     {
@@ -38,25 +48,28 @@ public class MouseTests
         var unused = CreateSystemUnderTest();
 
         // Assert
-        this.mockMousePosReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(int, int)>>()));
-        this.mockMouseBtnReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(MouseButton, bool)>>()));
-        this.mockMouseWheelReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(MouseScrollDirection, int)>>()));
+        this.mockReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor>()));
     }
 
     [Fact]
     public void GetState_WhenGettingMousePosition_ReturnsCorrectResult()
     {
         // Arrange
-        IReactor<(int, int)>? reactor = null;
+        IReactor? reactor = null;
 
-        this.mockMousePosReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(int x, int y)>>()))
-            .Callback<IReactor<(int x, int y)>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
             {
                 reactor = reactorObj;
             });
 
         var sut = CreateSystemUnderTest();
-        reactor?.OnNext((11, 22));
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<MouseStateData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new MouseStateData { X = 11, Y = 22 });
+
+        reactor?.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GetState();
@@ -74,16 +87,21 @@ public class MouseTests
     {
         // Arrange
         var mouseButton = (MouseButton)mouseButtonValue;
-        IReactor<(MouseButton, bool)>? reactor = null;
+        IReactor? reactor = null;
 
-        this.mockMouseBtnReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseButton, bool)>>()))
-            .Callback<IReactor<(MouseButton, bool)>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
             {
                 reactor = reactorObj;
             });
 
         var sut = CreateSystemUnderTest();
-        reactor?.OnNext((mouseButton, true));
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<MouseStateData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new MouseStateData { Button = mouseButton, ButtonIsDown = true });
+
+        reactor?.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GetState();
@@ -96,16 +114,21 @@ public class MouseTests
     public void GetState_WhenGettingMouseWheelData_ReturnsCorrectResult()
     {
         // Arrange
-        IReactor<(MouseScrollDirection, int)>? reactor = null;
+        IReactor? reactor = null;
 
-        this.mockMouseWheelReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseScrollDirection, int)>>()))
-            .Callback<IReactor<(MouseScrollDirection, int)>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
             {
                 reactor = reactorObj;
             });
 
         var sut = CreateSystemUnderTest();
-        reactor?.OnNext((MouseScrollDirection.ScrollDown, 33));
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<MouseStateData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new MouseStateData { ScrollDirection = MouseScrollDirection.ScrollDown, ScrollWheelValue = 33 });
+
+        reactor?.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GetState();
@@ -119,45 +142,23 @@ public class MouseTests
     public void Reactable_WhenReactorCompletes_DisposesOfSubscriptions()
     {
         // Arrange
-        IReactor<(int, int)>? posReactor = null;
-        IReactor<(MouseButton, bool)>? btnReactor = null;
-        IReactor<(MouseScrollDirection, int)>? wheelReactor = null;
-        var mockMousePosUnsubscriber = new Mock<IDisposable>();
-        var mockMouseBtnUnsubscriber = new Mock<IDisposable>();
-        var mockMouseWheelUnsubscriber = new Mock<IDisposable>();
+        IReactor? posReactor = null;
+        var unsubscriber = new Mock<IDisposable>();
 
-        this.mockMousePosReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(int x, int y)>>()))
-            .Returns(mockMousePosUnsubscriber.Object)
-            .Callback<IReactor<(int x, int y)>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Returns(unsubscriber.Object)
+            .Callback<IReactor>(reactorObj =>
             {
                 posReactor = reactorObj;
-            });
-
-        this.mockMouseBtnReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseButton, bool)>>()))
-            .Returns(mockMouseBtnUnsubscriber.Object)
-            .Callback<IReactor<(MouseButton, bool)>>(reactorObj =>
-            {
-                btnReactor = reactorObj;
-            });
-
-        this.mockMouseWheelReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseScrollDirection, int)>>()))
-            .Returns(mockMouseWheelUnsubscriber.Object)
-            .Callback<IReactor<(MouseScrollDirection, int)>>(reactorObj =>
-            {
-                wheelReactor = reactorObj;
             });
 
         var unused = CreateSystemUnderTest();
 
         // Act
-        posReactor.OnCompleted();
-        btnReactor.OnCompleted();
-        wheelReactor.OnCompleted();
+        posReactor.OnComplete();
 
         // Assert
-        mockMousePosUnsubscriber.VerifyOnce(m => m.Dispose());
-        mockMouseBtnUnsubscriber.VerifyOnce(m => m.Dispose());
-        mockMouseWheelUnsubscriber.VerifyOnce(m => m.Dispose());
+        unsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
@@ -166,7 +167,5 @@ public class MouseTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private Mouse CreateSystemUnderTest()
-        => new Mouse(this.mockMousePosReactable.Object,
-            this.mockMouseBtnReactable.Object,
-            this.mockMouseWheelReactable.Object);
+        => new (this.mockReactable.Object);
 }
