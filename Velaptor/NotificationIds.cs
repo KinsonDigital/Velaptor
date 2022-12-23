@@ -13,6 +13,11 @@ using Carbonate;
 internal static class NotificationIds
 {
     /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for the OpenGL context.
+    /// </summary>
+    public static Guid GLContextId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
+
+    /// <summary>
     /// Gets the unique event <see cref="Guid"/> for push notifications for batch sizes.
     /// </summary>
     public static Guid BatchSizeId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");

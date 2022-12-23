@@ -9,12 +9,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Carbonate;
+using Exceptions;
 using Silk.NET.OpenGL;
-using Silk.NET.Windowing;
 using Velaptor.OpenGL;
-using Reactables;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 
 /// <summary>
@@ -32,7 +30,7 @@ internal sealed class GLInvoker : IGLInvoker
     // ReSharper restore InconsistentNaming
     private static readonly Queue<string> OpenGLCallStack = new ();
     private static DebugProc? debugCallback;
-    private readonly IDisposable glContextUnsubscriber;
+    private readonly IDisposable unsubscriber;
     private readonly ILoggingService loggingService;
     private bool isDisposed;
 
@@ -42,33 +40,23 @@ internal sealed class GLInvoker : IGLInvoker
     /// <summary>
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
-    /// <param name="glContextReactable">
-    ///     The OpenGL context reactable to subscribe to get a push notification
-    ///     that the OpenGL context has been created.
+    /// <param name="reactable">
+    ///     The reactable to subscribe to get a push notification that the OpenGL context has been created.
     /// </param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
-    public GLInvoker(IReactable<GLContextData> glContextReactable, ILoggingService loggingService)
+    public GLInvoker(IReactable reactable, ILoggingService loggingService)
     {
-        this.glContextUnsubscriber = glContextReactable.Subscribe(new Reactor<GLContextData>(
-            onNext: data =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            NotificationIds.GLContextId,
+            onNext: msg =>
             {
-                if (data.Data is IWindow window)
-                {
-                    this.gl = window.CreateOpenGL();
-                }
-                else
-                {
-                    var exceptionMessage =
-                        $"The parameter '{nameof(data)}' of the '{nameof(Reactor<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
-                    exceptionMessage +=
-                        $"{Environment.NewLine}\t{nameof(OpenGLContextReactable)} subscription location: {nameof(GLInvoker)}.Ctor()";
+                var possibleGLObj = msg.GetData<GL>();
 
-                    throw new Exception(exceptionMessage);
-                }
+                this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", NotificationIds.GLContextId);
             },
             onCompleted: () =>
             {
-                this.glContextUnsubscriber?.Dispose();
+                this.unsubscriber?.Dispose();
             }));
 
         this.loggingService = loggingService;
@@ -477,6 +465,7 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <inheritdoc/>
+    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep same API signature.")]
     public void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
         where T : unmanaged
     {

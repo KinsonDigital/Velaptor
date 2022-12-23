@@ -1,4 +1,4 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,6 +25,7 @@ using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using Reactables.Core;
 using Reactables.ReactableData;
+using Silk.NET.OpenGL;
 using Velaptor.Services;
 using UI;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
@@ -49,7 +50,6 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ITaskService taskService;
     private readonly IRenderer renderer;
     private readonly IReactable<GLInitData> glInitReactable;
-    private readonly IReactable<GLContextData> glContextReactable;
     private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
     private readonly IReactable reactable;
     private readonly IReactable<ShutDownData> shutDownReactable;
@@ -75,7 +75,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="renderer">Renders textures and primitives.</param>
-    /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
     /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
     /// <param name="reactable">Used to send push notifications of the position of the mouse.</param>
@@ -92,7 +91,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         IRenderer renderer,
-        IReactable<GLContextData> glContextReactable,
         IReactable<GLInitData> glInitReactable,
         IReactable<(KeyCode key, bool isDown)> keyboardReactable,
         IReactable reactable,
@@ -107,7 +105,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(renderer);
-        EnsureThat.ParamIsNotNull(glContextReactable);
         EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(keyboardReactable);
         EnsureThat.ParamIsNotNull(reactable);
@@ -124,7 +121,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.renderer = renderer;
 
         this.glInitReactable = glInitReactable;
-        this.glContextReactable = glContextReactable;
         this.keyboardReactable = keyboardReactable;
         this.reactable = reactable;
         this.shutDownReactable = shutDownReactable;
@@ -331,8 +327,10 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
     private void Init(uint width, uint height)
     {
-        this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
-        this.glContextReactable.EndNotifications();
+        var glContextMsg = new GLContextMessage(this.glWindow.CreateOpenGL());
+
+        this.reactable.PushMessage(glContextMsg, NotificationIds.GLContextId);
+        this.reactable.Unsubscribe(NotificationIds.GLContextId);
 
         this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
