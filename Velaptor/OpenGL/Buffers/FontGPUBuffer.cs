@@ -25,14 +25,13 @@ using Velaptor.Exceptions;
 internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
+    private readonly IDisposable bathSizeUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
     /// <param name="reactable">Receives push notifications.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
@@ -41,14 +40,13 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     public FontGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
         IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        : base(gl, openGLService, reactable, shutDownReactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        this.bathSizeUnsubscriber = reactable.Subscribe(new Reactor(
             eventId: NotificationIds.BatchSizeId,
             onNextMsg: msg =>
             {
@@ -61,7 +59,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onCompleted: () => this.bathSizeUnsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

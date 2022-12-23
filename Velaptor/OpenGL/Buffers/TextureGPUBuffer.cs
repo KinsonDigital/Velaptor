@@ -34,7 +34,6 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
     /// <param name="reactable">Receives push notifications.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
@@ -43,10 +42,9 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     public TextureGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
         IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        : base(gl, openGLService, reactable, shutDownReactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 

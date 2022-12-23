@@ -18,6 +18,11 @@ internal static class NotificationIds
     public static Guid GLContextId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
 
     /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for the OpenGL being initialized.
+    /// </summary>
+    public static Guid GLInitId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+
+    /// <summary>
     /// Gets the unique event <see cref="Guid"/> for push notifications for batch sizes.
     /// </summary>
     public static Guid BatchSizeId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");

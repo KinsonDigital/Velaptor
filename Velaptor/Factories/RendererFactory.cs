@@ -43,7 +43,6 @@ public static class RendererFactory
         var bufferManager = new BufferManager(bufferFactory);
 
         var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
 
@@ -53,7 +52,6 @@ public static class RendererFactory
             shaderManager,
             bufferManager,
             batchServiceManager,
-            glInitReactable,
             shutDownReactable,
             reactable);
 

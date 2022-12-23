@@ -34,7 +34,6 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
@@ -42,7 +41,6 @@ internal sealed class ShaderFactory : IShaderFactory
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
             reactable,
             shutDownReactable);
 
@@ -60,7 +58,6 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
@@ -68,7 +65,6 @@ internal sealed class ShaderFactory : IShaderFactory
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
             reactable,
             shutDownReactable);
 
@@ -86,7 +82,6 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
@@ -94,7 +89,6 @@ internal sealed class ShaderFactory : IShaderFactory
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
             reactable,
             shutDownReactable);
 
@@ -112,7 +106,6 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
@@ -120,7 +113,6 @@ internal sealed class ShaderFactory : IShaderFactory
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
             reactable,
             shutDownReactable);
 

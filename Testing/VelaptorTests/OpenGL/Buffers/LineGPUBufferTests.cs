@@ -36,11 +36,10 @@ public class LineGPUBufferTests
     private const uint ViewPortHeight = 200u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
-    private IReactor<GLInitData>? glInitReactor;
-    private IReactor? reactor;
+    private IReactor? glInitReactor;
+    private IReactor? batchSizeReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -65,28 +64,21 @@ public class LineGPUBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
-        this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
-            .Callback<IReactor<GLInitData>>(reactorObj =>
-            {
-                if (reactorObj is null)
-                {
-                    reactorObj.Should().NotBeNull("the GL initialization reactable subscription failed.  Reactor is null.");
-                }
-
-                this.glInitReactor = reactorObj;
-            });
-
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+            .Callback<IReactor>(reactor =>
             {
-                if (reactorObj is null)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.BatchSizeId)
                 {
-                    reactorObj.Should().NotBeNull("the GL initialization reactable subscription failed.  Reactor is null.");
+                    this.batchSizeReactor = reactor;
                 }
 
-                this.reactor = reactorObj;
+                if (reactor.EventId == NotificationIds.GLInitId)
+                {
+                    this.glInitReactor = reactor;
+                }
             });
 
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
@@ -102,7 +94,6 @@ public class LineGPUBufferTests
             _ = new LineGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                this.mockGLInitReactable.Object,
                 null,
                 this.mockShutDownReactable.Object);
         };
@@ -120,22 +111,22 @@ public class LineGPUBufferTests
         var mockUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+            .Callback<IReactor>(reactor =>
             {
-                if (reactorObj is null)
+                if (reactor is null)
                 {
                     Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
                 }
 
-                this.reactor = reactorObj;
+                this.batchSizeReactor = reactor;
             })
             .Returns<IReactor>(_ => mockUnsubscriber.Object);
 
-        _ = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest(false);
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
 
         // Assert
         mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
@@ -153,17 +144,20 @@ public class LineGPUBufferTests
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
-                this.reactor = reactorObj;
+                if (reactorObj.EventId == NotificationIds.BatchSizeId)
+                {
+                    this.batchSizeReactor = reactorObj;
+                }
             });
 
         var mockMessage = new Mock<IMessage>();
         mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
             .Returns<Action<Exception>?>(_ => null);
 
-        _ = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest(false);
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -328,7 +322,7 @@ public class LineGPUBufferTests
         mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateData();
@@ -393,7 +387,7 @@ public class LineGPUBufferTests
         mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateIndices();
@@ -414,7 +408,6 @@ public class LineGPUBufferTests
         var result = new LineGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
-            this.mockGLInitReactable.Object,
             this.mockReactable.Object,
             this.mockShutDownReactable.Object)
         {
@@ -423,7 +416,7 @@ public class LineGPUBufferTests
 
         if (initialize)
         {
-            this.glInitReactor.OnNext(default);
+            this.glInitReactor.OnNext();
         }
 
         return result;

@@ -44,18 +44,16 @@ internal sealed class Renderer : IRenderer
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Renderer"/> class.
-    /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderManager">Manages various shader operations.</param>
     /// <param name="bufferManager">Manages various buffer operations.</param>
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
-    /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <param name="reactable">Sends push notifications.</param>
     /// <remarks>
-    ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+    ///     <paramref name="reactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
     /// </remarks>
     public Renderer(
@@ -64,7 +62,6 @@ internal sealed class Renderer : IRenderer
         IShaderManager shaderManager,
         IBufferManager bufferManager,
         IBatchServiceManager batchServiceManager,
-        IReactable<GLInitData> glInitReactable,
         IReactable<ShutDownData> shutDownReactable,
         IReactable reactable)
     {
@@ -73,7 +70,6 @@ internal sealed class Renderer : IRenderer
         EnsureThat.ParamIsNotNull(shaderManager);
         EnsureThat.ParamIsNotNull(bufferManager);
         EnsureThat.ParamIsNotNull(batchServiceManager);
-        EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
         EnsureThat.ParamIsNotNull(reactable);
 
@@ -89,25 +85,19 @@ internal sealed class Renderer : IRenderer
         this.batchServiceManager.LineBatchReadyForRendering += LineBatchService_BatchReadyForRendering;
 
         // Receive a push notification that OpenGL has initialized
-        this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
-            _ =>
+        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitId,
+            onNext: () =>
             {
                 this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
                 this.cachedClearColor.IsCaching = false;
 
                 Init();
-            }, onCompleted: () =>
-            {
-                this.glInitUnsubscriber?.Dispose();
-            }));
+            }, onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
         this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
             _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+            onCompleted: () => this.shutDownUnsubscriber?.Dispose()));
 
         var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 

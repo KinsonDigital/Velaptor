@@ -33,7 +33,6 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
     /// <param name="reactable">Receives push notifications.</param>
     /// <param name="shutDownReactable">Receives a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
@@ -42,10 +41,9 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     public RectGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
         IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        : base(gl, openGLService, reactable, shutDownReactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 

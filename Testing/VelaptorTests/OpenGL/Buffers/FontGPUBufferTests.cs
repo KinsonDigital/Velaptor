@@ -29,11 +29,10 @@ public class FontGPUBufferTests
     private const uint IndexBufferId = 333;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IReactable> mockReactable;
-    private IReactor<GLInitData>? glInitReactor;
-    private IReactor? reactor;
+    private IReactor? glInitReactor;
+    private IReactor? batchSizeReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -63,28 +62,21 @@ public class FontGPUBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
-        this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
-            .Callback<IReactor<GLInitData>>(reactorObj =>
-            {
-                if (reactorObj is null)
-                {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
-                }
-
-                this.glInitReactor = reactorObj;
-            });
-
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+            .Callback<IReactor>(reactor =>
             {
-                if (reactorObj is null)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.BatchSizeId)
                 {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                    this.batchSizeReactor = reactor;
                 }
 
-                this.reactor = reactorObj;
+                if (reactor.EventId == NotificationIds.GLInitId)
+                {
+                    this.glInitReactor = reactor;
+                }
             });
 
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
@@ -100,7 +92,6 @@ public class FontGPUBufferTests
             _ = new FontGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                this.mockGLInitReactable.Object,
                 null,
                 this.mockShutDownReactable.Object);
         };
@@ -125,15 +116,15 @@ public class FontGPUBufferTests
                     Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
                 }
 
-                this.reactor = reactorObj;
+                this.batchSizeReactor = reactorObj;
             })
             .Returns<IReactor>(_ => mockUnsubscriber.Object);
 
         _ = CreateSystemUnderTest();
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
 
         // Assert
         mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
@@ -151,7 +142,7 @@ public class FontGPUBufferTests
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
-                this.reactor = reactorObj;
+                this.batchSizeReactor = reactorObj;
             });
 
         var mockMessage = new Mock<IMessage>();
@@ -161,7 +152,7 @@ public class FontGPUBufferTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -201,7 +192,7 @@ public class FontGPUBufferTests
 
         var sut = CreateSystemUnderTest();
 
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.UploadVertexData(batchItem, 0u);
@@ -236,7 +227,7 @@ public class FontGPUBufferTests
 
         var sut = CreateSystemUnderTest();
 
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.UploadVertexData(batchItem, 0u);
@@ -264,7 +255,7 @@ public class FontGPUBufferTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.PrepareForUpload();
@@ -291,12 +282,14 @@ public class FontGPUBufferTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+
+        this.glInitReactor.OnNext();
+
         var mockMessage = new Mock<IMessage>();
         mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateData();
@@ -319,13 +312,13 @@ public class FontGPUBufferTests
     }
 
     [Fact]
-    public void SetupVAO_WhenInvoked_SetsUpVertexArrayObject()
+    public void Se3tupVAO_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Setup Font Buffer Vertex Attributes"), Times.Once);
@@ -369,7 +362,6 @@ public class FontGPUBufferTests
     private FontGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockGLInitReactable.Object,
         this.mockReactable.Object,
         this.mockShutDownReactable.Object);
 }

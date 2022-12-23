@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
@@ -27,7 +28,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-    /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
+    /// <param name="reactable">Initializes the shader once it receives a notification.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
@@ -36,19 +37,24 @@ internal abstract class ShaderProgram : IShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable<GLInitData> glInitReactable,
+        IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
+        EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
 
         GL = gl;
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
-        this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
+
+        this.glInitReactorUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitId,
+            onNext: Init,
+            onCompleted: () => this.glInitReactorUnsubscriber?.Dispose()));
+
         this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
 
         ProcessCustomAttributes();

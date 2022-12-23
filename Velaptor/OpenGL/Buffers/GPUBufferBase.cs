@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Reactables.Core;
@@ -19,8 +20,8 @@ using NETSizeF = System.Drawing.SizeF;
 internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     where TData : struct
 {
-    private readonly IDisposable glInitUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
+    private readonly IDisposable glInitUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
     private bool isDisposed;
@@ -30,7 +31,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+    /// <param name="reactable">Receives a notification when OpenGL has been initialized.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
@@ -38,30 +39,25 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
+        IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
+        EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
 
-        GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-        OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+        GL = gl;
+        OpenGLService = openGLService;
 
-        this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
-            _ => Init(),
-            onCompleted: () =>
-            {
-                this.glInitUnsubscriber?.Dispose();
-            }));
+        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitId,
+            onNext: Init,
+            onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
         this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+            onNext: _ => ShutDown(),
+            onCompleted: () => this.shutDownUnsubscriber?.Dispose()));
 
         ProcessCustomAttributes();
     }

@@ -40,7 +40,6 @@ public class LineShaderTests
                 new Mock<IGLInvoker>().Object,
                 new Mock<IOpenGLService>().Object,
                 new Mock<IShaderLoaderService<uint>>().Object,
-                new Mock<IReactable<GLInitData>>().Object,
                 null,
                 new Mock<IReactable<ShutDownData>>().Object);
         };
@@ -165,7 +164,6 @@ public class LineShaderTests
         => new (new Mock<IGLInvoker>().Object,
             new Mock<IOpenGLService>().Object,
             new Mock<IShaderLoaderService<uint>>().Object,
-            new Mock<IReactable<GLInitData>>().Object,
             this.mockReactable.Object,
             new Mock<IReactable<ShutDownData>>().Object);
 }

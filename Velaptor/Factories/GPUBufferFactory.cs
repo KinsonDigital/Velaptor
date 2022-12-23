@@ -33,14 +33,12 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         textureBuffer = new TextureGPUBuffer(
             glInvoker,
             glInvokerExtensions,
-            glInitReactor,
             reactable,
             shutDownReactor);
 
@@ -57,14 +55,12 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         fontBuffer = new FontGPUBuffer(
             glInvoker,
             glInvokerExtensions,
-            glInitReactor,
             reactable,
             shutDownReactor);
 
@@ -81,14 +77,12 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         rectBuffer = new RectGPUBuffer(
             glInvoker,
             glInvokerExtensions,
-            glInitReactor,
             reactable,
             shutDownReactor);
 
@@ -105,14 +99,12 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
         lineBuffer = new LineGPUBuffer(
             glInvoker,
             glInvokerExtensions,
-            glInitReactor,
             reactable,
             shutDownReactor);
 

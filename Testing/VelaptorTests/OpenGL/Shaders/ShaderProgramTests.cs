@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
 using System.Collections.Generic;
+using Carbonate;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
@@ -33,11 +34,11 @@ public class ShaderProgramTests
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IDisposable> mockGLInitReactorUnsubscriber;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReactor<GLInitData>? glInitReactor;
+    private IReactor? glInitReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -74,11 +75,11 @@ public class ShaderProgramTests
             .Returns(getProgramStatusCode);
         this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+        this.mockReactable = new Mock<IReactable>();
         this.mockGLInitReactorUnsubscriber = new Mock<IDisposable>();
-        this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Returns(this.mockGLInitReactorUnsubscriber.Object)
-            .Callback<IReactor<GLInitData>>(reactor =>
+            .Callback<IReactor>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -103,7 +104,7 @@ public class ShaderProgramTests
                 null,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                this.mockGLInitReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
@@ -118,7 +119,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 null,
                 this.mockShaderLoader.Object,
-                this.mockGLInitReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
@@ -133,7 +134,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
-                this.mockGLInitReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
     }
@@ -150,7 +151,7 @@ public class ShaderProgramTests
                 this.mockShaderLoader.Object,
                 null,
                 this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'glInitReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
@@ -163,7 +164,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                this.mockGLInitReactable.Object,
+                this.mockReactable.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
     }
@@ -197,7 +198,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         this.mockShaderLoader.Verify(m
@@ -211,10 +212,10 @@ public class ShaderProgramTests
     {
         // Arrange
         CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         this.mockShaderLoader.Verify(m
@@ -236,7 +237,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         // Verify the creation of the vertex sut
@@ -257,7 +258,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -273,7 +274,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Assert
         this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
@@ -296,7 +297,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext(default);
+            this.glInitReactor.OnNext();
         }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.{Environment.NewLine}Vertex Shader Compile Error");
     }
 
@@ -314,7 +315,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext(default);
+            this.glInitReactor.OnNext();
         }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.{Environment.NewLine}Fragment Shader Compile Error");
     }
 
@@ -332,7 +333,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext(default);
+            this.glInitReactor.OnNext();
         }, $"Error linking shader with ID '{ShaderProgramId}'{Environment.NewLine}Program Linking Error");
     }
 
@@ -354,7 +355,7 @@ public class ShaderProgramTests
     {
         // Arrange
         var program = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         program.Use();
@@ -382,7 +383,7 @@ public class ShaderProgramTests
             });
 
         CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         shutDownReactor?.OnNext(default);
@@ -403,6 +404,6 @@ public class ShaderProgramTests
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
-            this.mockGLInitReactable.Object,
+            this.mockReactable.Object,
             this.mockShutDownReactable.Object);
 }

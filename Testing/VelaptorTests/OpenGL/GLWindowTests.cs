@@ -53,7 +53,6 @@ public class GLWindowTests
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IRenderer> mockRenderer;
     private readonly Mock<ITaskService> mockTaskService;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IReactable<(KeyCode key, bool isDown)>> mockKeyboardReactable;
     private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
@@ -86,7 +85,6 @@ public class GLWindowTests
         this.mockContentLoader = new Mock<IContentLoader>();
         this.mockRenderer = new Mock<IRenderer>();
         this.mockTaskService = new Mock<ITaskService>();
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
         this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
         this.mockReactable = new Mock<IReactable>();
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
@@ -111,7 +109,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -136,7 +133,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -161,7 +157,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -186,7 +181,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -211,7 +205,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -236,7 +229,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -261,7 +253,6 @@ public class GLWindowTests
                 null,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -286,7 +277,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 null,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -311,36 +301,10 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 null,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'renderer')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullGLInitReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                this.mockRenderer.Object,
-                null,
-                this.mockKeyboardReactable.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'glInitReactable')");
     }
 
     [Fact]
@@ -361,7 +325,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 null,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
@@ -386,7 +349,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 null,
                 this.mockShutDownReactable.Object);
@@ -411,7 +373,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockGLInitReactable.Object,
                 this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 null);
@@ -1021,9 +982,9 @@ public class GLWindowTests
         this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutputSynchronous));
         this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
 
-        this.mockGLInitReactable.VerifyOnce(m
-            => m.PushNotification(default));
-        this.mockGLInitReactable.VerifyOnce(m => m.EndNotifications());
+        this.mockReactable.VerifyOnce(m
+            => m.Push(NotificationIds.GLInitId));
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.GLInitId));
 
         Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
     }
@@ -1398,7 +1359,6 @@ public class GLWindowTests
             this.mockTaskService.Object,
             this.mockContentLoader.Object,
             this.mockRenderer.Object,
-            this.mockGLInitReactable.Object,
             this.mockKeyboardReactable.Object,
             this.mockReactable.Object,
             this.mockShutDownReactable.Object);

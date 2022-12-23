@@ -49,7 +49,6 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
     private readonly IRenderer renderer;
-    private readonly IReactable<GLInitData> glInitReactable;
     private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
     private readonly IReactable reactable;
     private readonly IReactable<ShutDownData> shutDownReactable;
@@ -75,7 +74,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="renderer">Renders textures and primitives.</param>
-    /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
     /// <param name="reactable">Used to send push notifications of the position of the mouse.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
@@ -91,7 +89,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         IRenderer renderer,
-        IReactable<GLInitData> glInitReactable,
         IReactable<(KeyCode key, bool isDown)> keyboardReactable,
         IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
@@ -105,7 +102,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(renderer);
-        EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(keyboardReactable);
         EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
@@ -120,7 +116,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ContentLoader = contentLoader;
         this.renderer = renderer;
 
-        this.glInitReactable = glInitReactable;
         this.keyboardReactable = keyboardReactable;
         this.reactable = reactable;
         this.shutDownReactable = shutDownReactable;
@@ -379,10 +374,10 @@ internal sealed class GLWindow : VelaptorIWindow
 
         /* Send a push notification to all subscribers that OpenGL is initialized.
          * The context of initialized here is that the OpenGL context is set
-         *and the related GLFW window has been created and is ready to go.
+         * and the related GLFW window has been created and is ready to go.
          */
-        this.glInitReactable.PushNotification(default);
-        this.glInitReactable.EndNotifications();
+        this.reactable.Push(NotificationIds.GLInitId);
+        this.reactable.Unsubscribe(NotificationIds.GLInitId);
 
         Initialized = true;
 
