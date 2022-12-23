@@ -55,7 +55,6 @@ public static class App
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
             RendererFactory.CreateRenderer(width, height),
-            IoC.Container.GetInstance<IReactable<GLContextData>>(),
             IoC.Container.GetInstance<IReactable<GLInitData>>(),
             IoC.Container.GetInstance<IReactable<(KeyCode, bool)>>(),
             IoC.Container.GetInstance<IReactable>(),
