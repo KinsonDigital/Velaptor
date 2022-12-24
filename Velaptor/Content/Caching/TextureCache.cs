@@ -253,14 +253,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             var loadedTexture = this.textureFactory.Create(contentName, fullFilePath, imageData);
 
 #if DEBUG
-            if (isFontFile)
-            {
-                AppStats.RecordLoadedTexture("Texture Atlas", contentName, loadedTexture.Id);
-            }
-            else
-            {
-                AppStats.RecordLoadedTexture("Texture", contentName, loadedTexture.Id);
-            }
+            AppStats.RecordLoadedTexture(isFontFile ? "Texture Atlas" : "Texture", contentName, loadedTexture.Id);
 #endif
 
             return loadedTexture;

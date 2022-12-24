@@ -14,7 +14,7 @@ using Carbonate;
 using Content;
 using Content.Fonts;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
@@ -51,7 +51,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="bufferManager">Manages various buffer operations.</param>
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
-    /// <param name="reactable">Sends push notifications.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <remarks>
     ///     <paramref name="reactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
@@ -170,7 +170,7 @@ internal sealed class Renderer : IRenderer
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
         // Render the entire texture
-        var srcRect = new NETRect()
+        var srcRect = new NETRect
         {
             X = 0,
             Y = 0,

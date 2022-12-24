@@ -80,7 +80,7 @@ public sealed class Texture : ITexture
     /// <summary>
     /// Finalizes an instance of the <see cref="Texture"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~Texture()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -107,7 +107,7 @@ public sealed class Texture : ITexture
     public uint Height { get; private set; }
 
     /// <summary>
-    /// Disposes of the texture if this textures <see cref="Id"/> matches the texture ID  in given <paramref name="data"/>.
+    /// Disposes of the texture if this textures <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
     private void Dispose(DisposeTextureData data)
@@ -118,7 +118,7 @@ public sealed class Texture : ITexture
         }
 
         this.gl.DeleteTexture(Id);
-        this.disposeUnsubscriber.Dispose();
+        this.disposeUnsubscriber?.Dispose();
 
         this.isDisposed = true;
     }

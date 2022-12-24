@@ -33,7 +33,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactable">Receives push notifications.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="shutDownReactable">Receives a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.

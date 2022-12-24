@@ -23,8 +23,8 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <summary>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
-    /// <param name="keyboardReactable">Subscribed for keyboard state push notifications.</param>
-    public Keyboard(IReactable<(KeyCode key, bool isDown)> keyboardReactable)
+    /// <param name="reactable">Sends and receives push notifications.</param>
+    public Keyboard(IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 

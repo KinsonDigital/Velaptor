@@ -28,7 +28,7 @@ internal sealed class TextureShader : ShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
-    /// <param name="reactable">Receives push notifications.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.

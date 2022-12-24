@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureCacheTests.cs" company="KinsonDigital">
+// <copyright file="TextureCacheTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -124,7 +124,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 null,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
@@ -141,7 +141,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 null,
                 this.mockFontAtlasService.Object,
@@ -158,7 +158,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 null,
@@ -175,7 +175,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
@@ -192,7 +192,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
@@ -209,7 +209,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
@@ -226,7 +226,7 @@ public class TextureCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureCache(
+            _ = new TextureCache(
                 this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
@@ -491,7 +491,7 @@ public class TextureCacheTests
         MockTextureCreation(mockTexture.Object);
 
         var cache = CreateCache();
-        var unused = cache.GetItem(TextureFilePath);
+        _ = cache.GetItem(TextureFilePath);
 
         // Act
         var act = () => cache.Unload(TextureFilePath);
@@ -571,7 +571,7 @@ public class TextureCacheTests
     public void ShutDownReactable_WhenNotificationsEnd_DisposesOfUnsubscriber()
     {
         // Arrange
-        var unused = CreateCache();
+        _ = CreateCache();
 
         // Act
         this.shutDownReactor.OnCompleted();

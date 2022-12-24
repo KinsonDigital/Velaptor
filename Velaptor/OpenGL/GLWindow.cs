@@ -74,8 +74,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="renderer">Renders textures and primitives.</param>
-    /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
-    /// <param name="reactable">Used to send push notifications of the position of the mouse.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     public GLWindow(
         uint width,
@@ -391,7 +390,8 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Uninitialize?.Invoke();
 
-        this.keyboardReactable.EndNotifications();
+        // TODO: Once all of the old reactables are gone, a simple unsubscribe all should be fine here
+
         this.reactable.Unsubscribe(NotificationIds.MouseId);
 
         this.shutDownReactable.PushNotification(default);

@@ -797,6 +797,35 @@ public class RendererTests
     }
 
     [Fact]
+    public void RenderFont_WhenTextIsOnlyNewLineCharacters_DoesNotRenderText()
+    {
+        // Arrange
+        const string renderText = "\n\r\r\n";
+
+        MockFontMetrics();
+
+        MockToGlyphMetrics(renderText);
+
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
+
+        // Act
+        sut.Render(
+            this.mockFont.Object,
+            renderText,
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
+            It.IsAny<Color>());
+
+        // Assert
+        this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
+        this.mockFont.VerifyNever(m => m.GetKerning(It.IsAny<uint>(), It.IsAny<uint>()));
+        this.mockBatchServiceManager.VerifyNever(m => m.AddFontGlyphBatchItem(It.IsAny<FontGlyphBatchItem>()));
+    }
+
+    [Fact]
     public void RenderFont_WhenInvoked_MeasuresText()
     {
         // Arrange

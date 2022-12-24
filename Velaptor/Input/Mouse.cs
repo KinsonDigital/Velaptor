@@ -27,7 +27,7 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// <summary>
     /// Initializes a new instance of the <see cref="Mouse"/> class.
     /// </summary>
-    /// <param name="reactable">Used to get push notifications about the position of the mouse.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     public Mouse(IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);

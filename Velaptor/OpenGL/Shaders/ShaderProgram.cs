@@ -28,7 +28,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-    /// <param name="reactable">Initializes the shader once it receives a notification.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.

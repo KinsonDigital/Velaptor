@@ -40,9 +40,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <summary>
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
-    /// <param name="reactable">
-    ///     The reactable to subscribe to get a push notification that the OpenGL context has been created.
-    /// </param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
     public GLInvoker(IReactable reactable, ILoggingService loggingService)
     {

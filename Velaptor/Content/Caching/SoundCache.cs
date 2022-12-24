@@ -71,7 +71,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <summary>
     /// Finalizes an instance of the <see cref="SoundCache"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~SoundCache()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
