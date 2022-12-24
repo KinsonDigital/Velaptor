@@ -53,7 +53,6 @@ public class GLWindowTests
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IRenderer> mockRenderer;
     private readonly Mock<ITaskService> mockTaskService;
-    private readonly Mock<IReactable<(KeyCode key, bool isDown)>> mockKeyboardReactable;
     private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
@@ -85,7 +84,6 @@ public class GLWindowTests
         this.mockContentLoader = new Mock<IContentLoader>();
         this.mockRenderer = new Mock<IRenderer>();
         this.mockTaskService = new Mock<ITaskService>();
-        this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
         this.mockReactable = new Mock<IReactable>();
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
@@ -109,7 +107,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'windowFactory')");
@@ -133,7 +130,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
@@ -157,7 +153,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInvoker')");
@@ -181,7 +176,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'glfwInvoker')");
@@ -205,7 +199,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'systemMonitorService')");
@@ -229,7 +222,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'platform')");
@@ -253,7 +245,6 @@ public class GLWindowTests
                 null,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'taskService')");
@@ -277,7 +268,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 null,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'contentLoader')");
@@ -301,34 +291,9 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 null,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'renderer')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullKeyboardReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                this.mockRenderer.Object,
-                null,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'keyboardReactable')");
     }
 
     [Fact]
@@ -349,7 +314,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 null,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'reactable')");
@@ -373,7 +337,6 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyboardReactable.Object,
                 this.mockReactable.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
@@ -940,7 +903,6 @@ public class GLWindowTests
         sut.Dispose();
 
         // Assert
-        this.mockKeyboardReactable.VerifyOnce(m => m.Dispose());
         this.mockShutDownReactable.VerifyOnce(m => m.Dispose());
         this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
         this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Load)}' event did not occur.");
@@ -1166,8 +1128,19 @@ public class GLWindowTests
     public void GLWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardState()
     {
         // Arrange
-        var expectedKeyState = (KeyCode.Space, true);
+        var expected = new KeyboardKeyStateData { Key = KeyCode.Space, IsDown = true };
+
+        KeyboardKeyStateData? actual = null;
+
         MockWindowLoadEvent();
+
+        this.mockReactable.Setup(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((in KeyboardKeyStateData data, Guid _) =>
+            {
+                data.Should().NotBeNull("it is required for unit testing.");
+                actual = data;
+            });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
@@ -1178,15 +1151,27 @@ public class GLWindowTests
             0);
 
         // Assert
-        this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardId));
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void GLWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardState()
     {
         // Arrange
-        var expectedKeyState = (KeyCode.K, false);
+        var expected = new KeyboardKeyStateData { Key = KeyCode.K, IsDown = false };
+
+        KeyboardKeyStateData? actual = null;
+
         MockWindowLoadEvent();
+
+        this.mockReactable.Setup(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, It.IsAny<Guid>()))
+            .Callback((in KeyboardKeyStateData data, Guid _) =>
+            {
+                data.Should().NotBeNull("it is required for unit testing.");
+                actual = data;
+            });
+
         var sut = CreateSystemUnderTest();
         sut.Show();
 
@@ -1197,7 +1182,8 @@ public class GLWindowTests
             0);
 
         // Assert
-        this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardId));
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -1359,7 +1345,6 @@ public class GLWindowTests
             this.mockTaskService.Object,
             this.mockContentLoader.Object,
             this.mockRenderer.Object,
-            this.mockKeyboardReactable.Object,
             this.mockReactable.Object,
             this.mockShutDownReactable.Object);
 

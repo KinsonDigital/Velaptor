@@ -6,7 +6,6 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
-using Input;
 using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL;
@@ -55,7 +54,6 @@ public static class App
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
             RendererFactory.CreateRenderer(width, height),
-            IoC.Container.GetInstance<IReactable<(KeyCode, bool)>>(),
             IoC.Container.GetInstance<IReactable>(),
             IoC.Container.GetInstance<IReactable<ShutDownData>>());
 }

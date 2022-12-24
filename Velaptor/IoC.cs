@@ -107,7 +107,6 @@ internal static class IoC
         IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<(KeyCode key, bool isDown)>, KeyboardStateReactable>(Lifestyle.Singleton);
     }
 
     /// <summary>

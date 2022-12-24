@@ -7,8 +7,10 @@ namespace Velaptor.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Carbonate;
 using Guards;
-using Reactables.Core;
+using Reactables.ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Provides functionality for the keyboard.
@@ -16,7 +18,7 @@ using Reactables.Core;
 internal sealed class Keyboard : IAppInput<KeyboardState>
 {
     private readonly Dictionary<KeyCode, bool> keyStates = new ();
-    private readonly IDisposable keyboardStateUnsubscriber;
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
@@ -24,13 +26,22 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <param name="keyboardReactable">Subscribed for keyboard state push notifications.</param>
     public Keyboard(IReactable<(KeyCode key, bool isDown)> keyboardReactable)
     {
-        EnsureThat.ParamIsNotNull(keyboardReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.keyboardStateUnsubscriber = keyboardReactable.Subscribe(new Reactor<(KeyCode key, bool isDown)>(
-            state =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.KeyboardId,
+            onNextMsg: msg =>
             {
-                this.keyStates[state.key] = state.isDown;
-            }, () => this.keyboardStateUnsubscriber?.Dispose()));
+                var data = msg.GetData<KeyboardKeyStateData>();
+
+                if (data is null)
+                {
+                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", NotificationIds.KeyboardId);
+                }
+
+                this.keyStates[data.Key] = data.IsDown;
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
 
         InitializeKeyStates();
     }

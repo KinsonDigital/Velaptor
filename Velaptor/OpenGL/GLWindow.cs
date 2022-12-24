@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -49,10 +49,10 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
     private readonly IRenderer renderer;
-    private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
     private readonly IReactable reactable;
     private readonly IReactable<ShutDownData> shutDownReactable;
     private readonly MouseStateData mouseStateData;
+    private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
     private bool isShuttingDown;
@@ -89,7 +89,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         IRenderer renderer,
-        IReactable<(KeyCode key, bool isDown)> keyboardReactable,
         IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
     {
@@ -102,7 +101,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(renderer);
-        EnsureThat.ParamIsNotNull(keyboardReactable);
         EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
 
@@ -116,11 +114,11 @@ internal sealed class GLWindow : VelaptorIWindow
         ContentLoader = contentLoader;
         this.renderer = renderer;
 
-        this.keyboardReactable = keyboardReactable;
         this.reactable = reactable;
         this.shutDownReactable = shutDownReactable;
 
         this.mouseStateData = new MouseStateData();
+        this.keyStateData = new KeyboardKeyStateData();
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
@@ -485,7 +483,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="key">The key that was pushed down.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
-        => this.keyboardReactable.PushNotification(((KeyCode)key, true));
+    {
+        this.keyStateData.Key = (KeyCode)key;
+        this.keyStateData.IsDown = true;
+
+        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardId);
+    }
 
     /// <summary>
     /// Invoked when any keyboard input key transitions from the down position to the up position.
@@ -494,7 +497,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="key">The key that was released.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
-        => this.keyboardReactable.PushNotification(((KeyCode)key, false));
+    {
+        this.keyStateData.Key = (KeyCode)key;
+        this.keyStateData.IsDown = false;
+
+        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardId);
+    }
 
     /// <summary>
     /// Invoked when any of the mouse buttons are in the down position over the window.
@@ -575,7 +583,6 @@ internal sealed class GLWindow : VelaptorIWindow
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
 
-            this.keyboardReactable.Dispose();
             this.shutDownReactable.Dispose();
 
             this.gl.GLError -= GL_GLError;

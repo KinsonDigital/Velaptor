@@ -31,4 +31,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for the push notifications of the mouse position.
     /// </summary>
     public static Guid MouseId { get; } = new ("b63c2dcd-3ce4-475e-b574-8951413ff381");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for the push notifications of the keyboard position.
+    /// </summary>
+    public static Guid KeyboardId { get; } = new ("a18686c8-10c9-4ba9-afaf-ceea77c130e2");
 }
