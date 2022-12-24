@@ -5,12 +5,11 @@
 namespace VelaptorTests.Content;
 
 using System;
+using Carbonate;
 using Moq;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 using Helpers;
 using Xunit;
 
@@ -21,7 +20,7 @@ public class TextureFactoryTests
 {
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<DisposeTextureData>> mockDisposeTexturesReactable;
+    private readonly Mock<IReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactoryTests"/> class.
@@ -30,7 +29,7 @@ public class TextureFactoryTests
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockDisposeTexturesReactable = new Mock<IReactable<DisposeTextureData>>();
+        this.mockReactable = new Mock<IReactable>();
     }
 
     #region Constructor Tests
@@ -43,7 +42,7 @@ public class TextureFactoryTests
             _ = new TextureFactory(
                 null,
                 this.mockGLService.Object,
-                this.mockDisposeTexturesReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -56,12 +55,12 @@ public class TextureFactoryTests
             _ = new TextureFactory(
                 this.mockGL.Object,
                 null,
-                this.mockDisposeTexturesReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
-    public void Ctor_WithNullDisposeTexturesReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -70,7 +69,7 @@ public class TextureFactoryTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'disposeTexturesReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
     #endregion
 
@@ -128,5 +127,5 @@ public class TextureFactoryTests
     private TextureFactory CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockDisposeTexturesReactable.Object);
+        this.mockReactable.Object);
 }

@@ -36,4 +36,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for the push notifications of the keyboard position.
     /// </summary>
     public static Guid KeyboardId { get; } = new ("a18686c8-10c9-4ba9-afaf-ceea77c130e2");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of textures.
+    /// </summary>
+    public static Guid DisposeTextureId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
 }

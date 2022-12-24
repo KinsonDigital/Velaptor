@@ -5,18 +5,12 @@
 namespace Velaptor.Reactables.ReactableData;
 
 /// <summary>
-/// Holds data for the <see cref="DisposeTexturesReactable"/> reactable.
+/// Holds data for the disposing of a texture.
 /// </summary>
-internal readonly struct DisposeTextureData
+internal sealed record DisposeTextureData
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DisposeTextureData"/> struct.
+    /// Gets or sets the texture ID.
     /// </summary>
-    /// <param name="textureId">The texture ID of the texture to dispose.</param>
-    public DisposeTextureData(in uint textureId) => TextureId = textureId;
-
-    /// <summary>
-    /// Gets the texture ID.
-    /// </summary>
-    public uint TextureId { get; }
+    public uint TextureId { get; set; }
 }

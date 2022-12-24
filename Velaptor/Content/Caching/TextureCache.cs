@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
+using Carbonate;
 using Exceptions;
 using Factories;
 using Graphics;
@@ -37,7 +38,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     private readonly IFontMetaDataParser fontMetaDataParser;
     private readonly IPath path;
     private readonly IDisposable shutDownUnsubscriber;
-    private readonly IReactable<DisposeTextureData> disposeTexturesReactable;
+    private readonly IReactable reactable;
     private readonly string[] defaultFontNames =
     {
         DefaultRegularFontName, DefaultBoldFontName,
@@ -54,7 +55,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
     /// <param name="path">Provides path related services.</param>
     /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
-    /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     public TextureCache(
         IImageService imageService,
         ITextureFactory textureFactory,
@@ -62,7 +63,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         IFontMetaDataParser fontMetaDataParser,
         IPath path,
         IReactable<ShutDownData> shutDownReactable,
-        IReactable<DisposeTextureData> disposeTexturesReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(imageService);
         EnsureThat.ParamIsNotNull(textureFactory);
@@ -70,7 +71,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         EnsureThat.ParamIsNotNull(fontMetaDataParser);
         EnsureThat.ParamIsNotNull(path);
         EnsureThat.ParamIsNotNull(shutDownReactable);
-        EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
         this.imageService = imageService;
         this.textureFactory = textureFactory;
@@ -84,7 +85,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
                 this.shutDownUnsubscriber?.Dispose();
             }));
 
-        this.disposeTexturesReactable = disposeTexturesReactable;
+        this.reactable = reactable;
     }
 
     /// <summary>
@@ -271,14 +272,16 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     {
         this.textures.TryRemove(cacheKey, out var texture);
 
-        if (texture is not null)
+        if (texture is null)
         {
-            this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
-#if DEBUG
-            AppStats.ClearLoadedFont(cacheKey);
-            AppStats.RemoveLoadedTexture(texture.Id);
-#endif
+            return;
         }
+
+        this.reactable.PushData(new DisposeTextureData { TextureId = texture.Id }, NotificationIds.DisposeTextureId);
+#if DEBUG
+        AppStats.ClearLoadedFont(cacheKey);
+        AppStats.RemoveLoadedTexture(texture.Id);
+#endif
     }
 
     /// <summary>
@@ -291,19 +294,9 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        var cacheKeys = this.textures.Keys.ToArray();
+        this.reactable.Unsubscribe(NotificationIds.DisposeTextureId);
 
-        // Dispose of all default and non default textures
-        foreach (var cacheKey in cacheKeys)
-        {
-            this.textures.TryRemove(cacheKey, out var texture);
-
-            if (texture is not null)
-            {
-                this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
-            }
-        }
-
+        this.textures.Clear();
         this.isDisposed = true;
     }
 }

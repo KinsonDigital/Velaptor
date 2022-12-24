@@ -17,7 +17,7 @@ public class DisposeTextureDataTests
     public void Ctor_WhenInvoked_SetsTextureIdProperty()
     {
         // Arrange & Act
-        var data = new DisposeTextureData(1234u);
+        var data = new DisposeTextureData { TextureId = 1234u };
         var actual = data.TextureId;
 
         // Assert
