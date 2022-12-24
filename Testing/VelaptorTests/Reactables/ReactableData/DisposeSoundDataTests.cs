@@ -17,7 +17,7 @@ public class DisposeSoundDataTests
     public void Ctor_WhenInvoked_SetsSoundIdProperty()
     {
         // Arrange & Act
-        var data = new DisposeSoundData(1234u);
+        var data = new DisposeSoundData { SoundId = 1234u };
         var actual = data.SoundId;
 
         // Assert

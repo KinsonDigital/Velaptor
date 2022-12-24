@@ -41,4 +41,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of textures.
     /// </summary>
     public static Guid DisposeTextureId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of sounds.
+    /// </summary>
+    public static Guid DisposeSoundId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
 }

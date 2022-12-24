@@ -104,8 +104,8 @@ internal static class IoC
     /// </summary>
     private static void SetupReactors()
     {
+        // TODO: This method can be removed
         IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
     }
 
     /// <summary>

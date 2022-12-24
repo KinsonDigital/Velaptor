@@ -5,18 +5,12 @@
 namespace Velaptor.Reactables.ReactableData;
 
 /// <summary>
-/// Holds data for the <see cref="DisposeSoundsReactable"/> reactable.
+/// Holds data for the disposing of a sound.
 /// </summary>
-internal readonly struct DisposeSoundData
+internal sealed record DisposeSoundData
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DisposeSoundData"/> struct.
+    /// Gets or sets the sound ID.
     /// </summary>
-    /// <param name="soundId">The ID of the sound.</param>
-    public DisposeSoundData(in uint soundId) => SoundId = soundId;
-
-    /// <summary>
-    /// Gets the sound ID.
-    /// </summary>
-    public uint SoundId { get; }
+    public uint SoundId { get; set; }
 }

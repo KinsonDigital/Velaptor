@@ -7,6 +7,8 @@ namespace VelaptorTests.Content.Caching;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using Carbonate;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -15,6 +17,7 @@ using Velaptor.Content.Factories;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Helpers;
+using Velaptor;
 using Xunit;
 
 /// <summary>
@@ -32,7 +35,7 @@ public class SoundCacheTests
     private readonly Mock<ISoundFactory> mockSoundFactory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<IReactable<DisposeSoundData>> mockDisposeSoundReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor<ShutDownData>? shutDownReactor;
 
@@ -50,7 +53,7 @@ public class SoundCacheTests
         this.mockPath.Setup(m => m.GetExtension(OggSoundFilePath)).Returns(OggFileExtension);
         this.mockPath.Setup(m => m.GetExtension(Mp3SoundFilePath)).Returns(Mp3FileExtension);
 
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>> { Name = nameof(this.mockDisposeSoundReactable) };
+        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>> { Name = nameof(this.mockReactable) };
 
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber.Name = nameof(this.mockShutDownUnsubscriber);
@@ -66,8 +69,8 @@ public class SoundCacheTests
                 this.shutDownReactor = reactor;
             });
 
-        this.mockDisposeSoundReactable = new Mock<IReactable<DisposeSoundData>>();
-        this.mockDisposeSoundReactable.Name = nameof(this.mockDisposeSoundReactable);
+        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable.Name = nameof(this.mockReactable);
     }
 
     #region Constructor Tests
@@ -81,7 +84,7 @@ public class SoundCacheTests
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object,
-                this.mockDisposeSoundReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'soundFactory')");
     }
@@ -96,7 +99,7 @@ public class SoundCacheTests
                 this.mockSoundFactory.Object,
                 null,
                 this.mockPath.Object,
-                this.mockDisposeSoundReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'file')");
     }
@@ -111,13 +114,13 @@ public class SoundCacheTests
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 null,
-                this.mockDisposeSoundReactable.Object,
+                this.mockReactable.Object,
                 this.mockShutDownReactable.Object);
         }, "The parameter must not be null. (Parameter 'path')");
     }
 
     [Fact]
-    public void Ctor_WithNullDisposeSoundsReactorParam_ThrowsException()
+    public void Ctor_WithNullReactorParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -128,7 +131,7 @@ public class SoundCacheTests
                 this.mockPath.Object,
                 null,
                 this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'disposeSoundsReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
@@ -141,7 +144,7 @@ public class SoundCacheTests
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object,
-                this.mockDisposeSoundReactable.Object,
+                this.mockReactable.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
     }
@@ -288,27 +291,36 @@ public class SoundCacheTests
     public void Unload_WhenSoundToUnloadExists_RemovesAndDisposesOfSound()
     {
         // Arrange
+        var expected = new DisposeSoundData { SoundId = 123u };
+
+        DisposeSoundData? actual = null;
+
         var mockSound = new Mock<ISound>();
         mockSound.SetupGet(p => p.Id).Returns(123u);
+
         this.mockSoundFactory.Setup(m => m.Create(OggSoundFilePath))
             .Returns(mockSound.Object);
+
+        this.mockReactable.Setup(m => m.PushData(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()))
+            .Callback((in DisposeSoundData data, Guid _) =>
+            {
+                data.Should().NotBeNull("it is required for unit testing.");
+                actual = data;
+            });
 
         var cache = CreateCache();
         var unused = cache.GetItem(OggSoundFilePath);
 
         // Act
-        cache.Unload(OggSoundFilePath);
+        var act = () => cache.Unload(OggSoundFilePath);
 
         // Assert
-        AssertExtensions.DoesNotThrowNullReference(() =>
-        {
-            cache.Unload(OggSoundFilePath);
-        });
+        act.Should().NotThrow<NullReferenceException>();
 
-        Assert.Equal(0, cache.TotalCachedItems);
-        this.mockDisposeSoundReactable
-            .Verify(m
-                => m.PushNotification(new DisposeSoundData(123u)), Times.Once);
+        cache.TotalCachedItems.Should().Be(0);
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<DisposeSoundData>.IsAny, NotificationIds.DisposeSoundId));
+
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -325,9 +337,7 @@ public class SoundCacheTests
         cache.Unload("non-existing-texture");
 
         // Assert
-        this.mockDisposeSoundReactable
-            .Verify(m
-                => m.PushNotification(new DisposeSoundData(123u)), Times.Never);
+        this.mockReactable.VerifyNever(m => m.PushData(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()));
     }
 
     [Fact]
@@ -367,12 +377,7 @@ public class SoundCacheTests
         this.shutDownReactor?.OnNext(default);
 
         // Assert
-        this.mockDisposeSoundReactable
-            .Verify(m =>
-                m.PushNotification(new DisposeSoundData(11u)), Times.Once);
-        this.mockDisposeSoundReactable
-            .Verify(m =>
-                m.PushNotification(new DisposeSoundData(22u)), Times.Once);
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.DisposeSoundId));
     }
     #endregion
 
@@ -399,6 +404,6 @@ public class SoundCacheTests
         new (this.mockSoundFactory.Object,
             this.mockFile.Object,
             this.mockPath.Object,
-            this.mockDisposeSoundReactable.Object,
+            this.mockReactable.Object,
             this.mockShutDownReactable.Object);
 }

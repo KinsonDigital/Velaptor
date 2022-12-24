@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundFactory.cs" company="KinsonDigital">
+// <copyright file="SoundFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,9 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Carbonate;
 using Guards;
 using Reactables.Core;
 using Reactables.ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Creates sounds based on the sound file at a location.
@@ -19,23 +21,38 @@ using Reactables.ReactableData;
 internal sealed class SoundFactory : ISoundFactory
 {
     private static readonly Dictionary<uint, string> Sounds = new ();
+    private readonly IReactable reactable;
     private readonly IDisposable disposeSoundUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
     /// </summary>
-    /// <param name="disposeSoundReactable">Sends push notifications to dispose of sounds.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
     public SoundFactory(
-        IReactable<DisposeSoundData> disposeSoundReactable,
+        IReactable reactable,
         IReactable<ShutDownData> shutDownReactable)
     {
-        EnsureThat.ParamIsNotNull(disposeSoundReactable);
+        EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
 
+        this.reactable = reactable;
         this.disposeSoundUnsubscriber =
-            disposeSoundReactable.Subscribe(new Reactor<DisposeSoundData>(RemoveSoundId));
+            reactable.Subscribe(new Reactor(
+                eventId: NotificationIds.DisposeSoundId,
+                onNextMsg: msg =>
+                {
+                    var data = msg.GetData<DisposeSoundData>();
+
+                    if (data is null)
+                    {
+                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", NotificationIds.DisposeSoundId);
+                    }
+
+                    Sounds.Remove(data.SoundId);
+                },
+                onCompleted: () => this.disposeSoundUnsubscriber?.Dispose()));
 
         this.shutDownUnsubscriber =
             shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
@@ -60,27 +77,13 @@ internal sealed class SoundFactory : ISoundFactory
     /// <inheritdoc/>
     public ISound Create(string filePath)
     {
-        var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
-
         var newId = Sounds.Count <= 0
             ? 1
             : Sounds.Keys.Max() + 1;
 
         Sounds.Add(newId, filePath);
 
-        return new Sound(disposeReactor, filePath, newId);
-    }
-
-    /// <summary>
-    /// Removes a sound ID that matches the sound ID in the given <paramref name="data"/>.
-    /// </summary>
-    /// <param name="data">The sounds data used to remove the ID from the list.</param>
-    private static void RemoveSoundId(DisposeSoundData data)
-    {
-        if (Sounds.ContainsKey(data.SoundId))
-        {
-            Sounds.Remove(data.SoundId);
-        }
+        return new Sound(this.reactable, filePath, newId);
     }
 
     /// <summary>
