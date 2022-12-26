@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Carbonate;
 using Guards;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Velaptor.Exceptions;
 
@@ -84,7 +83,7 @@ internal sealed class SoundFactory : ISoundFactory
     }
 
     /// <summary>
-    /// Unsubscribes from the <see cref="IReactable{T}"/> reactors.
+    /// Disposes of all sounds.
     /// </summary>
     private void ShutDown()
     {
