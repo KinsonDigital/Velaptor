@@ -15,7 +15,7 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Velaptor.Services;
 using Helpers;
 using Velaptor;

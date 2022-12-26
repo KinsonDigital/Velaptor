@@ -14,7 +14,7 @@ using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Helpers;
 using Velaptor;
 using Velaptor.Exceptions;

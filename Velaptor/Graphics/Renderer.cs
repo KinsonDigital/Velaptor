@@ -18,7 +18,7 @@ using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Reactables.ReactableData;
+using ReactableData;
 using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;

@@ -12,7 +12,7 @@ using Carbonate;
 using Exceptions;
 using Guards;
 using OpenGL;
-using Reactables.ReactableData;
+using ReactableData;
 
 /// <summary>
 /// Manages the process of batching glyphs to be rendered.

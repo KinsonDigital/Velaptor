@@ -12,7 +12,7 @@ using Velaptor.Input;
 using Helpers;
 using Velaptor;
 using Velaptor.Exceptions;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>

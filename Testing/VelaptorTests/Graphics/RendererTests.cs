@@ -21,7 +21,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Velaptor.Services;
 using Helpers;
 using Xunit;

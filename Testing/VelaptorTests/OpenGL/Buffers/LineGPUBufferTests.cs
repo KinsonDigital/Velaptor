@@ -19,7 +19,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>

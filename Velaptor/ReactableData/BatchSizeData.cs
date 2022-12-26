@@ -1,8 +1,8 @@
-// <copyright file="BatchSizeData.cs" company="KinsonDigital">
+﻿// <copyright file="BatchSizeData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables.ReactableData;
+namespace Velaptor.ReactableData;
 
 using Carbonate;
 

@@ -23,7 +23,7 @@ using Input;
 using Velaptor.Input.Exceptions;
 using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
-using Reactables.ReactableData;
+using ReactableData;
 using Silk.NET.OpenGL;
 using Velaptor.Services;
 using UI;

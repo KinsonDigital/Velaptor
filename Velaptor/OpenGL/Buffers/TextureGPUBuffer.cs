@@ -16,7 +16,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
 using Guards;
-using Reactables.ReactableData;
+using ReactableData;
 using NETRect = System.Drawing.Rectangle;
 
 /// <summary>

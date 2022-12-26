@@ -15,7 +15,7 @@ using Exceptions;
 using Factories;
 using Graphics;
 using Guards;
-using Reactables.ReactableData;
+using ReactableData;
 using Services;
 
 /// <summary>

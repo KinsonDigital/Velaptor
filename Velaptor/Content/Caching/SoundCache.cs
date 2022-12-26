@@ -15,7 +15,7 @@ using Carbonate;
 using Exceptions;
 using Factories;
 using Guards;
-using Reactables.ReactableData;
+using ReactableData;
 
 /// <summary>
 /// Caches <see cref="ISound"/> objects for retrieval at a later time.

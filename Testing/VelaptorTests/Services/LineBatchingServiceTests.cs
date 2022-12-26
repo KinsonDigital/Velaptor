@@ -15,7 +15,7 @@ using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.OpenGL;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;
 

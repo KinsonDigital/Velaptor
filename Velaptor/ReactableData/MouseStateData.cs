@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables.ReactableData;
+namespace Velaptor.ReactableData;
 
 using Input;
 

@@ -12,7 +12,7 @@ using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
-using Reactables.ReactableData;
+using ReactableData;
 using Velaptor.Exceptions;
 
 /// <summary>

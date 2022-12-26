@@ -14,7 +14,7 @@ using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Helpers;
 using Velaptor;
 using Xunit;

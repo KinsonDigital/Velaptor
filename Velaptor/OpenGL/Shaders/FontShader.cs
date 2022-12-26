@@ -9,7 +9,7 @@ using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Services;
-using Reactables.ReactableData;
+using ReactableData;
 using Velaptor.Exceptions;
 
 /// <summary>

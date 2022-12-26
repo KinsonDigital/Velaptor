@@ -16,7 +16,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Xunit;
 
 public class LineShaderTests

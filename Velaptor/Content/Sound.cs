@@ -10,7 +10,7 @@ using Carbonate;
 using CASL;
 using Factories;
 using Guards;
-using Reactables.ReactableData;
+using ReactableData;
 using Velaptor.Exceptions;
 using CASLSound = CASL.Sound;
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Carbonate;
 using Guards;
-using Reactables.ReactableData;
+using ReactableData;
 using Velaptor.Exceptions;
 
 /// <summary>

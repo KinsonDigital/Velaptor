@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables.ReactableData;
+namespace Velaptor.ReactableData;
 
 /// <summary>
 /// Holds data for the disposing of a sound.

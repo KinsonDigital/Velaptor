@@ -13,7 +13,7 @@ using Content;
 using Exceptions;
 using Guards;
 using OpenGL;
-using Reactables.ReactableData;
+using ReactableData;
 
 /// <summary>
 /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
