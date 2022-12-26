@@ -59,7 +59,7 @@ public class KeyboardTests
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(Keyboard)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{NotificationIds.KeyboardId}'.";
+        expected += $" for subscription ID '{NotificationIds.KeyboardStateChangedId}'.";
 
         IReactor? reactor = null;
 

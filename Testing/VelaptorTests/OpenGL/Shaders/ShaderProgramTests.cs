@@ -84,12 +84,12 @@ public class ShaderProgramTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     return this.mockGLInitUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.ShutDownId)
+                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
@@ -101,11 +101,11 @@ public class ShaderProgramTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.ShutDownId)
+                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }

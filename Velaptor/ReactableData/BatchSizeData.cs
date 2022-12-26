@@ -4,10 +4,8 @@
 
 namespace Velaptor.ReactableData;
 
-using Carbonate;
-
 /// <summary>
-/// Holds data for the <see cref="Reactable"/> reactable.
+/// Holds data for the size of the batch.
 /// </summary>
 internal record BatchSizeData
 {

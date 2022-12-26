@@ -41,14 +41,14 @@ internal sealed class FontShader : ShaderProgram
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.BatchSizeId,
+            eventId: NotificationIds.BatchSizeSetId,
             onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
                 if (batchSize is null)
                 {
-                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", NotificationIds.BatchSizeId);
+                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", NotificationIds.BatchSizeSetId);
                 }
 
                 BatchSize = batchSize.Value;

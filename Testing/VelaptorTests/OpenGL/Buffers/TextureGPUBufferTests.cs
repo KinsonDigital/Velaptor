@@ -70,12 +70,12 @@ public class TextureGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.BatchSizeId)
+                if (reactor.EventId == NotificationIds.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
                 }
 
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
@@ -186,7 +186,7 @@ public class TextureGPUBufferTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(TextureGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Callback<IReactor>(reactorObj =>

@@ -32,7 +32,7 @@ public abstract class ControlBase : IControl
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     protected ControlBase() => this.mouse = AppInputFactory.CreateMouse();
 
     /// <inheritdoc cref="IControl.Click"/>
@@ -196,7 +196,7 @@ public abstract class ControlBase : IControl
     /// Renders the control to the screen.
     /// </summary>
     /// <param name="renderer">Renders the control.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     public virtual void Render(IRenderer renderer)
     {
     }

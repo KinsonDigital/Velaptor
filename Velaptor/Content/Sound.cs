@@ -17,7 +17,7 @@ using CASLSound = CASL.Sound;
 /// <summary>
 /// A single sound that can be played, paused etc.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASL.Sound)} implmementation changes.")]
 public sealed class Sound : ISound
 {
     private IDisposable? disposeUnsubscriber;
@@ -34,8 +34,9 @@ public sealed class Sound : ISound
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
         var reactable = IoC.Container.GetInstance<IReactable>();
+        var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
 
-        Init(reactable, filePath, SoundFactory.GetNewId(filePath));
+        Init(reactable, filePath, soundFactory.GetNewId(filePath));
     }
 
     /// <summary>
@@ -176,14 +177,14 @@ public sealed class Sound : ISound
     {
         this.disposeUnsubscriber =
             reactable.Subscribe(new Reactor(
-                eventId: NotificationIds.DisposeSoundId,
+                eventId: NotificationIds.SoundDisposedId,
                 onNextMsg: msg =>
                 {
                     var data = msg.GetData<DisposeSoundData>();
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(Sound)}.Constructor()", NotificationIds.DisposeSoundId);
+                        throw new PushNotificationException($"{nameof(Sound)}.Constructor()", NotificationIds.SoundDisposedId);
                     }
 
                     Dispose(data);

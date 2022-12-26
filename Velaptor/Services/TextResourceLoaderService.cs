@@ -14,7 +14,7 @@ using Exceptions;
 /// <summary>
 /// Loads embedded text file resources.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to the direct interaction with the dotnet '{nameof(Assembly)}' API.")]
 internal sealed class TextResourceLoaderService : IEmbeddedResourceLoaderService<string>
 {
     /// <summary>

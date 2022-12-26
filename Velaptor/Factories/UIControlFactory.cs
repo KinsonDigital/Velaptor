@@ -10,7 +10,7 @@ using Input;
 using UI;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public class UIControlFactory : IUIControlFactory
 {
     /// <inheritdoc/>

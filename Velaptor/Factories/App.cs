@@ -15,7 +15,7 @@ using UI;
 /// <summary>
 /// Velaptor application specific functionality.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class App
 {
     /// <summary>

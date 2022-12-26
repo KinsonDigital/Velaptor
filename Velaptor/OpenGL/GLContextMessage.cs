@@ -12,7 +12,7 @@ using Silk.NET.OpenGL;
 /// <summary>
 /// A message that contains the OpenGL instance.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
 public class GLContextMessage : IMessage
 {
     private readonly GL gl;

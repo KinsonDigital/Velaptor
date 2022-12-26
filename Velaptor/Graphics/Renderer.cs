@@ -51,7 +51,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
     /// <remarks>
-    ///     <paramref name="reactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+    ///     <paramref name="reactable"/> is subscribed to this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
     /// </remarks>
     public Renderer(
@@ -82,7 +82,7 @@ internal sealed class Renderer : IRenderer
 
         // Receive a push notification that OpenGL has initialized
         this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.GLInitId,
+            eventId: NotificationIds.GLInitializedId,
             onNext: () =>
             {
                 this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -92,13 +92,13 @@ internal sealed class Renderer : IRenderer
             }, onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
         this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
 
         var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        reactable.PushData(batchSizeData, NotificationIds.BatchSizeId);
-        reactable.Unsubscribe(NotificationIds.BatchSizeId);
+        reactable.PushData(batchSizeData, NotificationIds.BatchSizeSetId);
+        reactable.Unsubscribe(NotificationIds.BatchSizeSetId);
 
         SetupPropertyCaches();
     }
@@ -106,7 +106,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Finalizes an instance of the <see cref="Renderer"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~Renderer()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

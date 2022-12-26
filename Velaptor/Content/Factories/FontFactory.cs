@@ -4,7 +4,6 @@
 
 namespace Velaptor.Content.Factories;
 
-using System.Diagnostics.CodeAnalysis;
 using Caching;
 using Fonts;
 using Velaptor.Content.Fonts.Services;
@@ -15,7 +14,6 @@ using Services;
 /// <summary>
 /// Generates <see cref="IFont"/> instances.
 /// </summary>
-[ExcludeFromCodeCoverage]
 internal sealed class FontFactory : IFontFactory
 {
     private readonly IFontService fontService;

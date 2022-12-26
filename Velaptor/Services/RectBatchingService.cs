@@ -31,7 +31,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.BatchSizeId,
+            eventId: NotificationIds.BatchSizeSetId,
             onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
@@ -40,7 +40,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
                 {
                     throw new PushNotificationException(
                         $"{nameof(RectBatchingService)}.Constructor()",
-                        NotificationIds.BatchSizeId);
+                        NotificationIds.BatchSizeSetId);
                 }
 
                 var items = new List<RectBatchItem>();

@@ -46,12 +46,12 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         OpenGLService = openGLService;
 
         this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.GLInitId,
+            eventId: NotificationIds.GLInitializedId,
             onNext: Init,
             onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
         this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
 
         ProcessCustomAttributes();
@@ -60,7 +60,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// <summary>
     /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~GPUBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

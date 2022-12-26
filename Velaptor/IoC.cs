@@ -25,7 +25,7 @@ using Services;
 /// <summary>
 /// Provides dependency injection for the application.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to direct interaction with the '{nameof(SimpleInjector)}' library.")]
 internal static class IoC
 {
     private static readonly FileSystem FileSystem = new ();

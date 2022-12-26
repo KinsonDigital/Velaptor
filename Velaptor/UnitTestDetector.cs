@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>
 /// Detects if the code ahs been executed from a unit test vs the rest of the application.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
 internal static class UnitTestDetector
 {
     /// <summary>

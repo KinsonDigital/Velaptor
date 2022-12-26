@@ -13,42 +13,42 @@ using Carbonate;
 internal static class NotificationIds
 {
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications for the OpenGL context.
+    /// Gets the unique event <see cref="Guid"/> for push notifications of when the OpenGL context is created.
     /// </summary>
-    public static Guid GLContextId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
+    public static Guid GLContextCreatedId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications for the OpenGL being initialized.
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when OpenGL has been initialized.
     /// </summary>
-    public static Guid GLInitId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+    public static Guid GLInitializedId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications for batch sizes.
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the batch size is set.
     /// </summary>
-    public static Guid BatchSizeId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
+    public static Guid BatchSizeSetId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for the push notifications of the mouse position.
+    /// Gets the unique event <see cref="Guid"/> for the push notifications for when the mouse state has changed.
     /// </summary>
-    public static Guid MouseId { get; } = new ("b63c2dcd-3ce4-475e-b574-8951413ff381");
+    public static Guid MouseStateChangedId { get; } = new ("b63c2dcd-3ce4-475e-b574-8951413ff381");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for the push notifications of the keyboard position.
+    /// Gets the unique event <see cref="Guid"/> for the push notifications for when the keyboard state has changed.
     /// </summary>
-    public static Guid KeyboardId { get; } = new ("a18686c8-10c9-4ba9-afaf-ceea77c130e2");
+    public static Guid KeyboardStateChangedId { get; } = new ("a18686c8-10c9-4ba9-afaf-ceea77c130e2");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of textures.
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when a texture is disposed.
     /// </summary>
-    public static Guid DisposeTextureId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
+    public static Guid TextureDisposedId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of sounds.
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when a sound is disposed.
     /// </summary>
-    public static Guid DisposeSoundId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
+    public static Guid SoundDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
 
     /// <summary>
-    /// Gets the unique event <see cref="Guid"/> for push notifications to shut down.
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the system is shutting down.
     /// </summary>
-    public static Guid ShutDownId { get; } = new ("17b9fd1c-67ef-4f36-8973-45e32b0ee85b");
+    public static Guid SystemShuttingDownId { get; } = new ("17b9fd1c-67ef-4f36-8973-45e32b0ee85b");
 }

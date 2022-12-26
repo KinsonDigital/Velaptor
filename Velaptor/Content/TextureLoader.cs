@@ -27,7 +27,7 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public TextureLoader()
     {

@@ -6,6 +6,7 @@ namespace Velaptor.Content.Factories;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Carbonate;
@@ -16,10 +17,9 @@ using Velaptor.Exceptions;
 /// <summary>
 /// Creates sounds based on the sound file at a location.
 /// </summary>
-[ExcludeFromCodeCoverage]
 internal sealed class SoundFactory : ISoundFactory
 {
-    private static readonly Dictionary<uint, string> Sounds = new ();
+    private readonly Dictionary<uint, string> sounds = new ();
     private readonly IReactable reactable;
     private readonly IDisposable disposeSoundUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
@@ -35,49 +35,48 @@ internal sealed class SoundFactory : ISoundFactory
         this.reactable = reactable;
         this.disposeSoundUnsubscriber =
             reactable.Subscribe(new Reactor(
-                eventId: NotificationIds.DisposeSoundId,
+                eventId: NotificationIds.SoundDisposedId,
                 onNextMsg: msg =>
                 {
                     var data = msg.GetData<DisposeSoundData>();
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", NotificationIds.DisposeSoundId);
+                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", NotificationIds.SoundDisposedId);
                     }
 
-                    Sounds.Remove(data.SoundId);
-                },
-                onCompleted: () => this.disposeSoundUnsubscriber?.Dispose()));
+                    this.sounds.Remove(data.SoundId);
+                }));
 
         this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
     }
 
-    /// <summary>
-    /// Gets a new unique sound ID.
-    /// </summary>
-    /// <param name="filePath">The file path to the sound.</param>
-    /// <returns>The new ID for a sound.</returns>
-    public static uint GetNewId(string filePath)
-    {
-        var newId = Sounds.Count <= 0
-            ? 1
-            : Sounds.Keys.Max() + 1;
+    /// <inheritdoc/>
+    public ReadOnlyDictionary<uint, string> Sounds => new (this.sounds);
 
-        Sounds.Add(newId, filePath);
+    /// <inheritdoc />
+    public uint GetNewId(string filePath)
+    {
+        var newId = this.sounds.Count <= 0
+            ? 1
+            : this.sounds.Keys.Max() + 1;
+
+        this.sounds.Add(newId, filePath);
 
         return newId;
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the CASL library.")]
     public ISound Create(string filePath)
     {
-        var newId = Sounds.Count <= 0
+        var newId = this.sounds.Count <= 0
             ? 1
-            : Sounds.Keys.Max() + 1;
+            : this.sounds.Keys.Max() + 1;
 
-        Sounds.Add(newId, filePath);
+        this.sounds.Add(newId, filePath);
 
         return new Sound(this.reactable, filePath, newId);
     }

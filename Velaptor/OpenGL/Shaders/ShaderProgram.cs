@@ -46,12 +46,12 @@ internal abstract class ShaderProgram : IShaderProgram
         this.shaderLoaderService = shaderLoaderService;
 
         this.glInitReactorUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.GLInitId,
+            eventId: NotificationIds.GLInitializedId,
             onNext: Init,
             onCompleted: () => this.glInitReactorUnsubscriber?.Dispose()));
 
         this.shutDownReactorUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
 
         ProcessCustomAttributes();
@@ -60,7 +60,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <summary>
     /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~ShaderProgram()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

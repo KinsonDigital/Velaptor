@@ -95,12 +95,12 @@ public class RendererTests
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Returns<IReactor>(reactor =>
             {
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     return this.mockGLInitUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.ShutDownId)
+                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
@@ -112,11 +112,11 @@ public class RendererTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.ShutDownId)
+                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }
@@ -256,8 +256,8 @@ public class RendererTests
         _ = CreateSystemUnderTest();
 
         // Assert
-        this.mockReactable.Verify(m => m.PushData(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeId), Times.Once);
-        this.mockReactable.Verify(m => m.Unsubscribe(NotificationIds.BatchSizeId), Times.Once);
+        this.mockReactable.Verify(m => m.PushData(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeSetId), Times.Once);
+        this.mockReactable.Verify(m => m.Unsubscribe(NotificationIds.BatchSizeSetId), Times.Once);
     }
     #endregion
 

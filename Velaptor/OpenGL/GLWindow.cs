@@ -315,8 +315,8 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         var glContextMsg = new GLContextMessage(this.glWindow.CreateOpenGL());
 
-        this.reactable.PushMessage(glContextMsg, NotificationIds.GLContextId);
-        this.reactable.Unsubscribe(NotificationIds.GLContextId);
+        this.reactable.PushMessage(glContextMsg, NotificationIds.GLContextCreatedId);
+        this.reactable.Unsubscribe(NotificationIds.GLContextCreatedId);
 
         this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
@@ -367,8 +367,8 @@ internal sealed class GLWindow : VelaptorIWindow
          * The context of initialized here is that the OpenGL context is set
          * and the related GLFW window has been created and is ready to go.
          */
-        this.reactable.Push(NotificationIds.GLInitId);
-        this.reactable.Unsubscribe(NotificationIds.GLInitId);
+        this.reactable.Push(NotificationIds.GLInitializedId);
+        this.reactable.Unsubscribe(NotificationIds.GLInitializedId);
 
         Initialized = true;
 
@@ -425,7 +425,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ScrollDirection = MouseScrollDirection.None;
         this.mouseStateData.ScrollWheelValue = 0;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -474,7 +474,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.Key = (KeyCode)key;
         this.keyStateData.IsDown = true;
 
-        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardId);
+        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -488,7 +488,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.Key = (KeyCode)key;
         this.keyStateData.IsDown = false;
 
-        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardId);
+        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -501,7 +501,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = true;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -514,7 +514,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = false;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -532,7 +532,7 @@ internal sealed class GLWindow : VelaptorIWindow
             _ => MouseScrollDirection.None
         };
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.X = (int)position.X;
         this.mouseStateData.Y = (int)position.Y;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseId);
+        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>

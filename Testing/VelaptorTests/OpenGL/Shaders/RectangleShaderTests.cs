@@ -130,7 +130,7 @@ public class RectangleShaderTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(RectangleShader)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         IReactor? reactor = null;
 

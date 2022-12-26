@@ -123,7 +123,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
     /// <returns><c>true</c> if operands are not equal.</returns>
-    [ExcludeFromCodeCoverage] // NOTE: No public state to check for unit testing to be viable.
+    // TODO: Unit test this
     public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
 
     /// <summary>
@@ -358,7 +358,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => this.keyStates.GetHashCode();
 
     /// <inheritdoc/>

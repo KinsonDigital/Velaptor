@@ -34,7 +34,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.BatchSizeId,
+            eventId: NotificationIds.BatchSizeSetId,
             onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
@@ -43,7 +43,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
                 {
                     throw new PushNotificationException(
                         $"{nameof(FontGlyphBatchingService)}.Constructor()",
-                        NotificationIds.BatchSizeId);
+                        NotificationIds.BatchSizeSetId);
                 }
 
                 var items = new List<FontGlyphBatchItem>();

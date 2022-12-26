@@ -56,7 +56,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         this.reactable = reactable;
 
         this.shutDownUnsubscriber = this.reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
     }
 
@@ -143,7 +143,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
 
         if (sound is not null)
         {
-            this.reactable.PushData(new DisposeSoundData { SoundId = sound.Id }, NotificationIds.DisposeSoundId);
+            this.reactable.PushData(new DisposeSoundData { SoundId = sound.Id }, NotificationIds.SoundDisposedId);
         }
     }
 
@@ -158,7 +158,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         }
 
         this.shutDownUnsubscriber.Dispose();
-        this.reactable.Unsubscribe(NotificationIds.DisposeSoundId);
+        this.reactable.Unsubscribe(NotificationIds.SoundDisposedId);
 
         this.sounds.Clear();
         this.isDisposed = true;

@@ -4,11 +4,9 @@
 
 namespace Velaptor.Factories;
 
-using System.Diagnostics.CodeAnalysis;
 using Silk.NET.Input;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage]
 internal sealed class NativeInputFactory : INativeInputFactory
 {
     private readonly IWindowFactory windowFactory;

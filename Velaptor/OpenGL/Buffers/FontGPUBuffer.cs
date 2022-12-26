@@ -44,14 +44,14 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.batchSizeUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.BatchSizeId,
+            eventId: NotificationIds.BatchSizeSetId,
             onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
                 if (batchSize is null)
                 {
-                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", NotificationIds.BatchSizeId);
+                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", NotificationIds.BatchSizeSetId);
                 }
 
                 BatchSize = batchSize.Value;

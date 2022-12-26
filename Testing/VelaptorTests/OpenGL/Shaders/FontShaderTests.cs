@@ -46,12 +46,12 @@ public class FontShaderTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitId)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
 
-                if (reactor.EventId == NotificationIds.BatchSizeId)
+                if (reactor.EventId == NotificationIds.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
                 }
@@ -144,7 +144,7 @@ public class FontShaderTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(FontShader)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         var mockMessage = new Mock<IMessage>();
         mockMessage.Setup(m => m.GetData<BatchSizeData>(null))

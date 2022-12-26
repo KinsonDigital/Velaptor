@@ -15,7 +15,7 @@ using System.Text;
 /// <summary>
 /// Records and retrieves information about the running application.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Only used for debugging purposes.")]
 public static class AppStats
 {
     private const string DefaultTag = "[DEFAULT]";

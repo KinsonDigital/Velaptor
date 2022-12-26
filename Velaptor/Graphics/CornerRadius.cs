@@ -137,6 +137,6 @@ public readonly struct CornerRadius : IEquatable<CornerRadius>
     public override bool Equals(object? obj) => obj is CornerRadius other && Equals(other);
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => HashCode.Combine(TopLeft, BottomLeft, BottomRight, TopRight);
 }

@@ -470,7 +470,7 @@ public class TextureCacheTests
 
         cache.TotalCachedItems.Should().Be(0);
         this.mockReactable
-            .VerifyOnce(m => m.PushData(It.Ref<DisposeTextureData>.IsAny, NotificationIds.DisposeTextureId));
+            .VerifyOnce(m => m.PushData(It.Ref<DisposeTextureData>.IsAny, NotificationIds.TextureDisposedId));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -494,7 +494,7 @@ public class TextureCacheTests
         // Assert
         this.mockReactable
             .Verify(m
-                => m.PushData(new DisposeTextureData { TextureId = 123u }, NotificationIds.DisposeTextureId), Times.Never);
+                => m.PushData(new DisposeTextureData { TextureId = 123u }, NotificationIds.TextureDisposedId), Times.Never);
     }
 
     [Fact]
@@ -531,7 +531,7 @@ public class TextureCacheTests
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.DisposeTextureId));
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.TextureDisposedId));
         cache.TotalCachedItems.Should().Be(0);
     }
     #endregion

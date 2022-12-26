@@ -75,7 +75,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.fontMetaDataParser = fontMetaDataParser;
         this.path = path;
         this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.ShutDownId,
+            eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
 
         this.reactable = reactable;
@@ -84,7 +84,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <summary>
     /// Finalizes an instance of the <see cref="TextureCache"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~TextureCache()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -263,7 +263,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        this.reactable.PushData(new DisposeTextureData { TextureId = texture.Id }, NotificationIds.DisposeTextureId);
+        this.reactable.PushData(new DisposeTextureData { TextureId = texture.Id }, NotificationIds.TextureDisposedId);
 #if DEBUG
         AppStats.ClearLoadedFont(cacheKey);
         AppStats.RemoveLoadedTexture(texture.Id);
@@ -281,7 +281,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         }
 
         this.shutDownUnsubscriber.Dispose();
-        this.reactable.Unsubscribe(NotificationIds.DisposeTextureId);
+        this.reactable.Unsubscribe(NotificationIds.TextureDisposedId);
 
         this.textures.Clear();
         this.isDisposed = true;

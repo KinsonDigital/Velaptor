@@ -23,7 +23,7 @@ internal sealed class TextureFactory : ITextureFactory
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public TextureFactory()
     {
         this.gl = IoC.Container.GetInstance<IGLInvoker>();

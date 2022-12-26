@@ -107,7 +107,7 @@ public sealed class Texture : ITexture
     public uint Height { get; private set; }
 
     /// <summary>
-    /// Disposes of the texture if this textures <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
+    /// Disposes of the texture if this texture's <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
     private void Dispose(DisposeTextureData data)
@@ -133,14 +133,14 @@ public sealed class Texture : ITexture
     {
         this.disposeUnsubscriber =
             reactable.Subscribe(new Reactor(
-                eventId: NotificationIds.DisposeTextureId,
+                eventId: NotificationIds.TextureDisposedId,
                 onNextMsg: msg =>
                 {
                     var data = msg.GetData<DisposeTextureData>();
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", NotificationIds.DisposeTextureId);
+                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", NotificationIds.TextureDisposedId);
                     }
 
                     Dispose(data);

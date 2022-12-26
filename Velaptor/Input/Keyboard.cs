@@ -29,14 +29,14 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.KeyboardId,
+            eventId: NotificationIds.KeyboardStateChangedId,
             onNextMsg: msg =>
             {
                 var data = msg.GetData<KeyboardKeyStateData>();
 
                 if (data is null)
                 {
-                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", NotificationIds.KeyboardId);
+                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", NotificationIds.KeyboardStateChangedId);
                 }
 
                 this.keyStates[data.Key] = data.IsDown;

@@ -94,7 +94,7 @@ public class TextureBatchingServiceTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(TextureBatchingService)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Callback<IReactor>(reactorObj =>

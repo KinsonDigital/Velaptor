@@ -892,8 +892,8 @@ public class GLWindowTests
         sut.Show();
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushMessage(It.Ref<GLContextMessage>.IsAny, NotificationIds.GLContextId));
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.GLContextId));
+        this.mockReactable.VerifyOnce(m => m.PushMessage(It.Ref<GLContextMessage>.IsAny, NotificationIds.GLContextCreatedId));
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.GLContextCreatedId));
 
         this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>());
         this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>());
@@ -909,8 +909,8 @@ public class GLWindowTests
         this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
 
         this.mockReactable.VerifyOnce(m
-            => m.Push(NotificationIds.GLInitId));
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.GLInitId));
+            => m.Push(NotificationIds.GLInitializedId));
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.GLInitializedId));
 
         Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
     }
@@ -950,7 +950,7 @@ public class GLWindowTests
         // Assert
         Assert.False(sutUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
         this.mockReactable.VerifyNever(m
-            => m.PushData(It.IsAny<MouseStateData>(), NotificationIds.MouseId));
+            => m.PushData(It.IsAny<MouseStateData>(), NotificationIds.MouseStateChangedId));
     }
 
     [Fact]
@@ -987,7 +987,7 @@ public class GLWindowTests
 
         // Assert
         Assert.True(sutUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseStateChangedId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1110,7 +1110,7 @@ public class GLWindowTests
             0);
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardStateChangedId));
         actual.Should().BeEquivalentTo(expected);
     }
 
@@ -1141,7 +1141,7 @@ public class GLWindowTests
             0);
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<KeyboardKeyStateData>.IsAny, NotificationIds.KeyboardStateChangedId));
         actual.Should().BeEquivalentTo(expected);
     }
 
@@ -1172,7 +1172,7 @@ public class GLWindowTests
 
         // Assert
         this.mockReactable.VerifyOnce(m =>
-            m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+            m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseStateChangedId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1203,7 +1203,7 @@ public class GLWindowTests
             SilkMouseButton.Right);
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseStateChangedId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1237,7 +1237,7 @@ public class GLWindowTests
             new ScrollWheel(0, wheelValue));
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseStateChangedId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expectedStateData);
@@ -1264,7 +1264,7 @@ public class GLWindowTests
             new SysVector2(11f, 22f));
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseId));
+        this.mockReactable.VerifyOnce(m => m.PushData(It.Ref<MouseStateData>.IsAny, NotificationIds.MouseStateChangedId));
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);

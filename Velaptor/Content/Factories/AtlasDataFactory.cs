@@ -13,7 +13,7 @@ using Graphics;
 /// <summary>
 /// Generates <see cref="IAtlasData"/> instances.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class AtlasDataFactory : IAtlasDataFactory
 {
     /// <inheritdoc/>

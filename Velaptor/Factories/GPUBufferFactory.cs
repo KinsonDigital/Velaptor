@@ -13,7 +13,7 @@ using OpenGL.Buffers;
 /// <summary>
 /// Creates singleton instances of <see cref="TextureGPUBuffer"/> and <see cref="FontGPUBuffer"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class GPUBufferFactory : IGPUBufferFactory
 {
     private static IGPUBuffer<TextureBatchItem>? textureBuffer;

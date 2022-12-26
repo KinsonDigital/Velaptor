@@ -15,7 +15,7 @@ using Services;
 /// <summary>
 /// Creates instances of the type <see cref="Renderer"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
 public static class RendererFactory
 {
     private static IRenderer? renderer;

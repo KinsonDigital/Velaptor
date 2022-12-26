@@ -20,7 +20,7 @@ using Velaptor.Services;
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Waiting for changes from GitHub issue")]
 internal sealed class FontService : IFontService
 {
     private readonly IFreeTypeInvoker freeTypeInvoker;

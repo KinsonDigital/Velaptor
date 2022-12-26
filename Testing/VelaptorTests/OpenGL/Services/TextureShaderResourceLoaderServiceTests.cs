@@ -34,8 +34,8 @@ public class TextureShaderResourceLoaderServiceTests
     /// </summary>
     public TextureShaderResourceLoaderServiceTests()
     {
-        var fragFileName = $"{TextureShaderName}.frag";
-        var vertFileName = $"{TextureShaderName}.vert";
+        const string fragFileName = $"{TextureShaderName}.frag";
+        const string vertFileName = $"{TextureShaderName}.vert";
 
         this.mockPath = new Mock<IPath>();
         this.mockPath.Setup(m => m.HasExtension(fragFileName)).Returns(true);

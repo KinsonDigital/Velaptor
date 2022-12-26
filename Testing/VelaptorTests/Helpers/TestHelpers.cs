@@ -18,7 +18,7 @@ using Velaptor.Graphics;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
 public static class TestHelpers
 {
     private const string TestResultDirName = "ImageTestResults";

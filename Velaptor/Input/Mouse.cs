@@ -33,14 +33,14 @@ internal sealed class Mouse : IAppInput<MouseState>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.MouseId,
+            eventId: NotificationIds.MouseStateChangedId,
             onNextMsg: msg =>
             {
                 var data = msg.GetData<MouseStateData>();
 
                 if (data is null)
                 {
-                    throw new PushNotificationException($"{nameof(Mouse)}.Constructor()", NotificationIds.MouseId);
+                    throw new PushNotificationException($"{nameof(Mouse)}.Constructor()", NotificationIds.MouseStateChangedId);
                 }
 
                 this.xPos = data.X;

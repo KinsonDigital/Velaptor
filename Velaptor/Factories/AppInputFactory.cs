@@ -10,7 +10,7 @@ using Input;
 /// <summary>
 /// Generates input type objects for processing input such as the keyboard and mouse.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class AppInputFactory
 {
     /// <summary>

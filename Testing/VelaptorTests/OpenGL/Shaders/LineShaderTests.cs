@@ -127,7 +127,7 @@ public class LineShaderTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(LineShader)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeId}'.";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         IReactor? reactor = null;
 

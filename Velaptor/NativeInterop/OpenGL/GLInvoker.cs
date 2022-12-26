@@ -18,7 +18,7 @@ using Services;
 /// <summary>
 /// Invokes OpenGL calls.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
 internal sealed class GLInvoker : IGLInvoker
 {
     // ReSharper disable InconsistentNaming
@@ -45,12 +45,12 @@ internal sealed class GLInvoker : IGLInvoker
     public GLInvoker(IReactable reactable, ILoggingService loggingService)
     {
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            eventId: NotificationIds.GLContextId,
+            eventId: NotificationIds.GLContextCreatedId,
             onNextMsg: msg =>
             {
                 var possibleGLObj = msg.GetData<GL>();
 
-                this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", NotificationIds.GLContextId);
+                this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", NotificationIds.GLContextCreatedId);
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
 

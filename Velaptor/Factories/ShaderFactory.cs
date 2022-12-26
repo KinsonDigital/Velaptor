@@ -13,7 +13,7 @@ using OpenGL.Shaders;
 /// <summary>
 /// Creates instance of type <see cref="IShaderProgram"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class ShaderFactory : IShaderFactory
 {
     private static IShaderProgram? textureShader;
