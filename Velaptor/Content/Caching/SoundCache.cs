@@ -15,7 +15,6 @@ using Carbonate;
 using Exceptions;
 using Factories;
 using Guards;
-using Reactables.Core;
 using Reactables.ReactableData;
 
 /// <summary>
@@ -29,8 +28,8 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private readonly ISoundFactory soundFactory;
     private readonly IFile file;
     private readonly IPath path;
-    private readonly IDisposable shutDownUnsubscriber;
     private readonly IReactable reactable;
+    private readonly IDisposable shutDownUnsubscriber;
     private bool isDisposed;
 
     /// <summary>
@@ -40,32 +39,25 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Provides path related services.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends a push notification that the application is shutting down.</param>
     public SoundCache(
         ISoundFactory soundFactory,
         IFile file,
         IPath path,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(soundFactory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
         EnsureThat.ParamIsNotNull(reactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
 
         this.soundFactory = soundFactory;
         this.file = file;
         this.path = path;
-
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
-
         this.reactable = reactable;
+
+        this.shutDownUnsubscriber = this.reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
     }
 
     /// <summary>
@@ -165,6 +157,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         this.reactable.Unsubscribe(NotificationIds.DisposeSoundId);
 
         this.sounds.Clear();

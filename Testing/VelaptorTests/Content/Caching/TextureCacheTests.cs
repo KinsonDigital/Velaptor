@@ -15,7 +15,6 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Helpers;
@@ -41,12 +40,11 @@ public class TextureCacheTests
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IReactable> mockReactable;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
-    private IReactor<ShutDownData>? shutDownReactor;
+    private IReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -100,21 +98,15 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
+        this.mockReactable = new Mock<IReactable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor =>
+            .Callback<IReactor>(reactor =>
             {
-                if (reactor is null)
-                {
-                    Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
-                }
-
+                reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
             });
-
-        this.mockReactable = new Mock<IReactable>();
     }
 
     #region Constructor Tests
@@ -130,7 +122,6 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockShutDownReactable.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'imageService')");
     }
@@ -147,7 +138,6 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockShutDownReactable.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'textureFactory')");
     }
@@ -164,7 +154,6 @@ public class TextureCacheTests
                 null,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockShutDownReactable.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'fontAtlasService')");
     }
@@ -181,7 +170,6 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 null,
                 this.mockPath.Object,
-                this.mockShutDownReactable.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
     }
@@ -198,26 +186,8 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 null,
-                this.mockShutDownReactable.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'path')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactorParam_ThrowsException()
-    {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureCache(
-                this.mockImageService.Object,
-                this.mockTextureFactory.Object,
-                this.mockFontAtlasService.Object,
-                this.mockFontMetaDataParser.Object,
-                this.mockPath.Object,
-                null,
-                this.mockReactable.Object);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
     }
 
     [Fact]
@@ -232,7 +202,6 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockShutDownReactable.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'reactable')");
     }
@@ -529,7 +498,7 @@ public class TextureCacheTests
     }
 
     [Fact]
-    public void ShutDownNotification_WhenReceived_DisposesOfTextures()
+    public void ShutDownNotification_WhenReceived_ShutsDownCache()
     {
         // Arrange
         const string texturePathA = $"{TextureDirPath}/textureA{TextureExtension}";
@@ -557,27 +526,13 @@ public class TextureCacheTests
         cache.GetItem(texturePathB);
 
         // Act
-        this.shutDownReactor?.OnNext(default);
-        this.shutDownReactor?.OnNext(default);
-
-        // Assert
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.DisposeTextureId));
-        cache.TotalCachedItems.Should().Be(0);
-    }
-    #endregion
-
-    #region Indirect Internal Tests
-    [Fact]
-    public void ShutDownReactable_WhenNotificationsEnd_DisposesOfUnsubscriber()
-    {
-        // Arrange
-        _ = CreateCache();
-
-        // Act
-        this.shutDownReactor.OnCompleted();
+        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnNext();
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.DisposeTextureId));
+        cache.TotalCachedItems.Should().Be(0);
     }
     #endregion
 
@@ -591,7 +546,6 @@ public class TextureCacheTests
             this.mockFontAtlasService.Object,
             this.mockFontMetaDataParser.Object,
             this.mockPath.Object,
-            this.mockShutDownReactable.Object,
             this.mockReactable.Object);
 
     /// <summary>

@@ -16,7 +16,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
 
@@ -29,7 +28,6 @@ public class TextureShaderTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
 
@@ -58,8 +56,6 @@ public class TextureShaderTests
                     this.batchSizeReactor = reactor;
                 }
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Constructor Tests
@@ -73,8 +69,7 @@ public class TextureShaderTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -203,6 +198,5 @@ public class TextureShaderTests
         => new (this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockReactable.Object);
 }

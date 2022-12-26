@@ -9,8 +9,6 @@ using Carbonate;
 using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 using UI;
 
@@ -54,6 +52,5 @@ public static class App
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
             RendererFactory.CreateRenderer(width, height),
-            IoC.Container.GetInstance<IReactable>(),
-            IoC.Container.GetInstance<IReactable<ShutDownData>>());
+            IoC.Container.GetInstance<IReactable>());
 }

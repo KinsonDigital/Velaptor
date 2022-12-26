@@ -9,7 +9,6 @@ using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Services;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Velaptor.Exceptions;
 
@@ -28,7 +27,6 @@ internal sealed class RectangleShader : ShaderProgram
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -36,9 +34,8 @@ internal sealed class RectangleShader : ShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, shaderLoaderService, reactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, shaderLoaderService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 

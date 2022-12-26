@@ -9,7 +9,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 
 /// <summary>
 /// Used to test the abstract class <see cref="ShaderProgram"/>.
@@ -23,14 +22,12 @@ internal sealed class ShaderProgramFake : ShaderProgram
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for calling OpenGL functions.</param>
     /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/> for loading shader code.</param>
     /// <param name="reactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization..</param>
-    /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for shutdown notifications.</param>
     public ShaderProgramFake(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, shaderLoaderService, reactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, shaderLoaderService, reactable)
     {
     }
 }

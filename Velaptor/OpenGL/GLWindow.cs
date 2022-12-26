@@ -23,7 +23,6 @@ using Input;
 using Velaptor.Input.Exceptions;
 using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Silk.NET.OpenGL;
 using Velaptor.Services;
@@ -50,7 +49,6 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ITaskService taskService;
     private readonly IRenderer renderer;
     private readonly IReactable reactable;
-    private readonly IReactable<ShutDownData> shutDownReactable;
     private readonly MouseStateData mouseStateData;
     private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
@@ -75,7 +73,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="renderer">Renders textures and primitives.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -88,8 +85,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         IRenderer renderer,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
@@ -101,7 +97,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(renderer);
         EnsureThat.ParamIsNotNull(reactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
 
         this.windowFactory = windowFactory;
         this.nativeInputFactory = nativeInputFactory;
@@ -114,7 +109,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.renderer = renderer;
 
         this.reactable = reactable;
-        this.shutDownReactable = shutDownReactable;
 
         this.mouseStateData = new MouseStateData();
         this.keyStateData = new KeyboardKeyStateData();
@@ -390,13 +384,6 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Uninitialize?.Invoke();
 
-        // TODO: Once all of the old reactables are gone, a simple unsubscribe all should be fine here
-
-        this.reactable.Unsubscribe(NotificationIds.MouseId);
-
-        this.shutDownReactable.PushNotification(default);
-        this.shutDownReactable.EndNotifications();
-
         this.afterUnloadAction?.Invoke();
     }
 
@@ -579,11 +566,11 @@ internal sealed class GLWindow : VelaptorIWindow
 
         if (disposing)
         {
+            this.reactable.UnsubscribeAll();
+
             CachedStringProps.Clear();
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
-
-            this.shutDownReactable.Dispose();
 
             this.gl.GLError -= GL_GLError;
 

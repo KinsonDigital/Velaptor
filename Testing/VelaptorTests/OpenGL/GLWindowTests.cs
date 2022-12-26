@@ -25,7 +25,6 @@ using Velaptor.Input.Exceptions;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Velaptor.UI;
@@ -54,7 +53,6 @@ public class GLWindowTests
     private readonly Mock<IRenderer> mockRenderer;
     private readonly Mock<ITaskService> mockTaskService;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
     private readonly Mock<IWindowFactory> mockWindowFactory;
     private Mock<INativeInputFactory>? mockNativeInputFactory;
@@ -85,7 +83,6 @@ public class GLWindowTests
         this.mockRenderer = new Mock<IRenderer>();
         this.mockTaskService = new Mock<ITaskService>();
         this.mockReactable = new Mock<IReactable>();
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Contructor Tests
@@ -107,8 +104,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'windowFactory')");
     }
 
@@ -130,8 +126,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
     }
 
@@ -153,8 +148,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInvoker')");
     }
 
@@ -176,8 +170,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'glfwInvoker')");
     }
 
@@ -199,8 +192,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'systemMonitorService')");
     }
 
@@ -222,8 +214,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
 
@@ -245,8 +236,7 @@ public class GLWindowTests
                 null,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'taskService')");
     }
 
@@ -268,8 +258,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 null,
                 this.mockRenderer.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'contentLoader')");
     }
 
@@ -291,8 +280,7 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 null,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'renderer')");
     }
 
@@ -314,32 +302,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                null,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'reactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                this.mockRenderer.Object,
-                this.mockReactable.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
     #endregion
 
@@ -903,7 +867,7 @@ public class GLWindowTests
         sut.Dispose();
 
         // Assert
-        this.mockShutDownReactable.VerifyOnce(m => m.Dispose());
+        this.mockReactable.VerifyOnce(m => m.UnsubscribeAll());
         this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
         this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Load)}' event did not occur.");
         this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Update)}' event did not occur.");
@@ -1116,12 +1080,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Closing += null);
 
         // Assert
-        Assert.True(uninitializeInvoked);
-
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.MouseId));
-
-        this.mockShutDownReactable.Verify(m => m.PushNotification(default), Times.Once);
-        this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
+        uninitializeInvoked.Should().BeTrue();
     }
 
     [Fact]
@@ -1345,8 +1304,7 @@ public class GLWindowTests
             this.mockTaskService.Object,
             this.mockContentLoader.Object,
             this.mockRenderer.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockReactable.Object);
 
     private void MockWindowLoadEvent()
     {

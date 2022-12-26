@@ -15,7 +15,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
 using Guards;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Velaptor.Exceptions;
 
@@ -34,16 +33,14 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Receives a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public RectGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, reactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 

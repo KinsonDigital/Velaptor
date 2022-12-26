@@ -11,8 +11,6 @@ using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using Services;
-using Reactables.Core;
-using Reactables.ReactableData;
 
 /// <inheritdoc/>
 internal abstract class ShaderProgram : IShaderProgram
@@ -29,7 +27,6 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -37,14 +34,12 @@ internal abstract class ShaderProgram : IShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
         EnsureThat.ParamIsNotNull(reactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
 
         GL = gl;
         OpenGLService = openGLService;
@@ -55,7 +50,9 @@ internal abstract class ShaderProgram : IShaderProgram
             onNext: Init,
             onCompleted: () => this.glInitReactorUnsubscriber?.Dispose()));
 
-        this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
+        this.shutDownReactorUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
 
         ProcessCustomAttributes();
     }
@@ -71,7 +68,7 @@ internal abstract class ShaderProgram : IShaderProgram
             return;
         }
 
-        Dispose();
+        ShutDown();
     }
 
     /// <inheritdoc/>
@@ -128,17 +125,16 @@ internal abstract class ShaderProgram : IShaderProgram
         "ReSharper",
         "VirtualMemberNeverOverridden.Global",
         Justification = "Will be used in the future.")]
-    protected virtual void Dispose()
+    protected virtual void ShutDown()
     {
         if (IsDisposed)
         {
             return;
         }
 
-        GL.DeleteProgram(ShaderId);
-
         this.glInitReactorUnsubscriber.Dispose();
         this.shutDownReactorUnsubscriber.Dispose();
+        GL.DeleteProgram(ShaderId);
 
         IsDisposed = true;
     }

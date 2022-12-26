@@ -13,7 +13,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Helpers;
 using Velaptor;
@@ -29,7 +28,6 @@ public class FontShaderTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
 
@@ -41,7 +39,6 @@ public class FontShaderTests
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
 
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
@@ -72,8 +69,7 @@ public class FontShaderTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -201,6 +197,5 @@ public class FontShaderTests
         => new (this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockReactable.Object);
 }

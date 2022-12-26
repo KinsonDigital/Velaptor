@@ -10,8 +10,6 @@ using Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 
 /// <summary>
@@ -43,7 +41,6 @@ public static class RendererFactory
         var bufferManager = new BufferManager(bufferFactory);
 
         var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
-        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
         var reactable = IoC.Container.GetInstance<IReactable>();
 
         renderer = new Renderer(
@@ -52,7 +49,6 @@ public static class RendererFactory
             shaderManager,
             bufferManager,
             batchServiceManager,
-            shutDownReactable,
             reactable);
 
         renderer.RenderSurfaceWidth = renderSurfaceWidth;

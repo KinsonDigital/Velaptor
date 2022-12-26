@@ -29,13 +29,9 @@ internal sealed class SoundFactory : ISoundFactory
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
-    public SoundFactory(
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
+    public SoundFactory(IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
 
         this.reactable = reactable;
         this.disposeSoundUnsubscriber =
@@ -54,8 +50,9 @@ internal sealed class SoundFactory : ISoundFactory
                 },
                 onCompleted: () => this.disposeSoundUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber =
-            shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
     }
 
     /// <summary>

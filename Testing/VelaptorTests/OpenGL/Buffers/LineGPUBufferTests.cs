@@ -19,7 +19,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
 
@@ -37,7 +36,6 @@ public class LineGPUBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
     private bool vboGenerated;
@@ -80,8 +78,6 @@ public class LineGPUBufferTests
                     this.glInitReactor = reactor;
                 }
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Constructor Tests
@@ -94,8 +90,7 @@ public class LineGPUBufferTests
             _ = new LineGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -408,8 +403,7 @@ public class LineGPUBufferTests
         var result = new LineGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object)
+            this.mockReactable.Object)
         {
             ViewPortSize = new SizeU { Width = ViewPortWidth, Height = ViewPortHeight },
         };

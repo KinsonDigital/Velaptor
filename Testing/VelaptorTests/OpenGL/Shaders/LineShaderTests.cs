@@ -16,7 +16,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
 
@@ -40,8 +39,7 @@ public class LineShaderTests
                 new Mock<IGLInvoker>().Object,
                 new Mock<IOpenGLService>().Object,
                 new Mock<IShaderLoaderService<uint>>().Object,
-                null,
-                new Mock<IReactable<ShutDownData>>().Object);
+                null);
         };
 
         // Assert
@@ -164,6 +162,5 @@ public class LineShaderTests
         => new (new Mock<IGLInvoker>().Object,
             new Mock<IOpenGLService>().Object,
             new Mock<IShaderLoaderService<uint>>().Object,
-            this.mockReactable.Object,
-            new Mock<IReactable<ShutDownData>>().Object);
+            this.mockReactable.Object);
 }

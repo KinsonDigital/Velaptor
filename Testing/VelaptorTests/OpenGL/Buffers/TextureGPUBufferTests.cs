@@ -16,7 +16,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Helpers;
 using Velaptor;
@@ -34,7 +33,6 @@ public class TextureGPUBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
     private bool vertexBufferCreated;
@@ -82,8 +80,6 @@ public class TextureGPUBufferTests
                     this.glInitReactor = reactor;
                 }
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     /// <summary>
@@ -148,8 +144,7 @@ public class TextureGPUBufferTests
             _ = new TextureGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -433,6 +428,5 @@ public class TextureGPUBufferTests
     private TextureGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockReactable.Object,
-        this.mockShutDownReactable.Object);
+        this.mockReactable.Object);
 }

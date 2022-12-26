@@ -18,7 +18,6 @@ using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Services;
 using NETRect = System.Drawing.Rectangle;
@@ -50,7 +49,6 @@ internal sealed class Renderer : IRenderer
     /// <param name="shaderManager">Manages various shader operations.</param>
     /// <param name="bufferManager">Manages various buffer operations.</param>
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
     /// <remarks>
     ///     <paramref name="reactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
@@ -62,7 +60,6 @@ internal sealed class Renderer : IRenderer
         IShaderManager shaderManager,
         IBufferManager bufferManager,
         IBatchServiceManager batchServiceManager,
-        IReactable<ShutDownData> shutDownReactable,
         IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
@@ -70,7 +67,6 @@ internal sealed class Renderer : IRenderer
         EnsureThat.ParamIsNotNull(shaderManager);
         EnsureThat.ParamIsNotNull(bufferManager);
         EnsureThat.ParamIsNotNull(batchServiceManager);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
         EnsureThat.ParamIsNotNull(reactable);
 
         this.gl = gl;
@@ -95,9 +91,9 @@ internal sealed class Renderer : IRenderer
                 Init();
             }, onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () => this.shutDownUnsubscriber?.Dispose()));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
 
         var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
@@ -443,6 +439,7 @@ internal sealed class Renderer : IRenderer
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         this.batchServiceManager.TextureBatchReadyForRendering -= TextureBatchService_BatchReadyForRendering;
         this.batchServiceManager.FontGlyphBatchReadyForRendering -= FontGlyphBatchService_BatchReadyForRendering;
         this.batchServiceManager.RectBatchReadyForRendering -= RectBatchService_BatchReadyForRendering;

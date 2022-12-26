@@ -10,10 +10,10 @@ using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 using Fakes;
+using FluentAssertions;
 using Helpers;
+using Velaptor;
 using Xunit;
 
 /// <summary>
@@ -29,12 +29,11 @@ public class GPUBufferBaseTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
     private IReactor? glInitReactor;
-    private IReactor<ShutDownData>? shutDownReactor;
+    private IReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -64,32 +63,43 @@ public class GPUBufferBaseTests
         this.mockGLService = new Mock<IOpenGLService>();
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns(this.mockGLInitUnsubscriber.Object)
+            .Returns<IReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitId)
+                {
+                    return this.mockGLInitUnsubscriber.Object;
+                }
+
+                if (reactor.EventId == NotificationIds.ShutDownId)
+                {
+                    return this.mockShutDownUnsubscriber.Object;
+                }
+
+                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
             .Callback<IReactor>(reactor =>
             {
-                if (reactor is null)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitId)
                 {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                    this.glInitReactor = reactor;
                 }
-
-                this.glInitReactor = reactor;
-            });
-
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor =>
-            {
-                if (reactor is null)
+                else if (reactor.EventId == NotificationIds.ShutDownId)
                 {
-                    Assert.True(false, "Shut down reactable subscription failed.  Reactor is null.");
+                    this.shutDownReactor = reactor;
                 }
-
-                this.shutDownReactor = reactor;
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                }
             });
     }
 
@@ -103,8 +113,7 @@ public class GPUBufferBaseTests
             _ = new GPUBufferFake(
                 null,
                 this.mockGLService.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -117,8 +126,7 @@ public class GPUBufferBaseTests
             _ = new GPUBufferFake(
                 this.mockGL.Object,
                 null,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
@@ -131,23 +139,8 @@ public class GPUBufferBaseTests
             _ = new GPUBufferFake(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'reactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactorParam_ThrowsException()
-    {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GPUBufferFake(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockReactable.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
     #endregion
 
@@ -378,30 +371,19 @@ public class GPUBufferBaseTests
     }
 
     [Fact]
-    public void WithShutDownNotification_DisposesOfBuffer()
+    public void WithShutDownNotification_ShutsDownBuffer()
     {
         // Arrange
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor =>
-            {
-                if (reactor is null)
-                {
-                    Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
-                }
-
-                this.shutDownReactor = reactor;
-            });
-
         CreateSystemUnderTest();
 
         this.glInitReactor.OnNext();
 
         // Act
-        this.shutDownReactor?.OnNext(default);
-        this.shutDownReactor?.OnNext(default);
+        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnNext();
 
         // Assert
+        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
         this.mockGL.Verify(m => m.DeleteBuffer(VertexBufferId), Times.Once());
         this.mockGL.Verify(m => m.DeleteBuffer(IndexBufferId), Times.Once());
@@ -421,19 +403,6 @@ public class GPUBufferBaseTests
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
     }
-
-    [Fact]
-    public void ShutDownReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnCompleted();
-
-        // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
     #endregion
 
     /// <summary>
@@ -444,6 +413,5 @@ public class GPUBufferBaseTests
     private GPUBufferFake CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockReactable.Object,
-        this.mockShutDownReactable.Object);
+        this.mockReactable.Object);
 }

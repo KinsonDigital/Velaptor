@@ -12,10 +12,10 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.OpenGL.Services;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 using Fakes;
+using FluentAssertions;
 using Helpers;
+using Velaptor;
 using Xunit;
 
 /// <summary>
@@ -35,10 +35,10 @@ public class ShaderProgramTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IDisposable> mockGLInitReactorUnsubscriber;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
+    private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReactor? glInitReactor;
+    private IReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -75,22 +75,45 @@ public class ShaderProgramTests
             .Returns(getProgramStatusCode);
         this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
+        this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+
         this.mockReactable = new Mock<IReactable>();
-        this.mockGLInitReactorUnsubscriber = new Mock<IDisposable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns(this.mockGLInitReactorUnsubscriber.Object)
-            .Callback<IReactor>(reactor =>
+            .Returns<IReactor>(reactor =>
             {
-                if (reactor is null)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitId)
                 {
-                    Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                    return this.mockGLInitUnsubscriber.Object;
                 }
 
-                this.glInitReactor = reactor;
-            });
+                if (reactor.EventId == NotificationIds.ShutDownId)
+                {
+                    return this.mockShutDownUnsubscriber.Object;
+                }
 
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
+            .Callback<IReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitId)
+                {
+                    this.glInitReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.ShutDownId)
+                {
+                    this.shutDownReactor = reactor;
+                }
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                }
+            });
     }
 
     #region Constructor Tests
@@ -104,8 +127,7 @@ public class ShaderProgramTests
                 null,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -119,8 +141,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 null,
                 this.mockShaderLoader.Object,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
@@ -134,8 +155,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
-                this.mockReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
     }
 
@@ -149,24 +169,8 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                null,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'reactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactorParam_ThrowsException()
-    {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            var unused = new ShaderProgramFake(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderLoader.Object,
-                this.mockReactable.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+        }, "The parameter must not be null. (Parameter 'reactable')");
     }
     #endregion
 
@@ -368,30 +372,30 @@ public class ShaderProgramTests
     public void WithShutDownNotification_DisposesOfShaderProgram()
     {
         // Arrange
-        IReactor<ShutDownData>? shutDownReactor = null;
-
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor =>
-            {
-                if (reactor is null)
-                {
-                    Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
-                }
-
-                shutDownReactor = reactor;
-            });
-
         CreateSystemUnderTest();
         this.glInitReactor.OnNext();
 
         // Act
-        shutDownReactor?.OnNext(default);
-        shutDownReactor?.OnNext(default);
+        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnNext();
 
         // Assert
+        this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once);
-        this.mockGLInitReactorUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+    }
+
+    [Fact]
+    public void Reactable_WhenOnCompleteIsInvoked_UnsubscribesFromReactable()
+    {
+        // Arrange
+        CreateSystemUnderTest();
+
+        // Act
+        this.glInitReactor.OnComplete();
+
+        // Assert
+        this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
@@ -404,6 +408,5 @@ public class ShaderProgramTests
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockReactable.Object);
 }

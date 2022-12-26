@@ -20,9 +20,6 @@ using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL;
 using Velaptor.OpenGL.Services;
-using Reactables;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 
 /// <summary>
@@ -58,8 +55,6 @@ internal static class IoC
     private static void SetupContainer()
     {
         SetupNativeInterop();
-
-        SetupReactors();
 
         SetupCaching();
 
@@ -97,15 +92,6 @@ internal static class IoC
 
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
-    }
-
-    /// <summary>
-    /// Sets up container registration related to reactables.
-    /// </summary>
-    private static void SetupReactors()
-    {
-        // TODO: This method can be removed
-        IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
     }
 
     /// <summary>

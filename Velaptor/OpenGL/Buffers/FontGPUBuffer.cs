@@ -14,7 +14,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
 using Guards;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Velaptor.Exceptions;
 
@@ -25,7 +24,7 @@ using Velaptor.Exceptions;
 internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
-    private readonly IDisposable bathSizeUnsubscriber;
+    private readonly IDisposable batchSizeUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
@@ -33,20 +32,18 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public FontGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, reactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.bathSizeUnsubscriber = reactable.Subscribe(new Reactor(
+        this.batchSizeUnsubscriber = reactable.Subscribe(new Reactor(
             eventId: NotificationIds.BatchSizeId,
             onNextMsg: msg =>
             {
@@ -59,7 +56,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.bathSizeUnsubscriber?.Dispose()));
+            onCompleted: () => this.batchSizeUnsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

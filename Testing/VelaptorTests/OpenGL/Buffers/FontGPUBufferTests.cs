@@ -14,7 +14,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Helpers;
 using Velaptor;
@@ -29,7 +28,6 @@ public class FontGPUBufferTests
     private const uint IndexBufferId = 333;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IReactable> mockReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
@@ -78,8 +76,6 @@ public class FontGPUBufferTests
                     this.glInitReactor = reactor;
                 }
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Constructor Tests
@@ -92,8 +88,7 @@ public class FontGPUBufferTests
             _ = new FontGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -362,6 +357,5 @@ public class FontGPUBufferTests
     private FontGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockReactable.Object,
-        this.mockShutDownReactable.Object);
+        this.mockReactable.Object);
 }

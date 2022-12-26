@@ -18,7 +18,6 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Helpers;
 using Velaptor.Exceptions;
@@ -38,7 +37,6 @@ public class RectGPUBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
     private bool vboGenerated;
@@ -81,8 +79,6 @@ public class RectGPUBufferTests
                     this.glInitReactor = reactor;
                 }
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Constructor Tests
@@ -95,8 +91,7 @@ public class RectGPUBufferTests
             _ = new TextureGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
@@ -653,8 +648,7 @@ public class RectGPUBufferTests
         var result = new RectGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
-            this.mockReactable.Object,
-            this.mockShutDownReactable.Object)
+            this.mockReactable.Object)
         {
             ViewPortSize = new SizeU { Width = ViewPortWidth, Height = ViewPortHeight },
         };

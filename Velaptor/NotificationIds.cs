@@ -46,4 +46,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications to dispose of sounds.
     /// </summary>
     public static Guid DisposeSoundId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications to shut down.
+    /// </summary>
+    public static Guid ShutDownId { get; } = new ("17b9fd1c-67ef-4f36-8973-45e32b0ee85b");
 }

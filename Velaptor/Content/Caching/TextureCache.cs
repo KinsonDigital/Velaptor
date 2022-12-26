@@ -15,7 +15,6 @@ using Exceptions;
 using Factories;
 using Graphics;
 using Guards;
-using Reactables.Core;
 using Reactables.ReactableData;
 using Services;
 
@@ -54,7 +53,6 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <param name="fontAtlasService">Provides font atlas services.</param>
     /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
     /// <param name="path">Provides path related services.</param>
-    /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
     public TextureCache(
         IImageService imageService,
@@ -62,7 +60,6 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         IFontAtlasService fontAtlasService,
         IFontMetaDataParser fontMetaDataParser,
         IPath path,
-        IReactable<ShutDownData> shutDownReactable,
         IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(imageService);
@@ -70,7 +67,6 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         EnsureThat.ParamIsNotNull(fontAtlasService);
         EnsureThat.ParamIsNotNull(fontMetaDataParser);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
         EnsureThat.ParamIsNotNull(reactable);
 
         this.imageService = imageService;
@@ -78,12 +74,9 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.fontAtlasService = fontAtlasService;
         this.fontMetaDataParser = fontMetaDataParser;
         this.path = path;
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
 
         this.reactable = reactable;
     }
@@ -287,6 +280,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         this.reactable.Unsubscribe(NotificationIds.DisposeTextureId);
 
         this.textures.Clear();

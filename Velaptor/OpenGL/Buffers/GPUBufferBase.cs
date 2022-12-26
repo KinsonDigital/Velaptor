@@ -9,8 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -32,20 +30,17 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(reactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
 
         GL = gl;
         OpenGLService = openGLService;
@@ -55,9 +50,9 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
             onNext: Init,
             onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            onNext: _ => ShutDown(),
-            onCompleted: () => this.shutDownUnsubscriber?.Dispose()));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ShutDownId,
+            onNext: ShutDown));
 
         ProcessCustomAttributes();
     }
@@ -257,6 +252,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         GL.DeleteVertexArray(VAO);
         GL.DeleteBuffer(VBO);
         GL.DeleteBuffer(this.ebo);
