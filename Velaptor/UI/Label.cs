@@ -30,7 +30,7 @@ public class Label : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Label()
     {
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();

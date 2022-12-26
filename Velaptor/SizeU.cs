@@ -56,6 +56,6 @@ public struct SizeU : IEquatable<SizeU>
     public override bool Equals(object? obj) => obj is SizeU size && Equals(size);
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => HashCode.Combine(Width, Height);
 }

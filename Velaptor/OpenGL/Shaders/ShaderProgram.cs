@@ -6,12 +6,11 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using Services;
-using Reactables.Core;
-using Reactables.ReactableData;
 
 /// <inheritdoc/>
 internal abstract class ShaderProgram : IShaderProgram
@@ -27,8 +26,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-    /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -36,20 +34,25 @@ internal abstract class ShaderProgram : IShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
         GL = gl;
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
-        this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-        this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
+
+        this.glInitReactorUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitializedId,
+            onNext: Init,
+            onCompleted: () => this.glInitReactorUnsubscriber?.Dispose()));
+
+        this.shutDownReactorUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.SystemShuttingDownId,
+            onNext: ShutDown));
 
         ProcessCustomAttributes();
     }
@@ -57,7 +60,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <summary>
     /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~ShaderProgram()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -65,7 +68,7 @@ internal abstract class ShaderProgram : IShaderProgram
             return;
         }
 
-        Dispose();
+        ShutDown();
     }
 
     /// <inheritdoc/>
@@ -122,17 +125,16 @@ internal abstract class ShaderProgram : IShaderProgram
         "ReSharper",
         "VirtualMemberNeverOverridden.Global",
         Justification = "Will be used in the future.")]
-    protected virtual void Dispose()
+    protected virtual void ShutDown()
     {
         if (IsDisposed)
         {
             return;
         }
 
-        GL.DeleteProgram(ShaderId);
-
         this.glInitReactorUnsubscriber.Dispose();
         this.shutDownReactorUnsubscriber.Dispose();
+        GL.DeleteProgram(ShaderId);
 
         IsDisposed = true;
     }
@@ -164,7 +166,6 @@ internal abstract class ShaderProgram : IShaderProgram
         var infoLog = GL.GetShaderInfoLog(vertShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
         }
 
@@ -184,7 +185,6 @@ internal abstract class ShaderProgram : IShaderProgram
         infoLog = GL.GetShaderInfoLog(fragShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
         }
 

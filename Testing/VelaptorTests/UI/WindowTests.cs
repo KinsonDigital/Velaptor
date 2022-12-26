@@ -45,6 +45,7 @@ public class WindowTests
         }, "The parameter must not be null. (Parameter 'window')");
     }
     #endregion
+
     #region Prop Tests
     [Fact]
     public void Title_WhenSettingValue_ReturnsCorrectResult()

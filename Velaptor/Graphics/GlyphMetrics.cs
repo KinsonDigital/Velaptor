@@ -143,7 +143,7 @@ public struct GlyphMetrics : IEquatable<GlyphMetrics>
         CharIndex == other.CharIndex;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode()
     {
         var hashCode = default(HashCode);

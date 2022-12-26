@@ -7,12 +7,13 @@ namespace Velaptor.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Graphics;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// The texture to render to a screen.
@@ -21,7 +22,7 @@ public sealed class Texture : ITexture
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
-    private readonly IDisposable disposeUnsubscriber;
+    private IDisposable? disposeUnsubscriber;
     private bool isDisposed;
 
     /// <summary>
@@ -30,24 +31,20 @@ public sealed class Texture : ITexture
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Texture(string name, string filePath, ImageData imageData)
     {
+        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        EnsureThat.StringParamIsNotNullOrEmpty(filePath);
+
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
 
-        var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeTextureData>>();
-
-        this.disposeUnsubscriber =
-            disposeReactor.Subscribe(new Reactor<DisposeTextureData>(_ =>
-            {
-                var disposeData = new DisposeTextureData(Id);
-                Dispose(disposeData);
-            }));
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         FilePath = filePath;
-        Init(name, imageData);
+        Init(reactable, name, imageData);
     }
 
     /// <summary>
@@ -55,37 +52,35 @@ public sealed class Texture : ITexture
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="disposeTexturesReactable">Sends a push notification to dispose of a texture.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
     internal Texture(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<DisposeTextureData> disposeTexturesReactable,
+        IReactable reactable,
         string name,
         string filePath,
         ImageData imageData)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+        EnsureThat.ParamIsNotNull(reactable);
         EnsureThat.StringParamIsNotNullOrEmpty(name);
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
         this.gl = gl;
         this.openGLService = openGLService;
-        this.disposeUnsubscriber =
-            disposeTexturesReactable.Subscribe(new Reactor<DisposeTextureData>(Dispose));
 
         FilePath = filePath;
-        Init(name, imageData);
+        Init(reactable, name, imageData);
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="Texture"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~Texture()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -93,7 +88,7 @@ public sealed class Texture : ITexture
             return;
         }
 
-        Dispose(new DisposeTextureData(Id));
+        Dispose(new DisposeTextureData { TextureId = Id });
     }
 
     /// <inheritdoc/>
@@ -112,7 +107,7 @@ public sealed class Texture : ITexture
     public uint Height { get; private set; }
 
     /// <summary>
-    /// Disposes of the texture if this textures <see cref="Id"/> matches the texture ID  in given <paramref name="data"/>.
+    /// Disposes of the texture if this texture's <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
     private void Dispose(DisposeTextureData data)
@@ -123,7 +118,7 @@ public sealed class Texture : ITexture
         }
 
         this.gl.DeleteTexture(Id);
-        this.disposeUnsubscriber.Dispose();
+        this.disposeUnsubscriber?.Dispose();
 
         this.isDisposed = true;
     }
@@ -131,10 +126,27 @@ public sealed class Texture : ITexture
     /// <summary>
     /// Initializes the <see cref="Texture"/>.
     /// </summary>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void Init(string name, ImageData imageData)
+    private void Init(IReactable reactable, string name, ImageData imageData)
     {
+        this.disposeUnsubscriber =
+            reactable.Subscribe(new Reactor(
+                eventId: NotificationIds.TextureDisposedId,
+                onNextMsg: msg =>
+                {
+                    var data = msg.GetData<DisposeTextureData>();
+
+                    if (data is null)
+                    {
+                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", NotificationIds.TextureDisposedId);
+                    }
+
+                    Dispose(data);
+                },
+                onCompleted: () => Dispose(new DisposeTextureData { TextureId = Id })));
+
         if (imageData.IsEmpty())
         {
             throw new ArgumentException("The image data must not be empty.", nameof(imageData));

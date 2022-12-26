@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Carbonate;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -20,8 +21,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Velaptor.Services;
 using Helpers;
 using Xunit;
@@ -45,11 +45,9 @@ public class RendererTests
     private readonly Mock<IBufferManager> mockBufferManager;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IBatchServiceManager> mockBatchServiceManager;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactable> mockReactable;
     private readonly char[] glyphChars =
     {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -59,8 +57,8 @@ public class RendererTests
     };
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
-    private IReactor<GLInitData>? glInitReactor;
-    private IReactor<ShutDownData>? shutDownReactor;
+    private IReactor? glInitReactor;
+    private IReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RendererTests"/> class.
@@ -92,34 +90,41 @@ public class RendererTests
             .Returns(Array.Empty<LineBatchItem>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
-        this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
-            .Returns(this.mockGLInitUnsubscriber.Object)
-            .Callback<IReactor<GLInitData>>(reactor =>
-            {
-                if (reactor is null)
-                {
-                    Assert.True(false, "GL Init reactable subscription failed.  Reactor is null.");
-                }
-
-                this.glInitReactor = reactor;
-            });
-
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor =>
+        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Returns<IReactor>(reactor =>
             {
-                if (reactor is null)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
-                    Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                    return this.mockGLInitUnsubscriber.Object;
                 }
 
-                this.shutDownReactor = reactor;
-            });
+                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    return this.mockShutDownUnsubscriber.Object;
+                }
 
-        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
+            .Callback<IReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitializedId)
+                {
+                    this.glInitReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    this.shutDownReactor = reactor;
+                }
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                }
+            });
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -137,15 +142,13 @@ public class RendererTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Renderer(
+             _ = new Renderer(
                 null,
                 this.mockGLService.Object,
                 this.mockShaderManager.Object,
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -155,15 +158,13 @@ public class RendererTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Renderer(
+            _ = new Renderer(
                 this.mockGL.Object,
                 null,
                 this.mockShaderManager.Object,
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
@@ -173,15 +174,13 @@ public class RendererTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Renderer(
+            _ = new Renderer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderManager')");
     }
 
@@ -191,15 +190,13 @@ public class RendererTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Renderer(
+            _ = new Renderer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderManager.Object,
                 null,
                 this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'bufferManager')");
     }
 
@@ -209,82 +206,42 @@ public class RendererTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Renderer(
+            _ = new Renderer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderManager.Object,
                 this.mockBufferManager.Object,
                 null,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
+                this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'batchServiceManager')");
     }
 
     [Fact]
-    public void Ctor_WithNullGLInitReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            var unused = new Renderer(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderManager.Object,
-                this.mockBufferManager.Object,
-                this.mockBatchServiceManager.Object,
-                null,
-                this.mockShutDownReactable.Object,
-                this.mockBatchSizeReactable.Object);
-        }, "The parameter must not be null. (Parameter 'glInitReactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactableParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            var unused = new Renderer(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderManager.Object,
-                this.mockBufferManager.Object,
-                this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                null,
-                this.mockBatchSizeReactable.Object);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            var unused = new Renderer(
+            _ = new Renderer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderManager.Object,
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
-                this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object,
                 null);
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToBatchEvents()
     {
         // Arrange & Act
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Assert
         this.mockBatchServiceManager.VerifyAdd(a => a.TextureBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
@@ -299,9 +256,8 @@ public class RendererTests
         _ = CreateSystemUnderTest();
 
         // Assert
-        this.mockBatchSizeReactable.Verify(m => m.PushNotification(new BatchSizeData(1000u)), Times.Once);
-        this.mockBatchSizeReactable.Verify(m => m.EndNotifications(), Times.Once);
-        this.mockBatchSizeReactable.Verify(m => m.UnsubscribeAll(), Times.Once);
+        this.mockReactable.Verify(m => m.PushData(It.Ref<BatchSizeData>.IsAny, NotificationIds.BatchSizeSetId), Times.Once);
+        this.mockReactable.Verify(m => m.Unsubscribe(NotificationIds.BatchSizeSetId), Times.Once);
     }
     #endregion
 
@@ -312,7 +268,7 @@ public class RendererTests
         // Arrange
         this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.RenderSurfaceWidth = 100;
@@ -329,7 +285,7 @@ public class RendererTests
         // Arrange
         this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.RenderSurfaceHeight = 100;
@@ -360,7 +316,8 @@ public class RendererTests
             });
 
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+
+        this.glInitReactor.OnNext();
 
         // Act
         var actual = sut.ClearColor;
@@ -375,7 +332,7 @@ public class RendererTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.ClearColor = Color.FromArgb(11, 22, 33, 44);
@@ -487,7 +444,7 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestTextureShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Texture)).Returns(shaderName);
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.mockBatchServiceManager.Raise(e => e.TextureBatchReadyForRendering += null, EventArgs.Empty);
@@ -534,7 +491,7 @@ public class RendererTests
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
         sut.Begin();
 
         // Act
@@ -568,7 +525,7 @@ public class RendererTests
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
         sut.Begin();
 
         // Act
@@ -601,7 +558,7 @@ public class RendererTests
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
         sut.Begin();
 
         // Act
@@ -636,7 +593,7 @@ public class RendererTests
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
         sut.Begin();
 
         // Act
@@ -687,7 +644,7 @@ public class RendererTests
                 MockTextureBatchItems(items);
                 this.mockBatchServiceManager.Raise(m => m.TextureBatchReadyForRendering += null, EventArgs.Empty);
             });
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.Begin();
@@ -731,7 +688,7 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestFontShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Font)).Returns(shaderName);
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.mockBatchServiceManager.Raise(e => e.FontGlyphBatchReadyForRendering += null, EventArgs.Empty);
@@ -828,6 +785,35 @@ public class RendererTests
                 It.IsAny<float>(),
                 It.IsAny<Color>());
         }, "The 'Begin()' method must be invoked first before any 'Render()' methods.");
+    }
+
+    [Fact]
+    public void RenderFont_WhenTextIsOnlyNewLineCharacters_DoesNotRenderText()
+    {
+        // Arrange
+        const string renderText = "\n\r\r\n";
+
+        MockFontMetrics();
+
+        MockToGlyphMetrics(renderText);
+
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
+
+        // Act
+        sut.Render(
+            this.mockFont.Object,
+            renderText,
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
+            It.IsAny<Color>());
+
+        // Assert
+        this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
+        this.mockFont.VerifyNever(m => m.GetKerning(It.IsAny<uint>(), It.IsAny<uint>()));
+        this.mockBatchServiceManager.VerifyNever(m => m.AddFontGlyphBatchItem(It.IsAny<FontGlyphBatchItem>()));
     }
 
     [Fact]
@@ -1287,7 +1273,7 @@ public class RendererTests
                 doNotRaise = true;
             });
 
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.Begin();
@@ -1317,7 +1303,7 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestRectShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Rectangle)).Returns(shaderName);
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.mockBatchServiceManager.Raise(e => e.RectBatchReadyForRendering += null, EventArgs.Empty);
@@ -1425,7 +1411,7 @@ public class RendererTests
                 MockRectBatchItems(items);
                 this.mockBatchServiceManager.Raise(m => m.RectBatchReadyForRendering += null, EventArgs.Empty);
             });
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.Begin();
@@ -1564,7 +1550,7 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestLineShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Line)).Returns(shaderName);
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.mockBatchServiceManager.Raise(e => e.LineBatchReadyForRendering += null, EventArgs.Empty);
@@ -1620,7 +1606,7 @@ public class RendererTests
                 MockLineBatchItems(items);
                 this.mockBatchServiceManager.Raise(m => m.LineBatchReadyForRendering += null, EventArgs.Empty);
             });
-        this.glInitReactor.OnNext(default);
+        this.glInitReactor.OnNext();
 
         // Act
         sut.Begin();
@@ -1654,15 +1640,15 @@ public class RendererTests
     public void WithShutDownNotification_DisposesOfRenderer()
     {
         // Arrange
-        this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>(reactor => this.shutDownReactor = reactor);
+            .Callback<IReactor>(reactor => this.shutDownReactor = reactor);
 
         CreateSystemUnderTest();
 
         // Act
-        this.shutDownReactor?.OnNext(default);
-        this.shutDownReactor?.OnNext(default);
+        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnNext();
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.Dispose(), Times.Once);
@@ -1677,29 +1663,17 @@ public class RendererTests
 
     #region Indirect Tests
     [Fact]
-    public void GlInitReactable_WhenCompleted_DisposesOfSubscription()
+    public void Reactable_WhenGLInitEventIsCompleted_DisposesOfSubscription()
     {
         // Arrange
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnCompleted();
+        this.glInitReactor.OnComplete();
+        this.glInitReactor.OnComplete();
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
-    [Fact]
-    public void ShutDownReactable_WhenCompleted_DisposesOfSubscription()
-    {
-        // Arrange
-        var unused = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnCompleted();
-
-        // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
@@ -1776,19 +1750,12 @@ public class RendererTests
     /// </summary>
     /// <returns>The instance to test with.</returns>
     private Renderer CreateSystemUnderTest()
-    {
-        var result = new Renderer(
-            this.mockGL.Object,
+        => new (this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderManager.Object,
             this.mockBufferManager.Object,
             this.mockBatchServiceManager.Object,
-            this.mockGLInitReactable.Object,
-            this.mockShutDownReactable.Object,
-            this.mockBatchSizeReactable.Object);
-
-        return result;
-    }
+            this.mockReactable.Object);
 
     /// <summary>
     /// Mocks the <see cref="BatchServiceManager.TextureBatchItems"/> property of the <see cref="IBatchServiceManager"/>.

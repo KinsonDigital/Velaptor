@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -17,9 +18,9 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Helpers;
+using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>
@@ -35,11 +36,9 @@ public class RectGPUBufferTests
     private const uint ViewPortHeight = 200u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
-    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
-    private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
-    private IReactor<GLInitData>? glInitReactor;
-    private IReactor<BatchSizeData>? batchSizeReactor;
+    private readonly Mock<IReactable> mockReactable;
+    private IReactor? glInitReactor;
+    private IReactor? batchSizeReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -64,36 +63,27 @@ public class RectGPUBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
-        this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
-            .Callback<IReactor<GLInitData>>(reactor =>
+        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactor =>
             {
-                if (reactor is null)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.BatchSizeSetId)
                 {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                    this.batchSizeReactor = reactor;
                 }
 
-                this.glInitReactor = reactor;
-            });
-
-        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>(reactor =>
-            {
-                if (reactor is null)
+                if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                    this.glInitReactor = reactor;
                 }
-
-                this.batchSizeReactor = reactor;
             });
-
-        this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -101,25 +91,23 @@ public class RectGPUBufferTests
             _ = new TextureGPUBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                this.mockGLInitReactable.Object,
-                null,
-                this.mockShutDownReactable.Object);
+                null);
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
-    public void Ctor_WhenBatchSizeReactableEndsNotifications_UnsubscriberInvoked()
+    public void Ctor_WhenReactableEndsNotifications_UnsubscriberInvoked()
     {
         // Arrange
         var mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>(reactor =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -128,16 +116,45 @@ public class RectGPUBufferTests
 
                 this.batchSizeReactor = reactor;
             })
-            .Returns<IReactor<BatchSizeData>>(_ => mockUnsubscriber.Object);
+            .Returns<IReactor>(_ => mockUnsubscriber.Object);
 
-        _ = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest(false);
 
         // Act
-        this.batchSizeReactor.OnCompleted();
-        this.batchSizeReactor.OnCompleted();
+        this.batchSizeReactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
 
         // Assert
         mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+    }
+
+    [Fact]
+    public void Ctor_WhenReactableNotificationHasAnIssue_ThrowsException()
+    {
+        // Arrange
+        var expectedMsg = $"There was an issue with the '{nameof(RectGPUBuffer)}.Constructor()' subscription source";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull("it is required for unit testing.");
+
+                this.batchSizeReactor = reactorObj;
+            });
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest(false);
+
+        // Act
+        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expectedMsg);
     }
     #endregion
 
@@ -498,7 +515,12 @@ public class RectGPUBufferTests
             .LoadTestData<float[]>(string.Empty,
                 $"{nameof(RectGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
-        this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = BatchSize });
+
+        this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateData();
@@ -570,7 +592,12 @@ public class RectGPUBufferTests
         var expected = TestDataLoader
             .LoadTestData<uint[]>(string.Empty, $"{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
         var sut = CreateSystemUnderTest(false);
-        this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = BatchSize });
+
+        this.batchSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateIndices();
@@ -621,16 +648,14 @@ public class RectGPUBufferTests
         var result = new RectGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
-            this.mockGLInitReactable.Object,
-            this.mockBatchSizeReactable.Object,
-            this.mockShutDownReactable.Object)
+            this.mockReactable.Object)
         {
             ViewPortSize = new SizeU { Width = ViewPortWidth, Height = ViewPortHeight },
         };
 
         if (initialize)
         {
-            this.glInitReactor.OnNext(default);
+            this.glInitReactor.OnNext();
         }
 
         return result;

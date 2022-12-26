@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to direct interaction with the dotnet {nameof(System)}.{nameof(DateTime)} API.")]
 internal sealed class DateTimeService : IDateTimeService
 {
     /// <inheritdoc/>

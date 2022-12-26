@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using Silk.NET.Windowing;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
 internal sealed class SilkWindowFactory : IWindowFactory
 {
     private static IWindow? window;

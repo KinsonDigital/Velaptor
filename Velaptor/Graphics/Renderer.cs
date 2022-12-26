@@ -10,15 +10,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Carbonate;
 using Content;
 using Content.Fonts;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
 using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
@@ -43,18 +43,15 @@ internal sealed class Renderer : IRenderer
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Renderer"/> class.
-    /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderManager">Manages various shader operations.</param>
     /// <param name="bufferManager">Manages various buffer operations.</param>
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
-    /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
-    /// <param name="batchSizeReactable">Sends a push notification of the batch size.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <remarks>
-    ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+    ///     <paramref name="reactable"/> is subscribed to this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
     /// </remarks>
     public Renderer(
@@ -63,18 +60,14 @@ internal sealed class Renderer : IRenderer
         IShaderManager shaderManager,
         IBufferManager bufferManager,
         IBatchServiceManager batchServiceManager,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable,
-        IReactable<BatchSizeData> batchSizeReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderManager);
         EnsureThat.ParamIsNotNull(bufferManager);
         EnsureThat.ParamIsNotNull(batchServiceManager);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
         this.gl = gl;
         this.openGLService = openGLService;
@@ -88,30 +81,24 @@ internal sealed class Renderer : IRenderer
         this.batchServiceManager.LineBatchReadyForRendering += LineBatchService_BatchReadyForRendering;
 
         // Receive a push notification that OpenGL has initialized
-        this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
-            _ =>
+        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitializedId,
+            onNext: () =>
             {
                 this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
                 this.cachedClearColor.IsCaching = false;
 
                 Init();
-            }, onCompleted: () =>
-            {
-                this.glInitUnsubscriber?.Dispose();
-            }));
+            }, onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.SystemShuttingDownId,
+            onNext: ShutDown));
 
-        var batchSizeData = new BatchSizeData(BatchSize);
-        batchSizeReactable.PushNotification(batchSizeData);
-        batchSizeReactable.EndNotifications();
-        batchSizeReactable.UnsubscribeAll();
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
+
+        reactable.PushData(batchSizeData, NotificationIds.BatchSizeSetId);
+        reactable.Unsubscribe(NotificationIds.BatchSizeSetId);
 
         SetupPropertyCaches();
     }
@@ -119,7 +106,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Finalizes an instance of the <see cref="Renderer"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~Renderer()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -179,7 +166,7 @@ internal sealed class Renderer : IRenderer
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
         // Render the entire texture
-        var srcRect = new NETRect()
+        var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
@@ -452,6 +439,7 @@ internal sealed class Renderer : IRenderer
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         this.batchServiceManager.TextureBatchReadyForRendering -= TextureBatchService_BatchReadyForRendering;
         this.batchServiceManager.FontGlyphBatchReadyForRendering -= FontGlyphBatchService_BatchReadyForRendering;
         this.batchServiceManager.RectBatchReadyForRendering -= RectBatchService_BatchReadyForRendering;

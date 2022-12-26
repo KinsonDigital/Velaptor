@@ -6,29 +6,31 @@ namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
 using System.Linq;
+using Carbonate;
 using FluentAssertions;
 using Helpers;
 using Moq;
+using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Velaptor.ReactableData;
 using Xunit;
 
 public class RectangleShaderTests
 {
-    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectangleShaderTests"/> class.
     /// </summary>
-    public RectangleShaderTests() => this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+    public RectangleShaderTests() => this.mockReactable = new Mock<IReactable>();
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -37,25 +39,23 @@ public class RectangleShaderTests
                 new Mock<IGLInvoker>().Object,
                 new Mock<IOpenGLService>().Object,
                 new Mock<IShaderLoaderService<uint>>().Object,
-                new Mock<IReactable<GLInitData>>().Object,
-                null,
-                new Mock<IReactable<ShutDownData>>().Object);
+                null);
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
     }
 
     [Fact]
     public void Ctor_WhenReceivingBatchSizeNotification_SetsBatchSize()
     {
         // Arrange
-        IReactor<BatchSizeData>? reactor = null;
+        IReactor? reactor = null;
 
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
             {
                 if (reactorObj is null)
                 {
@@ -65,10 +65,14 @@ public class RectangleShaderTests
                 reactor = reactorObj;
             });
 
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns(new BatchSizeData { BatchSize = 123u });
+
         var shader = CreateSystemUnderTest();
 
         // Act
-        reactor.OnNext(new BatchSizeData(123u));
+        reactor.OnNext(mockMessage.Object);
         var actual = shader.BatchSize;
 
         // Assert
@@ -79,11 +83,11 @@ public class RectangleShaderTests
     public void Ctor_WhenEndingNotifications_Unsubscribes()
     {
         // Arrange
-        IReactor<BatchSizeData>? reactor = null;
+        IReactor? reactor = null;
         var mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
             {
                 if (reactorObj is null)
                 {
@@ -92,13 +96,13 @@ public class RectangleShaderTests
 
                 reactor = reactorObj;
             })
-            .Returns<IReactor<BatchSizeData>>(_ => mockUnsubscriber.Object);
+            .Returns<IReactor>(_ => mockUnsubscriber.Object);
 
         _ = CreateSystemUnderTest();
 
         // Act
-        reactor.OnCompleted();
-        reactor.OnCompleted();
+        reactor.OnComplete();
+        reactor.OnComplete();
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());
@@ -120,6 +124,37 @@ public class RectangleShaderTests
             .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
         sut.Name.Should().Be("Rectangle");
     }
+
+    [Fact]
+    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
+    {
+        // Arrange
+        var expectedMsg = $"There was an issue with the '{nameof(RectangleShader)}.Constructor()' subscription source";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+
+        IReactor? reactor = null;
+
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull("it is required for unit testing.");
+
+                reactor = reactorObj;
+            });
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => reactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expectedMsg);
+    }
     #endregion
 
     /// <summary>
@@ -130,7 +165,5 @@ public class RectangleShaderTests
         => new (new Mock<IGLInvoker>().Object,
             new Mock<IOpenGLService>().Object,
             new Mock<IShaderLoaderService<uint>>().Object,
-            new Mock<IReactable<GLInitData>>().Object,
-            this.mockBatchSizeReactable.Object,
-            new Mock<IReactable<ShutDownData>>().Object);
+            this.mockReactable.Object);
 }

@@ -6,10 +6,9 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -19,8 +18,8 @@ using NETSizeF = System.Drawing.SizeF;
 internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     where TData : struct
 {
-    private readonly IDisposable glInitUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
+    private readonly IDisposable glInitUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
     private bool isDisposed;
@@ -30,38 +29,30 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-        OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+        GL = gl;
+        OpenGLService = openGLService;
 
-        this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
-            _ => Init(),
-            onCompleted: () =>
-            {
-                this.glInitUnsubscriber?.Dispose();
-            }));
+        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.GLInitializedId,
+            onNext: Init,
+            onCompleted: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.SystemShuttingDownId,
+            onNext: ShutDown));
 
         ProcessCustomAttributes();
     }
@@ -69,7 +60,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// <summary>
     /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~GPUBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -261,6 +252,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
             return;
         }
 
+        this.shutDownUnsubscriber.Dispose();
         GL.DeleteVertexArray(VAO);
         GL.DeleteBuffer(VBO);
         GL.DeleteBuffer(this.ebo);

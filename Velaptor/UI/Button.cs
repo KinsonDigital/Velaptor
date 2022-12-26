@@ -36,13 +36,14 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Button() => Init();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
     /// <param name="label">The label to display on the face of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Label? label)
     {
@@ -55,7 +56,8 @@ public sealed class Button : ControlBase
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
     /// <param name="position">The position of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position)
     {
         Init();
@@ -67,7 +69,7 @@ public sealed class Button : ControlBase
     /// </summary>
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height)
     {
@@ -82,7 +84,7 @@ public sealed class Button : ControlBase
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
     /// <param name="label">The label to display on the face of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height, Label? label)
     {
@@ -98,7 +100,7 @@ public sealed class Button : ControlBase
     /// <param name="position">The position of the button.</param>
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height)
     {
@@ -115,7 +117,7 @@ public sealed class Button : ControlBase
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
     /// <param name="label">The label to display on the face of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height, Label? label)
     {
@@ -450,7 +452,7 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Initializes the <see cref="Button"/>.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     private void Init()
     {
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();

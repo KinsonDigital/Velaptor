@@ -9,7 +9,7 @@ using System.IO;
 using Serilog;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to direct interaction with the '{nameof(Serilog)}' library.")]
 internal sealed class FileLoggerService : IFileLoggerService
 {
     private const string LogsDirName = "logs";

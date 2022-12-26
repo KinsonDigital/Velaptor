@@ -35,7 +35,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public AtlasLoader()
     {

@@ -15,7 +15,7 @@ using Velaptor.Services;
 /// <summary>
 /// Loads embedded font file resources.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to the direct interaction with the dotnet '{nameof(Assembly)}' API.")]
 internal sealed class EmbeddedFontResourceService : IEmbeddedResourceLoaderService<Stream?>
 {
     private const string FontResourcePath = "Velaptor.Content.Fonts.EmbeddedResources.";

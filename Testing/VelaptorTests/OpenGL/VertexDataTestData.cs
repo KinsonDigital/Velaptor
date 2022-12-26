@@ -26,6 +26,6 @@ public class VertexDataTestData : IEnumerable<object[]>
     }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

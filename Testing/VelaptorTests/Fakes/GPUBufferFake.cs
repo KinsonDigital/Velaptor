@@ -4,11 +4,10 @@
 
 namespace VelaptorTests.Fakes;
 
+using Carbonate;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -21,13 +20,11 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
-    /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization.</param>
-    /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for application shutdown..</param>
+    /// <param name="reactable">Mocked <see cref="IReactable"/> for OpenGL initialization.</param>
     public GPUBufferFake(IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, reactable)
     {
     }
 

@@ -5,11 +5,12 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
+using Carbonate;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Services;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// A texture shader used to render 2D textures.
@@ -26,9 +27,7 @@ internal sealed class TextureShader : ShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -36,17 +35,23 @@ internal sealed class TextureShader : ShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, shaderLoaderService, glInitReactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, shaderLoaderService, reactable)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.BatchSizeSetId,
+            onNextMsg: msg =>
             {
-                BatchSize = data.BatchSize;
+                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+
+                if (batchSize is null)
+                {
+                    throw new PushNotificationException($"{nameof(TextureShader)}.Constructor()", NotificationIds.BatchSizeSetId);
+                }
+
+                BatchSize = batchSize.Value;
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
     }

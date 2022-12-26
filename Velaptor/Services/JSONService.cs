@@ -10,7 +10,9 @@ using Newtonsoft.Json;
 /// <summary>
 /// Performs JSON services.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(
+    Justification =
+        $"Cannot test due to direct interaction with the '{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}.{nameof(JsonConvert)}' API")]
 internal sealed class JSONService : IJSONService
 {
     /// <inheritdoc/>

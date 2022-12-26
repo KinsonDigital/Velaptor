@@ -9,12 +9,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Carbonate;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
 using Guards;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Updates font data in the GPU buffer.
@@ -23,35 +24,39 @@ using Reactables.ReactableData;
 internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
+    private readonly IDisposable batchSizeUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public FontGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactable reactable)
+            : base(gl, openGLService, reactable)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        this.batchSizeUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.BatchSizeSetId,
+            onNextMsg: msg =>
             {
-                BatchSize = data.BatchSize;
+                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+
+                if (batchSize is null)
+                {
+                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", NotificationIds.BatchSizeSetId);
+                }
+
+                BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onCompleted: () => this.batchSizeUnsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

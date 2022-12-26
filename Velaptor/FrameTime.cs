@@ -46,6 +46,6 @@ public struct FrameTime : IEquatable<FrameTime>
         => other.TotalTime == TotalTime && other.ElapsedTime == ElapsedTime;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => ElapsedTime.GetHashCode();
 }

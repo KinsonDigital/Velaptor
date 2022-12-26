@@ -171,7 +171,7 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     public override bool Equals(object? obj) => obj is TextureBatchItem other && Equals(other);
 
     /// <inheritdoc cref="object.GetHashCode"/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode()
         => HashCode.Combine(
             HashCode.Combine(

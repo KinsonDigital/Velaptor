@@ -1442,7 +1442,7 @@ public class InternalExtensionMethodsTests
     ///     The <paramref name="rowColors"/> dictionary key is the zero based row index and the
     ///     value is the color to make the entire row.
     /// </remarks>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static Image<Rgba32> CreateSixLaborsImage(int width, int height, Dictionary<uint, NETColor> rowColors)
     {
         if (height != rowColors.Count)

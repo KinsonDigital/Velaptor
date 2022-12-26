@@ -463,7 +463,7 @@ internal static class InternalExtensionMethods
     /// </summary>
     /// <typeparam name="T">The type to suppress against.</typeparam>
     /// <param name="container">The container that the suppression applies to.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public static void SuppressDisposableTransientWarning<T>(this Container container)
     {
         var registration = container.GetRegistration(typeof(T))?.Registration;
@@ -494,7 +494,7 @@ internal static class InternalExtensionMethods
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
         where TService : class
@@ -522,7 +522,7 @@ internal static class InternalExtensionMethods
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
         where TService : class
@@ -533,26 +533,6 @@ internal static class InternalExtensionMethods
         if (suppressDisposal)
         {
             SuppressDisposableTransientWarning<TService>(container);
-        }
-    }
-
-    /// <summary>
-    /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned.
-    /// </summary>
-    /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
-    /// <param name="container">The container that the registration applies to.</param>
-    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
-    /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
-    public static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
-        where TImplementation : class
-    {
-        container.Register<TImplementation>();
-
-        if (suppressDisposal)
-        {
-            SuppressDisposableTransientWarning<TImplementation>(container);
         }
     }
 
@@ -576,40 +556,12 @@ internal static class InternalExtensionMethods
     /// <typeparamref name="TService" /> has already been registered.</exception>
     /// <exception cref="T:System.ArgumentNullException">
     /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
         where TService : class
     {
         container.Register(instanceCreator);
-
-        if (suppressDisposal)
-        {
-            SuppressDisposableTransientWarning<TService>(container);
-        }
-    }
-
-    /// <summary>
-    /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
-    /// a <typeparamref name="TService"/> is requested (transient).
-    /// </summary>
-    /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
-    /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
-    /// <param name="container">The container that the registration applies to.</param>
-    /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
-    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
-    /// <remarks>
-    ///     This method uses the container's LifestyleSelectionBehavior to select the exact
-    ///     lifestyle for the specified type. By default this will be Transient.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
-    public static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
-        where TService : class
-        where TImplementation : class, TService
-    {
-        container.Register<TService, TImplementation>(lifestyle);
 
         if (suppressDisposal)
         {

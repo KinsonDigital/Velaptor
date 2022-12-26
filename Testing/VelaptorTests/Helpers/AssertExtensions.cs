@@ -14,7 +14,7 @@ using Xunit.Sdk;
 /// <summary>
 /// Provides helper methods for the <see cref="Xunit"/>'s <see cref="Assert"/> class.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
 // ReSharper disable once ClassNeverInstantiated.Global
 public class AssertExtensions : Assert
 {

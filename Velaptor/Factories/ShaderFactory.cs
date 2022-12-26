@@ -5,16 +5,15 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Carbonate;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Services;
 using OpenGL.Shaders;
-using Reactables.Core;
-using Reactables.ReactableData;
 
 /// <summary>
 /// Creates instance of type <see cref="IShaderProgram"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class ShaderFactory : IShaderFactory
 {
     private static IShaderProgram? textureShader;
@@ -33,17 +32,13 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
-        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         textureShader = new TextureShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
-            batchSizeReactable,
-            shutDownReactable);
+            reactable);
 
         return textureShader;
     }
@@ -59,17 +54,13 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
-        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         fontShader = new FontShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
-            batchSizeReactable,
-            shutDownReactable);
+            reactable);
 
         return fontShader;
     }
@@ -85,17 +76,13 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
-        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         rectShader = new RectangleShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
-            batchSizeReactable,
-            shutDownReactable);
+            reactable);
 
         return rectShader;
     }
@@ -111,17 +98,13 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
-        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var reactable = IoC.Container.GetInstance<IReactable>();
 
         lineShader = new LineShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            glInitReactable,
-            batchSizeReactable,
-            shutDownReactable);
+            reactable);
 
         return lineShader;
     }

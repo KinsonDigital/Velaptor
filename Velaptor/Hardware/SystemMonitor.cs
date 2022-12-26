@@ -20,7 +20,7 @@ public class SystemMonitor : IEquatable<SystemMonitor>
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public SystemMonitor() => this.platform = IoC.Container.GetInstance<IPlatform>();
 
     /// <summary>
@@ -149,7 +149,7 @@ public class SystemMonitor : IEquatable<SystemMonitor>
     }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode()
         => HashCode.Combine(IsMain, RedBitDepth, GreenBitDepth, BlueBitDepth, Width) +
            HashCode.Combine(Height, RefreshRate, HorizontalScale, VerticalScale);
@@ -158,6 +158,6 @@ public class SystemMonitor : IEquatable<SystemMonitor>
     /// Gets the default DPI value of the current platform.
     /// </summary>
     /// <returns>The current platform's DPI setting.</returns>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     private float GetPlatformDefaultDpi() => this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f;
 }

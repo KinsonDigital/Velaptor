@@ -101,7 +101,7 @@ public class EnsureThatTests
         string expected)
     {
         // Arrange & Act
-        var act = () => EnsureThat.PointerIsNotNull(nint.Zero, paramName);
+        var act = () => EnsureThat.PointerIsNotNull(nuint.Zero, paramName);
 
         // Assert
         act.Should().Throw<NullReferenceException>()

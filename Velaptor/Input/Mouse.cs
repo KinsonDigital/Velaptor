@@ -5,16 +5,17 @@
 namespace Velaptor.Input;
 
 using System;
-using Reactables.Core;
+using Carbonate;
+using Guards;
+using ReactableData;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Gets or sets the state of the mouse.
 /// </summary>
 internal sealed class Mouse : IAppInput<MouseState>
 {
-    private readonly IDisposable mousePosUnsubscriber;
-    private readonly IDisposable mouseButtonUnsubscriber;
-    private readonly IDisposable mouseWheelUnsubscriber;
+    private readonly IDisposable unsubscriber;
     private (MouseButton button, bool isDown) leftMouseButton = (MouseButton.LeftButton, false);
     private (MouseButton button, bool isDown) middleMouseButton = (MouseButton.MiddleButton, false);
     private (MouseButton button, bool isDown) rightMouseButton = (MouseButton.RightButton, false);
@@ -26,54 +27,43 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// <summary>
     /// Initializes a new instance of the <see cref="Mouse"/> class.
     /// </summary>
-    /// <param name="mousePositionReactable">Used to get push notifications about the position of the mouse.</param>
-    /// <param name="mouseButtonReactable">Used to get push notifications about the state of the mouse buttons.</param>
-    /// <param name="mouseWheelReactable">Used to get push notifications about the state of the mouse wheel.</param>
-    public Mouse(
-        IReactable<(int x, int y)> mousePositionReactable,
-        IReactable<(MouseButton button, bool isDown)> mouseButtonReactable,
-        IReactable<(MouseScrollDirection wheelDirection, int mouseWheelValue)> mouseWheelReactable)
+    /// <param name="reactable">Sends and receives push notifications.</param>
+    public Mouse(IReactable reactable)
     {
-        this.mousePosUnsubscriber = mousePositionReactable.Subscribe(new Reactor<(int x, int y)>(
-            onNext: position =>
-            {
-                this.xPos = position.x;
-                this.yPos = position.y;
-            }, () =>
-            {
-                this.mousePosUnsubscriber?.Dispose();
-            }));
+        EnsureThat.ParamIsNotNull(reactable);
 
-        this.mouseButtonUnsubscriber = mouseButtonReactable.Subscribe(new Reactor<(MouseButton button, bool isDown)>(
-            onNext: buttonState =>
+        this.unsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.MouseStateChangedId,
+            onNextMsg: msg =>
             {
-                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-                switch (buttonState.button)
+                var data = msg.GetData<MouseStateData>();
+
+                if (data is null)
+                {
+                    throw new PushNotificationException($"{nameof(Mouse)}.Constructor()", NotificationIds.MouseStateChangedId);
+                }
+
+                this.xPos = data.X;
+                this.yPos = data.Y;
+                this.mouseScrollDirection = data.ScrollDirection;
+                this.scrollWheelValue = data.ScrollWheelValue;
+
+                switch (data.Button)
                 {
                     case MouseButton.LeftButton:
-                        this.leftMouseButton.isDown = buttonState.isDown;
+                        this.leftMouseButton.isDown = data.ButtonIsDown;
                         break;
                     case MouseButton.MiddleButton:
-                        this.middleMouseButton.isDown = buttonState.isDown;
+                        this.middleMouseButton.isDown = data.ButtonIsDown;
                         break;
                     case MouseButton.RightButton:
-                        this.rightMouseButton.isDown = buttonState.isDown;
+                        this.rightMouseButton.isDown = data.ButtonIsDown;
                         break;
+                    default:
+                        throw new EnumOutOfRangeException($"The enum '{nameof(MouseButton)}' is out of range.");
                 }
-            }, () =>
-            {
-                this.mouseButtonUnsubscriber?.Dispose();
-            }));
-
-        this.mouseWheelUnsubscriber = mouseWheelReactable.Subscribe(new Reactor<(MouseScrollDirection wheelDirection, int mouseWheelValue)>(
-            onNext: wheelState =>
-            {
-                this.scrollWheelValue = wheelState.mouseWheelValue;
-                this.mouseScrollDirection = wheelState.wheelDirection;
-            }, () =>
-            {
-                this.mouseWheelUnsubscriber?.Dispose();
-            }));
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
     /// <summary>

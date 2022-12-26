@@ -12,7 +12,9 @@ using System.Threading.Tasks;
 /// <summary>
 /// Creates a new task for asynchronous operations to be performed.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(
+    Justification =
+        $"Cannot test due to direct interaction with the dotnet {nameof(System)}.{nameof(System.Threading)}.{nameof(System.Threading.Tasks)} API.")]
 internal sealed class TaskService : ITaskService
 {
     private readonly CancellationTokenSource tokenSrc = new ();

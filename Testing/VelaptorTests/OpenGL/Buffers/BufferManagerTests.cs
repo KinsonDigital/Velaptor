@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL.Buffers;
 using System;
 using System.Drawing;
 using System.Numerics;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Factories;
@@ -43,6 +44,23 @@ public class BufferManagerTests
         this.mockBufferFactory.Setup(m => m.CreateRectGPUBuffer()).Returns(this.mockRectBuffer.Object);
         this.mockBufferFactory.Setup(m => m.CreateLineGPUBuffer()).Returns(this.mockLineBuffer.Object);
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullBufferFactoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new BufferManager(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'bufferFactory')");
+    }
+    #endregion
 
     #region Method Tests
     [Fact]

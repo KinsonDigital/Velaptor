@@ -13,7 +13,7 @@ using Silk.NET.GLFW;
 /// <summary>
 /// Invokes GLFW calls.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the GLFW library.")]
 internal sealed class GLFWInvoker : IGLFWInvoker
 {
     private readonly Glfw glfw;

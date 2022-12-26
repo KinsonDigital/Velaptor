@@ -7,6 +7,7 @@ namespace Velaptor;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using Carbonate;
 using SimpleInjector;
 using Content;
 using Content.Caching;
@@ -19,15 +20,12 @@ using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
 using OpenGL;
 using Velaptor.OpenGL.Services;
-using Reactables;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 
 /// <summary>
 /// Provides dependency injection for the application.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to direct interaction with the '{nameof(SimpleInjector)}' library.")]
 internal static class IoC
 {
     private static readonly FileSystem FileSystem = new ();
@@ -58,8 +56,6 @@ internal static class IoC
     {
         SetupNativeInterop();
 
-        SetupReactors();
-
         SetupCaching();
 
         SetupFactories();
@@ -68,6 +64,7 @@ internal static class IoC
 
         SetupContent();
 
+        IoCContainer.Register<IReactable>(() => new Reactable(), Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
@@ -95,23 +92,6 @@ internal static class IoC
 
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
-    }
-
-    /// <summary>
-    /// Sets up container registration related to reactables.
-    /// </summary>
-    private static void SetupReactors()
-    {
-        IoCContainer.Register<IReactable<GLInitData>, OpenGLInitReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<BatchSizeData>, BatchSizeReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<(KeyCode key, bool isDown)>, KeyboardStateReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<(int, int)>, MousePositionReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<(MouseButton, bool)>, MouseButtonReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IReactable<(MouseScrollDirection, int)>, MouseWheelReactable>(Lifestyle.Singleton);
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ using Content.Fonts;
 /// <summary>
 /// Creates path resolver instances.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
 public static class PathResolverFactory
 {
     private static readonly IPlatform Platform;

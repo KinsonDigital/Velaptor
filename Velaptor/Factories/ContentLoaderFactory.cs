@@ -17,7 +17,7 @@ using IVelaptorSound = Content.ISound;
 /// <summary>
 /// Creates instances of a content loader.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class ContentLoaderFactory
 {
     private static IContentLoader? contentLoader;

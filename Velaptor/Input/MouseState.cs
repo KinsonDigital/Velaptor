@@ -181,7 +181,7 @@ public struct MouseState : IEquatable<MouseState>
            this.isRightButtonDown == other.isRightButtonDown;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode()
         => HashCode.Combine(
             this.scrollWheelValue,
