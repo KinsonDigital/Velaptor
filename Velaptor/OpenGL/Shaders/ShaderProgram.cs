@@ -166,7 +166,6 @@ internal abstract class ShaderProgram : IShaderProgram
         var infoLog = GL.GetShaderInfoLog(vertShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
         }
 
@@ -186,7 +185,6 @@ internal abstract class ShaderProgram : IShaderProgram
         infoLog = GL.GetShaderInfoLog(fragShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
         }
 

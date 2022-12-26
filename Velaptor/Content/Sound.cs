@@ -31,7 +31,6 @@ public sealed class Sound : ISound
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Sound(string filePath)
     {
-        // TODO: unit test this
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
         var reactable = IoC.Container.GetInstance<IReactable>();

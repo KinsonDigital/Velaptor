@@ -291,8 +291,6 @@ internal sealed class FontService : IFontService
         return result ?? string.Empty;
     }
 
-    // TODO: Convert the size parameter to uint
-
     /// <inheritdoc/>
     public float GetFontScaledLineSpacing(nint facePtr, uint sizeInPoints)
     {

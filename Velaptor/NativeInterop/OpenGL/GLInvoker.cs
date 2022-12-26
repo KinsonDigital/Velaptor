@@ -537,7 +537,6 @@ internal sealed class GLInvoker : IGLInvoker
         }
     }
 
-    // TODO: Add Debug precompiler logic here to only run this method code if in debug
     private void AddToGLCallStack(string glFunctionName)
     {
         OpenGLCallStack.Enqueue(glFunctionName);
