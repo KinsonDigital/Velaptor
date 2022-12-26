@@ -33,8 +33,8 @@ internal sealed class Mouse : IAppInput<MouseState>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            NotificationIds.MouseId,
-            onNext: msg =>
+            eventId: NotificationIds.MouseId,
+            onNextMsg: msg =>
             {
                 var data = msg.GetData<MouseStateData>();
 
@@ -62,7 +62,8 @@ internal sealed class Mouse : IAppInput<MouseState>
                     default:
                         throw new EnumOutOfRangeException($"The enum '{nameof(MouseButton)}' is out of range.");
                 }
-            }, () => this.unsubscriber?.Dispose()));
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
     /// <summary>

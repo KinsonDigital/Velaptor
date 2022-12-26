@@ -31,8 +31,8 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            NotificationIds.BatchSizeId,
-            onNext: msg =>
+            eventId: NotificationIds.BatchSizeId,
+            onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 

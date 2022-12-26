@@ -32,8 +32,8 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
         EnsureThat.ParamIsNotNull(reactable);
 
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            NotificationIds.BatchSizeId,
-            onNext: msg =>
+            eventId: NotificationIds.BatchSizeId,
+            onNextMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 

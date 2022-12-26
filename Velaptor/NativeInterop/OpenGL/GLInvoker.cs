@@ -47,17 +47,14 @@ internal sealed class GLInvoker : IGLInvoker
     public GLInvoker(IReactable reactable, ILoggingService loggingService)
     {
         this.unsubscriber = reactable.Subscribe(new Reactor(
-            NotificationIds.GLContextId,
-            onNext: msg =>
+            eventId: NotificationIds.GLContextId,
+            onNextMsg: msg =>
             {
                 var possibleGLObj = msg.GetData<GL>();
 
                 this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", NotificationIds.GLContextId);
             },
-            onCompleted: () =>
-            {
-                this.unsubscriber?.Dispose();
-            }));
+            onCompleted: () => this.unsubscriber?.Dispose()));
 
         this.loggingService = loggingService;
     }
