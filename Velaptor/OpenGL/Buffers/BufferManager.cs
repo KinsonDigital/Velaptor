@@ -22,7 +22,7 @@ internal sealed class BufferManager : IBufferManager
     /// <param name="bufferFactory">Creates various buffers.</param>
     public BufferManager(IGPUBufferFactory bufferFactory)
     {
-        EnsureThat.ParamIsNotNull(bufferFactory); // TODO: Add test for this
+        EnsureThat.ParamIsNotNull(bufferFactory);
 
         this.textureBuffer = bufferFactory.CreateTextureGPUBuffer();
         this.fontGlyphBuffer = bufferFactory.CreateFontGPUBuffer();
