@@ -189,6 +189,9 @@ dotnet_diagnostic.SA1202.severity = warning
 
 dotnet_diagnostic.CA1852.severity = warning
 
+# Do not guard 'Dictionary.Remove(key)' with 'Dictionary.ContainsKey(key)'
+dotnet_diagnostic.CA1853.severity = warning
+
 csharp_prefer_simple_using_statement = true:suggestion
 
 # Using directives must be placed inside of a namespace declaration
