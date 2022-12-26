@@ -27,7 +27,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. [#344](https://github.com/KinsonDigital/Velaptor/issues/344) - Updated the projects to build and run for **_x64_(64 bit)** bit machines.
-   - This was done due to the number of people out there running **_x86(32bit)_** machines.  Running this kind of architecture is getting rare and the work involved with supporting both is simply not worth the effort.
+   - This was done due to the number of people running **_x86(32bit)_** machines.  Running this kind of architecture is getting rare and the work involved with supporting both is simply not worth the effort.
    - Updated all workflows to build and execute unit tests for the **_x64_(64 bit)** architecture.
    - Created publish profiles for **Windows** and **Linux** for each build configuration to assist with future cross-platform testing.
    - Configured the debugging console to display both **Debug**** and **Release** modes when using the **Velaptor Testing** application.
@@ -58,14 +58,14 @@ As with all software, there is always a chance for issues and bugs, especially f
    - Upgraded **SixLabors.ImageSharp** from version **_v2.0.0_** to **_v2.1.3_**.
    - Upgraded **System.IO.Abstractions** from version **_v13.2.43_** to **_v17.1.1_**.
    - Downgraded **NVorbis** from version **_v0.10.4_** to **_v0.10.3_**.
-     - The reasoning for the downgrade is not known and was unintentional.  The downgrade is safe due to this only being a patch change and testing was performed.  An upgrade is planned using version [#389](https://github.com/KinsonDigital/Velaptor/issues/389).
+     - The reason for the downgrade is not known and was unintentional.  The downgrade is safe due to this only being a patch change and testing was performed.  An upgrade is planned using version [#389](https://github.com/KinsonDigital/Velaptor/issues/389).
 
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
-1. [#310](https://github.com/KinsonDigital/Velaptor/issues/310) - Made simple grammar change to the project's readme document.
+1. [#310](https://github.com/KinsonDigital/Velaptor/issues/310) - Made grammar changes to the project's readme document.
 2. [#309](https://github.com/KinsonDigital/Velaptor/issues/309) - Added contact email to the project's code of conduct.
 3. [#302](https://github.com/KinsonDigital/Velaptor/issues/302) - Made various grammar and style changes to the project branching documentation.
    - This can be found at the location `./Documentation/Branching.md`.

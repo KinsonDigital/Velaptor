@@ -40,7 +40,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - This template is used when sending a tweet about a preview or production release.
 7. [#393](https://github.com/KinsonDigital/Velaptor/issues/393) - Removed the ability for the project to copy the native library **_soft_oal.dll_** to the build target directory.
    - This library is used by **_OpenAL_** for sound.  This is not required anymore due to using the [CASL](https://github.com/KinsonDigital/CASL) project instead for sound.
-8. [#389](https://github.com/KinsonDigital/Velaptor/issues/389) - Performed simple project file cleanup.
+8. [#389](https://github.com/KinsonDigital/Velaptor/issues/389) - Performed project file cleanup.
 9. [#388](https://github.com/KinsonDigital/Velaptor/issues/388) - Changed the label for the discord badge in the **_README_** file from `discord` to `chat on discord`.
 10. [#376](https://github.com/KinsonDigital/Velaptor/issues/376) - Updated the project's logo to a new and improved logo.
 11. [#347](https://github.com/KinsonDigital/Velaptor/issues/347) - Added badge to the project's **_README_** file that shows the total number of NuGet package downloads.

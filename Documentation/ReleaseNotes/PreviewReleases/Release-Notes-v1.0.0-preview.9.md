@@ -14,10 +14,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Added a new method named `EndNotifications()` to `IReactable<TData>` interface and `Reactable<TData>` class to end notifications to subscribed `IReactor` implementations.
-   - Before there was no way for the `Reactor.OnCompleted()` method implementation to be invoked.  When invoking the `IReactable<TData>.EndNotifications()` method, all subscribed `IReactor<T>` implementations will be completed.
-   - Note #1: After `OnCompleted()` is invoked, `OnNext()` will never be invoked again.  This follows the observable pattern.
-   - Note #2: No matter how many times `OnCompleted()` is invoked, the on completed `Action` will only be invoked the first time `OnCompleted()` is called.
-2. Added a new method named `IsAnyAltKeyDown()`.
+      > 💡 Previously, there was no way for the `Reactor.OnCompleted()` method implementation to be invoked.  When invoking the `IReactable<TData>.EndNotifications()` method, all subscribed `IReactor<T>` implementations will be completed.
+      > After `OnCompleted()` is invoked, `OnNext()` will never be invoked again.  This follows the observable pattern. No matter how many times `OnCompleted()` is invoked, the `OnCompleted()` `Action` will only be invoked the first time `OnCompleted()` is called.
+1. Added a new method named `IsAnyAltKeyDown()`.
 
 ---
 
@@ -38,10 +37,10 @@ As with all software, there is always a chance for issues and bugs, especially f
       - `BatchServiceManager`
 2. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored the `IRenderer.BeginBatch()` method to `IRenderer.Begin()`.
    - This was done for the same reason as in item **_#1_** above.
-   - NOTE: The `Renderer` class used to be named `ISpriteBatch`.
+      >💡 The `Renderer` class used to be named `ISpriteBatch`.
 3. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored the `IRenderer.EndBatch()` method to `IRenderer.End()`.
    - This was done for the same reason as in item **_#1_** above.
-   - NOTE: The `Renderer` class used to be named `ISpriteBatch`.
+      >💡 The `Renderer` class used to be named `ISpriteBatch`.
 4. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Refactored `afterUnloadAction` to `afterUnload` parameter for `IWindow.ShowAsync()` and `Window.ShowAsync()` methods.
    - This was done to simplify naming as well as internal naming of class fields and to follow coding standards.
 5. [#239](https://github.com/KinsonDigital/Velaptor/issues/239) - Removed method parameter from `IReactable` interface and the abstract `Reactable` class.
@@ -72,7 +71,7 @@ As with all software, there is always a chance for issues and bugs, especially f
     - This interface was not required due to the deletion of the `GLWindowFacade` class.
 15. [#239](https://github.com/KinsonDigital/Velaptor/issues/239) - Improved how some of the `IReactable` subscriptions were being disposed of for some of the internal types.
 16. [#246](https://github.com/KinsonDigital/Velaptor/issues/246) - Refactored **OpenGL** debug callback to print warnings and errors to the console.
-   - Now if the solution is set to the solution configuration **_Debug-Console_**, the warnings and errors will be displayed in the console window that accompanies the **_VelaptorTesting_** testing application.  This works for both **_Visual Studio_** and **_JetBrains Rider_**
+      >💡 Now if the solution is set to the solution configuration **_Debug-Console_**, the warnings and errors will be displayed in the console window that accompanies the **_VelaptorTesting_** testing application.  This works for both **_Visual Studio_** and **_JetBrains Rider_**
 
 ---
 
