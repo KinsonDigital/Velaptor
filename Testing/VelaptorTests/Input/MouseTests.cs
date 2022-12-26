@@ -10,6 +10,8 @@ using FluentAssertions;
 using Moq;
 using Velaptor.Input;
 using Helpers;
+using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
 
@@ -136,6 +138,68 @@ public class MouseTests
         // Assert
         Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
         Assert.Equal(33, actual.GetScrollWheelValue());
+    }
+
+    [Fact]
+    public void Reactable_WhenOnNextMessageIsNull_ThrowsException()
+    {
+        // Arrange
+        var expected = $"There was an issue with the '{nameof(Mouse)}.Constructor()' subscription source";
+        expected += $" for subscription ID '{NotificationIds.MouseId}'.";
+
+        IReactor? reactor = null;
+
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull("it is required for unit testing.");
+                reactor = reactorObj;
+            });
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<MouseStateData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => reactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expected);
+    }
+
+    [Fact]
+    public void Reactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
+    {
+        // Arrange
+        const string expected = $"The enum '{nameof(MouseButton)}' is out of range.";
+
+        IReactor? reactor = null;
+
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Callback<IReactor>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull("it is required for unit testing.");
+                reactor = reactorObj;
+            });
+
+        var mouseStateData = new MouseStateData();
+        mouseStateData.Button = (MouseButton)1234;
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<MouseStateData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => mouseStateData);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => reactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<EnumOutOfRangeException>()
+            .WithMessage(expected);
     }
 
     [Fact]
