@@ -732,7 +732,7 @@ public class FontLoaderTests
     /// </remarks>
     private static GlyphMetrics GenerateMetricData(int start)
     {
-        return new GlyphMetrics()
+        return new GlyphMetrics
         {
             Ascender = start,
             Descender = start + 1,

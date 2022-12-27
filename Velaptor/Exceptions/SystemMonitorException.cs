@@ -15,7 +15,7 @@ public class SystemMonitorException : Exception
     /// Initializes a new instance of the <see cref="SystemMonitorException"/> class.
     /// </summary>
     public SystemMonitorException()
-        : base($"There was an issue with one of the system monitors.")
+        : base("There was an issue with one of the system monitors.")
     {
     }
 

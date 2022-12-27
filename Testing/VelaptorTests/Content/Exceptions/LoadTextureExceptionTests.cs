@@ -21,7 +21,7 @@ public class LoadTextureExceptionTests
         var exception = new LoadTextureException();
 
         // Assert
-        Assert.Equal($"There was an issue loading the texture.", exception.Message);
+        Assert.Equal("There was an issue loading the texture.", exception.Message);
     }
 
     [Fact]

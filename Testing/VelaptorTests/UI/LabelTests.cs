@@ -133,7 +133,7 @@ public class LabelTests
 
         var sut = CreateSystemUnderTest();
         sut.AutoSize = false;
-        var mockedCharBounds = new List<(char character, RectangleF bounds)>()
+        var mockedCharBounds = new List<(char character, RectangleF bounds)>
         {
             (characters[0], RectangleF.Empty),
             (characters[1], RectangleF.Empty),
@@ -346,7 +346,7 @@ public class LabelTests
         var characters = labelText.ToArray();
 
         var sut = CreateSystemUnderTest();
-        var mockedCharBounds = new List<(char character, RectangleF bounds)>()
+        var mockedCharBounds = new List<(char character, RectangleF bounds)>
         {
             (characters[0], RectangleF.Empty),
             (characters[1], RectangleF.Empty),

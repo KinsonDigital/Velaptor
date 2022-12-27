@@ -4,7 +4,7 @@
 
 namespace Velaptor.OpenGL;
 
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 
 /// <summary>
 /// Represents the type of GPU buffer.

@@ -21,7 +21,7 @@ public class LoadSoundExceptionTests
         var exception = new LoadSoundException();
 
         // Assert
-        Assert.Equal($"There was an issue loading the sound.", exception.Message);
+        Assert.Equal("There was an issue loading the sound.", exception.Message);
     }
 
     [Fact]

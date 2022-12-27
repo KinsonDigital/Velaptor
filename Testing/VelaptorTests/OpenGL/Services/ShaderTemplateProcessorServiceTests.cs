@@ -26,9 +26,9 @@ public class ShaderTemplateProcessorServiceTests
             var result = new List<object[]>
             {
                 // Generate the data for starting with an underscore
-                new object[] { $"_MY_VAR", "Template variables cannot start with an '_' underscore character." },
+                new object[] { "_MY_VAR", "Template variables cannot start with an '_' underscore character." },
                 // Generate the data for ending with an underscore
-                new object[] { $"MY_VAR_", "Template variables cannot end with an '_' underscore character." },
+                new object[] { "MY_VAR_", "Template variables cannot end with an '_' underscore character." },
             };
 
             // Generate the lowercase numbers

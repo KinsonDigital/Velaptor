@@ -21,7 +21,7 @@ public class LoadAtlasExceptionTests
         var exception = new LoadAtlasException();
 
         // Assert
-        Assert.Equal($"There was an issue loading the atlas data.", exception.Message);
+        Assert.Equal("There was an issue loading the atlas data.", exception.Message);
     }
 
     [Fact]

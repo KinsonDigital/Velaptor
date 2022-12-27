@@ -46,7 +46,7 @@ public class FontStatsTests
         statsA.FamilyName = "Times New Roman";
         statsA.Style = FontStyle.Regular;
 
-        object statsB = new FontStats()
+        object statsB = new FontStats
         {
             FontFilePath = @"C:/Windows/Fonts/test-font.ttf",
             FamilyName = "Times New Roman",

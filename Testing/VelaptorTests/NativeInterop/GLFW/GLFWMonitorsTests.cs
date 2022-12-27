@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWMonitorsTests.cs" company="KinsonDigital">
+// <copyright file="GLFWMonitorsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -39,7 +39,7 @@ public unsafe class GLFWMonitorsTests
         this.mockPlatform = new Mock<IPlatform>();
         this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
 
-        this.videoModeA = new GLFWVideoMode()
+        this.videoModeA = new GLFWVideoMode
         {
             Width = 1,
             Height = 2,
@@ -49,7 +49,7 @@ public unsafe class GLFWMonitorsTests
             RefreshRate = 6,
         };
 
-        this.videoModeB = new GLFWVideoMode()
+        this.videoModeB = new GLFWVideoMode
         {
             Width = 11,
             Height = 22,

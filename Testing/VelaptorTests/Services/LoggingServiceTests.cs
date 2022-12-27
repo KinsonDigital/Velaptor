@@ -128,7 +128,7 @@ public class LoggingServiceTests
     public void Info_WithAllLoggingDisabledButConsoleAndFileLoggingEnabled_DoesNotLogAnything()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = false,
             ConsoleLoggingEnabled = true,
@@ -151,7 +151,7 @@ public class LoggingServiceTests
     public void Info_WithOnlyConsoleLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -177,7 +177,7 @@ public class LoggingServiceTests
     public void Info_WithOnlyFileLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,
@@ -203,7 +203,7 @@ public class LoggingServiceTests
     public void Info_WithFileAndConsoleLoggingEnabled_LogsBothToConsoleAndFile()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -232,7 +232,7 @@ public class LoggingServiceTests
     public void Warning_WithAllLoggingDisabledButConsoleAndFileLoggingEnabled_DoesNotLogAnything()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = false,
             ConsoleLoggingEnabled = true,
@@ -255,7 +255,7 @@ public class LoggingServiceTests
     public void Warning_WithOnlyConsoleLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -281,7 +281,7 @@ public class LoggingServiceTests
     public void Warning_WithOnlyFileLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,
@@ -307,7 +307,7 @@ public class LoggingServiceTests
     public void Warning_WithFileAndConsoleLoggingEnabled_LogsBothToConsoleAndFile()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -336,7 +336,7 @@ public class LoggingServiceTests
     public void Error_WithAllLoggingDisabledButConsoleAndFileLoggingEnabled_DoesNotLogAnything()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = false,
             ConsoleLoggingEnabled = true,
@@ -359,7 +359,7 @@ public class LoggingServiceTests
     public void Error_WithOnlyConsoleLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -385,7 +385,7 @@ public class LoggingServiceTests
     public void Error_WithOnlyFileLoggingEnabled_LogsToConsole()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,
@@ -411,7 +411,7 @@ public class LoggingServiceTests
     public void Error_WithFileAndConsoleLoggingEnabled_LogsBothToConsoleAndFile()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,

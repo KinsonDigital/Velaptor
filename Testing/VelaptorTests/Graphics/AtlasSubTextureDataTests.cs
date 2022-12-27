@@ -67,7 +67,7 @@ public class AtlasSubTextureDataTests
     {
         // Arrange
         var dataA = default(AtlasSubTextureData);
-        var dataB = new AtlasSubTextureData()
+        var dataB = new AtlasSubTextureData
         {
             Name = "DataB",
         };
@@ -84,7 +84,7 @@ public class AtlasSubTextureDataTests
     {
         // Arrange
         var dataA = default(AtlasSubTextureData);
-        var dataB = new AtlasSubTextureData()
+        var dataB = new AtlasSubTextureData
         {
             Bounds = new Rectangle(11, 22, 33, 44),
         };
@@ -101,7 +101,7 @@ public class AtlasSubTextureDataTests
     {
         // Arrange
         var dataA = default(AtlasSubTextureData);
-        var dataB = new AtlasSubTextureData()
+        var dataB = new AtlasSubTextureData
         {
             FrameIndex = 111,
         };

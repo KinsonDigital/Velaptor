@@ -1,4 +1,4 @@
-﻿// <copyright file="BatchServiceManagerTests.cs" company="KinsonDigital">
+// <copyright file="BatchServiceManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -112,7 +112,7 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(TextureBatchItem);
-        var batchItems = new List<TextureBatchItem>()
+        var batchItems = new List<TextureBatchItem>
         {
             batchItem,
         };
@@ -141,7 +141,7 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(FontGlyphBatchItem);
-        var batchItems = new List<FontGlyphBatchItem>()
+        var batchItems = new List<FontGlyphBatchItem>
         {
             batchItem,
         };
@@ -170,7 +170,7 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(RectBatchItem);
-        var batchItems = new List<RectBatchItem>()
+        var batchItems = new List<RectBatchItem>
         {
             batchItem,
         };

@@ -1,4 +1,4 @@
-﻿// <copyright file="KeyboardScene.cs" company="KinsonDigital">
+// <copyright file="KeyboardScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.lblInstructions = new Label()
+        this.lblInstructions = new Label
         {
             Name = "Instructions",
             Color = Color.White,
@@ -50,7 +50,7 @@ public class KeyboardScene : SceneBase
         this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
         this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
-        this.downKeys = new Label()
+        this.downKeys = new Label
         {
             Name = "DownKeys",
             Color = Color.White,

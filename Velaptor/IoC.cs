@@ -11,15 +11,15 @@ using Carbonate;
 using SimpleInjector;
 using Content;
 using Content.Caching;
-using Velaptor.Content.Factories;
-using Velaptor.Content.Fonts.Services;
+using Content.Factories;
+using Content.Fonts.Services;
 using Factories;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
-using Velaptor.OpenGL.Services;
+using OpenGL.Services;
 using Services;
 
 /// <summary>

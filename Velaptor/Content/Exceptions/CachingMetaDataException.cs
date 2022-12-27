@@ -15,7 +15,7 @@ public class CachingMetaDataException : Exception
     /// Initializes a new instance of the <see cref="CachingMetaDataException"/> class.
     /// </summary>
     public CachingMetaDataException()
-        : base($"There was an issue with caching the metadata.")
+        : base("There was an issue with caching the metadata.")
     {
     }
 

@@ -7,7 +7,7 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Graphics;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
 using Services;

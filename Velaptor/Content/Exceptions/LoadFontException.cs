@@ -15,7 +15,7 @@ public class LoadFontException : Exception
     /// Initializes a new instance of the <see cref="LoadFontException"/> class.
     /// </summary>
     public LoadFontException()
-        : base($"There was an issue loading the font.")
+        : base("There was an issue loading the font.")
     {
     }
 

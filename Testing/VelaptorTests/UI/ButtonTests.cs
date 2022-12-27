@@ -45,7 +45,7 @@ public class ButtonTests
 
         var glyphMetrics = new[]
         {
-            new GlyphMetrics()
+            new GlyphMetrics
             {
                 Ascender = 1, Descender = 2, CharIndex = 3,
                 Glyph = 'c', GlyphWidth = 4, GlyphHeight = 5,
@@ -53,7 +53,7 @@ public class ButtonTests
                 XMax = 9, YMin = 11, YMax = 22,
                 HorizontalAdvance = 33, GlyphBounds = new Rectangle(44, 55, 66, 77),
             },
-            new GlyphMetrics()
+            new GlyphMetrics
             {
                 Ascender = 11, Descender = 22, CharIndex = 33,
                 Glyph = 'c', GlyphWidth = 44, GlyphHeight = 55,

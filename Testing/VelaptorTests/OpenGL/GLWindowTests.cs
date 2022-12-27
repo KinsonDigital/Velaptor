@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -695,7 +695,7 @@ public class GLWindowTests
         var actual = sut.TypeOfBorder;
 
         // Assert
-        Assert.Equal(Velaptor.WindowBorder.Resizable, actual);
+        Assert.Equal(VelaptorWindowBorder.Resizable, actual);
     }
 
     [Theory]

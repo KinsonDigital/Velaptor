@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -456,7 +456,7 @@ public class InternalExtensionMethodsTests
     public void ToImageData_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
-        var rowColors = new Dictionary<uint, NETColor>()
+        var rowColors = new Dictionary<uint, NETColor>
         {
             { 0, NETColor.Red },
             { 1, NETColor.Green },

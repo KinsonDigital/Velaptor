@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Content;
 using Content.Caching;
-using Velaptor.Content.Factories;
+using Content.Factories;
 using Content.Fonts;
 using Services;
 using IVelaptorSound = Content.ISound;

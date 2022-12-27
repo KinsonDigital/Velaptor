@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
+// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -131,7 +131,7 @@ public class SoundLoaderTests
         // Arrange
         this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(false);
 
-        var expectedMsg = $"The sound file does not exist.";
+        var expectedMsg = "The sound file does not exist.";
 
         var loader = CreateSoundLoader();
 

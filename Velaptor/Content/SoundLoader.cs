@@ -105,7 +105,7 @@ public sealed class SoundLoader : ILoader<ISound>
         }
         else
         {
-            throw new FileNotFoundException($"The sound file does not exist.", filePath);
+            throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
         return this.soundCache.GetItem(cacheKey);

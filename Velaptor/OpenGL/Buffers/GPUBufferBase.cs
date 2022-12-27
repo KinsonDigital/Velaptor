@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
