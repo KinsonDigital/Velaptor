@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -70,7 +70,7 @@ public class FontLoaderTests
         };
 
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
-        this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
+        this.mockFontAtlasService.Setup(m => m.CreateAtlas(this.fontFilePath, FontSize))
             .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
         this.mockEmbeddedFontResourceService = new Mock<IEmbeddedResourceLoaderService<Stream?>>();
@@ -553,7 +553,7 @@ public class FontLoaderTests
         this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExt)).Returns(FontContentName);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExtAndMetaData)).Returns(FontContentName);
-        this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
+        this.mockFontAtlasService.Setup(m => m.CreateAtlas(this.fontFilePath, FontSize))
             .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
         var sut = CreateSystemUnderTest();
@@ -565,7 +565,7 @@ public class FontLoaderTests
         this.mockFontMetaDataParser.Verify(m => m.Parse(fileNameWithExtAndMetaData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(fileNameWithExt), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
@@ -592,7 +592,7 @@ public class FontLoaderTests
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.filePathWithMetaData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
@@ -620,7 +620,7 @@ public class FontLoaderTests
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.contentNameWithMetaData), Times.Once);
         this.mockFontPathResolver.Verify(m => m.ResolveFilePath(FontContentName), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
 
         this.mockFontFactory.Verify(m =>

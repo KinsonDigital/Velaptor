@@ -75,7 +75,7 @@ public sealed class Font : IFont
         EnsureThat.ParamIsNotNull(textureCache);
         EnsureThat.StringParamIsNotNullOrEmpty(name);
 
-        FontTextureAtlas = texture;
+        Atlas = texture;
         this.fontService = fontService;
         this.fontStatsService = fontStatsService;
         this.fontAtlasService = fontAtlasService;
@@ -112,7 +112,7 @@ public sealed class Font : IFont
     public string FilePath { get; }
 
     /// <inheritdoc/>
-    public ITexture FontTextureAtlas { get; private set; }
+    public ITexture Atlas { get; private set; }
 
     /// <inheritdoc/>
     public uint Size
@@ -419,9 +419,9 @@ public sealed class Font : IFont
         }
 
         var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
-        FontTextureAtlas = this.textureCache.GetItem(filePathWithMetaData);
+        Atlas = this.textureCache.GetItem(filePathWithMetaData);
 
-        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fontFilePath, Size);
+        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fontFilePath, Size);
 
         LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 

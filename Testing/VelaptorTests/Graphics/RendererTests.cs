@@ -131,7 +131,7 @@ public class RendererTests
         mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
 
         this.mockFont = new Mock<IFont>();
-        this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
+        this.mockFont.SetupGet(p => p.Atlas).Returns(mockFontTextureAtlas.Object);
         this.mockFont.SetupGet(p => p.Size).Returns(12u);
     }
 
@@ -1253,7 +1253,7 @@ public class RendererTests
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Id).Returns(FontAtlasTextureId);
 
-        this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
+        this.mockFont.SetupGet(p => p.Atlas).Returns(mockFontTextureAtlas.Object);
 
         var sut = CreateSystemUnderTest();
         var totalAddFontGlyphBatchItemInvokes = 0;

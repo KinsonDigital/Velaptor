@@ -188,7 +188,7 @@ public class FontAtlasServiceTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            service.CreateFontAtlas(fontFilePath, It.IsAny<uint>());
+            service.CreateAtlas(fontFilePath, It.IsAny<uint>());
         }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
     }
 
@@ -202,7 +202,7 @@ public class FontAtlasServiceTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
         {
-            service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
+            service.CreateAtlas(FontFilePath, It.IsAny<uint>());
         }, $"The file '{FontFilePath}' does not exist.");
     }
 
@@ -217,7 +217,7 @@ public class FontAtlasServiceTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
         {
-            service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
+            service.CreateAtlas(FontFilePath, It.IsAny<uint>());
         }, "The main system monitor must not be null.");
     }
 
@@ -230,7 +230,7 @@ public class FontAtlasServiceTests
         var service = CreateService();
 
         // Act
-        service.CreateFontAtlas(FontFilePath, fontSize);
+        service.CreateAtlas(FontFilePath, fontSize);
 
         // Assert
         this.mockFontService.Verify(m => m.SetFontSize(this.facePtr, 12), Times.Once());
@@ -246,7 +246,7 @@ public class FontAtlasServiceTests
         var service = CreateService();
 
         // Act
-        var (actualImage, _) = service.CreateFontAtlas(FontFilePath, 12);
+        var (actualImage, _) = service.CreateAtlas(FontFilePath, 12);
 
         // Save the the results
         TestHelpers.SaveImageForTest(actualImage);

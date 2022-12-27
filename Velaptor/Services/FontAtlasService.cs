@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -61,7 +61,7 @@ internal sealed class FontAtlasService : IFontAtlasService
     }
 
     /// <inheritdoc/>
-    public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint sizeInPoints)
+    public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateAtlas(string fontFilePath, uint sizeInPoints)
     {
         if (string.IsNullOrEmpty(fontFilePath))
         {

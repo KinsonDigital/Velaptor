@@ -64,7 +64,7 @@ public class TextureCacheTests
 
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockFontAtlasService.Setup(m =>
-                m.CreateFontAtlas(FontFilePath, FontSize))
+                m.CreateAtlas(FontFilePath, FontSize))
             .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
 
         var mockRegularTexture = new Mock<ITexture>();
@@ -408,7 +408,7 @@ public class TextureCacheTests
         this.mockPath.Verify(m => m.GetExtension(FontFilePath), Times.Exactly(2));
 
         this.mockFontAtlasService.Verify(m =>
-            m.CreateFontAtlas(FontFilePath, FontSize), Times.Once);
+            m.CreateAtlas(FontFilePath, FontSize), Times.Once);
 
         this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(FontFilePath), Times.Exactly(2));

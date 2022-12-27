@@ -223,7 +223,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (isFontFile)
             {
-                var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(fullFilePath, parseResult.FontSize);
+                var (atlasImageData, _) = this.fontAtlasService.CreateAtlas(fullFilePath, parseResult.FontSize);
 
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;

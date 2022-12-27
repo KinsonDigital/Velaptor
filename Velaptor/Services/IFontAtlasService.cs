@@ -30,5 +30,5 @@ internal interface IFontAtlasService
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="fontFilePath"/> is null or empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the file cannot be found.</exception>
-    (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint sizeInPoints);
+    (ImageData atlasImage, GlyphMetrics[] atlasData) CreateAtlas(string fontFilePath, uint sizeInPoints);
 }

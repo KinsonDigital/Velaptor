@@ -307,8 +307,8 @@ internal sealed class Renderer : IRenderer
 
         var textHalfWidth = textSize.Width / 2f;
 
-        var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
-        var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
+        var atlasWidth = font.Atlas.Width.ApplySize(normalizedSize);
+        var atlasHeight = font.Atlas.Height.ApplySize(normalizedSize);
 
         var glyphLines = lines.Select(l =>
         {
@@ -788,7 +788,7 @@ internal sealed class Renderer : IRenderer
                     color,
                     RenderEffects.None,
                     new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
-                    font.FontTextureAtlas.Id,
+                    font.Atlas.Id,
                     layer);
 
                 result.Add(itemToAdd);

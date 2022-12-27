@@ -41,7 +41,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     {
         this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        this.atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+        this.atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         this.jsonService = IoC.Container.GetInstance<IJSONService>();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
