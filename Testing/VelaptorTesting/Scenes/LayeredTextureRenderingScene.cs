@@ -31,14 +31,14 @@ public class LayeredTextureRenderingScene : SceneBase
     private ITexture? background;
     private IFont? font;
     private IAtlasData? atlas;
-    private AtlasSubTextureData? whiteBoxData;
+    private AtlasSubTextureData whiteBoxData;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
     private Vector2 blueBoxPos;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private AtlasSubTextureData? orangeBoxData;
-    private AtlasSubTextureData? blueBoxData;
+    private AtlasSubTextureData orangeBoxData;
+    private AtlasSubTextureData blueBoxData;
     private Vector2 boxStateTextPos;
     private Vector2 backgroundPos;
     private SizeF instructionTextSize;

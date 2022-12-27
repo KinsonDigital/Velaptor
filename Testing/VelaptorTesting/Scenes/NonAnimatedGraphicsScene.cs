@@ -25,7 +25,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     private readonly int windowHalfWidth;
     private readonly int windowHalfHeight;
     private IAtlasData? mainAtlas;
-    private AtlasSubTextureData? octagonData;
+    private AtlasSubTextureData octagonData;
     private IFont? font;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;

@@ -21,10 +21,12 @@ public class AtlasSubTextureDataTests
     {
         // Arrange
         var expected = new Rectangle(11, 22, 33, 44);
-        var data = new AtlasSubTextureData();
+        var data = new AtlasSubTextureData
+        {
+            Bounds = new Rectangle(11, 22, 33, 44),
+        };
 
         // Act
-        data.Bounds = new Rectangle(11, 22, 33, 44);
         var actual = data.Bounds;
 
         // Assert
@@ -32,13 +34,12 @@ public class AtlasSubTextureDataTests
     }
 
     [Fact]
-    public void Name_WhenSettingValue_ReturnsCorrectResult()
+    public void Name_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var data = new AtlasSubTextureData();
+        var data = new AtlasSubTextureData { Name = "test-name" };
 
         // Act
-        data.Name = "test-name";
         var actual = data.Name;
 
         // Assert
