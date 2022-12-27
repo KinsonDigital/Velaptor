@@ -206,39 +206,58 @@ public class AtlasDataTests
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(".txt")]
-    public void FilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+    [InlineData("C:/atlas-dir", "")]
+    [InlineData("C:/atlas-dir", ".txt")]
+    [InlineData("C:/atlas-dir/", ".txt")]
+    [InlineData(@"C:\atlas-dir\", ".txt")]
+    public void FilePath_WhenGettingValue_ReturnsCorrectResult(
+        string dirPath,
+        string extension)
     {
         // Arrange
-        const string atlasName = "atlasWithExtension";
+        const string atlasName = "testAtlas";
+        var atlasFileName = $"{atlasName}{extension}";
+        const string expected = $"C:/atlas-dir/{atlasName}{TextureExtension}";
+
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var sut = CreateSystemUnderTest(atlasName: $"{atlasName}{extension}");
+
+        var sut = CreateSystemUnderTest(
+            dirPath: dirPath,
+            atlasName: atlasFileName);
 
         // Act
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().Be($"{DirPath}/{atlasName}{TextureExtension}");
+        actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(".txt")]
-    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+    [InlineData("C:/atlas-dir", "")]
+    [InlineData("C:/atlas-dir", ".txt")]
+    [InlineData("C:/atlas-dir/", ".txt")]
+    [InlineData(@"C:\atlas-dir\", ".txt")]
+    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(
+        string dirPath,
+        string extension)
     {
         // Arrange
-        const string atlasName = "atlasWithExtension";
+        const string atlasName = "testAtlas";
+        var atlasFileName = $"{atlasName}{extension}";
+        const string expected = $"C:/atlas-dir/{atlasName}{JSONFileExtension}";
+
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var sut = CreateSystemUnderTest(atlasName: $"{atlasName}{extension}");
+        var sut = CreateSystemUnderTest(
+            dirPath: dirPath,
+            atlasName: atlasFileName);
 
         // Act
         var actual = sut.AtlasDataFilePath;
 
         // Assert
-        actual.Should().Be($"{DirPath}/{atlasName}{JSONFileExtension}");
+        actual.Should().Be(expected);
     }
 
     [Fact]

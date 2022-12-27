@@ -62,7 +62,7 @@ public sealed class AtlasData : IAtlasData
         // ReSharper restore PossibleMultipleEnumeration
         atlasName = path.GetFileNameWithoutExtension(atlasName);
 
-        dirPath = dirPath.TrimDirSeparatorFromEnd();
+        dirPath = dirPath.ToCrossPlatPath().TrimDirSeparatorFromEnd();
 
         Name = atlasName;
         FilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{TextureExtension}";
