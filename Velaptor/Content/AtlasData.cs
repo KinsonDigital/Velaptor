@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasData.cs" company="KinsonDigital">
+// <copyright file="AtlasData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,6 +12,7 @@ using System.Linq;
 using Caching;
 using Graphics;
 using Guards;
+using Velaptor.Exceptions;
 
 /// <summary>
 /// Holds data relating to a texture atlas.
@@ -22,6 +23,7 @@ public sealed class AtlasData : IAtlasData
     private const string AtlasDataExtension = ".json";
     private const string TextureExtension = ".png";
     private readonly AtlasSubTextureData[] subTexturesData;
+    private readonly Dictionary<string, AtlasSubTextureData[]> dataGroups = new ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasData"/> class.
@@ -47,6 +49,13 @@ public sealed class AtlasData : IAtlasData
         EnsureThat.ParamIsNotNull(atlasSubTextureData);
         EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
         EnsureThat.StringParamIsNotNullOrEmpty(atlasName);
+
+        var groups = atlasSubTextureData.GroupBy(x => x.Name).ToArray();
+
+        foreach (var group in groups)
+        {
+            this.dataGroups.Add(group.Key, group.ToArray());
+        }
 
         this.subTexturesData = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
 
@@ -113,8 +122,18 @@ public sealed class AtlasData : IAtlasData
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if the <paramref name="subTextureId"/> is null or empty.
+    /// </exception>
     public AtlasSubTextureData[] GetFrames(string subTextureId)
-        => (from s in this.subTexturesData
-            where s.Name == subTextureId
-            select s).ToArray();
+    {
+        EnsureThat.StringParamIsNotNullOrEmpty(subTextureId);
+
+        if (this.dataGroups.ContainsKey(subTextureId) is false)
+        {
+            throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
+        }
+
+        return this.dataGroups[subTextureId];
+    }
 }
