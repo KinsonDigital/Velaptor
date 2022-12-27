@@ -8,14 +8,14 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Core;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Graphics;
-using Velaptor.UI;
-using Core;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
+using Velaptor.Graphics;
 using Velaptor.Input;
+using Velaptor.UI;
 
 /// <summary>
 /// Tests out rectangle rendering.

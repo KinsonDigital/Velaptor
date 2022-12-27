@@ -1,4 +1,4 @@
-// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -20,7 +21,6 @@ using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GPUData;
-using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
@@ -62,7 +62,7 @@ public class InternalExtensionMethodsTests
     /// <returns>The test data.</returns>
     public static IEnumerable<object[]> IsInvalidFilePathTestData()
     {
-        yield return new object[] { $@"C:\test-dir\test-file.txt", false };
+        yield return new object[] { @"C:\test-dir\test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
         yield return new object[] { string.Empty, true };
@@ -89,7 +89,7 @@ public class InternalExtensionMethodsTests
         yield return new object[] { ":C", false };
         yield return new object[] { "1:", false };
         yield return new object[] { "windowsC:system32", false };
-        yield return new object[] { $@"C:\Windows\System32", true };
+        yield return new object[] { @"C:\Windows\System32", true };
         yield return new object[] { @"C:windows", true };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
     }
@@ -102,7 +102,7 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\Windows\System32", false };
+        yield return new object[] { @"\Windows\System32", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
         yield return new object[] { "C:Windows", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
@@ -119,7 +119,7 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\\", false };
+        yield return new object[] { @"\\", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
     }

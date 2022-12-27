@@ -6,10 +6,10 @@ namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Shaders;
-using Helpers;
 using Xunit;
 
 /// <summary>

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Newtonsoft.Json;
 using Velaptor;
@@ -21,7 +22,6 @@ using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

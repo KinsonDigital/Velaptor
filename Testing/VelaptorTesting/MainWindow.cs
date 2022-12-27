@@ -7,11 +7,11 @@ namespace VelaptorTesting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Core;
+using Scenes;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.UI;
-using Core;
-using Scenes;
 
 /// <summary>
 /// The main window to the testing application.

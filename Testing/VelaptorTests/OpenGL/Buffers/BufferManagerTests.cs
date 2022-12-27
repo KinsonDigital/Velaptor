@@ -8,13 +8,13 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
-using Helpers;
 using Xunit;
 
 /// <summary>

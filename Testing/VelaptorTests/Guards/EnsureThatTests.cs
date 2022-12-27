@@ -7,8 +7,8 @@ namespace VelaptorTests.Guards;
 
 using System;
 using FluentAssertions;
-using Velaptor.Guards;
 using Helpers;
+using Velaptor.Guards;
 using Xunit;
 
 /// <summary>

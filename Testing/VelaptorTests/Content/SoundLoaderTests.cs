@@ -1,4 +1,4 @@
-// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,11 +7,11 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
-using Helpers;
 using Xunit;
 
 /// <summary>

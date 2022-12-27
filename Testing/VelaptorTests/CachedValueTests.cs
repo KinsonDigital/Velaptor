@@ -6,9 +6,9 @@
 namespace VelaptorTests;
 
 using System;
+using Helpers;
 using Moq;
 using Velaptor;
-using Helpers;
 using Xunit;
 
 public class CachedValueTests

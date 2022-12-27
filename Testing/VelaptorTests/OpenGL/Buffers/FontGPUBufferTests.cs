@@ -8,16 +8,16 @@ using System;
 using System.Drawing;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
-using Helpers;
-using Velaptor;
-using Velaptor.Exceptions;
 using Xunit;
 
 public class FontGPUBufferTests

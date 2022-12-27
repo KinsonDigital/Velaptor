@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content.Fonts.Services;
@@ -17,7 +18,6 @@ using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.Hardware;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

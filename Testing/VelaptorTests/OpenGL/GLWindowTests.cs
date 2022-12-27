@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Silk.NET.Core.Contexts;
 using Silk.NET.Input;
@@ -28,7 +29,6 @@ using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Velaptor.UI;
-using Helpers;
 using Xunit;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;

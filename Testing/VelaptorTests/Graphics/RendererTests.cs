@@ -12,6 +12,7 @@ using System.Linq;
 using System.Numerics;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -23,7 +24,6 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.ReactableData;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

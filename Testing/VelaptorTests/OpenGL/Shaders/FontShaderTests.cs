@@ -8,15 +8,15 @@ using System;
 using System.Linq;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.ReactableData;
-using Helpers;
-using Velaptor;
-using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>

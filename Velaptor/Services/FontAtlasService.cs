@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Fonts.Services;
+using Content.Fonts.Services;
 using Exceptions;
 using Graphics;
 using Guards;

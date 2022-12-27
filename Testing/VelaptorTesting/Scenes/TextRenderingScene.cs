@@ -7,12 +7,12 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Linq;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Used to test whether or not text is properly rendered to the screen.

@@ -6,11 +6,11 @@ namespace Velaptor.Services;
 
 using System.IO;
 using System.IO.Abstractions;
+using Graphics;
+using Guards;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Graphics;
-using Guards;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 

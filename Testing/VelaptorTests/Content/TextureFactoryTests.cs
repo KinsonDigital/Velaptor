@@ -6,11 +6,11 @@ namespace VelaptorTests.Content;
 
 using System;
 using Carbonate;
+using Helpers;
 using Moq;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
-using Helpers;
 using Xunit;
 
 /// <summary>

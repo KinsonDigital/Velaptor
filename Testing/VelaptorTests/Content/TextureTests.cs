@@ -9,15 +9,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.Content;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
-using Helpers;
-using Velaptor;
-using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>
@@ -217,7 +217,7 @@ public class TextureTests
             this.mockGLService.Object,
             this.mockReactable.Object,
             "test-texture.png",
-            $@"C:\temp\test-texture.png",
+            @"C:\temp\test-texture.png",
             this.imageData);
 
         // Assert

@@ -8,11 +8,11 @@ using System;
 using System.Collections.Generic;
 using Carbonate;
 using FluentAssertions;
-using Moq;
-using Velaptor.Input;
 using Helpers;
+using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
+using Velaptor.Input;
 using Velaptor.ReactableData;
 using Xunit;
 

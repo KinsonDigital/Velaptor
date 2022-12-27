@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Graphics;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.

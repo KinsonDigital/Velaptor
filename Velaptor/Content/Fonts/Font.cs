@@ -12,9 +12,9 @@ using System.Linq;
 using System.Numerics;
 using Caching;
 using Exceptions;
-using Services;
 using Graphics;
 using Guards;
+using Services;
 using Velaptor.Services;
 using VelFontStyle = FontStyle;
 

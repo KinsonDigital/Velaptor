@@ -10,8 +10,8 @@ using System.IO;
 using System.IO.Abstractions;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads textures.

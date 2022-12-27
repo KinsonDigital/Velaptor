@@ -10,13 +10,13 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Carbonate;
-using Velaptor.Exceptions;
-using Graphics;
-using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
+using Graphics;
 using Guards;
+using NativeInterop.OpenGL;
 using ReactableData;
+using Velaptor.Exceptions;
 using NETRect = System.Drawing.Rectangle;
 
 /// <summary>

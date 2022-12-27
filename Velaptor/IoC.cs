@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using Carbonate;
-using SimpleInjector;
 using Content;
 using Content.Caching;
 using Content.Factories;
@@ -21,6 +20,7 @@ using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Services;
 using Services;
+using SimpleInjector;
 
 /// <summary>
 /// Provides dependency injection for the application.

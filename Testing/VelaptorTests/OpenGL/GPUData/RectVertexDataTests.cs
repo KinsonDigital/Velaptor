@@ -7,8 +7,8 @@ namespace VelaptorTests.OpenGL.GPUData;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.OpenGL.GPUData;
 using Helpers;
+using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>

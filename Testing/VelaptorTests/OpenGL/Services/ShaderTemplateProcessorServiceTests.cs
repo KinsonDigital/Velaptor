@@ -6,9 +6,9 @@ namespace VelaptorTests.OpenGL.Services;
 
 using System;
 using System.Collections.Generic;
+using Helpers;
 using Moq;
 using Velaptor.OpenGL.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

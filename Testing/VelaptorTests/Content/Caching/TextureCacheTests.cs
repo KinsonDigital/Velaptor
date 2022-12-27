@@ -9,7 +9,9 @@ using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
@@ -17,8 +19,6 @@ using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.ReactableData;
 using Velaptor.Services;
-using Helpers;
-using Velaptor;
 using Xunit;
 
 public class TextureCacheTests

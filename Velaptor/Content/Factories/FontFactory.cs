@@ -6,7 +6,7 @@ namespace Velaptor.Content.Factories;
 
 using Caching;
 using Fonts;
-using Velaptor.Content.Fonts.Services;
+using Fonts.Services;
 using Graphics;
 using Guards;
 using Services;

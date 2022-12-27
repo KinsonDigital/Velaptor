@@ -7,13 +7,13 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
-using Core;
 
 /// <summary>
 /// Tests out layered rendering with textures.

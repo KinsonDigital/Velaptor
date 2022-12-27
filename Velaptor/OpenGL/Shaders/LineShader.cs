@@ -7,9 +7,9 @@ namespace Velaptor.OpenGL.Shaders;
 using System;
 using Carbonate;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
-using Services;
+using NativeInterop.OpenGL;
 using ReactableData;
+using Services;
 using Velaptor.Exceptions;
 
 /// <summary>

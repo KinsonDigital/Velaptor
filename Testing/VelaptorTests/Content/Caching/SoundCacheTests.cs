@@ -9,14 +9,14 @@ using System.IO;
 using System.IO.Abstractions;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.ReactableData;
-using Helpers;
-using Velaptor;
 using Xunit;
 
 /// <summary>

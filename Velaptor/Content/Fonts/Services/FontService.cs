@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using FreeTypeSharp.Native;
 using Exceptions;
-using Velaptor.Exceptions;
+using FreeTypeSharp.Native;
 using Graphics;
 using Guards;
 using NativeInterop.FreeType;
+using Velaptor.Exceptions;
 using Velaptor.Services;
 
 /// <summary>

@@ -6,14 +6,14 @@ namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
 using Carbonate;
-using Moq;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
 using Fakes;
 using FluentAssertions;
 using Helpers;
+using Moq;
 using Velaptor;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.OpenGL;
+using Velaptor.OpenGL.Buffers;
 using Xunit;
 
 /// <summary>

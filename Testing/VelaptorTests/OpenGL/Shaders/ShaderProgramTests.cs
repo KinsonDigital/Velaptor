@@ -7,15 +7,15 @@ namespace VelaptorTests.OpenGL.Shaders;
 using System;
 using System.Collections.Generic;
 using Carbonate;
+using Fakes;
+using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.OpenGL.Services;
-using Fakes;
-using FluentAssertions;
-using Helpers;
-using Velaptor;
 using Xunit;
 
 /// <summary>

@@ -11,14 +11,14 @@ using System.Drawing;
 using System.Linq;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Services;
-using Helpers;
-using Velaptor.Exceptions;
 using Xunit;
 
 public class FontGlyphBatchingServiceTests

@@ -12,8 +12,8 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 using Velaptor.Services;
 
 /// <summary>

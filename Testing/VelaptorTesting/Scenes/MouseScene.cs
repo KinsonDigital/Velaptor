@@ -1,4 +1,4 @@
-// <copyright file="MouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="MouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,12 +6,12 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Used to test that the mouse works correctly.

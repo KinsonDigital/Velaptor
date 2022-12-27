@@ -1,4 +1,4 @@
-// <copyright file="BatchServiceManagerTests.cs" company="KinsonDigital">
+﻿// <copyright file="BatchServiceManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,10 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.OpenGL;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

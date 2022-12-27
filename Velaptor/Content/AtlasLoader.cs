@@ -1,4 +1,4 @@
-// <copyright file="AtlasLoader.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,10 +11,10 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
-using Velaptor.Factories;
 using Graphics;
 using Guards;
 using Services;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads atlas data.

@@ -11,8 +11,8 @@ using System.IO.Abstractions;
 using System.Linq;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads sound content.

@@ -5,8 +5,8 @@
 namespace VelaptorTests;
 
 using FluentAssertions;
-using Velaptor;
 using Helpers;
+using Velaptor;
 using Xunit;
 
 /// <summary>

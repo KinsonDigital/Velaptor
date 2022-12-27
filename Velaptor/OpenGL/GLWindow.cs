@@ -11,22 +11,22 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate;
-using Silk.NET.Input;
-using Silk.NET.Maths;
-using Silk.NET.Windowing;
 using Content;
-using Velaptor.Exceptions;
 using Factories;
 using Graphics;
 using Guards;
 using Input;
-using Velaptor.Input.Exceptions;
+using Input.Exceptions;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using ReactableData;
+using Silk.NET.Input;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Velaptor.Services;
+using Silk.NET.Windowing;
 using UI;
+using Velaptor.Exceptions;
+using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -732,7 +732,7 @@ internal sealed class GLWindow : VelaptorIWindow
                 enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
 
                 // ReSharper disable once RedundantNameQualifier
-                enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowBorder)}";
+                enumTypeStr += $".{nameof(WindowBorder)}";
 
                 var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowBorder switch

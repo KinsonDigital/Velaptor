@@ -11,9 +11,9 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Carbonate;
 using Exceptions;
+using Services;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
-using Services;
 
 /// <summary>
 /// Invokes OpenGL calls.

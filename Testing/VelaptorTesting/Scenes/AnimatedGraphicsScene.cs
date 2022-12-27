@@ -5,11 +5,11 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.

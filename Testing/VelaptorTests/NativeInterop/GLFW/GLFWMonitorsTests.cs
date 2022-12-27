@@ -1,4 +1,4 @@
-// <copyright file="GLFWMonitorsTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLFWMonitorsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,12 +7,12 @@ namespace VelaptorTests.NativeInterop.GLFW;
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Helpers;
 using Moq;
 using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
-using Helpers;
 using Xunit;
 
 /// <summary>

@@ -7,10 +7,10 @@ namespace VelaptorTests.NativeInterop.OpenGL;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Helpers;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
-using Helpers;
 using Xunit;
 
 /// <summary>

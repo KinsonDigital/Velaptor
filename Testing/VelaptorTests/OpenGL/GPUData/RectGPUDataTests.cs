@@ -4,8 +4,8 @@
 
 namespace VelaptorTests.OpenGL.GPUData;
 
-using Velaptor.OpenGL.GPUData;
 using Helpers;
+using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
