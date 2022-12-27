@@ -51,4 +51,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications for when the system is shutting down.
     /// </summary>
     public static Guid SystemShuttingDownId { get; } = new ("17b9fd1c-67ef-4f36-8973-45e32b0ee85b");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the window size changes.
+    /// </summary>
+    public static Guid WindowSizeChangedId { get; } = new ("d1095c6e-cf1f-4719-b7e2-aeeb285d1d02");
 }
