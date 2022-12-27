@@ -18,7 +18,9 @@ using NativeInterop.FreeType;
 using NativeInterop.GLFW;
 using NativeInterop.OpenGL;
 using OpenGL;
+using OpenGL.Buffers;
 using OpenGL.Services;
+using OpenGL.Shaders;
 using Services;
 using SimpleInjector;
 
@@ -114,7 +116,9 @@ internal static class IoC
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IShaderManager, ShaderManager>(Lifestyle.Singleton);
         IoCContainer.Register<IGPUBufferFactory, GPUBufferFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IBufferManager, BufferManager>(Lifestyle.Singleton);
         IoCContainer.Register<IFontFactory, FontFactory>();
     }
 

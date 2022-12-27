@@ -35,10 +35,8 @@ public static class RendererFactory
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
-        var shaderFactory = IoC.Container.GetInstance<IShaderFactory>();
-        var bufferFactory = IoC.Container.GetInstance<IGPUBufferFactory>();
-        var shaderManager = new ShaderManager(shaderFactory);
-        var bufferManager = new BufferManager(bufferFactory);
+        var shaderManager = IoC.Container.GetInstance<IShaderManager>();
+        var bufferManager = IoC.Container.GetInstance<IBufferManager>();
 
         var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
         var reactable = IoC.Container.GetInstance<IReactable>();
