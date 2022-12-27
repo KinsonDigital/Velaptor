@@ -11,9 +11,11 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
+using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
@@ -30,10 +32,12 @@ public class GPUBufferBaseTests
     private readonly Mock<IReactable> mockReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly Mock<IDisposable> mockViewPortSizeUnsubscriber;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
     private IReactor? glInitReactor;
     private IReactor? shutDownReactor;
+    private IReactor? viewPortSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -64,6 +68,7 @@ public class GPUBufferBaseTests
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+        this.mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
@@ -81,6 +86,11 @@ public class GPUBufferBaseTests
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
+                if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    return this.mockViewPortSizeUnsubscriber.Object;
+                }
+
                 Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
                 return null;
             })
@@ -95,6 +105,10 @@ public class GPUBufferBaseTests
                 else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    this.viewPortSizeReactor = reactor;
                 }
                 else
                 {
@@ -392,7 +406,7 @@ public class GPUBufferBaseTests
 
     #region Indirect Tests
     [Fact]
-    public void InitReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
+    public void InitReactable_OnComplete_UnsubscribesFromReactable()
     {
         // Arrange
         _ = CreateSystemUnderTest();
@@ -402,6 +416,40 @@ public class GPUBufferBaseTests
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
+    }
+
+    [Fact]
+    public void ViewPortSizeReactable_WithNullMessage_ThrowsException()
+    {
+        // Arrange
+        var expected = $"There was an issue with the 'GPUBufferBase.Constructor()' subscription source";
+        expected += $" for subscription ID '{NotificationIds.ViewPortSizeChangedId}'.";
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => this.viewPortSizeReactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expected);
+    }
+
+    [Fact]
+    public void ViewPortSizeReactable_OnComplete_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSizeReactor.OnComplete();
+
+        // Assert
+        this.mockViewPortSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

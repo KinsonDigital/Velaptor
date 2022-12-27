@@ -29,8 +29,10 @@ public class FontGPUBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
+    private IReactor? viewPortSizeReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -60,20 +62,63 @@ public class FontGPUBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
+        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
+
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Returns<IReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitializedId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                {
+                    return this.mockBatchSizeUnsubscriber.Object;
+                }
+
+                if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
             .Callback<IReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.BatchSizeSetId)
-                {
-                    this.batchSizeReactor = reactor;
-                }
-
                 if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                {
+                    this.batchSizeReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    this.viewPortSizeReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    // EMPTY ON PURPOSE.  SIMPLY IGNORING THIS EVENT ID
+                }
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -181,7 +226,6 @@ public class FontGPUBufferTests
             90,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             0,
             0);
 
@@ -216,13 +260,17 @@ public class FontGPUBufferTests
             45f,
             Color.MediumPurple,
             RenderEffects.None,
-            new SizeF(800, 600),
             1,
             0);
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = 800, Height = 600 });
 
         var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnNext();
+        this.viewPortSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         sut.UploadVertexData(batchItem, 0u);
@@ -347,6 +395,21 @@ public class FontGPUBufferTests
         {
             sut.GenerateIndices();
         }, "The font buffer has not been initialized.");
+    }
+    #endregion
+
+    #region Indirect Tests
+    [Fact]
+    public void BatchSizeReactable_OnComplete_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.batchSizeReactor.OnComplete();
+
+        // Assert
+        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

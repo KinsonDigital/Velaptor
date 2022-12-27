@@ -23,10 +23,8 @@ public static class RendererFactory
     /// <summary>
     /// Initializes and instance of a <see cref="IRenderer"/>.
     /// </summary>
-    /// <param name="renderSurfaceWidth">The width of the render surface.</param>
-    /// <param name="renderSurfaceHeight">The height of the render surface.</param>
     /// <returns>A Velaptor implemented renderer.</returns>
-    public static IRenderer CreateRenderer(uint renderSurfaceWidth, uint renderSurfaceHeight)
+    public static IRenderer CreateRenderer()
     {
         if (renderer is not null)
         {
@@ -48,9 +46,6 @@ public static class RendererFactory
             bufferManager,
             batchServiceManager,
             reactable);
-
-        renderer.RenderSurfaceWidth = renderSurfaceWidth;
-        renderer.RenderSurfaceHeight = renderSurfaceHeight;
 
         return renderer;
     }

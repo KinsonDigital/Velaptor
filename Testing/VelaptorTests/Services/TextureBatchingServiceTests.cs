@@ -131,7 +131,6 @@ public class TextureBatchingServiceTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
         var batchItem2 = new TextureBatchItem(
@@ -141,7 +140,6 @@ public class TextureBatchingServiceTests
             18,
             Color.FromArgb(29, 30, 31, 32),
             RenderEffects.FlipHorizontally,
-            new SizeF(33, 34),
             28,
             35);
 
@@ -170,7 +168,6 @@ public class TextureBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             1,
             0);
 
@@ -181,7 +178,6 @@ public class TextureBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             2,
             0);
 
@@ -215,7 +211,6 @@ public class TextureBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             1,
             0);
         var batchItem2 = new TextureBatchItem(
@@ -225,7 +220,6 @@ public class TextureBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             2,
             0);
 

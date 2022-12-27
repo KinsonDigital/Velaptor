@@ -393,15 +393,15 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void GLWindow_Resize(Vector2D<int> obj)
     {
-        var uWidth = (uint)obj.X;
-        var uHeight = (uint)obj.Y;
+        var width = (uint)obj.X;
+        var height = (uint)obj.Y;
 
         // Update the viewport so it is the same size as the window
-        this.gl.Viewport(0, 0, uWidth, uHeight);
-        var size = new SizeU { Width = uWidth, Height = uHeight };
+        this.gl.Viewport(0, 0, width, height);
+        var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
-        this.renderer.OnResize(size);
+        this.reactable.PushData(new ViewPortSizeData { Width = width, Height = height }, NotificationIds.ViewPortSizeChangedId);
     }
 
     /// <summary>

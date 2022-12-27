@@ -10,13 +10,6 @@ namespace Velaptor.OpenGL.Buffers;
 internal interface IBufferManager
 {
     /// <summary>
-    /// Sets the viewport size for a buffer that matches the given <paramref name="bufferType"/>.
-    /// </summary>
-    /// <param name="bufferType">The type of GPU buffer.</param>
-    /// <param name="size">The size to set the buffer to.</param>
-    void SetViewPortSize(VelaptorBufferType bufferType, SizeU size);
-
-    /// <summary>
     /// Uploads the GPU buffer using the given texture <paramref name="data"/>
     /// at the given <paramref name="batchIndex"/> location.
     /// </summary>

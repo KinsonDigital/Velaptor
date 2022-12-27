@@ -929,7 +929,6 @@ public class GLWindowTests
 
         // Assert
         this.mockGL.Verify(m => m.Viewport(0, 0, 11, 22));
-        this.mockRenderer.Verify(m => m.OnResize(new SizeU(11u, 22u)), Times.Once);
         Assert.Equal(11u, actualSize.Width);
         Assert.Equal(22u, actualSize.Height);
     }

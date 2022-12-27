@@ -64,75 +64,6 @@ public class BufferManagerTests
 
     #region Method Tests
     [Fact]
-    public void SetViewPortSize_WithTextureBufferType_ReturnsCorrectResult()
-    {
-        // Arrange
-        var expectedSize = new SizeU(111u, 222u);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(111u, 222u));
-
-        // Assert
-        this.mockTextureBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
-    }
-
-    [Fact]
-    public void SetViewPortSize_WithFontGlyphBufferType_ReturnsCorrectResult()
-    {
-        // Arrange
-        var expectedSize = new SizeU(111u, 222u);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.SetViewPortSize(VelaptorBufferType.Font, new SizeU(111u, 222u));
-
-        // Assert
-        this.mockFontGlyphBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
-    }
-
-    [Fact]
-    public void SetViewPortSize_WithRectangleBufferType_ReturnsCorrectResult()
-    {
-        // Arrange
-        var expectedSize = new SizeU(111u, 222u);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.SetViewPortSize(VelaptorBufferType.Rectangle, new SizeU(111u, 222u));
-
-        // Assert
-        this.mockRectBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
-    }
-
-    [Fact]
-    public void SetViewPortSize_WithLineBufferType_ReturnsCorrectResult()
-    {
-        // Arrange
-        var expectedSize = new SizeU(111u, 222u);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.SetViewPortSize(VelaptorBufferType.Line, new SizeU(111u, 222u));
-
-        // Assert
-        this.mockLineBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
-    }
-
-    [Fact]
-    public void SetViewPortSize_WithInvalidBufferType_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            sut.SetViewPortSize((VelaptorBufferType)1234, It.IsAny<SizeU>());
-        }, $"The enum '{nameof(VelaptorBufferType)}' value is invalid. (Parameter 'bufferType'){Environment.NewLine}Actual value was 1234.");
-    }
-
-    [Fact]
     public void UploadTextureData_WhenInvoked_UploadsData()
     {
         // Arrange
@@ -159,7 +90,6 @@ public class BufferManagerTests
             90,
             Color.Empty,
             RenderEffects.FlipVertically,
-            SizeF.Empty,
             0,
             0);
 

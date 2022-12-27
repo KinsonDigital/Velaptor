@@ -51,6 +51,6 @@ public static class App
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
-            RendererFactory.CreateRenderer(width, height),
+            RendererFactory.CreateRenderer(),
             IoC.Container.GetInstance<IReactable>());
 }

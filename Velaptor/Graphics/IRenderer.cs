@@ -18,18 +18,6 @@ using Content.Fonts;
 public interface IRenderer
 {
     /// <summary>
-    /// Gets or sets the render surface width.
-    /// </summary>
-    /// <remarks>This is the width of the viewport.</remarks>
-    uint RenderSurfaceWidth { get; set; }
-
-    /// <summary>
-    /// Gets or sets the render surface height.
-    /// </summary>
-    /// <remarks>This is the height of the viewport.</remarks>
-    uint RenderSurfaceHeight { get; set; }
-
-    /// <summary>
     /// Gets or sets the color that the back buffer will be cleared to.
     /// </summary>
     Color ClearColor { get; set; }
@@ -54,12 +42,6 @@ public interface IRenderer
     /// still in the batch.
     /// </summary>
     void End();
-
-    /// <summary>
-    /// Updates the viewport size.
-    /// </summary>
-    /// <param name="size">The size to set the viewport to.</param>
-    void OnResize(SizeU size);
 
     /// <summary>
     /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.

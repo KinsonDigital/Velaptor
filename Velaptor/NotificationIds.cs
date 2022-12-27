@@ -56,4 +56,9 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications for when the window size changes.
     /// </summary>
     public static Guid WindowSizeChangedId { get; } = new ("d1095c6e-cf1f-4719-b7e2-aeeb285d1d02");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the viewport size changes.
+    /// </summary>
+    public static Guid ViewPortSizeChangedId { get; } = new ("430e7d43-ffd5-4f81-90b9-039e05ed490e");
 }

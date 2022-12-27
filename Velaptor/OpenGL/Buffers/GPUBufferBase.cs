@@ -9,6 +9,8 @@ using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Guards;
 using NativeInterop.OpenGL;
+using ReactableData;
+using Velaptor.Exceptions;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -20,6 +22,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
 {
     private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable glInitUnsubscriber;
+    private readonly IDisposable viewPortSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
     private bool isDisposed;
@@ -54,6 +57,22 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
             eventId: NotificationIds.SystemShuttingDownId,
             onNext: ShutDown));
 
+        this.viewPortSizeUnsubscriber = reactable.Subscribe(new Reactor(
+            eventId: NotificationIds.ViewPortSizeChangedId,
+            onNextMsg: msg =>
+            {
+                var data = msg.GetData<ViewPortSizeData>();
+
+                if (data is null)
+                {
+                    throw new PushNotificationException(
+                        $"{nameof(GPUBufferBase<TData>)}.Constructor()",
+                        NotificationIds.ViewPortSizeChangedId);
+                }
+
+                ViewPortSize = new SizeU(data.Width, data.Height);
+            }, onCompleted: () => this.viewPortSizeUnsubscriber?.Dispose()));
+
         ProcessCustomAttributes();
     }
 
@@ -71,9 +90,6 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         ShutDown();
     }
 
-    /// <inheritdoc/>
-    public SizeU ViewPortSize { get; set; }
-
     /// <summary>
     /// Gets or sets the size of the batch.
     /// </summary>
@@ -89,6 +105,11 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
     protected internal string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets the size of the view port.
+    /// </summary>
+    protected SizeU ViewPortSize { get; private set; }
 
     /// <summary>
     /// Gets the invoker that makes OpenGL calls.

@@ -47,6 +47,7 @@ public class RendererTests
     private readonly Mock<IBatchServiceManager> mockBatchServiceManager;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly Mock<IDisposable> mockViewPortSizeUnsubscriber;
     private readonly Mock<IReactable> mockReactable;
     private readonly char[] glyphChars =
     {
@@ -59,6 +60,7 @@ public class RendererTests
     private List<GlyphMetrics> allGlyphMetrics = new ();
     private IReactor? glInitReactor;
     private IReactor? shutDownReactor;
+    private IReactor? viewPortSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RendererTests"/> class.
@@ -91,6 +93,8 @@ public class RendererTests
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+        this.mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
+
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
             .Returns<IReactor>(reactor =>
@@ -103,6 +107,11 @@ public class RendererTests
                 if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
+                }
+
+                if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    return this.mockViewPortSizeUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
@@ -119,6 +128,10 @@ public class RendererTests
                 else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    this.viewPortSizeReactor = reactor;
                 }
                 else
                 {
@@ -263,40 +276,6 @@ public class RendererTests
 
     #region Prop Tests
     [Fact]
-    public void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
-    {
-        // Arrange
-        this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
-        var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext();
-
-        // Act
-        sut.RenderSurfaceWidth = 100;
-        _ = sut.RenderSurfaceWidth;
-
-        // Assert
-        this.mockGLService.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-        this.mockGLService.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
-    }
-
-    [Fact]
-    public void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
-    {
-        // Arrange
-        this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
-        var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnNext();
-
-        // Act
-        sut.RenderSurfaceHeight = 100;
-        _ = sut.RenderSurfaceHeight;
-
-        // Assert
-        this.mockGLService.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
-        this.mockGLService.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-    }
-
-    [Fact]
     public void ClearColor_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -357,21 +336,6 @@ public class RendererTests
 
         // Assert
         this.mockGL.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
-    }
-
-    [Fact]
-    public void OnResize_WhenInvoked_SetsBufferViewPortSizes()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.OnResize(new SizeU(11u, 22u));
-
-        // Assert
-        this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(11u, 22u)));
-        this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Font, new SizeU(11u, 22u)));
-        this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Rectangle, new SizeU(11u, 22u)));
     }
 
     [Fact]
@@ -619,7 +583,6 @@ public class RendererTests
             45,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             TextureId,
             0);
 
@@ -630,7 +593,6 @@ public class RendererTests
             90,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             TextureId,
             1);
 
@@ -1640,10 +1602,6 @@ public class RendererTests
     public void WithShutDownNotification_DisposesOfRenderer()
     {
         // Arrange
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor>(reactor => this.shutDownReactor = reactor);
-
         CreateSystemUnderTest();
 
         // Act
@@ -1710,7 +1668,6 @@ public class RendererTests
             0f,
             clr,
             effects,
-            new SizeF(800f, 600f),
             (uint)textureId,
             0);
 
@@ -1785,7 +1742,6 @@ public class RendererTests
                 0,
                 Color.Empty,
                 RenderEffects.None,
-                SizeF.Empty,
                 AtlasTextureId,
                 0);
 

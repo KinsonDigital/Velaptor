@@ -36,8 +36,10 @@ public class LineGPUBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReactor? glInitReactor;
     private IReactor? batchSizeReactor;
+    private IReactor? viewPortSizeReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -62,20 +64,63 @@ public class LineGPUBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
+        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
+
         this.mockReactable = new Mock<IReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+            .Returns<IReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.EventId == NotificationIds.GLInitializedId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                {
+                    return this.mockBatchSizeUnsubscriber.Object;
+                }
+
+                if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    return null!;
+                }
+
+                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
             .Callback<IReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.BatchSizeSetId)
-                {
-                    this.batchSizeReactor = reactor;
-                }
-
                 if (reactor.EventId == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                {
+                    this.batchSizeReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                {
+                    this.viewPortSizeReactor = reactor;
+                }
+                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                {
+                    // EMPTY ON PURPOSE.  SIMPLY IGNORING THIS EVENT ID
+                }
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -97,66 +142,6 @@ public class LineGPUBufferTests
         act.Should()
             .Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'reactable')");
-    }
-
-    [Fact]
-    public void Ctor_WhenReactableUnsubscribes_UnsubscriberInvoked()
-    {
-        // Arrange
-        var mockUnsubscriber = new Mock<IDisposable>();
-
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactor =>
-            {
-                if (reactor is null)
-                {
-                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
-                }
-
-                this.batchSizeReactor = reactor;
-            })
-            .Returns<IReactor>(_ => mockUnsubscriber.Object);
-
-        _ = CreateSystemUnderTest(false);
-
-        // Act
-        this.batchSizeReactor.OnComplete();
-        this.batchSizeReactor.OnComplete();
-
-        // Assert
-        mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-    }
-
-    [Fact]
-    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(LineGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
-
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactorObj.EventId == NotificationIds.BatchSizeSetId)
-                {
-                    this.batchSizeReactor = reactorObj;
-                }
-            });
-
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest(false);
-
-        // Act
-        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
     }
     #endregion
 
@@ -258,7 +243,12 @@ public class LineGPUBufferTests
 
         var batchItem = new LineBatchItem(p1, p2, color, thickness, layer);
 
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight });
+
         var sut = CreateSystemUnderTest();
+        this.viewPortSizeReactor.OnNext(mockMessage.Object);
 
         // Act
         sut.UploadVertexData(batchItem, 10);
@@ -393,6 +383,43 @@ public class LineGPUBufferTests
     }
     #endregion
 
+    #region Indirect Tests
+    [Fact]
+    public void BatchSizeReactable_OnComplete_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest(false);
+
+        // Act
+        this.batchSizeReactor.OnComplete();
+        this.batchSizeReactor.OnComplete();
+
+        // Assert
+        this.mockBatchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+    }
+
+    [Fact]
+    public void BatchSizeReactable_WithNullMessageData_ThrowsException()
+    {
+        // Arrange
+        var expectedMsg = $"There was an issue with the '{nameof(LineGPUBuffer)}.Constructor()' subscription source";
+        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest(false);
+
+        // Act
+        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expectedMsg);
+    }
+    #endregion
+
     /// <summary>
     /// Creates a new instance of <see cref="LineGPUBuffer"/> class for the purpose of testing.
     /// </summary>
@@ -403,10 +430,7 @@ public class LineGPUBufferTests
         var result = new LineGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
-            this.mockReactable.Object)
-        {
-            ViewPortSize = new SizeU { Width = ViewPortWidth, Height = ViewPortHeight },
-        };
+            this.mockReactable.Object);
 
         if (initialize)
         {

@@ -37,13 +37,8 @@ public class MainWindow : Window
 
         WindowWidth = Width;
         WindowHeight = Height;
-        var renderer = RendererFactory.CreateRenderer(Width, Height);
+        var renderer = RendererFactory.CreateRenderer();
         renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
-        window.WinResize = size =>
-        {
-            renderer.RenderSurfaceWidth = size.Width;
-            renderer.RenderSurfaceHeight = size.Height;
-        };
 
         this.sceneManager = new SceneManager(renderer);
 

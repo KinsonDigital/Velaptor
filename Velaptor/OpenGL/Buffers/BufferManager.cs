@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL.Buffers;
 
-using System;
 using Factories;
 using Guards;
 
@@ -28,31 +27,6 @@ internal sealed class BufferManager : IBufferManager
         this.fontGlyphBuffer = bufferFactory.CreateFontGPUBuffer();
         this.rectBuffer = bufferFactory.CreateRectGPUBuffer();
         this.lineBuffer = bufferFactory.CreateLineGPUBuffer();
-    }
-
-    /// <inheritdoc/>
-    public void SetViewPortSize(VelaptorBufferType bufferType, SizeU size)
-    {
-        switch (bufferType)
-        {
-            case VelaptorBufferType.Texture:
-                this.textureBuffer.ViewPortSize = size;
-                break;
-            case VelaptorBufferType.Font:
-                this.fontGlyphBuffer.ViewPortSize = size;
-                break;
-            case VelaptorBufferType.Rectangle:
-                this.rectBuffer.ViewPortSize = size;
-                break;
-            case VelaptorBufferType.Line:
-                this.lineBuffer.ViewPortSize = size;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(bufferType),
-                    bufferType,
-                    $"The enum '{nameof(VelaptorBufferType)}' value is invalid.");
-        }
     }
 
     /// <inheritdoc/>

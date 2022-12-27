@@ -27,7 +27,6 @@ using NETSizeF = System.Drawing.SizeF;
 internal sealed class Renderer : IRenderer
 {
     private const uint BatchSize = 1000;
-    private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
     private readonly IShaderManager shaderManager;
@@ -85,7 +84,6 @@ internal sealed class Renderer : IRenderer
             eventId: NotificationIds.GLInitializedId,
             onNext: () =>
             {
-                this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
                 this.cachedClearColor.IsCaching = false;
 
                 Init();
@@ -118,20 +116,6 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public uint RenderSurfaceWidth
-    {
-        get => this.cachedUIntProps[nameof(RenderSurfaceWidth)].GetValue();
-        set => this.cachedUIntProps[nameof(RenderSurfaceWidth)].SetValue(value);
-    }
-
-    /// <inheritdoc/>
-    public uint RenderSurfaceHeight
-    {
-        get => this.cachedUIntProps[nameof(RenderSurfaceHeight)].GetValue();
-        set => this.cachedUIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
-    }
-
-    /// <inheritdoc/>
     public Color ClearColor
     {
         get => this.cachedClearColor.GetValue();
@@ -143,15 +127,6 @@ internal sealed class Renderer : IRenderer
 
     /// <inheritdoc/>
     public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
-
-    /// <inheritdoc/>
-    public void OnResize(SizeU size)
-    {
-        this.bufferManager.SetViewPortSize(VelaptorBufferType.Texture, size);
-        this.bufferManager.SetViewPortSize(VelaptorBufferType.Font, size);
-        this.bufferManager.SetViewPortSize(VelaptorBufferType.Rectangle, size);
-        this.bufferManager.SetViewPortSize(VelaptorBufferType.Line, size);
-    }
 
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, int layer = 0) => Render(texture, x, y, Color.White, layer);
@@ -222,7 +197,6 @@ internal sealed class Renderer : IRenderer
             angle,
             color,
             effects,
-            new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
             texture.Id,
             layer);
 
@@ -446,7 +420,6 @@ internal sealed class Renderer : IRenderer
         this.batchServiceManager.LineBatchReadyForRendering -= LineBatchService_BatchReadyForRendering;
 
         this.batchServiceManager.Dispose();
-        this.cachedUIntProps.Clear();
 
         this.isDisposed = true;
     }
@@ -787,7 +760,6 @@ internal sealed class Renderer : IRenderer
                     angle,
                     color,
                     RenderEffects.None,
-                    new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
                     font.Atlas.Id,
                     layer);
 
@@ -808,32 +780,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Setup all of the caching for the properties that need caching.
     /// </summary>
-    private void SetupPropertyCaches()
-    {
-        this.cachedUIntProps.Add(
-            nameof(RenderSurfaceWidth),
-            new CachedValue<uint>(
-                0,
-                () => (uint)this.openGLService.GetViewPortSize().Width,
-                value =>
-                {
-                    var viewPortSize = this.openGLService.GetViewPortSize();
-
-                    this.openGLService.SetViewPortSize(new Size((int)value, viewPortSize.Height));
-                }));
-
-        this.cachedUIntProps.Add(
-            nameof(RenderSurfaceHeight),
-            new CachedValue<uint>(
-                0,
-                () => (uint)this.openGLService.GetViewPortSize().Height,
-                value =>
-                {
-                    var viewPortSize = this.openGLService.GetViewPortSize();
-
-                    this.openGLService.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
-                }));
-
+    private void SetupPropertyCaches() =>
         this.cachedClearColor = new CachedValue<Color>(
             Color.CornflowerBlue,
             () =>
@@ -857,5 +804,4 @@ internal sealed class Renderer : IRenderer
 
                 this.gl.ClearColor(red, green, blue, alpha);
             });
-    }
 }

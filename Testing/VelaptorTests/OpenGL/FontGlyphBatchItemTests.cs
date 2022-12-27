@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Xunit;
@@ -32,7 +33,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             true, // Expected Equal Result
         };
         yield return new object[]
@@ -44,7 +44,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -56,7 +55,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -68,7 +66,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -80,7 +77,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -92,7 +88,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(77, 88, 99, 100), // Src Rect <-- THIS ONE IS DIFFERENT
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -104,7 +99,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             111, // TextureId <-- THIS ONE IS DIFFERENT
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -116,19 +110,6 @@ public class FontGlyphBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(120, 130, 140, 150), // Tint Color <-- THIS ONE IS DIFFERENT
-            new SizeF(16, 17), // Viewport Size
-            false, // Expected Equal Result
-        };
-        yield return new object[]
-        {
-            1, // Angle
-            RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(160, 170), // Viewport Size <-- THIS ONE IS DIFFERENT
             false, // Expected Equal Result
         };
     }
@@ -157,7 +138,6 @@ public class FontGlyphBatchItemTests
         RectangleF srcRect,
         uint textureId,
         Color tintColor,
-        SizeF viewPortSize,
         bool expected)
     {
         // Arrange
@@ -169,7 +149,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -181,7 +160,6 @@ public class FontGlyphBatchItemTests
             angle,
             tintColor,
             effects,
-            viewPortSize,
             textureId,
             0);
 
@@ -189,7 +167,7 @@ public class FontGlyphBatchItemTests
         var actual = batchItemA.Equals(batchItemB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -204,7 +182,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -216,7 +193,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -239,7 +215,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -251,7 +226,6 @@ public class FontGlyphBatchItemTests
             11,
             Color.FromArgb(120, 130, 140, 150),
             RenderEffects.None,
-            new SizeF(160, 170),
             110,
             0);
 
@@ -274,7 +248,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -286,7 +259,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -309,7 +281,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             0);
 
@@ -333,7 +304,6 @@ public class FontGlyphBatchItemTests
         expected += $"{Environment.NewLine}Angle: 1";
         expected += $"{Environment.NewLine}Tint Clr: {{A=12,R=13,G=14,B=15}}";
         expected += $"{Environment.NewLine}Effects: None";
-        expected += $"{Environment.NewLine}View Port Size: {{W=16,H=17}}";
         expected += $"{Environment.NewLine}Texture ID: 11";
         expected += $"{Environment.NewLine}Glyph: V";
         expected += $"{Environment.NewLine}Layer: 18";
@@ -346,7 +316,6 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 

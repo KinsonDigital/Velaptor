@@ -181,10 +181,10 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         bottomRight = bottomRight.RotateAround(origin, angle);
         topRight = topRight.RotateAround(origin, angle);
 
-        var vertex1 = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex2 = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex3 = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex4 = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex1 = topLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex2 = bottomLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex3 = topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex4 = bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);
         var textureBottomLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Bottom);
