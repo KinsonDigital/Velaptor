@@ -88,9 +88,9 @@ public class LayeredTextureRenderingScene : SceneBase
 
         this.atlas = ContentLoader.LoadAtlas("layered-rendering-atlas");
 
-        this.whiteBoxData = this.atlas.GetFrame("white-box");
-        this.orangeBoxData = this.atlas.GetFrame("orange-box");
-        this.blueBoxData = this.atlas.GetFrame("blue-box");
+        this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
+        this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
+        this.blueBoxData = this.atlas.GetFrames("blue-box")[0];
 
         // Set the default white box position
         this.orangeBoxPos.X = this.windowHalfWidth - 100;

@@ -67,7 +67,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.textSize = this.font.Measure(this.instructions);
 
         this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
-        this.octagonData = this.mainAtlas.GetFrame("octagon-flip");
+        this.octagonData = this.mainAtlas.GetFrames("octagon-flip")[0];
 
         base.LoadContent();
     }

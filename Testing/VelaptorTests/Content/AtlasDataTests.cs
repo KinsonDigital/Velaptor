@@ -334,21 +334,7 @@ public class AtlasDataTests
     }
 
     [Fact]
-    public void GetFrame_WhenSubTextureIDDoesNotExist_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.GetFrame("missing-texture");
-
-        // Assert
-        act.Should().Throw<Exception>()
-            .WithMessage("The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
-    }
-
-    [Fact]
-    public void GetFrame_WithExistingSubTexture_ReturnsSubTextureData()
+    public void GetFrames_WithExistingSubTexture_ReturnsSubTextureData()
     {
         // Arrange
         var expected = new AtlasSubTextureData()
@@ -361,7 +347,7 @@ public class AtlasDataTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.GetFrame("sub-texture");
+        var actual = sut.GetFrames("sub-texture")[0];
 
         // Assert
         actual.Name.Should().Be(expected.Name);

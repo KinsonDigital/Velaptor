@@ -113,22 +113,6 @@ public sealed class AtlasData : IAtlasData
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
     /// <inheritdoc/>
-    public AtlasSubTextureData GetFrame(string subTextureId)
-    {
-        var foundFrame = (from s in this.subTexturesData
-            where s.Name == subTextureId
-            select s).FirstOrDefault();
-
-        if (foundFrame is null)
-        {
-            // TODO: Create a custom exception named TextureAtlasException and implement here
-            throw new Exception($"The frame '{subTextureId}' was not found in the atlas '{Name}'.");
-        }
-
-        return foundFrame;
-    }
-
-    /// <inheritdoc/>
     public AtlasSubTextureData[] GetFrames(string subTextureId)
         => (from s in this.subTexturesData
             where s.Name == subTextureId
