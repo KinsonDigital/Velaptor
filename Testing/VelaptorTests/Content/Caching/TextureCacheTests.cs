@@ -27,13 +27,13 @@ public class TextureCacheTests
     private const string TextureExtension = ".png";
     private const string TextureDirPath = @"C:/textures";
     private const string TextureName = "text-texture";
-    private const string FontTextureAtlasPrefix = "FontAtlasTexture";
+    private const string FontAtlasPrefix = "FontAtlas";
     private const string FontDirPath = @"C:/fonts";
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private const string TextureFilePath = $"{TextureDirPath}/{TextureName}{TextureExtension}";
     private const string FontFilePath = $"{FontDirPath}/{FontName}{FontExtension}";
-    private readonly string fontAtlasTextureName = $"{FontTextureAtlasPrefix}|{FontName}|size:{FontSize}";
+    private readonly string fontAtlasTextureName = $"{FontAtlasPrefix}|{FontName}|size:{FontSize}";
     private readonly string fontFilePathWithMetaData;
     private readonly Mock<IImageService> mockImageService;
     private readonly Mock<ITextureFactory> mockTextureFactory;

@@ -240,7 +240,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (parseResult.ContainsMetaData)
             {
-                contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
+                contentName = $"FontAtlas|{contentName}|{parseResult.MetaData}";
             }
 
             var loadedTexture = this.textureFactory.Create(contentName, fullFilePath, imageData);

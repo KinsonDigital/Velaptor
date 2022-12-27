@@ -1,4 +1,4 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -44,7 +44,7 @@ public class FontLoaderTests
     private readonly Mock<IFontFactory> mockFontFactory;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<ITexture> mockFontAtlasTexture;
+    private readonly Mock<ITexture> mockAtlasTexture;
     private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IFileStreamFactory> mockFileStream;
@@ -59,7 +59,7 @@ public class FontLoaderTests
         this.filePathWithMetaData = $"{this.fontFilePath}|{this.metaData}";
         this.contentNameWithMetaData = $"{FontContentName}|{this.metaData}";
 
-        this.mockFontAtlasTexture = new Mock<ITexture>();
+        this.mockAtlasTexture = new Mock<ITexture>();
 
         this.mockFont = new Mock<IFont>();
 
@@ -85,12 +85,12 @@ public class FontLoaderTests
         // Mock for both full file paths and content names with metadata
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
         this.mockTextureCache.Setup(m => m.GetItem(this.filePathWithMetaData))
-            .Returns(this.mockFontAtlasTexture.Object);
+            .Returns(this.mockAtlasTexture.Object);
 
         // Mock for both full file paths and content names with metadata
         this.mockFontFactory = new Mock<IFontFactory>();
         this.mockFontFactory.Setup(m =>
-                m.Create(this.mockFontAtlasTexture.Object,
+                m.Create(this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -569,7 +569,7 @@ public class FontLoaderTests
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -596,7 +596,7 @@ public class FontLoaderTests
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -625,7 +625,7 @@ public class FontLoaderTests
 
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,

@@ -37,7 +37,7 @@ public class RendererTests
     private const uint FontShaderId = 2222u;
     private const uint RectShaderId = 3333u;
     private const uint TextureId = 456u;
-    private const uint FontAtlasTextureId = 1234u;
+    private const uint AtlasTextureId = 1234u;
     private const char InvalidCharacter = '□';
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
@@ -1251,7 +1251,7 @@ public class RendererTests
         MockFontBatchItems(renderText);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
-        mockFontTextureAtlas.SetupGet(p => p.Id).Returns(FontAtlasTextureId);
+        mockFontTextureAtlas.SetupGet(p => p.Id).Returns(AtlasTextureId);
 
         this.mockFont.SetupGet(p => p.Atlas).Returns(mockFontTextureAtlas.Object);
 
@@ -1290,7 +1290,7 @@ public class RendererTests
                 GLDrawElementsType.UnsignedInt,
                 nint.Zero),
             Times.Once());
-        this.mockGLService.Verify(m => m.BindTexture2D(FontAtlasTextureId), Times.Once);
+        this.mockGLService.Verify(m => m.BindTexture2D(AtlasTextureId), Times.Once);
         this.mockBufferManager.Verify(m => m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(),
                 It.IsAny<uint>()),
             Times.Exactly(renderText.Length));
@@ -1786,7 +1786,7 @@ public class RendererTests
                 Color.Empty,
                 RenderEffects.None,
                 SizeF.Empty,
-                FontAtlasTextureId,
+                AtlasTextureId,
                 0);
 
             glyphsToMock.Add(batchItem);

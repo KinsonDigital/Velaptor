@@ -1,4 +1,4 @@
-// <copyright file="FontTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -436,7 +436,7 @@ public class FontTests : IDisposable
     }
 
     [Fact]
-    public void Size_WhenValueIsEqualToZero_DoesNotBuildFontAtlasTexture()
+    public void Size_WhenValueIsEqualToZero_DoesNotBuildAtlas()
     {
         // Arrange
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))

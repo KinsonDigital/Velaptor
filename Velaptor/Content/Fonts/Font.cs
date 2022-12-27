@@ -124,7 +124,7 @@ public sealed class Font : IFont
 
             if (this.fontInitialized && this.size > 0u)
             {
-                RebuildFontAtlasTexture();
+                RebuildAtlasTexture();
             }
         }
     }
@@ -139,7 +139,7 @@ public sealed class Font : IFont
 
             if (this.fontInitialized)
             {
-                RebuildFontAtlasTexture();
+                RebuildAtlasTexture();
             }
         }
     }
@@ -401,7 +401,7 @@ public sealed class Font : IFont
     /// Rebuilds the font atlas texture and glyph metrics.
     /// </summary>
     /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
-    private void RebuildFontAtlasTexture()
+    private void RebuildAtlasTexture()
     {
         var fontFilePath = string.Empty;
 

@@ -192,7 +192,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenUsingFullFilePath_LoadsTextureAtlasData()
+    public void Load_WhenUsingFullFilePath_LoadsAtlasData()
     {
         // Arrange
         var mockAtlasData = new Mock<IAtlasData>();
@@ -268,7 +268,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenUsingJustContentName_LoadsTextureAtlasData()
+    public void Load_WhenUsingJustContentName_LoadsAtlasData()
     {
         // Arrange
         var mockAtlasData = new Mock<IAtlasData>();

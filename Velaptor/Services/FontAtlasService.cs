@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -90,14 +90,14 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         var glyphMetrics = this.fontService.CreateGlyphMetrics(this.facePtr, glyphIndices);
 
-        var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
+        var atlasMetrics = CalcAtlasMetrics(glyphImages);
 
         var atlasImage = new ImageData(
-            new NETColor[fontAtlasMetrics.Width, fontAtlasMetrics.Height],
-            fontAtlasMetrics.Width,
-            fontAtlasMetrics.Height);
+            new NETColor[atlasMetrics.Width, atlasMetrics.Height],
+            atlasMetrics.Width,
+            atlasMetrics.Height);
 
-        glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, fontAtlasMetrics.Columns);
+        glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, atlasMetrics.Columns);
 
         // Render each glyph image to the atlas
         foreach (var glyphImage in glyphImages)
