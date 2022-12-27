@@ -7,6 +7,7 @@ namespace Velaptor.Content;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Caching;
@@ -29,6 +30,7 @@ public sealed class AtlasData : IAtlasData
     /// Initializes a new instance of the <see cref="AtlasData"/> class.
     /// </summary>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
+    /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Performs path related operations.</param>
     /// <param name="atlasSubTextureData">The sub texture data of all sub textures in the atlas.</param>
     /// <param name="dirPath">The path to the content.</param>
@@ -36,8 +38,10 @@ public sealed class AtlasData : IAtlasData
     /// <exception cref="ArgumentNullException">
     ///     Thrown if any of the constructor parameters are null.
     /// </exception>
+    /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="dirPath"/> does not exist.</exception>
     public AtlasData(
         IItemCache<string, ITexture> textureCache,
+        IDirectory directory,
         IPath path,
         IEnumerable<AtlasSubTextureData> atlasSubTextureData,
         string dirPath,
@@ -45,6 +49,7 @@ public sealed class AtlasData : IAtlasData
     {
         // ReSharper disable PossibleMultipleEnumeration
         EnsureThat.ParamIsNotNull(textureCache);
+        EnsureThat.ParamIsNotNull(directory);
         EnsureThat.ParamIsNotNull(path);
         EnsureThat.ParamIsNotNull(atlasSubTextureData);
         EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
@@ -63,6 +68,11 @@ public sealed class AtlasData : IAtlasData
         atlasName = path.GetFileNameWithoutExtension(atlasName);
 
         dirPath = dirPath.ToCrossPlatPath().TrimDirSeparatorFromEnd();
+
+        if (directory.Exists(dirPath) is false)
+        {
+            throw new DirectoryNotFoundException($"The directory '{dirPath}' does not exist.");
+        }
 
         Name = atlasName;
         FilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{TextureExtension}";

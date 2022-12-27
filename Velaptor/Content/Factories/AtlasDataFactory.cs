@@ -20,8 +20,9 @@ internal sealed class AtlasDataFactory : IAtlasDataFactory
     public IAtlasData Create(IEnumerable<AtlasSubTextureData> atlasSubTextureData, string dirPath, string atlasName)
     {
         var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var path = IoC.Container.GetInstance<IPath>();
 
-        return new AtlasData(textureCache, path, atlasSubTextureData, dirPath, atlasName);
+        return new AtlasData(textureCache, directory, path, atlasSubTextureData, dirPath, atlasName);
     }
 }

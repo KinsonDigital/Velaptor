@@ -27,6 +27,7 @@ public class AtlasDataTests
     private const string AtlasImagePath = $"{DirPath}/{AtlasName}{TextureExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
     private readonly Mock<IPath> mockPath;
+    private readonly Mock<IDirectory> mockDirectory;
     private readonly AtlasSubTextureData[] atlasData;
 
     /// <summary>
@@ -35,6 +36,9 @@ public class AtlasDataTests
     public AtlasDataTests()
     {
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
+
+        this.mockDirectory = new Mock<IDirectory>();
+        this.mockDirectory.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
 
         this.mockPath = new Mock<IPath>();
         this.mockPath.Setup(m => m.GetDirectoryName(DirPath)).Returns(DirPath);
@@ -72,6 +76,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 null,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -92,6 +97,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 null,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -112,6 +118,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 null,
                 "dir-path",
@@ -134,6 +141,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 dirPath,
@@ -156,6 +164,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -425,6 +434,12 @@ public class AtlasDataTests
     {
         var data = subTextureData ?? this.atlasData;
 
-        return new (this.mockTextureCache.Object, this.mockPath.Object, data, dirPath, atlasName);
+        return new (
+            this.mockTextureCache.Object,
+            this.mockDirectory.Object,
+            this.mockPath.Object,
+            data,
+            dirPath,
+            atlasName);
     }
 }
