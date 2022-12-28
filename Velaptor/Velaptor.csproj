@@ -45,6 +45,11 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
 
+<ItemGroup>
+  <InternalsVisibleTo Include="$(AssemblyName)Tests" />
+  <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+</ItemGroup>
+
   <ItemGroup>
     <None Include="velaptor-logo.ico" Pack="true" PackagePath="\" />
     <None Include="..\Documentation\Images\velaptor-logo.png" Pack="true" PackagePath="\" />
