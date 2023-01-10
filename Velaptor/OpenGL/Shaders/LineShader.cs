@@ -34,14 +34,16 @@ internal sealed class LineShader : ShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable reactable)
+        IPushReactable reactable)
             : base(gl, openGLService, shaderLoaderService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -52,6 +54,6 @@ internal sealed class LineShader : ShaderProgram
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 }

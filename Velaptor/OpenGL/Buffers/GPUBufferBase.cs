@@ -39,7 +39,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -48,18 +48,24 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+        var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
+        this.glInitUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
-            onNext: Init,
-            onCompleted: () => this.glInitUnsubscriber?.Dispose()));
+            name: glInitName,
+            onReceive: Init,
+            onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
 
-        this.viewPortSizeUnsubscriber = reactable.Subscribe(new Reactor(
+        var viewPortName = this.GetExecutionMemberName(nameof(NotificationIds.ViewPortSizeChangedId));
+        this.viewPortSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.ViewPortSizeChangedId,
-            onNextMsg: msg =>
+            name: viewPortName,
+            onReceiveMsg: msg =>
             {
                 var data = msg.GetData<ViewPortSizeData>();
 
@@ -71,7 +77,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
                 }
 
                 ViewPortSize = new SizeU(data.Width, data.Height);
-            }, onCompleted: () => this.viewPortSizeUnsubscriber?.Dispose()));
+            }, onUnsubscribe: () => this.viewPortSizeUnsubscriber?.Dispose()));
 
         ProcessCustomAttributes();
     }

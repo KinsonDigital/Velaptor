@@ -46,8 +46,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ISystemMonitorService systemMonitorService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
-    private readonly IRenderer renderer;
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
     private readonly MouseStateData mouseStateData;
     private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
@@ -70,7 +69,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="renderer">Renders textures and primitives.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
     public GLWindow(
         uint width,
@@ -83,8 +81,7 @@ internal sealed class GLWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
-        IRenderer renderer,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
@@ -364,6 +361,7 @@ internal sealed class GLWindow : VelaptorIWindow
          * The context of initialized here is that the OpenGL context is set
          * and the related GLFW window has been created and is ready to go.
          */
+
         this.reactable.Push(NotificationIds.GLInitializedId);
         this.reactable.Unsubscribe(NotificationIds.GLInitializedId);
 

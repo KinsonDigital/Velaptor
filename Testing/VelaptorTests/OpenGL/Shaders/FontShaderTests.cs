@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL.Shaders;
 using System;
 using System.Linq;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -27,9 +28,9 @@ public class FontShaderTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
-    private readonly Mock<IReactable> mockReactable;
-    private IReactor? glInitReactor;
-    private IReactor? batchSizeReactor;
+    private readonly Mock<IPushReactable> mockReactable;
+    private IReceiveReactor? glInitReactor;
+    private IReceiveReactor? batchSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontShaderTests"/> class.
@@ -40,18 +41,18 @@ public class FontShaderTests
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactor =>
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
 
-                if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                if (reactor.Id == NotificationIds.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
                 }
@@ -89,7 +90,7 @@ public class FontShaderTests
         var shader = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
         var actual = shader.BatchSize;
 
         // Assert
@@ -103,20 +104,20 @@ public class FontShaderTests
         IReactor? reactor = null;
         var mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
                 reactor = reactorObj;
             })
-            .Returns<IReactor>(_ => mockUnsubscriber.Object);
+            .Returns<IReceiveReactor>(_ => mockUnsubscriber.Object);
 
         _ = CreateSystemUnderTest();
 
         // Act
-        reactor.OnComplete();
-        reactor.OnComplete();
+        reactor.OnUnsubscribe();
+        reactor.OnUnsubscribe();
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());
@@ -153,7 +154,7 @@ public class FontShaderTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
+        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -178,7 +179,7 @@ public class FontShaderTests
 
         var shader = CreateSystemUnderTest();
 
-        this.glInitReactor?.OnNext();
+        this.glInitReactor?.OnReceive();
 
         // Act
         shader.Use();

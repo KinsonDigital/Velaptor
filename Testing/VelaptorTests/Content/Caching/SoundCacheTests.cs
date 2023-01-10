@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -34,8 +35,8 @@ public class SoundCacheTests
     private readonly Mock<ISoundFactory> mockSoundFactory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<IReactable> mockReactable;
-    private IReactor? shutDownReactor;
+    private readonly Mock<IPushReactable> mockReactable;
+    private IReceiveReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCacheTests"/> class.
@@ -54,11 +55,11 @@ public class SoundCacheTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber.Name = nameof(this.mockShutDownUnsubscriber);
 
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
         this.mockReactable.Name = nameof(this.mockReactable);
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
@@ -346,8 +347,8 @@ public class SoundCacheTests
         cache.GetItem(soundPathB);
 
         // Act
-        this.shutDownReactor?.OnNext();
-        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnReceive();
+        this.shutDownReactor?.OnReceive();
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());

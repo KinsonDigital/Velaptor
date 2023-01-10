@@ -7,10 +7,12 @@ namespace Velaptor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Graphics;
 using OpenGL;
@@ -446,6 +448,14 @@ internal static class InternalExtensionMethods
     /// </returns>
     public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
+    /// <summary>
+    /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.
+    /// </summary>
+    /// <param name="value">The string to change.</param>
+    /// <param name="str">The string to remove.</param>
+    /// <returns>The original string with the <paramref name="str"/> values removed.</returns>
+    public static string RemoveAll(this string value, string str) =>
+        string.IsNullOrEmpty(value) ? string.Empty : value.Replace(str, string.Empty);
 
     /// <summary>
     /// Builds a name that represents a location of where an execution took place.
@@ -506,9 +516,7 @@ internal static class InternalExtensionMethods
     /// <param name="items">The items to convert.</param>
     /// <returns>The items as a read only collection.</returns>
     public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
-        items is null ?
-            new ReadOnlyCollection<T>(Array.Empty<T>()) :
-            new ReadOnlyCollection<T>(items.ToList());
+        items is null ? new ReadOnlyCollection<T>(Array.Empty<T>()) : new ReadOnlyCollection<T>(items.ToList());
 
     /// <summary>
     /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they

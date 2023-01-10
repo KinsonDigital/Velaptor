@@ -34,7 +34,7 @@ internal abstract class ShaderProgram : IShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -45,14 +45,18 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
-        this.glInitReactorUnsubscriber = reactable.Subscribe(new Reactor(
+        var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
+        this.glInitReactorUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
-            onNext: Init,
-            onCompleted: () => this.glInitReactorUnsubscriber?.Dispose()));
+            name: glInitName,
+            onReceive: Init,
+            onUnsubscribe: () => this.glInitReactorUnsubscriber?.Dispose()));
 
-        this.shutDownReactorUnsubscriber = reactable.Subscribe(new Reactor(
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownReactorUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
 
         ProcessCustomAttributes();
     }

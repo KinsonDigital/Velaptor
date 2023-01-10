@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL.Shaders;
 using System;
 using System.Collections.Generic;
 using Carbonate;
+using Carbonate.Core;
 using Fakes;
 using FluentAssertions;
 using Helpers;
@@ -34,11 +35,11 @@ public class ShaderProgramTests
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReactor? glInitReactor;
-    private IReactor? shutDownReactor;
+    private IReceiveReactor? glInitReactor;
+    private IReceiveReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -78,40 +79,40 @@ public class ShaderProgramTests
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns<IReactor>(reactor =>
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     return this.mockGLInitUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
-                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }
                 else
                 {
-                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -202,7 +203,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockShaderLoader.Verify(m
@@ -216,10 +217,10 @@ public class ShaderProgramTests
     {
         // Arrange
         CreateSystemUnderTest();
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockShaderLoader.Verify(m
@@ -241,7 +242,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         // Verify the creation of the vertex sut
@@ -262,7 +263,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -278,7 +279,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
@@ -301,7 +302,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext();
+            this.glInitReactor.OnReceive();
         }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.{Environment.NewLine}Vertex Shader Compile Error");
     }
 
@@ -319,7 +320,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext();
+            this.glInitReactor.OnReceive();
         }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.{Environment.NewLine}Fragment Shader Compile Error");
     }
 
@@ -337,7 +338,7 @@ public class ShaderProgramTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            this.glInitReactor.OnNext();
+            this.glInitReactor.OnReceive();
         }, $"Error linking shader with ID '{ShaderProgramId}'{Environment.NewLine}Program Linking Error");
     }
 
@@ -359,7 +360,7 @@ public class ShaderProgramTests
     {
         // Arrange
         var program = CreateSystemUnderTest();
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Act
         program.Use();
@@ -373,11 +374,11 @@ public class ShaderProgramTests
     {
         // Arrange
         CreateSystemUnderTest();
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Act
-        this.shutDownReactor?.OnNext();
-        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnReceive();
+        this.shutDownReactor?.OnReceive();
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
@@ -392,7 +393,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnComplete();
+        this.glInitReactor.OnUnsubscribe();
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());

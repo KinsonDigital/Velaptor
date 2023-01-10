@@ -33,7 +33,7 @@ public sealed class Sound : ISound
     {
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
         var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
 
         Init(reactable, filePath, soundFactory.GetNewId(filePath));
@@ -42,10 +42,10 @@ public sealed class Sound : ISound
     /// <summary>
     /// Initializes a new instance of the <see cref="Sound"/> class.
     /// </summary>
-    /// <param name="reactable">Sends a push notifications to dispose of sounds.</param>
+    /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the sound file.</param>
     /// <param name="soundId">The unique ID of the sound.</param>
-    internal Sound(IReactable reactable, string filePath, uint soundId) => Init(reactable, filePath, soundId);
+    internal Sound(IPushReactable reactable, string filePath, uint soundId) => Init(reactable, filePath, soundId);
 
     /// <inheritdoc/>
     public uint Id { get; private set; }
@@ -173,12 +173,14 @@ public sealed class Sound : ISound
     /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the sound file.</param>
     /// <param name="soundId">The unique ID of the sound.</param>
-    private void Init(IReactable reactable, string filePath, uint soundId)
+    private void Init(IPushReactable reactable, string filePath, uint soundId)
     {
+        var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
         this.disposeUnsubscriber =
-            reactable.Subscribe(new Reactor(
+            reactable.Subscribe(new ReceiveReactor(
                 eventId: NotificationIds.SoundDisposedId,
-                onNextMsg: msg =>
+                name: soundDisposeName,
+                onReceiveMsg: msg =>
                 {
                     var data = msg.GetData<DisposeSoundData>();
 
@@ -189,7 +191,7 @@ public sealed class Sound : ISound
 
                     Dispose(data);
                 },
-                onCompleted: () => Dispose(new DisposeSoundData { SoundId = Id })));
+                onUnsubscribe: () => Dispose(new DisposeSoundData { SoundId = Id })));
 
         this.sound = new CASLSound(filePath);
         Id = soundId;

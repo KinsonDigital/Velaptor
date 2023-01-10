@@ -4,7 +4,6 @@
 
 namespace Velaptor.Services;
 
-using System;
 using System.Collections.ObjectModel;
 
 /// <summary>

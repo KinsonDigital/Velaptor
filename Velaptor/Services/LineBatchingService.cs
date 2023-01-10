@@ -1,4 +1,4 @@
-// <copyright file="LineBatchingService.cs" company="KinsonDigital">
+﻿// <copyright file="LineBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,19 +20,24 @@ using ReactableData;
 internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
 {
     private readonly IDisposable unsubscriber;
+    private readonly IPushReactable reactable;
     private LineBatchItem[] batchItems = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingService"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public LineBatchingService(IReactable reactable)
+    public LineBatchingService(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        this.reactable = reactable;
+
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -52,7 +57,7 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
 
                 this.batchItems = items.ToArray();
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>
@@ -69,7 +74,7 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
 
         if (batchIsFull)
         {
-            this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
+            this.reactable.Push(NotificationIds.RenderLinesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

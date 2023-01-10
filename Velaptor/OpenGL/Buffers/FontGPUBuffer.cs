@@ -38,14 +38,16 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     public FontGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
             : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.batchSizeUnsubscriber = reactable.Subscribe(new Reactor(
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.batchSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -56,7 +58,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.batchSizeUnsubscriber?.Dispose()));
+            onUnsubscribe: () => this.batchSizeUnsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

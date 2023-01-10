@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -36,11 +37,11 @@ public class RectGPUBufferTests
     private const uint ViewPortHeight = 200u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
-    private IReactor? glInitReactor;
-    private IReactor? batchSizeReactor;
-    private IReactor? viewPortSizeReactor;
+    private IReceiveReactor? glInitReactor;
+    private IReceiveReactor? batchSizeReactor;
+    private IReceiveReactor? viewPortSizeReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -67,61 +68,61 @@ public class RectGPUBufferTests
 
         this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns<IReactor>(reactor =>
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
                     return null!;
                 }
 
-                if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                if (reactor.Id == NotificationIds.BatchSizeSetId)
                 {
                     return this.mockBatchSizeUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
                 {
                     // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
                     return null!;
                 }
 
-                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
                     return null!;
                 }
 
-                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.BatchSizeSetId)
+                else if (reactor.Id == NotificationIds.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.ViewPortSizeChangedId)
+                else if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
                 {
                     this.viewPortSizeReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     // EMPTY ON PURPOSE.  SIMPLY IGNORING THIS EVENT ID
                 }
                 else
                 {
-                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -244,7 +245,7 @@ public class RectGPUBufferTests
 
         var sut = CreateSystemUnderTest();
 
-        this.viewPortSizeReactor.OnNext(mockMessage.Object);
+        this.viewPortSizeReactor.OnReceive(mockMessage.Object);
 
         // Act
         sut.UploadVertexData(rect, 0);
@@ -514,7 +515,7 @@ public class RectGPUBufferTests
         mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
-        this.batchSizeReactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateData();
@@ -591,7 +592,7 @@ public class RectGPUBufferTests
         mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
-        this.batchSizeReactor.OnNext(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Act
         var actual = sut.GenerateIndices();
@@ -610,8 +611,8 @@ public class RectGPUBufferTests
         _ = CreateSystemUnderTest(false);
 
         // Act
-        this.batchSizeReactor.OnComplete();
-        this.batchSizeReactor.OnComplete();
+        this.batchSizeReactor.OnUnsubscribe();
+        this.batchSizeReactor.OnUnsubscribe();
 
         // Assert
         this.mockBatchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
@@ -631,7 +632,7 @@ public class RectGPUBufferTests
         _ = CreateSystemUnderTest(false);
 
         // Act
-        var act = () => this.batchSizeReactor.OnNext(mockMessage.Object);
+        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -683,7 +684,7 @@ public class RectGPUBufferTests
 
         if (initialize)
         {
-            this.glInitReactor.OnNext();
+            this.glInitReactor.OnReceive();
         }
 
         return result;

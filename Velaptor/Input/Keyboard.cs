@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Carbonate;
+using Carbonate.Core;
 using Guards;
 using ReactableData;
 using Velaptor.Exceptions;
@@ -24,13 +25,15 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public Keyboard(IReactable reactable)
+    public Keyboard(IReactable<IReceiveReactor> reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.KeyboardStateChangedId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.KeyboardStateChangedId,
-            onNextMsg: msg =>
+            name: keyboardStateChangeName,
+            onReceiveMsg: msg =>
             {
                 var data = msg.GetData<KeyboardKeyStateData>();
 
@@ -41,7 +44,7 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
                 this.keyStates[data.Key] = data.IsDown;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
 
         InitializeKeyStates();
     }

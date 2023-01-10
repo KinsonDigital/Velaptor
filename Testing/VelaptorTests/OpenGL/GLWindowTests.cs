@@ -50,7 +50,7 @@ public class GLWindowTests
     private readonly Mock<IPlatform> mockPlatform;
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<ITaskService> mockTaskService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
     private readonly Mock<IWindowFactory> mockWindowFactory;
     private Mock<INativeInputFactory>? mockNativeInputFactory;
@@ -79,7 +79,7 @@ public class GLWindowTests
         this.mockPlatform = new Mock<IPlatform>();
         this.mockContentLoader = new Mock<IContentLoader>();
         this.mockTaskService = new Mock<ITaskService>();
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
     }
 
     #region Contructor Tests

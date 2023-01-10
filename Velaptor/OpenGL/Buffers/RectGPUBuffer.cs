@@ -39,14 +39,16 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     public RectGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
             : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -57,7 +59,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

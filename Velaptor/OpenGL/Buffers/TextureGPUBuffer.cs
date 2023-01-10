@@ -1,4 +1,4 @@
-// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -40,14 +40,16 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     public TextureGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
         : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -58,7 +60,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

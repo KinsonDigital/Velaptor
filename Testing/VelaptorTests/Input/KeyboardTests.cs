@@ -7,6 +7,7 @@ namespace VelaptorTests.Input;
 using System;
 using System.Collections.Generic;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -21,12 +22,12 @@ using Xunit;
 /// </summary>
 public class KeyboardTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardTests"/> class.
     /// </summary>
-    public KeyboardTests() => this.mockReactable = new Mock<IReactable>();
+    public KeyboardTests() => this.mockReactable = new Mock<IPushReactable>();
 
     #region Constructor Tests
     [Fact]
@@ -51,7 +52,7 @@ public class KeyboardTests
         var unused = CreateSystemUnderTest();
 
         // Assert
-        this.mockReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor>()));
+        this.mockReactable.VerifyOnce(m => m.Subscribe(It.IsAny<IReceiveReactor>()));
     }
 
     [Fact]
@@ -61,14 +62,14 @@ public class KeyboardTests
         var expected = $"There was an issue with the '{nameof(Keyboard)}.Constructor()' subscription source";
         expected += $" for subscription ID '{NotificationIds.KeyboardStateChangedId}'.";
 
-        IReactor? reactor = null;
+        IReceiveReactor? reactor = null;
 
         var mockMessage = new Mock<IMessage>();
         mockMessage.Setup(m => m.GetData<KeyboardKeyStateData>(It.IsAny<Action<Exception>?>()))
             .Returns<Action<Exception>?>(_ => null);
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
                 reactor = reactorObj;
@@ -77,7 +78,7 @@ public class KeyboardTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => reactor.OnNext(mockMessage.Object);
+        var act = () => reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -90,7 +91,7 @@ public class KeyboardTests
     public void GetState_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        IReactor? reactor = null;
+        IReceiveReactor? reactor = null;
 
         var expected = new KeyValuePair<KeyCode, bool>(KeyCode.K, true);
 
@@ -104,14 +105,14 @@ public class KeyboardTests
         mockMessage.Setup(m => m.GetData<KeyboardKeyStateData>(It.IsAny<Action<Exception>?>()))
             .Returns<Action<Exception>?>(_ => keyState);
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactor = reactorObj;
             });
 
         var sut = CreateSystemUnderTest();
-        reactor.OnNext(mockMessage.Object);
+        reactor.OnReceive(mockMessage.Object);
 
         // Act
         var actual = sut.GetState().GetKeyStates();
@@ -128,16 +129,16 @@ public class KeyboardTests
         IReactor? reactor = null;
         mockUnsubscriber.Name = nameof(mockUnsubscriber);
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(mockUnsubscriber.Object)
-            .Callback<IReactor>(reactorObj =>
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactor = reactorObj;
             });
         var unused = new Keyboard(this.mockReactable.Object);
 
         // Act
-        reactor.OnComplete();
+        reactor.OnUnsubscribe();
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());

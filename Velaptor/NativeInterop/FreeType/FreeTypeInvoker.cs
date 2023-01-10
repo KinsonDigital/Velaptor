@@ -167,7 +167,7 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     /// </remarks>
     private static string CreateErrorMessage(string freeTypeMsg)
     {
-        freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);
+        freeTypeMsg = freeTypeMsg.RemoveAll("FT_Err");
 
         var result = string.Empty;
 

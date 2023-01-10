@@ -1,14 +1,14 @@
-// <copyright file="NotificationIds.cs" company="KinsonDigital">
+﻿// <copyright file="NotificationIds.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor;
 
 using System;
-using Carbonate;
+using Carbonate.Core;
 
 /// <summary>
-/// Contains unique event GUIDs for the <see cref="Reactable"/> push notification system.
+/// Contains unique event GUIDs for the <see cref="IReactable{T}"/> push notification system.
 /// </summary>
 internal static class NotificationIds
 {

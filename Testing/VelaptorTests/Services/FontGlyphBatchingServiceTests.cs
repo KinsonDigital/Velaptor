@@ -1,4 +1,4 @@
-// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -23,9 +24,9 @@ using Xunit;
 
 public class FontGlyphBatchingServiceTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReactor? reactor;
+    private IReceiveReactor? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingServiceTests"/> class.
@@ -34,9 +35,9 @@ public class FontGlyphBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj => this.reactor = reactorObj)
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
     }
 
@@ -66,7 +67,7 @@ public class FontGlyphBatchingServiceTests
 
         var sut = CreateService();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -79,8 +80,8 @@ public class FontGlyphBatchingServiceTests
         _ = CreateService();
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.reactor.OnUnsubscribe();
+        this.reactor.OnUnsubscribe();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
@@ -93,8 +94,8 @@ public class FontGlyphBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(FontGlyphBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -108,7 +109,7 @@ public class FontGlyphBatchingServiceTests
         _ = CreateService();
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -187,7 +188,7 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 1u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
 
         // Act
@@ -227,7 +228,7 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
         service.Add(batchItem2);
 
@@ -250,7 +251,7 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act

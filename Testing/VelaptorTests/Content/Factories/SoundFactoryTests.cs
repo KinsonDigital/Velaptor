@@ -6,6 +6,7 @@ namespace VelaptorTests.Content.Factories;
 
 using System;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -20,11 +21,11 @@ using Xunit;
 /// </summary>
 public class SoundFactoryTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockDisposeSoundUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReactor? disposeReactor;
-    private IReactor? shutDownReactor;
+    private IReceiveReactor? disposeReactor;
+    private IReceiveReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactoryTests"/> class.
@@ -34,40 +35,40 @@ public class SoundFactoryTests
         this.mockDisposeSoundUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns<IReactor>(reactor =>
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.SoundDisposedId)
+                if (reactor.Id == NotificationIds.SoundDisposedId)
                 {
                     return this.mockDisposeSoundUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
-                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.SoundDisposedId)
+                if (reactor.Id == NotificationIds.SoundDisposedId)
                 {
                     this.disposeReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }
                 else
                 {
-                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -104,7 +105,7 @@ public class SoundFactoryTests
             .Returns<Action<Exception>?>(_ => null);
 
         // Act
-        var act = () => this.disposeReactor.OnNext(mockMessage.Object);
+        var act = () => this.disposeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -133,7 +134,7 @@ public class SoundFactoryTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.shutDownReactor.OnNext();
+        this.shutDownReactor.OnReceive();
 
         // Assert
         this.mockDisposeSoundUnsubscriber.VerifyOnce(m => m.Dispose());

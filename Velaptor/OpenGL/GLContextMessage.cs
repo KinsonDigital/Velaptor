@@ -6,7 +6,7 @@ namespace Velaptor.OpenGL;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
+using Carbonate.Core;
 using Silk.NET.OpenGL;
 
 /// <summary>
@@ -20,7 +20,7 @@ public class GLContextMessage : IMessage
     /// <summary>
     /// Initializes a new instance of the <see cref="GLContextMessage"/> class.
     /// </summary>
-    /// <param name="gl">An OpenGL instance.</param>
+    /// <param name="gl">Invokes OpenGL functions.</param>
     public GLContextMessage(GL gl) => this.gl = gl;
 
     /// <summary>

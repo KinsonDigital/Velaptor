@@ -41,7 +41,7 @@ public sealed class Texture : ITexture
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
 
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
 
         FilePath = filePath;
         Init(reactable, name, imageData);
@@ -59,7 +59,7 @@ public sealed class Texture : ITexture
     internal Texture(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable,
+        IPushReactable reactable,
         string name,
         string filePath,
         ImageData imageData)
@@ -129,12 +129,14 @@ public sealed class Texture : ITexture
     /// <param name="reactable">Sends and receives push notifications.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void Init(IReactable reactable, string name, ImageData imageData)
+    private void Init(IPushReactable reactable, string name, ImageData imageData)
     {
+        var textureDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.TextureDisposedId));
         this.disposeUnsubscriber =
-            reactable.Subscribe(new Reactor(
+            reactable.Subscribe(new ReceiveReactor(
                 eventId: NotificationIds.TextureDisposedId,
-                onNextMsg: msg =>
+                name: textureDisposeName,
+                onReceiveMsg: msg =>
                 {
                     var data = msg.GetData<DisposeTextureData>();
 
@@ -145,7 +147,7 @@ public sealed class Texture : ITexture
 
                     Dispose(data);
                 },
-                onCompleted: () => Dispose(new DisposeTextureData { TextureId = Id })));
+                onUnsubscribe: () => Dispose(new DisposeTextureData { TextureId = Id })));
 
         if (imageData.IsEmpty())
         {

@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL.Shaders;
 using System;
 using System.Linq;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -21,12 +22,12 @@ using Xunit;
 
 public class LineShaderTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineShaderTests"/> class.
     /// </summary>
-    public LineShaderTests() => this.mockReactable = new Mock<IReactable>();
+    public LineShaderTests() => this.mockReactable = new Mock<IPushReactable>();
 
     #region Constructor Tests
     [Fact]
@@ -52,10 +53,10 @@ public class LineShaderTests
     public void Ctor_WhenReceivingBatchSizeNotification_SetsBatchSize()
     {
         // Arrange
-        IReactor? reactor = null;
+        IReceiveReactor? reactor = null;
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -69,7 +70,7 @@ public class LineShaderTests
         var shader = CreateSystemUnderTest();
 
         // Act
-        reactor.OnNext(mockMessage.Object);
+        reactor.OnReceive(mockMessage.Object);
         var actual = shader.BatchSize;
 
         // Assert
@@ -80,11 +81,11 @@ public class LineShaderTests
     public void Ctor_WhenEndingNotifications_Unsubscribes()
     {
         // Arrange
-        IReactor? reactor = null;
+        IReceiveReactor? reactor = null;
         var mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 if (reactorObj is null)
                 {
@@ -93,13 +94,13 @@ public class LineShaderTests
 
                 reactor = reactorObj;
             })
-            .Returns<IReactor>(_ => mockUnsubscriber.Object);
+            .Returns<IReceiveReactor>(_ => mockUnsubscriber.Object);
 
         _ = CreateSystemUnderTest();
 
         // Act
-        reactor.OnComplete();
-        reactor.OnComplete();
+        reactor.OnUnsubscribe();
+        reactor.OnUnsubscribe();
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());
@@ -129,10 +130,10 @@ public class LineShaderTests
         var expectedMsg = $"There was an issue with the '{nameof(LineShader)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        IReactor? reactor = null;
+        IReceiveReactor? reactor = null;
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -146,7 +147,7 @@ public class LineShaderTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => reactor.OnNext(mockMessage.Object);
+        var act = () => reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()

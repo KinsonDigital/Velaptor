@@ -32,7 +32,7 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
 
         textureShader = new TextureShader(
             glInvoker,
@@ -54,7 +54,7 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
 
         fontShader = new FontShader(
             glInvoker,
@@ -76,7 +76,7 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
 
         rectShader = new RectangleShader(
             glInvoker,
@@ -98,7 +98,7 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var reactable = IoC.Container.GetInstance<IReactable>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
 
         lineShader = new LineShader(
             glInvoker,

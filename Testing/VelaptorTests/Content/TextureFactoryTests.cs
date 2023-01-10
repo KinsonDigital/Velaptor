@@ -20,7 +20,7 @@ public class TextureFactoryTests
 {
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactoryTests"/> class.
@@ -29,7 +29,7 @@ public class TextureFactoryTests
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
     }
 
     #region Constructor Tests

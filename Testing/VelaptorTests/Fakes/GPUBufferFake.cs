@@ -20,10 +20,10 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
-    /// <param name="reactable">Mocked <see cref="IReactable"/> for OpenGL initialization.</param>
+    /// <param name="reactable">Mocked <see cref="IPushReactable"/> for OpenGL initialization.</param>
     public GPUBufferFake(IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
             : base(gl, openGLService, reactable)
     {
     }

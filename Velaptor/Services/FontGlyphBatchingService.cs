@@ -1,4 +1,4 @@
-// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,6 +20,7 @@ using ReactableData;
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
+    private readonly IPushReactable reactable;
     private FontGlyphBatchItem[] batchItems = null!;
 #if DEBUG
     private uint currentFrame;
@@ -29,13 +30,17 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     /// Initializes a new instance of the <see cref="FontGlyphBatchingService"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public FontGlyphBatchingService(IReactable reactable)
+    public FontGlyphBatchingService(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        this.reactable = reactable;
+
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -55,7 +60,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
 
                 this.batchItems = items.ToArray();
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>
@@ -75,7 +80,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
 
         if (batchIsFull)
         {
-            this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
+            this.reactable.Push(NotificationIds.RenderFontsId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

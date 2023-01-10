@@ -69,7 +69,7 @@ internal static class IoC
 
         SetupContent();
 
-        IoCContainer.Register<IReactable>(() => new Reactable(), Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable>(() => new PushReactable(), Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
@@ -78,7 +78,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to OpenGL.
+    /// Sets up the container registration related to OpenGL.
     /// </summary>
     private static void SetupNativeInterop()
     {
@@ -120,7 +120,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to factories.
+    /// Sets up the container registration related to factories.
     /// </summary>
     private static void SetupFactories()
     {
@@ -136,7 +136,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to services.
+    /// Sets up the container registration related to services.
     /// </summary>
     private static void SetupServices()
     {
@@ -174,7 +174,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to content.
+    /// Sets up the container registration related to content.
     /// </summary>
     private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
 }

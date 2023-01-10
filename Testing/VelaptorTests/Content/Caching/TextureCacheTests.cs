@@ -8,6 +8,7 @@ using System;
 using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -41,10 +42,10 @@ public class TextureCacheTests
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
-    private IReactor? shutDownReactor;
+    private IReceiveReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -98,11 +99,11 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
@@ -526,8 +527,8 @@ public class TextureCacheTests
         cache.GetItem(texturePathB);
 
         // Act
-        this.shutDownReactor?.OnNext();
-        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnReceive();
+        this.shutDownReactor?.OnReceive();
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());

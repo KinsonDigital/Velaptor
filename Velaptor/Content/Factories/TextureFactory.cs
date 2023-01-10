@@ -18,7 +18,7 @@ internal sealed class TextureFactory : ITextureFactory
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService mockGLService;
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
@@ -28,16 +28,16 @@ internal sealed class TextureFactory : ITextureFactory
     {
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.mockGLService = IoC.Container.GetInstance<IOpenGLService>();
-        this.reactable = IoC.Container.GetInstance<IReactable>();
+        this.reactable = IoC.Container.GetInstance<IPushReactable>();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    /// <param name="gl">Provides access to OpenGL functions.</param>
+    /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactable reactable)
+    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
