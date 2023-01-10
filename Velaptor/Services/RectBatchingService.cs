@@ -56,9 +56,6 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
     }
 
     /// <inheritdoc/>
-    public event EventHandler<EventArgs>? ReadyForRendering;
-
-    /// <inheritdoc/>
     public ReadOnlyCollection<RectBatchItem> BatchItems
     {
         get => new (this.batchItems);

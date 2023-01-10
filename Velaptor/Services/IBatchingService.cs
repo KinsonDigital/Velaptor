@@ -14,14 +14,6 @@ using System.Collections.ObjectModel;
 internal interface IBatchingService<T>
 {
     /// <summary>
-    /// Occurs when the batch is ready for rendering.
-    /// </summary>
-    /// <remarks>
-    ///     The batch is ready when all of the items are ready to be rendered.
-    /// </remarks>
-    event EventHandler<EventArgs>? ReadyForRendering;
-
-    /// <summary>
     /// Gets or sets the list of batch items.
     /// </summary>
     ReadOnlyCollection<T> BatchItems { get; set; }

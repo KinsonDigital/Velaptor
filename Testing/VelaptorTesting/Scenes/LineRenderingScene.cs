@@ -13,6 +13,7 @@ using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
 /// <summary>
@@ -24,6 +25,8 @@ public class LineRenderingScene : SceneBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private IAppInput<MouseState>? mouse;
     private IAppInput<KeyboardState>? keyboard;
+    private ILineRenderer? lineRenderer;
+    private IFontRenderer? fontRenderer;
     private IFont? font;
     private Line line;
     private MouseState currentMouseState;
@@ -46,6 +49,10 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
+        var renderFactory = new RendererFactory();
+        this.lineRenderer = renderFactory.CreateLineRenderer();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
         this.keyboard = AppInputFactory.CreateKeyboard();
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
         this.mouse = AppInputFactory.CreateMouse();
@@ -96,13 +103,12 @@ public class LineRenderingScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
-        renderer.Render(this.line);
+        this.lineRenderer.Render(this.line);
+        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
 
-        renderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
-
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>

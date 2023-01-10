@@ -13,6 +13,8 @@ using Content.Caching;
 using Content.Factories;
 using Content.Fonts.Services;
 using Factories;
+using Graphics;
+using Graphics.Renderers;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
@@ -20,7 +22,6 @@ using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Services;
-using OpenGL.Shaders;
 using Services;
 using SimpleInjector;
 
@@ -57,6 +58,8 @@ internal static class IoC
     private static void SetupContainer()
     {
         SetupNativeInterop();
+
+        SetupBuffers();
 
         SetupCaching();
 
@@ -97,7 +100,18 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to caching.
+    /// Sets up the container registration related to the GPU buffers.
+    /// </summary>
+    private static void SetupBuffers()
+    {
+        IoCContainer.Register<IGPUBuffer<TextureBatchItem>, TextureGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<FontGlyphBatchItem>, FontGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<RectBatchItem>, RectGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<LineBatchItem>, LineGPUBuffer>(Lifestyle.Singleton);
+    }
+
+    /// <summary>
+    /// Sets up the container registration related to caching.
     /// </summary>
     private static void SetupCaching()
     {
@@ -116,10 +130,9 @@ internal static class IoC
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IShaderManager, ShaderManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBufferFactory, GPUBufferFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IBufferManager, BufferManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontFactory, FontFactory>();
+        IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
+        IoCContainer.Register<IRendererFactory, RendererFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -147,7 +160,6 @@ internal static class IoC
         IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<LineBatchItem>, LineBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchServiceManager, BatchServiceManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(

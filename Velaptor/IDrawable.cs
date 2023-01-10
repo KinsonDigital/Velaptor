@@ -4,8 +4,6 @@
 
 namespace Velaptor;
 
-using Graphics;
-
 /// <summary>
 /// Provides the ability for an object to be rendered.
 /// </summary>
@@ -14,6 +12,5 @@ public interface IDrawable
     /// <summary>
     /// Renders the object.
     /// </summary>
-    /// <param name="renderer">Renders textures, primitives, and text.</param>
-    void Render(IRenderer renderer);
+    void Render();
 }

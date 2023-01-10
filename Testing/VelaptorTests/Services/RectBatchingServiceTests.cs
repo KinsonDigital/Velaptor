@@ -178,17 +178,11 @@ public class RectBatchingServiceTests
         this.reactor.OnNext(mockMessage.Object);
         sut.Add(batchItem1);
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            sut.ReadyForRendering += e;
-        }, e =>
-        {
-            sut.ReadyForRendering -= e;
-        }, () =>
-        {
-            sut.Add(batchItem2);
-        });
+        // Act
+        sut.Add(batchItem2);
+
+        // Assert
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderRectsId));
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-﻿// <copyright file="LineBatchingService.cs" company="KinsonDigital">
+// <copyright file="LineBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -54,9 +54,6 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
     }
-
-    /// <inheritdoc/>
-    public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
     public ReadOnlyCollection<LineBatchItem> BatchItems

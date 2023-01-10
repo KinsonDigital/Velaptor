@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Carbonate;
 using Content;
 using Factories;
-using Graphics;
 using Guards;
 using Input;
 using Input.Exceptions;
@@ -95,7 +94,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(renderer);
         EnsureThat.ParamIsNotNull(reactable);
 
         this.windowFactory = windowFactory;
@@ -106,7 +104,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         ContentLoader = contentLoader;
-        this.renderer = renderer;
 
         this.reactable = reactable;
 

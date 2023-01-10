@@ -12,7 +12,7 @@ using System.Linq;
 using Content;
 using Content.Fonts;
 using Factories;
-using Graphics;
+using Graphics.Renderers;
 using Guards;
 using Input;
 
@@ -24,6 +24,7 @@ public class Label : ControlBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IContentLoader contentLoader;
     private readonly Color disabledColor = Color.DarkGray;
+    private readonly IFontRenderer fontRenderer;
     private string labelText = string.Empty;
     private (char character, RectangleF bounds)[]? textCharBounds;
 
@@ -33,6 +34,9 @@ public class Label : ControlBase
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Label()
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
     }
@@ -43,20 +47,27 @@ public class Label : ControlBase
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="font">The type of font to render the text.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
+    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
     ///         <item><paramref name="contentLoader"/></item>
     ///     </list>
     /// </exception>
-    internal Label(IContentLoader contentLoader, IFont font, IAppInput<MouseState> mouse)
+    internal Label(
+        IContentLoader contentLoader,
+        IFont font,
+        IAppInput<MouseState> mouse,
+        IRendererFactory rendererFactory)
         : base(mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(font);
+        EnsureThat.ParamIsNotNull(rendererFactory);
 
         this.contentLoader = contentLoader;
         Font = font;
+        this.fontRenderer = rendererFactory.CreateFontRenderer();
     }
 
     /// <summary>
@@ -189,25 +200,14 @@ public class Label : ControlBase
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
-    /// <param name="renderer">Renders textures, primitives, and text.</param>
-    /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
-    public override void Render(IRenderer renderer)
-    {
-        Render(renderer, this.labelText);
-
-        base.Render(renderer);
-    }
+    public override void Render() => Render(this.labelText);
 
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
-    /// <param name="renderer">Renders textures, primitives, and text.</param>
     /// <param name="text">The text to render.</param>
-    /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
-    internal void Render(IRenderer renderer, string text)
+    internal void Render(string text)
     {
-        EnsureThat.ParamIsNotNull(renderer);
-
         if (IsLoaded is false || Visible is false)
         {
             return;
@@ -215,7 +215,7 @@ public class Label : ControlBase
 
         if (string.IsNullOrEmpty(text) is false)
         {
-            renderer.Render(
+            this.fontRenderer.Render(
                 Font,
                 text,
                 Position.X,
@@ -225,7 +225,7 @@ public class Label : ControlBase
                 Enabled ? Color : this.disabledColor);
         }
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <summary>

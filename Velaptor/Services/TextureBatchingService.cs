@@ -56,18 +56,6 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
             onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <remarks>
-    /// Invoked when the scenarios below occur:
-    /// <list type="bullet">
-    ///     <item>When the item to be called is a different texture.</item>
-    ///     <item>When all of the items are ready to be rendered.</item>
-    /// </list>
-    /// </remarks>
-    public event EventHandler<EventArgs>? ReadyForRendering;
-
     /// <inheritdoc/>
     public ReadOnlyCollection<TextureBatchItem> BatchItems
     {

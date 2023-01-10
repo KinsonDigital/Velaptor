@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchingServiceTests.cs" company="KinsonDigital">
+// <copyright file="TextureBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -187,8 +187,7 @@ public class TextureBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        var monitor = sut.Monitor();
-
+        this.reactor.OnReceive(mockMessage.Object);
         this.reactor.OnNext(mockMessage.Object);
         sut.Add(batchItem1);
 

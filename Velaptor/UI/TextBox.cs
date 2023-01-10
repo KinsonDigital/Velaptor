@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Content;
-using Graphics;
+using Graphics.Renderers;
 
 /// <summary>
 /// Provides the ability to enter text into a box.
@@ -40,7 +40,7 @@ internal sealed class TextBox : ControlBase
     {
         this.contentLoader = contentLoader;
 
-        this.text = new Label(contentLoader, null, null)
+        this.text = new Label(contentLoader, null, null, IoC.Container.GetInstance<IRendererFactory>())
         {
             Position = Point.Empty,
             Text = "Textbox Text",
@@ -99,14 +99,15 @@ internal sealed class TextBox : ControlBase
     }
 
     /// <inheritdoc/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         if (IsLoaded is false || Visible is false)
         {
             return;
         }
 
-        this.text.Render(renderer);
+        // TODO: Fix renderer
+        // this.text.Render(renderer);
     }
 
     /// <summary>

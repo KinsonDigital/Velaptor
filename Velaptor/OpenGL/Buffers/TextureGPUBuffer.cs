@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -125,10 +125,10 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         bottomRight = bottomRight.RotateAround(origin, angle);
         topRight = topRight.RotateAround(origin, angle);
 
-        var vertex1 = topLeft.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-        var vertex2 = bottomLeft.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-        var vertex3 = topRight.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-        var vertex4 = bottomRight.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
+        var vertex1 = topLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex2 = bottomLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex3 = topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex4 = bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
         // Set up the corners of the sub texture to render
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);

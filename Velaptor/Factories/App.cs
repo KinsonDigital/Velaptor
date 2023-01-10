@@ -1,4 +1,4 @@
-﻿// <copyright file="App.cs" company="KinsonDigital">
+// <copyright file="App.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -51,6 +51,5 @@ public static class App
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
-            RendererFactory.CreateRenderer(),
-            IoC.Container.GetInstance<IReactable>());
+            IoC.Container.GetInstance<IPushReactable>());
 }

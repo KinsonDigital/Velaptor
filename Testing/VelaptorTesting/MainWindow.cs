@@ -11,6 +11,7 @@ using Core;
 using Scenes;
 using Velaptor;
 using Velaptor.Factories;
+using Velaptor.Graphics.Renderers;
 using Velaptor.UI;
 
 /// <summary>
@@ -37,10 +38,10 @@ public class MainWindow : Window
 
         WindowWidth = Width;
         WindowHeight = Height;
-        var renderer = RendererFactory.CreateRenderer();
-        renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.sceneManager = new SceneManager(renderer);
+        IRenderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
+
+        this.sceneManager = new SceneManager();
 
         var textRenderingScene = new TextRenderingScene(contentLoader)
         {

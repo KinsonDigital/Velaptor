@@ -11,7 +11,8 @@ using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Velaptor.Graphics;
+using Velaptor.Factories;
+using Velaptor.Graphics.Renderers;
 using Velaptor.UI;
 
 /// <summary>
@@ -27,6 +28,7 @@ public class TextRenderingScene : SceneBase
     private const string SingleLineText = "Change me using the buttons to the left.";
     private readonly Point windowCenter;
     private readonly string multiLineText = $"Change me using{Environment.NewLine}the buttons to the left.";
+    private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private Button? btnRotateCW;
     private Button? btnRotateCCW;
@@ -63,6 +65,10 @@ public class TextRenderingScene : SceneBase
         {
             return;
         }
+
+        var renderFactory = new RendererFactory();
+
+        this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
@@ -287,12 +293,12 @@ public class TextRenderingScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         var xPos = (int)(MainWindow.WindowWidth / 2f);
         var yPos = (int)MainWindow.WindowHeight / 2;
 
-        renderer.Render(
+        this.fontRenderer.Render(
             this.textFont,
             this.isMultiLine ? this.multiLineText : SingleLineText,
             xPos,
@@ -301,7 +307,7 @@ public class TextRenderingScene : SceneBase
             this.angle,
             this.isClrSet ? Color.CornflowerBlue : Color.White);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

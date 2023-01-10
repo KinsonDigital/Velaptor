@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -158,7 +158,7 @@ public class FontGlyphBatchingServiceTests
 
     #region Method Tests
     [Fact]
-    public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
+    public void Add_WhenBatchIsFull_SendsRenderPushNotification()
     {
         // Arrange
         var batchItem1 = new FontGlyphBatchItem(
@@ -190,17 +190,11 @@ public class FontGlyphBatchingServiceTests
         this.reactor.OnNext(mockMessage.Object);
         service.Add(batchItem1);
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            service.ReadyForRendering += e;
-        }, e =>
-        {
-            service.ReadyForRendering -= e;
-        }, () =>
-        {
-            service.Add(batchItem2);
-        });
+        // Act
+        service.Add(batchItem2);
+
+        // Assert
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderFontsId));
     }
 
     [Fact]

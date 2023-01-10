@@ -14,6 +14,7 @@ using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 
@@ -31,6 +32,8 @@ public class RectangleScene : SceneBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly Point windowCenter;
     private readonly IAppInput<KeyboardState> keyboard;
+    private IFontRenderer? fontRenderer;
+    private IRectangleRenderer? rectRenderer;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -70,6 +73,11 @@ public class RectangleScene : SceneBase
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
+        var renderFactory = new RendererFactory();
+
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         this.rectangle = new RectShape
         {
             Position = new Vector2(this.windowCenter.X, this.windowCenter.Y),
@@ -120,13 +128,13 @@ public class RectangleScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
-        renderer.Render(this.rectangle);
+        this.rectRenderer.Render(this.rectangle);
 
-        renderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
+        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <summary>

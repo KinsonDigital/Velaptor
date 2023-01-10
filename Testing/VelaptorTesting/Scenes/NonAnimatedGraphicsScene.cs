@@ -13,6 +13,7 @@ using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
 /// <summary>
@@ -26,6 +27,8 @@ public class NonAnimatedGraphicsScene : SceneBase
     private readonly int windowHalfHeight;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData octagonData;
+    private ITextureRenderer? textureRenderer;
+    private IFontRenderer? fontRenderer;
     private IFont? font;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
@@ -52,6 +55,11 @@ public class NonAnimatedGraphicsScene : SceneBase
         {
             return;
         }
+
+        var renderFactory = new RendererFactory();
+
+        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
         var textLines = new List<string>
@@ -137,7 +145,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         var posX = this.windowHalfWidth - (this.octagonData.Bounds.Width / 2);
         var posY = this.windowHalfHeight - (this.octagonData.Bounds.Height / 2);
@@ -145,9 +153,9 @@ public class NonAnimatedGraphicsScene : SceneBase
         var instructionsX = (int)(this.textSize.Width / 2) + 25;
         var instructionsY = (int)(this.textSize.Height / 2) + 25;
 
-        renderer.Render(this.font, this.instructions, instructionsX, instructionsY);
+        this.fontRenderer.Render(this.font, this.instructions, instructionsX, instructionsY);
 
-        renderer.Render(
+        this.textureRenderer.Render(
             this.mainAtlas.Texture,
             this.octagonData.Bounds,
             new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
@@ -156,7 +164,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             Color.White,
             this.renderEffects);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

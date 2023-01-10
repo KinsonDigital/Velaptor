@@ -16,6 +16,7 @@ using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 using Xunit;
@@ -30,6 +31,8 @@ public class LabelTests
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
+    private readonly Mock<IRendererFactory> mockRenderFactory;
+    private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LabelTests"/> class.
@@ -44,6 +47,12 @@ public class LabelTests
             .Returns(this.mockFont.Object);
 
         this.mockMouse = new Mock<IAppInput<MouseState>>();
+
+        this.mockFontRenderer = new Mock<IFontRenderer>();
+
+        this.mockRenderFactory = new Mock<IRendererFactory>();
+        this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
+            .Returns(this.mockFontRenderer.Object);
     }
 
     #region Constructor Tests
@@ -53,7 +62,11 @@ public class LabelTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Label(null, this.mockFont.Object, this.mockMouse.Object);
+            _ = new Label(
+                null,
+                this.mockFont.Object,
+                this.mockMouse.Object,
+                this.mockRenderFactory.Object);
         };
 
         // Assert
@@ -67,12 +80,34 @@ public class LabelTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Label(this.mockContentLoader.Object, null, this.mockMouse.Object);
+            _ = new Label(
+                this.mockContentLoader.Object,
+                null,
+                this.mockMouse.Object,
+                this.mockRenderFactory.Object);
         };
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'font')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullRendererFactoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Label(
+                this.mockContentLoader.Object,
+                this.mockFont.Object,
+                this.mockMouse.Object,
+                null);
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'rendererFactory')");
     }
     #endregion
 
@@ -405,36 +440,22 @@ public class LabelTests
     }
 
     [Fact]
-    public void Render_WithNullRenderer_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.Render(null);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'renderer')");
-    }
-
-    [Fact]
     public void Render_WhenInvokedWithoutLoadedContent_DoesNotRender()
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
-
         var sut = CreateSystemUnderTest();
         sut.Visible = true;
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render("test-value");
 
         // Assert
-        mockRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
+        this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
             It.IsAny<string>(),
             It.IsAny<int>(),
             It.IsAny<int>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
             It.IsAny<Color>(),
             It.IsAny<int>()), Times.Never);
     }
@@ -443,56 +464,52 @@ public class LabelTests
     public void Render_WhenInvokedWhileNotVisible_DoesNotRender()
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
         var sut = CreateSystemUnderTest();
         sut.Visible = false;
 
         // Act
         sut.LoadContent();
-        sut.Render(mockRenderer.Object);
+        sut.Render("test-value");
 
         // Assert
-        mockRenderer.Verify(m =>
-            m.Render(It.IsAny<IFont>(),
-                It.IsAny<string>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Color>(),
-                It.IsAny<int>()), Times.Never);
+        this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
+            It.IsAny<string>(),
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
+            It.IsAny<Color>(),
+            It.IsAny<int>()), Times.Never);
     }
 
-    [Fact]
-    public void Render_WithNullOrEmptyText_DoesNotRender()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void Render_WithNullOrEmptyText_DoesNotRender(string text)
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
-
         var sut = CreateSystemUnderTest();
         sut.Text = string.Empty;
         sut.LoadContent();
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render(text);
 
         // Assert
-        mockRenderer.Verify(m =>
-            m.Render(
-                It.IsAny<IFont>(),
-                It.IsAny<string>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<int>()), Times.Never);
+        this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
+            It.IsAny<string>(),
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
+            It.IsAny<Color>(),
+            It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
     public void Render_WhenInvoked_RendersText()
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
-
         var sut = CreateSystemUnderTest();
         sut.Text = TextValue;
         sut.Position = new Point(100, 200);
@@ -501,18 +518,17 @@ public class LabelTests
         sut.LoadContent();
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render(TextValue);
 
         // Assert
-        mockRenderer.Verify(m =>
-            m.Render(this.mockFont.Object,
-                TextValue,
-                100,
-                200,
-                1f,
-                0f,
-                Color.FromArgb(11, 22, 33, 44),
-                It.IsAny<int>()), Times.Once());
+        this.mockFontRenderer.Verify(m => m.Render(this.mockFont.Object,
+            TextValue,
+            100,
+            200,
+            1f,
+            0f,
+            Color.FromArgb(11, 22, 33, 44),
+            0), Times.Once);
     }
     #endregion
 
@@ -552,5 +568,9 @@ public class LabelTests
     /// Creates a new sut for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private Label CreateSystemUnderTest() => new (this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
+    private Label CreateSystemUnderTest() =>
+        new (this.mockContentLoader.Object,
+            this.mockFont.Object,
+            this.mockMouse.Object,
+            this.mockRenderFactory.Object);
 }

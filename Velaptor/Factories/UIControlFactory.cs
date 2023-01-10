@@ -6,6 +6,7 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using Content.Fonts;
+using Graphics.Renderers;
 using Input;
 using UI;
 
@@ -19,7 +20,8 @@ public class UIControlFactory : IUIControlFactory
         var label = new Label(
             ContentLoaderFactory.CreateContentLoader(),
             IoC.Container.GetInstance<IFont>(),
-            IoC.Container.GetInstance<IAppInput<MouseState>>())
+            IoC.Container.GetInstance<IAppInput<MouseState>>(),
+            IoC.Container.GetInstance<IRendererFactory>())
         {
             Text = labelText,
         };
@@ -33,7 +35,8 @@ public class UIControlFactory : IUIControlFactory
         var label = new Label(
             ContentLoaderFactory.CreateContentLoader(),
             font,
-            IoC.Container.GetInstance<IAppInput<MouseState>>())
+            IoC.Container.GetInstance<IAppInput<MouseState>>(),
+            IoC.Container.GetInstance<IRendererFactory>())
         {
             Text = labelText,
         };

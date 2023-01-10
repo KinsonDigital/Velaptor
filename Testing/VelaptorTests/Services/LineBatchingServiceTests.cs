@@ -1,4 +1,4 @@
-﻿// <copyright file="LineBatchingServiceTests.cs" company="KinsonDigital">
+// <copyright file="LineBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -149,7 +149,7 @@ public class LineBatchingServiceTests
 
     #region Method Tests
     [Fact]
-    public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
+    public void Add_WhenBatchIsFull_SendsRenderPushNotification()
     {
         // Arrange
         var batchItem1 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 1);
@@ -165,13 +165,11 @@ public class LineBatchingServiceTests
 
         sut.Add(batchItem1);
 
-        using var monitor = sut.Monitor();
-
         // Act
         sut.Add(batchItem2);
 
         // Assert
-        monitor.Should().Raise(nameof(LineBatchingService.ReadyForRendering));
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderLinesId));
     }
 
     [Fact]

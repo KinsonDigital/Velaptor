@@ -446,6 +446,59 @@ internal static class InternalExtensionMethods
     /// </returns>
     public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
+
+    /// <summary>
+    /// Builds a name that represents a location of where an execution took place.
+    /// </summary>
+    /// <param name="unused">The object to enable this extension method to be executed anywhere.</param>
+    /// <param name="postFixValue">The value to add to the end of the name.</param>
+    /// <param name="memberName">The name of the member invoked this method.</param>
+    /// <returns>The formatted member name of where this was invoked.</returns>
+    /// <exception cref="Exception">Occurs if the stack frame is null.</exception>
+    [SuppressMessage("ReSharper", "UnusedParameter.Global", Justification = "Helper method.")]
+    public static string GetExecutionMemberName(
+        this object unused,
+        string postFixValue = "",
+        [CallerMemberName] string memberName = "")
+    {
+        string callerLocation;
+        Type? declaringType;
+        var skipFrames = 2;
+
+        do
+        {
+            var method = new StackFrame(skipFrames, false).GetMethod();
+
+            if (method is null)
+            {
+                throw new Exception("There was an issue getting the method for stack frame 2.");
+            }
+
+            declaringType = method.DeclaringType;
+
+            if (declaringType == null)
+            {
+                return method.Name;
+            }
+
+            skipFrames++;
+            callerLocation = declaringType.FullName ?? string.Empty;
+        }
+        while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+        var containsPostFixValue = string.IsNullOrEmpty(postFixValue);
+
+        callerLocation = callerLocation.Contains(".")
+            ? callerLocation.Split('.')[^1]
+            : callerLocation;
+
+        memberName = memberName == ".ctor"
+            ? "Ctor"
+            : memberName;
+
+        return $"{callerLocation}.{memberName}{(containsPostFixValue ? string.Empty : " - ")}{postFixValue}";
+    }
+
     /// <summary>
     /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
     /// </summary>

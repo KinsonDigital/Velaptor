@@ -6,47 +6,122 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
-using Graphics;
+using Graphics.Renderers;
 using NativeInterop.OpenGL;
+using OpenGL;
 using OpenGL.Buffers;
-using OpenGL.Shaders;
 using Services;
 
-/// <summary>
-/// Creates instances of the type <see cref="Renderer"/>.
-/// </summary>
+/// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
-public static class RendererFactory
+public sealed class RendererFactory : IRendererFactory
 {
-    private static IRenderer? renderer;
+    private static ITextureRenderer? textureRenderer;
+    private static IFontRenderer? fontRenderer;
+    private static IRectangleRenderer? rectangleRenderer;
+    private static ILineRenderer? lineRenderer;
 
-    /// <summary>
-    /// Initializes and instance of a <see cref="IRenderer"/>.
-    /// </summary>
-    /// <returns>A Velaptor implemented renderer.</returns>
-    public static IRenderer CreateRenderer()
+    /// <inheritdoc/>
+    public ITextureRenderer CreateTextureRenderer()
     {
-        if (renderer is not null)
+        if (textureRenderer is not null)
         {
-            return renderer;
+            return textureRenderer;
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
-        var shaderManager = IoC.Container.GetInstance<IShaderManager>();
-        var bufferManager = IoC.Container.GetInstance<IBufferManager>();
+        var buffer = IoC.Container.GetInstance<IGPUBuffer<TextureBatchItem>>();
+        var shader = IoC.Container.GetInstance<IShaderFactory>().CreateTextureShader();
+        var textureBatchManager = IoC.Container.GetInstance<IBatchingService<TextureBatchItem>>();
 
-        var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
-        var reactable = IoC.Container.GetInstance<IReactable>();
-
-        renderer = new Renderer(
+        textureRenderer = new TextureRenderer(
             glInvoker,
+            reactable,
             openGLService,
-            shaderManager,
-            bufferManager,
-            batchServiceManager,
-            reactable);
+            buffer,
+            shader,
+            textureBatchManager);
 
-        return renderer;
+        return textureRenderer;
+    }
+
+    /// <inheritdoc/>
+    public IFontRenderer CreateFontRenderer()
+    {
+        if (fontRenderer is not null)
+        {
+            return fontRenderer;
+        }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var openGLService = IoC.Container.GetInstance<IOpenGLService>();
+        var buffer = IoC.Container.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
+        var shader = IoC.Container.GetInstance<IShaderFactory>().CreateFontShader();
+        var fontBatchService = IoC.Container.GetInstance<IBatchingService<FontGlyphBatchItem>>();
+
+        fontRenderer = new FontRenderer(
+            glInvoker,
+            reactable,
+            openGLService,
+            buffer,
+            shader,
+            fontBatchService);
+
+        return fontRenderer;
+    }
+
+    /// <inheritdoc/>
+    public IRectangleRenderer CreateRectangleRenderer()
+    {
+        if (rectangleRenderer is not null)
+        {
+            return rectangleRenderer;
+        }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var openGLService = IoC.Container.GetInstance<IOpenGLService>();
+        var buffer = IoC.Container.GetInstance<IGPUBuffer<RectBatchItem>>();
+        var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
+        var rectBatchService = IoC.Container.GetInstance<IBatchingService<RectBatchItem>>();
+
+        rectangleRenderer = new RectangleRenderer(
+            glInvoker,
+            reactable,
+            openGLService,
+            buffer,
+            shader,
+            rectBatchService);
+
+        return rectangleRenderer;
+    }
+
+    /// <inheritdoc/>
+    public ILineRenderer CreateLineRenderer()
+    {
+        if (lineRenderer is not null)
+        {
+            return lineRenderer;
+        }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var openGLService = IoC.Container.GetInstance<IOpenGLService>();
+        var buffer = IoC.Container.GetInstance<IGPUBuffer<LineBatchItem>>();
+        var shader = IoC.Container.GetInstance<IShaderFactory>().CreateLineShader();
+        var lineBatchService = IoC.Container.GetInstance<IBatchingService<LineBatchItem>>();
+
+        lineRenderer = new LineRenderer(
+            glInvoker,
+            reactable,
+            openGLService,
+            buffer,
+            shader,
+            lineBatchService);
+
+        return lineRenderer;
     }
 }

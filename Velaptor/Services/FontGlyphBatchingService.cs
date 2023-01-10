@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
+// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -57,9 +57,6 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
             },
             onCompleted: () => this.unsubscriber?.Dispose()));
     }
-
-    /// <inheritdoc/>
-    public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
     public ReadOnlyCollection<FontGlyphBatchItem> BatchItems
