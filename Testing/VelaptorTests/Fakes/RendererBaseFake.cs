@@ -11,7 +11,7 @@ using Velaptor.NativeInterop.OpenGL;
 /// <summary>
 /// Used to test the <see cref="RendererBase"/> class.
 /// </summary>
-internal class RendererBaseFake : RendererBase
+internal sealed class RendererBaseFake : RendererBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RendererBaseFake"/> class.
