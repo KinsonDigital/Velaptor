@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Carbonate;
-using Carbonate.Core;
 using Guards;
 using ReactableData;
 using Velaptor.Exceptions;
@@ -25,7 +24,7 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public Keyboard(IReactable<IReceiveReactor> reactable)
+    public Keyboard(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
