@@ -17,6 +17,11 @@ using ReactableData;
 public interface IRenderer
 {
     /// <summary>
+    /// <c>true</c> if initialization has been executed.
+    /// </summary>
+    private static bool isInitialized;
+
+    /// <summary>
     /// The batch size.
     /// </summary>
     private const uint BatchSize = 1000;
@@ -55,6 +60,11 @@ public interface IRenderer
             name: glInitName,
             onReceive: () =>
             {
+                if (isInitialized)
+                {
+                    return;
+                }
+
                 GLInvoker.Enable(GLEnableCap.Blend);
                 GLInvoker.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
@@ -66,6 +76,8 @@ public interface IRenderer
                 {
                     cachedClearColor.IsCaching = false;
                 }
+
+                isInitialized = true;
             },
             onUnsubscribe: () => GLInitUnsubscriber?.Dispose()));
 
