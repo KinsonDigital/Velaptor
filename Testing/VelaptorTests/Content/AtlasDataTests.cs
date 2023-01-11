@@ -46,13 +46,13 @@ public class AtlasDataTests
             .Returns(AtlasName);
         this.atlasData = new[]
         {
-            new AtlasSubTextureData() // First frame of Animating sub texture
+            new AtlasSubTextureData() // First frame of animating sub texture
             {
                 Name = "test-texture",
                 FrameIndex = 0,
                 Bounds = new Rectangle(11, 22, 33, 44),
             },
-            new AtlasSubTextureData() // Second frame of Animating sub texture
+            new AtlasSubTextureData() // Second frame of animating sub texture
             {
                 Name = "test-texture",
                 FrameIndex = 1,

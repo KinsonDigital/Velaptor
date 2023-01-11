@@ -132,7 +132,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         var vertex3 = topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
         var vertex4 = bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
-        // Set up the corners of the sub texture to render
+        // Sets up the corners of the sub texture to render
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);
         var textureBottomLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Bottom);
         var textureTopRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Top);

@@ -23,7 +23,7 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <param name="destRect">The destination rectangular area of where to render the texture on the screen.</param>
     /// <param name="size">The size of the rendered texture.</param>
     /// <param name="angle">The angle of the texture in degrees.</param>
-    /// <param name="tintColor">The color to apply to an entire texture.</param>
+    /// <param name="tintColor">The color to apply to the entire texture.</param>
     /// <param name="effects">The type of effects to apply to a texture.</param>
     /// <param name="textureId">The ID of the texture.</param>
     /// <param name="layer">The layer where a texture will be rendered.</param>

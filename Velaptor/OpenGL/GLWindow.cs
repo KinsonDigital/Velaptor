@@ -391,7 +391,7 @@ internal sealed class GLWindow : VelaptorIWindow
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
 
-        // Update the viewport so it is the same size as the window
+        // Updates the viewport so it is the same size as the window
         this.gl.Viewport(0, 0, width, height);
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);

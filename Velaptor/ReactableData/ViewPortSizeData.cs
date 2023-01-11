@@ -5,7 +5,7 @@
 namespace Velaptor.ReactableData;
 
 /// <summary>
-/// Holds the size of the view port.
+/// Holds the size of the viewport.
 /// </summary>
 internal sealed record ViewPortSizeData
 {

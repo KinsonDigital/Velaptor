@@ -85,7 +85,7 @@ public interface IRenderer
     }
 
     /// <summary>
-    /// Gets or sets the color that the back buffer will be cleared to.
+    /// Gets or sets the color of the back buffer when cleared.
     /// </summary>
     static Color ClearColor
     {

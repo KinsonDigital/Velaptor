@@ -113,7 +113,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     protected internal string Name { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Gets the size of the view port.
+    /// Gets the size of the viewport.
     /// </summary>
     protected SizeU ViewPortSize { get; private set; }
 

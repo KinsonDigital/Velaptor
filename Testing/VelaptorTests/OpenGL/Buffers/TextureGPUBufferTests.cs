@@ -77,7 +77,7 @@ public class TextureGPUBufferTests
 
                 if (reactor.Id == NotificationIds.GLInitializedId)
                 {
-                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
                 }
 
@@ -88,13 +88,13 @@ public class TextureGPUBufferTests
 
                 if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
                 {
-                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
                 }
 
                 if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
-                    // RETURN NULL TO SIMPLY IGNORE THIS EVENT ID
+                    // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
                 }
 
@@ -119,7 +119,7 @@ public class TextureGPUBufferTests
                 }
                 else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
-                    // EMPTY ON PURPOSE.  SIMPLY IGNORING THIS EVENT ID
+                    // EMPTY ON PURPOSE. IGNORING THIS EVENT ID
                 }
                 else
                 {
