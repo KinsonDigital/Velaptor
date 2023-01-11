@@ -357,6 +357,8 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
 
+        Initialize?.Invoke();
+
         /* Send a push notification to all subscribers that OpenGL is initialized.
          * The context of initialized here is that the OpenGL context is set
          * and the related GLFW window has been created and is ready to go.
@@ -366,8 +368,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.reactable.Unsubscribe(NotificationIds.GLInitializedId);
 
         Initialized = true;
-
-        Initialize?.Invoke();
     }
 
     /// <summary>
