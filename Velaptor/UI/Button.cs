@@ -440,15 +440,16 @@ public sealed class Button : ControlBase
             this.rectRenderer.Render(buttonBorder);
         }
 
-        var textToWide = Label?.Width > Width;
         var textHeightNotTooLarge = Label?.Height <= Height;
+        var textIsTooWide = Label?.Width > Width;
         var textToRender = Label?.Text ?? string.Empty;
 
-        if (textHeightNotTooLarge)
+        if (textHeightNotTooLarge && string.IsNullOrEmpty(textToRender) is false)
         {
-            // If the text is wider than the button, figure out which characters are past
-            // the left and right edges of the button and prevent them from being rendered
-            if (textToWide && Label is not null)
+            // If the text is wider than the button, figure out which characters are physically past
+            // the left and right edges of the button and prevent them from being rendered.
+            // The reason we check for the left and right side is because the text is centered.
+            if (textIsTooWide && Label is not null)
             {
                 var textCharBounds = Label.CharacterBounds.ToArray();
 

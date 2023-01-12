@@ -518,7 +518,8 @@ public class LabelTests
         sut.LoadContent();
 
         // Act
-        sut.Render(TextValue);
+        // sut.Render(TextValue);
+        sut.Render();
 
         // Assert
         this.mockFontRenderer.Verify(m => m.Render(this.mockFont.Object,

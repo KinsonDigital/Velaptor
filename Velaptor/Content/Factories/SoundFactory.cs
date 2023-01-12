@@ -59,6 +59,7 @@ internal sealed class SoundFactory : ISoundFactory
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test this until the Create() method can be tested.  Waiting for CASL improvements.")]
     public ReadOnlyDictionary<uint, string> Sounds => new (this.sounds);
 
     /// <inheritdoc />

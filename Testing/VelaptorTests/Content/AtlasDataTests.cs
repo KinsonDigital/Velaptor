@@ -6,6 +6,7 @@ namespace VelaptorTests.Content;
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.IO.Abstractions;
 using FluentAssertions;
 using Moq;
@@ -174,6 +175,20 @@ public class AtlasDataTests
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The string parameter must not be null or empty. (Parameter 'atlasName')");
+    }
+
+    [Fact]
+    public void Ctor_WhenDirPathDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        this.mockDirectory.Setup(m => m.Exists(It.IsAny<string?>())).Returns(false);
+
+        // Act
+        var act = () => _ = CreateSystemUnderTest();
+
+        // Assert
+        act.Should().Throw<DirectoryNotFoundException>()
+            .WithMessage($"The directory '{DirPath}' does not exist.");
     }
     #endregion
 

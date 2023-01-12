@@ -25,6 +25,9 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Services;
 using Xunit;
 
+/// <summary>
+/// Tests the <see cref="RectangleRenderer"/> class.
+/// </summary>
 public class RectangleRendererTests
 {
     private const uint RectShaderId = 3333u;
@@ -39,6 +42,9 @@ public class RectangleRendererTests
     private IReceiveReactor? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectangleRendererTests"/> class.
+    /// </summary>
     public RectangleRendererTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
@@ -235,6 +241,23 @@ public class RectangleRendererTests
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
         this.mockGPUBuffer.VerifyNever(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+    }
+
+    [Fact]
+    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
+    public void RenderRectangle_WhenBegunHasNotBeenInvoked_ThrowsException()
+    {
+        // Arrange
+        const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
+        var rect = default(RectShape);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(rect);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage(expected);
     }
     #endregion
 

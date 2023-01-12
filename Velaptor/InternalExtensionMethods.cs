@@ -466,6 +466,7 @@ internal static class InternalExtensionMethods
     /// <returns>The formatted member name of where this was invoked.</returns>
     /// <exception cref="Exception">Occurs if the stack frame is null.</exception>
     [SuppressMessage("ReSharper", "UnusedParameter.Global", Justification = "Helper method.")]
+    [ExcludeFromCodeCoverage]
     public static string GetExecutionMemberName(
         this object unused,
         string postFixValue = "",

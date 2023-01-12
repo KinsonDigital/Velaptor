@@ -23,6 +23,9 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Services;
 using Xunit;
 
+/// <summary>
+/// Tests the <see cref="TextureRenderer"/> class.
+/// </summary>
 public class TextureRendererTests
 {
     private const uint TextureShaderId = 1111u;
@@ -34,10 +37,14 @@ public class TextureRendererTests
     private readonly Mock<IBatchingService<TextureBatchItem>> mockBatchingService;
     private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
+    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? batchHasBegunReactor;
     private IReceiveReactor? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextureRendererTests"/> class.
+    /// </summary>
     public TextureRendererTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
@@ -58,8 +65,8 @@ public class TextureRendererTests
             .Returns(Array.Empty<TextureBatchItem>().AsReadOnly());
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
+        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         var mockRenderUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactable = new Mock<IPushReactable>();
         this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
@@ -77,7 +84,7 @@ public class TextureRendererTests
 
                 if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
-                    return mockShutDownUnsubscriber.Object;
+                    return this.mockShutDownUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
@@ -420,6 +427,7 @@ public class TextureRendererTests
 
         // Assert
         this.mockBatchBegunUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
 

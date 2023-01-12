@@ -5,6 +5,7 @@
 namespace Velaptor.UI;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -59,7 +60,7 @@ public class Label : ControlBase
         IFont font,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
-        : base(mouse)
+            : base(mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(font);
@@ -88,7 +89,7 @@ public class Label : ControlBase
     /// Gets a list of all the bounds for each character of the <see cref="Label"/>.<see cref="Text"/>.
     /// </summary>
     public ReadOnlyCollection<(char character, RectangleF bounds)> CharacterBounds =>
-        this.textCharBounds.ToReadOnlyCollection();
+        this.textCharBounds?.AsReadOnly() ?? Array.Empty<(char, RectangleF)>().AsReadOnly();
 
     /// <inheritdoc/>
     public override Point Position

@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CS8509
 namespace VelaptorTests.UI;
 
 using System;
@@ -36,6 +37,7 @@ public class ButtonTests
     private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Label label;
     private readonly Mock<IRectangleRenderer> mockRectRenderer;
+    private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ButtonTests"/> class.
@@ -79,10 +81,13 @@ public class ButtonTests
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
         this.mockRectRenderer = new Mock<IRectangleRenderer>();
+        this.mockFontRenderer = new Mock<IFontRenderer>();
 
         this.mockRenderFactory = new Mock<IRendererFactory>();
         this.mockRenderFactory.Setup(m => m.CreateRectangleRenderer())
             .Returns(this.mockRectRenderer.Object);
+        this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
+            .Returns(this.mockFontRenderer.Object);
 
         this.label = new Label(
             this.mockContentLoader.Object,
@@ -161,6 +166,7 @@ public class ButtonTests
         // Arrange
         var expected = new Point(11, 22);
         var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
         sut.Position = new Point(11, 22);
@@ -168,6 +174,7 @@ public class ButtonTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+        this.label.Position.Should().Be(new Point(11, 22));
     }
 
     [Fact]
@@ -559,15 +566,29 @@ public class ButtonTests
     public void Render_MouseOverButtonAndLeftMouseButtonDown_RendersButtonWithCorrectMouseHoverColor()
     {
         // Arrange
+        var totalGetStateInvokes = 0;
         var expected = Color.FromArgb(1, 2, 3, 4);
         var btnFace = default(RectShape);
 
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(400, 600);
-        mouseState.SetButtonState(MouseButton.LeftButton, true);
+        var mouseDownState = default(MouseState);
+        mouseDownState.SetPosition(400, 600);
+        mouseDownState.SetButtonState(MouseButton.LeftButton, true);
+
+        var mouseUpState = default(MouseState);
+        mouseUpState.SetPosition(400, 600);
+        mouseUpState.SetButtonState(MouseButton.LeftButton, false);
 
         this.mockMouse.Setup(m => m.GetState())
-            .Returns(mouseState);
+            .Returns(() =>
+            {
+                totalGetStateInvokes++;
+                return totalGetStateInvokes switch
+                {
+                    1 => mouseDownState,
+                    2 => mouseUpState,
+                    3 => mouseDownState,
+                };
+            });
 
         this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
@@ -585,12 +606,101 @@ public class ButtonTests
         sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
         sut.LoadContent();
         sut.Update(default);
+        sut.Update(default);
+        sut.Update(default);
 
         // Act
         sut.Render();
 
         // Assert
         btnFace.Color.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Render_WithBorderSetToVisible_RendersBorder()
+    {
+        // Arrange
+        var expected = default(RectShape);
+        expected.Position = new Vector2(1, 2);
+        expected.IsFilled = false;
+        expected.BorderThickness = 3;
+        expected.Color = Color.CornflowerBlue;
+        expected.Width = 4;
+        expected.Height = 5;
+        expected.CornerRadius = new CornerRadius(6, 7, 8, 9);
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(1, 2);
+        sut.BorderColor = Color.CornflowerBlue;
+        sut.BorderThickness = 3;
+        sut.Width = 4;
+        sut.Height = 5;
+        sut.CornerRadius = new CornerRadius(6, 7, 8, 9);
+        sut.AutoSize = false;
+
+        sut.LoadContent();
+
+        // Act
+        sut.Render();
+
+        // Assert
+        this.mockRectRenderer.Verify(m => m.Render(expected, 0), Times.Once);
+    }
+
+    [Fact]
+    public void Render_WhenTextIsWiderThanButton_OnlyRendersRequiredCharacters()
+    {
+        // Arrange
+        // NOTE: Anything with the value '999' signifies that it is not used in the code being tested.
+        var charBounds = new[]
+        {
+            // The height and Y position of the chars are not used for determining left and right positioning.
+            // With the set X position and width of the chars, the width of the text should be 90 pixels.
+            // There is not space between each char in the data below.
+            ('t', new RectangleF(new PointF(155f,  999), new SizeF(10, 999))),
+            ('e', new RectangleF(new PointF(165f, 999), new SizeF(10, 999))),
+            ('s', new RectangleF(new PointF(175f, 999), new SizeF(10, 999))),
+            ('t', new RectangleF(new PointF(185f, 999), new SizeF(10, 999))),
+            ('-', new RectangleF(new PointF(195f, 999), new SizeF(10, 999))),
+            ('v', new RectangleF(new PointF(205f, 999), new SizeF(10, 999))),
+            ('a', new RectangleF(new PointF(215f, 999), new SizeF(10, 999))),
+            ('l', new RectangleF(new PointF(225f, 999), new SizeF(10, 999))),
+            ('u', new RectangleF(new PointF(235f, 999), new SizeF(10, 999))),
+            ('e', new RectangleF(new PointF(245f, 999), new SizeF(10, 999))),
+        };
+
+        this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
+            .Returns<string, Vector2>((_, _) => charBounds);
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(200, 999);
+        sut.BorderColor = Color.CornflowerBlue;
+        sut.BorderThickness = 3;
+        sut.Width = 70;
+        sut.Height = 40;
+        sut.CornerRadius = new CornerRadius(6, 7, 8, 9);
+        sut.AutoSize = false;
+        sut.Text = "test-value";
+
+        this.label.AutoSize = false;
+        this.label.Height = 30;
+        this.label.Width = 90;
+
+        sut.LoadContent();
+
+        // Act
+        sut.Render();
+
+        // Assert
+        this.mockFontRenderer.Verify(m =>
+            m.Render(It.IsAny<IFont>(),
+                "st-va",
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Once);
     }
     #endregion
 

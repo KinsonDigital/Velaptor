@@ -90,7 +90,7 @@ public class SoundFactoryTests
     }
     #endregion
 
-    #region Notification Tests
+    #region Indirect Tests
     [Fact]
     public void Reactable_WhenOnNextMessageHasNullData_ThrowsException()
     {
