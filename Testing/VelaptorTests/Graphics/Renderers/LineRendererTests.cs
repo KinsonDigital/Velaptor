@@ -329,7 +329,7 @@ public class LineRendererTests
     #region Indirect Tests
     [Fact]
     [Trait(Category, "Indirect Tests")]
-    public void Reactable_WithShutDownNotification_ShutsDownRenderer()
+    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
     {
         // Arrange
         _ = CreateSystemUnderTest();

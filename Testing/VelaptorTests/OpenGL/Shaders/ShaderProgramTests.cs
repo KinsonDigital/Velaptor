@@ -387,7 +387,7 @@ public class ShaderProgramTests
     }
 
     [Fact]
-    public void Reactable_WhenOnCompleteIsInvoked_UnsubscribesFromReactable()
+    public void PushReactable_WhenOnCompleteIsInvoked_UnsubscribesFromReactable()
     {
         // Arrange
         CreateSystemUnderTest();

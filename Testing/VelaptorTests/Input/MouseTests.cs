@@ -142,7 +142,7 @@ public class MouseTests
     }
 
     [Fact]
-    public void Reactable_WhenOnNextMessageIsNull_ThrowsException()
+    public void PushReactable_WhenOnNextMessageIsNull_ThrowsException()
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(Mouse)}.Constructor()' subscription source";
@@ -172,7 +172,7 @@ public class MouseTests
     }
 
     [Fact]
-    public void Reactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
+    public void PushReactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
     {
         // Arrange
         const string expected = $"The enum '{nameof(MouseButton)}' is out of range.";
@@ -204,7 +204,7 @@ public class MouseTests
     }
 
     [Fact]
-    public void Reactable_WhenReactorCompletes_DisposesOfSubscriptions()
+    public void PushReactable_WhenReactorCompletes_DisposesOfSubscriptions()
     {
         // Arrange
         IReactor? posReactor = null;

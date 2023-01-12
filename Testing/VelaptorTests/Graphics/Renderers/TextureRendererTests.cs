@@ -416,7 +416,7 @@ public class TextureRendererTests
 
     #region Indirect Tests
     [Fact]
-    public void Reactable_WithShutDownNotification_ShutsDownRenderer()
+    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
     {
         // Arrange
         _ = CreateSystemUnderTest();

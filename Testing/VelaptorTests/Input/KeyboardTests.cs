@@ -122,7 +122,7 @@ public class KeyboardTests
     }
 
     [Fact]
-    public void Reactable_WhenReactorCompletes_DisposeOfSubscription()
+    public void PushReactable_WhenReactorCompletes_DisposeOfSubscription()
     {
         // Arrange
         var mockUnsubscriber = new Mock<IDisposable>();

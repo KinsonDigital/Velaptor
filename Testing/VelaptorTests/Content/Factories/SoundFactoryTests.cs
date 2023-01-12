@@ -92,7 +92,7 @@ public class SoundFactoryTests
 
     #region Indirect Tests
     [Fact]
-    public void Reactable_WhenOnNextMessageHasNullData_ThrowsException()
+    public void PushReactable_WhenOnNextMessageHasNullData_ThrowsException()
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(SoundFactory)}.Constructor()' subscription source";
