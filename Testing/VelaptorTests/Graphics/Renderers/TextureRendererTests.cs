@@ -117,7 +117,7 @@ public class TextureRendererTests
 
     #region Method Tests
     [Fact]
-    public void RenderTexture_WhenNotCallingBeginFirst_ThrowsException()
+    public void Render_WhenNotCallingBeginFirst_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -139,7 +139,7 @@ public class TextureRendererTests
     [Theory]
     [InlineData(0, 20)]
     [InlineData(10, 0)]
-    public void RenderTexture_WithSourceRectWithNoWidthOrHeight_ThrowsException(int width, int height)
+    public void Render_WithSourceRectWithNoWidthOrHeight_ThrowsException(int width, int height)
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -160,7 +160,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WithNullTexture_ThrowsException()
+    public void Render_WithNullTexture_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -181,7 +181,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WithNoTextureItemsToRender_SetsUpCorrectDebugGroupAndExits()
+    public void Render_WithNoTextureItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
         const string shaderName = "TestTextureShader";
@@ -213,7 +213,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WhenInvoking3ParamOverload_AddsCorrectItemToBatch()
+    public void Render_WhenInvoking3ParamOverload_AddsCorrectItemToBatch()
     {
         // Arrange
         const int textureId = 1234;
@@ -248,7 +248,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WhenInvoking4ParamOverloadWithEffects_AddsCorrectItemToBatch()
+    public void Render_WhenInvoking4ParamOverloadWithEffects_AddsCorrectItemToBatch()
     {
         // Arrange
         const int textureId = 1234;
@@ -284,7 +284,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WhenInvoking4ParamOverloadWithColor_AddsCorrectItemToBatch()
+    public void Render_WhenInvoking4ParamOverloadWithColor_AddsCorrectItemToBatch()
     {
         // Arrange
         const int textureId = 1234;
@@ -319,7 +319,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WhenInvoking5ParamOverload_AddsCorrectItemToBatch()
+    public void Render_WhenInvoking5ParamOverload_AddsCorrectItemToBatch()
     {
         // Arrange
         const int textureId = 1234;
@@ -356,7 +356,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void RenderTexture_WhenInvoked_RendersTexture()
+    public void Render_WhenInvoked_RendersTexture()
     {
         // Arrange
         const uint itemABatchIndex = 0;

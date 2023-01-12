@@ -131,7 +131,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WhenInvoking2ParamMethodOverload_AddsToBatch()
+    public void Render_WhenInvoking2ParamMethodOverload_AddsToBatch()
     {
         // Arrange
         var expected = new LineBatchItem(
@@ -157,7 +157,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WhenInvoking3ParamMethodOverload_AddsToBatch()
+    public void Render_WhenInvoking3ParamMethodOverload_AddsToBatch()
     {
         // Arrange
         var expected = new LineBatchItem(
@@ -178,7 +178,7 @@ public class LineRendererTests
      }
 
     [Fact]
-    public void RenderLine_WhenInvoking4ParamWithColorMethodOverload_AddsToBatch()
+    public void Render_WhenInvoking4ParamWithColorMethodOverload_AddsToBatch()
     {
         // Arrange
         var expected = new LineBatchItem(
@@ -203,7 +203,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WhenInvoking4ParamWithThicknessMethodOverload_AddsToBatch()
+    public void Render_WhenInvoking4ParamWithThicknessMethodOverload_AddsToBatch()
     {
         // Arrange
         var expected = new LineBatchItem(
@@ -228,7 +228,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WhenInvokingOverloadWithAllParams_AddsToBatch()
+    public void Render_WhenInvokingOverloadWithAllParams_AddsToBatch()
     {
         // Arrange
         var expected = new LineBatchItem(
@@ -254,7 +254,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WithNoLineItemsToRender_SetsUpCorrectDebugGroupAndExits()
+    public void Render_WithNoLineItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
         const string shaderName = "TestLineShader";
@@ -286,7 +286,7 @@ public class LineRendererTests
     }
 
     [Fact]
-    public void RenderLine_WhenInvoked_RendersLine()
+    public void Render_WhenInvoked_RendersLine()
     {
         // Arrange
         const uint batchIndex = 0;

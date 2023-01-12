@@ -78,6 +78,33 @@
     <None Update="SampleTestData\LineGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoked_AddsCorrectBatchItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking3ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking4ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking6ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking6ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

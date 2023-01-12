@@ -117,7 +117,7 @@ public class RectangleRendererTests
 
     #region Method Tests
     [Fact]
-    public void RenderRectangle_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
+    public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
         const string shaderName = "TestRectShader";
@@ -150,7 +150,7 @@ public class RectangleRendererTests
 
     [Fact]
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void RenderRectangle_WhenInvoked_AddsRectToBatch()
+    public void Render_WhenInvoked_AddsRectToBatch()
     {
         // Arrange
         var rect = new RectShape
@@ -192,7 +192,7 @@ public class RectangleRendererTests
 
     [Fact]
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void RenderRectangle_WhenInvoked_RendersRectangle()
+    public void Render_WhenInvoked_RendersRectangle()
     {
         // Arrange
         const uint batchIndex = 0;
@@ -245,7 +245,7 @@ public class RectangleRendererTests
 
     [Fact]
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void RenderRectangle_WhenBegunHasNotBeenInvoked_ThrowsException()
+    public void Render_WhenBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
         const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
