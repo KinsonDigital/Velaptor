@@ -7,13 +7,14 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
-using Core;
 
 /// <summary>
 /// Tests out layered rendering with textures.
@@ -29,16 +30,18 @@ public class LayeredTextureRenderingScene : SceneBase
     private readonly int windowHalfWidth;
     private readonly int windowHalfHeight;
     private ITexture? background;
+    private ITextureRenderer? textureRenderer;
+    private IFontRenderer? fontRenderer;
     private IFont? font;
     private IAtlasData? atlas;
-    private AtlasSubTextureData? whiteBoxData;
+    private AtlasSubTextureData whiteBoxData;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
     private Vector2 blueBoxPos;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private AtlasSubTextureData? orangeBoxData;
-    private AtlasSubTextureData? blueBoxData;
+    private AtlasSubTextureData orangeBoxData;
+    private AtlasSubTextureData blueBoxData;
     private Vector2 boxStateTextPos;
     private Vector2 backgroundPos;
     private SizeF instructionTextSize;
@@ -68,6 +71,11 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
+        var renderFactory = new RendererFactory();
+
+        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
         this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
 
@@ -88,9 +96,9 @@ public class LayeredTextureRenderingScene : SceneBase
 
         this.atlas = ContentLoader.LoadAtlas("layered-rendering-atlas");
 
-        this.whiteBoxData = this.atlas.GetFrame("white-box");
-        this.orangeBoxData = this.atlas.GetFrame("orange-box");
-        this.blueBoxData = this.atlas.GetFrame("blue-box");
+        this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
+        this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
+        this.blueBoxData = this.atlas.GetFrames("blue-box")[0];
 
         // Set the default white box position
         this.orangeBoxPos.X = this.windowHalfWidth - 100;
@@ -122,10 +130,10 @@ public class LayeredTextureRenderingScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         // BLUE
-        renderer.Render(
+        this.textureRenderer.Render(
             this.atlas.Texture,
             this.blueBoxData.Bounds,
             new Rectangle((int)this.blueBoxPos.X, (int)this.blueBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
@@ -136,7 +144,7 @@ public class LayeredTextureRenderingScene : SceneBase
             (int)BlueLayer);
 
         // ORANGE
-        renderer.Render(
+        this.textureRenderer.Render(
             this.atlas.Texture,
             this.orangeBoxData.Bounds,
             new Rectangle((int)this.orangeBoxPos.X, (int)this.orangeBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
@@ -147,7 +155,7 @@ public class LayeredTextureRenderingScene : SceneBase
             (int)OrangeLayer); // Neutral layer
 
         // WHITE
-        renderer.Render(
+        this.textureRenderer.Render(
             this.atlas.Texture,
             this.whiteBoxData.Bounds,
             new Rectangle((int)this.whiteBoxPos.X, (int)this.whiteBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
@@ -158,15 +166,15 @@ public class LayeredTextureRenderingScene : SceneBase
             (int)this.whiteLayer);
 
         // Render the checkerboard background
-        renderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
         // Render the instructions
-        renderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.White);
+        this.fontRenderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.White);
 
         // Render the box state text
-        renderer.Render(this.font, this.boxStateText, (int)this.boxStateTextPos.X, (int)this.boxStateTextPos.Y);
+        this.fontRenderer.Render(this.font, this.boxStateText, (int)this.boxStateTextPos.X, (int)this.boxStateTextPos.Y);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="IScene.UnloadContent"/>

@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -26,9 +27,9 @@ using Xunit;
 /// </summary>
 public class RectBatchingServiceTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReactor? reactor;
+    private IReceiveReactor? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchingServiceTests"/> class.
@@ -37,9 +38,9 @@ public class RectBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj => this.reactor = reactorObj)
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
     }
 
@@ -68,7 +69,7 @@ public class RectBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 4u });
 
         var sut = CreateSystemUnderTest();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -81,8 +82,8 @@ public class RectBatchingServiceTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.reactor.OnUnsubscribe();
+        this.reactor.OnUnsubscribe();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
@@ -95,8 +96,8 @@ public class RectBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(RectBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -110,7 +111,7 @@ public class RectBatchingServiceTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -175,20 +176,14 @@ public class RectBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         sut.Add(batchItem1);
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            sut.ReadyForRendering += e;
-        }, e =>
-        {
-            sut.ReadyForRendering -= e;
-        }, () =>
-        {
-            sut.Add(batchItem2);
-        });
+        // Act
+        sut.Add(batchItem2);
+
+        // Assert
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderRectsId));
     }
 
     [Fact]
@@ -204,7 +199,7 @@ public class RectBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.Add(batchItem1);
         sut.Add(batchItem2);
@@ -229,7 +224,7 @@ public class RectBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.BatchItems = new List<RectBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 

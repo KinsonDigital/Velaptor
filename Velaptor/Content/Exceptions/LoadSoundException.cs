@@ -15,7 +15,7 @@ public class LoadSoundException : Exception
     /// Initializes a new instance of the <see cref="LoadSoundException"/> class.
     /// </summary>
     public LoadSoundException()
-        : base($"There was an issue loading the sound.")
+        : base("There was an issue loading the sound.")
     {
     }
 

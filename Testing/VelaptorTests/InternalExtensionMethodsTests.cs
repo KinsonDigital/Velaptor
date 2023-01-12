@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -20,7 +21,6 @@ using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GPUData;
-using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
@@ -62,7 +62,7 @@ public class InternalExtensionMethodsTests
     /// <returns>The test data.</returns>
     public static IEnumerable<object[]> IsInvalidFilePathTestData()
     {
-        yield return new object[] { $@"C:\test-dir\test-file.txt", false };
+        yield return new object[] { @"C:\test-dir\test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
         yield return new object[] { string.Empty, true };
@@ -89,7 +89,7 @@ public class InternalExtensionMethodsTests
         yield return new object[] { ":C", false };
         yield return new object[] { "1:", false };
         yield return new object[] { "windowsC:system32", false };
-        yield return new object[] { $@"C:\Windows\System32", true };
+        yield return new object[] { @"C:\Windows\System32", true };
         yield return new object[] { @"C:windows", true };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
     }
@@ -102,7 +102,7 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\Windows\System32", false };
+        yield return new object[] { @"\Windows\System32", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
         yield return new object[] { "C:Windows", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
@@ -119,7 +119,8 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\\", false };
+        yield return new object[] { @"\\", false };
+        yield return new object[] { @"directory", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
     }
@@ -423,6 +424,19 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
+    public void RemoveAll_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var testValue = "keep-remove-keep-keep-remove-keep";
+
+        // Act
+        var actual = testValue.RemoveAll("remove");
+
+        // Assert
+        actual.Should().Be("keep--keep-keep--keep");
+    }
+
+    [Fact]
     public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
     {
         // Arrange
@@ -456,7 +470,7 @@ public class InternalExtensionMethodsTests
     public void ToImageData_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
-        var rowColors = new Dictionary<uint, NETColor>()
+        var rowColors = new Dictionary<uint, NETColor>
         {
             { 0, NETColor.Red },
             { 1, NETColor.Green },
@@ -691,7 +705,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetVertexPos_WithInvalidVertextNumber_ThrowsException()
+    public void SetVertexPos_WithInvalidVertexNumber_ThrowsException()
     {
         // Arrange
         var gpuData = new LineGPUData(
@@ -1286,6 +1300,26 @@ public class InternalExtensionMethodsTests
         Assert.Equal(expected, actual.Vertex2.Color);
         Assert.Equal(expected, actual.Vertex3.Color);
         Assert.Equal(expected, actual.Vertex4.Color);
+    }
+
+    [Fact]
+    public void SetColor_WhenSettingLineGPUData_SetsColorToAllVertexData()
+    {
+        // Arrange
+        var data = new LineGPUData(
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White));
+
+        // Act
+        var actual = data.SetColor(NETColor.CornflowerBlue);
+
+        // Assert
+        actual.Vertex1.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex2.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex3.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex4.Color.Should().Be(NETColor.CornflowerBlue);
     }
 
     [Fact]

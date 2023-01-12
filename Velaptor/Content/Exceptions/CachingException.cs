@@ -15,7 +15,7 @@ public class CachingException : Exception
     /// Initializes a new instance of the <see cref="CachingException"/> class.
     /// </summary>
     public CachingException()
-        : base($"There was an issue caching the item.")
+        : base("There was an issue caching the item.")
     {
     }
 

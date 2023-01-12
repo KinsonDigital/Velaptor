@@ -7,12 +7,12 @@ namespace VelaptorTests.UI;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Fakes;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
-using Fakes;
-using Helpers;
 using Xunit;
 
 /// <summary>

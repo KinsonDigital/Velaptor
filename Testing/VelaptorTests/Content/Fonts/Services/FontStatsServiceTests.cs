@@ -7,11 +7,11 @@ namespace VelaptorTests.Content.Fonts.Services;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

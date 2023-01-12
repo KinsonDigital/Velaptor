@@ -5,8 +5,8 @@
 namespace VelaptorTests.NativeInterop.FreeType;
 
 using System;
-using Velaptor.NativeInterop.FreeType;
 using Helpers;
+using Velaptor.NativeInterop.FreeType;
 using Xunit;
 
 /// <summary>

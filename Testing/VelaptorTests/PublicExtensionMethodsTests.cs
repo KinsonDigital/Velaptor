@@ -9,9 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Helpers;
 using Velaptor;
 using Velaptor.Graphics;
-using Helpers;
 using Xunit;
 
 /// <summary>

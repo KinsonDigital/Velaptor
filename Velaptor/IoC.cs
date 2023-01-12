@@ -8,19 +8,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using Carbonate;
-using SimpleInjector;
 using Content;
 using Content.Caching;
-using Velaptor.Content.Factories;
-using Velaptor.Content.Fonts.Services;
+using Content.Factories;
+using Content.Fonts.Services;
 using Factories;
+using Graphics;
+using Graphics.Renderers;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
-using Velaptor.OpenGL.Services;
+using OpenGL.Buffers;
+using OpenGL.Services;
 using Services;
+using SimpleInjector;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -56,6 +59,8 @@ internal static class IoC
     {
         SetupNativeInterop();
 
+        SetupBuffers();
+
         SetupCaching();
 
         SetupFactories();
@@ -64,7 +69,7 @@ internal static class IoC
 
         SetupContent();
 
-        IoCContainer.Register<IReactable>(() => new Reactable(), Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable>(() => new PushReactable(), Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
@@ -73,7 +78,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to OpenGL.
+    /// Sets up the container registration related to OpenGL.
     /// </summary>
     private static void SetupNativeInterop()
     {
@@ -95,7 +100,18 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to caching.
+    /// Sets up the container registration related to the GPU buffers.
+    /// </summary>
+    private static void SetupBuffers()
+    {
+        IoCContainer.Register<IGPUBuffer<TextureBatchItem>, TextureGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<FontGlyphBatchItem>, FontGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<RectBatchItem>, RectGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<LineBatchItem>, LineGPUBuffer>(Lifestyle.Singleton);
+    }
+
+    /// <summary>
+    /// Sets up the container registration related to caching.
     /// </summary>
     private static void SetupCaching()
     {
@@ -104,7 +120,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to factories.
+    /// Sets up the container registration related to factories.
     /// </summary>
     private static void SetupFactories()
     {
@@ -114,12 +130,13 @@ internal static class IoC
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBufferFactory, GPUBufferFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontFactory, FontFactory>();
+        IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
+        IoCContainer.Register<IRendererFactory, RendererFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>
-    /// Sets up container registration related to services.
+    /// Sets up the container registration related to services.
     /// </summary>
     private static void SetupServices()
     {
@@ -143,7 +160,6 @@ internal static class IoC
         IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<LineBatchItem>, LineBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchServiceManager, BatchServiceManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
@@ -158,7 +174,7 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up container registration related to content.
+    /// Sets up the container registration related to content.
     /// </summary>
     private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
 }

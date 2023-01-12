@@ -120,7 +120,7 @@ internal sealed class CachedValue<T>
     /// <summary>
     /// Sets the value.
     /// </summary>
-    /// <param name="value">The value to cache or simply use for setting a value.</param>
+    /// <param name="value">The value to cache or use for setting a value.</param>
     /// <remarks>
     /// <para>
     ///     If caching is turned on, then the <paramref name="value"/> will be cached.

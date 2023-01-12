@@ -26,7 +26,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// <param name="angle">The angle in degrees of the glyph texture.</param>
     /// <param name="tintColor">The color to apply to the entire glyph texture.</param>
     /// <param name="effects">The type of effects to apply to the glyph texture when rendering.</param>
-    /// <param name="viewPortSize">The size of the viewport.</param>
     /// <param name="textureId">The ID of the font atlas texture.</param>
     /// <param name="layer">The layer where the shape will be rendered.</param>
     public FontGlyphBatchItem(
@@ -37,7 +36,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         float angle,
         Color tintColor,
         RenderEffects effects,
-        SizeF viewPortSize,
         uint textureId,
         int layer)
     {
@@ -48,7 +46,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         Angle = angle;
         TintColor = tintColor;
         Effects = effects;
-        ViewPortSize = viewPortSize;
         TextureId = textureId;
         Layer = layer;
     }
@@ -89,11 +86,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// Gets the type of effects to apply to the glyph texture when rendering.
     /// </summary>
     public RenderEffects Effects { get; }
-
-    /// <summary>
-    /// Gets the size of the viewport.
-    /// </summary>
-    public SizeF ViewPortSize { get; }
 
     /// <summary>
     /// Gets the ID of the font atlas texture.
@@ -162,8 +154,7 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         Glyph == '\0' &&
         SrcRect.IsEmpty &&
         DestRect.IsEmpty &&
-        TintColor.IsEmpty &&
-        ViewPortSize.IsEmpty;
+        TintColor.IsEmpty;
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
     public bool Equals(FontGlyphBatchItem other) =>
@@ -173,7 +164,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         Angle.Equals(other.Angle) &&
         TintColor.Equals(other.TintColor) &&
         Effects == other.Effects &&
-        ViewPortSize.Equals(other.ViewPortSize) &&
         TextureId == other.TextureId &&
         Glyph == other.Glyph &&
         Layer == other.Layer;
@@ -192,7 +182,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
                 Angle,
                 TintColor,
                 (int)Effects,
-                ViewPortSize,
                 TextureId),
             Glyph,
             Layer);
@@ -210,7 +199,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         result.AppendLine(
             $"Tint Clr: {{A={TintColor.A},R={TintColor.R},G={TintColor.G},B={TintColor.B}}}");
         result.AppendLine($"Effects: {Effects.ToString()}");
-        result.AppendLine($"View Port Size: {{W={ViewPortSize.Width},H={ViewPortSize.Height}}}");
         result.AppendLine($"Texture ID: {TextureId.ToString()}");
         result.AppendLine($"Glyph: {Glyph}");
         result.Append($"Layer: {Layer}");

@@ -21,7 +21,7 @@ public class InvalidInputExceptionTests
         var exception = new InvalidInputException();
 
         // Assert
-        Assert.Equal($"Invalid Input", exception.Message);
+        Assert.Equal("Invalid Input", exception.Message);
     }
 
     [Fact]

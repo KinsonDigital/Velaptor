@@ -5,8 +5,8 @@
 namespace VelaptorTests.Services;
 
 using System;
-using Velaptor.Services;
 using Helpers;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>

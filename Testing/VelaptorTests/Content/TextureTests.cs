@@ -8,16 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.Content;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
-using Helpers;
-using Velaptor;
-using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>
@@ -30,10 +31,10 @@ public class TextureTests
     private const uint TextureId = 1234;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockDisposeUnsubscriber;
     private readonly ImageData imageData;
-    private IReactor? disposeReactor;
+    private IReceiveReactor? disposeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureTests"/> class.
@@ -81,11 +82,11 @@ public class TextureTests
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockDisposeUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
         this.mockReactable.Setup(m =>
-                m.Subscribe(It.IsAny<IReactor>()))
+                m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(this.mockDisposeUnsubscriber.Object)
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -217,7 +218,7 @@ public class TextureTests
             this.mockGLService.Object,
             this.mockReactable.Object,
             "test-texture.png",
-            $@"C:\temp\test-texture.png",
+            @"C:\temp\test-texture.png",
             this.imageData);
 
         // Assert
@@ -343,7 +344,7 @@ public class TextureTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.disposeReactor.OnNext(mockMessage.Object);
+        var act = () => this.disposeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -361,7 +362,7 @@ public class TextureTests
         CreateSystemUnderTest();
 
         // Act
-        this.disposeReactor?.OnNext(mockMessage.Object);
+        this.disposeReactor?.OnReceive(mockMessage.Object);
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(It.IsAny<uint>()), Times.Never);
@@ -379,7 +380,7 @@ public class TextureTests
         CreateSystemUnderTest();
 
         // Act
-        this.disposeReactor?.OnNext(mockMessage.Object);
+        this.disposeReactor?.OnReceive(mockMessage.Object);
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
@@ -393,7 +394,7 @@ public class TextureTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.disposeReactor.OnComplete();
+        this.disposeReactor.OnUnsubscribe();
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());

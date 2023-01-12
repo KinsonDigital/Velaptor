@@ -8,10 +8,10 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
-using Helpers;
 using Xunit;
 
 /// <summary>

@@ -7,11 +7,11 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -131,7 +131,7 @@ public class SoundLoaderTests
         // Arrange
         this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(false);
 
-        var expectedMsg = $"The sound file does not exist.";
+        var expectedMsg = "The sound file does not exist.";
 
         var loader = CreateSoundLoader();
 

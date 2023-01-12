@@ -11,22 +11,21 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate;
-using Silk.NET.Input;
-using Silk.NET.Maths;
-using Silk.NET.Windowing;
 using Content;
-using Velaptor.Exceptions;
 using Factories;
-using Graphics;
 using Guards;
 using Input;
-using Velaptor.Input.Exceptions;
+using Input.Exceptions;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using ReactableData;
+using Silk.NET.Input;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Velaptor.Services;
+using Silk.NET.Windowing;
 using UI;
+using Velaptor.Exceptions;
+using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -47,8 +46,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ISystemMonitorService systemMonitorService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
-    private readonly IRenderer renderer;
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
     private readonly MouseStateData mouseStateData;
     private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
@@ -71,7 +69,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="renderer">Renders textures and primitives.</param>
     /// <param name="reactable">Sends and receives push notifications.</param>
     public GLWindow(
         uint width,
@@ -84,8 +81,7 @@ internal sealed class GLWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
-        IRenderer renderer,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
@@ -95,7 +91,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(renderer);
         EnsureThat.ParamIsNotNull(reactable);
 
         this.windowFactory = windowFactory;
@@ -106,7 +101,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         ContentLoader = contentLoader;
-        this.renderer = renderer;
 
         this.reactable = reactable;
 
@@ -363,16 +357,17 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
 
+        Initialize?.Invoke();
+
         /* Send a push notification to all subscribers that OpenGL is initialized.
          * The context of initialized here is that the OpenGL context is set
          * and the related GLFW window has been created and is ready to go.
          */
+
         this.reactable.Push(NotificationIds.GLInitializedId);
         this.reactable.Unsubscribe(NotificationIds.GLInitializedId);
 
         Initialized = true;
-
-        Initialize?.Invoke();
     }
 
     /// <summary>
@@ -393,15 +388,15 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void GLWindow_Resize(Vector2D<int> obj)
     {
-        var uWidth = (uint)obj.X;
-        var uHeight = (uint)obj.Y;
+        var width = (uint)obj.X;
+        var height = (uint)obj.Y;
 
-        // Update the viewport so it is the same size as the window
-        this.gl.Viewport(0, 0, uWidth, uHeight);
-        var size = new SizeU { Width = uWidth, Height = uHeight };
+        // Updates the viewport so it is the same size as the window
+        this.gl.Viewport(0, 0, width, height);
+        var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
-        this.renderer.OnResize(size);
+        this.reactable.PushData(new ViewPortSizeData { Width = width, Height = height }, NotificationIds.ViewPortSizeChangedId);
     }
 
     /// <summary>
@@ -732,7 +727,7 @@ internal sealed class GLWindow : VelaptorIWindow
                 enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
 
                 // ReSharper disable once RedundantNameQualifier
-                enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowBorder)}";
+                enumTypeStr += $".{nameof(WindowBorder)}";
 
                 var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowBorder switch

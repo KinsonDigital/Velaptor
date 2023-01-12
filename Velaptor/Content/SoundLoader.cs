@@ -11,8 +11,8 @@ using System.IO.Abstractions;
 using System.Linq;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads sound content.
@@ -105,7 +105,7 @@ public sealed class SoundLoader : ILoader<ISound>
         }
         else
         {
-            throw new FileNotFoundException($"The sound file does not exist.", filePath);
+            throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
         return this.soundCache.GetItem(cacheKey);

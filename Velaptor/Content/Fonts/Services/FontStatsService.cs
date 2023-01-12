@@ -67,7 +67,7 @@ internal sealed class FontStatsService : IFontStatsService
         var results =
             (from filePath in fontFiles
                 where this.fontService.GetFamilyName(filePath) == fontFamilyName
-                select new FontStats()
+                select new FontStats
                 {
                     FontFilePath = filePath,
                     FamilyName = fontFamilyName,
@@ -103,7 +103,7 @@ internal sealed class FontStatsService : IFontStatsService
         var results =
             (from filePath in fontFiles
                 where this.fontService.GetFamilyName(filePath) == fontFamilyName
-                select new FontStats()
+                select new FontStats
                 {
                     FontFilePath = filePath,
                     FamilyName = fontFamilyName,

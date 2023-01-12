@@ -5,12 +5,12 @@
 namespace VelaptorTests.Services;
 
 using System;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>

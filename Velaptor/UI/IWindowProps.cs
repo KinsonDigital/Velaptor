@@ -6,7 +6,7 @@ namespace Velaptor.UI;
 
 using System.Numerics;
 using Content;
-using Graphics;
+using Graphics.Renderers;
 
 /// <summary>
 /// Provides properties to hold the state of a window.

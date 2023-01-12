@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Carbonate;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Silk.NET.Core.Contexts;
 using Silk.NET.Input;
@@ -18,7 +19,6 @@ using Velaptor;
 using Velaptor.Content;
 using Velaptor.Exceptions;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.Hardware;
 using Velaptor.Input;
 using Velaptor.Input.Exceptions;
@@ -28,7 +28,6 @@ using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Velaptor.UI;
-using Helpers;
 using Xunit;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;
@@ -50,9 +49,8 @@ public class GLWindowTests
     private readonly Mock<ISystemMonitorService> mockMonitorService;
     private readonly Mock<IPlatform> mockPlatform;
     private readonly Mock<IContentLoader> mockContentLoader;
-    private readonly Mock<IRenderer> mockRenderer;
     private readonly Mock<ITaskService> mockTaskService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
     private readonly Mock<IWindowFactory> mockWindowFactory;
     private Mock<INativeInputFactory>? mockNativeInputFactory;
@@ -80,9 +78,8 @@ public class GLWindowTests
         this.mockMonitorService = new Mock<ISystemMonitorService>();
         this.mockPlatform = new Mock<IPlatform>();
         this.mockContentLoader = new Mock<IContentLoader>();
-        this.mockRenderer = new Mock<IRenderer>();
         this.mockTaskService = new Mock<ITaskService>();
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
     }
 
     #region Contructor Tests
@@ -103,7 +100,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'windowFactory')");
     }
@@ -125,7 +121,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
     }
@@ -147,7 +142,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInvoker')");
     }
@@ -169,7 +163,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'glfwInvoker')");
     }
@@ -191,7 +184,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'systemMonitorService')");
     }
@@ -213,7 +205,6 @@ public class GLWindowTests
                 null,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
@@ -235,7 +226,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 null,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'taskService')");
     }
@@ -257,31 +247,8 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 null,
-                this.mockRenderer.Object,
                 this.mockReactable.Object);
         }, "The parameter must not be null. (Parameter 'contentLoader')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullRendererParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGLFW.Object,
-                this.mockMonitorService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                this.mockContentLoader.Object,
-                null,
-                this.mockReactable.Object);
-        }, "The parameter must not be null. (Parameter 'renderer')");
     }
 
     [Fact]
@@ -301,7 +268,6 @@ public class GLWindowTests
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockRenderer.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'reactable')");
     }
@@ -695,7 +661,7 @@ public class GLWindowTests
         var actual = sut.TypeOfBorder;
 
         // Assert
-        Assert.Equal(Velaptor.WindowBorder.Resizable, actual);
+        Assert.Equal(VelaptorWindowBorder.Resizable, actual);
     }
 
     [Theory]
@@ -929,7 +895,6 @@ public class GLWindowTests
 
         // Assert
         this.mockGL.Verify(m => m.Viewport(0, 0, 11, 22));
-        this.mockRenderer.Verify(m => m.OnResize(new SizeU(11u, 22u)), Times.Once);
         Assert.Equal(11u, actualSize.Width);
         Assert.Equal(22u, actualSize.Height);
     }
@@ -1303,7 +1268,6 @@ public class GLWindowTests
             this.mockPlatform.Object,
             this.mockTaskService.Object,
             this.mockContentLoader.Object,
-            this.mockRenderer.Object,
             this.mockReactable.Object);
 
     private void MockWindowLoadEvent()

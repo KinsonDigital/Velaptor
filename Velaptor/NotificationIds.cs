@@ -5,10 +5,10 @@
 namespace Velaptor;
 
 using System;
-using Carbonate;
+using Carbonate.Core;
 
 /// <summary>
-/// Contains unique event GUIDs for the <see cref="Reactable"/> push notification system.
+/// Contains unique event GUIDs for the <see cref="IReactable{T}"/> push notification system.
 /// </summary>
 internal static class NotificationIds
 {
@@ -51,4 +51,44 @@ internal static class NotificationIds
     /// Gets the unique event <see cref="Guid"/> for push notifications for when the system is shutting down.
     /// </summary>
     public static Guid SystemShuttingDownId { get; } = new ("17b9fd1c-67ef-4f36-8973-45e32b0ee85b");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the window size changes.
+    /// </summary>
+    public static Guid WindowSizeChangedId { get; } = new ("d1095c6e-cf1f-4719-b7e2-aeeb285d1d02");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the viewport size changes.
+    /// </summary>
+    public static Guid ViewPortSizeChangedId { get; } = new ("430e7d43-ffd5-4f81-90b9-039e05ed490e");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the render batch has started.
+    /// </summary>
+    public static Guid RenderBatchBegunId { get; } = new ("845e89b2-5a9d-4091-8689-d56f5c3060f3");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the render batch has been ended.
+    /// </summary>
+    public static Guid RenderBatchEndedId { get; } = new ("ea261a35-58f9-4ddd-8301-004564311002");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the textures need to be rendered.
+    /// </summary>
+    public static Guid RenderTexturesId { get; } = new ("0b2e75f4-cc15-4cdd-b14c-f5732644e818");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the fonts need to be rendered.
+    /// </summary>
+    public static Guid RenderFontsId { get; } = new ("95cb1356-ae02-46f4-900c-651d50bc0de4");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the rectangles need to be rendered.
+    /// </summary>
+    public static Guid RenderRectsId { get; } = new ("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
+
+    /// <summary>
+    /// Gets the unique event <see cref="Guid"/> for push notifications for when the lines need to be rendered.
+    /// </summary>
+    public static Guid RenderLinesId { get; } = new ("3fb13cdb-db24-4d28-b117-b9604722277f");
 }

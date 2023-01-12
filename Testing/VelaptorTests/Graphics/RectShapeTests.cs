@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Graphics;
 using Helpers;
+using Velaptor.Graphics;
 using Xunit;
 
 /// <summary>

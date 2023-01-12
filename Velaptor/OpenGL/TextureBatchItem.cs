@@ -23,9 +23,8 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <param name="destRect">The destination rectangular area of where to render the texture on the screen.</param>
     /// <param name="size">The size of the rendered texture.</param>
     /// <param name="angle">The angle of the texture in degrees.</param>
-    /// <param name="tintColor">The color to apply to an entire texture.</param>
+    /// <param name="tintColor">The color to apply to the entire texture.</param>
     /// <param name="effects">The type of effects to apply to a texture.</param>
-    /// <param name="viewPortSize">The size of the viewport.</param>
     /// <param name="textureId">The ID of the texture.</param>
     /// <param name="layer">The layer where a texture will be rendered.</param>
     public TextureBatchItem(
@@ -36,7 +35,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         float angle,
         Color tintColor,
         RenderEffects effects,
-        SizeF viewPortSize,
         uint textureId,
         int layer)
     {
@@ -46,7 +44,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         Angle = angle;
         TintColor = tintColor;
         Effects = effects;
-        ViewPortSize = viewPortSize;
         TextureId = textureId;
         Layer = layer;
     }
@@ -80,11 +77,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// Gets the type of effects to apply to a texture.
     /// </summary>
     public RenderEffects Effects { get; } = RenderEffects.None;
-
-    /// <summary>
-    /// Gets the size of the viewport.
-    /// </summary>
-    public SizeF ViewPortSize { get; }
 
     /// <summary>
     /// Gets the ID of the texture.
@@ -152,8 +144,7 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         Layer == 0 &&
         SrcRect.IsEmpty &&
         DestRect.IsEmpty &&
-        TintColor.IsEmpty &&
-        ViewPortSize.IsEmpty;
+        TintColor.IsEmpty;
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
     public bool Equals(TextureBatchItem other) =>
@@ -163,7 +154,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         Angle.Equals(other.Angle) &&
         TintColor.Equals(other.TintColor) &&
         Effects == other.Effects &&
-        ViewPortSize.Equals(other.ViewPortSize) &&
         TextureId == other.TextureId &&
         Layer == other.Layer;
 
@@ -181,7 +171,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
             Angle,
             TintColor,
             (int)Effects,
-            ViewPortSize,
             TextureId),
             Layer);
 
@@ -198,7 +187,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         result.AppendLine(
             $"Tint Clr: {{A={TintColor.A},R={TintColor.R},G={TintColor.G},B={TintColor.B}}}");
         result.AppendLine($"Effects: {Effects.ToString()}");
-        result.AppendLine($"View Port Size: {{W={ViewPortSize.Width},H={ViewPortSize.Height}}}");
         result.AppendLine($"Texture ID: {TextureId.ToString()}");
         result.Append($"Layer: {Layer}");
 

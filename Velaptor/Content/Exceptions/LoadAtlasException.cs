@@ -15,7 +15,7 @@ public class LoadAtlasException : Exception
     /// Initializes a new instance of the <see cref="LoadAtlasException"/> class.
     /// </summary>
     public LoadAtlasException()
-        : base($"There was an issue loading the atlas data.")
+        : base("There was an issue loading the atlas data.")
     {
     }
 

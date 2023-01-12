@@ -13,6 +13,7 @@ using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
 /// <summary>
@@ -29,6 +30,9 @@ public class LayeredLineRenderingScene : SceneBase
     private readonly float windowHalfWidth;
     private readonly float windowHalfHeight;
     private ITexture? background;
+    private IFontRenderer? fontRenderer;
+    private ITextureRenderer? textureRenderer;
+    private ILineRenderer? lineRenderer;
     private IFont? font;
     private Line whiteLine;
     private Line orangeLine;
@@ -62,6 +66,12 @@ public class LayeredLineRenderingScene : SceneBase
         {
             return;
         }
+
+        var renderFactory = new RendererFactory();
+
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.lineRenderer = renderFactory.CreateLineRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
         this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
@@ -118,22 +128,22 @@ public class LayeredLineRenderingScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
-        renderer.Render(this.blueLine, (int)BlueLayer);
-        renderer.Render(this.orangeLine, (int)OrangeLayer);
-        renderer.Render(this.whiteLine, (int)this.whiteLayer);
+        this.lineRenderer.Render(this.blueLine, (int)BlueLayer);
+        this.lineRenderer.Render(this.orangeLine, (int)OrangeLayer);
+        this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
 
         // Render the checkerboard background
-        renderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
         // Render the instructions
-        renderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
+        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
 
         // Render the rectangle state text
-        renderer.Render(this.font, this.lineStateText, (int)this.lineStateTextPos.X, (int)this.lineStateTextPos.Y);
+        this.fontRenderer.Render(this.font, this.lineStateText, (int)this.lineStateTextPos.X, (int)this.lineStateTextPos.Y);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>

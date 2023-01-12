@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -24,9 +25,9 @@ using Xunit;
 /// </summary>
 public class LineBatchingServiceTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReactor? reactor;
+    private IReceiveReactor? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingServiceTests"/> class.
@@ -35,9 +36,9 @@ public class LineBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj => this.reactor = reactorObj)
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
     }
 
@@ -68,7 +69,7 @@ public class LineBatchingServiceTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -81,8 +82,8 @@ public class LineBatchingServiceTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.reactor.OnUnsubscribe();
+        this.reactor.OnUnsubscribe();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
@@ -95,8 +96,8 @@ public class LineBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(LineBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -110,7 +111,7 @@ public class LineBatchingServiceTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -149,7 +150,7 @@ public class LineBatchingServiceTests
 
     #region Method Tests
     [Fact]
-    public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
+    public void Add_WhenBatchIsFull_SendsRenderPushNotification()
     {
         // Arrange
         var batchItem1 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 1);
@@ -161,17 +162,15 @@ public class LineBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.Add(batchItem1);
-
-        using var monitor = sut.Monitor();
 
         // Act
         sut.Add(batchItem2);
 
         // Assert
-        monitor.Should().Raise(nameof(LineBatchingService.ReadyForRendering));
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderLinesId));
     }
 
     [Fact]
@@ -187,7 +186,7 @@ public class LineBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.Add(batchItem1);
         sut.Add(batchItem2);
@@ -213,7 +212,7 @@ public class LineBatchingServiceTests
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.BatchItems = new List<LineBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 

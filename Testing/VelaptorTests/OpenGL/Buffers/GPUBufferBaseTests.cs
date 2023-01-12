@@ -6,14 +6,17 @@ namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
 using Carbonate;
-using Moq;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
+using Carbonate.Core;
 using Fakes;
 using FluentAssertions;
 using Helpers;
+using Moq;
 using Velaptor;
+using Velaptor.Exceptions;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.OpenGL;
+using Velaptor.OpenGL.Buffers;
+using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
@@ -27,13 +30,15 @@ public class GPUBufferBaseTests
     private const uint IndexBufferId = 5678;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly Mock<IDisposable> mockViewPortSizeUnsubscriber;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
-    private IReactor? glInitReactor;
-    private IReactor? shutDownReactor;
+    private IReceiveReactor? glInitReactor;
+    private IReceiveReactor? shutDownReactor;
+    private IReceiveReactor? viewPortSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -64,41 +69,51 @@ public class GPUBufferBaseTests
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+        this.mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Returns<IReactor>(reactor =>
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     return this.mockGLInitUnsubscriber.Object;
                 }
 
-                if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
-                Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+                {
+                    return this.mockViewPortSizeUnsubscriber.Object;
+                }
+
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.EventId == NotificationIds.GLInitializedId)
+                if (reactor.Id == NotificationIds.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.EventId == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }
+                else if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+                {
+                    this.viewPortSizeReactor = reactor;
+                }
                 else
                 {
-                    Assert.Fail($"The event ID '{reactor.EventId}' is not recognized or accounted for in the unit test.");
+                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
     }
@@ -165,7 +180,7 @@ public class GPUBufferBaseTests
         var buffer = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         Assert.True(buffer.IsInitialized);
@@ -180,7 +195,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
@@ -196,7 +211,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         // These are all invoked once per quad
@@ -213,7 +228,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         // First invoke is done creating the Vertex Buffer, the second is the index buffer
@@ -230,7 +245,7 @@ public class GPUBufferBaseTests
         var sut  = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         Assert.True(sut.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
@@ -243,7 +258,7 @@ public class GPUBufferBaseTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         Assert.True(sut.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
@@ -256,7 +271,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ArrayBuffer,
@@ -272,7 +287,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ElementArrayBuffer,
@@ -288,7 +303,7 @@ public class GPUBufferBaseTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         Assert.True(sut.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
@@ -327,7 +342,7 @@ public class GPUBufferBaseTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
@@ -376,11 +391,11 @@ public class GPUBufferBaseTests
         // Arrange
         CreateSystemUnderTest();
 
-        this.glInitReactor.OnNext();
+        this.glInitReactor.OnReceive();
 
         // Act
-        this.shutDownReactor?.OnNext();
-        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnReceive();
+        this.shutDownReactor?.OnReceive();
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
@@ -392,16 +407,50 @@ public class GPUBufferBaseTests
 
     #region Indirect Tests
     [Fact]
-    public void InitReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
+    public void InitReactable_OnComplete_UnsubscribesFromReactable()
     {
         // Arrange
         _ = CreateSystemUnderTest();
 
         // Act
-        this.glInitReactor.OnComplete();
+        this.glInitReactor.OnUnsubscribe();
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
+    }
+
+    [Fact]
+    public void ViewPortSizeReactable_WithNullMessage_ThrowsException()
+    {
+        // Arrange
+        var expected = $"There was an issue with the 'GPUBufferBase.Constructor()' subscription source";
+        expected += $" for subscription ID '{NotificationIds.ViewPortSizeChangedId}'.";
+
+        var mockMessage = new Mock<IMessage>();
+        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+            .Returns<Action<Exception>?>(_ => null);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        var act = () => this.viewPortSizeReactor.OnReceive(mockMessage.Object);
+
+        // Assert
+        act.Should().Throw<PushNotificationException>()
+            .WithMessage(expected);
+    }
+
+    [Fact]
+    public void ViewPortSizeReactable_OnComplete_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSizeReactor.OnUnsubscribe();
+
+        // Assert
+        this.mockViewPortSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

@@ -7,18 +7,20 @@ namespace Velaptor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Graphics;
+using OpenGL;
+using OpenGL.GPUData;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Graphics;
-using OpenGL;
-using OpenGL.GPUData;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
@@ -447,15 +449,75 @@ internal static class InternalExtensionMethods
     public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
     /// <summary>
+    /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.
+    /// </summary>
+    /// <param name="value">The string to change.</param>
+    /// <param name="str">The string to remove.</param>
+    /// <returns>The original string with the <paramref name="str"/> values removed.</returns>
+    public static string RemoveAll(this string value, string str) =>
+        string.IsNullOrEmpty(value) ? string.Empty : value.Replace(str, string.Empty);
+
+    /// <summary>
+    /// Builds a name that represents a location of where an execution took place.
+    /// </summary>
+    /// <param name="unused">The object to enable this extension method to be executed anywhere.</param>
+    /// <param name="postFixValue">The value to add to the end of the name.</param>
+    /// <param name="memberName">The name of the member invoked this method.</param>
+    /// <returns>The formatted member name of where this was invoked.</returns>
+    /// <exception cref="Exception">Occurs if the stack frame is null.</exception>
+    [SuppressMessage("ReSharper", "UnusedParameter.Global", Justification = "Helper method.")]
+    [ExcludeFromCodeCoverage]
+    public static string GetExecutionMemberName(
+        this object unused,
+        string postFixValue = "",
+        [CallerMemberName] string memberName = "")
+    {
+        string callerLocation;
+        Type? declaringType;
+        var skipFrames = 2;
+
+        do
+        {
+            var method = new StackFrame(skipFrames, false).GetMethod();
+
+            if (method is null)
+            {
+                throw new Exception("There was an issue getting the method for stack frame 2.");
+            }
+
+            declaringType = method.DeclaringType;
+
+            if (declaringType == null)
+            {
+                return method.Name;
+            }
+
+            skipFrames++;
+            callerLocation = declaringType.FullName ?? string.Empty;
+        }
+        while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+        var containsPostFixValue = string.IsNullOrEmpty(postFixValue);
+
+        callerLocation = callerLocation.Contains(".")
+            ? callerLocation.Split('.')[^1]
+            : callerLocation;
+
+        memberName = memberName == ".ctor"
+            ? "Ctor"
+            : memberName;
+
+        return $"{callerLocation}.{memberName}{(containsPostFixValue ? string.Empty : " - ")}{postFixValue}";
+    }
+
+    /// <summary>
     /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
     /// <param name="items">The items to convert.</param>
     /// <returns>The items as a read only collection.</returns>
     public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
-        items is null ?
-            new ReadOnlyCollection<T>(Array.Empty<T>()) :
-            new ReadOnlyCollection<T>(items.ToList());
+        items is null ? new ReadOnlyCollection<T>(Array.Empty<T>()) : new ReadOnlyCollection<T>(items.ToList());
 
     /// <summary>
     /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they

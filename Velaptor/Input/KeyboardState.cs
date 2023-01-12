@@ -96,8 +96,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
 
     private Dictionary<KeyCode, bool> keyStates;
 
-    /*TODO: Get these two properties working with SILK.NET
-
+    /*
     /// <summary>
     /// Gets a value indicating whether or not the caps lock key is on.
     /// </summary>
@@ -123,7 +122,6 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
     /// <returns><c>true</c> if operands are not equal.</returns>
-    // TODO: Unit test this
     public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
 
     /// <summary>
@@ -311,9 +309,9 @@ public struct KeyboardState : IEquatable<KeyboardState>
     public bool AnyAltKeysDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
 
     /// <summary>
-    ///     Returns the character equivalent of the given key if it is
-    ///     a letter, number or symbol key.  The value of 0 will be returned
-    ///     if the key is not a letter, number or symbol.
+    /// Returns the character equivalent of the given key if it is
+    /// a letter, number or symbol key.  The value of 0 will be returned
+    /// if the key is not a letter, number or symbol.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns>The character that matches the given key.</returns>
@@ -377,9 +375,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     {
         InitKeys();
 
-        var otherKeyStates = other.GetKeyStates();
-
-        return this.keyStates.All(state => otherKeyStates.Keys.Contains(state.Key) && otherKeyStates.Values.Contains(state.Value));
+        return !this.keyStates.Any(i => other.GetKeyStates().Contains(i) is false);
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ public class NoMouseException : Exception
     /// Initializes a new instance of the <see cref="NoMouseException"/> class.
     /// </summary>
     public NoMouseException()
-        : base($"No mouse detected.")
+        : base("No mouse detected.")
     {
     }
 

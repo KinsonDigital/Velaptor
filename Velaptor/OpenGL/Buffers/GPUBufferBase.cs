@@ -8,7 +8,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
+using ReactableData;
+using Velaptor.Exceptions;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -20,6 +22,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
 {
     private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable glInitUnsubscriber;
+    private readonly IDisposable viewPortSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
     private bool isDisposed;
@@ -36,7 +39,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -45,14 +48,36 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        this.glInitUnsubscriber = reactable.Subscribe(new Reactor(
+        var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
+        this.glInitUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
-            onNext: Init,
-            onCompleted: () => this.glInitUnsubscriber?.Dispose()));
+            name: glInitName,
+            onReceive: Init,
+            onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
 
-        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
+
+        var viewPortName = this.GetExecutionMemberName(nameof(NotificationIds.ViewPortSizeChangedId));
+        this.viewPortSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+            eventId: NotificationIds.ViewPortSizeChangedId,
+            name: viewPortName,
+            onReceiveMsg: msg =>
+            {
+                var data = msg.GetData<ViewPortSizeData>();
+
+                if (data is null)
+                {
+                    throw new PushNotificationException(
+                        $"{nameof(GPUBufferBase<TData>)}.Constructor()",
+                        NotificationIds.ViewPortSizeChangedId);
+                }
+
+                ViewPortSize = new SizeU(data.Width, data.Height);
+            }, onUnsubscribe: () => this.viewPortSizeUnsubscriber?.Dispose()));
 
         ProcessCustomAttributes();
     }
@@ -71,9 +96,6 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         ShutDown();
     }
 
-    /// <inheritdoc/>
-    public SizeU ViewPortSize { get; set; }
-
     /// <summary>
     /// Gets or sets the size of the batch.
     /// </summary>
@@ -89,6 +111,11 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
     protected internal string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets the size of the viewport.
+    /// </summary>
+    protected SizeU ViewPortSize { get; private set; }
 
     /// <summary>
     /// Gets the invoker that makes OpenGL calls.

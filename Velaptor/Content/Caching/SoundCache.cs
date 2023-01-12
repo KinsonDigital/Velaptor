@@ -28,7 +28,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private readonly ISoundFactory soundFactory;
     private readonly IFile file;
     private readonly IPath path;
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
     private readonly IDisposable shutDownUnsubscriber;
     private bool isDisposed;
 
@@ -43,7 +43,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         ISoundFactory soundFactory,
         IFile file,
         IPath path,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(soundFactory);
         EnsureThat.ParamIsNotNull(file);
@@ -55,9 +55,11 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         this.path = path;
         this.reactable = reactable;
 
-        this.shutDownUnsubscriber = this.reactable.Subscribe(new Reactor(
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownUnsubscriber = this.reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
     }
 
     /// <summary>

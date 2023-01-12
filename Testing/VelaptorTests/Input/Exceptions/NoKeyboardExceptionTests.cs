@@ -21,7 +21,7 @@ public class NoKeyboardExceptionTests
         var exception = new NoKeyboardException();
 
         // Assert
-        Assert.Equal($"No keyboard detected.", exception.Message);
+        Assert.Equal("No keyboard detected.", exception.Message);
     }
 
     [Fact]

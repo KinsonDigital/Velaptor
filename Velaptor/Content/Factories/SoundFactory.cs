@@ -20,7 +20,7 @@ using Velaptor.Exceptions;
 internal sealed class SoundFactory : ISoundFactory
 {
     private readonly Dictionary<uint, string> sounds = new ();
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
     private readonly IDisposable disposeSoundUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
 
@@ -28,15 +28,18 @@ internal sealed class SoundFactory : ISoundFactory
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public SoundFactory(IReactable reactable)
+    public SoundFactory(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
         this.reactable = reactable;
+
+        var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
         this.disposeSoundUnsubscriber =
-            reactable.Subscribe(new Reactor(
+            reactable.Subscribe(new ReceiveReactor(
                 eventId: NotificationIds.SoundDisposedId,
-                onNextMsg: msg =>
+                name: soundDisposeName,
+                onReceiveMsg: msg =>
                 {
                     var data = msg.GetData<DisposeSoundData>();
 
@@ -48,12 +51,15 @@ internal sealed class SoundFactory : ISoundFactory
                     this.sounds.Remove(data.SoundId);
                 }));
 
-        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test this until the Create() method can be tested.  Waiting for CASL improvements.")]
     public ReadOnlyDictionary<uint, string> Sounds => new (this.sounds);
 
     /// <inheritdoc />

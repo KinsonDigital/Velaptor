@@ -21,7 +21,7 @@ public class LoadFontExceptionTests
         var exception = new LoadFontException();
 
         // Assert
-        Assert.Equal($"There was an issue loading the font.", exception.Message);
+        Assert.Equal("There was an issue loading the font.", exception.Message);
     }
 
     [Fact]

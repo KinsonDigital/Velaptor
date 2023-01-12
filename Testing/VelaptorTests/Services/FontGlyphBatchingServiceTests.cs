@@ -10,22 +10,23 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Services;
-using Helpers;
-using Velaptor.Exceptions;
 using Xunit;
 
 public class FontGlyphBatchingServiceTests
 {
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReactor? reactor;
+    private IReceiveReactor? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingServiceTests"/> class.
@@ -34,9 +35,9 @@ public class FontGlyphBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj => this.reactor = reactorObj)
+        this.mockReactable = new Mock<IPushReactable>();
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
     }
 
@@ -66,7 +67,7 @@ public class FontGlyphBatchingServiceTests
 
         var sut = CreateService();
 
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -79,8 +80,8 @@ public class FontGlyphBatchingServiceTests
         _ = CreateService();
 
         // Act
-        this.reactor.OnComplete();
-        this.reactor.OnComplete();
+        this.reactor.OnUnsubscribe();
+        this.reactor.OnUnsubscribe();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
@@ -93,8 +94,8 @@ public class FontGlyphBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(FontGlyphBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
-            .Callback<IReactor>(reactorObj =>
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
@@ -108,7 +109,7 @@ public class FontGlyphBatchingServiceTests
         _ = CreateService();
 
         // Act
-        var act = () => this.reactor.OnNext(mockMessage.Object);
+        var act = () => this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -129,7 +130,6 @@ public class FontGlyphBatchingServiceTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             12);
         var batchItem2 = new FontGlyphBatchItem(
@@ -140,7 +140,6 @@ public class FontGlyphBatchingServiceTests
             18,
             Color.FromArgb(29, 30, 31, 32),
             RenderEffects.FlipHorizontally,
-            new SizeF(33, 34),
             28,
             35);
 
@@ -160,7 +159,7 @@ public class FontGlyphBatchingServiceTests
 
     #region Method Tests
     [Fact]
-    public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
+    public void Add_WhenBatchIsFull_SendsRenderPushNotification()
     {
         // Arrange
         var batchItem1 = new FontGlyphBatchItem(
@@ -171,7 +170,6 @@ public class FontGlyphBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             0,
             0);
         var batchItem2 = new FontGlyphBatchItem(
@@ -182,7 +180,6 @@ public class FontGlyphBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             0,
             0);
 
@@ -191,20 +188,14 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 1u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            service.ReadyForRendering += e;
-        }, e =>
-        {
-            service.ReadyForRendering -= e;
-        }, () =>
-        {
-            service.Add(batchItem2);
-        });
+        // Act
+        service.Add(batchItem2);
+
+        // Assert
+        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderFontsId));
     }
 
     [Fact]
@@ -219,7 +210,6 @@ public class FontGlyphBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             0,
             0);
         var batchItem2 = new FontGlyphBatchItem(
@@ -230,7 +220,6 @@ public class FontGlyphBatchingServiceTests
             0,
             Color.Empty,
             RenderEffects.None,
-            SizeF.Empty,
             0,
             0);
 
@@ -239,7 +228,7 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
         service.Add(batchItem2);
 
@@ -262,7 +251,7 @@ public class FontGlyphBatchingServiceTests
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnNext(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
         service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act

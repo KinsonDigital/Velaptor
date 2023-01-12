@@ -12,11 +12,6 @@ internal interface IGPUBuffer<in TData>
     where TData : struct
 {
     /// <summary>
-    /// Gets or sets the size of the viewport.
-    /// </summary>
-    SizeU ViewPortSize { get; set; }
-
-    /// <summary>
     /// Updates the GPU buffer using the given <paramref name="data"/>
     /// at the given <paramref name="index"/> location.
     /// </summary>

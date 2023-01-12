@@ -158,7 +158,7 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     // ReSharper restore InconsistentNaming
 
     /// <summary>
-    /// Creates n error message from the standard <c>FreeType</c> message.
+    /// Creates an error message from the standard <c>FreeType</c> message.
     /// </summary>
     /// <param name="freeTypeMsg">The error message coming from the <c>FreeType</c> library.</param>
     /// <returns>The C# friendly exception message.</returns>
@@ -167,7 +167,7 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     /// </remarks>
     private static string CreateErrorMessage(string freeTypeMsg)
     {
-        freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);
+        freeTypeMsg = freeTypeMsg.RemoveAll("FT_Err");
 
         var result = string.Empty;
 

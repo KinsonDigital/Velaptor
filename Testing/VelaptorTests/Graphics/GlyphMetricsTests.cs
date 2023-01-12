@@ -281,7 +281,7 @@ public class GlyphMetricsTests
         metricsA.HoriBearingX = 15;
         metricsA.HoriBearingY = 16;
 
-        object metricsB = new GlyphMetrics()
+        object metricsB = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,

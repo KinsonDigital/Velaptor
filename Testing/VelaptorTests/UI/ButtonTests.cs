@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CS8509
 namespace VelaptorTests.UI;
 
 using System;
@@ -16,6 +17,7 @@ using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 using Xunit;
@@ -32,7 +34,10 @@ public class ButtonTests
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IUIControlFactory> mockControlFactory;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
+    private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Label label;
+    private readonly Mock<IRectangleRenderer> mockRectRenderer;
+    private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ButtonTests"/> class.
@@ -45,7 +50,7 @@ public class ButtonTests
 
         var glyphMetrics = new[]
         {
-            new GlyphMetrics()
+            new GlyphMetrics
             {
                 Ascender = 1, Descender = 2, CharIndex = 3,
                 Glyph = 'c', GlyphWidth = 4, GlyphHeight = 5,
@@ -53,7 +58,7 @@ public class ButtonTests
                 XMax = 9, YMin = 11, YMax = 22,
                 HorizontalAdvance = 33, GlyphBounds = new Rectangle(44, 55, 66, 77),
             },
-            new GlyphMetrics()
+            new GlyphMetrics
             {
                 Ascender = 11, Descender = 22, CharIndex = 33,
                 Glyph = 'c', GlyphWidth = 44, GlyphHeight = 55,
@@ -75,7 +80,20 @@ public class ButtonTests
 
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
-        this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
+        this.mockRectRenderer = new Mock<IRectangleRenderer>();
+        this.mockFontRenderer = new Mock<IFontRenderer>();
+
+        this.mockRenderFactory = new Mock<IRendererFactory>();
+        this.mockRenderFactory.Setup(m => m.CreateRectangleRenderer())
+            .Returns(this.mockRectRenderer.Object);
+        this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
+            .Returns(this.mockFontRenderer.Object);
+
+        this.label = new Label(
+            this.mockContentLoader.Object,
+            this.mockFont.Object,
+            this.mockMouse.Object,
+            this.mockRenderFactory.Object);
 
         this.mockControlFactory = new Mock<IUIControlFactory>();
         this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>(), It.IsAny<IFont>()))
@@ -89,7 +107,11 @@ public class ButtonTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Button(null, this.mockControlFactory.Object, this.mockMouse.Object);
+            _ = new Button(
+                null,
+                this.mockControlFactory.Object,
+                this.mockMouse.Object,
+                this.mockRenderFactory.Object);
         };
 
         // Assert
@@ -104,13 +126,36 @@ public class ButtonTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Button(this.mockContentLoader.Object, null, this.mockMouse.Object);
+            _ = new Button(
+                this.mockContentLoader.Object,
+                null,
+                this.mockMouse.Object,
+                this.mockRenderFactory.Object);
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'controlFactory')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullRendererFactoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Button(
+                this.mockContentLoader.Object,
+                this.mockControlFactory.Object,
+                this.mockMouse.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'rendererFactory')");
     }
     #endregion
 
@@ -121,6 +166,7 @@ public class ButtonTests
         // Arrange
         var expected = new Point(11, 22);
         var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
         sut.Position = new Point(11, 22);
@@ -128,6 +174,7 @@ public class ButtonTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+        this.label.Position.Should().Be(new Point(11, 22));
     }
 
     [Fact]
@@ -416,72 +463,31 @@ public class ButtonTests
     public void Render_WithNoLoadedContentAndVisible_DoesNotRender()
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
         var sut = CreateSystemUnderTest();
         sut.Visible = true;
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render();
 
         // Assert
-        mockRenderer.Verify(m =>
-            m.Render(It.IsAny<ITexture>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Color>(),
-                It.IsAny<int>()), Times.Never);
+        this.mockRectRenderer.Verify(m =>
+            m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
     public void Render_WithLoadedContentAndInvisible_DoesNotRender()
     {
         // Arrange
-        var mockRenderer = new Mock<IRenderer>();
         var sut = CreateSystemUnderTest();
         sut.Visible = false;
         sut.LoadContent();
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render();
 
         // Assert
-        mockRenderer.Verify(m =>
-            m.Render(It.IsAny<ITexture>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Color>(),
-                It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public void Render_WithNullTexture_DoesNotRender()
-    {
-        // Arrange
-        var mockRenderer = new Mock<IRenderer>();
-
-        this.mockContentLoader.Setup(m => m.LoadTexture(TextureName))
-            .Returns(() =>
-            {
-                ITexture? nullTexture = null;
-
-#pragma warning disable 8603
-                return nullTexture;
-#pragma warning restore 8603
-            });
-        var sut = CreateSystemUnderTest();
-        sut.Visible = true;
-        sut.LoadContent();
-
-        // Act
-        sut.Render(mockRenderer.Object);
-
-        // Assert
-        mockRenderer.Verify(m =>
-            m.Render(It.IsAny<ITexture>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Color>(),
-                It.IsAny<int>()), Times.Never);
+        this.mockRectRenderer.Verify(m =>
+            m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -499,19 +505,6 @@ public class ButtonTests
         expected.Top = 574f;
         expected.Bottom = 625f;
 
-        var actual = default(RectShape);
-
-        var mockRenderer = new Mock<IRenderer>();
-        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
-            .Callback<RectShape, int>((rectangle, _) =>
-            {
-                // Only capture the sut face rectangle
-                if (rectangle.IsFilled)
-                {
-                    actual = rectangle;
-                }
-            });
-
         var sut = CreateSystemUnderTest();
         sut.Position = new Point(400, 600);
         sut.BorderVisible = false;
@@ -525,13 +518,11 @@ public class ButtonTests
         sut.LoadContent();
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render();
 
         // Assert
-        mockRenderer.Verify(m => m.Render(actual, 0), Times.Once);
-
-        // Assert
-        actual.Should().BeEquivalentTo(expected);
+        this.mockRectRenderer.Verify(m =>
+            m.Render(expected, It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
@@ -547,12 +538,8 @@ public class ButtonTests
         this.mockMouse.Setup(m => m.GetState())
             .Returns(mouseState);
 
-        var mockRenderer = new Mock<IRenderer>();
-        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
-            .Callback<RectShape, int>((rectangle, _) =>
-            {
-                btnFace = rectangle;
-            });
+        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+            .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
         sut.Position = new Point(400, 600);
@@ -569,7 +556,7 @@ public class ButtonTests
         sut.Update(default);
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render();
 
         // Assert
         btnFace.Color.Should().Be(expected);
@@ -579,22 +566,32 @@ public class ButtonTests
     public void Render_MouseOverButtonAndLeftMouseButtonDown_RendersButtonWithCorrectMouseHoverColor()
     {
         // Arrange
+        var totalGetStateInvokes = 0;
         var expected = Color.FromArgb(1, 2, 3, 4);
         var btnFace = default(RectShape);
 
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(400, 600);
-        mouseState.SetButtonState(MouseButton.LeftButton, true);
+        var mouseDownState = default(MouseState);
+        mouseDownState.SetPosition(400, 600);
+        mouseDownState.SetButtonState(MouseButton.LeftButton, true);
+
+        var mouseUpState = default(MouseState);
+        mouseUpState.SetPosition(400, 600);
+        mouseUpState.SetButtonState(MouseButton.LeftButton, false);
 
         this.mockMouse.Setup(m => m.GetState())
-            .Returns(mouseState);
-
-        var mockRenderer = new Mock<IRenderer>();
-        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
-            .Callback<RectShape, int>((rectangle, _) =>
+            .Returns(() =>
             {
-                btnFace = rectangle;
+                totalGetStateInvokes++;
+                return totalGetStateInvokes switch
+                {
+                    1 => mouseDownState,
+                    2 => mouseUpState,
+                    3 => mouseDownState,
+                };
             });
+
+        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+            .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
         sut.Position = new Point(400, 600);
@@ -609,12 +606,101 @@ public class ButtonTests
         sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
         sut.LoadContent();
         sut.Update(default);
+        sut.Update(default);
+        sut.Update(default);
 
         // Act
-        sut.Render(mockRenderer.Object);
+        sut.Render();
 
         // Assert
         btnFace.Color.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Render_WithBorderSetToVisible_RendersBorder()
+    {
+        // Arrange
+        var expected = default(RectShape);
+        expected.Position = new Vector2(1, 2);
+        expected.IsFilled = false;
+        expected.BorderThickness = 3;
+        expected.Color = Color.CornflowerBlue;
+        expected.Width = 4;
+        expected.Height = 5;
+        expected.CornerRadius = new CornerRadius(6, 7, 8, 9);
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(1, 2);
+        sut.BorderColor = Color.CornflowerBlue;
+        sut.BorderThickness = 3;
+        sut.Width = 4;
+        sut.Height = 5;
+        sut.CornerRadius = new CornerRadius(6, 7, 8, 9);
+        sut.AutoSize = false;
+
+        sut.LoadContent();
+
+        // Act
+        sut.Render();
+
+        // Assert
+        this.mockRectRenderer.Verify(m => m.Render(expected, 0), Times.Once);
+    }
+
+    [Fact]
+    public void Render_WhenTextIsWiderThanButton_OnlyRendersRequiredCharacters()
+    {
+        // Arrange
+        // NOTE: Anything with the value '999' signifies that it is not used in the code being tested.
+        var charBounds = new[]
+        {
+            // The height and Y position of the chars are not used for determining left and right positioning.
+            // With the set X position and width of the chars, the width of the text should be 90 pixels.
+            // There is not space between each char in the data below.
+            ('t', new RectangleF(new PointF(155f,  999), new SizeF(10, 999))),
+            ('e', new RectangleF(new PointF(165f, 999), new SizeF(10, 999))),
+            ('s', new RectangleF(new PointF(175f, 999), new SizeF(10, 999))),
+            ('t', new RectangleF(new PointF(185f, 999), new SizeF(10, 999))),
+            ('-', new RectangleF(new PointF(195f, 999), new SizeF(10, 999))),
+            ('v', new RectangleF(new PointF(205f, 999), new SizeF(10, 999))),
+            ('a', new RectangleF(new PointF(215f, 999), new SizeF(10, 999))),
+            ('l', new RectangleF(new PointF(225f, 999), new SizeF(10, 999))),
+            ('u', new RectangleF(new PointF(235f, 999), new SizeF(10, 999))),
+            ('e', new RectangleF(new PointF(245f, 999), new SizeF(10, 999))),
+        };
+
+        this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
+            .Returns<string, Vector2>((_, _) => charBounds);
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(200, 999);
+        sut.BorderColor = Color.CornflowerBlue;
+        sut.BorderThickness = 3;
+        sut.Width = 70;
+        sut.Height = 40;
+        sut.CornerRadius = new CornerRadius(6, 7, 8, 9);
+        sut.AutoSize = false;
+        sut.Text = "test-value";
+
+        this.label.AutoSize = false;
+        this.label.Height = 30;
+        this.label.Width = 90;
+
+        sut.LoadContent();
+
+        // Act
+        sut.Render();
+
+        // Assert
+        this.mockFontRenderer.Verify(m =>
+            m.Render(It.IsAny<IFont>(),
+                "st-va",
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Once);
     }
     #endregion
 
@@ -651,5 +737,6 @@ public class ButtonTests
     private Button CreateSystemUnderTest()
         => new (this.mockContentLoader.Object,
             this.mockControlFactory.Object,
-            this.mockMouse.Object);
+            this.mockMouse.Object,
+            this.mockRenderFactory.Object);
 }

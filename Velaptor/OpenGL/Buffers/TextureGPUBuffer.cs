@@ -10,13 +10,13 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Carbonate;
-using Velaptor.Exceptions;
-using Graphics;
-using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
+using Graphics;
 using Guards;
+using NativeInterop.OpenGL;
 using ReactableData;
+using Velaptor.Exceptions;
 using NETRect = System.Drawing.Rectangle;
 
 /// <summary>
@@ -40,14 +40,16 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     public TextureGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable reactable)
+        IPushReactable reactable)
         : base(gl, openGLService, reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -58,7 +60,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
 
                 BatchSize = batchSize.Value;
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>
@@ -125,12 +127,12 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         bottomRight = bottomRight.RotateAround(origin, angle);
         topRight = topRight.RotateAround(origin, angle);
 
-        var vertex1 = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex2 = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex3 = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex4 = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex1 = topLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex2 = bottomLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex3 = topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex4 = bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
-        // Set up the corners of the sub texture to render
+        // Sets up the corners of the sub texture to render
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);
         var textureBottomLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Bottom);
         var textureTopRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Top);

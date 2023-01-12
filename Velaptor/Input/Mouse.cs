@@ -28,13 +28,15 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// Initializes a new instance of the <see cref="Mouse"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public Mouse(IReactable reactable)
+    public Mouse(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        var mouseStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.MouseStateChangedId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.MouseStateChangedId,
-            onNextMsg: msg =>
+            name: mouseStateChangeName,
+            onReceiveMsg: msg =>
             {
                 var data = msg.GetData<MouseStateData>();
 
@@ -63,7 +65,7 @@ internal sealed class Mouse : IAppInput<MouseState>
                         throw new EnumOutOfRangeException($"The enum '{nameof(MouseButton)}' is out of range.");
                 }
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <summary>

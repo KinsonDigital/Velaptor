@@ -11,10 +11,10 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
-using Velaptor.Factories;
 using Graphics;
 using Guards;
 using Services;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads atlas data.
@@ -41,7 +41,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     {
         this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        this.atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+        this.atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         this.jsonService = IoC.Container.GetInstance<IJSONService>();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
@@ -130,7 +130,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
             if (validExtensions.All(e => e != extension))
             {
-                var exceptionMsg = $"When performing full content file path loads,";
+                var exceptionMsg = "When performing full content file path loads,";
                 exceptionMsg += $" the files must be a '{TextureExtension}' or '{AtlasDataExtension}' extension.";
 
                 throw new LoadAtlasException(exceptionMsg);

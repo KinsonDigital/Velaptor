@@ -15,7 +15,7 @@ public class NoKeyboardException : Exception
     /// Initializes a new instance of the <see cref="NoKeyboardException"/> class.
     /// </summary>
     public NoKeyboardException()
-        : base($"No keyboard detected.")
+        : base("No keyboard detected.")
     {
     }
 

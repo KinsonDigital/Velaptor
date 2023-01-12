@@ -6,11 +6,13 @@ namespace VelaptorTests.Content;
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.IO.Abstractions;
 using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
+using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -26,7 +28,8 @@ public class AtlasDataTests
     private const string AtlasImagePath = $"{DirPath}/{AtlasName}{TextureExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
     private readonly Mock<IPath> mockPath;
-    private readonly AtlasSubTextureData[] subTextureData;
+    private readonly Mock<IDirectory> mockDirectory;
+    private readonly AtlasSubTextureData[] atlasData;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasDataTests"/> class.
@@ -35,27 +38,30 @@ public class AtlasDataTests
     {
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
+        this.mockDirectory = new Mock<IDirectory>();
+        this.mockDirectory.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+
         this.mockPath = new Mock<IPath>();
         this.mockPath.Setup(m => m.GetDirectoryName(DirPath)).Returns(DirPath);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasName))
             .Returns(AtlasName);
-        this.subTextureData = new[]
+        this.atlasData = new[]
         {
-            new AtlasSubTextureData() // First frame of Animating sub texture
+            new AtlasSubTextureData() // First frame of animating sub texture
             {
-                Name = "sub-texture",
+                Name = "test-texture",
                 FrameIndex = 0,
                 Bounds = new Rectangle(11, 22, 33, 44),
             },
-            new AtlasSubTextureData() // Second frame of Animating sub texture
+            new AtlasSubTextureData() // Second frame of animating sub texture
             {
-                Name = "sub-texture",
+                Name = "test-texture",
                 FrameIndex = 1,
                 Bounds = new Rectangle(55, 66, 77, 88),
             },
             new AtlasSubTextureData() // Non animating sub texture
             {
-                Name = "other-sub-texture",
+                Name = "other-test-texture",
                 FrameIndex = -1,
                 Bounds = new Rectangle(111, 222, 333, 444),
             },
@@ -71,6 +77,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 null,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -91,6 +98,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 null,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -111,6 +119,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 null,
                 "dir-path",
@@ -133,6 +142,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 dirPath,
@@ -155,6 +165,7 @@ public class AtlasDataTests
         {
             _ = new AtlasData(
                 this.mockTextureCache.Object,
+                this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
@@ -164,6 +175,20 @@ public class AtlasDataTests
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The string parameter must not be null or empty. (Parameter 'atlasName')");
+    }
+
+    [Fact]
+    public void Ctor_WhenDirPathDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        this.mockDirectory.Setup(m => m.Exists(It.IsAny<string?>())).Returns(false);
+
+        // Act
+        var act = () => _ = CreateSystemUnderTest();
+
+        // Assert
+        act.Should().Throw<DirectoryNotFoundException>()
+            .WithMessage($"The directory '{DirPath}' does not exist.");
     }
     #endregion
 
@@ -178,8 +203,8 @@ public class AtlasDataTests
         */
         var expected = new[]
         {
-            "other-sub-texture",
-            "sub-texture",
+            "other-test-texture",
+            "test-texture",
         };
 
         var sut = CreateSystemUnderTest();
@@ -205,39 +230,58 @@ public class AtlasDataTests
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(".txt")]
-    public void FilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+    [InlineData("C:/atlas-dir", "")]
+    [InlineData("C:/atlas-dir", ".txt")]
+    [InlineData("C:/atlas-dir/", ".txt")]
+    [InlineData(@"C:\atlas-dir\", ".txt")]
+    public void FilePath_WhenGettingValue_ReturnsCorrectResult(
+        string dirPath,
+        string extension)
     {
         // Arrange
-        const string atlasName = "atlasWithExtension";
+        const string atlasName = "testAtlas";
+        var atlasFileName = $"{atlasName}{extension}";
+        const string expected = $"C:/atlas-dir/{atlasName}{TextureExtension}";
+
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var sut = CreateSystemUnderTest($"{atlasName}{extension}");
+
+        var sut = CreateSystemUnderTest(
+            dirPath: dirPath,
+            atlasName: atlasFileName);
 
         // Act
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().Be($"{DirPath}/{atlasName}{TextureExtension}");
+        actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(".txt")]
-    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+    [InlineData("C:/atlas-dir", "")]
+    [InlineData("C:/atlas-dir", ".txt")]
+    [InlineData("C:/atlas-dir/", ".txt")]
+    [InlineData(@"C:\atlas-dir\", ".txt")]
+    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(
+        string dirPath,
+        string extension)
     {
         // Arrange
-        const string atlasName = "atlasWithExtension";
+        const string atlasName = "testAtlas";
+        var atlasFileName = $"{atlasName}{extension}";
+        const string expected = $"C:/atlas-dir/{atlasName}{JSONFileExtension}";
+
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var sut = CreateSystemUnderTest($"{atlasName}{extension}");
+        var sut = CreateSystemUnderTest(
+            dirPath: dirPath,
+            atlasName: atlasFileName);
 
         // Act
         var actual = sut.AtlasDataFilePath;
 
         // Assert
-        actual.Should().Be($"{DirPath}/{atlasName}{JSONFileExtension}");
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -282,9 +326,9 @@ public class AtlasDataTests
     public void Iterator_WhenGettingValueAtIndex_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new AtlasSubTextureData()
+        var expected = new AtlasSubTextureData
         {
-            Name = "sub-texture",
+            Name = "test-texture",
             Bounds = new Rectangle(55, 66, 77, 88),
             FrameIndex = 1,
         };
@@ -304,6 +348,44 @@ public class AtlasDataTests
         actual.Bounds.Should().Be(expected.Bounds);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void GetFrames_WithNullOrEmptySubTextureId_ThrowsException(string subTextureId)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.GetFrames(subTextureId);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'subTextureId')");
+    }
+
+    [Fact]
+    public void GetFrames_WhenSubTextureIdDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        const string subTextureId = "test-id";
+        const string dirPath = "C:/atlas-dir";
+
+        var data = new[]
+        {
+            new AtlasSubTextureData { Name = "itemA" },
+        };
+
+        var sut = CreateSystemUnderTest(subTextureData: data, dirPath: dirPath);
+
+        // Act
+        var act = () => sut.GetFrames(subTextureId);
+
+        // Assert
+        act.Should().Throw<AtlasException>()
+            .WithMessage($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
+    }
+
     [Fact]
     public void GetFrames_WhenInvokedWithExistingSubTextureID_ReturnsCorrectFrameRectangle()
     {
@@ -312,13 +394,13 @@ public class AtlasDataTests
         {
             new AtlasSubTextureData() // First frame of Animating sub texture
             {
-                Name = "sub-texture",
+                Name = "test-texture",
                 FrameIndex = 0,
                 Bounds = new Rectangle(11, 22, 33, 44),
             },
             new AtlasSubTextureData() // Second frame of Animating sub texture
             {
-                Name = "sub-texture",
+                Name = "test-texture",
                 FrameIndex = 1,
                 Bounds = new Rectangle(55, 66, 77, 88),
             },
@@ -327,33 +409,19 @@ public class AtlasDataTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.GetFrames("sub-texture");
+        var actual = sut.GetFrames("test-texture");
 
         // Assert
         actual.Should().BeEquivalentTo(expectedItems);
     }
 
     [Fact]
-    public void GetFrame_WhenSubTextureIDDoesNotExist_ThrowsException()
+    public void GetFrames_WithExistingSubTexture_ReturnsSubTextureData()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.GetFrame("missing-texture");
-
-        // Assert
-        act.Should().Throw<Exception>()
-            .WithMessage("The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
-    }
-
-    [Fact]
-    public void GetFrame_WithExistingSubTexture_ReturnsSubTextureData()
-    {
-        // Arrange
-        var expected = new AtlasSubTextureData()
+        var expected = new AtlasSubTextureData
         {
-            Name = "sub-texture",
+            Name = "test-texture",
             FrameIndex = 0,
             Bounds = new Rectangle(11, 22, 33, 44),
         };
@@ -361,7 +429,7 @@ public class AtlasDataTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.GetFrame("sub-texture");
+        var actual = sut.GetFrames("test-texture")[0];
 
         // Assert
         actual.Name.Should().Be(expected.Name);
@@ -374,6 +442,19 @@ public class AtlasDataTests
     /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private AtlasData CreateSystemUnderTest(string? atlasName = null)
-        => new (this.mockTextureCache.Object, this.mockPath.Object, this.subTextureData, DirPath, atlasName ?? AtlasName);
+    private AtlasData CreateSystemUnderTest(
+        AtlasSubTextureData[]? subTextureData = null,
+        string? dirPath = DirPath,
+        string? atlasName = AtlasName)
+    {
+        var data = subTextureData ?? this.atlasData;
+
+        return new (
+            this.mockTextureCache.Object,
+            this.mockDirectory.Object,
+            this.mockPath.Object,
+            data,
+            dirPath,
+            atlasName);
+    }
 }

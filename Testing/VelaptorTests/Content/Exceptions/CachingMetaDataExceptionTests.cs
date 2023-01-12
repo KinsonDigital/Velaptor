@@ -21,7 +21,7 @@ public class CachingMetaDataExceptionTests
         var exception = new CachingMetaDataException();
 
         // Assert
-        Assert.Equal($"There was an issue with caching the metadata.", exception.Message);
+        Assert.Equal("There was an issue with caching the metadata.", exception.Message);
     }
 
     [Fact]

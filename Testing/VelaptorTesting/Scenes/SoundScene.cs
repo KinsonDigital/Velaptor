@@ -8,11 +8,10 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
-using Core;
-using ISound = Velaptor.Content.ISound;
 
 public class SoundScene : SceneBase
 {

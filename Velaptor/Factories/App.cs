@@ -7,7 +7,7 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
 using Services;
 using UI;
@@ -51,6 +51,5 @@ public static class App
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
-            RendererFactory.CreateRenderer(width, height),
-            IoC.Container.GetInstance<IReactable>());
+            IoC.Container.GetInstance<IPushReactable>());
 }

@@ -21,7 +21,7 @@ public class SystemDisplayExceptionTests
         var exception = new SystemMonitorException();
 
         // Assert
-        Assert.Equal($"There was an issue with one of the system monitors.", exception.Message);
+        Assert.Equal("There was an issue with one of the system monitors.", exception.Message);
     }
 
     [Fact]

@@ -33,7 +33,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             true, // Expected Equal Result
         };
@@ -46,7 +45,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -59,7 +57,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -72,7 +69,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -85,7 +81,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -98,7 +93,6 @@ public class TextureBatchItemTests
             new RectangleF(77, 88, 99, 100), // Src Rect <-- THIS ONE IS DIFFERENT
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -111,7 +105,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             111, // TextureId <-- THIS ONE IS DIFFERENT
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -124,7 +117,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(120, 130, 140, 150), // Tint Color <-- THIS ONE IS DIFFERENT
-            new SizeF(16, 17), // Viewport Size
             18, // Layer
             false, // Expected Equal Result
         };
@@ -137,20 +129,6 @@ public class TextureBatchItemTests
             new RectangleF(7, 8, 9, 10), // Src Rect
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(160, 170), // Viewport Size <-- THIS ONE IS DIFFERENT
-            18, // Layer
-            false, // Expected Equal Result
-        };
-        yield return new object[]
-        {
-            1, // Angle
-            RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            new SizeF(16, 17), // Viewport Size
             180, // Layer <-- THIS ONE IS DIFFERENT
             false, // Expected Equal Result
         };
@@ -180,7 +158,6 @@ public class TextureBatchItemTests
         RectangleF srcRect,
         uint textureId,
         Color tintColor,
-        SizeF viewPortSize,
         int layer,
         bool expected)
     {
@@ -192,7 +169,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 
@@ -203,7 +179,6 @@ public class TextureBatchItemTests
             angle,
             tintColor,
             effects,
-            viewPortSize,
             textureId,
             layer);
 
@@ -225,7 +200,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 
@@ -236,7 +210,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 
@@ -258,7 +231,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 
@@ -269,7 +241,6 @@ public class TextureBatchItemTests
             11,
             Color.FromArgb(120, 130, 140, 150),
             RenderEffects.None,
-            new SizeF(160, 170),
             110,
             180);
 
@@ -291,7 +262,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             12);
 
@@ -302,7 +272,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             12);
 
@@ -324,7 +293,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             12);
 
@@ -348,7 +316,6 @@ public class TextureBatchItemTests
         expected += $"{Environment.NewLine}Angle: 1";
         expected += $"{Environment.NewLine}Tint Clr: {{A=12,R=13,G=14,B=15}}";
         expected += $"{Environment.NewLine}Effects: None";
-        expected += $"{Environment.NewLine}View Port Size: {{W=16,H=17}}";
         expected += $"{Environment.NewLine}Texture ID: 11";
         expected += $"{Environment.NewLine}Layer: 18";
 
@@ -359,7 +326,6 @@ public class TextureBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            new SizeF(16, 17),
             11,
             18);
 

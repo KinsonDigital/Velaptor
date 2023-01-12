@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Content;
 using Factories;
-using Graphics;
 using Input;
 
 /// <summary>
@@ -195,9 +194,8 @@ public abstract class ControlBase : IControl
     /// <summary>
     /// Renders the control to the screen.
     /// </summary>
-    /// <param name="renderer">Renders the control.</param>
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
-    public virtual void Render(IRenderer renderer)
+    public virtual void Render()
     {
     }
 

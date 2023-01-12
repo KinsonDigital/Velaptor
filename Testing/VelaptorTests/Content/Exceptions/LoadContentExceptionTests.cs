@@ -21,7 +21,7 @@ public class LoadContentExceptionTests
         var exception = new LoadContentException();
 
         // Assert
-        Assert.Equal($"There was an issue loading the content.", exception.Message);
+        Assert.Equal("There was an issue loading the content.", exception.Message);
     }
 
     [Fact]

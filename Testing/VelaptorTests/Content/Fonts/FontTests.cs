@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Newtonsoft.Json;
 using Velaptor;
@@ -21,7 +22,6 @@ using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -235,7 +235,7 @@ public class FontTests : IDisposable
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.FontTextureAtlas.Should().BeEquivalentTo(this.mockTexture.Object);
+        sut.Atlas.Should().BeEquivalentTo(this.mockTexture.Object);
         sut.Metrics.Count.Should().Be(this.glyphMetrics.Count);
         sut.Name.Should().Be(FontName);
         sut.FamilyName.Should().Be("test-font-family");
@@ -436,7 +436,7 @@ public class FontTests : IDisposable
     }
 
     [Fact]
-    public void Size_WhenValueIsEqualToZero_DoesNotBuildFontAtlasTexture()
+    public void Size_WhenValueIsEqualToZero_DoesNotBuildAtlas()
     {
         // Arrange
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
@@ -450,9 +450,9 @@ public class FontTests : IDisposable
         sut.Size = 0;
 
         // Assert
-        sut.FontTextureAtlas.Should().Be(this.mockTexture.Object);
+        sut.Atlas.Should().Be(this.mockTexture.Object);
         sut.LineSpacing.Should().Be(123);
-        this.mockFontAtlasService.VerifyNever(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<uint>()));
+        this.mockFontAtlasService.VerifyNever(m => m.CreateAtlas(It.IsAny<string>(), It.IsAny<uint>()));
         this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<nint>(), 0u));
     }
     #endregion

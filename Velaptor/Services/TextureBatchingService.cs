@@ -21,19 +21,24 @@ using ReactableData;
 internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
 {
     private readonly IDisposable unsubscriber;
+    private readonly IPushReactable reactable;
     private TextureBatchItem[] batchItems = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchingService"/> class.
     /// </summary>
     /// <param name="reactable">Sends and receives push notifications.</param>
-    public TextureBatchingService(IReactable reactable)
+    public TextureBatchingService(IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(reactable);
 
-        this.unsubscriber = reactable.Subscribe(new Reactor(
+        this.reactable = reactable;
+
+        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.BatchSizeSetId,
-            onNextMsg: msg =>
+            name: batchSizeName,
+            onReceiveMsg: msg =>
             {
                 var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
 
@@ -53,20 +58,8 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
 
                 this.batchItems = items.ToArray();
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <remarks>
-    /// Invoked when the scenarios below occur:
-    /// <list type="bullet">
-    ///     <item>When the item to be called is a different texture.</item>
-    ///     <item>When all of the items are ready to be rendered.</item>
-    /// </list>
-    /// </remarks>
-    public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
     public ReadOnlyCollection<TextureBatchItem> BatchItems
@@ -85,7 +78,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
 
         if (batchIsFull)
         {
-            this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
+            this.reactable.Push(NotificationIds.RenderTexturesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

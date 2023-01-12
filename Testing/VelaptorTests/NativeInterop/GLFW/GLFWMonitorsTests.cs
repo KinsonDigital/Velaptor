@@ -7,12 +7,12 @@ namespace VelaptorTests.NativeInterop.GLFW;
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Helpers;
 using Moq;
 using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -39,7 +39,7 @@ public unsafe class GLFWMonitorsTests
         this.mockPlatform = new Mock<IPlatform>();
         this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
 
-        this.videoModeA = new GLFWVideoMode()
+        this.videoModeA = new GLFWVideoMode
         {
             Width = 1,
             Height = 2,
@@ -49,7 +49,7 @@ public unsafe class GLFWMonitorsTests
             RefreshRate = 6,
         };
 
-        this.videoModeB = new GLFWVideoMode()
+        this.videoModeB = new GLFWVideoMode
         {
             Width = 11,
             Height = 22,

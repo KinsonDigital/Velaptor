@@ -8,8 +8,11 @@ using System;
 using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate;
+using Carbonate.Core;
 using FluentAssertions;
+using Helpers;
 using Moq;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
@@ -17,8 +20,6 @@ using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.ReactableData;
 using Velaptor.Services;
-using Helpers;
-using Velaptor;
 using Xunit;
 
 public class TextureCacheTests
@@ -27,13 +28,13 @@ public class TextureCacheTests
     private const string TextureExtension = ".png";
     private const string TextureDirPath = @"C:/textures";
     private const string TextureName = "text-texture";
-    private const string FontTextureAtlasPrefix = "FontAtlasTexture";
+    private const string FontAtlasPrefix = "FontAtlas";
     private const string FontDirPath = @"C:/fonts";
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private const string TextureFilePath = $"{TextureDirPath}/{TextureName}{TextureExtension}";
     private const string FontFilePath = $"{FontDirPath}/{FontName}{FontExtension}";
-    private readonly string fontAtlasTextureName = $"{FontTextureAtlasPrefix}|{FontName}|size:{FontSize}";
+    private readonly string fontAtlasTextureName = $"{FontAtlasPrefix}|{FontName}|size:{FontSize}";
     private readonly string fontFilePathWithMetaData;
     private readonly Mock<IImageService> mockImageService;
     private readonly Mock<ITextureFactory> mockTextureFactory;
@@ -41,10 +42,10 @@ public class TextureCacheTests
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockReactable;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
-    private IReactor? shutDownReactor;
+    private IReceiveReactor? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -64,7 +65,7 @@ public class TextureCacheTests
 
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockFontAtlasService.Setup(m =>
-                m.CreateFontAtlas(FontFilePath, FontSize))
+                m.CreateAtlas(FontFilePath, FontSize))
             .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
 
         var mockRegularTexture = new Mock<ITexture>();
@@ -98,11 +99,11 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
-        this.mockReactable = new Mock<IReactable>();
+        this.mockReactable = new Mock<IPushReactable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReactor>()))
+        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
@@ -408,7 +409,7 @@ public class TextureCacheTests
         this.mockPath.Verify(m => m.GetExtension(FontFilePath), Times.Exactly(2));
 
         this.mockFontAtlasService.Verify(m =>
-            m.CreateFontAtlas(FontFilePath, FontSize), Times.Once);
+            m.CreateAtlas(FontFilePath, FontSize), Times.Once);
 
         this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(FontFilePath), Times.Exactly(2));
@@ -526,8 +527,8 @@ public class TextureCacheTests
         cache.GetItem(texturePathB);
 
         // Act
-        this.shutDownReactor?.OnNext();
-        this.shutDownReactor?.OnNext();
+        this.shutDownReactor?.OnReceive();
+        this.shutDownReactor?.OnReceive();
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());

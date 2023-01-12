@@ -9,17 +9,17 @@ using System.Drawing;
 /// <summary>
 /// Holds data about a texture atlas sub texture.
 /// </summary>
-public class AtlasSubTextureData
+public readonly struct AtlasSubTextureData
 {
     /// <summary>
-    /// Gets or sets the bounds of the sub texture data.
+    /// Gets the bounds of the sub texture data.
     /// </summary>
-    public Rectangle Bounds { get; set; }
+    public Rectangle Bounds { get; init; }
 
     /// <summary>
-    /// Gets or sets the name of the sub texture.
+    /// Gets the name of the sub texture.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; }
 
     /// <summary>
     /// Gets the index of the sub texture frame.
@@ -28,5 +28,5 @@ public class AtlasSubTextureData
     ///     This is used for frames of animation.  A negative value indicates
     ///     that the sub texture is not part of any animation frames.
     /// </remarks>
-    public int FrameIndex { get; init; } = -1;
+    public int FrameIndex { get; init; }
 }

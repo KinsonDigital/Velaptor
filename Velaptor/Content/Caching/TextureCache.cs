@@ -37,7 +37,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     private readonly IFontMetaDataParser fontMetaDataParser;
     private readonly IPath path;
     private readonly IDisposable shutDownUnsubscriber;
-    private readonly IReactable reactable;
+    private readonly IPushReactable reactable;
     private readonly string[] defaultFontNames =
     {
         DefaultRegularFontName, DefaultBoldFontName,
@@ -60,7 +60,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         IFontAtlasService fontAtlasService,
         IFontMetaDataParser fontMetaDataParser,
         IPath path,
-        IReactable reactable)
+        IPushReactable reactable)
     {
         EnsureThat.ParamIsNotNull(imageService);
         EnsureThat.ParamIsNotNull(textureFactory);
@@ -74,9 +74,12 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.fontAtlasService = fontAtlasService;
         this.fontMetaDataParser = fontMetaDataParser;
         this.path = path;
-        this.shutDownUnsubscriber = reactable.Subscribe(new Reactor(
+
+        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
-            onNext: ShutDown));
+            name: shutDownName,
+            onReceive: ShutDown));
 
         this.reactable = reactable;
     }
@@ -223,7 +226,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (isFontFile)
             {
-                var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(fullFilePath, parseResult.FontSize);
+                var (atlasImageData, _) = this.fontAtlasService.CreateAtlas(fullFilePath, parseResult.FontSize);
 
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;
@@ -240,7 +243,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (parseResult.ContainsMetaData)
             {
-                contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
+                contentName = $"FontAtlas|{contentName}|{parseResult.MetaData}";
             }
 
             var loadedTexture = this.textureFactory.Create(contentName, fullFilePath, imageData);

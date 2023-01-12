@@ -12,8 +12,8 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 using Velaptor.Services;
 
 /// <summary>
@@ -210,7 +210,7 @@ public sealed class FontLoader : ILoader<IFont>
 
         var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-        var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
+        var (_, glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
 
         var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
         var fileName = this.path.GetFileName(fullFontFilePath);

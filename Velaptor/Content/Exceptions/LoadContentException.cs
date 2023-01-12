@@ -15,7 +15,7 @@ public class LoadContentException : Exception
     /// Initializes a new instance of the <see cref="LoadContentException"/> class.
     /// </summary>
     public LoadContentException()
-        : base($"There was an issue loading the content.")
+        : base("There was an issue loading the content.")
     {
     }
 

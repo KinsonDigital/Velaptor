@@ -21,7 +21,7 @@ public class NoMouseExceptionTests
         var exception = new NoMouseException();
 
         // Assert
-        Assert.Equal($"No mouse detected.", exception.Message);
+        Assert.Equal("No mouse detected.", exception.Message);
     }
 
     [Fact]
