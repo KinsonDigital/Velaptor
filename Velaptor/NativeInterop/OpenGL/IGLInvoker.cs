@@ -369,20 +369,6 @@ internal interface IGLInvoker : IDisposable
     /// </param>
     void BufferData(GLBufferTarget target, uint[] data, GLBufferUsageHint usage);
 
-    /*
-    * TODO: Need to eventually convert the BufferSubData<T> method `data` param from a `ref`
-    * param to an `in` param.  Currently this cannot be done due to an issue found in NET 5 runtime.
-    *
-    * The issue was suppose to be fixed in NET 6 preview at the link below, but the issue seems to have
-    * moved from the test failing at the actual method call to the `Mock<T>.Verify()` call in the
-    * unit test `UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer`, and is should be passing.
-    *
-    * Links to GITHUB issues:
-    *      1. https://github.com/moq/moq4/issues/555
-    *      2. https://github.com/moq/moq4/issues/1136
-    *          * This one is related to the first
-    */
-
     /// <summary>
     /// [requires: v1.5] Updates a subset of a buffer object's data store.
     /// </summary>

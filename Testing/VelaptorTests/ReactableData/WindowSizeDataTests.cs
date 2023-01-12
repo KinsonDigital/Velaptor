@@ -9,7 +9,7 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="WindowSizeData"/> class;
+/// Tests the <see cref="WindowSizeData"/> class.
 /// </summary>
 public class WindowSizeDataTests
 {

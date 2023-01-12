@@ -133,8 +133,6 @@ public class LayeredTextRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        // TODO: Fix renderer
-
         // BLUE
         this.fontRenderer.Render(
             this.font,

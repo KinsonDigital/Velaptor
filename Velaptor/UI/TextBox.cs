@@ -15,7 +15,7 @@ using Graphics.Renderers;
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Waiting for implementation")]
 
-// TODO: Left as internal to prevent library users from using the control until it is ready
+// NOTE: Left as internal to prevent library users from using the control until it is ready
 internal sealed class TextBox : ControlBase
 {
     private const int LEFTMARGIN = 5;
@@ -106,7 +106,6 @@ internal sealed class TextBox : ControlBase
             return;
         }
 
-        // TODO: Fix renderer
         // this.text.Render(renderer);
     }
 

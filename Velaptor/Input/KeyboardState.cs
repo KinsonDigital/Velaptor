@@ -96,8 +96,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
 
     private Dictionary<KeyCode, bool> keyStates;
 
-    /*TODO: Get these two properties working with SILK.NET
-
+    /*
     /// <summary>
     /// Gets a value indicating whether or not the caps lock key is on.
     /// </summary>
@@ -123,7 +122,6 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
     /// <returns><c>true</c> if operands are not equal.</returns>
-    // TODO: Unit test this
     public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
 
     /// <summary>

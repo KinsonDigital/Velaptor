@@ -139,8 +139,6 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         this.batchService.Add(batchItem);
     }
 
-    // TODO: Create more overloads as features
-
     /// <summary>
     /// Invoked every time a batch of rectangles is ready to be rendered.
     /// </summary>

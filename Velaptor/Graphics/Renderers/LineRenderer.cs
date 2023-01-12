@@ -116,7 +116,6 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
-        // TODO: Create custom RendererException
         var batchItem = new LineBatchItem(
             start,
             end,
