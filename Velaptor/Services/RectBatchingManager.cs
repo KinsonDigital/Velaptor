@@ -13,7 +13,7 @@ using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using Guards;
-using OpenGL;
+using OpenGL.Batching;
 using ReactableData;
 
 /// <summary>

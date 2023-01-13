@@ -7,6 +7,7 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Batching;
 using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;

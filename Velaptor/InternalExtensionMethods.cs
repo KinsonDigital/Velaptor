@@ -16,6 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Graphics;
 using OpenGL;
+using OpenGL.Batching;
 using OpenGL.GPUData;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;

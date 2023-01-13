@@ -15,6 +15,7 @@ using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
+using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
 using Services;

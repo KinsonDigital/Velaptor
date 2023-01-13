@@ -19,6 +19,7 @@ using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.ReactableData;
 using Xunit;

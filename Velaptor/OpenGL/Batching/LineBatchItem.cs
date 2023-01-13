@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL;
+namespace Velaptor.OpenGL.Batching;
 
 using System.Drawing;
 using System.Numerics;

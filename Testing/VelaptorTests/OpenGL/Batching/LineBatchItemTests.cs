@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL;
+namespace VelaptorTests.OpenGL.Batching;
 
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
-using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Xunit;
 
 /// <summary>

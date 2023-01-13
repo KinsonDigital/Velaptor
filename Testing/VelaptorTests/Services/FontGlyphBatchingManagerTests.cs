@@ -20,7 +20,7 @@ using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;

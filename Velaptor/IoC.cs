@@ -20,7 +20,7 @@ using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
 using NativeInterop.OpenGL;
-using OpenGL;
+using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Services;
 using ReactableData;

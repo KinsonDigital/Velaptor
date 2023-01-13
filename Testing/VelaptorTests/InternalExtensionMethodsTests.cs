@@ -20,6 +20,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
 using NETColor = System.Drawing.Color;
