@@ -8,6 +8,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Batching;
 using Carbonate.NonDirectional;
 using Factories;
 using Guards;
@@ -16,7 +17,6 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Services;
 
 /// <inheritdoc cref="ILineRenderer"/>
 internal sealed class LineRenderer : RendererBase, ILineRenderer

@@ -5,11 +5,11 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Batching;
 using Graphics.Renderers;
 using NativeInterop.OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
-using Services;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]

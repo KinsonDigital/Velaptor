@@ -7,6 +7,7 @@ namespace Velaptor;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Content;

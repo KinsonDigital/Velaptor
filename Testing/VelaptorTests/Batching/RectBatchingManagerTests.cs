@@ -3,7 +3,7 @@
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue
-namespace VelaptorTests.Services;
+namespace VelaptorTests.Batching;
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
-using Velaptor.Services;
+using Velaptor.Batching;
 using Xunit;
 
 /// <summary>

@@ -6,6 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Linq;
+using Batching;
 using Carbonate.NonDirectional;
 using Factories;
 using Guards;
@@ -14,7 +15,6 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Services;
 
 /// <inheritdoc cref="IRectangleRenderer"/>
 internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer

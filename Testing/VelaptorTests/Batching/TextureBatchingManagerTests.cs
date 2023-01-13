@@ -1,14 +1,14 @@
-﻿// <copyright file="LineBatchingManagerTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchingManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Services;
+namespace VelaptorTests.Batching;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Numerics;
+using System.Linq;
 using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -18,26 +18,27 @@ using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.Factories;
+using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
-using Velaptor.Services;
+using Velaptor.Batching;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="LineBatchingManager"/> class.
+/// Tests the <see cref="TextureBatchingManager"/> class.
 /// </summary>
-public class LineBatchingManagerTests
+public class TextureBatchingManagerTests
 {
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IPushReactable> mockPushReactable;
     private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
-    private IReceiveReactor<BatchSizeData>? batchSizeReactor;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private IReceiveReactor<BatchSizeData>? reactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LineBatchingManagerTests"/> class.
+    /// Initializes a new instance of the <see cref="TextureBatchingManagerTests"/> class.
     /// </summary>
-    public LineBatchingManagerTests()
+    public TextureBatchingManagerTests()
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
@@ -45,7 +46,7 @@ public class LineBatchingManagerTests
 
         this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj => this.batchSizeReactor = reactorObj)
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -55,12 +56,12 @@ public class LineBatchingManagerTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithReactableFactoryNullParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new LineBatchingManager(null);
+            _ = new TextureBatchingManager(null);
         };
 
         // Assert
@@ -80,7 +81,7 @@ public class LineBatchingManagerTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -93,18 +94,18 @@ public class LineBatchingManagerTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnUnsubscribe();
-        this.batchSizeReactor.OnUnsubscribe();
+        this.reactor.OnUnsubscribe();
 
+        this.reactor.OnUnsubscribe();
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
     }
 
     [Fact]
-    public void Ctor_WhenReactableNotificationHasAnIssue_ThrowsException()
+    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
     {
         // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(LineBatchingManager)}.Constructor()' subscription source";
+        var expectedMsg = $"There was an issue with the '{nameof(TextureBatchingManager)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
@@ -112,7 +113,7 @@ public class LineBatchingManagerTests
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
-                this.batchSizeReactor = reactorObj;
+                this.reactor = reactorObj;
             });
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
@@ -122,7 +123,7 @@ public class LineBatchingManagerTests
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
+        var act = () => this.reactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -135,19 +136,27 @@ public class LineBatchingManagerTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new LineBatchItem(
-            new Vector2(1, 2),
-            new Vector2(3, 4),
-            Color.FromArgb(5, 6, 7, 8),
-            9);
-        var batchItem2 = new LineBatchItem(
-            new Vector2(10, 11),
-            new Vector2(12, 13),
-            Color.FromArgb(14, 15, 16, 17),
+        var batchItem1 = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            11,
             18);
+        var batchItem2 = new TextureBatchItem(
+            new RectangleF(24, 25, 26, 27),
+            new RectangleF(20, 21, 22, 23),
+            19,
+            18,
+            Color.FromArgb(29, 30, 31, 32),
+            RenderEffects.FlipHorizontally,
+            28,
+            35);
 
-        var batchItems = new List<LineBatchItem> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyCollection<LineBatchItem>(batchItems.ToReadOnlyCollection());
+        var batchItems = new List<TextureBatchItem> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems.ToReadOnlyCollection());
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -155,17 +164,34 @@ public class LineBatchingManagerTests
         var actual = sut.BatchItems;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.Should().BeEquivalentTo(expected.ToArray());
     }
     #endregion
 
     #region Method Tests
     [Fact]
-    public void Add_WhenBatchIsFull_SendsRenderPushNotification()
+    public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 1);
-        var batchItem2 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 2);
+        var batchItem1 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            1,
+            0);
+
+        var batchItem2 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            2,
+            0);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
@@ -173,23 +199,39 @@ public class LineBatchingManagerTests
 
         var sut = CreateSystemUnderTest();
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
-
+        this.reactor.OnReceive(mockMessage.Object);
         sut.Add(batchItem1);
 
         // Act
         sut.Add(batchItem2);
 
         // Assert
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderLinesId));
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderTexturesId));
     }
 
     [Fact]
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 1);
-        var batchItem2 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 2);
+        var expected = new[] { default(TextureBatchItem), default(TextureBatchItem) };
+        var batchItem1 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            1,
+            0);
+        var batchItem2 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            2,
+            0);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
@@ -197,7 +239,7 @@ public class LineBatchingManagerTests
 
         var sut = CreateSystemUnderTest();
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
         sut.Add(batchItem1);
         sut.Add(batchItem2);
@@ -206,16 +248,15 @@ public class LineBatchingManagerTests
         sut.EmptyBatch();
 
         // Assert
-        sut.BatchItems[0].Should().BeEquivalentTo(default(LineBatchItem));
-        sut.BatchItems[1].Should().BeEquivalentTo(default(LineBatchItem));
+        sut.BatchItems.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
     {
         // Arrange
-        var batchItem1 = default(LineBatchItem);
-        var batchItem2 = default(LineBatchItem);
+        var batchItem1 = default(TextureBatchItem);
+        var batchItem2 = default(TextureBatchItem);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
@@ -223,9 +264,9 @@ public class LineBatchingManagerTests
 
         var sut = CreateSystemUnderTest();
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(mockMessage.Object);
 
-        sut.BatchItems = new List<LineBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
+        sut.BatchItems = new List<TextureBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
         sut.EmptyBatch();
@@ -237,8 +278,8 @@ public class LineBatchingManagerTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="LineBatchingManager"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="TextureBatchingManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private LineBatchingManager CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private TextureBatchingManager CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

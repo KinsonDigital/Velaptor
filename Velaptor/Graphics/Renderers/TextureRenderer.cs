@@ -7,6 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Linq;
+using Batching;
 using Carbonate.NonDirectional;
 using Content;
 using Factories;
@@ -16,7 +17,6 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
 

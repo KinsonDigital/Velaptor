@@ -1,8 +1,8 @@
-// <copyright file="TextureBatchingManager.cs" company="KinsonDigital">
+﻿// <copyright file="LineBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services;
+namespace Velaptor.Batching;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
-using Content;
 using Exceptions;
 using Factories;
 using Guards;
@@ -18,19 +17,19 @@ using OpenGL.Batching;
 using ReactableData;
 
 /// <summary>
-/// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
+/// Manages the process of batching the rendering of lines.
 /// </summary>
-internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem>
+internal sealed class LineBatchingManager : IBatchingManager<LineBatchItem>
 {
     private readonly IDisposable unsubscriber;
     private readonly IPushReactable pushReactable;
-    private TextureBatchItem[] batchItems = null!;
+    private LineBatchItem[] batchItems = null!;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureBatchingManager"/> class.
+    /// Initializes a new instance of the <see cref="LineBatchingManager"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public TextureBatchingManager(IReactableFactory reactableFactory)
+    public LineBatchingManager(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
@@ -49,11 +48,11 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
                 if (batchSize is null)
                 {
                     throw new PushNotificationException(
-                        $"{nameof(TextureBatchingManager)}.Constructor()",
+                        $"{nameof(LineBatchingManager)}.Constructor()",
                         NotificationIds.BatchSizeSetId);
                 }
 
-                var items = new List<TextureBatchItem>();
+                var items = new List<LineBatchItem>();
 
                 for (var i = 0u; i < batchSize; i++)
                 {
@@ -66,23 +65,20 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<TextureBatchItem> BatchItems
+    public ReadOnlyCollection<LineBatchItem> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
     }
 
-    /// <summary>
-    /// Adds the given <paramref name="item"/> to the batch.
-    /// </summary>
-    /// <param name="item">The item to be added.</param>
-    public void Add(in TextureBatchItem item)
+    /// <inheritdoc/>
+    public void Add(in LineBatchItem line)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderTexturesId);
+            this.pushReactable.Push(NotificationIds.RenderLinesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
@@ -92,15 +88,10 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
             return;
         }
 
-        this.batchItems[emptyItemIndex] = item;
+        this.batchItems[emptyItemIndex] = line;
     }
 
-    /// <summary>
-    /// Empties the entire batch.
-    /// </summary>
-    /// <remarks>
-    /// An empty batch are items that are set NOT to render and have all values set to default.
-    /// </remarks>
+    /// <inheritdoc/>
     public void EmptyBatch()
     {
         for (var i = 0u; i < this.batchItems.Length; i++)

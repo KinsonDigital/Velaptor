@@ -15,6 +15,7 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -24,7 +25,6 @@ using Velaptor.OpenGL;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Services;
 using Xunit;
 
 /// <summary>
