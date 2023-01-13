@@ -32,7 +32,7 @@ public class RectBatchingServiceTests
 {
     private readonly Mock<IDisposable> mockUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IPushReactable> mockPushReactable;
     private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
     private IReceiveReactor<BatchSizeData>? reactor;
 
@@ -43,7 +43,7 @@ public class RectBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
+        this.mockPushReactable = new Mock<IPushReactable>();
 
         this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
@@ -51,7 +51,7 @@ public class RectBatchingServiceTests
             .Returns(this.mockUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(this.mockBatchSizeReactable.Object);
     }
 
@@ -194,7 +194,7 @@ public class RectBatchingServiceTests
         sut.Add(batchItem2);
 
         // Assert
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderRectsId));
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderRectsId));
     }
 
     [Fact]
