@@ -7,13 +7,14 @@ namespace Velaptor.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
+using Carbonate.UniDirectional;
 using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using ReactableData;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 
 /// <summary>
 /// The texture to render to a screen.
@@ -41,10 +42,10 @@ public sealed class Texture : ITexture
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
 
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
 
         FilePath = filePath;
-        Init(reactable, name, imageData);
+        Init(disposeReactable, name, imageData);
     }
 
     /// <summary>
@@ -52,21 +53,21 @@ public sealed class Texture : ITexture
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
     internal Texture(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IPushReactable reactable,
+        IReactableFactory reactableFactory,
         string name,
         string filePath,
         ImageData imageData)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
         EnsureThat.StringParamIsNotNullOrEmpty(name);
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
@@ -74,7 +75,9 @@ public sealed class Texture : ITexture
         this.openGLService = openGLService;
 
         FilePath = filePath;
-        Init(reactable, name, imageData);
+
+        var disposeReactable = reactableFactory.CreateDisposeTextureReactable();
+        Init(disposeReactable, name, imageData);
     }
 
     /// <summary>
@@ -126,19 +129,19 @@ public sealed class Texture : ITexture
     /// <summary>
     /// Initializes the <see cref="Texture"/>.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void Init(IPushReactable reactable, string name, ImageData imageData)
+    private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
     {
         var textureDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.TextureDisposedId));
-        this.disposeUnsubscriber =
-            reactable.Subscribe(new ReceiveReactor(
+
+        this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveReactor<DisposeTextureData>(
                 eventId: NotificationIds.TextureDisposedId,
                 name: textureDisposeName,
                 onReceiveMsg: msg =>
                 {
-                    var data = msg.GetData<DisposeTextureData>();
+                    var data = msg.GetData();
 
                     if (data is null)
                     {

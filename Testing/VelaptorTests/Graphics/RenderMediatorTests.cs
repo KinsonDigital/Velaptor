@@ -5,11 +5,12 @@
 namespace VelaptorTests.Graphics;
 
 using System;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using FluentAssertions;
 using Moq;
 using Velaptor;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -18,16 +19,23 @@ using Xunit;
 /// </summary>
 public class RenderMediatorTests
 {
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable> mockPushReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediatorTests"/> class.
     /// </summary>
-    public RenderMediatorTests() => this.mockReactable = new Mock<IPushReactable>();
+    public RenderMediatorTests()
+    {
+        this.mockPushReactable = new Mock<IPushReactable>();
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
+    }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -38,18 +46,18 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SetsUpReactable()
     {
         // Arrange
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Callback<IReceiveReactor>(Subscribe);
 
         // Act
-        _ = new RenderMediator(this.mockReactable.Object);
+        _ = new RenderMediator(this.mockReactableFactory.Object);
 
         // Assert
         void Subscribe(IReceiveReactor reactor)
@@ -66,23 +74,23 @@ public class RenderMediatorTests
         // Arrange
         IReceiveReactor? reactor = null;
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Callback<IReceiveReactor>(_ =>
             {
                 _.Should().NotBeNull();
                 reactor = _;
             });
 
-        _ = new RenderMediator(this.mockReactable.Object);
+        _ = new RenderMediator(this.mockReactableFactory.Object);
 
         // Act
         reactor.OnReceive();
 
         // Assert
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderTexturesId), Times.Once);
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderRectsId), Times.Once);
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderFontsId), Times.Once);
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderLinesId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderTexturesId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderRectsId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderFontsId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderLinesId), Times.Once);
     }
     #endregion
 }

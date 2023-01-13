@@ -9,13 +9,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.UniDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
@@ -24,9 +27,11 @@ using Xunit;
 
 public class FontGlyphBatchingServiceTests
 {
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IPushReactable> mockPushReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReceiveReactor? reactor;
+    private IReceiveReactor<BatchSizeData>? batchSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingServiceTests"/> class.
@@ -35,15 +40,25 @@ public class FontGlyphBatchingServiceTests
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
+        this.mockPushReactable = new Mock<IPushReactable>();
+
+        this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
+            {
+                reactorObj.Should().NotBeNull();
+                this.batchSizeReactor = reactorObj;
+            })
             .Returns(this.mockUnsubscriber.Object);
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(this.mockBatchSizeReactable.Object);
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -54,20 +69,20 @@ public class FontGlyphBatchingServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange & Act
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 4u });
 
         var sut = CreateService();
 
-        this.reactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -80,8 +95,8 @@ public class FontGlyphBatchingServiceTests
         _ = CreateService();
 
         // Act
-        this.reactor.OnUnsubscribe();
-        this.reactor.OnUnsubscribe();
+        this.batchSizeReactor.OnUnsubscribe();
+        this.batchSizeReactor.OnUnsubscribe();
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
@@ -94,22 +109,22 @@ public class FontGlyphBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(FontGlyphBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactorObj =>
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
-                this.reactor = reactorObj;
+                this.batchSizeReactor = reactorObj;
             });
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(null))
             .Returns<Action<Exception>?>(_ => null);
 
         _ = CreateService();
 
         // Act
-        var act = () => this.reactor.OnReceive(mockMessage.Object);
+        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Assert
         act.Should().Throw<PushNotificationException>()
@@ -183,19 +198,19 @@ public class FontGlyphBatchingServiceTests
             0,
             0);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 1u });
 
         var service = CreateService();
-        this.reactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
 
         // Act
         service.Add(batchItem2);
 
         // Assert
-        this.mockReactable.Verify(m => m.Push(NotificationIds.RenderFontsId));
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderFontsId));
     }
 
     [Fact]
@@ -223,12 +238,12 @@ public class FontGlyphBatchingServiceTests
             0,
             0);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
         service.Add(batchItem1);
         service.Add(batchItem2);
 
@@ -246,12 +261,12 @@ public class FontGlyphBatchingServiceTests
         var batchItem1 = default(FontGlyphBatchItem);
         var batchItem2 = default(FontGlyphBatchItem);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var service = CreateService();
-        this.reactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(mockMessage.Object);
         service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
@@ -267,5 +282,5 @@ public class FontGlyphBatchingServiceTests
     /// Creates a new instance of <see cref="FontGlyphBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontGlyphBatchingService CreateService() => new (this.mockReactable.Object);
+    private FontGlyphBatchingService CreateService() => new (this.mockReactableFactory.Object);
 }

@@ -8,12 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
@@ -35,7 +36,7 @@ public class LineRendererTests
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGPUBuffer<LineBatchItem>> mockGPUBuffer;
     private readonly Mock<IBatchingService<LineBatchItem>> mockBatchingService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? shutDownReactor;
@@ -67,8 +68,8 @@ public class LineRendererTests
         var mockRenderUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 if (reactor.Id == NotificationIds.RenderBatchBegunId)
@@ -108,6 +109,9 @@ public class LineRendererTests
                     this.shutDownReactor = reactor;
                 }
             });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -360,7 +364,7 @@ public class LineRendererTests
     /// <returns>The instance to test.</returns>
     private LineRenderer CreateSystemUnderTest()
         => new (this.mockGL.Object,
-            this.mockReactable.Object,
+            this.mockReactableFactory.Object,
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,

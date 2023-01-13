@@ -7,7 +7,8 @@ namespace Velaptor.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Carbonate;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
 using ReactableData;
 using Velaptor.Exceptions;
@@ -23,18 +24,20 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <summary>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public Keyboard(IPushReactable reactable)
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    public Keyboard(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var reactable = reactableFactory.CreateKeyboardReactable();
 
         var keyboardStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.KeyboardStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
             eventId: NotificationIds.KeyboardStateChangedId,
             name: keyboardStateChangeName,
             onReceiveMsg: msg =>
             {
-                var data = msg.GetData<KeyboardKeyStateData>();
+                var data = msg.GetData();
 
                 if (data is null)
                 {

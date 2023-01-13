@@ -7,8 +7,9 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Linq;
-using Carbonate;
+using Carbonate.NonDirectional;
 using Content;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
@@ -33,19 +34,19 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// Initializes a new instance of the <see cref="TextureRenderer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
     /// <param name="batchService">Batches items for rendering.</param>
     public TextureRenderer(
         IGLInvoker gl,
-        IPushReactable reactable,
+        IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<TextureBatchItem> buffer,
         IShaderProgram shader,
         IBatchingService<TextureBatchItem> batchService)
-            : base(gl, reactable)
+            : base(gl, reactableFactory)
     {
         EnsureThat.ParamIsNotNull(batchService);
 
@@ -54,14 +55,16 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         this.buffer = buffer;
         this.shader = shader;
 
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+
         var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderTexturesId));
-        this.renderUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.RenderTexturesId,
             name: batchEndName,
             onReceive: RenderBatch));
 
         const string renderStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
-        this.renderBatchBegunUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.RenderBatchBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));

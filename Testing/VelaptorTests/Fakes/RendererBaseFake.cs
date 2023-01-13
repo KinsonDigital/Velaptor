@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Fakes;
 
-using Carbonate;
+using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
 
@@ -17,9 +17,9 @@ internal sealed class RendererBaseFake : RendererBase
     /// Initializes a new instance of the <see cref="RendererBaseFake"/> class.
     /// </summary>
     /// <param name="gl"><see cref="IGLInvoker"/> mock used for testing.</param>
-    /// <param name="reactable"><see cref="IPushReactable"/> mock used for testing.</param>
-    public RendererBaseFake(IGLInvoker gl, IPushReactable reactable)
-        : base(gl, reactable)
+    /// <param name="reactableFactory"><see cref="IReactableFactory"/> mock used for creating reactables.</param>
+    public RendererBaseFake(IGLInvoker gl, IReactableFactory reactableFactory)
+        : base(gl, reactableFactory)
     {
     }
 

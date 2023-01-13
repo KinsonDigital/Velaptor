@@ -5,7 +5,8 @@
 namespace Velaptor.Input;
 
 using System;
-using Carbonate;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
 using ReactableData;
 using Velaptor.Exceptions;
@@ -27,18 +28,20 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// <summary>
     /// Initializes a new instance of the <see cref="Mouse"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public Mouse(IPushReactable reactable)
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    public Mouse(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var reactable = reactableFactory.CreateMouseReactable();
 
         var mouseStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.MouseStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<MouseStateData>(
             eventId: NotificationIds.MouseStateChangedId,
             name: mouseStateChangeName,
             onReceiveMsg: msg =>
             {
-                var data = msg.GetData<MouseStateData>();
+                var data = msg.GetData();
 
                 if (data is null)
                 {

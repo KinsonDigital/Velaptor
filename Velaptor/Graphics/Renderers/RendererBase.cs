@@ -5,7 +5,8 @@
 namespace Velaptor.Graphics.Renderers;
 
 using System;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 
@@ -18,16 +19,18 @@ internal abstract class RendererBase : IRenderer
     /// Initializes a new instance of the <see cref="RendererBase"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    protected RendererBase(IGLInvoker gl, IPushReactable reactable)
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    protected RendererBase(IGLInvoker gl, IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         GL = gl;
 
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+
         var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
-        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));

@@ -6,13 +6,14 @@ namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
 using System.Collections.Generic;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using Fakes;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Exceptions;
@@ -35,7 +36,7 @@ public class ShaderProgramTests
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? glInitReactor;
@@ -79,8 +80,8 @@ public class ShaderProgramTests
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -115,6 +116,9 @@ public class ShaderProgramTests
                     Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
     }
 
     #region Constructor Tests
@@ -128,7 +132,7 @@ public class ShaderProgramTests
                 null,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -142,7 +146,7 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 null,
                 this.mockShaderLoader.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
@@ -156,12 +160,12 @@ public class ShaderProgramTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
     }
 
     [Fact]
-    public void Ctor_WithNullInitReactorParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -171,7 +175,7 @@ public class ShaderProgramTests
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactable')");
+        }, "The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -409,5 +413,5 @@ public class ShaderProgramTests
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
-            this.mockReactable.Object);
+            this.mockReactableFactory.Object);
 }

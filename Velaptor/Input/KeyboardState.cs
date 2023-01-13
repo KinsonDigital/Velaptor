@@ -70,7 +70,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     };
 
     /// <summary>
-    /// The symbol keys produced by the keyboard when no shift modifier keys are in the down position..
+    /// The symbol keys produced by the keyboard when no shift modifier keys are in the down position.
     /// </summary>
     private static readonly Dictionary<KeyCode, char> NoShiftSymbolCharacters = new ()
     {

@@ -5,14 +5,18 @@
 namespace VelaptorTests.Content.Factories;
 
 using System;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.Core.UniDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content.Factories;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 using Velaptor.ReactableData;
 using Xunit;
 
@@ -21,10 +25,10 @@ using Xunit;
 /// </summary>
 public class SoundFactoryTests
 {
-    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockDisposeSoundUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReceiveReactor? disposeReactor;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private IReceiveReactor<DisposeSoundData>? disposeReactor;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -35,47 +39,41 @@ public class SoundFactoryTests
         this.mockDisposeSoundUnsubscriber = new Mock<IDisposable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == NotificationIds.SoundDisposedId)
-                {
-                    return this.mockDisposeSoundUnsubscriber.Object;
-                }
-
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
-                {
-                    return this.mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
+                return this.mockShutDownUnsubscriber.Object;
             })
             .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == NotificationIds.SoundDisposedId)
-                {
-                    this.disposeReactor = reactor;
-                }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
-                else
-                {
-                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                }
+                this.shutDownReactor = reactor;
             });
+
+        var mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
+        mockDisposeSoundReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<DisposeSoundData>>()))
+            .Returns<IReceiveReactor<DisposeSoundData>>((reactor) =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                return this.mockDisposeSoundUnsubscriber.Object;
+            })
+            .Callback<IReceiveReactor<DisposeSoundData>>((reactor) =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                this.disposeReactor = reactor;
+            });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable()).Returns(mockDisposeSoundReactable.Object);
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -86,7 +84,7 @@ public class SoundFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -100,8 +98,8 @@ public class SoundFactoryTests
 
         _ = CreateSystemUnderTest();
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<DisposeSoundData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<DisposeSoundData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns<Action<Exception>?>(_ => null);
 
         // Act
@@ -147,5 +145,5 @@ public class SoundFactoryTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private SoundFactory CreateSystemUnderTest()
-        => new (this.mockReactable.Object);
+        => new (this.mockReactableFactory.Object);
 }

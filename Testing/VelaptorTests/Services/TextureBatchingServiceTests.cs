@@ -9,12 +9,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.UniDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
@@ -26,9 +29,11 @@ using Xunit;
 /// </summary>
 public class TextureBatchingServiceTests
 {
-    private readonly Mock<IPushReactable> mockReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReceiveReactor? reactor;
+    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private IReceiveReactor<BatchSizeData>? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchingServiceTests"/> class.
@@ -38,14 +43,20 @@ public class TextureBatchingServiceTests
         this.mockUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactorObj => this.reactor = reactorObj)
+
+        this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj => this.reactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(this.mockBatchSizeReactable.Object);
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -56,15 +67,15 @@ public class TextureBatchingServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 4u });
 
         var sut = CreateSystemUnderTest();
@@ -97,16 +108,16 @@ public class TextureBatchingServiceTests
         var expectedMsg = $"There was an issue with the '{nameof(TextureBatchingService)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactorObj =>
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
             {
                 reactorObj.Should().NotBeNull("it is required for unit testing.");
 
                 this.reactor = reactorObj;
             });
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(null))
             .Returns<Action<Exception>?>(_ => null);
 
         _ = CreateSystemUnderTest();
@@ -182,8 +193,8 @@ public class TextureBatchingServiceTests
             2,
             0);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 1u });
 
         var sut = CreateSystemUnderTest();
@@ -222,8 +233,8 @@ public class TextureBatchingServiceTests
             2,
             0);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var sut = CreateSystemUnderTest();
@@ -247,8 +258,8 @@ public class TextureBatchingServiceTests
         var batchItem1 = default(TextureBatchItem);
         var batchItem2 = default(TextureBatchItem);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
         var sut = CreateSystemUnderTest();
@@ -270,5 +281,5 @@ public class TextureBatchingServiceTests
     /// Creates a new instance of <see cref="TextureBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureBatchingService CreateSystemUnderTest() => new (this.mockReactable.Object);
+    private TextureBatchingService CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

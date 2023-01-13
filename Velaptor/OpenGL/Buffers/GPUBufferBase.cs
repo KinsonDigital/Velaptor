@@ -6,7 +6,9 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
@@ -32,42 +34,45 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IPushReactable reactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;
 
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var portSizeReactable = reactableFactory.CreateViewPortReactable();
+
         var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
-        this.glInitUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
             name: glInitName,
             onReceive: Init,
             onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
 
         var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
-        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
 
         var viewPortName = this.GetExecutionMemberName(nameof(NotificationIds.ViewPortSizeChangedId));
-        this.viewPortSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
             eventId: NotificationIds.ViewPortSizeChangedId,
             name: viewPortName,
             onReceiveMsg: msg =>
             {
-                var data = msg.GetData<ViewPortSizeData>();
+                var data = msg.GetData();
 
                 if (data is null)
                 {

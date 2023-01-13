@@ -8,8 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using Guards;
 using OpenGL;
 using ReactableData;
@@ -20,7 +22,7 @@ using ReactableData;
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private readonly IPushReactable reactable;
+    private readonly IPushReactable pushReactable;
     private FontGlyphBatchItem[] batchItems = null!;
 #if DEBUG
     private uint currentFrame;
@@ -29,20 +31,22 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingService"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public FontGlyphBatchingService(IPushReactable reactable)
+    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    public FontGlyphBatchingService(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.reactable = reactable;
+        this.pushReactable = reactableFactory.CreateNoDataReactable();
+
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: NotificationIds.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
-                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+                var batchSize = msg.GetData()?.BatchSize;
 
                 if (batchSize is null)
                 {
@@ -80,7 +84,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
 
         if (batchIsFull)
         {
-            this.reactable.Push(NotificationIds.RenderFontsId);
+            this.pushReactable.Push(NotificationIds.RenderFontsId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

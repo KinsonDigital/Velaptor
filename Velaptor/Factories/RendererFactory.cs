@@ -5,7 +5,6 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
 using Graphics.Renderers;
 using NativeInterop.OpenGL;
 using OpenGL;
@@ -30,7 +29,7 @@ public sealed class RendererFactory : IRendererFactory
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<TextureBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateTextureShader();
@@ -38,7 +37,7 @@ public sealed class RendererFactory : IRendererFactory
 
         textureRenderer = new TextureRenderer(
             glInvoker,
-            reactable,
+            reactableFactory,
             openGLService,
             buffer,
             shader,
@@ -56,7 +55,7 @@ public sealed class RendererFactory : IRendererFactory
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateFontShader();
@@ -64,7 +63,7 @@ public sealed class RendererFactory : IRendererFactory
 
         fontRenderer = new FontRenderer(
             glInvoker,
-            reactable,
+            reactableFactory,
             openGLService,
             buffer,
             shader,
@@ -82,7 +81,7 @@ public sealed class RendererFactory : IRendererFactory
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<RectBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
@@ -90,7 +89,7 @@ public sealed class RendererFactory : IRendererFactory
 
         rectangleRenderer = new RectangleRenderer(
             glInvoker,
-            reactable,
+            reactableFactory,
             openGLService,
             buffer,
             shader,
@@ -108,7 +107,7 @@ public sealed class RendererFactory : IRendererFactory
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<LineBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateLineShader();
@@ -116,7 +115,7 @@ public sealed class RendererFactory : IRendererFactory
 
         lineRenderer = new LineRenderer(
             glInvoker,
-            reactable,
+            reactableFactory,
             openGLService,
             buffer,
             shader,
