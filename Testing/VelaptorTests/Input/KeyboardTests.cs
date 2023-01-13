@@ -58,7 +58,7 @@ public class KeyboardTests
     public void Ctor_WhenInvoked_SubscribesToReactable()
     {
         // Arrange & Act
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Assert
         this.mockKeyboardReactable.VerifyOnce(m =>
@@ -147,7 +147,7 @@ public class KeyboardTests
             {
                 reactor = reactorObj;
             });
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         reactor.OnUnsubscribe();

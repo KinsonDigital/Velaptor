@@ -219,7 +219,7 @@ public class WindowTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new WindowFake(null);
+            _ = new WindowFake(null);
         }, "The parameter must not be null. (Parameter 'window')");
     }
 

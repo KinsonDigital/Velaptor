@@ -82,7 +82,7 @@ public class SoundCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundCache(
+            _ = new SoundCache(
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object,
@@ -96,7 +96,7 @@ public class SoundCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundCache(
+            _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 null,
                 this.mockPath.Object,
@@ -110,7 +110,7 @@ public class SoundCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundCache(
+            _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 null,
@@ -124,7 +124,7 @@ public class SoundCacheTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundCache(
+            _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object,
@@ -293,7 +293,6 @@ public class SoundCacheTests
             });
 
         var cache = CreateCache();
-        // TODO: Go through entire code base and find 'var unused' code and replace with discards
         _ = cache.GetItem(OggSoundFilePath);
 
         // Act

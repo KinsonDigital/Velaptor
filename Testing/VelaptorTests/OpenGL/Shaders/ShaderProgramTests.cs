@@ -128,7 +128,7 @@ public class ShaderProgramTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new ShaderProgramFake(
+            _ = new ShaderProgramFake(
                 null,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
@@ -142,7 +142,7 @@ public class ShaderProgramTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new ShaderProgramFake(
+            _ = new ShaderProgramFake(
                 this.mockGL.Object,
                 null,
                 this.mockShaderLoader.Object,
@@ -156,7 +156,7 @@ public class ShaderProgramTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new ShaderProgramFake(
+            _ = new ShaderProgramFake(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
@@ -170,7 +170,7 @@ public class ShaderProgramTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new ShaderProgramFake(
+            _ = new ShaderProgramFake(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,

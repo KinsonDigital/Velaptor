@@ -104,7 +104,7 @@ public class TextureTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Texture(
+            _ = new Texture(
                 null,
                 this.mockGLService.Object,
                 this.mockReactableFactory.Object,
@@ -120,7 +120,7 @@ public class TextureTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Texture(
+            _ = new Texture(
                 this.mockGL.Object,
                 null,
                 this.mockReactableFactory.Object,
@@ -136,7 +136,7 @@ public class TextureTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Texture(
+            _ = new Texture(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null,
@@ -154,7 +154,7 @@ public class TextureTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Texture(
+            _ = new Texture(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockReactableFactory.Object,
@@ -172,7 +172,7 @@ public class TextureTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new Texture(
+            _ = new Texture(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockReactableFactory.Object,
@@ -188,7 +188,7 @@ public class TextureTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            var unused = CreateSystemUnderTest(true);
+            _ = CreateSystemUnderTest(true);
         }, "The image data must not be empty. (Parameter 'imageData')");
     }
 
@@ -216,7 +216,7 @@ public class TextureTests
         }
 
         // Act
-        var unused = new Texture(
+        _ = new Texture(
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockReactableFactory.Object,

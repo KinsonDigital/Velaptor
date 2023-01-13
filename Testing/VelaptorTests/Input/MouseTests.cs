@@ -57,7 +57,7 @@ public class MouseTests
     public void Ctor_WhenInvoked_SubscribesToReactables()
     {
         // Act & Arrange
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Assert
         this.mockMouseReactable.VerifyOnce(m => m.Subscribe(It.IsAny<IReceiveReactor<MouseStateData>>()));
@@ -228,7 +228,7 @@ public class MouseTests
                 posReactor = reactorObj;
             });
 
-        var unused = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
         posReactor.OnUnsubscribe();

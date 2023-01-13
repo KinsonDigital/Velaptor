@@ -46,7 +46,7 @@ public class ImageDataTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            var unused = new ImageData(new Color[1, 2], 11, 2);
+            _ = new ImageData(new Color[1, 2], 11, 2);
         }, "The length of the 1st dimension of the 'pixels' parameter must match the 'width' parameter.");
     }
 
@@ -56,7 +56,7 @@ public class ImageDataTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            var unused = new ImageData(new Color[1, 2], 1, 22);
+            _ = new ImageData(new Color[1, 2], 1, 22);
         }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
     }
     #endregion

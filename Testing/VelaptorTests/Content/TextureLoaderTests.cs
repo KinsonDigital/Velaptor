@@ -55,7 +55,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 null,
                 this.mockTexturePathResolver.Object,
                 this.mockFile.Object,
@@ -69,7 +69,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 null,
                 this.mockFile.Object,
@@ -83,7 +83,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
                 null,
@@ -97,7 +97,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
                 this.mockFile.Object,

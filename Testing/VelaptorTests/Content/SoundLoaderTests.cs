@@ -52,7 +52,7 @@ public class SoundLoaderTests
         // Arrange, Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundLoader(
+            _ = new SoundLoader(
                 null,
                 this.mockSoundPathResolver.Object,
                 this.mockFile.Object,
@@ -66,7 +66,7 @@ public class SoundLoaderTests
         // Arrange, Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundLoader(
+            _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 null,
                 this.mockFile.Object,
@@ -80,7 +80,7 @@ public class SoundLoaderTests
         // Arrange, Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundLoader(
+            _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
                 null,
@@ -94,7 +94,7 @@ public class SoundLoaderTests
         // Arrange, Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundLoader(
+            _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
                 this.mockFile.Object,

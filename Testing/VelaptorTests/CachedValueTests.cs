@@ -22,7 +22,7 @@ public class CachedValueTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new CachedValue<int>(123, null, _ => { });
+            _ = new CachedValue<int>(123, null, _ => { });
         }, "The parameter must not be null. (Parameter 'getterWhenNotCaching')");
     }
 
@@ -34,7 +34,7 @@ public class CachedValueTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new CachedValue<int>(123, () => 0, null);
+            _ = new CachedValue<int>(123, () => 0, null);
         }, "The parameter must not be null. (Parameter 'setterWhenNotCaching')");
     }
 
