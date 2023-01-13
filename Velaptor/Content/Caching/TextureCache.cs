@@ -70,7 +70,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         EnsureThat.ParamIsNotNull(fontAtlasService);
         EnsureThat.ParamIsNotNull(fontMetaDataParser);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.imageService = imageService;
         this.textureFactory = textureFactory;

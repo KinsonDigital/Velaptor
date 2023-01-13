@@ -1,4 +1,4 @@
-// <copyright file="ShaderProgram.cs" company="KinsonDigital">
+﻿// <copyright file="ShaderProgram.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ internal abstract class ShaderProgram : IShaderProgram
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;

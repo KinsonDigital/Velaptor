@@ -43,7 +43,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 

@@ -875,8 +875,6 @@ public class GLWindowTests
         sut.Initialize += () => initializeInvoked = true;
 
         // Act
-        // TODO: Disable this line and see if tests still pass.
-        // Might be able to just invoke the load event directly on the mockSilkWindow object.
         sut.Show();
 
         // Assert

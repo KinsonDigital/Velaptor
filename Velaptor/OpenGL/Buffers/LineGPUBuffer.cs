@@ -1,4 +1,4 @@
-// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
+﻿// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 

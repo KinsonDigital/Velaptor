@@ -51,7 +51,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         EnsureThat.ParamIsNotNull(soundFactory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.soundFactory = soundFactory;
         this.file = file;

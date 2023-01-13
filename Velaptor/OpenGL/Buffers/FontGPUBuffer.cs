@@ -42,7 +42,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory); // TODO: Unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         var reactable = reactableFactory.CreateBatchSizeReactable();
 

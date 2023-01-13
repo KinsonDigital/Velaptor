@@ -38,7 +38,7 @@ internal sealed class RectangleShader : ShaderProgram
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory); // todo: unit test
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
