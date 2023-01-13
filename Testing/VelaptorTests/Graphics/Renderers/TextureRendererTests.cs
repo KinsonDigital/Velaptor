@@ -7,13 +7,14 @@ namespace VelaptorTests.Graphics.Renderers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
@@ -35,7 +36,7 @@ public class TextureRendererTests
     private readonly Mock<IGPUBuffer<TextureBatchItem>> mockGPUBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IBatchingService<TextureBatchItem>> mockBatchingService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactorFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? batchHasBegunReactor;
@@ -68,8 +69,8 @@ public class TextureRendererTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         var mockRenderUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 if (reactor.Id == NotificationIds.RenderTexturesId)
@@ -109,6 +110,9 @@ public class TextureRendererTests
                     this.shutDownReactor = reactor;
                 }
             });
+
+        this.mockReactorFactory = new Mock<IReactableFactory>();
+        this.mockReactorFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -486,7 +490,7 @@ public class TextureRendererTests
     /// <returns>The instance to test.</returns>
     private TextureRenderer CreateSystemUnderTest()
         => new (this.mockGL.Object,
-            this.mockReactable.Object,
+            this.mockReactorFactory.Object,
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,

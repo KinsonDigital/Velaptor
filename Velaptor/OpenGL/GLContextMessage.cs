@@ -13,7 +13,7 @@ using Silk.NET.OpenGL;
 /// A message that contains the OpenGL instance.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
-public class GLContextMessage : IMessage
+public class GLContextMessage : IMessage<GL>
 {
     private readonly GL gl;
 
@@ -27,9 +27,6 @@ public class GLContextMessage : IMessage
     /// Gets the OpenGL context instance.
     /// </summary>
     /// <param name="onError">The action to invoke if an exception occurs.</param>
-    /// <typeparam name="T">The type to deserialize the message into.</typeparam>
     /// <returns>The deserialized message data.</returns>
-    public T? GetData<T>(Action<Exception>? onError = null)
-        where T : class =>
-        this.gl as T;
+    public GL GetData(Action<Exception>? onError = null) => this.gl;
 }

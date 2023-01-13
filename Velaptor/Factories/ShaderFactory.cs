@@ -5,7 +5,6 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
 using NativeInterop.OpenGL;
 using OpenGL.Services;
 using OpenGL.Shaders;
@@ -29,31 +28,31 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
+        var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
 
         this.textureShader = new TextureShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            reactable);
+            reactableFactory);
 
         this.fontShader = new FontShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            reactable);
+            reactableFactory);
 
         this.rectShader = new RectangleShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            reactable);
+            reactableFactory);
 
         this.lineShader = new LineShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
-            reactable);
+            reactableFactory);
     }
 
     /// <inheritdoc/>

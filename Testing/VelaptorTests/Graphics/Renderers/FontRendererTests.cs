@@ -9,14 +9,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
@@ -42,7 +43,7 @@ public class FontRendererTests
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IBatchingService<FontGlyphBatchItem>> mockBatchingService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
 
     private readonly char[] glyphChars =
@@ -83,8 +84,8 @@ public class FontRendererTests
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
         var mockRenderUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 if (reactor.Id == NotificationIds.RenderBatchBegunId)
@@ -124,6 +125,9 @@ public class FontRendererTests
                     this.shutDownReactor = reactor;
                 }
             });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -786,7 +790,7 @@ public class FontRendererTests
     /// <returns>The instance to test.</returns>
     private FontRenderer CreateSystemUnderTest()
         => new (this.mockGL.Object,
-            this.mockReactable.Object,
+            this.mockReactableFactory.Object,
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,

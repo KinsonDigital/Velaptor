@@ -7,13 +7,17 @@ namespace VelaptorTests.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.Core.UniDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
@@ -33,11 +37,11 @@ public class TextureGPUBufferTests
     private const uint IndexBufferId = 333;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReceiveReactor? glInitReactor;
-    private IReceiveReactor? batchSizeReactor;
-    private IReceiveReactor? viewPortSizeReactor;
+    private IReceiveReactor<BatchSizeData>? batchSizeReactor;
+    private IReceiveReactor<ViewPortSizeData>? viewPortSizeReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -69,39 +73,9 @@ public class TextureGPUBufferTests
 
         this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == NotificationIds.GLInitializedId)
-                {
-                    // RETURN NULL TO IGNORE THIS EVENT ID
-                    return null!;
-                }
-
-                if (reactor.Id == NotificationIds.BatchSizeSetId)
-                {
-                    return this.mockBatchSizeUnsubscriber.Object;
-                }
-
-                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
-                {
-                    // RETURN NULL TO IGNORE THIS EVENT ID
-                    return null!;
-                }
-
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
-                {
-                    // RETURN NULL TO IGNORE THIS EVENT ID
-                    return null!;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
-            })
-            .Callback<IReceiveReactor>(reactor =>
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>((reactor) =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -109,13 +83,29 @@ public class TextureGPUBufferTests
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.BatchSizeSetId)
+            });
+
+        var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
+        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
+            .Returns<IReceiveReactor<BatchSizeData>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == NotificationIds.BatchSizeSetId)
+                {
+                    return this.mockBatchSizeUnsubscriber.Object;
+                }
+
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
+            .Callback<IReceiveReactor<BatchSizeData>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == NotificationIds.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
-                }
-                else if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
-                {
-                    this.viewPortSizeReactor = reactor;
                 }
                 else if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
@@ -126,6 +116,15 @@ public class TextureGPUBufferTests
                     Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 }
             });
+
+        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
+        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
+            .Callback<IReceiveReactor<ViewPortSizeData>>((reactor) => this.viewPortSizeReactor = reactor);
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
     }
 
     /// <summary>
@@ -182,7 +181,7 @@ public class TextureGPUBufferTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -196,7 +195,7 @@ public class TextureGPUBufferTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -278,8 +277,8 @@ public class TextureGPUBufferTests
             1,
             0);
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = 800, Height = 600 });
 
         var sut = CreateSystemUnderTest();
@@ -342,8 +341,8 @@ public class TextureGPUBufferTests
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnReceive();
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = BatchSize });
 
         this.batchSizeReactor.OnReceive(mockMessage.Object);
@@ -434,8 +433,8 @@ public class TextureGPUBufferTests
         var expectedMsg = $"There was an issue with the '{nameof(TextureGPUBuffer)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<BatchSizeData>(null))
+        var mockMessage = new Mock<IMessage<BatchSizeData>>();
+        mockMessage.Setup(m => m.GetData(null))
             .Returns<Action<Exception>?>(_ => null);
 
         _ = CreateSystemUnderTest();
@@ -456,5 +455,5 @@ public class TextureGPUBufferTests
     private TextureGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockReactable.Object);
+        this.mockReactableFactory.Object);
 }

@@ -7,8 +7,9 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Carbonate;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using GPUData;
 using Guards;
 using NativeInterop.OpenGL;
@@ -29,25 +30,27 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public LineGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IPushReactable reactable)
-            : base(gl, openGLService, reactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: NotificationIds.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
-                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+                var batchSize = msg.GetData()?.BatchSize;
 
                 if (batchSize is null)
                 {

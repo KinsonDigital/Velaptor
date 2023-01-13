@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Fakes;
 
-using Carbonate;
+using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
@@ -20,11 +20,11 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
-    /// <param name="reactable">Mocked <see cref="IPushReactable"/> for OpenGL initialization.</param>
+    /// <param name="reactableFactory">Mocked <see cref="IReactableFactory"/> for creating reactables.</param>
     public GPUBufferFake(IGLInvoker gl,
         IOpenGLService openGLService,
-        IPushReactable reactable)
-            : base(gl, openGLService, reactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
     }
 

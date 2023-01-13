@@ -7,6 +7,8 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using NativeInterop.OpenGL;
 using OpenGL;
 using ReactableData;
@@ -32,9 +34,9 @@ public interface IRenderer
     private static readonly IGLInvoker GLInvoker;
 
     /// <summary>
-    /// The messaging system for the entire library.
+    /// A push reactable to push messages without data.
     /// </summary>
-    private static readonly IPushReactable Reactable;
+    private static readonly IPushReactable PushReactable;
 
     /// <summary>
     /// The unsubscriber for OpenGL the initialization event.
@@ -52,10 +54,11 @@ public interface IRenderer
     static IRenderer()
     {
         GLInvoker = IoC.Container.GetInstance<IGLInvoker>();
-        Reactable = IoC.Container.GetInstance<IPushReactable>();
+        PushReactable = IoC.Container.GetInstance<IPushReactable>();
+        var batchSizeReactable = IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();
 
         const string glInitName = $"{nameof(IRenderer)}.Ctor - {nameof(NotificationIds.GLInitializedId)}";
-        GLInitUnsubscriber = Reactable.Subscribe(new ReceiveReactor(
+        GLInitUnsubscriber = PushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
             name: glInitName,
             onReceive: () =>
@@ -68,9 +71,9 @@ public interface IRenderer
                 GLInvoker.Enable(GLEnableCap.Blend);
                 GLInvoker.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-                var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
-                Reactable.PushData(batchSizeData, NotificationIds.BatchSizeSetId);
-                Reactable.Unsubscribe(NotificationIds.BatchSizeSetId);
+                var msg = MessageFactory.CreateMessage(new BatchSizeData { BatchSize = BatchSize });
+                batchSizeReactable.PushMessage(msg, NotificationIds.BatchSizeSetId);
+                PushReactable.Unsubscribe(NotificationIds.BatchSizeSetId);
 
                 if (cachedClearColor is not null)
                 {
@@ -96,7 +99,7 @@ public interface IRenderer
     /// <summary>
     /// Starts the batch rendering process.  Must be called before invoking any render methods.
     /// </summary>
-    static void Begin() => Reactable.Push(NotificationIds.RenderBatchBegunId);
+    static void Begin() => PushReactable.Push(NotificationIds.RenderBatchBegunId);
 
     /// <summary>
     /// Clears the buffers.
@@ -112,7 +115,7 @@ public interface IRenderer
     /// Ends the batch process.  Calling this will render any textures
     /// still in the batch.
     /// </summary>
-    static void End() => Reactable.Push(NotificationIds.RenderBatchEndedId);
+    static void End() => PushReactable.Push(NotificationIds.RenderBatchEndedId);
 
     /// <summary>
     /// Setup all of the caching for the properties that need caching.

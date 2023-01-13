@@ -113,7 +113,7 @@ public unsafe class GLFWMonitorsTests
     public void Ctor_WhenInvoked_InitializesGLFW()
     {
         // Act
-        var unused = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
+        _ = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
         // Assert
         this.mockGLFWInvoker.Verify(m => m.Init(), Times.Once());

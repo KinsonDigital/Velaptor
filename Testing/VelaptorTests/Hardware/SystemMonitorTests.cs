@@ -50,7 +50,7 @@ public class SystemMonitorTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SystemMonitor(null);
+            _ = new SystemMonitor(null);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
     #endregion

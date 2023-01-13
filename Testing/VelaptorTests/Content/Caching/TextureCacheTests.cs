@@ -7,8 +7,10 @@ namespace VelaptorTests.Content.Caching;
 using System;
 using System.Drawing;
 using System.IO.Abstractions;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -17,6 +19,7 @@ using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.ReactableData;
 using Velaptor.Services;
@@ -42,9 +45,10 @@ public class TextureCacheTests
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IPushReactable> mockReactable;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
+    private readonly Mock<IPushReactable<DisposeTextureData>> mockDisposeReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -99,15 +103,21 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
-        this.mockReactable = new Mock<IPushReactable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
             .Callback<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
             });
+
+        this.mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateDisposeTextureReactable()).Returns(this.mockDisposeReactable.Object);
     }
 
     #region Constructor Tests
@@ -123,7 +133,7 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'imageService')");
     }
 
@@ -139,7 +149,7 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'textureFactory')");
     }
 
@@ -155,7 +165,7 @@ public class TextureCacheTests
                 null,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'fontAtlasService')");
     }
 
@@ -171,7 +181,7 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 null,
                 this.mockPath.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
     }
 
@@ -187,12 +197,12 @@ public class TextureCacheTests
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 null,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'path')");
     }
 
     [Fact]
-    public void Ctor_WithNullReactorParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -204,7 +214,7 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactable')");
+        }, "The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -449,12 +459,13 @@ public class TextureCacheTests
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(123u);
 
-        this.mockReactable.Setup(m => m.PushData(It.Ref<DisposeTextureData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in DisposeTextureData data, Guid _) =>
+        this.mockDisposeReactable.Setup(m =>
+                m.PushMessage(It.Ref<IMessage<DisposeTextureData>>.IsAny, It.IsAny<Guid>()))
+            .Callback((in IMessage<DisposeTextureData> msg, Guid _) =>
             {
-                data.Should().NotBeNull("it is required for unit testing.");
+                msg.Should().NotBeNull("it is required for unit testing.");
 
-                actual = data;
+                actual = msg.GetData();
             });
 
         MockImageData();
@@ -470,8 +481,9 @@ public class TextureCacheTests
         act.Should().NotThrow<NullReferenceException>();
 
         cache.TotalCachedItems.Should().Be(0);
-        this.mockReactable
-            .VerifyOnce(m => m.PushData(It.Ref<DisposeTextureData>.IsAny, NotificationIds.TextureDisposedId));
+        this.mockDisposeReactable
+            .VerifyOnce(m =>
+                m.PushMessage(It.Ref<IMessage<DisposeTextureData>>.IsAny, NotificationIds.TextureDisposedId));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -493,13 +505,15 @@ public class TextureCacheTests
         cache.Unload("non-existing-texture");
 
         // Assert
-        this.mockReactable
-            .Verify(m
-                => m.PushData(new DisposeTextureData { TextureId = 123u }, NotificationIds.TextureDisposedId), Times.Never);
+        this.mockDisposeReactable
+            .Verify(m =>
+                m.PushMessage(It.IsAny<IMessage<DisposeTextureData>>(), NotificationIds.TextureDisposedId), Times.Never);
     }
+    #endregion
 
+    #region Indirect Tests
     [Fact]
-    public void ShutDownNotification_WhenReceived_ShutsDownCache()
+    public void Reactable_WithShutDownNotification_ShutsDownCache()
     {
         // Arrange
         const string texturePathA = $"{TextureDirPath}/textureA{TextureExtension}";
@@ -532,7 +546,7 @@ public class TextureCacheTests
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.TextureDisposedId));
+        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.TextureDisposedId));
         cache.TotalCachedItems.Should().Be(0);
     }
     #endregion
@@ -547,7 +561,7 @@ public class TextureCacheTests
             this.mockFontAtlasService.Object,
             this.mockFontMetaDataParser.Object,
             this.mockPath.Object,
-            this.mockReactable.Object);
+            this.mockReactableFactory.Object);
 
     /// <summary>
     /// Mocks parse result when caching texture file paths.

@@ -5,11 +5,12 @@
 namespace VelaptorTests.Graphics.Renderers;
 
 using System;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using Fakes;
 using FluentAssertions;
 using Moq;
+using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
 using Xunit;
@@ -20,7 +21,8 @@ using Xunit;
 public class RendererBaseTests
 {
     private readonly Mock<IGLInvoker> mockGLInvoker;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable> mockPushReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
     /// <summary>
@@ -29,8 +31,11 @@ public class RendererBaseTests
     public RendererBaseTests()
     {
         this.mockGLInvoker = new Mock<IGLInvoker>();
-        this.mockReactable = new Mock<IPushReactable>();
+        this.mockPushReactable = new Mock<IPushReactable>();
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
     }
 
     #region Constructor Tests
@@ -40,7 +45,7 @@ public class RendererBaseTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RendererBaseFake(null, this.mockReactable.Object);
+            _ = new RendererBaseFake(null, this.mockReactableFactory.Object);
         };
 
         // Assert
@@ -50,7 +55,7 @@ public class RendererBaseTests
     }
 
     [Fact]
-    public void Ctor_WithNullReactableParam_ThrowsException()
+    public void Ctor_WithNullParam_ReactableFactoryThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -61,14 +66,14 @@ public class RendererBaseTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactable')");
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SetsGLProperty()
     {
         // Arrange & Act
-        var sut = new RendererBaseFake(this.mockGLInvoker.Object, this.mockReactable.Object);
+        var sut = new RendererBaseFake(this.mockGLInvoker.Object, this.mockReactableFactory.Object);
 
         // Assert
         sut.GL.Should().BeSameAs(this.mockGLInvoker.Object);
@@ -82,7 +87,7 @@ public class RendererBaseTests
         // Arrange
         IReceiveReactor? shutDownReactor = null;
 
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(_ => this.mockShutDownUnsubscriber.Object)
             .Callback<IReceiveReactor>(reactor =>
             {
@@ -90,7 +95,7 @@ public class RendererBaseTests
                 shutDownReactor = reactor;
             });
 
-        _ = new RendererBaseFake(this.mockGLInvoker.Object, this.mockReactable.Object);
+        _ = new RendererBaseFake(this.mockGLInvoker.Object, this.mockReactableFactory.Object);
 
         // Act
         shutDownReactor.OnReceive();

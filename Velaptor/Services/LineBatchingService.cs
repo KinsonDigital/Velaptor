@@ -8,8 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using Guards;
 using OpenGL;
 using ReactableData;
@@ -20,26 +22,28 @@ using ReactableData;
 internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private readonly IPushReactable reactable;
+    private readonly IPushReactable pushReactable;
     private LineBatchItem[] batchItems = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingService"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public LineBatchingService(IPushReactable reactable)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    public LineBatchingService(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.reactable = reactable;
+        this.pushReactable = reactableFactory.CreateNoDataReactable();
+
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: NotificationIds.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
-                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+                var batchSize = msg.GetData()?.BatchSize;
 
                 if (batchSize is null)
                 {
@@ -74,7 +78,7 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
 
         if (batchIsFull)
         {
-            this.reactable.Push(NotificationIds.RenderLinesId);
+            this.pushReactable.Push(NotificationIds.RenderLinesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

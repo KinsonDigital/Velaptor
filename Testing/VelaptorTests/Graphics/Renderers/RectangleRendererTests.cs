@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Carbonate;
-using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
@@ -37,7 +38,7 @@ public class RectangleRendererTests
     private readonly Mock<IGPUBuffer<RectBatchItem>> mockGPUBuffer;
     private readonly Mock<IBatchingService<RectBatchItem>> mockBatchingService;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveReactor? batchHasBegunReactor;
     private IReceiveReactor? renderReactor;
     private IReceiveReactor? shutDownReactor;
@@ -68,8 +69,8 @@ public class RectangleRendererTests
         var mockRenderUnsubscriber = new Mock<IDisposable>();
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 if (reactor.Id == NotificationIds.RenderRectsId)
@@ -109,6 +110,9 @@ public class RectangleRendererTests
                     this.shutDownReactor = reactor;
                 }
             });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -293,7 +297,7 @@ public class RectangleRendererTests
     /// <returns>The instance to test.</returns>
     private RectangleRenderer CreateSystemUnderTest()
         => new (this.mockGL.Object,
-            this.mockReactable.Object,
+            this.mockReactableFactory.Object,
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,

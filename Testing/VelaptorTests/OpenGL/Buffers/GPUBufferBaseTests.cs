@@ -5,14 +5,18 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
-using Carbonate;
 using Carbonate.Core;
+using Carbonate.Core.NonDirectional;
+using Carbonate.Core.UniDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Fakes;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
@@ -30,7 +34,7 @@ public class GPUBufferBaseTests
     private const uint IndexBufferId = 5678;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IPushReactable> mockReactable;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IDisposable> mockViewPortSizeUnsubscriber;
@@ -38,7 +42,7 @@ public class GPUBufferBaseTests
     private bool indexBufferCreated;
     private IReceiveReactor? glInitReactor;
     private IReceiveReactor? shutDownReactor;
-    private IReceiveReactor? viewPortSizeReactor;
+    private IReceiveReactor<ViewPortSizeData>? viewPortSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -71,8 +75,8 @@ public class GPUBufferBaseTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         this.mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
 
-        this.mockReactable = new Mock<IPushReactable>();
-        this.mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -85,11 +89,6 @@ public class GPUBufferBaseTests
                 if (reactor.Id == NotificationIds.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
-                }
-
-                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
-                {
-                    return this.mockViewPortSizeUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
@@ -107,15 +106,35 @@ public class GPUBufferBaseTests
                 {
                     this.shutDownReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+            });
+
+        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
+        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
+            .Returns<IReceiveReactor<ViewPortSizeData>>((reactor) =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+                {
+                    return this.mockViewPortSizeUnsubscriber.Object;
+                }
+
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
+                return null;
+            })
+            .Callback<IReceiveReactor<ViewPortSizeData>>((reactor) =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
                 {
                     this.viewPortSizeReactor = reactor;
                 }
-                else
-                {
-                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                }
             });
+
+        this.mockReactableFactory = new Mock<IReactableFactory>();
+        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
     }
 
     #region Constructor Tests
@@ -128,7 +147,7 @@ public class GPUBufferBaseTests
             _ = new GPUBufferFake(
                 null,
                 this.mockGLService.Object,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
     }
 
@@ -141,12 +160,12 @@ public class GPUBufferBaseTests
             _ = new GPUBufferFake(
                 this.mockGL.Object,
                 null,
-                this.mockReactable.Object);
+                this.mockReactableFactory.Object);
         }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
-    public void Ctor_WithNullGLInitReactorParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -155,7 +174,7 @@ public class GPUBufferBaseTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactable')");
+        }, "The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -426,8 +445,8 @@ public class GPUBufferBaseTests
         var expected = $"There was an issue with the 'GPUBufferBase.Constructor()' subscription source";
         expected += $" for subscription ID '{NotificationIds.ViewPortSizeChangedId}'.";
 
-        var mockMessage = new Mock<IMessage>();
-        mockMessage.Setup(m => m.GetData<ViewPortSizeData>(It.IsAny<Action<Exception>?>()))
+        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
+        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns<Action<Exception>?>(_ => null);
 
         _ = CreateSystemUnderTest();
@@ -462,5 +481,5 @@ public class GPUBufferBaseTests
     private GPUBufferFake CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
-        this.mockReactable.Object);
+        this.mockReactableFactory.Object);
 }

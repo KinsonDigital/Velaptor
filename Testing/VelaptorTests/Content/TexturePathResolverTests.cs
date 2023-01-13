@@ -42,7 +42,7 @@ public class TexturePathResolverTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TexturePathResolver(null);
+            _ = new TexturePathResolver(null);
         }, "The parameter must not be null. (Parameter 'directory')");
     }
 

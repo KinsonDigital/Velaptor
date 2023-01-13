@@ -6,10 +6,10 @@ namespace Velaptor.Content.Factories;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
 using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
+using Velaptor.Factories;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.
@@ -18,7 +18,7 @@ internal sealed class TextureFactory : ITextureFactory
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService mockGLService;
-    private readonly IPushReactable reactable;
+    private readonly IReactableFactory reactableFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
@@ -28,7 +28,7 @@ internal sealed class TextureFactory : ITextureFactory
     {
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.mockGLService = IoC.Container.GetInstance<IOpenGLService>();
-        this.reactable = IoC.Container.GetInstance<IPushReactable>();
+        this.reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
     }
 
     /// <summary>
@@ -36,16 +36,16 @@ internal sealed class TextureFactory : ITextureFactory
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IPushReactable reactable)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.gl = gl;
         this.mockGLService = openGLService;
-        this.reactable = reactable;
+        this.reactableFactory = reactableFactory;
     }
 
     /// <inheritdoc/>
@@ -61,6 +61,6 @@ internal sealed class TextureFactory : ITextureFactory
             throw new ArgumentNullException(nameof(filePath), "The string parameter must not be null or empty.");
         }
 
-        return new Texture(this.gl, this.mockGLService, this.reactable, name, filePath, imageData);
+        return new Texture(this.gl, this.mockGLService, this.reactableFactory, name, filePath, imageData);
     }
 }

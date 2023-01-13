@@ -7,7 +7,8 @@ namespace Velaptor;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Content;
 using Content.Caching;
 using Content.Factories;
@@ -22,7 +23,9 @@ using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Buffers;
 using OpenGL.Services;
+using ReactableData;
 using Services;
+using Silk.NET.OpenGL;
 using SimpleInjector;
 
 /// <summary>
@@ -69,7 +72,16 @@ internal static class IoC
 
         SetupContent();
 
-        IoCContainer.Register<IPushReactable>(() => new PushReactable(), Lifestyle.Singleton);
+        IoCContainer.Register<IReactableFactory, ReactableFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable, PushReactable>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);

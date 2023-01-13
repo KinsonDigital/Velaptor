@@ -9,10 +9,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Guards;
 using ReactableData;
 using Velaptor.Exceptions;
+using Velaptor.Factories;
 
 /// <summary>
 /// Creates sounds based on the sound file at a location.
@@ -20,28 +22,28 @@ using Velaptor.Exceptions;
 internal sealed class SoundFactory : ISoundFactory
 {
     private readonly Dictionary<uint, string> sounds = new ();
-    private readonly IPushReactable reactable;
     private readonly IDisposable disposeSoundUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
+    private readonly IPushReactable<DisposeSoundData> disposeReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public SoundFactory(IPushReactable reactable)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    public SoundFactory(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.reactable = reactable;
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+        this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
         var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
-        this.disposeSoundUnsubscriber =
-            reactable.Subscribe(new ReceiveReactor(
+        this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
                 eventId: NotificationIds.SoundDisposedId,
                 name: soundDisposeName,
                 onReceiveMsg: msg =>
                 {
-                    var data = msg.GetData<DisposeSoundData>();
+                    var data = msg.GetData();
 
                     if (data is null)
                     {
@@ -52,7 +54,7 @@ internal sealed class SoundFactory : ISoundFactory
                 }));
 
         var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
-        this.shutDownUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
@@ -84,7 +86,7 @@ internal sealed class SoundFactory : ISoundFactory
 
         this.sounds.Add(newId, filePath);
 
-        return new Sound(this.reactable, filePath, newId);
+        return new Sound(this.disposeReactable, filePath, newId);
     }
 
     /// <summary>

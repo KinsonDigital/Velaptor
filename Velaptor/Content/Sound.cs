@@ -6,7 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
+using Carbonate.UniDirectional;
 using CASL;
 using Factories;
 using Guards;
@@ -33,19 +33,19 @@ public sealed class Sound : ISound
     {
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
-        var reactable = IoC.Container.GetInstance<IPushReactable>();
         var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeSoundData>>();
 
-        Init(reactable, filePath, soundFactory.GetNewId(filePath));
+        Init(disposeReactable, filePath, soundFactory.GetNewId(filePath));
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sound"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the sound file.</param>
     /// <param name="soundId">The unique ID of the sound.</param>
-    internal Sound(IPushReactable reactable, string filePath, uint soundId) => Init(reactable, filePath, soundId);
+    internal Sound(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId) => Init(disposeReactable, filePath, soundId);
 
     /// <inheritdoc/>
     public uint Id { get; private set; }
@@ -170,19 +170,19 @@ public sealed class Sound : ISound
     /// <summary>
     /// Initializes the sound.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the sound file.</param>
     /// <param name="soundId">The unique ID of the sound.</param>
-    private void Init(IPushReactable reactable, string filePath, uint soundId)
+    private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
         var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
         this.disposeUnsubscriber =
-            reactable.Subscribe(new ReceiveReactor(
+            disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
                 eventId: NotificationIds.SoundDisposedId,
                 name: soundDisposeName,
                 onReceiveMsg: msg =>
                 {
-                    var data = msg.GetData<DisposeSoundData>();
+                    var data = msg.GetData();
 
                     if (data is null)
                     {

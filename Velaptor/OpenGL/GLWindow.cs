@@ -11,6 +11,8 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Content;
 using Factories;
 using Guards;
@@ -46,7 +48,11 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ISystemMonitorService systemMonitorService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
-    private readonly IPushReactable reactable;
+    private readonly IPushReactable pushReactable;
+    private readonly IPushReactable<MouseStateData> mouseReactable;
+    private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
+    private readonly IPushReactable<GL> glReactable;
+    private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly MouseStateData mouseStateData;
     private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
@@ -69,7 +75,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -81,7 +87,7 @@ internal sealed class GLWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
-        IPushReactable reactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
@@ -91,7 +97,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.windowFactory = windowFactory;
         this.nativeInputFactory = nativeInputFactory;
@@ -102,7 +108,11 @@ internal sealed class GLWindow : VelaptorIWindow
         this.taskService = taskService;
         ContentLoader = contentLoader;
 
-        this.reactable = reactable;
+        this.pushReactable = reactableFactory.CreateNoDataReactable();
+        this.mouseReactable = reactableFactory.CreateMouseReactable();
+        this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
+        this.glReactable = reactableFactory.CreateGLReactable();
+        this.viewPortReactable = reactableFactory.CreateViewPortReactable();
 
         this.mouseStateData = new MouseStateData();
         this.keyStateData = new KeyboardKeyStateData();
@@ -265,6 +275,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose() => Dispose(true);
 
+    /// <summary>
+    /// Invoked when an OpenGL error occurs.
+    /// </summary>
+    private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
+
     private void RunGLWindow()
     {
         this.glWindow.Run();
@@ -309,8 +324,8 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         var glContextMsg = new GLContextMessage(this.glWindow.CreateOpenGL());
 
-        this.reactable.PushMessage(glContextMsg, NotificationIds.GLContextCreatedId);
-        this.reactable.Unsubscribe(NotificationIds.GLContextCreatedId);
+        this.glReactable.PushMessage(glContextMsg, NotificationIds.GLContextCreatedId);
+        this.glReactable.Unsubscribe(NotificationIds.GLContextCreatedId);
 
         this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
@@ -364,8 +379,8 @@ internal sealed class GLWindow : VelaptorIWindow
          * and the related GLFW window has been created and is ready to go.
          */
 
-        this.reactable.Push(NotificationIds.GLInitializedId);
-        this.reactable.Unsubscribe(NotificationIds.GLInitializedId);
+        this.pushReactable.Push(NotificationIds.GLInitializedId);
+        this.pushReactable.Unsubscribe(NotificationIds.GLInitializedId);
 
         Initialized = true;
     }
@@ -396,7 +411,8 @@ internal sealed class GLWindow : VelaptorIWindow
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
-        this.reactable.PushData(new ViewPortSizeData { Width = width, Height = height }, NotificationIds.ViewPortSizeChangedId);
+        var msg = MessageFactory.CreateMessage(new ViewPortSizeData { Width = width, Height = height });
+        this.viewPortReactable.PushMessage(msg, NotificationIds.ViewPortSizeChangedId);
     }
 
     /// <summary>
@@ -420,7 +436,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ScrollDirection = MouseScrollDirection.None;
         this.mouseStateData.ScrollWheelValue = 0;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.mouseStateData);
+        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -469,7 +486,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.Key = (KeyCode)key;
         this.keyStateData.IsDown = true;
 
-        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.keyStateData);
+        this.keyboardReactable.PushMessage(msg, NotificationIds.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -483,7 +501,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.Key = (KeyCode)key;
         this.keyStateData.IsDown = false;
 
-        this.reactable.PushData(this.keyStateData, NotificationIds.KeyboardStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.keyStateData);
+        this.keyboardReactable.PushMessage(msg, NotificationIds.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -496,7 +515,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = true;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.mouseStateData);
+        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -509,7 +529,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Button = (VelaptorMouseButton)button;
         this.mouseStateData.ButtonIsDown = false;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.mouseStateData);
+        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -527,7 +548,8 @@ internal sealed class GLWindow : VelaptorIWindow
             _ => MouseScrollDirection.None
         };
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.mouseStateData);
+        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
     }
 
     /// <summary>
@@ -540,13 +562,9 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.X = (int)position.X;
         this.mouseStateData.Y = (int)position.Y;
 
-        this.reactable.PushData(this.mouseStateData, NotificationIds.MouseStateChangedId);
+        var msg = MessageFactory.CreateMessage(this.mouseStateData);
+        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
     }
-
-    /// <summary>
-    /// Invoked when an OpenGL error occurs.
-    /// </summary>
-    private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
     /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -561,7 +579,7 @@ internal sealed class GLWindow : VelaptorIWindow
 
         if (disposing)
         {
-            this.reactable.UnsubscribeAll();
+            this.pushReactable.UnsubscribeAll();
 
             CachedStringProps.Clear();
             CachedIntProps.Clear();

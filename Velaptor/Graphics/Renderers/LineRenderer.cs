@@ -8,7 +8,8 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Carbonate;
+using Carbonate.NonDirectional;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
@@ -31,19 +32,19 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     /// Initializes a new instance of the <see cref="LineRenderer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
     /// <param name="batchService">Batches items for rendering.</param>
     public LineRenderer(
         IGLInvoker gl,
-        IPushReactable reactable,
+        IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
         IBatchingService<LineBatchItem> batchService)
-            : base(gl, reactable)
+            : base(gl, reactableFactory)
     {
         EnsureThat.ParamIsNotNull(batchService);
 
@@ -52,14 +53,16 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         this.buffer = buffer;
         this.shader = shader;
 
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+
         var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderLinesId));
-        this.renderUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.RenderLinesId,
             name: batchEndName,
             onReceive: RenderBatch));
 
         const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
-        this.renderBatchBegunUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.RenderBatchBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));

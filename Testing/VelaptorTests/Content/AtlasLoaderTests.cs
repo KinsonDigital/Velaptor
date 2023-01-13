@@ -70,7 +70,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 null,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -86,7 +86,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 null,
                 this.mockAtlasPathResolver.Object,
@@ -102,7 +102,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 null,
@@ -118,7 +118,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -134,7 +134,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -150,7 +150,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,

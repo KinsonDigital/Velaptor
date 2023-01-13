@@ -4,27 +4,28 @@
 
 namespace Velaptor.Graphics;
 
-using Carbonate;
+using Carbonate.NonDirectional;
+using Factories;
 using Guards;
 
 /// <inheritdoc/>
 internal sealed class RenderMediator : IRenderMediator
 {
-    private readonly IPushReactable reactable;
+    private readonly IPushReactable pushReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
-    public RenderMediator(IPushReactable reactable)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    public RenderMediator(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.reactable = reactable;
+        this.pushReactable = reactableFactory.CreateNoDataReactable();
 
         var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderBatchEndedId));
 
-        reactable.Subscribe(new ReceiveReactor(
+        this.pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.RenderBatchEndedId,
             name: batchEndName,
             onReceive: CoordinateRenders));
@@ -35,9 +36,9 @@ internal sealed class RenderMediator : IRenderMediator
     /// </summary>
     private void CoordinateRenders()
     {
-        this.reactable.Push(NotificationIds.RenderTexturesId);
-        this.reactable.Push(NotificationIds.RenderRectsId);
-        this.reactable.Push(NotificationIds.RenderFontsId);
-        this.reactable.Push(NotificationIds.RenderLinesId);
+        this.pushReactable.Push(NotificationIds.RenderTexturesId);
+        this.pushReactable.Push(NotificationIds.RenderRectsId);
+        this.pushReactable.Push(NotificationIds.RenderFontsId);
+        this.pushReactable.Push(NotificationIds.RenderLinesId);
     }
 }

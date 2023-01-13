@@ -42,7 +42,7 @@ public class AtlasJSONDataPathResolverTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasJSONDataPathResolver(null);
+            _ = new AtlasJSONDataPathResolver(null);
         }, "The parameter must not be null. (Parameter 'directory')");
     }
 

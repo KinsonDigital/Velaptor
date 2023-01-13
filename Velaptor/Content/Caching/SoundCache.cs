@@ -12,10 +12,13 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using Guards;
 using ReactableData;
+using Velaptor.Factories;
 
 /// <summary>
 /// Caches <see cref="ISound"/> objects for retrieval at a later time.
@@ -28,7 +31,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private readonly ISoundFactory soundFactory;
     private readonly IFile file;
     private readonly IPath path;
-    private readonly IPushReactable reactable;
+    private readonly IPushReactable<DisposeSoundData> disposeReactable;
     private readonly IDisposable shutDownUnsubscriber;
     private bool isDisposed;
 
@@ -38,25 +41,27 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <param name="soundFactory">Creates <see cref="ISound"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Provides path related services.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundCache(
         ISoundFactory soundFactory,
         IFile file,
         IPath path,
-        IPushReactable reactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(soundFactory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.soundFactory = soundFactory;
         this.file = file;
         this.path = path;
-        this.reactable = reactable;
+
+        this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
+        var pushReactable = reactableFactory.CreateNoDataReactable();
 
         var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
-        this.shutDownUnsubscriber = this.reactable.Subscribe(new ReceiveReactor(
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
@@ -143,10 +148,13 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     {
         this.sounds.TryRemove(cacheKey, out var sound);
 
-        if (sound is not null)
+        if (sound is null)
         {
-            this.reactable.PushData(new DisposeSoundData { SoundId = sound.Id }, NotificationIds.SoundDisposedId);
+            return;
         }
+
+        var msg = MessageFactory.CreateMessage(new DisposeSoundData { SoundId = sound.Id });
+        this.disposeReactable.PushMessage(msg, NotificationIds.SoundDisposedId);
     }
 
     /// <summary>
@@ -160,7 +168,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         }
 
         this.shutDownUnsubscriber.Dispose();
-        this.reactable.Unsubscribe(NotificationIds.SoundDisposedId);
+        this.disposeReactable.Unsubscribe(NotificationIds.SoundDisposedId);
 
         this.sounds.Clear();
         this.isDisposed = true;

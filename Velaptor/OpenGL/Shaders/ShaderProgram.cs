@@ -6,8 +6,9 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate;
+using Carbonate.NonDirectional;
 using Exceptions;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using Services;
@@ -26,7 +27,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -34,26 +35,28 @@ internal abstract class ShaderProgram : IShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IPushReactable reactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
+        var pushReactable = reactableFactory.CreateNoDataReactable();
+
         var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
-        this.glInitReactorUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.glInitReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.GLInitializedId,
             name: glInitName,
             onReceive: Init,
             onUnsubscribe: () => this.glInitReactorUnsubscriber?.Dispose()));
 
         var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
-        this.shutDownReactorUnsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.shutDownReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: NotificationIds.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));

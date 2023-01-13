@@ -5,7 +5,8 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
-using Carbonate;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
@@ -26,7 +27,7 @@ internal sealed class LineShader : ShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -34,18 +35,20 @@ internal sealed class LineShader : ShaderProgram
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService<uint> shaderLoaderService,
-        IPushReactable reactable)
-            : base(gl, openGLService, shaderLoaderService, reactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor(
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: NotificationIds.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
-                var batchSize = msg.GetData<BatchSizeData>()?.BatchSize;
+                var batchSize = msg.GetData()?.BatchSize;
 
                 if (batchSize is null)
                 {
