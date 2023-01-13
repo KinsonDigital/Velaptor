@@ -1,4 +1,4 @@
-﻿// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,7 +30,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>

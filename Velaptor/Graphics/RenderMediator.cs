@@ -16,7 +16,7 @@ internal sealed class RenderMediator : IRenderMediator
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param> // TODO: Fix this param doc for entire code base
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public RenderMediator(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);

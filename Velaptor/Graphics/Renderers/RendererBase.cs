@@ -19,7 +19,7 @@ internal abstract class RendererBase : IRenderer
     /// Initializes a new instance of the <see cref="RendererBase"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     protected RendererBase(IGLInvoker gl, IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);

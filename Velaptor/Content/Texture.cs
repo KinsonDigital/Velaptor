@@ -53,7 +53,7 @@ public sealed class Texture : ITexture
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>

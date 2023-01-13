@@ -29,7 +29,7 @@ internal sealed class SoundFactory : ISoundFactory
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundFactory(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);

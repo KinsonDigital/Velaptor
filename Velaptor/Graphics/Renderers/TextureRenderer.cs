@@ -34,7 +34,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// Initializes a new instance of the <see cref="TextureRenderer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>

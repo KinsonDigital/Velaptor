@@ -28,7 +28,7 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchingService"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public LineBatchingService(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);

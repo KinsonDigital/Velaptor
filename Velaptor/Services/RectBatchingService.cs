@@ -28,7 +28,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Sends and receives push notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public RectBatchingService(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
