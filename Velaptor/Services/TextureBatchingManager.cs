@@ -1,4 +1,4 @@
-// <copyright file="TextureBatchingService.cs" company="KinsonDigital">
+// <copyright file="TextureBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,17 +20,17 @@ using ReactableData;
 /// <summary>
 /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
 /// </summary>
-internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
+internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem>
 {
     private readonly IDisposable unsubscriber;
     private readonly IPushReactable pushReactable;
     private TextureBatchItem[] batchItems = null!;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureBatchingService"/> class.
+    /// Initializes a new instance of the <see cref="TextureBatchingManager"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public TextureBatchingService(IReactableFactory reactableFactory)
+    public TextureBatchingManager(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
@@ -49,7 +49,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
                 if (batchSize is null)
                 {
                     throw new PushNotificationException(
-                        $"{nameof(TextureBatchingService)}.Constructor()",
+                        $"{nameof(TextureBatchingManager)}.Constructor()",
                         NotificationIds.BatchSizeSetId);
                 }
 

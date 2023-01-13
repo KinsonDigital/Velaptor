@@ -18,7 +18,7 @@ using Services;
 /// <inheritdoc cref="IRectangleRenderer"/>
 internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
 {
-    private readonly IBatchingService<RectBatchItem> batchService;
+    private readonly IBatchingManager<RectBatchItem> batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<RectBatchItem> buffer;
     private readonly IShaderProgram shader;
@@ -34,19 +34,19 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
-    /// <param name="batchService">Batches items for rendering.</param>
+    /// <param name="batchManager">Batches items for rendering.</param>
     public RectangleRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<RectBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingService<RectBatchItem> batchService)
+        IBatchingManager<RectBatchItem> batchManager)
             : base(gl, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchService);
+        EnsureThat.ParamIsNotNull(batchManager);
 
-        this.batchService = batchService;
+        this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
@@ -139,7 +139,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
             rectangle.GradientStop,
             layer);
 
-        this.batchService.Add(batchItem);
+        this.batchManager.Add(batchItem);
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// </summary>
     private void RenderBatch()
     {
-        if (this.batchService.BatchItems.Count <= 0)
+        if (this.batchManager.BatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Rectangle Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -162,7 +162,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchService.BatchItems
+        var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
             .OrderBy(i => i.Layer)
@@ -190,7 +190,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
             this.openGLService.EndGroup();
 
             // Empties the batch
-            this.batchService.EmptyBatch();
+            this.batchManager.EmptyBatch();
         }
 
         this.openGLService.EndGroup();

@@ -24,7 +24,7 @@ using NETSizeF = System.Drawing.SizeF;
 /// <inheritdoc cref="IFontRenderer"/>
 internal sealed class FontRenderer : RendererBase, IFontRenderer
 {
-    private readonly IBatchingService<FontGlyphBatchItem> batchService;
+    private readonly IBatchingManager<FontGlyphBatchItem> batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
@@ -40,19 +40,19 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
-    /// <param name="batchService">Batches items for rendering.</param>
+    /// <param name="batchManager">Batches items for rendering.</param>
     public FontRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<FontGlyphBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingService<FontGlyphBatchItem> batchService)
+        IBatchingManager<FontGlyphBatchItem> batchManager)
             : base(gl, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchService);
+        EnsureThat.ParamIsNotNull(batchManager);
 
-        this.batchService = batchService;
+        this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
@@ -224,7 +224,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
             foreach (var item in batchItems)
             {
-                this.batchService.Add(item);
+                this.batchManager.Add(item);
             }
         }
     }
@@ -324,7 +324,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
     /// </summary>
     private void RenderBatch()
     {
-        if (this.batchService.BatchItems.Count <= 0)
+        if (this.batchManager.BatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -339,7 +339,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchService.BatchItems
+        var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
             .OrderBy(i => i.Layer)
@@ -385,7 +385,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             }
 
             // Empties the batch
-            this.batchService.EmptyBatch();
+            this.batchManager.EmptyBatch();
         }
 
         this.openGLService.EndGroup();

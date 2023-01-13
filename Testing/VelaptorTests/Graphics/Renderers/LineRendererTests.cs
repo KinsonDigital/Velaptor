@@ -35,7 +35,7 @@ public class LineRendererTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGPUBuffer<LineBatchItem>> mockGPUBuffer;
-    private readonly Mock<IBatchingService<LineBatchItem>> mockBatchingService;
+    private readonly Mock<IBatchingManager<LineBatchItem>> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
@@ -60,8 +60,8 @@ public class LineRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<LineBatchItem>>();
 
-        this.mockBatchingService = new Mock<IBatchingService<LineBatchItem>>();
-        this.mockBatchingService.SetupGet(p => p.BatchItems)
+        this.mockBatchingManager = new Mock<IBatchingManager<LineBatchItem>>();
+        this.mockBatchingManager.SetupGet(p => p.BatchItems)
             .Returns(Array.Empty<LineBatchItem>().AsReadOnly());
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
@@ -157,7 +157,7 @@ public class LineRendererTests
         sut.Render(line, 10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class LineRendererTests
         sut.RenderLine(new Vector2(1, 2), new Vector2(3, 4), 10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
      }
 
     [Fact]
@@ -203,7 +203,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class LineRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()), Times.Never);
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
+        this.mockBatchingManager.Verify(m => m.EmptyBatch(), Times.Never);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class LineRendererTests
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
         this.mockGPUBuffer.Verify(m => m.UploadData(batchItem, batchIndex), Times.Once);
         this.mockGPUBuffer.Verify(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex), Times.Never);
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+        this.mockBatchingManager.Verify(m => m.EmptyBatch(), Times.Once);
     }
     #endregion
 
@@ -349,13 +349,13 @@ public class LineRendererTests
     #endregion
 
     /// <summary>
-    /// Mocks the <see cref="IBatchingService{T}.BatchItems"/> property of the <see cref="IBatchingService{T}"/>.
+    /// Mocks the <see cref="IBatchingManager{T}.BatchItems"/> property of the <see cref="IBatchingManager{T}"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
     private void MockLineBatchItems(IList<LineBatchItem> items)
     {
-        this.mockBatchingService.SetupProperty(p => p.BatchItems);
-        this.mockBatchingService.Object.BatchItems = items.AsReadOnly();
+        this.mockBatchingManager.SetupProperty(p => p.BatchItems);
+        this.mockBatchingManager.Object.BatchItems = items.AsReadOnly();
     }
 
     /// <summary>
@@ -368,5 +368,5 @@ public class LineRendererTests
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,
-            this.mockBatchingService.Object);
+            this.mockBatchingManager.Object);
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchingServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchingManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,9 +25,9 @@ using Velaptor.Services;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="TextureBatchingService"/> class.
+/// Tests the <see cref="TextureBatchingManager"/> class.
 /// </summary>
-public class TextureBatchingServiceTests
+public class TextureBatchingManagerTests
 {
     private readonly Mock<IDisposable> mockUnsubscriber;
     private readonly Mock<IPushReactable> mockPushReactable;
@@ -36,9 +36,9 @@ public class TextureBatchingServiceTests
     private IReceiveReactor<BatchSizeData>? reactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureBatchingServiceTests"/> class.
+    /// Initializes a new instance of the <see cref="TextureBatchingManagerTests"/> class.
     /// </summary>
-    public TextureBatchingServiceTests()
+    public TextureBatchingManagerTests()
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
@@ -61,7 +61,7 @@ public class TextureBatchingServiceTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new TextureBatchingService(null);
+            _ = new TextureBatchingManager(null);
         };
 
         // Assert
@@ -105,7 +105,7 @@ public class TextureBatchingServiceTests
     public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
     {
         // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(TextureBatchingService)}.Constructor()' subscription source";
+        var expectedMsg = $"There was an issue with the '{nameof(TextureBatchingManager)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
@@ -278,8 +278,8 @@ public class TextureBatchingServiceTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="TextureBatchingService"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="TextureBatchingManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureBatchingService CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private TextureBatchingManager CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

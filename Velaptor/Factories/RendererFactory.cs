@@ -33,7 +33,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<TextureBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateTextureShader();
-        var textureBatchManager = IoC.Container.GetInstance<IBatchingService<TextureBatchItem>>();
+        var textureBatchManager = IoC.Container.GetInstance<IBatchingManager<TextureBatchItem>>();
 
         textureRenderer = new TextureRenderer(
             glInvoker,
@@ -59,7 +59,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateFontShader();
-        var fontBatchService = IoC.Container.GetInstance<IBatchingService<FontGlyphBatchItem>>();
+        var fontBatchService = IoC.Container.GetInstance<IBatchingManager<FontGlyphBatchItem>>();
 
         fontRenderer = new FontRenderer(
             glInvoker,
@@ -85,7 +85,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<RectBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
-        var rectBatchService = IoC.Container.GetInstance<IBatchingService<RectBatchItem>>();
+        var rectBatchService = IoC.Container.GetInstance<IBatchingManager<RectBatchItem>>();
 
         rectangleRenderer = new RectangleRenderer(
             glInvoker,
@@ -111,7 +111,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<LineBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateLineShader();
-        var lineBatchService = IoC.Container.GetInstance<IBatchingService<LineBatchItem>>();
+        var lineBatchService = IoC.Container.GetInstance<IBatchingManager<LineBatchItem>>();
 
         lineRenderer = new LineRenderer(
             glInvoker,

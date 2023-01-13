@@ -20,7 +20,7 @@ using Services;
 /// <inheritdoc cref="ILineRenderer"/>
 internal sealed class LineRenderer : RendererBase, ILineRenderer
 {
-    private readonly IBatchingService<LineBatchItem> batchService;
+    private readonly IBatchingManager<LineBatchItem> batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
@@ -36,19 +36,19 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
-    /// <param name="batchService">Batches items for rendering.</param>
+    /// <param name="batchManager">Batches items for rendering.</param>
     public LineRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingService<LineBatchItem> batchService)
+        IBatchingManager<LineBatchItem> batchManager)
             : base(gl, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchService);
+        EnsureThat.ParamIsNotNull(batchManager);
 
-        this.batchService = batchService;
+        this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
@@ -126,7 +126,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             thickness,
             layer);
 
-        this.batchService.Add(batchItem);
+        this.batchManager.Add(batchItem);
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     /// </summary>
     private void RenderBatch()
     {
-        if (this.batchService.BatchItems.Count <= 0)
+        if (this.batchManager.BatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Line Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -149,7 +149,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchService.BatchItems
+        var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
             .OrderBy(i => i.Layer)
@@ -177,7 +177,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             this.openGLService.EndGroup();
 
             // Empties the batch
-            this.batchService.EmptyBatch();
+            this.batchManager.EmptyBatch();
         }
 
         this.openGLService.EndGroup();

@@ -1,4 +1,4 @@
-// <copyright file="RectBatchingService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,19 +17,22 @@ using OpenGL;
 using ReactableData;
 
 /// <summary>
-/// Manages the process of batching the rendering of rectangles.
+/// Manages the process of batching glyphs to be rendered.
 /// </summary>
-internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
+internal sealed class FontGlyphBatchingManager : IBatchingManager<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
     private readonly IPushReactable pushReactable;
-    private RectBatchItem[] batchItems = null!;
+    private FontGlyphBatchItem[] batchItems = null!;
+#if DEBUG
+    private uint currentFrame;
+#endif
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
+    /// Initializes a new instance of the <see cref="FontGlyphBatchingManager"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public RectBatchingService(IReactableFactory reactableFactory)
+    public FontGlyphBatchingManager(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
@@ -48,11 +51,11 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
                 if (batchSize is null)
                 {
                     throw new PushNotificationException(
-                        $"{nameof(RectBatchingService)}.Constructor()",
+                        $"{nameof(FontGlyphBatchingManager)}.Constructor()",
                         NotificationIds.BatchSizeSetId);
                 }
 
-                var items = new List<RectBatchItem>();
+                var items = new List<FontGlyphBatchItem>();
 
                 for (var i = 0u; i < batchSize; i++)
                 {
@@ -65,23 +68,23 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<RectBatchItem> BatchItems
+    public ReadOnlyCollection<FontGlyphBatchItem> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
     }
 
     /// <summary>
-    /// Adds the given <paramref name="rect"/> to the batch.
+    /// Adds the given <paramref name="item"/> to the batch.
     /// </summary>
-    /// <param name="rect">The item to be added.</param>
-    public void Add(in RectBatchItem rect)
+    /// <param name="item">The item to be added.</param>
+    public void Add(in FontGlyphBatchItem item)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderRectsId);
+            this.pushReactable.Push(NotificationIds.RenderFontsId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
@@ -91,23 +94,36 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
             return;
         }
 
-        this.batchItems[emptyItemIndex] = rect;
+        this.batchItems[emptyItemIndex] = item;
     }
 
     /// <summary>
     /// Empties the entire batch.
     /// </summary>
     /// <remarks>
-    /// An empty batch are items that are set NOT set to render and have all values set to default.
+    /// An empty batch are items that are set NOT to render and have all values set to default.
     /// </remarks>
     public void EmptyBatch()
     {
+#if DEBUG
+        this.currentFrame += 1u;
+#endif
+
         for (var i = 0u; i < this.batchItems.Length; i++)
         {
             if (this.batchItems[i].IsEmpty())
             {
                 continue;
             }
+
+#if DEBUG
+            AppStats.RecordFontGlyphRendering(
+                this.currentFrame,
+                this.batchItems[i].Glyph,
+                this.batchItems[i].TextureId,
+                this.batchItems[i].Size,
+                this.batchItems[i].DestRect);
+#endif
 
             this.batchItems[i] = default;
         }

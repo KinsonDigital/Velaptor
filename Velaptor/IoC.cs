@@ -168,10 +168,10 @@ internal static class IoC
         IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<TextureBatchItem>, TextureBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<LineBatchItem>, LineBatchingService>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingManager<TextureBatchItem>, TextureBatchingManager>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingManager<FontGlyphBatchItem>, FontGlyphBatchingManager>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingManager<RectBatchItem>, RectBatchingManager>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingManager<LineBatchItem>, LineBatchingManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(

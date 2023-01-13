@@ -1,4 +1,4 @@
-// <copyright file="IBatchingService.cs" company="KinsonDigital">
+// <copyright file="IBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 /// Manages the process of batching items.
 /// </summary>
 /// <typeparam name="T">The type of items stored in the batch.</typeparam>
-internal interface IBatchingService<T>
+internal interface IBatchingManager<T>
 {
     /// <summary>
     /// Gets or sets the list of batch items.

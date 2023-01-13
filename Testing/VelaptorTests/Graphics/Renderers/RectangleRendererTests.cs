@@ -36,7 +36,7 @@ public class RectangleRendererTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGPUBuffer<RectBatchItem>> mockGPUBuffer;
-    private readonly Mock<IBatchingService<RectBatchItem>> mockBatchingService;
+    private readonly Mock<IBatchingManager<RectBatchItem>> mockBatchingManager;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveReactor? batchHasBegunReactor;
@@ -60,9 +60,9 @@ public class RectangleRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
 
-        this.mockBatchingService = new Mock<IBatchingService<RectBatchItem>>();
-        this.mockBatchingService.Name = nameof(this.mockBatchingService);
-        this.mockBatchingService.SetupGet(p => p.BatchItems)
+        this.mockBatchingManager = new Mock<IBatchingManager<RectBatchItem>>();
+        this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
+        this.mockBatchingManager.SetupGet(p => p.BatchItems)
             .Returns(Array.Empty<RectBatchItem>().AsReadOnly());
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
@@ -149,7 +149,7 @@ public class RectangleRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()));
-        this.mockBatchingService.VerifyNever(m => m.EmptyBatch());
+        this.mockBatchingManager.VerifyNever(m => m.EmptyBatch());
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class RectangleRendererTests
         sut.Render(rect);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(expected), Times.Once);
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class RectangleRendererTests
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
         this.mockGPUBuffer.VerifyNever(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex));
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+        this.mockBatchingManager.Verify(m => m.EmptyBatch(), Times.Once);
     }
 
     [Fact]
@@ -282,13 +282,13 @@ public class RectangleRendererTests
     #endregion
 
     /// <summary>
-    /// Mocks the <see cref="IBatchingService{T}.BatchItems"/> property of the <see cref="IBatchingService{T}"/>.
+    /// Mocks the <see cref="IBatchingManager{T}.BatchItems"/> property of the <see cref="IBatchingManager{T}"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
     private void MockRectBatchItems(RectBatchItem[] items)
     {
-        this.mockBatchingService.SetupProperty(p => p.BatchItems);
-        this.mockBatchingService.Object.BatchItems = items.ToReadOnlyCollection();
+        this.mockBatchingManager.SetupProperty(p => p.BatchItems);
+        this.mockBatchingManager.Object.BatchItems = items.ToReadOnlyCollection();
     }
 
     /// <summary>
@@ -301,5 +301,5 @@ public class RectangleRendererTests
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,
-            this.mockBatchingService.Object);
+            this.mockBatchingManager.Object);
 }

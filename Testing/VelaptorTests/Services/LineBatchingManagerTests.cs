@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="LineBatchingManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,35 +8,36 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
+using System.Numerics;
 using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
-using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;
 
-public class FontGlyphBatchingServiceTests
+/// <summary>
+/// Tests the <see cref="LineBatchingManager"/> class.
+/// </summary>
+public class LineBatchingManagerTests
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
-    private readonly Mock<IPushReactable> mockPushReactable;
     private readonly Mock<IDisposable> mockUnsubscriber;
+    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable> mockPushReactable;
+    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
     private IReceiveReactor<BatchSizeData>? batchSizeReactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontGlyphBatchingServiceTests"/> class.
+    /// Initializes a new instance of the <see cref="LineBatchingManagerTests"/> class.
     /// </summary>
-    public FontGlyphBatchingServiceTests()
+    public LineBatchingManagerTests()
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
@@ -44,11 +45,7 @@ public class FontGlyphBatchingServiceTests
 
         this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull();
-                this.batchSizeReactor = reactorObj;
-            })
+            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj => this.batchSizeReactor = reactorObj)
             .Returns(this.mockUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -58,12 +55,12 @@ public class FontGlyphBatchingServiceTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
+    public void Ctor_WithReactableFactoryNullParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new FontGlyphBatchingService(null);
+            _ = new LineBatchingManager(null);
         };
 
         // Assert
@@ -75,13 +72,14 @@ public class FontGlyphBatchingServiceTests
     [Fact]
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
-        // Arrange & Act
+        // Arrange
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 4u });
 
-        var sut = CreateService();
+        var sut = CreateSystemUnderTest();
 
+        // Act
         this.batchSizeReactor.OnReceive(mockMessage.Object);
 
         // Assert
@@ -92,7 +90,7 @@ public class FontGlyphBatchingServiceTests
     public void Ctor_WhenReactableUnsubscribes_InvokesUnsubscriber()
     {
         // Arrange
-        _ = CreateService();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.batchSizeReactor.OnUnsubscribe();
@@ -103,10 +101,10 @@ public class FontGlyphBatchingServiceTests
     }
 
     [Fact]
-    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
+    public void Ctor_WhenReactableNotificationHasAnIssue_ThrowsException()
     {
         // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(FontGlyphBatchingService)}.Constructor()' subscription source";
+        var expectedMsg = $"There was an issue with the '{nameof(LineBatchingManager)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
@@ -121,7 +119,7 @@ public class FontGlyphBatchingServiceTests
         mockMessage.Setup(m => m.GetData(null))
             .Returns<Action<Exception>?>(_ => null);
 
-        _ = CreateService();
+        _ = CreateSystemUnderTest();
 
         // Act
         var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
@@ -137,38 +135,27 @@ public class FontGlyphBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            12);
-        var batchItem2 = new FontGlyphBatchItem(
-            new RectangleF(20, 21, 22, 23),
-            new RectangleF(24, 25, 26, 27),
-            'g',
-            19,
-            18,
-            Color.FromArgb(29, 30, 31, 32),
-            RenderEffects.FlipHorizontally,
-            28,
-            35);
+        var batchItem1 = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9);
+        var batchItem2 = new LineBatchItem(
+            new Vector2(10, 11),
+            new Vector2(12, 13),
+            Color.FromArgb(14, 15, 16, 17),
+            18);
 
-        var batchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems.ToReadOnlyCollection());
-        var service = CreateService();
+        var batchItems = new List<LineBatchItem> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<LineBatchItem>(batchItems.ToReadOnlyCollection());
+        var sut = CreateSystemUnderTest();
 
         // Act
-        service.BatchItems = batchItems.ToReadOnlyCollection();
-        var actual = service.BatchItems;
+        sut.BatchItems = batchItems.ToReadOnlyCollection();
+        var actual = sut.BatchItems;
 
         // Assert
-        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
-        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -177,110 +164,81 @@ public class FontGlyphBatchingServiceTests
     public void Add_WhenBatchIsFull_SendsRenderPushNotification()
     {
         // Arrange
-        var batchItem1 = new FontGlyphBatchItem(
-            default,
-            default,
-            'g',
-            0,
-            0,
-            Color.Empty,
-            RenderEffects.None,
-            0,
-            0);
-        var batchItem2 = new FontGlyphBatchItem(
-            default,
-            default,
-            'g',
-            0,
-            0,
-            Color.Empty,
-            RenderEffects.None,
-            0,
-            0);
+        var batchItem1 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 1);
+        var batchItem2 = new LineBatchItem(Vector2.Zero, Vector2.Zero, Color.Empty, 2);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 1u });
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
+
         this.batchSizeReactor.OnReceive(mockMessage.Object);
-        service.Add(batchItem1);
+
+        sut.Add(batchItem1);
 
         // Act
-        service.Add(batchItem2);
+        sut.Add(batchItem2);
 
         // Assert
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderFontsId));
+        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderLinesId));
     }
 
     [Fact]
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = new FontGlyphBatchItem(
-            default,
-            default,
-            'g',
-            0,
-            0,
-            Color.Empty,
-            RenderEffects.None,
-            0,
-            0);
-        var batchItem2 = new FontGlyphBatchItem(
-            default,
-            default,
-            'g',
-            0,
-            0,
-            Color.Empty,
-            RenderEffects.None,
-            0,
-            0);
+        var batchItem1 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 1);
+        var batchItem2 = new LineBatchItem(Vector2.One, Vector2.One, Color.White, 2);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
+
         this.batchSizeReactor.OnReceive(mockMessage.Object);
-        service.Add(batchItem1);
-        service.Add(batchItem2);
+
+        sut.Add(batchItem1);
+        sut.Add(batchItem2);
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0]);
+        sut.BatchItems[0].Should().BeEquivalentTo(default(LineBatchItem));
+        sut.BatchItems[1].Should().BeEquivalentTo(default(LineBatchItem));
     }
 
     [Fact]
     public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
     {
         // Arrange
-        var batchItem1 = default(FontGlyphBatchItem);
-        var batchItem2 = default(FontGlyphBatchItem);
+        var batchItem1 = default(LineBatchItem);
+        var batchItem2 = default(LineBatchItem);
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
             .Returns(new BatchSizeData { BatchSize = 2u });
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
+
         this.batchSizeReactor.OnReceive(mockMessage.Object);
-        service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
+
+        sut.BatchItems = new List<LineBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0]);
-        Assert.Equal(batchItem2, service.BatchItems[1]);
+        sut.BatchItems[0].Should().BeEquivalentTo(batchItem1);
+        sut.BatchItems[1].Should().BeEquivalentTo(batchItem2);
     }
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="FontGlyphBatchingService"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="LineBatchingManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontGlyphBatchingService CreateService() => new (this.mockReactableFactory.Object);
+    private LineBatchingManager CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="LineBatchingService.cs" company="KinsonDigital">
+﻿// <copyright file="LineBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,17 +19,17 @@ using ReactableData;
 /// <summary>
 /// Manages the process of batching the rendering of lines.
 /// </summary>
-internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
+internal sealed class LineBatchingManager : IBatchingManager<LineBatchItem>
 {
     private readonly IDisposable unsubscriber;
     private readonly IPushReactable pushReactable;
     private LineBatchItem[] batchItems = null!;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LineBatchingService"/> class.
+    /// Initializes a new instance of the <see cref="LineBatchingManager"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public LineBatchingService(IReactableFactory reactableFactory)
+    public LineBatchingManager(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
@@ -48,7 +48,7 @@ internal sealed class LineBatchingService : IBatchingService<LineBatchItem>
                 if (batchSize is null)
                 {
                     throw new PushNotificationException(
-                        $"{nameof(LineBatchingService)}.Constructor()",
+                        $"{nameof(LineBatchingManager)}.Constructor()",
                         NotificationIds.BatchSizeSetId);
                 }
 

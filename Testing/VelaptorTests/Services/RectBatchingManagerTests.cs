@@ -1,4 +1,4 @@
-// <copyright file="RectBatchingServiceTests.cs" company="KinsonDigital">
+// <copyright file="RectBatchingManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,9 +26,9 @@ using Velaptor.Services;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="RectBatchingService"/> class.
+/// Tests the <see cref="RectBatchingManager"/> class.
 /// </summary>
-public class RectBatchingServiceTests
+public class RectBatchingManagerTests
 {
     private readonly Mock<IDisposable> mockUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -37,9 +37,9 @@ public class RectBatchingServiceTests
     private IReceiveReactor<BatchSizeData>? reactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectBatchingServiceTests"/> class.
+    /// Initializes a new instance of the <see cref="RectBatchingManagerTests"/> class.
     /// </summary>
-    public RectBatchingServiceTests()
+    public RectBatchingManagerTests()
     {
         this.mockUnsubscriber = new Mock<IDisposable>();
 
@@ -62,7 +62,7 @@ public class RectBatchingServiceTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectBatchingService(null);
+            _ = new RectBatchingManager(null);
         };
 
         // Assert
@@ -104,7 +104,7 @@ public class RectBatchingServiceTests
     public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
     {
         // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(RectBatchingService)}.Constructor()' subscription source";
+        var expectedMsg = $"There was an issue with the '{nameof(RectBatchingManager)}.Constructor()' subscription source";
         expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
@@ -249,8 +249,8 @@ public class RectBatchingServiceTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="RectBatchingService"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="RectBatchingManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private RectBatchingService CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private RectBatchingManager CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

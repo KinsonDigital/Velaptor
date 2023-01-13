@@ -35,7 +35,7 @@ public class TextureRendererTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IGPUBuffer<TextureBatchItem>> mockGPUBuffer;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IBatchingService<TextureBatchItem>> mockBatchingService;
+    private readonly Mock<IBatchingManager<TextureBatchItem>> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactorFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
@@ -60,9 +60,9 @@ public class TextureRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
 
-        this.mockBatchingService = new Mock<IBatchingService<TextureBatchItem>>();
-        this.mockBatchingService.Name = nameof(this.mockBatchingService);
-        this.mockBatchingService.SetupGet(p => p.BatchItems)
+        this.mockBatchingManager = new Mock<IBatchingManager<TextureBatchItem>>();
+        this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
+        this.mockBatchingManager.SetupGet(p => p.BatchItems)
             .Returns(Array.Empty<TextureBatchItem>().AsReadOnly());
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
@@ -213,7 +213,7 @@ public class TextureRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()));
-        this.mockBatchingService.VerifyNever(m => m.EmptyBatch());
+        this.mockBatchingManager.VerifyNever(m => m.EmptyBatch());
     }
 
     [Fact]
@@ -234,7 +234,7 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingService.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
+        this.mockBatchingManager.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
             .Callback((in TextureBatchItem item) =>
             {
                 actualBatchItem = item;
@@ -247,7 +247,7 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -271,7 +271,7 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingService.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
+        this.mockBatchingManager.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
             .Callback((in TextureBatchItem item) =>
             {
                 actualBatchItem = item;
@@ -283,7 +283,7 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -306,7 +306,7 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingService.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
+        this.mockBatchingManager.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
             .Callback((in TextureBatchItem item) =>
             {
                 actualBatchItem = item;
@@ -318,7 +318,7 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedClr);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -343,7 +343,7 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingService.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
+        this.mockBatchingManager.Setup(m => m.Add(It.Ref<TextureBatchItem>.IsAny))
             .Callback((in TextureBatchItem item) =>
             {
                 actualBatchItem = item;
@@ -355,7 +355,7 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
+        this.mockBatchingManager.Verify(m => m.Add(It.Ref<TextureBatchItem>.IsAny), Times.Once);
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -414,7 +414,7 @@ public class TextureRendererTests
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(itemA, itemABatchIndex));
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(itemB, itemBBatchIndex));
         this.mockGPUBuffer.VerifyNever(m => m.UploadData(shouldNotRenderItem, It.IsAny<uint>()));
-        this.mockBatchingService.VerifyOnce(m => m.EmptyBatch());
+        this.mockBatchingManager.VerifyOnce(m => m.EmptyBatch());
     }
     #endregion
 
@@ -475,13 +475,13 @@ public class TextureRendererTests
     }
 
     /// <summary>
-    /// Mocks the <see cref="IBatchingService{T}.BatchItems"/> property of the <see cref="IBatchingService{T}"/>.
+    /// Mocks the <see cref="IBatchingManager{T}.BatchItems"/> property of the <see cref="IBatchingManager{T}"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
     private void MockTextureBatchItems(IList<TextureBatchItem> items)
     {
-        this.mockBatchingService.SetupProperty(p => p.BatchItems);
-        this.mockBatchingService.Object.BatchItems = items.AsReadOnly();
+        this.mockBatchingManager.SetupProperty(p => p.BatchItems);
+        this.mockBatchingManager.Object.BatchItems = items.AsReadOnly();
     }
 
     /// <summary>
@@ -494,5 +494,5 @@ public class TextureRendererTests
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,
-            this.mockBatchingService.Object);
+            this.mockBatchingManager.Object);
 }
