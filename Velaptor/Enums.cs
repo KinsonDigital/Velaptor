@@ -56,3 +56,29 @@ public enum StateOfWindow
     /// </summary>
     FullScreen = 3,
 }
+
+/// <summary>
+/// Represents different types of batches used for rendering.
+/// </summary>
+internal enum BatchType
+{
+    /// <summary>
+    /// Texture batch.
+    /// </summary>
+    Texture,
+
+    /// <summary>
+    /// Font batch.
+    /// </summary>
+    Font,
+
+    /// <summary>
+    /// Rectangle batch.
+    /// </summary>
+    Rect,
+
+    /// <summary>
+    /// Line batch.
+    /// </summary>
+    Line,
+}
