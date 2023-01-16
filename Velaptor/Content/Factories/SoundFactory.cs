@@ -37,9 +37,9 @@ internal sealed class SoundFactory : ISoundFactory
         var pushReactable = reactableFactory.CreateNoDataReactable();
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
-        var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
+        var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
         this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
-                eventId: NotificationIds.SoundDisposedId,
+                eventId: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
                 onReceiveMsg: msg =>
                 {
@@ -47,15 +47,15 @@ internal sealed class SoundFactory : ISoundFactory
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", NotificationIds.SoundDisposedId);
+                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", PushNotifications.SoundDisposedId);
                     }
 
                     this.sounds.Remove(data.SoundId);
                 }));
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }

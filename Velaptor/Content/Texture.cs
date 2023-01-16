@@ -134,10 +134,10 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
     {
-        var textureDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.TextureDisposedId));
+        var textureDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId));
 
         this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveReactor<DisposeTextureData>(
-                eventId: NotificationIds.TextureDisposedId,
+                eventId: PushNotifications.TextureDisposedId,
                 name: textureDisposeName,
                 onReceiveMsg: msg =>
                 {
@@ -145,7 +145,7 @@ public sealed class Texture : ITexture
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", NotificationIds.TextureDisposedId);
+                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", PushNotifications.TextureDisposedId);
                     }
 
                     Dispose(data);

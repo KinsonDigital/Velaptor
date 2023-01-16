@@ -175,10 +175,10 @@ public sealed class Sound : ISound
     /// <param name="soundId">The unique ID of the sound.</param>
     private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
-        var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
+        var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
         this.disposeUnsubscriber =
             disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
-                eventId: NotificationIds.SoundDisposedId,
+                eventId: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
                 onReceiveMsg: msg =>
                 {
@@ -186,7 +186,7 @@ public sealed class Sound : ISound
 
                     if (data is null)
                     {
-                        throw new PushNotificationException($"{nameof(Sound)}.Constructor()", NotificationIds.SoundDisposedId);
+                        throw new PushNotificationException($"{nameof(Sound)}.Constructor()", PushNotifications.SoundDisposedId);
                     }
 
                     Dispose(data);

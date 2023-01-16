@@ -73,17 +73,17 @@ public class LineRendererTests
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.RenderBatchBegunId)
                 {
                     return this.mockBatchBegunUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.RenderLinesId)
+                if (reactor.Id == PushNotifications.RenderLinesId)
                 {
                     return mockRenderUnsubscriber.Object;
                 }
@@ -95,17 +95,17 @@ public class LineRendererTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.RenderBatchBegunId)
                 {
                     this.batchHasBegunReactor = reactor;
                 }
 
-                if (reactor.Id == NotificationIds.RenderLinesId)
+                if (reactor.Id == PushNotifications.RenderLinesId)
                 {
                     this.renderReactor = reactor;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }

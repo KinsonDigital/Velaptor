@@ -31,9 +31,9 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
         var reactable = reactableFactory.CreateKeyboardReactable();
 
-        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.KeyboardStateChangedId));
+        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
-            eventId: NotificationIds.KeyboardStateChangedId,
+            eventId: PushNotifications.KeyboardStateChangedId,
             name: keyboardStateChangeName,
             onReceiveMsg: msg =>
             {
@@ -41,7 +41,7 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
                 if (data is null)
                 {
-                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", NotificationIds.KeyboardStateChangedId);
+                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", PushNotifications.KeyboardStateChangedId);
                 }
 
                 this.keyStates[data.Key] = data.IsDown;

@@ -37,9 +37,9 @@ internal sealed class RectBatchingManager : IBatchingManager<RectBatchItem>
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -49,7 +49,7 @@ internal sealed class RectBatchingManager : IBatchingManager<RectBatchItem>
                 {
                     throw new PushNotificationException(
                         $"{nameof(RectBatchingManager)}.Constructor()",
-                        NotificationIds.BatchSizeSetId);
+                        PushNotifications.BatchSizeSetId);
                 }
 
                 var items = new List<RectBatchItem>();
@@ -81,7 +81,7 @@ internal sealed class RectBatchingManager : IBatchingManager<RectBatchItem>
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderRectsId);
+            this.pushReactable.Push(PushNotifications.RenderRectsId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

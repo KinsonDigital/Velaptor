@@ -60,15 +60,15 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
         var pushReactable = reactableFactory.CreateNoDataReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderFontsId));
+        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
         this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderFontsId,
+            eventId: PushNotifications.RenderFontsId,
             name: batchEndName,
             onReceive: RenderBatch));
 
-        const string renderStateName = $"{nameof(FontRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
+        const string renderStateName = $"{nameof(FontRenderer)}.Ctor - {nameof(PushNotifications.RenderBatchBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderBatchBegunId,
+            eventId: PushNotifications.RenderBatchBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
     }

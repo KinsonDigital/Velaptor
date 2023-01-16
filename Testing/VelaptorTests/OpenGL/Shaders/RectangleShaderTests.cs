@@ -48,7 +48,7 @@ public class RectangleShaderTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId || reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return new Mock<IDisposable>().Object;
                 }
@@ -153,7 +153,7 @@ public class RectangleShaderTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(RectangleShader)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(null))

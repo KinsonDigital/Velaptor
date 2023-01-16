@@ -89,17 +89,17 @@ public class FontRendererTests
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.RenderBatchBegunId)
                 {
                     return this.mockBatchBegunUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.RenderFontsId)
+                if (reactor.Id == PushNotifications.RenderFontsId)
                 {
                     return mockRenderUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return mockShutDownUnsubscriber.Object;
                 }
@@ -111,17 +111,17 @@ public class FontRendererTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.RenderBatchBegunId)
                 {
                     this.batchHasBegunReactor = reactor;
                 }
 
-                if (reactor.Id == NotificationIds.RenderFontsId)
+                if (reactor.Id == PushNotifications.RenderFontsId)
                 {
                     this.renderReactor = reactor;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }

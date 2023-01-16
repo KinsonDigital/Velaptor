@@ -303,7 +303,7 @@ public class SoundCacheTests
 
         cache.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable.VerifyOnce(m =>
-            m.PushMessage(It.Ref<IMessage<DisposeSoundData>>.IsAny, NotificationIds.SoundDisposedId));
+            m.PushMessage(It.Ref<IMessage<DisposeSoundData>>.IsAny, PushNotifications.SoundDisposedId));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -366,7 +366,7 @@ public class SoundCacheTests
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.SoundDisposedId));
+        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.SoundDisposedId));
     }
     #endregion
 

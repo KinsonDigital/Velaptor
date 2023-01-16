@@ -155,7 +155,7 @@ public class MouseTests
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(Mouse)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{NotificationIds.MouseStateChangedId}'.";
+        expected += $" for subscription ID '{PushNotifications.MouseStateChangedId}'.";
 
         IReceiveReactor<MouseStateData>? reactor = null;
 

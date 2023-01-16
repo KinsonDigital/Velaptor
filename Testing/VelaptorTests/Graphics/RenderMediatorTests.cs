@@ -64,7 +64,7 @@ public class RenderMediatorTests
         {
             reactor.Should().NotBeNull();
             reactor.Name.Should().Be("RenderMediatorTests.Ctor - RenderBatchEndedId");
-            reactor.Id.Should().Be(NotificationIds.RenderBatchEndedId);
+            reactor.Id.Should().Be(PushNotifications.RenderBatchEndedId);
         }
     }
 
@@ -87,10 +87,10 @@ public class RenderMediatorTests
         reactor.OnReceive();
 
         // Assert
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderTexturesId), Times.Once);
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderRectsId), Times.Once);
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderFontsId), Times.Once);
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderLinesId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(PushNotifications.RenderTexturesId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(PushNotifications.RenderRectsId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(PushNotifications.RenderFontsId), Times.Once);
+        this.mockPushReactable.Verify(m => m.Push(PushNotifications.RenderLinesId), Times.Once);
     }
     #endregion
 }

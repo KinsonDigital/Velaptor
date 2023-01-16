@@ -324,8 +324,8 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         var glContextMsg = new GLContextMessage(this.glWindow.CreateOpenGL());
 
-        this.glReactable.PushMessage(glContextMsg, NotificationIds.GLContextCreatedId);
-        this.glReactable.Unsubscribe(NotificationIds.GLContextCreatedId);
+        this.glReactable.PushMessage(glContextMsg, PushNotifications.GLContextCreatedId);
+        this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
 
         this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
@@ -379,8 +379,8 @@ internal sealed class GLWindow : VelaptorIWindow
          * and the related GLFW window has been created and is ready to go.
          */
 
-        this.pushReactable.Push(NotificationIds.GLInitializedId);
-        this.pushReactable.Unsubscribe(NotificationIds.GLInitializedId);
+        this.pushReactable.Push(PushNotifications.GLInitializedId);
+        this.pushReactable.Unsubscribe(PushNotifications.GLInitializedId);
 
         Initialized = true;
     }
@@ -412,7 +412,7 @@ internal sealed class GLWindow : VelaptorIWindow
         WinResize?.Invoke(size);
 
         var msg = MessageFactory.CreateMessage(new ViewPortSizeData { Width = width, Height = height });
-        this.viewPortReactable.PushMessage(msg, NotificationIds.ViewPortSizeChangedId);
+        this.viewPortReactable.PushMessage(msg, PushNotifications.ViewPortSizeChangedId);
     }
 
     /// <summary>
@@ -437,7 +437,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ScrollWheelValue = 0;
 
         var msg = MessageFactory.CreateMessage(this.mouseStateData);
-        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
+        this.mouseReactable.PushMessage(msg, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -487,7 +487,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.IsDown = true;
 
         var msg = MessageFactory.CreateMessage(this.keyStateData);
-        this.keyboardReactable.PushMessage(msg, NotificationIds.KeyboardStateChangedId);
+        this.keyboardReactable.PushMessage(msg, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -502,7 +502,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.keyStateData.IsDown = false;
 
         var msg = MessageFactory.CreateMessage(this.keyStateData);
-        this.keyboardReactable.PushMessage(msg, NotificationIds.KeyboardStateChangedId);
+        this.keyboardReactable.PushMessage(msg, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -516,7 +516,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ButtonIsDown = true;
 
         var msg = MessageFactory.CreateMessage(this.mouseStateData);
-        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
+        this.mouseReactable.PushMessage(msg, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -530,7 +530,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.ButtonIsDown = false;
 
         var msg = MessageFactory.CreateMessage(this.mouseStateData);
-        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
+        this.mouseReactable.PushMessage(msg, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -549,7 +549,7 @@ internal sealed class GLWindow : VelaptorIWindow
         };
 
         var msg = MessageFactory.CreateMessage(this.mouseStateData);
-        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
+        this.mouseReactable.PushMessage(msg, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -563,7 +563,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseStateData.Y = (int)position.Y;
 
         var msg = MessageFactory.CreateMessage(this.mouseStateData);
-        this.mouseReactable.PushMessage(msg, NotificationIds.MouseStateChangedId);
+        this.mouseReactable.PushMessage(msg, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>

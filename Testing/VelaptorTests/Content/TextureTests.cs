@@ -338,7 +338,7 @@ public class TextureTests
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(Texture)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{NotificationIds.TextureDisposedId}'.";
+        expected += $" for subscription ID '{PushNotifications.TextureDisposedId}'.";
 
         var mockMessage = new Mock<IMessage<DisposeTextureData>>();
         mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))

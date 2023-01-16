@@ -94,7 +94,7 @@ public class SoundFactoryTests
     {
         // Arrange
         var expected = $"There was an issue with the '{nameof(SoundFactory)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{NotificationIds.SoundDisposedId}'.";
+        expected += $" for subscription ID '{PushNotifications.SoundDisposedId}'.";
 
         _ = CreateSystemUnderTest();
 

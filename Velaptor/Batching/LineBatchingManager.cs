@@ -37,9 +37,9 @@ internal sealed class LineBatchingManager : IBatchingManager<LineBatchItem>
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -49,7 +49,7 @@ internal sealed class LineBatchingManager : IBatchingManager<LineBatchItem>
                 {
                     throw new PushNotificationException(
                         $"{nameof(LineBatchingManager)}.Constructor()",
-                        NotificationIds.BatchSizeSetId);
+                        PushNotifications.BatchSizeSetId);
                 }
 
                 var items = new List<LineBatchItem>();
@@ -78,7 +78,7 @@ internal sealed class LineBatchingManager : IBatchingManager<LineBatchItem>
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderLinesId);
+            this.pushReactable.Push(PushNotifications.RenderLinesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

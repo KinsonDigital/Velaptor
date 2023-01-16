@@ -56,15 +56,15 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
 
         var pushReactable = reactableFactory.CreateNoDataReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderLinesId));
+        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
         this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderLinesId,
+            eventId: PushNotifications.RenderLinesId,
             name: batchEndName,
             onReceive: RenderBatch));
 
-        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
+        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.RenderBatchBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderBatchBegunId,
+            eventId: PushNotifications.RenderBatchBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
     }

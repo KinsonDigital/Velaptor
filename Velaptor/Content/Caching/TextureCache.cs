@@ -81,9 +81,9 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
         var pushReactable = reactableFactory.CreateNoDataReactable();
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }
@@ -271,7 +271,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         }
 
         var msg = MessageFactory.CreateMessage(new DisposeTextureData { TextureId = texture.Id });
-        this.disposeReactable.PushMessage(msg, NotificationIds.TextureDisposedId);
+        this.disposeReactable.PushMessage(msg, PushNotifications.TextureDisposedId);
 #if DEBUG
         AppStats.ClearLoadedFont(cacheKey);
         AppStats.RemoveLoadedTexture(texture.Id);
@@ -289,7 +289,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         }
 
         this.shutDownUnsubscriber.Dispose();
-        this.disposeReactable.Unsubscribe(NotificationIds.TextureDisposedId);
+        this.disposeReactable.Unsubscribe(PushNotifications.TextureDisposedId);
 
         this.textures.Clear();
         this.isDisposed = true;

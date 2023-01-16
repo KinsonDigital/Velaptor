@@ -54,15 +54,15 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
 
         var pushReactable = reactableFactory.CreateNoDataReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderRectsId));
+        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderRectsId));
         this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderRectsId,
+            eventId: PushNotifications.RenderRectsId,
             name: batchEndName,
             onReceive: RenderBatch));
 
-        const string renderStateName = $"{nameof(RectangleRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
+        const string renderStateName = $"{nameof(RectangleRenderer)}.Ctor - {nameof(PushNotifications.RenderBatchBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderBatchBegunId,
+            eventId: PushNotifications.RenderBatchBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
     }

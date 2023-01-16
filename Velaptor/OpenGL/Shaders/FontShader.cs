@@ -43,9 +43,9 @@ internal sealed class FontShader : ShaderProgram
 
         var reactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -53,7 +53,7 @@ internal sealed class FontShader : ShaderProgram
 
                 if (batchSize is null)
                 {
-                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", NotificationIds.BatchSizeSetId);
+                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", PushNotifications.BatchSizeSetId);
                 }
 
                 BatchSize = batchSize.Value;

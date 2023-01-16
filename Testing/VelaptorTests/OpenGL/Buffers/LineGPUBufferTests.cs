@@ -78,7 +78,7 @@ public class LineGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId || reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
@@ -91,11 +91,11 @@ public class LineGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // EMPTY ON PURPOSE.  IGNORING THIS EVENT ID
                 }
@@ -410,7 +410,7 @@ public class LineGPUBufferTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(LineGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(null))

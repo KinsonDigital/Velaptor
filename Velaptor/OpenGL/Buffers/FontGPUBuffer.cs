@@ -47,9 +47,9 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
         var reactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.batchSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -57,7 +57,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
                 if (batchSize is null)
                 {
-                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", NotificationIds.BatchSizeSetId);
+                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", PushNotifications.BatchSizeSetId);
                 }
 
                 BatchSize = batchSize.Value;

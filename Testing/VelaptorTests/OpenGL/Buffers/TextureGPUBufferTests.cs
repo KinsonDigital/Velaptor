@@ -80,7 +80,7 @@ public class TextureGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
@@ -92,7 +92,7 @@ public class TextureGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.BatchSizeSetId)
+                if (reactor.Id == PushNotifications.BatchSizeSetId)
                 {
                     return this.mockBatchSizeUnsubscriber.Object;
                 }
@@ -104,11 +104,11 @@ public class TextureGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.BatchSizeSetId)
+                if (reactor.Id == PushNotifications.BatchSizeSetId)
                 {
                     this.batchSizeReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // EMPTY ON PURPOSE. IGNORING THIS EVENT ID
                 }
@@ -432,7 +432,7 @@ public class TextureGPUBufferTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(TextureGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
 
         var mockMessage = new Mock<IMessage<BatchSizeData>>();
         mockMessage.Setup(m => m.GetData(null))

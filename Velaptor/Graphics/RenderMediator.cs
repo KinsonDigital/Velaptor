@@ -1,4 +1,4 @@
-﻿// <copyright file="RenderMediator.cs" company="KinsonDigital">
+// <copyright file="RenderMediator.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -23,10 +23,10 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.pushReactable = reactableFactory.CreateNoDataReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderBatchEndedId));
+        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderBatchEndedId));
 
         this.pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderBatchEndedId,
+            eventId: PushNotifications.RenderBatchEndedId,
             name: batchEndName,
             onReceive: CoordinateRenders));
     }
@@ -36,9 +36,9 @@ internal sealed class RenderMediator : IRenderMediator
     /// </summary>
     private void CoordinateRenders()
     {
-        this.pushReactable.Push(NotificationIds.RenderTexturesId);
-        this.pushReactable.Push(NotificationIds.RenderRectsId);
-        this.pushReactable.Push(NotificationIds.RenderFontsId);
-        this.pushReactable.Push(NotificationIds.RenderLinesId);
+        this.pushReactable.Push(PushNotifications.RenderTexturesId);
+        this.pushReactable.Push(PushNotifications.RenderRectsId);
+        this.pushReactable.Push(PushNotifications.RenderFontsId);
+        this.pushReactable.Push(PushNotifications.RenderLinesId);
     }
 }

@@ -40,9 +40,9 @@ internal sealed class FontGlyphBatchingManager : IBatchingManager<FontGlyphBatch
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -52,7 +52,7 @@ internal sealed class FontGlyphBatchingManager : IBatchingManager<FontGlyphBatch
                 {
                     throw new PushNotificationException(
                         $"{nameof(FontGlyphBatchingManager)}.Constructor()",
-                        NotificationIds.BatchSizeSetId);
+                        PushNotifications.BatchSizeSetId);
                 }
 
                 var items = new List<FontGlyphBatchItem>();
@@ -84,7 +84,7 @@ internal sealed class FontGlyphBatchingManager : IBatchingManager<FontGlyphBatch
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderFontsId);
+            this.pushReactable.Push(PushNotifications.RenderFontsId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

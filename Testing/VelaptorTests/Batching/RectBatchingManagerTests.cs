@@ -105,7 +105,7 @@ public class RectBatchingManagerTests
     {
         // Arrange
         var expectedMsg = $"There was an issue with the '{nameof(RectBatchingManager)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
+        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
             .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
@@ -194,7 +194,7 @@ public class RectBatchingManagerTests
         sut.Add(batchItem2);
 
         // Assert
-        this.mockPushReactable.Verify(m => m.Push(NotificationIds.RenderRectsId));
+        this.mockPushReactable.Verify(m => m.Push(PushNotifications.RenderRectsId));
     }
 
     [Fact]

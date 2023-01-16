@@ -38,9 +38,9 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -50,7 +50,7 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
                 {
                     throw new PushNotificationException(
                         $"{nameof(TextureBatchingManager)}.Constructor()",
-                        NotificationIds.BatchSizeSetId);
+                        PushNotifications.BatchSizeSetId);
                 }
 
                 var items = new List<TextureBatchItem>();
@@ -82,7 +82,7 @@ internal sealed class TextureBatchingManager : IBatchingManager<TextureBatchItem
 
         if (batchIsFull)
         {
-            this.pushReactable.Push(NotificationIds.RenderTexturesId);
+            this.pushReactable.Push(PushNotifications.RenderTexturesId);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());

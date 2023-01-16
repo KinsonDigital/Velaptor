@@ -45,9 +45,9 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveMsg: msg =>
             {
@@ -55,7 +55,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
 
                 if (batchSize is null)
                 {
-                    throw new PushNotificationException($"{nameof(LineGPUBuffer)}.Constructor()", NotificationIds.BatchSizeSetId);
+                    throw new PushNotificationException($"{nameof(LineGPUBuffer)}.Constructor()", PushNotifications.BatchSizeSetId);
                 }
 
                 BatchSize = batchSize.Value;
