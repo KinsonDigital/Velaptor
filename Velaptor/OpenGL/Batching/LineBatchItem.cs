@@ -4,13 +4,14 @@
 
 namespace Velaptor.OpenGL.Batching;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
 /// <summary>
 /// Represents a line with various attributes.
 /// </summary>
-internal readonly struct LineBatchItem
+internal readonly record struct LineBatchItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LineBatchItem"/> struct.
@@ -20,6 +21,10 @@ internal readonly struct LineBatchItem
     /// <param name="color">The color of the line.</param>
     /// <param name="thickness">The thickness of the line.</param>
     /// <param name="layer">The layer where the shape will be rendered.</param>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "The standard text is incorrect and says class instead of struct.")]
     public LineBatchItem(
         Vector2 p1,
         Vector2 p2,

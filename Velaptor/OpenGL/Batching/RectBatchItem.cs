@@ -4,6 +4,7 @@
 
 namespace Velaptor.OpenGL.Batching;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Graphics;
@@ -11,7 +12,7 @@ using Graphics;
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-internal readonly struct RectBatchItem
+internal readonly record struct RectBatchItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchItem"/> struct.
@@ -35,6 +36,10 @@ internal readonly struct RectBatchItem
     ///     The value of each corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </para>
     /// </remarks>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "The standard text is incorrect and says class instead of struct.")]
     public RectBatchItem(
         Vector2 position = default,
         float width = 1f,
@@ -51,40 +56,13 @@ internal readonly struct RectBatchItem
         Position = position;
         Width = width;
         Height = height;
-        Color = color == Color.Empty ? Color.White : color;
+        Color = color;
         IsFilled = isFilled;
         BorderThickness = borderThickness;
-
-        if (cornerRadius == CornerRadius.Empty())
-        {
-            CornerRadius = new CornerRadius(1, 1, 1, 1);
-        }
-        else
-        {
-            var minValue = Width > height ? width : height;
-
-            cornerRadius = cornerRadius.TopLeft > minValue
-                ? CornerRadius.SetTopLeft(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.TopRight > minValue
-                ? CornerRadius.SetTopRight(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.BottomRight > minValue
-                ? CornerRadius.SetBottomRight(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.BottomLeft > minValue
-                ? CornerRadius.SetBottomLeft(cornerRadius, minValue)
-                : cornerRadius;
-
-            CornerRadius = cornerRadius;
-        }
-
+        CornerRadius = cornerRadius;
         GradientType = gradientType;
-        GradientStart = gradientStart == Color.Empty ? Color.White : gradientStart;
-        GradientStop = gradientStop == Color.Empty ? Color.White : gradientStop;
+        GradientStart = gradientStart;
+        GradientStop = gradientStop;
         Layer = layer;
     }
 
@@ -123,7 +101,7 @@ internal readonly struct RectBatchItem
     /// <summary>
     /// Gets a value indicating whether or not the rectangle is filled with a solid color.
     /// </summary>
-    public bool IsFilled { get; } = true;
+    public bool IsFilled { get; }
 
     /// <summary>
     /// Gets the thickness of the rectangle's border.
@@ -232,7 +210,7 @@ internal readonly struct RectBatchItem
         Color.IsEmpty &&
         IsFilled is false &&
         BorderThickness <= 1f &&
-        CornerRadius.IsEmpty() &&
+        CornerRadius is { TopLeft: <= 1, TopRight: <= 1, BottomRight: <= 1, BottomLeft: <= 1 } &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
         GradientStop.IsEmpty &&

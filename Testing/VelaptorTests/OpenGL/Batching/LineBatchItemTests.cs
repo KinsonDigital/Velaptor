@@ -19,13 +19,14 @@ public class LineBatchItemTests
 #pragma warning disable SA1514
     #region TestData
     /// <summary>
-    /// Provides test data for the <see cref="Ctor_WhenInvoked_CorrectlySetsPropertyValues"/> test.
+    /// Gets all of the test data related to testing the <see cref="IsEmptyTestData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
     public static IEnumerable<object[]> IsEmptyTestData()
     {
         yield return new object[]
         {
+            // FULLY EMPTY
             Vector2.Zero, // P1
             Vector2.Zero, // P2
             Color.Empty, // Color
@@ -35,7 +36,7 @@ public class LineBatchItemTests
         };
         yield return new object[]
         {
-            new Vector2(1, 2),
+            new Vector2(1, 2), // NOT EMPTY HERE
             Vector2.Zero,
             Color.Empty,
             0f,
@@ -45,7 +46,7 @@ public class LineBatchItemTests
         yield return new object[]
         {
             Vector2.Zero,
-            new Vector2(1, 2),
+            new Vector2(1, 2), // NOT EMPTY HERE
             Color.Empty,
             0f,
             0,
@@ -55,7 +56,7 @@ public class LineBatchItemTests
         {
             Vector2.Zero,
             Vector2.Zero,
-            Color.FromArgb(1, 2, 3, 4),
+            Color.FromArgb(1, 2, 3, 4), // NOT EMPTY HERE
             0f,
             0,
             false,
@@ -65,7 +66,7 @@ public class LineBatchItemTests
             Vector2.Zero,
             Vector2.Zero,
             Color.Empty,
-            1f,
+            1f, // NOT EMPTY HERE
             0,
             false,
         };
@@ -75,7 +76,7 @@ public class LineBatchItemTests
             Vector2.Zero,
             Color.Empty,
             0f,
-            1,
+            1, // NOT EMPTY HERE
             false,
         };
     }

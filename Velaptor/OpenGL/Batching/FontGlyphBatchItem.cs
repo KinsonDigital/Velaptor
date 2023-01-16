@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL.Batching;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -14,7 +13,7 @@ using Graphics;
 /// <summary>
 /// A single item in a batch of glyph items that can be rendered to the screen.
 /// </summary>
-internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
+internal readonly record struct FontGlyphBatchItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchItem"/> struct.
@@ -28,6 +27,10 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// <param name="effects">The type of effects to apply to the glyph texture when rendering.</param>
     /// <param name="textureId">The ID of the font atlas texture.</param>
     /// <param name="layer">The layer where the shape will be rendered.</param>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "The standard text is incorrect and says class instead of struct.")]
     public FontGlyphBatchItem(
         RectangleF srcRect,
         RectangleF destRect,
@@ -126,22 +129,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     public int Layer { get; }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are equal.</returns>
-    public static bool operator ==(FontGlyphBatchItem left, FontGlyphBatchItem right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are not equal.</returns>
-    public static bool operator !=(FontGlyphBatchItem left, FontGlyphBatchItem right) => !(left == right);
-
-    /// <summary>
     /// Gets a value indicating whether or not the current <see cref="FontGlyphBatchItem"/> is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
@@ -155,36 +142,6 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         SrcRect.IsEmpty &&
         DestRect.IsEmpty &&
         TintColor.IsEmpty;
-
-    /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
-    public bool Equals(FontGlyphBatchItem other) =>
-        SrcRect.Equals(other.SrcRect) &&
-        DestRect.Equals(other.DestRect) &&
-        Size.Equals(other.Size) &&
-        Angle.Equals(other.Angle) &&
-        TintColor.Equals(other.TintColor) &&
-        Effects == other.Effects &&
-        TextureId == other.TextureId &&
-        Glyph == other.Glyph &&
-        Layer == other.Layer;
-
-    /// <inheritdoc cref="object.Equals(object?)"/>
-    public override bool Equals(object? obj) => obj is FontGlyphBatchItem other && Equals(other);
-
-    /// <inheritdoc cref="object.GetHashCode"/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-        => HashCode.Combine(
-            HashCode.Combine(
-                SrcRect,
-                DestRect,
-                Size,
-                Angle,
-                TintColor,
-                (int)Effects,
-                TextureId),
-            Glyph,
-            Layer);
 
     /// <inheritdoc/>
     public override string ToString()

@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL.Batching;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -14,7 +13,7 @@ using Graphics;
 /// <summary>
 /// A single texture batch item that can be rendered to the screen.
 /// </summary>
-internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
+internal readonly record struct TextureBatchItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchItem"/> struct.
@@ -27,6 +26,10 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <param name="effects">The type of effects to apply to a texture.</param>
     /// <param name="textureId">The ID of the texture.</param>
     /// <param name="layer">The layer where a texture will be rendered.</param>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "The standard text is incorrect and says class instead of struct.")]
     public TextureBatchItem(
         in
         RectangleF srcRect,
@@ -117,22 +120,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     public int Layer { get; }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are equal.</returns>
-    public static bool operator ==(TextureBatchItem left, TextureBatchItem right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are not equal.</returns>
-    public static bool operator !=(TextureBatchItem left, TextureBatchItem right) => !(left == right);
-
-    /// <summary>
     /// Gets a value indicating whether or not the current <see cref="TextureBatchItem"/> is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
@@ -145,34 +132,6 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
         SrcRect.IsEmpty &&
         DestRect.IsEmpty &&
         TintColor.IsEmpty;
-
-    /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
-    public bool Equals(TextureBatchItem other) =>
-        SrcRect.Equals(other.SrcRect) &&
-        DestRect.Equals(other.DestRect) &&
-        Size.Equals(other.Size) &&
-        Angle.Equals(other.Angle) &&
-        TintColor.Equals(other.TintColor) &&
-        Effects == other.Effects &&
-        TextureId == other.TextureId &&
-        Layer == other.Layer;
-
-    /// <inheritdoc cref="object.Equals(object?)"/>
-    public override bool Equals(object? obj) => obj is TextureBatchItem other && Equals(other);
-
-    /// <inheritdoc cref="object.GetHashCode"/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-        => HashCode.Combine(
-            HashCode.Combine(
-            SrcRect,
-            DestRect,
-            Size,
-            Angle,
-            TintColor,
-            (int)Effects,
-            TextureId),
-            Layer);
 
     /// <inheritdoc/>
     public override string ToString()

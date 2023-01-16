@@ -18,279 +18,176 @@ using Xunit;
 public class FontGlyphBatchItemTests
 {
     /// <summary>
-    /// Gets all of the test data related to testing the end result
-    /// values for the batch items to be rendered.
+    /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> GetBatchItemData()
+    public static IEnumerable<object[]> IsEmptyData()
     {
         yield return new object[]
         {
-            1, // Angle
+            // FULLY EMPTY
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            true, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            true, // Expected Result
         };
         yield return new object[]
         {
-            45, // Angle <-- THIS ONE IS DIFFERENT
+            new RectangleF(10, 20, 30, 40), // Dest Rect - NON-EMPTY VALUE
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
-            RenderEffects.FlipHorizontally, //Render Effects <-- THIS ONE IS DIFFERENT
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            RectangleF.Empty, // Dest Rect
+            new RectangleF(10, 20, 30, 40), // Src Rect - NON-EMPTY VALUE
+            'V', // Glyph - NON-EMPTY VALUE
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
+            RenderEffects.None, //Render Effects
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            'V', // Glyph - NON-EMPTY VALUE
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            20, // Size <-- THIS ONE IS DIFFERENT
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            10, // Size - NON-EMPTY VALUE
+            0, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(33, 44, 55, 66), // Dest Rect <-- THIS ONE IS DIFFERENT
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            10, // Angle - NON-EMPTY VALUE
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(77, 88, 99, 100), // Src Rect <-- THIS ONE IS DIFFERENT
-            11, // TextureId
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.FromArgb(10, 20, 30, 40), // Tint Color - NON-EMPTY VALUE
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            111, // TextureId <-- THIS ONE IS DIFFERENT
-            Color.FromArgb(12, 13, 14, 15), // Tint Color
-            false, // Expected Equal Result
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
         };
         yield return new object[]
         {
-            1, // Angle
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
+            RenderEffects.FlipHorizontally, //Render Effects - NON-EMPTY VALUE
+            0, // TextureId
+            0, // Layer
+            false, // Expected Result
+        };
+        yield return new object[]
+        {
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            2, // Size
-            new RectangleF(3, 4, 5, 6), // Dest Rect
-            new RectangleF(7, 8, 9, 10), // Src Rect
-            11, // TextureId
-            Color.FromArgb(120, 130, 140, 150), // Tint Color <-- THIS ONE IS DIFFERENT
-            false, // Expected Equal Result
+            10, // TextureId - NON-EMPTY VALUE
+            0, // Layer
+            false, // Expected Result
+        };
+        yield return new object[]
+        {
+            RectangleF.Empty, // Dest Rect
+            RectangleF.Empty, // Src Rect
+            '\0', // Glyph
+            0, // Size
+            0, // Angle
+            Color.Empty, // Tint Color
+            RenderEffects.None, //Render Effects
+            0, // TextureId
+            10, // Layer - NON-EMPTY VALUE
+            false, // Expected Result
         };
     }
 
     #region Method Tests
-    [Fact]
-    public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue()
-    {
-        // Arrange
-        var item = default(FontGlyphBatchItem);
-
-        // Act
-        var actual = item.IsEmpty();
-
-        // Assert
-        Assert.True(actual);
-    }
-
     [Theory]
-    [MemberData(nameof(GetBatchItemData))]
-    public void Equals_WhenUsingBatchItemParamOverload_ReturnsCorrectResult(
-        float angle,
-        RenderEffects effects,
-        float size,
-        RectangleF destRect,
+    [MemberData(nameof(IsEmptyData))]
+    public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue(
         RectangleF srcRect,
-        uint textureId,
+        RectangleF destRect,
+        char glyph,
+        float size,
+        float angle,
         Color tintColor,
+        RenderEffects effects,
+        uint textureId,
+        int layer,
         bool expected)
     {
         // Arrange
-        var batchItemA = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        var batchItemB = new FontGlyphBatchItem(
+        var sut = new FontGlyphBatchItem(
             srcRect,
             destRect,
-            'g',
+            glyph,
             size,
             angle,
             tintColor,
             effects,
             textureId,
-            0);
+            layer);
 
         // Act
-        var actual = batchItemA.Equals(batchItemB);
+        var actual = sut.IsEmpty();
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void EqualsOperator_WithEqualOperands_ReturnsTrue()
-    {
-        // Arrange
-        var batchItemA = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        var batchItemB = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        // Act
-        var actual = batchItemA == batchItemB;
-
-        // Assert
-        Assert.True(actual);
-    }
-
-    [Fact]
-    public void NotEqualsOperator_WithUnequalOperands_ReturnsTrue()
-    {
-        // Arrange
-        var batchItemA = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        var batchItemB = new FontGlyphBatchItem(
-            new RectangleF(77, 88, 99, 100),
-            new RectangleF(33, 44, 55, 66),
-            'g',
-            22,
-            11,
-            Color.FromArgb(120, 130, 140, 150),
-            RenderEffects.None,
-            110,
-            0);
-
-        // Act
-        var actual = batchItemA != batchItemB;
-
-        // Assert
-        Assert.True(actual);
-    }
-
-    [Fact]
-    public void Equals_WhenUsingObjectParamOverloadWithMatchingType_ReturnsTrue()
-    {
-        // Arrange
-        var batchItemA = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        object batchItemB = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        // Act
-        var actual = batchItemA.Equals(batchItemB);
-
-        // Assert
-        Assert.True(actual);
-    }
-
-    [Fact]
-    public void Equals_WhenUsingObjectParamOverloadWithDifferentType_ReturnsFalse()
-    {
-        // Arrange
-        var batchItemA = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'g',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11,
-            0);
-
-        var batchItemB = new object();
-
-        // Act
-        var actual = batchItemA.Equals(batchItemB);
-
-        // Assert
-        Assert.False(actual);
     }
 
     [Fact]
