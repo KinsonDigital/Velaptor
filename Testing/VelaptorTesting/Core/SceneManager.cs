@@ -240,7 +240,6 @@ public sealed class SceneManager : IUpdatable, IDisposable
         this.previousButton.Render();
 
         IRenderer.End();
-        // this.renderer.End();
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
