@@ -5,7 +5,6 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -15,7 +14,6 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
@@ -437,27 +435,6 @@ public class GPUBufferBaseTests
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
-    [Fact]
-    public void ViewPortSizeReactable_WithNullMessage_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the 'GPUBufferBase.Constructor()' subscription source";
-        expected += $" for subscription ID '{PushNotifications.ViewPortSizeChangedId}'.";
-
-        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.viewPortSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
     }
 
     [Fact]

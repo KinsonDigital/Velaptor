@@ -6,14 +6,11 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.ReactableData;
@@ -64,36 +61,6 @@ public class KeyboardTests
         this.mockKeyboardReactable.VerifyOnce(m =>
             m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()));
     }
-
-    [Fact]
-    public void Ctor_WithNullMessageData_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the '{nameof(Keyboard)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{PushNotifications.KeyboardStateChangedId}'.";
-
-        IReceiveReactor<KeyboardKeyStateData>? reactor = null;
-
-        var mockMessage = new Mock<IMessage<KeyboardKeyStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()))
-            .Callback<IReceiveReactor<KeyboardKeyStateData>>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
-                reactor = reactorObj;
-            });
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => reactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
-    }
     #endregion
 
     #region Method Tests
@@ -111,18 +78,14 @@ public class KeyboardTests
             IsDown = true,
         };
 
-        var mockMessage = new Mock<IMessage<KeyboardKeyStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => keyState);
-
         this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()))
             .Callback<IReceiveReactor<KeyboardKeyStateData>>(reactorObj =>
             {
                 reactor = reactorObj;
-            });
+             });
 
         var sut = CreateSystemUnderTest();
-        reactor.OnReceive(mockMessage.Object);
+        reactor.OnReceive(keyState);
 
         // Act
         var actual = sut.GetState().GetKeyStates();

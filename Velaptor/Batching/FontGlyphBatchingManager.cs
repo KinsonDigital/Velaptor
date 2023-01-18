@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
-using Exceptions;
 using Factories;
 using Guards;
 using OpenGL.Batching;
@@ -44,20 +43,11 @@ internal sealed class FontGlyphBatchingManager : IBatchingManager<FontGlyphBatch
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException(
-                        $"{nameof(FontGlyphBatchingManager)}.Constructor()",
-                        PushNotifications.BatchSizeSetId);
-                }
-
                 var items = new List<FontGlyphBatchItem>();
 
-                for (var i = 0u; i < batchSize; i++)
+                for (var i = 0u; i < data.BatchSize; i++)
                 {
                     items.Add(default);
                 }

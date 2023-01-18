@@ -7,15 +7,12 @@ namespace VelaptorTests.Content;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Velaptor;
 using Velaptor.Content;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
@@ -334,38 +331,15 @@ public class TextureTests
 
     #region Method Tests
     [Fact]
-    public void ReactableNotifications_WhenMessageIsNull_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the '{nameof(Texture)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{PushNotifications.TextureDisposedId}'.";
-
-        var mockMessage = new Mock<IMessage<DisposeTextureData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.disposeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
-    }
-
-    [Fact]
     public void ReactableNotifications_WithDifferentTextureID_DoesNotDisposeOfTexture()
     {
         // Arrange
-        var mockMessage = new Mock<IMessage<DisposeTextureData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => new DisposeTextureData { TextureId = 456u });
+        var disposeTextureData = new DisposeTextureData { TextureId = 456u };
 
         CreateSystemUnderTest();
 
         // Act
-        this.disposeReactor?.OnReceive(mockMessage.Object);
+        this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(It.IsAny<uint>()), Times.Never);
@@ -376,14 +350,12 @@ public class TextureTests
     public void ReactableNotifications_WhenPushingDisposeTextureNotification_DisposesOfTexture()
     {
         // Arrange
-        var mockMessage = new Mock<IMessage<DisposeTextureData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => new DisposeTextureData { TextureId = TextureId });
+        var disposeTextureData = new DisposeTextureData { TextureId = TextureId };
 
         CreateSystemUnderTest();
 
         // Act
-        this.disposeReactor?.OnReceive(mockMessage.Object);
+        this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());

@@ -13,7 +13,6 @@ using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Guards;
 using ReactableData;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 
 /// <summary>
@@ -41,15 +40,8 @@ internal sealed class SoundFactory : ISoundFactory
         this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
                 eventId: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
-                onReceiveMsg: msg =>
+                onReceiveData: data =>
                 {
-                    var data = msg.GetData();
-
-                    if (data is null)
-                    {
-                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", PushNotifications.SoundDisposedId);
-                    }
-
                     this.sounds.Remove(data.SoundId);
                 }));
 

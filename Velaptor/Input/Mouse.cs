@@ -39,15 +39,8 @@ internal sealed class Mouse : IAppInput<MouseState>
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<MouseStateData>(
             eventId: PushNotifications.MouseStateChangedId,
             name: mouseStateChangeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var data = msg.GetData();
-
-                if (data is null)
-                {
-                    throw new PushNotificationException($"{nameof(Mouse)}.Constructor()", PushNotifications.MouseStateChangedId);
-                }
-
                 this.xPos = data.X;
                 this.yPos = data.Y;
                 this.mouseScrollDirection = data.ScrollDirection;

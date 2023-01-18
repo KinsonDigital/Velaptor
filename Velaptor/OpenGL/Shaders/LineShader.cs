@@ -11,7 +11,6 @@ using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Services;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// A line shader used to render 2D lines.
@@ -46,16 +45,9 @@ internal sealed class LineShader : ShaderProgram
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(LineShader)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

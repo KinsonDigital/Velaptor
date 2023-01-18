@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Exceptions;
@@ -270,8 +269,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        var msg = MessageFactory.CreateMessage(new DisposeTextureData { TextureId = texture.Id });
-        this.disposeReactable.PushMessage(msg, PushNotifications.TextureDisposedId);
+        this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
 #if DEBUG
         AppStats.ClearLoadedFont(cacheKey);
         AppStats.RemoveLoadedTexture(texture.Id);

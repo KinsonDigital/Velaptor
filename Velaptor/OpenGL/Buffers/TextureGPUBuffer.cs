@@ -53,16 +53,9 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(TextureGPUBuffer)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

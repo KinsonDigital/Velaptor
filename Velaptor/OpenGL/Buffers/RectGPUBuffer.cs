@@ -18,7 +18,6 @@ using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Updates data in the rectangle GPU buffer.
@@ -52,16 +51,9 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(RectGPUBuffer)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

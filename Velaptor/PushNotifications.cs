@@ -5,7 +5,6 @@
 namespace Velaptor;
 
 using System;
-using Carbonate.Core;
 
 /// <summary>
 /// Contains unique GUIDs for the push notification system.

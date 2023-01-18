@@ -6,7 +6,6 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
-using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using NativeInterop.OpenGL;
@@ -71,8 +70,7 @@ public interface IRenderer
                 GLInvoker.Enable(GLEnableCap.Blend);
                 GLInvoker.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-                var msg = MessageFactory.CreateMessage(new BatchSizeData { BatchSize = BatchSize });
-                batchSizeReactable.PushMessage(msg, PushNotifications.BatchSizeSetId);
+                batchSizeReactable.Push(new BatchSizeData { BatchSize = BatchSize }, PushNotifications.BatchSizeSetId);
                 PushReactable.Unsubscribe(PushNotifications.BatchSizeSetId);
 
                 if (cachedClearColor is not null)

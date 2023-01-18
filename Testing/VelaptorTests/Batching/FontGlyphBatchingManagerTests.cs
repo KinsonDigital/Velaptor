@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
@@ -17,7 +16,6 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
@@ -79,13 +77,11 @@ public class FontGlyphBatchingManagerTests
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange & Act
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 4u });
+        var batchSizeData = new BatchSizeData { BatchSize = 4 };
 
         var sut = CreateService();
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -103,35 +99,6 @@ public class FontGlyphBatchingManagerTests
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
-    }
-
-    [Fact]
-    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(FontGlyphBatchingManager)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
-
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
-
-                this.batchSizeReactor = reactorObj;
-            });
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateService();
-
-        // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
     }
     #endregion
 
@@ -201,12 +168,10 @@ public class FontGlyphBatchingManagerTests
             0,
             0);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 1u });
+        var batchSizeData = new BatchSizeData { BatchSize = 1 };
 
         var service = CreateService();
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
         service.Add(batchItem1);
 
         // Act
@@ -241,12 +206,10 @@ public class FontGlyphBatchingManagerTests
             0,
             0);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 2u });
+        var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
         var service = CreateService();
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
         service.Add(batchItem1);
         service.Add(batchItem2);
 
@@ -264,12 +227,10 @@ public class FontGlyphBatchingManagerTests
         var batchItem1 = default(FontGlyphBatchItem);
         var batchItem2 = default(FontGlyphBatchItem);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 2u });
+        var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
         var service = CreateService();
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
         service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act

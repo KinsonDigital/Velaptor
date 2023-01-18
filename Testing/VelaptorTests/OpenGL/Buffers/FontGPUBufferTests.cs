@@ -6,7 +6,6 @@ namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
 using System.Drawing;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -15,7 +14,6 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
@@ -148,27 +146,6 @@ public class FontGPUBufferTests
             .Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
-
-    [Fact]
-    public void Ctor_WhenReactableNotificationHasAnIssue_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(FontGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
-    }
     #endregion
 
     #region Method Tests
@@ -234,14 +211,12 @@ public class FontGPUBufferTests
             1,
             0);
 
-        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = 800, Height = 600 });
+        var viewPortSizeData = new ViewPortSizeData { Width = 800, Height = 600 };
 
         var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnReceive();
-        this.viewPortSizeReactor.OnReceive(mockMessage.Object);
+        this.viewPortSizeReactor.OnReceive(viewPortSizeData);
 
         // Act
         sut.UploadVertexData(batchItem, 0u);
@@ -299,11 +274,9 @@ public class FontGPUBufferTests
 
         this.glInitReactor.OnReceive();
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = BatchSize });
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Act
         var actual = sut.GenerateData();

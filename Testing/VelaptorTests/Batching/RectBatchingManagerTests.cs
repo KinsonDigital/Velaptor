@@ -10,14 +10,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Core;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
@@ -75,12 +73,10 @@ public class RectBatchingManagerTests
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange & Act
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 4u });
+        var batchSizeData = new BatchSizeData { BatchSize = 4 };
 
         var sut = CreateSystemUnderTest();
-        this.reactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(batchSizeData);
 
         // Assert
         sut.BatchItems.Should().HaveCount(4);
@@ -98,35 +94,6 @@ public class RectBatchingManagerTests
 
         // Assert
         this.mockUnsubscriber.Verify(m => m.Dispose());
-    }
-
-    [Fact]
-    public void Ctor_WhenBatchSizeNotificationHasAnIssue_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(RectBatchingManager)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
-
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
-
-                this.reactor = reactorObj;
-            });
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.reactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
     }
     #endregion
 
@@ -181,13 +148,11 @@ public class RectBatchingManagerTests
         var batchItem1 = new RectBatchItem(width: 10, height: 20);
         var batchItem2 = new RectBatchItem(width: 30, height: 40);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 1u });
+        var batchSizeData = new BatchSizeData { BatchSize = 1 };
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(batchSizeData);
         sut.Add(batchItem1);
 
         // Act
@@ -204,13 +169,11 @@ public class RectBatchingManagerTests
         var batchItem1 = new RectBatchItem(width: 10);
         var batchItem2 = new RectBatchItem(width: 20);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 2u });
+        var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(batchSizeData);
 
         sut.Add(batchItem1);
         sut.Add(batchItem2);
@@ -229,13 +192,11 @@ public class RectBatchingManagerTests
         var batchItem1 = default(RectBatchItem);
         var batchItem2 = default(RectBatchItem);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 2u });
+        var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
         var sut = CreateSystemUnderTest();
 
-        this.reactor.OnReceive(mockMessage.Object);
+        this.reactor.OnReceive(batchSizeData);
 
         sut.BatchItems = new List<RectBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 

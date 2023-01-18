@@ -12,7 +12,6 @@ using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -70,17 +69,8 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
             eventId: PushNotifications.ViewPortSizeChangedId,
             name: viewPortName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var data = msg.GetData();
-
-                if (data is null)
-                {
-                    throw new PushNotificationException(
-                        $"{nameof(GPUBufferBase<TData>)}.Constructor()",
-                        PushNotifications.ViewPortSizeChangedId);
-                }
-
                 ViewPortSize = new SizeU(data.Width, data.Height);
             }, onUnsubscribe: () => this.viewPortSizeUnsubscriber?.Dispose()));
 

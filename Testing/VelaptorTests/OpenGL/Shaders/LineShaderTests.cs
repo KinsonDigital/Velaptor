@@ -6,7 +6,6 @@ namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
 using System.Linq;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -15,7 +14,6 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
@@ -131,38 +129,15 @@ public class LineShaderTests
     }
 
     [Fact]
-    public void BatchSizeReactable_WhenNotificationHasAnIssue_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(LineShader)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{PushNotifications.BatchSizeSetId}'.";
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
-    }
-
-    [Fact]
     public void BatchSizeReactable_WhenReceivingBatchSizeNotification_SetsBatchSize()
     {
         // Arrange
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = 123u });
+        var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
         var shader = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
         var actual = shader.BatchSize;
 
         // Assert

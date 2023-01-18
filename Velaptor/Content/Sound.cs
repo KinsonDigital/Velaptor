@@ -11,7 +11,6 @@ using CASL;
 using Factories;
 using Guards;
 using ReactableData;
-using Velaptor.Exceptions;
 using CASLSound = CASL.Sound;
 
 /// <summary>
@@ -180,17 +179,7 @@ public sealed class Sound : ISound
             disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
                 eventId: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
-                onReceiveMsg: msg =>
-                {
-                    var data = msg.GetData();
-
-                    if (data is null)
-                    {
-                        throw new PushNotificationException($"{nameof(Sound)}.Constructor()", PushNotifications.SoundDisposedId);
-                    }
-
-                    Dispose(data);
-                },
+                onReceiveData: Dispose,
                 onUnsubscribe: () => Dispose(new DisposeSoundData { SoundId = Id })));
 
         this.sound = new CASLSound(filePath);

@@ -17,7 +17,6 @@ using GPUData;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Updates font data in the GPU buffer.
@@ -51,16 +50,9 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         this.batchSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(FontGPUBuffer)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.batchSizeUnsubscriber?.Dispose()));
     }

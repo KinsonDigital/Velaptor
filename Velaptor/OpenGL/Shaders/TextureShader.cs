@@ -11,7 +11,6 @@ using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Services;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// A texture shader used to render 2D textures.
@@ -47,16 +46,9 @@ internal sealed class TextureShader : ShaderProgram
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(TextureShader)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

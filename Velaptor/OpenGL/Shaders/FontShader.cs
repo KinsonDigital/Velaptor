@@ -11,7 +11,6 @@ using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Services;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// A shader used to render text of a particular font.
@@ -47,16 +46,9 @@ internal sealed class FontShader : ShaderProgram
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(FontShader)}.Constructor()", PushNotifications.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content.Factories;
 
 using System;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -13,9 +12,7 @@ using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Velaptor;
 using Velaptor.Content.Factories;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.ReactableData;
 using Xunit;
@@ -85,29 +82,6 @@ public class SoundFactoryTests
         act.Should()
             .Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
-    }
-    #endregion
-
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WhenOnNextMessageHasNullData_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the '{nameof(SoundFactory)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{PushNotifications.SoundDisposedId}'.";
-
-        _ = CreateSystemUnderTest();
-
-        var mockMessage = new Mock<IMessage<DisposeSoundData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        // Act
-        var act = () => this.disposeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
     }
     #endregion
 

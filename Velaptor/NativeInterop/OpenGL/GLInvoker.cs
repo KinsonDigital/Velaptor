@@ -48,11 +48,9 @@ internal sealed class GLInvoker : IGLInvoker
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<GL>(
             eventId: PushNotifications.GLContextCreatedId,
             name: glContextName,
-            onReceiveMsg: msg =>
+            onReceiveData: glObj =>
             {
-                var possibleGLObj = msg.GetData();
-
-                this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
+                this.gl = glObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
 

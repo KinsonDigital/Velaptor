@@ -11,7 +11,6 @@ using Carbonate.UniDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -77,11 +76,9 @@ public class MouseTests
 
         var sut = CreateSystemUnderTest();
 
-        var mockMessage = new Mock<IMessage<MouseStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new MouseStateData { X = 11, Y = 22 });
+        var mouseStateData = new MouseStateData { X = 11, Y = 22 };
 
-        reactor?.OnReceive(mockMessage.Object);
+        reactor?.OnReceive(mouseStateData);
 
         // Act
         var actual = sut.GetState();
@@ -109,11 +106,9 @@ public class MouseTests
 
         var sut = CreateSystemUnderTest();
 
-        var mockMessage = new Mock<IMessage<MouseStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new MouseStateData { Button = mouseButton, ButtonIsDown = true });
+        var mouseStateData = new MouseStateData { Button = mouseButton, ButtonIsDown = true };
 
-        reactor?.OnReceive(mockMessage.Object);
+        reactor?.OnReceive(mouseStateData);
 
         // Act
         var actual = sut.GetState();
@@ -136,11 +131,9 @@ public class MouseTests
 
         var sut = CreateSystemUnderTest();
 
-        var mockMessage = new Mock<IMessage<MouseStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new MouseStateData { ScrollDirection = MouseScrollDirection.ScrollDown, ScrollWheelValue = 33 });
+        var mouseStateData = new MouseStateData { ScrollDirection = MouseScrollDirection.ScrollDown, ScrollWheelValue = 33 };
 
-        reactor?.OnReceive(mockMessage.Object);
+        reactor?.OnReceive(mouseStateData);
 
         // Act
         var actual = sut.GetState();
@@ -148,36 +141,6 @@ public class MouseTests
         // Assert
         Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
         Assert.Equal(33, actual.GetScrollWheelValue());
-    }
-
-    [Fact]
-    public void PushReactable_WhenOnNextMessageIsNull_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the '{nameof(Mouse)}.Constructor()' subscription source";
-        expected += $" for subscription ID '{PushNotifications.MouseStateChangedId}'.";
-
-        IReceiveReactor<MouseStateData>? reactor = null;
-
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<MouseStateData>>()))
-            .Callback<IReceiveReactor<MouseStateData>>(reactorObj =>
-            {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
-                reactor = reactorObj;
-            });
-
-        var mockMessage = new Mock<IMessage<MouseStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => reactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
     }
 
     [Fact]
@@ -195,17 +158,12 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouseStateData = new MouseStateData();
-        mouseStateData.Button = (MouseButton)1234;
-
-        var mockMessage = new Mock<IMessage<MouseStateData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => mouseStateData);
+        var mouseStateData = new MouseStateData { Button = (MouseButton)1234 };
 
         _ = CreateSystemUnderTest();
 
         // Act
-        var act = () => reactor.OnReceive(mockMessage.Object);
+        var act = () => reactor.OnReceive(mouseStateData);
 
         // Assert
         act.Should().Throw<EnumOutOfRangeException>()

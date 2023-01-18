@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Exceptions;
@@ -153,8 +152,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
             return;
         }
 
-        var msg = MessageFactory.CreateMessage(new DisposeSoundData { SoundId = sound.Id });
-        this.disposeReactable.PushMessage(msg, PushNotifications.SoundDisposedId);
+        this.disposeReactable.Push(new DisposeSoundData { SoundId = sound.Id }, PushNotifications.SoundDisposedId);
     }
 
     /// <summary>

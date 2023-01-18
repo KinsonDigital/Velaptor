@@ -7,7 +7,6 @@ namespace VelaptorTests.Content.Caching;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
@@ -285,11 +284,11 @@ public class SoundCacheTests
             .Returns(mockSound.Object);
 
         this.mockDisposeReactable.Setup(m =>
-                m.PushMessage(It.Ref<IMessage<DisposeSoundData>>.IsAny, It.IsAny<Guid>()))
-            .Callback((in IMessage<DisposeSoundData> msg, Guid _) =>
+                m.Push(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()))
+            .Callback((in DisposeSoundData data, Guid _) =>
             {
-                msg.Should().NotBeNull("it is required for unit testing.");
-                actual = msg.GetData();
+                data.Should().NotBeNull("it is required for unit testing.");
+                actual = data;
             });
 
         var cache = CreateCache();
@@ -303,7 +302,7 @@ public class SoundCacheTests
 
         cache.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable.VerifyOnce(m =>
-            m.PushMessage(It.Ref<IMessage<DisposeSoundData>>.IsAny, PushNotifications.SoundDisposedId));
+            m.Push(It.Ref<DisposeSoundData>.IsAny, PushNotifications.SoundDisposedId));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -323,7 +322,7 @@ public class SoundCacheTests
 
         // Assert
         this.mockDisposeReactable.VerifyNever(m =>
-            m.PushMessage(It.Ref<IMessage<DisposeSoundData>>.IsAny, It.IsAny<Guid>()));
+            m.Push(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()));
     }
     #endregion
 
