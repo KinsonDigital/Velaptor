@@ -182,8 +182,7 @@ public class RectangleRendererTests
             CornerRadius.Empty(),
             ColorGradient.None,
             Color.Magenta,
-            Color.Magenta,
-            0);
+            Color.Magenta);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -224,8 +223,7 @@ public class RectangleRendererTests
             new CornerRadius(6f, 7f, 8f, 9f),
             ColorGradient.Horizontal,
             Color.FromArgb(11, 22, 33, 44),
-            Color.FromArgb(55, 66, 77, 88),
-            0);
+            Color.FromArgb(55, 66, 77, 88));
 
         var shouldNotRenderEmptyItem = default(RectBatchItem);
 

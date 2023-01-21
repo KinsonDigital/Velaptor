@@ -375,8 +375,7 @@ public class TextureRendererTests
             45,
             Color.Empty,
             RenderEffects.None,
-            TextureId,
-            0);
+            TextureId);
 
         var itemB = new TextureBatchItem(
             RectangleF.Empty,
@@ -385,8 +384,7 @@ public class TextureRendererTests
             90,
             Color.Empty,
             RenderEffects.None,
-            TextureId,
-            1);
+            TextureId);
 
         var shouldNotRenderItem = default(TextureBatchItem);
         var items = new[] { itemA, itemB, shouldNotRenderItem };
@@ -456,8 +454,7 @@ public class TextureRendererTests
             0f,
             clr,
             effects,
-            (uint)textureId,
-            0);
+            (uint)textureId);
 
         return result;
     }

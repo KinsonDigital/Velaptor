@@ -303,8 +303,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
                     angle,
                     color,
                     RenderEffects.None,
-                    font.Atlas.Id,
-                    layer);
+                    font.Atlas.Id);
 
                 result.Add(itemToAdd);
             }
@@ -343,7 +342,6 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
-            .OrderBy(i => i.Layer)
             .ToArray();
 
         // Only if items are available to render

@@ -112,8 +112,7 @@ public class RectBatchingManagerTests
             new CornerRadius(10, 11, 12, 13),
             ColorGradient.None,
             Color.FromArgb(14, 15, 16, 17),
-            Color.FromArgb(18, 19, 20, 21),
-            0);
+            Color.FromArgb(18, 19, 20, 21));
         var batchItem2 = new RectBatchItem(
             new Vector2(22f, 23f),
             24f,
@@ -124,8 +123,7 @@ public class RectBatchingManagerTests
             new CornerRadius(31, 32, 33, 34),
             ColorGradient.None,
             Color.FromArgb(35, 36, 37, 38),
-            Color.FromArgb(39, 40, 41, 42),
-            0);
+            Color.FromArgb(39, 40, 41, 42));
 
         var batchItems = new List<RectBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<RectBatchItem>(batchItems.ToReadOnlyCollection());

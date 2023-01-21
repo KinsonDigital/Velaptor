@@ -115,8 +115,7 @@ public class FontGlyphBatchingManagerTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            11,
-            12);
+            11);
         var batchItem2 = new FontGlyphBatchItem(
             new RectangleF(20, 21, 22, 23),
             new RectangleF(24, 25, 26, 27),
@@ -125,8 +124,7 @@ public class FontGlyphBatchingManagerTests
             18,
             Color.FromArgb(29, 30, 31, 32),
             RenderEffects.FlipHorizontally,
-            28,
-            35);
+            28);
 
         var batchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems.ToReadOnlyCollection());
@@ -155,7 +153,6 @@ public class FontGlyphBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            0,
             0);
         var batchItem2 = new FontGlyphBatchItem(
             default,
@@ -165,7 +162,6 @@ public class FontGlyphBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            0,
             0);
 
         var batchSizeData = new BatchSizeData { BatchSize = 1 };
@@ -193,7 +189,6 @@ public class FontGlyphBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            0,
             0);
         var batchItem2 = new FontGlyphBatchItem(
             default,
@@ -203,7 +198,6 @@ public class FontGlyphBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            0,
             0);
 
         var batchSizeData = new BatchSizeData { BatchSize = 123 };

@@ -843,8 +843,7 @@ public class FontRendererTests
                 0,
                 Color.Empty,
                 RenderEffects.None,
-                AtlasTextureId,
-                0);
+                AtlasTextureId);
 
             glyphsToMock.Add(batchItem);
         }

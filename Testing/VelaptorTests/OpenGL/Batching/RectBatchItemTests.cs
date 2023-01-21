@@ -221,8 +221,7 @@ public class RectBatchItemTests
             new CornerRadius(10, 11, 12, 13),
             ColorGradient.None,
             Color.FromArgb(14, 15, 16, 17),
-            Color.FromArgb(18, 19, 20, 21),
-            22);
+            Color.FromArgb(18, 19, 20, 21));
 
         // Assert
         sut.Position.Should().Be(new Vector2(1, 2));
@@ -235,7 +234,6 @@ public class RectBatchItemTests
         sut.GradientType.Should().Be(ColorGradient.None);
         sut.GradientStart.Should().Be(Color.FromArgb(14, 15, 16, 17));
         sut.GradientStop.Should().Be(Color.FromArgb(18, 19, 20, 21));
-        sut.Layer.Should().Be(22);
     }
     #endregion
 
@@ -267,8 +265,7 @@ public class RectBatchItemTests
             cornerRadius,
             gradientType,
             gradientStart,
-            gradientStop,
-            layer);
+            gradientStop);
 
         // Act
         var actual = sut.IsEmpty();

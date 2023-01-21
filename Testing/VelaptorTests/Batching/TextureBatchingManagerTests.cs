@@ -110,8 +110,7 @@ public class TextureBatchingManagerTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            11,
-            18);
+            11);
         var batchItem2 = new TextureBatchItem(
             new RectangleF(24, 25, 26, 27),
             new RectangleF(20, 21, 22, 23),
@@ -119,8 +118,7 @@ public class TextureBatchingManagerTests
             18,
             Color.FromArgb(29, 30, 31, 32),
             RenderEffects.FlipHorizontally,
-            28,
-            35);
+            28);
 
         var batchItems = new List<TextureBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems.ToReadOnlyCollection());
@@ -147,8 +145,7 @@ public class TextureBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            1,
-            0);
+            1);
 
         var batchItem2 = new TextureBatchItem(
             RectangleF.Empty,
@@ -157,8 +154,7 @@ public class TextureBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            2,
-            0);
+            2);
 
         var batchSizeData = new BatchSizeData { BatchSize = 1 };
 
@@ -186,8 +182,7 @@ public class TextureBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            1,
-            0);
+            1);
         var batchItem2 = new TextureBatchItem(
             RectangleF.Empty,
             RectangleF.Empty,
@@ -195,8 +190,7 @@ public class TextureBatchingManagerTests
             0,
             Color.Empty,
             RenderEffects.None,
-            2,
-            0);
+            2);
 
         var batchSizeData = new BatchSizeData { BatchSize = 2 };
 

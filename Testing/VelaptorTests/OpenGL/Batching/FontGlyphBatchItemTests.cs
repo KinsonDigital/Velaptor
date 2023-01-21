@@ -180,8 +180,7 @@ public class FontGlyphBatchItemTests
             angle,
             tintColor,
             effects,
-            textureId,
-            layer);
+            textureId);
 
         // Act
         var actual = sut.IsEmpty();
@@ -213,8 +212,7 @@ public class FontGlyphBatchItemTests
             1,
             Color.FromArgb(12, 13, 14, 15),
             RenderEffects.None,
-            11,
-            18);
+            11);
 
         // Act
         var actual = batchItem.ToString();

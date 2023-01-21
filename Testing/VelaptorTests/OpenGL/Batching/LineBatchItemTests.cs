@@ -31,7 +31,6 @@ public class LineBatchItemTests
             Vector2.Zero, // P2
             Color.Empty, // Color
             0f, // Thickness
-            0, // Layer
             true, // Expected
         };
         yield return new object[]
@@ -40,7 +39,6 @@ public class LineBatchItemTests
             Vector2.Zero,
             Color.Empty,
             0f,
-            0,
             false,
         };
         yield return new object[]
@@ -49,7 +47,6 @@ public class LineBatchItemTests
             new Vector2(1, 2), // NOT EMPTY HERE
             Color.Empty,
             0f,
-            0,
             false,
         };
         yield return new object[]
@@ -58,7 +55,6 @@ public class LineBatchItemTests
             Vector2.Zero,
             Color.FromArgb(1, 2, 3, 4), // NOT EMPTY HERE
             0f,
-            0,
             false,
         };
         yield return new object[]
@@ -67,7 +63,6 @@ public class LineBatchItemTests
             Vector2.Zero,
             Color.Empty,
             1f, // NOT EMPTY HERE
-            0,
             false,
         };
         yield return new object[]
@@ -76,7 +71,6 @@ public class LineBatchItemTests
             Vector2.Zero,
             Color.Empty,
             0f,
-            1, // NOT EMPTY HERE
             false,
         };
     }
@@ -92,17 +86,15 @@ public class LineBatchItemTests
         var expectedP2 = new Vector2(3, 4);
         var expectedClr = Color.FromArgb(5, 6, 7, 8);
         const int expectedThickness = 9;
-        const int expectedLayer = 10;
 
         // Act
-        var sut = new LineBatchItem(expectedP1, expectedP2, expectedClr, expectedThickness, expectedLayer);
+        var sut = new LineBatchItem(expectedP1, expectedP2, expectedClr, expectedThickness);
 
         // Assert
         sut.P1.Should().BeEquivalentTo(expectedP1);
         sut.P2.Should().BeEquivalentTo(expectedP2);
         sut.Color.Should().BeEquivalentTo(expectedClr);
         sut.Thickness.Should().Be(expectedThickness);
-        sut.Layer.Should().Be(expectedLayer);
     }
 
     [Theory]
@@ -112,11 +104,10 @@ public class LineBatchItemTests
         Vector2 p2,
         Color color,
         float thickness,
-        int layer,
         bool expected)
     {
         // Arrange
-        var sut = new LineBatchItem(p1, p2, color, thickness, layer);
+        var sut = new LineBatchItem(p1, p2, color, thickness);
 
         // Act
         var actual = sut.IsEmpty();

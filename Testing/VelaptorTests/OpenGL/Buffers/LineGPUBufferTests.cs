@@ -244,9 +244,8 @@ public class LineGPUBufferTests
         var p2 = new Vector2(3, 4);
         var color = Color.FromArgb(4, 5, 6, 7);
         const int thickness = 8;
-        const int layer = 9;
 
-        var batchItem = new LineBatchItem(p1, p2, color, thickness, layer);
+        var batchItem = new LineBatchItem(p1, p2, color, thickness);
 
         var viewPortSizeData = new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight };
 

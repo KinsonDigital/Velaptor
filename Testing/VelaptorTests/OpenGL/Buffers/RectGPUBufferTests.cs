@@ -231,8 +231,7 @@ public class RectGPUBufferTests
             new CornerRadius(10, 11, 12, 13),
             ColorGradient.None,
             Color.FromArgb(14, 15, 16, 17),
-            Color.FromArgb(18, 19, 20, 21),
-            0);
+            Color.FromArgb(18, 19, 20, 21));
 
         float[]? actualRawData = null;
 

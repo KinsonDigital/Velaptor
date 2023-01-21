@@ -124,8 +124,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             start,
             end,
             color,
-            thickness,
-            layer);
+            thickness);
 
         this.batchManager.Add(batchItem);
     }
@@ -153,7 +152,6 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
-            .OrderBy(i => i.Layer)
             .ToArray();
 
         // Only if items are available to render

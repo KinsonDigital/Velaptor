@@ -27,7 +27,6 @@ internal readonly record struct RectBatchItem
     /// <param name="gradientType">The type of color gradient that will be applied to the rectangle.</param>
     /// <param name="gradientStart">The starting color of the gradient.</param>
     /// <param name="gradientStop">The ending color of the gradient.</param>
-    /// <param name="layer">The layer where the shape will be rendered.</param>
     /// <remarks>
     /// <para>
     ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
@@ -50,8 +49,7 @@ internal readonly record struct RectBatchItem
         CornerRadius cornerRadius = default,
         ColorGradient gradientType = ColorGradient.None,
         Color gradientStart = default,
-        Color gradientStop = default,
-        int layer = 0)
+        Color gradientStop = default)
     {
         Position = position;
         Width = width;
@@ -63,7 +61,6 @@ internal readonly record struct RectBatchItem
         GradientType = gradientType;
         GradientStart = gradientStart;
         GradientStop = gradientStop;
-        Layer = layer;
     }
 
     /// <summary>
@@ -167,39 +164,6 @@ internal readonly record struct RectBatchItem
     public Color GradientStop { get; }
 
     /// <summary>
-    /// Gets the layer where the shape will be rendered.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         Lower layer values will render before higher layer values.
-    ///         If two separate textures have the same layer value, they will
-    ///         rendered in the order that the render method was invoked.
-    ///     </para>
-    ///     <para>Example below:</para>
-    ///
-    ///     <b>Render Method Invoked Order:</b>
-    ///     <list type="number">
-    ///         <item>Texture 1 (Layer -10)</item>
-    ///         <item>Texture 2 (Layer -20)</item>
-    ///         <item>Texture 3 (Layer 0)</item>
-    ///         <item>Texture 4 (Layer 0)</item>
-    ///         <item>Texture 5 (Layer 4)</item>
-    ///         <item>Texture 6 (Layer 3)</item>
-    ///     </list>
-    ///
-    ///     <b>Texture Render Order:</b>
-    ///     <list type="bullet">
-    ///         <item>Texture 2</item>
-    ///         <item>Texture 1</item>
-    ///         <item>Texture 3</item>
-    ///         <item>Texture 4</item>
-    ///         <item>Texture 6</item>
-    ///         <item>Texture 5</item>
-    ///     </list>
-    /// </remarks>
-    public int Layer { get; }
-
-    /// <summary>
     /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
@@ -213,6 +177,5 @@ internal readonly record struct RectBatchItem
         CornerRadius is { TopLeft: <= 1, TopRight: <= 1, BottomRight: <= 1, BottomLeft: <= 1 } &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
-        GradientStop.IsEmpty &&
-        Layer == 0;
+        GradientStop.IsEmpty;
 }

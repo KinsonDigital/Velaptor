@@ -191,8 +191,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             angle,
             color,
             effects,
-            texture.Id,
-            layer);
+            texture.Id);
 
         this.batchManager.Add(itemToAdd);
     }
@@ -220,7 +219,6 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
-            .OrderBy(i => i.Layer)
             .ToArray();
 
         // Only if items are available to render

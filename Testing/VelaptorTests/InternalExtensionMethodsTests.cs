@@ -145,7 +145,7 @@ public class InternalExtensionMethodsTests
         // X and Y axis aligned rectangle rotated 45 degrees clockwise
         yield return new object[]
         {
-            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f, 0),
+            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f),
             new Vector2(135.35535f, 64.64465f),
             new Vector2(235.35535f, 164.64467f),
             new Vector2(164.64465f, 235.35533f),
@@ -550,7 +550,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.Scale(0.5f);
@@ -570,7 +570,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.FlipEnd();
@@ -593,8 +593,7 @@ public class InternalExtensionMethodsTests
             new Vector2(startX, startY),
             new Vector2(stopX, stopY),
             NETColor.White,
-            0f,
-            0);
+            0f);
 
         // Act
         var actual = line.Length();
@@ -621,7 +620,7 @@ public class InternalExtensionMethodsTests
             bottomLeftCorner,
         };
 
-        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness, lineItem.Layer);
+        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
 
         // Act
         var actual = line.CreateRectFromLine();
@@ -638,15 +637,13 @@ public class InternalExtensionMethodsTests
             new Vector2(10, 20),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP1(new Vector2(10, 20));
@@ -663,15 +660,13 @@ public class InternalExtensionMethodsTests
             new Vector2(1, 2),
             new Vector2(20, 30),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP2(new Vector2(20, 30));
@@ -688,15 +683,13 @@ public class InternalExtensionMethodsTests
             new Vector2(2, 3),
             new Vector2(1, 2),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SwapEnds();

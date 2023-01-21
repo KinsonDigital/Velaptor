@@ -224,7 +224,6 @@ public class TextureGPUBufferTests
             1,
             Color.White,
             (RenderEffects)1234,
-            1,
             1);
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnReceive();
@@ -247,8 +246,7 @@ public class TextureGPUBufferTests
             0,
             default,
             RenderEffects.None,
-            1,
-            0);
+            1);
 
         var sut = CreateSystemUnderTest();
 
@@ -274,8 +272,7 @@ public class TextureGPUBufferTests
             45,
             Color.MediumPurple,
             effects,
-            1,
-            0);
+            1);
 
         var viewPortSizeData = new ViewPortSizeData { Width = 800, Height = 600 };
 

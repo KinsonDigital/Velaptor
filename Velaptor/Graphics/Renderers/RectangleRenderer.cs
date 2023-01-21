@@ -137,8 +137,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
             rectangle.CornerRadius,
             rectangle.GradientType,
             rectangle.GradientStart,
-            rectangle.GradientStop,
-            layer);
+            rectangle.GradientStop);
 
         this.batchManager.Add(batchItem);
     }
@@ -166,7 +165,6 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         var itemsToRender = this.batchManager.BatchItems
             .Where(i => i.IsEmpty() is false)
             .Select(i => i)
-            .OrderBy(i => i.Layer)
             .ToArray();
 
         // Only if items are available to render

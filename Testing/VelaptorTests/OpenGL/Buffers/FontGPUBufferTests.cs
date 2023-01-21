@@ -174,7 +174,6 @@ public class FontGPUBufferTests
             90,
             Color.Empty,
             RenderEffects.None,
-            0,
             0);
 
         var sut = CreateSystemUnderTest();
@@ -208,8 +207,7 @@ public class FontGPUBufferTests
             45f,
             Color.MediumPurple,
             RenderEffects.None,
-            1,
-            0);
+            1);
 
         var viewPortSizeData = new ViewPortSizeData { Width = 800, Height = 600 };
 

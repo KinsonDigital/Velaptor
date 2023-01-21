@@ -340,8 +340,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             rect.CornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }
@@ -387,8 +386,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             cornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }

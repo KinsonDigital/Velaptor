@@ -1378,8 +1378,7 @@ internal static class InternalExtensionMethods
         new (p1,
             item.P2,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Sets the <see cref="LineBatchItem.P2"/> vector component of the batch item to the given <paramref name="p2"/> vector.
@@ -1391,8 +1390,7 @@ internal static class InternalExtensionMethods
         new (item.P1,
             p2,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Swaps the <see cref="LineBatchItem"/>.<see cref="LineBatchItem.P1"/> and <see cref="LineBatchItem"/>.<see cref="LineBatchItem.P2"/>
@@ -1404,8 +1402,7 @@ internal static class InternalExtensionMethods
         new (item.P2,
             item.P1,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.

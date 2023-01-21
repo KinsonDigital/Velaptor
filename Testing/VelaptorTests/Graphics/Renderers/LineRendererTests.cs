@@ -143,8 +143,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9,
-            10);
+            9);
 
         var line = new Line(
             new Vector2(1, 2),
@@ -169,8 +168,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.White,
-            1u,
-            10);
+            1u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -190,8 +188,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            1u,
-            10);
+            1u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -215,8 +212,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.White,
-            11u,
-            10);
+            11u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -240,8 +236,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9u,
-            10);
+            9u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -306,8 +301,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9,
-            10);
+            9);
 
         var shouldNotRenderEmptyItem = default(LineBatchItem);
 
