@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
+using Factories;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -226,7 +227,17 @@ public class TextureRendererTests
         const int expectedY = 20;
         const int expectedWidth = 111;
         const int expectedHeight = 222;
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, RenderEffects.None, Color.White, textureId);
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureBatchItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            Color.White,
+            RenderEffects.None,
+            textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -262,8 +273,17 @@ public class TextureRendererTests
         const int expectedWidth = 111;
         const int expectedHeight = 222;
         const RenderEffects expectedRenderEffects = RenderEffects.FlipHorizontally;
-        var expectedBatchItem =
-            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureBatchItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            Color.White,
+            expectedRenderEffects,
+            textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -297,8 +317,18 @@ public class TextureRendererTests
         const int expectedY = 20;
         const int expectedWidth = 111;
         const int expectedHeight = 222;
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
         var expectedClr = Color.FromArgb(11, 22, 33, 44);
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, RenderEffects.None, expectedClr, textureId);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureBatchItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            expectedClr,
+            RenderEffects.None,
+            textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -332,10 +362,19 @@ public class TextureRendererTests
         const int expectedY = 20;
         const int expectedWidth = 111;
         const int expectedHeight = 222;
-        var expectedClr = Color.FromArgb(11, 22, 33, 44);
         const RenderEffects expectedRenderEffects = RenderEffects.FlipVertically;
-        var expectedBatchItem =
-            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
+        var expectedClr = Color.FromArgb(11, 22, 33, 44);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureBatchItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            expectedClr,
+            expectedRenderEffects,
+            textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -433,31 +472,6 @@ public class TextureRendererTests
         this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
-
-    /// <summary>
-    /// Creates a <see cref="TextureBatchItem"/> using the given parameters for the purpose of testing.
-    /// </summary>
-    /// <param name="x">The X location of the item.</param>
-    /// <param name="y">The Y location of the item.</param>
-    /// <param name="width">The width of the item.</param>
-    /// <param name="height">The height of the item.</param>
-    /// <param name="effects">The type of render effects to perform for the item.</param>
-    /// <param name="clr">The color of the item.</param>
-    /// <param name="textureId">The ID of the texture.</param>
-    /// <returns>The instance to use for testing.</returns>
-    private static TextureBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
-    {
-        var result = new TextureBatchItem(
-            new RectangleF(0f, 0f, width, height),
-            new RectangleF(x, y, width, height),
-            1f,
-            0f,
-            clr,
-            effects,
-            (uint)textureId);
-
-        return result;
-    }
 
     /// <summary>
     /// Creates an <see cref="ITexture"/> instance for the purpose of testing the <see cref="TextureRenderer"/> class.

@@ -13,6 +13,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Factories;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -262,7 +263,7 @@ public class RectGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = new RectBatchItem(gradientType: (ColorGradient)1234);
+        var rect = BatchItemFactory.CreateRectBatchItem(gradientType: (ColorGradient)1234);
 
         var sut = CreateSystemUnderTest();
 
@@ -319,6 +320,7 @@ public class RectGPUBufferTests
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
+            isFilled: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.None,
@@ -384,6 +386,7 @@ public class RectGPUBufferTests
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
+            isFilled: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.Horizontal,
@@ -443,18 +446,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-#pragma warning disable SA1117
-        var rect = new RectBatchItem(
-            position: new Vector2(1, 2),
-            width: 3,
-            height: 4,
-            color: Color.FromArgb(5, 6, 7, 8),
-            borderThickness: 9,
-            cornerRadius: new CornerRadius(10, 11, 12, 13),
-            gradientType: ColorGradient.Vertical,
-            gradientStart: Color.FromArgb(14, 15, 16, 17),
-            gradientStop: Color.FromArgb(18, 19, 20, 21));
-#pragma warning restore SA1117
+        var rect = BatchItemFactory.CreateRectBatchItem();
 
         var sut = CreateSystemUnderTest();
 

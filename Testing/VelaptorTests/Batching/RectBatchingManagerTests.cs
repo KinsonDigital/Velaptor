@@ -13,6 +13,7 @@ using System.Numerics;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Factories;
 using FluentAssertions;
 using Moq;
 using Velaptor;
@@ -143,8 +144,8 @@ public class RectBatchingManagerTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = new RectBatchItem(width: 10, height: 20);
-        var batchItem2 = new RectBatchItem(width: 30, height: 40);
+        var batchItem1 = BatchItemFactory.CreateRectBatchItem(width: 10, height: 20);
+        var batchItem2 = BatchItemFactory.CreateRectBatchItem(width: 30, height: 40);
 
         var batchSizeData = new BatchSizeData { BatchSize = 1 };
 
@@ -164,8 +165,8 @@ public class RectBatchingManagerTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = new RectBatchItem(width: 10);
-        var batchItem2 = new RectBatchItem(width: 20);
+        var batchItem1 = BatchItemFactory.CreateRectBatchItem(width: 10);
+        var batchItem2 = BatchItemFactory.CreateRectBatchItem(width: 20);
 
         var batchSizeData = new BatchSizeData { BatchSize = 123 };
 
