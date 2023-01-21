@@ -38,7 +38,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -82,7 +82,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -126,7 +126,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -170,7 +170,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -214,7 +214,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -258,7 +258,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -302,7 +302,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -346,7 +346,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -390,7 +390,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -434,7 +434,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -478,7 +478,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
@@ -522,7 +522,7 @@
     "Size": 0.5,
     "Angle": 45.0,
     "TintColor": "11, 22, 33, 44",
-    "Effects": 1,
+    "Effects": 0,
     "ViewPortSize": "0, 0",
     "TextureId": 0,
     "Layer": 500
