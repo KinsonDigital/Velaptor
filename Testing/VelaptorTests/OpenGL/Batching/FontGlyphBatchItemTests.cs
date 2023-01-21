@@ -4,19 +4,27 @@
 
 namespace VelaptorTests.OpenGL.Batching;
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Xunit;
+using Xunit.Abstractions;
 
 /// <summary>
 /// Test the <see cref="FontGlyphBatchItem"/> struct.
 /// </summary>
 public class FontGlyphBatchItemTests
 {
+    private readonly ITestOutputHelper testOutputHelper;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FontGlyphBatchItemTests"/> class.
+    /// </summary>
+    /// <param name="testOutputHelper">Provides test output.</param>
+    public FontGlyphBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
+
     /// <summary>
     /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
@@ -25,7 +33,6 @@ public class FontGlyphBatchItemTests
     {
         yield return new object[]
         {
-            // FULLY EMPTY
             RectangleF.Empty, // Dest Rect
             RectangleF.Empty, // Src Rect
             '\0', // Glyph
@@ -34,12 +41,12 @@ public class FontGlyphBatchItemTests
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "Fully Empty", // TEST NAME
             true, // Expected Result
         };
         yield return new object[]
         {
-            new RectangleF(10, 20, 30, 40), // Dest Rect - NON-EMPTY VALUE
+            new RectangleF(10, 20, 30, 40), // Src Rect
             RectangleF.Empty, // Src Rect
             '\0', // Glyph
             0, // Size
@@ -47,46 +54,33 @@ public class FontGlyphBatchItemTests
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "srcRect", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
         {
             RectangleF.Empty, // Dest Rect
-            new RectangleF(10, 20, 30, 40), // Src Rect - NON-EMPTY VALUE
-            'V', // Glyph - NON-EMPTY VALUE
+            new RectangleF(10, 20, 30, 40), // Dest Rect
+            'V', // Glyph
             0, // Size
             0, // Angle
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "destRect", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
         {
             RectangleF.Empty, // Dest Rect
             RectangleF.Empty, // Src Rect
-            'V', // Glyph - NON-EMPTY VALUE
+            'V', // Glyph
             0, // Size
             0, // Angle
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            10, // Size - NON-EMPTY VALUE
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            0, // Layer
+            "glyph", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -94,12 +88,12 @@ public class FontGlyphBatchItemTests
             RectangleF.Empty, // Dest Rect
             RectangleF.Empty, // Src Rect
             '\0', // Glyph
-            0, // Size
-            10, // Angle - NON-EMPTY VALUE
+            10, // Size
+            0, // Angle
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "size", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -108,11 +102,11 @@ public class FontGlyphBatchItemTests
             RectangleF.Empty, // Src Rect
             '\0', // Glyph
             0, // Size
-            0, // Angle
-            Color.FromArgb(10, 20, 30, 40), // Tint Color - NON-EMPTY VALUE
+            10, // Angle
+            Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "angle", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -122,10 +116,10 @@ public class FontGlyphBatchItemTests
             '\0', // Glyph
             0, // Size
             0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.FlipHorizontally, //Render Effects - NON-EMPTY VALUE
+            Color.FromArgb(10, 20, 30, 40), // Tint Color
+            RenderEffects.None, //Render Effects
             0, // TextureId
-            0, // Layer
+            "tintColor", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -136,9 +130,9 @@ public class FontGlyphBatchItemTests
             0, // Size
             0, // Angle
             Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            10, // TextureId - NON-EMPTY VALUE
-            0, // Layer
+            RenderEffects.FlipHorizontally, //Render Effects
+            0, // TextureId
+            "effects", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -150,11 +144,38 @@ public class FontGlyphBatchItemTests
             0, // Angle
             Color.Empty, // Tint Color
             RenderEffects.None, //Render Effects
-            0, // TextureId
-            10, // Layer - NON-EMPTY VALUE
+            10, // TextureId
+            "textureId", // TEST NAME
             false, // Expected Result
         };
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WhenInvoked_CorrectlySetsProperties()
+    {
+        // Arrange & Act
+        var sut = new FontGlyphBatchItem(
+            new RectangleF(1, 2, 3, 4),
+            new RectangleF(5, 6, 7, 8),
+            'V',
+            9,
+            10,
+            Color.FromArgb(11, 12, 13, 14),
+            RenderEffects.FlipHorizontally,
+            15);
+
+        // Assert
+        sut.SrcRect.Should().Be(new RectangleF(1, 2, 3, 4));
+        sut.DestRect.Should().Be(new RectangleF(5, 6, 7, 8));
+        sut.Glyph.Should().Be('V');
+        sut.Size.Should().Be(9);
+        sut.Angle.Should().Be(10);
+        sut.TintColor.Should().Be(Color.FromArgb(11, 12, 13, 14));
+        sut.Effects.Should().Be(RenderEffects.FlipHorizontally);
+        sut.TextureId.Should().Be(15);
+    }
+    #endregion
 
     #region Method Tests
     [Theory]
@@ -168,7 +189,7 @@ public class FontGlyphBatchItemTests
         Color tintColor,
         RenderEffects effects,
         uint textureId,
-        int layer,
+        string testName, // Only used for test output
         bool expected)
     {
         // Arrange
@@ -186,39 +207,8 @@ public class FontGlyphBatchItemTests
         var actual = sut.IsEmpty();
 
         // Assert
+        this.testOutputHelper.WriteLine($"Test Param: {testName}");
         actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void ToString_WhenInvoked_ReturnsCorrectResult()
-    {
-        // Arrange
-        var expected = "Font Batch Item Values:";
-        expected += $"{Environment.NewLine}Src Rect: {{X=7,Y=8,Width=9,Height=10}}";
-        expected += $"{Environment.NewLine}Dest Rect: {{X=3,Y=4,Width=5,Height=6}}";
-        expected += $"{Environment.NewLine}Size: 2";
-        expected += $"{Environment.NewLine}Angle: 1";
-        expected += $"{Environment.NewLine}Tint Clr: {{A=12,R=13,G=14,B=15}}";
-        expected += $"{Environment.NewLine}Effects: None";
-        expected += $"{Environment.NewLine}Texture ID: 11";
-        expected += $"{Environment.NewLine}Glyph: V";
-        expected += $"{Environment.NewLine}Layer: 18";
-
-        var batchItem = new FontGlyphBatchItem(
-            new RectangleF(7, 8, 9, 10),
-            new RectangleF(3, 4, 5, 6),
-            'V',
-            2,
-            1,
-            Color.FromArgb(12, 13, 14, 15),
-            RenderEffects.None,
-            11);
-
-        // Act
-        var actual = batchItem.ToString();
-
-        // Assert
-        Assert.Equal(expected, actual);
     }
     #endregion
 }

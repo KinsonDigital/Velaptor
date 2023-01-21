@@ -86,11 +86,11 @@ internal readonly record struct TextureBatchItem
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        TextureId == 0 &&
-        Size == 0f &&
-        Angle == 0f &&
-        Effects is 0 or RenderEffects.None &&
-        SrcRect.IsEmpty &&
-        DestRect.IsEmpty &&
-        TintColor.IsEmpty;
+        !(Angle != 0f ||
+          Size != 0f ||
+          Effects != RenderEffects.None ||
+          TintColor.IsEmpty != true ||
+          SrcRect.IsEmpty != true ||
+          DestRect.IsEmpty != true ||
+          TextureId != 0);
 }

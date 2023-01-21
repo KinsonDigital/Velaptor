@@ -10,14 +10,21 @@ using System.Numerics;
 using FluentAssertions;
 using Velaptor.OpenGL.Batching;
 using Xunit;
+using Xunit.Abstractions;
 
 /// <summary>
 /// Tests the <see cref="LineBatchItem"/> struct.
 /// </summary>
 public class LineBatchItemTests
 {
-#pragma warning disable SA1514
-    #region TestData
+    private readonly ITestOutputHelper testOutputHelper;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LineBatchItemTests"/> class.
+    /// </summary>
+    /// <param name="testOutputHelper">Provides test output.</param>
+    public LineBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
+
     /// <summary>
     /// Gets all of the test data related to testing the <see cref="IsEmptyTestData"/> method.
     /// </summary>
@@ -26,56 +33,50 @@ public class LineBatchItemTests
     {
         yield return new object[]
         {
-            // FULLY EMPTY
-            Vector2.Zero, // P1
-            Vector2.Zero, // P2
-            Color.Empty, // Color
-            0f, // Thickness
+            Vector2.Zero, // p1
+            Vector2.Zero, // p2
+            Color.Empty, // color
+            0f, // thickness
+            "Fully Empty", // TEST NAME
             true, // Expected
         };
         yield return new object[]
         {
-            new Vector2(1, 2), // NOT EMPTY HERE
-            Vector2.Zero,
-            Color.Empty,
-            0f,
+            new Vector2(1, 2), // p1
+            Vector2.Zero, // p2
+            Color.Empty, // color
+            0f, // thickness
+            "p1", // TEST NAME
             false,
         };
         yield return new object[]
         {
-            Vector2.Zero,
-            new Vector2(1, 2), // NOT EMPTY HERE
-            Color.Empty,
-            0f,
+            Vector2.Zero, // p1
+            new Vector2(1, 2), // p2
+            Color.Empty, // color
+            0f, // thickness
+            "p2", // TEST NAME
             false,
         };
         yield return new object[]
         {
-            Vector2.Zero,
-            Vector2.Zero,
-            Color.FromArgb(1, 2, 3, 4), // NOT EMPTY HERE
-            0f,
+            Vector2.Zero, // p1
+            Vector2.Zero, // p2
+            Color.FromArgb(1, 2, 3, 4), // color
+            0f, // thickness
+            "color", // TEST NAME
             false,
         };
         yield return new object[]
         {
-            Vector2.Zero,
-            Vector2.Zero,
-            Color.Empty,
-            1f, // NOT EMPTY HERE
-            false,
-        };
-        yield return new object[]
-        {
-            Vector2.Zero,
-            Vector2.Zero,
-            Color.Empty,
-            0f,
+            Vector2.Zero, // p1
+            Vector2.Zero, // p2
+            Color.Empty, // color
+            1f, // thickness
+            "thickness", // TEST NAME
             false,
         };
     }
-    #endregion
-#pragma warning restore SA1514
 
     #region Constructor Tests
     [Fact]
@@ -104,6 +105,7 @@ public class LineBatchItemTests
         Vector2 p2,
         Color color,
         float thickness,
+        string testName, // Only used for test output
         bool expected)
     {
         // Arrange
@@ -113,6 +115,7 @@ public class LineBatchItemTests
         var actual = sut.IsEmpty();
 
         // Assert
+        this.testOutputHelper.WriteLine($"Test Param: {testName}");
         actual.Should().Be(expected);
     }
     #endregion

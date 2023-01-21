@@ -11,12 +11,21 @@ using FluentAssertions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Xunit;
+using Xunit.Abstractions;
 
 /// <summary>
 /// Tests the <see cref="RectBatchItem"/> struct.
 /// </summary>
 public class RectBatchItemTests
 {
+    private readonly ITestOutputHelper testOutputHelper;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectBatchItemTests"/> class.
+    /// </summary>
+    /// <param name="testOutputHelper">Provides test output.</param>
+    public RectBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
+
     /// <summary>
     /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
@@ -25,7 +34,6 @@ public class RectBatchItemTests
     {
         yield return new object[]
         {
-            // FULLY EMPTY
             Vector2.Zero, // Position
             0f, // Width
             0f, // Height
@@ -36,12 +44,12 @@ public class RectBatchItemTests
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "Fully Empty", // TEST NAME
             true, // Expected Result
         };
         yield return new object[]
         {
-            new Vector2(10, 20), // Position - NON-EMPTY VALUE
+            new Vector2(10, 20), // Position
             0f, // Width
             0f, // Height
             Color.Empty, // Color
@@ -51,13 +59,13 @@ public class RectBatchItemTests
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "position", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
         {
             Vector2.Zero, // Position
-            10f, // Width - NON-EMPTY VALUE
+            10f, // Width
             0f, // Height
             Color.Empty, // Color
             false, // IsFilled
@@ -66,14 +74,14 @@ public class RectBatchItemTests
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "width", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
         {
             Vector2.Zero, // Position
             0f, // Width
-            10f, // Height - NON-EMPTY VALUE
+            10f, // Height
             Color.Empty, // Color
             false, // IsFilled
             0f, // BorderThickness
@@ -81,7 +89,7 @@ public class RectBatchItemTests
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "height", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -89,29 +97,14 @@ public class RectBatchItemTests
             Vector2.Zero, // Position
             0f, // Width
             0f, // Height
-            Color.FromArgb(10, 20, 30, 40), // Color - NON-EMPTY VALUE
+            Color.FromArgb(10, 20, 30, 40), // Color
             false, // IsFilled
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            true, // IsFilled - NON-EMPTY VALUE
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            0, // Layer
+            "color", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -120,13 +113,13 @@ public class RectBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
-            10f, // BorderThickness - NON-EMPTY VALUE
+            true, // IsFilled
+            0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "isFilled", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -136,12 +129,12 @@ public class RectBatchItemTests
             0f, // Height
             Color.Empty, // Color
             false, // IsFilled
-            0f, // BorderThickness
+            10f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
-            ColorGradient.Horizontal, // GradientType - NON-EMPTY VALUE
+            ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "borderThickness", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -152,11 +145,11 @@ public class RectBatchItemTests
             Color.Empty, // Color
             false, // IsFilled
             0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
+            new CornerRadius(1, 2, 3, 4), // CornerRadius
             ColorGradient.None, // GradientType
-            Color.FromArgb(10, 20, 30, 40), // GradientStart - NON-EMPTY VALUE
+            Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            0, // Layer
+            "cornerRadius", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -168,10 +161,10 @@ public class RectBatchItemTests
             false, // IsFilled
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
+            ColorGradient.Horizontal, // GradientType
             Color.Empty, // GradientStart
-            Color.FromArgb(10, 20, 30, 40), // GradientStop - NON-EMPTY VALUE
-            0, // Layer
+            Color.Empty, // GradientStop
+            "gradientType", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -184,9 +177,9 @@ public class RectBatchItemTests
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
+            Color.FromArgb(10, 20, 30, 40), // GradientStart
             Color.Empty, // GradientStop
-            10, // Layer - NON-EMPTY VALUE
+            "gradientStart", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -200,15 +193,15 @@ public class RectBatchItemTests
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            10, // Layer
+            Color.FromArgb(10, 20, 30, 40), // GradientStop
+            "gradientStop", // TEST NAME
             false, // Expected Result
         };
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithDifferentCornerRadiusValues_SetsPropToCorrectResult()
+    public void Ctor_WhenInvoked_CorrectlySetsProperties()
     {
         // Arrange & Act
         var sut = new RectBatchItem(
@@ -217,9 +210,9 @@ public class RectBatchItemTests
             4,
             Color.FromArgb(5, 6, 7, 8),
             true,
-            9f,
+            9,
             new CornerRadius(10, 11, 12, 13),
-            ColorGradient.None,
+            ColorGradient.Horizontal,
             Color.FromArgb(14, 15, 16, 17),
             Color.FromArgb(18, 19, 20, 21));
 
@@ -229,9 +222,9 @@ public class RectBatchItemTests
         sut.Height.Should().Be(4);
         sut.Color.Should().Be(Color.FromArgb(5, 6, 7, 8));
         sut.IsFilled.Should().Be(true);
-        sut.BorderThickness.Should().Be(9f);
+        sut.BorderThickness.Should().Be(9);
         sut.CornerRadius.Should().Be(new CornerRadius(10, 11, 12, 13));
-        sut.GradientType.Should().Be(ColorGradient.None);
+        sut.GradientType.Should().Be(ColorGradient.Horizontal);
         sut.GradientStart.Should().Be(Color.FromArgb(14, 15, 16, 17));
         sut.GradientStop.Should().Be(Color.FromArgb(18, 19, 20, 21));
     }
@@ -251,7 +244,7 @@ public class RectBatchItemTests
         ColorGradient gradientType,
         Color gradientStart,
         Color gradientStop,
-        int layer,
+        string testName, // Only used for test output
         bool expected)
     {
         // Arrange
@@ -271,6 +264,7 @@ public class RectBatchItemTests
         var actual = sut.IsEmpty();
 
         // Assert
+        this.testOutputHelper.WriteLine($"Test Param: {testName}");
         actual.Should().Be(expected, sut.ToString());
     }
     #endregion

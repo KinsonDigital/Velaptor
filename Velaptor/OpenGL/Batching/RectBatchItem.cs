@@ -40,16 +40,16 @@ internal readonly record struct RectBatchItem
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The standard text is incorrect and says class instead of struct.")]
     public RectBatchItem(
-        Vector2 position = default,
-        float width = 1f,
-        float height = 1f,
-        Color color = default,
-        bool isFilled = true,
-        float borderThickness = 1f,
-        CornerRadius cornerRadius = default,
-        ColorGradient gradientType = ColorGradient.None,
-        Color gradientStart = default,
-        Color gradientStop = default)
+        Vector2 position,
+        float width,
+        float height,
+        Color color,
+        bool isFilled,
+        float borderThickness,
+        CornerRadius cornerRadius,
+        ColorGradient gradientType,
+        Color gradientStart,
+        Color gradientStop)
     {
         Position = position;
         Width = width;
@@ -168,14 +168,14 @@ internal readonly record struct RectBatchItem
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        Position == Vector2.Zero &&
-        Width <= 1f &&
-        Height <= 1f &&
-        Color.IsEmpty &&
-        IsFilled is false &&
-        BorderThickness <= 1f &&
-        CornerRadius is { TopLeft: <= 1, TopRight: <= 1, BottomRight: <= 1, BottomLeft: <= 1 } &&
-        GradientType == ColorGradient.None &&
-        GradientStart.IsEmpty &&
-        GradientStop.IsEmpty;
+        !(Position != Vector2.Zero ||
+          Width > 0f ||
+          Height > 0f ||
+          Color.IsEmpty != true ||
+          IsFilled ||
+          CornerRadius.IsEmpty() != true ||
+          GradientType != ColorGradient.None ||
+          GradientStart.IsEmpty != true ||
+          GradientStop.IsEmpty != true ||
+          BorderThickness > 0f);
 }

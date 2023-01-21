@@ -61,8 +61,9 @@ internal readonly record struct LineBatchItem
     /// </summary>
     /// <returns><c>true</c> if the item is empty.</returns>
     public bool IsEmpty() =>
-        P1 == Vector2.Zero &&
-        P2 == Vector2.Zero &&
-        Color == Color.Empty &&
-        Thickness == 0f;
+        !(P1 != Vector2.Zero ||
+          P2 != Vector2.Zero ||
+          Color.IsEmpty != true ||
+          Thickness != 0f);
+
 }

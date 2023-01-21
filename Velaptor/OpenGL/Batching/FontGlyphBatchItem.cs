@@ -6,8 +6,6 @@ namespace Velaptor.OpenGL.Batching;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Globalization;
-using System.Text;
 using Graphics;
 
 /// <summary>
@@ -97,12 +95,12 @@ internal readonly record struct FontGlyphBatchItem
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        TextureId == 0 &&
-        Size == 0f &&
-        Angle == 0f &&
-        Effects is 0 or RenderEffects.None &&
-        Glyph == '\0' &&
-        SrcRect.IsEmpty &&
-        DestRect.IsEmpty &&
-        TintColor.IsEmpty;
+        !(Size > 0f ||
+          Angle > 0f ||
+          SrcRect.IsEmpty != true ||
+          DestRect.IsEmpty != true ||
+          Glyph != '\0' ||
+          TintColor.IsEmpty != true ||
+          Effects != RenderEffects.None ||
+          TextureId > 0);
 }
