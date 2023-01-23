@@ -21,7 +21,7 @@ internal sealed class RenderMediator : IRenderMediator
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.pushReactable = reactableFactory.CreateNoDataReactable();
+        this.pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderBatchEndedId));
 

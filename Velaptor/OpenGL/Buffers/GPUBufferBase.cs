@@ -49,7 +49,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
         var portSizeReactable = reactableFactory.CreateViewPortReactable();
 
         var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));

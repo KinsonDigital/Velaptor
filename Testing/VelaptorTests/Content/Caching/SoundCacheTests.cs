@@ -70,7 +70,7 @@ public class SoundCacheTests
 
         this.mockDisposeReactable = new Mock<IPushReactable<DisposeSoundData>>();
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable()).Returns(this.mockDisposeReactable.Object);
     }
 

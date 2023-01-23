@@ -46,7 +46,7 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
         this.glInitReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(

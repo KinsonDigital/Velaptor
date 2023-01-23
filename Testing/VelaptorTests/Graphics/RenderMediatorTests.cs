@@ -30,7 +30,7 @@ public class RenderMediatorTests
         this.mockPushReactable = new Mock<IPushReactable>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(this.mockPushReactable.Object);
     }
 
     #region Constructor Tests

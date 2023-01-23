@@ -107,7 +107,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.taskService = taskService;
         ContentLoader = contentLoader;
 
-        this.pushReactable = reactableFactory.CreateNoDataReactable();
+        this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
         this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
         this.glReactable = reactableFactory.CreateGLReactable();

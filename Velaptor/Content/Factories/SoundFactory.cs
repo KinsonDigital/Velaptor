@@ -33,7 +33,7 @@ internal sealed class SoundFactory : ISoundFactory
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
         var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));

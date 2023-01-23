@@ -1,4 +1,4 @@
-﻿// <copyright file="IReactableFactory.cs" company="KinsonDigital">
+// <copyright file="IReactableFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ internal interface IReactableFactory
     /// Creates a non-directional reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IPushReactable CreateNoDataReactable();
+    IPushReactable CreateNoDataPushReactable();
 
     /// <summary>
     /// Creates an OpenGL reactable.

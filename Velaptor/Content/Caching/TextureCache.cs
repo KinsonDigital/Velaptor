@@ -78,7 +78,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.path = path;
 
         this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(

@@ -56,7 +56,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId));
         this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(

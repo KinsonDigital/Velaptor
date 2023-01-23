@@ -114,7 +114,7 @@ public class TextureRendererTests
             });
 
         this.mockReactorFactory = new Mock<IReactableFactory>();
-        this.mockReactorFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactorFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);

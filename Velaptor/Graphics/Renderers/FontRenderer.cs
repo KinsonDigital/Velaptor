@@ -58,7 +58,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
         this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(

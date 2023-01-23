@@ -1,4 +1,4 @@
-﻿// <copyright file="ReactableFactory.cs" company="KinsonDigital">
+// <copyright file="ReactableFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ using Silk.NET.OpenGL;
 internal class ReactableFactory : IReactableFactory
 {
     /// <inheritdoc/>
-    public IPushReactable CreateNoDataReactable() => IoC.Container.GetInstance<IPushReactable>();
+    public IPushReactable CreateNoDataPushReactable() => IoC.Container.GetInstance<IPushReactable>();
 
     /// <inheritdoc/>
     public IPushReactable<GL> CreateGLReactable() => IoC.Container.GetInstance<IPushReactable<GL>>();
