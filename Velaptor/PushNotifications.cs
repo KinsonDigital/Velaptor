@@ -64,12 +64,17 @@ internal static class PushNotifications
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has started.
     /// </summary>
-    public static Guid RenderBatchBegunId { get; } = new ("845e89b2-5a9d-4091-8689-d56f5c3060f3");
+    public static Guid BatchHasBegunId { get; } = new ("845e89b2-5a9d-4091-8689-d56f5c3060f3");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has been ended.
     /// </summary>
-    public static Guid RenderBatchEndedId { get; } = new ("ea261a35-58f9-4ddd-8301-004564311002");
+    public static Guid BatchHasEndedId { get; } = new ("ea261a35-58f9-4ddd-8301-004564311002");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications to empty the batch.
+    /// </summary>
+    public static Guid EmptyBatchId { get; } = new ("e2d7eb6a-53f0-4d10-9941-ad1c64706764");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the textures need to be rendered.

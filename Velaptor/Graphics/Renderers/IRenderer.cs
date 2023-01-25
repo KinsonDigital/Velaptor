@@ -97,7 +97,7 @@ public interface IRenderer
     /// <summary>
     /// Starts the batch rendering process.  Must be called before invoking any render methods.
     /// </summary>
-    static void Begin() => PushReactable.Push(PushNotifications.RenderBatchBegunId);
+    static void Begin() => PushReactable.Push(PushNotifications.BatchHasBegunId);
 
     /// <summary>
     /// Clears the buffers.
@@ -113,7 +113,7 @@ public interface IRenderer
     /// Ends the batch process.  Calling this will render any textures
     /// still in the batch.
     /// </summary>
-    static void End() => PushReactable.Push(PushNotifications.RenderBatchEndedId);
+    static void End() => PushReactable.Push(PushNotifications.BatchHasEndedId);
 
     /// <summary>
     /// Setup all of the caching for the properties that need caching.

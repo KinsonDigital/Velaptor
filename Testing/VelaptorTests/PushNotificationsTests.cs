@@ -1,4 +1,4 @@
-﻿// <copyright file="NotificationIdsTests.cs" company="KinsonDigital">
+﻿// <copyright file="PushNotificationsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="PushNotifications"/> class.
 /// </summary>
-public class NotificationIdsTests
+public class PushNotificationsTests
 {
     #region Prop Tests
     [Fact]
@@ -88,14 +88,14 @@ public class NotificationIdsTests
     public void RenderBatchBegunId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.RenderBatchBegunId.Should().Be("845e89b2-5a9d-4091-8689-d56f5c3060f3");
+        PushNotifications.BatchHasBegunId.Should().Be("845e89b2-5a9d-4091-8689-d56f5c3060f3");
     }
 
     [Fact]
     public void RenderBatchEndedId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.RenderBatchEndedId.Should().Be("ea261a35-58f9-4ddd-8301-004564311002");
+        PushNotifications.BatchHasEndedId.Should().Be("ea261a35-58f9-4ddd-8301-004564311002");
     }
 
     [Fact]
