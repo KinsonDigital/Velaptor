@@ -235,8 +235,8 @@ public class RectangleRendererTests
         this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.EndGroup());
         this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
         this.mockShader.VerifyNever(m => m.Use());
         this.mockGLService.VerifyNever(m =>
@@ -338,8 +338,8 @@ public class RectangleRendererTests
 
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
+        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
+        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
 
