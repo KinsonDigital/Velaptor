@@ -1477,4 +1477,109 @@ internal static class InternalExtensionMethods
 
         return -1;
     }
+
+    /// <summary>
+    /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">Indicates if the item index should be returned.</param>
+    /// <typeparam name="T">The type of item in list.</typeparam>
+    /// <returns>The index of the item that the <paramref name="predicate"/> returned <c>true</c> on.</returns>
+    /// <remarks>
+    ///     The iterating over the items will stop once the <paramref name="predicate"/> returns true.
+    /// </remarks>
+    public static int FirstItemIndex<T>(this Memory<T> items, Predicate<T> predicate)
+    {
+        var index = -1;
+
+        foreach (var item in items.Span)
+        {
+            index++;
+
+            if (predicate(item))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Returns the index of the first item that matches the given <paramref name="layer"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="layer">The layer to check for.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>.</typeparam>
+    /// <returns>
+    ///     The index of the item in the list of <paramref name="items"/>.
+    ///     <br/>
+    ///     The value of -1 will be returned if the layer can not be found.
+    /// </returns>
+    public static int FirstLayerIndex<T>(this Memory<RenderItem<T>> items, int layer)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (items.Span[i].Layer == layer)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Gets the total number of items that are on the given <paramref name="layer"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="layer">The layer to check for.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>
+    ///     The total number of items on the <paramref name="layer"/>.
+    /// </returns>
+    /// <remarks>
+    ///     This method assumes that the items are sorted by layer in ascending order to work properly.
+    /// </remarks>
+    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "Left for performance reasons.")]
+    public static int TotalOnLayer<T>(this Memory<RenderItem<T>> items, int layer)
+    {
+        var result = 0;
+
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            // If there is no point in checking the rest of the items
+            if (items.Span[i].Layer > layer)
+            {
+                return result;
+            }
+
+            if (items.Span[i].Layer == layer)
+            {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">The predicate to execute against each item.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>The index of the item.</returns>
+    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (predicate(items.Span[i].Item))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 }

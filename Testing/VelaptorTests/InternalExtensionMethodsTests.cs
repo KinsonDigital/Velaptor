@@ -1444,7 +1444,7 @@ public class InternalExtensionMethodsTests
     [Theory]
     [InlineData(3, 2)]
     [InlineData(40, -1)]
-    public void IndexOf_WhenInvoked_ReturnsCorrectResult(int value, int expected)
+    public void IndexOf_WithEnumerableItemsAndPredicate_ReturnsCorrectResult(int value, int expected)
     {
         // Arrange
         var items = new[] { 1, 2, 3, 4 };
@@ -1454,6 +1454,158 @@ public class InternalExtensionMethodsTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateReturnsTrue_ReturnsCorrectIndex()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-C");
+
+        // Assert
+        actual.Should().Be(1);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-D");
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(30);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerDoesNotExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(300);
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithLayerGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(20);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithNoLayersGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(200);
+
+        // Assert
+        actual.Should().Be(0);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            default,
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(-1);
     }
     #endregion
 
