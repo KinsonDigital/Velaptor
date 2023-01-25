@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
+using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
@@ -43,7 +44,7 @@ public class FontRendererTests
     private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockGPUBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IFont> mockFont;
-    private readonly Mock<IBatchingManager<FontGlyphBatchItem>> mockBatchingManager;
+    private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
 
@@ -55,7 +56,7 @@ public class FontRendererTests
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
     };
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor? renderReactor;
+    private IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
@@ -77,9 +78,7 @@ public class FontRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
 
-        this.mockBatchingManager = new Mock<IBatchingManager<FontGlyphBatchItem>>();
-        this.mockBatchingManager.SetupGet(p => p.BatchItems)
-            .Returns(Array.Empty<FontGlyphBatchItem>().AsReadOnly());
+        this.mockBatchingManager = new Mock<IBatchingManager>();
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
@@ -89,7 +88,9 @@ public class FontRendererTests
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
             .Returns<IReceiveReactor>(reactor =>
             {
-                if (reactor.Id == PushNotifications.RenderBatchBegunId)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
                     return this.mockBatchBegunUnsubscriber.Object;
                 }
@@ -111,14 +112,10 @@ public class FontRendererTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == PushNotifications.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
+                    reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
                     this.batchHasBegunReactor = reactor;
-                }
-
-                if (reactor.Id == PushNotifications.RenderFontsId)
-                {
-                    this.renderReactor = reactor;
                 }
 
                 if (reactor.Id == PushNotifications.SystemShuttingDownId)
@@ -127,8 +124,27 @@ public class FontRendererTests
                 }
             });
 
+        var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
+        mockFontRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>()))
+            .Returns<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                return mockRenderUnsubscriber.Object;
+            })
+            .Callback<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.RenderFontsId)}");
+
+                this.renderReactor = reactor;
+            });
+
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
+            .Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateRenderFontReactable())
+            .Returns(mockFontRenderBatchReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -138,6 +154,92 @@ public class FontRendererTests
         this.mockFont.SetupGet(p => p.Atlas).Returns(mockFontTextureAtlas.Object);
         this.mockFont.SetupGet(p => p.Size).Returns(12u);
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                null,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBufferParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                null,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'buffer')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullShaderParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                null,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'shader')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBatchManagerParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchManager')");
+    }
+    #endregion
 
     #region Method Tests
     [Fact]
@@ -162,7 +264,7 @@ public class FontRendererTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.renderReactor.OnReceive();
+        this.renderReactor.OnReceive(default);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
@@ -182,7 +284,6 @@ public class FontRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()));
-        this.mockBatchingManager.VerifyNever(m => m.EmptyBatch());
     }
 
     [Theory]
@@ -207,7 +308,7 @@ public class FontRendererTests
         // Assert
         this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
         this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-        this.mockBatchingManager.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()), Times.Never);
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -232,7 +333,7 @@ public class FontRendererTests
         // Assert
         this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
         this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-        this.mockBatchingManager.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()), Times.Never);
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -284,7 +385,7 @@ public class FontRendererTests
         // Assert
         this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
         this.mockFont.VerifyNever(m => m.GetKerning(It.IsAny<uint>(), It.IsAny<uint>()));
-        this.mockBatchingManager.VerifyNever(m => m.Add(It.IsAny<FontGlyphBatchItem>()));
+        this.mockBatchingManager.VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()));
     }
 
     [Fact]
@@ -352,8 +453,8 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
 
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem item) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -374,7 +475,7 @@ public class FontRendererTests
 
         // Assert
         this.mockBatchingManager.Verify(m =>
-            m.Add(It.Ref<FontGlyphBatchItem>.IsAny), Times.Exactly(renderText.Length));
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()), Times.Exactly(renderText.Length));
         Assert.Equal(12, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
     }
@@ -397,10 +498,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -411,10 +512,11 @@ public class FontRendererTests
             this.mockFont.Object,
             renderText,
             11,
-            22);
+            22,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -438,10 +540,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -451,10 +553,11 @@ public class FontRendererTests
         sut.Render(
             this.mockFont.Object,
             renderText,
-            new Vector2(33, 44));
+            new Vector2(33, 44),
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -478,10 +581,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -494,12 +597,16 @@ public class FontRendererTests
             321,
             202,
             2.25f,
-            230f);
+            230f,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
+
+        // TODO: Replace all of the assertions with FluentAssertions in all of the renderers
+
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
     }
 
@@ -521,10 +628,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -536,10 +643,11 @@ public class FontRendererTests
             renderText,
             new Vector2(66, 77),
             1.25f,
-            8f);
+            8f,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -563,10 +671,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -578,10 +686,11 @@ public class FontRendererTests
             renderText,
             456,
             635,
-            Color.DarkOrange);
+            Color.DarkOrange,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -605,10 +714,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -619,10 +728,11 @@ public class FontRendererTests
             this.mockFont.Object,
             renderText,
             new Vector2(758, 137),
-            Color.MediumPurple);
+            Color.MediumPurple,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -646,10 +756,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -662,10 +772,11 @@ public class FontRendererTests
             147,
             185,
             16f,
-            Color.IndianRed);
+            Color.IndianRed,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -689,10 +800,10 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem batchItem) =>
+        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
+            .Callback<FontGlyphBatchItem, int>((item, _) =>
             {
-                actualBatchResultData.Add(batchItem);
+                actualBatchResultData.Add(item);
             });
 
         var sut = CreateSystemUnderTest();
@@ -704,10 +815,11 @@ public class FontRendererTests
             renderText,
             new Vector2(1255, 79),
             88f,
-            Color.CornflowerBlue);
+            Color.CornflowerBlue,
+            123);
 
         // Assert
-        this.mockBatchingManager.Verify(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny),
+        this.mockBatchingManager.Verify(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123),
             Times.Exactly(totalGlyphs));
         Assert.Equal(totalGlyphs, actualBatchResultData.Count);
         AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
@@ -721,30 +833,15 @@ public class FontRendererTests
 
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
-        MockFontBatchItems(renderText);
+
+        var renderItems = CreateFontRenderItems(renderText);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Id).Returns(AtlasTextureId);
 
-        this.mockFont.SetupGet(p => p.Atlas).Returns(mockFontTextureAtlas.Object);
-
         var sut = CreateSystemUnderTest();
-        var totalAddFontGlyphBatchItemInvokes = 0;
-        var doNotRaise = false;
 
-        this.mockBatchingManager.Setup(m => m.Add(It.Ref<FontGlyphBatchItem>.IsAny))
-            .Callback((in FontGlyphBatchItem _) =>
-            {
-                totalAddFontGlyphBatchItemInvokes += 1;
-
-                if (totalAddFontGlyphBatchItemInvokes > renderText.Length || doNotRaise)
-                {
-                    return;
-                }
-
-                this.renderReactor.OnReceive();
-                doNotRaise = true;
-            });
+        this.renderReactor.OnReceive(renderItems);
 
         // Act
         this.batchHasBegunReactor.OnReceive();
@@ -765,7 +862,6 @@ public class FontRendererTests
         this.mockGPUBuffer.Verify(m => m.UploadData(It.IsAny<FontGlyphBatchItem>(),
                 It.IsAny<uint>()),
             Times.Exactly(renderText.Length));
-        this.mockBatchingManager.VerifyOnce(m => m.EmptyBatch());
     }
     #endregion
 
@@ -784,6 +880,36 @@ public class FontRendererTests
         this.mockBatchBegunUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
+
+    /// <summary>
+    /// Creates batch items for the purpose of testing.
+    /// </summary>
+    /// <param name="batchGlyphs">The glyphs to mock.</param>
+    private static Memory<RenderItem<FontGlyphBatchItem>> CreateFontRenderItems(string batchGlyphs)
+    {
+        var renderItems = new List<RenderItem<FontGlyphBatchItem>>();
+
+        foreach (var t in batchGlyphs)
+        {
+            var batchItem = new FontGlyphBatchItem(
+                RectangleF.Empty,
+                RectangleF.Empty,
+                t,
+                0,
+                0,
+                Color.Empty,
+                RenderEffects.None,
+                AtlasTextureId);
+
+            renderItems.Add(new RenderItem<FontGlyphBatchItem>
+            {
+                Layer = 0,
+                Item = batchItem,
+            });
+        }
+
+        return new Memory<RenderItem<FontGlyphBatchItem>>(renderItems.ToArray());
+    }
 
     /// <summary>
     /// Creates a new instance of <see cref="FontRenderer"/> for the purpose of testing.
@@ -823,32 +949,5 @@ public class FontRendererTests
                         : InvalidCharacter)
                     select m).FirstOrDefault()).ToArray();
         });
-    }
-
-    /// <summary>
-    /// Mocks the <see cref="IBatchingManager{T}.BatchItems"/> property of the <see cref="IBatchingManager{T}"/>.
-    /// </summary>
-    /// <param name="batchGlyphs">The glyphs to mock.</param>
-    private void MockFontBatchItems(string batchGlyphs)
-    {
-        var glyphsToMock = new List<FontGlyphBatchItem>();
-
-        foreach (var t in batchGlyphs)
-        {
-            var batchItem = new FontGlyphBatchItem(
-                RectangleF.Empty,
-                RectangleF.Empty,
-                t,
-                0,
-                0,
-                Color.Empty,
-                RenderEffects.None,
-                AtlasTextureId);
-
-            glyphsToMock.Add(batchItem);
-        }
-
-        this.mockBatchingManager.SetupProperty(p => p.BatchItems);
-        this.mockBatchingManager.Object.BatchItems = glyphsToMock.AsReadOnly();
     }
 }

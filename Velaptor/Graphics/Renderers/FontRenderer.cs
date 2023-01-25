@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Content.Fonts;
 using Factories;
 using Guards;
@@ -25,7 +26,7 @@ using NETSizeF = System.Drawing.SizeF;
 /// <inheritdoc cref="IFontRenderer"/>
 internal sealed class FontRenderer : RendererBase, IFontRenderer
 {
-    private readonly IBatchingManager<FontGlyphBatchItem> batchManager;
+    private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
@@ -48,9 +49,12 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         IOpenGLService openGLService,
         IGPUBuffer<FontGlyphBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingManager<FontGlyphBatchItem> batchManager)
+        IBatchingManager batchManager)
             : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(openGLService);
+        EnsureThat.ParamIsNotNull(buffer);
+        EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
         this.batchManager = batchManager;
@@ -60,17 +64,19 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
-        this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.RenderFontsId,
-            name: batchEndName,
-            onReceive: RenderBatch));
-
-        const string renderStateName = $"{nameof(FontRenderer)}.Ctor - {nameof(PushNotifications.RenderBatchBegunId)}";
+        var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.RenderBatchBegunId,
+            eventId: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
+
+        var fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
+
+        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
+        this.renderUnsubscriber = fontRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>(
+            eventId: PushNotifications.RenderFontsId,
+            name: renderReactorName,
+            onReceiveData: RenderBatch));
     }
 
         /// <inheritdoc/>
@@ -123,6 +129,93 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         this.renderBatchBegunUnsubscriber.Dispose();
 
         base.ShutDown();
+    }
+
+    /// <summary>
+    /// Constructs a list of batch items from the given
+    /// <paramref name="charMetrics"/> to be rendered.
+    /// </summary>
+    /// <param name="textPos">The position to render the text.</param>
+    /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
+    /// <param name="font">The font being used.</param>
+    /// <param name="origin">The origin to rotate the text around.</param>
+    /// <param name="renderSize">The size of the text.</param>
+    /// <param name="angle">The angle of the text.</param>
+    /// <param name="color">The color of the text.</param>
+    /// <param name="atlasWidth">The width of the font texture atlas.</param>
+    /// <param name="atlasHeight">The height of the font texture atlas.</param>
+    /// <returns>The list of glyphs that make up the string as font batch items.</returns>
+    private static IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
+        Vector2 textPos,
+        IEnumerable<GlyphMetrics> charMetrics,
+        IFont font,
+        Vector2 origin,
+        float renderSize,
+        float angle,
+        Color color,
+        float atlasWidth,
+        float atlasHeight)
+    {
+        var result = new List<FontGlyphBatchItem>();
+
+        var leftGlyphIndex = 0u;
+
+        foreach (var currentCharMetric in charMetrics)
+        {
+            textPos.X += font.GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
+
+            // Create the source rect
+            var srcRect = currentCharMetric.GlyphBounds;
+            srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
+            srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
+
+            // Calculate the height offset
+            var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
+
+            // Adjust for characters that have a negative horizontal bearing Y
+            // For example, the '_' character
+            if (currentCharMetric.HoriBearingY < 0)
+            {
+                heightOffset += currentCharMetric.HoriBearingY;
+            }
+
+            // Create the destination rect
+            RectangleF destRect = default;
+            destRect.X = textPos.X;
+            destRect.Y = textPos.Y + heightOffset;
+            destRect.Width = atlasWidth;
+            destRect.Height = atlasHeight;
+
+            var newPosition = destRect.GetPosition().RotateAround(origin, angle);
+
+            destRect.X = newPosition.X;
+            destRect.Y = newPosition.Y;
+
+            // Only render characters that are not a space (32 char code)
+            if (currentCharMetric.Glyph != ' ')
+            {
+                var itemToAdd = new FontGlyphBatchItem(
+                    srcRect,
+                    destRect,
+                    currentCharMetric.Glyph,
+                    renderSize,
+                    angle,
+                    color,
+                    RenderEffects.None,
+                    font.Atlas.Id);
+
+                result.Add(itemToAdd);
+            }
+
+            // Horizontally advance to the next glyph
+            // Get the difference between the old glyph width
+            // and the glyph width with the size applied
+            textPos.X += currentCharMetric.HorizontalAdvance;
+
+            leftGlyphIndex = currentCharMetric.CharIndex;
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -220,111 +313,21 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
                 angle,
                 color,
                 atlasWidth,
-                atlasHeight,
-                layer);
+                atlasHeight);
 
             foreach (var item in batchItems)
             {
-                this.batchManager.Add(item);
+                this.batchManager.AddFontItem(item, layer);
             }
         }
-    }
-
-    /// <summary>
-    /// Constructs a list of batch items from the given
-    /// <paramref name="charMetrics"/> to be rendered.
-    /// </summary>
-    /// <param name="textPos">The position to render the text.</param>
-    /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
-    /// <param name="font">The font being used.</param>
-    /// <param name="origin">The origin to rotate the text around.</param>
-    /// <param name="renderSize">The size of the text.</param>
-    /// <param name="angle">The angle of the text.</param>
-    /// <param name="color">The color of the text.</param>
-    /// <param name="atlasWidth">The width of the font texture atlas.</param>
-    /// <param name="atlasHeight">The height of the font texture atlas.</param>
-    /// <param name="layer">The layer to render the text.</param>
-    /// <returns>The list of glyphs that make up the string as font batch items.</returns>
-    private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
-        Vector2 textPos,
-        IEnumerable<GlyphMetrics> charMetrics,
-        IFont font,
-        Vector2 origin,
-        float renderSize,
-        float angle,
-        Color color,
-        float atlasWidth,
-        float atlasHeight,
-        int layer)
-    {
-        var result = new List<FontGlyphBatchItem>();
-
-        var leftGlyphIndex = 0u;
-
-        foreach (var currentCharMetric in charMetrics)
-        {
-            textPos.X += font.GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
-
-            // Create the source rect
-            var srcRect = currentCharMetric.GlyphBounds;
-            srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
-            srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
-
-            // Calculate the height offset
-            var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
-
-            // Adjust for characters that have a negative horizontal bearing Y
-            // For example, the '_' character
-            if (currentCharMetric.HoriBearingY < 0)
-            {
-                heightOffset += currentCharMetric.HoriBearingY;
-            }
-
-            // Create the destination rect
-            RectangleF destRect = default;
-            destRect.X = textPos.X;
-            destRect.Y = textPos.Y + heightOffset;
-            destRect.Width = atlasWidth;
-            destRect.Height = atlasHeight;
-
-            var newPosition = destRect.GetPosition().RotateAround(origin, angle);
-
-            destRect.X = newPosition.X;
-            destRect.Y = newPosition.Y;
-
-            // Only render characters that are not a space (32 char code)
-            if (currentCharMetric.Glyph != ' ')
-            {
-                var itemToAdd = new FontGlyphBatchItem(
-                    srcRect,
-                    destRect,
-                    currentCharMetric.Glyph,
-                    renderSize,
-                    angle,
-                    color,
-                    RenderEffects.None,
-                    font.Atlas.Id);
-
-                result.Add(itemToAdd);
-            }
-
-            // Horizontally advance to the next glyph
-            // Get the difference between the old glyph width
-            // and the glyph width with the size applied
-            textPos.X += currentCharMetric.HorizontalAdvance;
-
-            leftGlyphIndex = currentCharMetric.CharIndex;
-        }
-
-        return result.ToArray();
     }
 
     /// <summary>
     /// Invoked every time a batch of fonts is ready to be rendered.
     /// </summary>
-    private void RenderBatch()
+    private void RenderBatch(Memory<RenderItem<FontGlyphBatchItem>> itemsToRender)
     {
-        if (this.batchManager.BatchItems.Count <= 0)
+        if (itemsToRender.Length <= 0)
         {
             this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -339,52 +342,41 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchManager.BatchItems
-            .Where(i => i.IsEmpty() is false)
-            .Select(i => i)
-            .ToArray();
-
         // Only if items are available to render
-        if (itemsToRender.Length > 0)
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            for (var i = 0u; i < itemsToRender.Length; i++)
+            var batchItem = itemsToRender.Span[(int)i].Item;
+
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
+
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender.Span[(int)(i + 1)].Item.TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
+            this.openGLService.EndGroup();
+
+            if (shouldNotRender)
             {
-                var batchItem = itemsToRender[(int)i];
-
-                var isLastItem = i >= itemsToRender.Length - 1;
-                var isNotLastItem = !isLastItem;
-
-                var nextTextureIsDifferent = isNotLastItem &&
-                                             itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
-                var shouldRender = isLastItem || nextTextureIsDifferent;
-                var shouldNotRender = !shouldRender;
-
-                gpuDataIndex++;
-                totalItemsToRender++;
-
-                this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
-                this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
-                this.openGLService.EndGroup();
-
-                if (shouldNotRender)
-                {
-                    continue;
-                }
-
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-
-                var totalElements = 6u * totalItemsToRender;
-
-                this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-                GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
-                this.openGLService.EndGroup();
-
-                totalItemsToRender = 0;
-                gpuDataIndex = -1;
+                continue;
             }
 
-            // Empties the batch
-            this.batchManager.EmptyBatch();
+            this.openGLService.BindTexture2D(batchItem.TextureId);
+
+            var totalElements = 6u * totalItemsToRender;
+
+            this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
+            GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+            this.openGLService.EndGroup();
+
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         this.openGLService.EndGroup();
