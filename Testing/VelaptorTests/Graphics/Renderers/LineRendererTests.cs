@@ -368,23 +368,23 @@ public class LineRendererTests
         this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render Line Process - Nothing To Render"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
-        this.mockGLService.Verify(m => m.BeginGroup($"Render Line Process With {shaderName} Shader"), Times.Never);
-        this.mockShader.Verify(m => m.Use(), Times.Never);
-        this.mockGLService.Verify(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))), Times.Never);
-        this.mockGL.Verify(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()), Times.Never);
-        this.mockGLService.Verify(m => m.BindTexture2D(It.IsAny<uint>()), Times.Never);
-        this.mockGPUBuffer.Verify(m =>
-            m.UploadData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()), Times.Never);
-        this.mockGLService.Verify(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))), Times.Never);
-        this.mockGL.Verify(m => m.DrawElements(
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Line Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.EndGroup());
+        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Line Process With {shaderName} Shader"));
+        this.mockShader.VerifyNever(m => m.Use());
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))));
+        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+        this.mockGPUBuffer.VerifyNever(m =>
+            m.UploadData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()));
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+        this.mockGL.VerifyNever(m => m.DrawElements(
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<nint>()), Times.Never);
+            It.IsAny<nint>()));
     }
 
     [Fact]
@@ -417,16 +417,16 @@ public class LineRendererTests
         this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render 6 Line Elements"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
-        this.mockGPUBuffer.Verify(m => m.UploadData(batchItem, batchIndex), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Line Elements"));
+        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
+        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
+        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
     #endregion
 
-    #region Indirect Tests
+    #region Reactable Tests
     [Fact]
-    [Trait(Category, "Indirect Tests")]
+    [Trait(Category, "Reactable Tests")]
     public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
     {
         // Arrange
@@ -437,8 +437,8 @@ public class LineRendererTests
         this.shutDownReactor.OnReceive();
 
         // Assert
-        this.mockBatchBegunUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-        this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
