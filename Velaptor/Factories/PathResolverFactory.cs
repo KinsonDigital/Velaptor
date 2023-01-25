@@ -65,7 +65,7 @@ public static class PathResolverFactory
             return CreateWindowsFontPathResolver();
         }
 
-        throw new NotImplementedException("Currently loading system fonts is only supported on Windows.");
+        throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
     }
 
     /// <summary>

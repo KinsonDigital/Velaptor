@@ -190,7 +190,7 @@ public class FontPathResolverTests
         var act = () => sut.RootDirectoryPath;
 
         // Assert
-        act.Should().Throw<NotImplementedException>()
+        act.Should().Throw<NotSupportedException>()
             .WithMessage(OnlyWindowsSupportMessage);
     }
 
@@ -234,7 +234,7 @@ public class FontPathResolverTests
         var act = () => sut.ContentDirectoryName;
 
         // Assert
-        act.Should().Throw<NotImplementedException>()
+        act.Should().Throw<NotSupportedException>()
             .WithMessage(OnlyWindowsSupportMessage);
     }
     #endregion
@@ -254,7 +254,7 @@ public class FontPathResolverTests
         };
 
         // Assert
-        act.Should().Throw<NotImplementedException>()
+        act.Should().Throw<NotSupportedException>()
             .WithMessage(OnlyWindowsSupportMessage);
     }
 
@@ -305,7 +305,7 @@ public class FontPathResolverTests
         var act = () => sut.ResolveDirPath();
 
         // Assert
-        act.Should().Throw<NotImplementedException>()
+        act.Should().Throw<NotSupportedException>()
             .WithMessage(OnlyWindowsSupportMessage);
     }
 
