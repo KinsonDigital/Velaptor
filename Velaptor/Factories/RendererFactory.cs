@@ -33,7 +33,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<TextureBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateTextureShader();
-        var textureBatchManager = IoC.Container.GetInstance<IBatchingManager<TextureBatchItem>>();
+        var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
         textureRenderer = new TextureRenderer(
             glInvoker,
@@ -41,7 +41,7 @@ public sealed class RendererFactory : IRendererFactory
             openGLService,
             buffer,
             shader,
-            textureBatchManager);
+            batchManager);
 
         return textureRenderer;
     }
@@ -59,7 +59,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateFontShader();
-        var fontBatchService = IoC.Container.GetInstance<IBatchingManager<FontGlyphBatchItem>>();
+        var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
         fontRenderer = new FontRenderer(
             glInvoker,
@@ -67,7 +67,7 @@ public sealed class RendererFactory : IRendererFactory
             openGLService,
             buffer,
             shader,
-            fontBatchService);
+            batchManager);
 
         return fontRenderer;
     }
@@ -85,7 +85,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<RectBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
-        var rectBatchService = IoC.Container.GetInstance<IBatchingManager<RectBatchItem>>();
+        var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
         rectangleRenderer = new RectangleRenderer(
             glInvoker,
@@ -93,7 +93,7 @@ public sealed class RendererFactory : IRendererFactory
             openGLService,
             buffer,
             shader,
-            rectBatchService);
+            batchManager);
 
         return rectangleRenderer;
     }
@@ -111,7 +111,7 @@ public sealed class RendererFactory : IRendererFactory
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
         var buffer = IoC.Container.GetInstance<IGPUBuffer<LineBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateLineShader();
-        var lineBatchService = IoC.Container.GetInstance<IBatchingManager<LineBatchItem>>();
+        var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
         lineRenderer = new LineRenderer(
             glInvoker,
@@ -119,7 +119,7 @@ public sealed class RendererFactory : IRendererFactory
             openGLService,
             buffer,
             shader,
-            lineBatchService);
+            batchManager);
 
         return lineRenderer;
     }
