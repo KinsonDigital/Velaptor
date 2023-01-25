@@ -4,6 +4,7 @@
 
 namespace Velaptor;
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
@@ -73,16 +74,14 @@ internal static class IoC
 
         SetupContent();
 
-        IoCContainer.Register<IReactableFactory, ReactableFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable, PushReactable>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+        SetupReactables();
 
+        IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IComparer<RenderItem<RectBatchItem>>, RenderItemComparer<RectBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IComparer<RenderItem<LineBatchItem>>, RenderItemComparer<LineBatchItem>>(Lifestyle.Singleton);
+
+        IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
@@ -169,10 +168,6 @@ internal static class IoC
         IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingManager<TextureBatchItem>, TextureBatchingManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingManager<FontGlyphBatchItem>, FontGlyphBatchingManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingManager<RectBatchItem>, RectBatchingManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingManager<LineBatchItem>, LineBatchingManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
@@ -190,4 +185,30 @@ internal static class IoC
     /// Sets up the container registration related to content.
     /// </summary>
     private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
+
+    /// <summary>
+    /// Sets up the container registration related to reactables.
+    /// </summary>
+    private static void SetupReactables()
+    {
+        IoCContainer.Register<IReactableFactory, ReactableFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable, PushReactable>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+
+        IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchPullReactable<FontGlyphBatchItem>, BatchPullReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchPullReactable<RectBatchItem>, BatchPullReactable<RectBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchPullReactable<LineBatchItem>, BatchPullReactable<LineBatchItem>>(Lifestyle.Singleton);
+
+        IoCContainer.Register<IRenderBatchReactable<TextureBatchItem>, RenderBatchReactable<TextureBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderBatchReactable<FontGlyphBatchItem>, RenderBatchReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderBatchReactable<RectBatchItem>, RenderBatchReactable<RectBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
+    }
 }
