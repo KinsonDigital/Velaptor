@@ -8,7 +8,6 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
@@ -26,6 +25,14 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
 
+using LineRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.LineBatchItem
+        >
+    >
+>;
+
 /// <summary>
 /// Tests the <see cref="LineRenderer"/> class.
 /// </summary>
@@ -42,7 +49,7 @@ public class LineRendererTests
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? shutDownReactor;
-    private IReceiveReactor<Memory<RenderItem<LineBatchItem>>>? renderReactor;
+    private LineRenderItem? renderReactor;
     private IReceiveReactor? batchHasBegunReactor;
 
     /// <summary>
@@ -102,8 +109,8 @@ public class LineRendererTests
 
         var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
         mockLineRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<Memory<RenderItem<LineBatchItem>>>>()))
-            .Callback<IReceiveReactor<Memory<RenderItem<LineBatchItem>>>>(reactor =>
+            .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
+            .Callback<LineRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -114,7 +121,7 @@ public class LineRendererTests
                     this.renderReactor = reactor;
                 }
             })
-            .Returns<IReceiveReactor<Memory<RenderItem<LineBatchItem>>>>(reactor =>
+            .Returns<LineRenderItem>(reactor =>
             {
                 if (reactor.Id == PushNotifications.RenderLinesId)
                 {

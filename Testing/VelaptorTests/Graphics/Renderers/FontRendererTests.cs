@@ -10,7 +10,6 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
@@ -28,6 +27,14 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
+
+using FontRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.FontGlyphBatchItem
+        >
+    >
+>;
 
 /// <summary>
 /// Tests the <see cref="FontRenderer"/> class.
@@ -56,7 +63,7 @@ public class FontRendererTests
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
     };
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>? renderReactor;
+    private FontRenderItem? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
@@ -126,13 +133,13 @@ public class FontRendererTests
 
         var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
         mockFontRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>()))
-            .Returns<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
+            .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
+            .Returns<FontRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return mockRenderUnsubscriber.Object;
             })
-            .Callback<IReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
+            .Callback<FontRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.RenderFontsId)}");

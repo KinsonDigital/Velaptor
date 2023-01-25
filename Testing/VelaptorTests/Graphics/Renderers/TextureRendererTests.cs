@@ -7,7 +7,6 @@ namespace VelaptorTests.Graphics.Renderers;
 using System;
 using System.Drawing;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Factories;
 using FluentAssertions;
@@ -26,6 +25,15 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
 
+using TextureRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.TextureBatchItem
+        >
+    >
+>;
+
+
 /// <summary>
 /// Tests the <see cref="TextureRenderer"/> class.
 /// </summary>
@@ -42,7 +50,7 @@ public class TextureRendererTests
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor<Memory<RenderItem<TextureBatchItem>>>? renderReactor;
+    private TextureRenderItem? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -108,13 +116,13 @@ public class TextureRendererTests
 
         var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
         mockTextureRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<Memory<RenderItem<TextureBatchItem>>>>()))
-            .Returns<IReceiveReactor<Memory<RenderItem<TextureBatchItem>>>>(reactor =>
+            .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
+            .Returns<TextureRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return mockRenderUnsubscriber.Object;
             })
-            .Callback<IReceiveReactor<Memory<RenderItem<TextureBatchItem>>>>(reactor =>
+            .Callback<TextureRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 reactor.Name.Should().Be($"TextureRendererTests.Ctor - {nameof(PushNotifications.RenderTexturesId)}");

@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
@@ -27,6 +26,14 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
 
+using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.RectBatchItem
+        >
+    >
+>;
+
 /// <summary>
 /// Tests the <see cref="RectangleRenderer"/> class.
 /// </summary>
@@ -42,7 +49,7 @@ public class RectangleRendererTests
     private readonly Mock<IDisposable> mockRenderUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor<Memory<RenderItem<RectBatchItem>>>? renderReactor;
+    private RectRenderItem? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -106,15 +113,15 @@ public class RectangleRendererTests
 
         var mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<RectBatchItem>>();
         mockRectRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<Memory<RenderItem<RectBatchItem>>>>()))
-            .Callback<IReceiveReactor<Memory<RenderItem<RectBatchItem>>>>(reactor =>
+            .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
+            .Callback<RectRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 reactor.Name.Should().Be($"RectangleRendererTests.Ctor - {nameof(PushNotifications.RenderRectsId)}");
 
                 this.renderReactor = reactor;
             })
-            .Returns<IReceiveReactor<Memory<RenderItem<RectBatchItem>>>>((reactor) =>
+            .Returns<RectRenderItem>((reactor) =>
             {
                 if (reactor.Id == PushNotifications.RenderRectsId)
                 {
