@@ -263,7 +263,7 @@ public class RectGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = BatchItemFactory.CreateRectBatchItem(gradientType: (ColorGradient)1234);
+        var rect = BatchItemFactory.CreateRectItemWithOrderedValues(gradientType: (ColorGradient)1234);
 
         var sut = CreateSystemUnderTest();
 
@@ -446,7 +446,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = BatchItemFactory.CreateRectBatchItem();
+        var rect = BatchItemFactory.CreateRectItemWithOrderedValues();
 
         var sut = CreateSystemUnderTest();
 
