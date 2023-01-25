@@ -1,30 +1,41 @@
-// <copyright file="IBatchingManager.cs" company="KinsonDigital">
+﻿// <copyright file="IBatchingManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Batching;
 
-using System.Collections.ObjectModel;
+using OpenGL.Batching;
 
 /// <summary>
-/// Manages the process of batching items.
+/// Manages batch items that are used for rendering.
 /// </summary>
-/// <typeparam name="T">The type of items stored in the batch.</typeparam>
-internal interface IBatchingManager<T>
+internal interface IBatchingManager
 {
     /// <summary>
-    /// Gets or sets the list of batch items.
+    /// Adds a texture item to the batch.
     /// </summary>
-    ReadOnlyCollection<T> BatchItems { get; set; }
+    /// <param name="item">The item to add.</param>
+    /// <param name="layer">The layer to add the item on.</param>
+    void AddTextureItem(TextureBatchItem item, int layer);
 
     /// <summary>
-    /// Adds the given <paramref name="item"/> to the batch.
+    /// Adds a font glyph item to the batch.
     /// </summary>
-    /// <param name="item">The item to be added.</param>
-    void Add(in T item);
+    /// <param name="item">The item to add.</param>
+    /// <param name="layer">The layer to add the item on.</param>
+    void AddFontItem(FontGlyphBatchItem item, int layer);
 
     /// <summary>
-    /// Empties the entire batch.
+    /// Adds a rectangle item to the batch.
     /// </summary>
-    void EmptyBatch();
+    /// <param name="item">The item to add.</param>
+    /// <param name="layer">The layer to add the item on.</param>
+    void AddRectItem(RectBatchItem item, int layer);
+
+    /// <summary>
+    /// Adds a line item to the batch.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <param name="layer">The layer to add the item on.</param>
+    void AddLineItem(LineBatchItem item, int layer);
 }
