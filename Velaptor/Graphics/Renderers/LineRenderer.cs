@@ -6,10 +6,10 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -21,7 +21,7 @@ using OpenGL.Shaders;
 /// <inheritdoc cref="ILineRenderer"/>
 internal sealed class LineRenderer : RendererBase, ILineRenderer
 {
-    private readonly IBatchingManager<LineBatchItem> batchManager;
+    private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
@@ -44,9 +44,12 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         IOpenGLService openGLService,
         IGPUBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingManager<LineBatchItem> batchManager)
+        IBatchingManager batchManager)
             : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(openGLService);
+        EnsureThat.ParamIsNotNull(buffer);
+        EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
         this.batchManager = batchManager;
@@ -56,17 +59,19 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
 
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
-        this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.RenderLinesId,
-            name: batchEndName,
-            onReceive: RenderBatch));
-
-        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.RenderBatchBegunId)}";
+        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.RenderBatchBegunId,
+            eventId: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
+
+        var lineRenderBatchReactable = reactableFactory.CreateRenderLineReactable();
+
+        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
+        this.renderUnsubscriber = lineRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<LineBatchItem>>>(
+            eventId: PushNotifications.RenderLinesId,
+            name: renderReactorName,
+            onReceiveData: RenderBatch));
     }
 
     /// <inheritdoc/>
@@ -126,15 +131,15 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             color,
             thickness);
 
-        this.batchManager.Add(batchItem);
+        this.batchManager.AddLineItem(batchItem, layer);
     }
 
     /// <summary>
     /// Invoked every time a batch of lines is ready to be rendered.
     /// </summary>
-    private void RenderBatch()
+    private void RenderBatch(Memory<RenderItem<LineBatchItem>> itemsToRender)
     {
-        if (this.batchManager.BatchItems.Count <= 0)
+        if (itemsToRender.Length <= 0)
         {
             this.openGLService.BeginGroup("Render Line Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -149,35 +154,24 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchManager.BatchItems
-            .Where(i => i.IsEmpty() is false)
-            .Select(i => i)
-            .ToArray();
-
         // Only if items are available to render
-        if (itemsToRender.Length > 0)
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            for (var i = 0u; i < itemsToRender.Length; i++)
-            {
-                var batchItem = itemsToRender[(int)i];
+            var batchItem = itemsToRender.Span[(int)i].Item;
 
-                gpuDataIndex++;
-                totalItemsToRender++;
+            gpuDataIndex++;
+            totalItemsToRender++;
 
-                this.openGLService.BeginGroup($"Update Line Data - BatchItem({i})");
-                this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
-                this.openGLService.EndGroup();
-            }
-
-            var totalElements = 6u * totalItemsToRender;
-
-            this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
-            GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+            this.openGLService.BeginGroup($"Update Line Data - BatchItem({i})");
+            this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
             this.openGLService.EndGroup();
-
-            // Empties the batch
-            this.batchManager.EmptyBatch();
         }
+
+        var totalElements = 6u * totalItemsToRender;
+
+        this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
+        GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.openGLService.EndGroup();
 
         this.openGLService.EndGroup();
         this.hasBegun = false;
