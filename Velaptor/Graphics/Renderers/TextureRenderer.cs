@@ -67,11 +67,6 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
 
-        // TODO: Create a new class named 'ReceiveTextureItemReactor' to simplify 'new ReceiveReactor<Memory<RenderItem<TextureBatchItem>>'
-        // This will reduce the amount of code to type and make things more readable.  This is the same the 'IBatchFullReactable';
-        // Do this with other classes as well.  This is a generic condenser.
-        // ⚠️Cannot do this unless the reactors are not 'sealed'.  Need a new issue to implement this feature into Carbonate
-
         var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId));

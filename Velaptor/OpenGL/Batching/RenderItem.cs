@@ -4,8 +4,6 @@
 
 namespace Velaptor.OpenGL.Batching;
 
-using System;
-
 /// <summary>
 /// A single batch item with associated meta-data about how it should be rendered.
 /// </summary>
