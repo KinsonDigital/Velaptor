@@ -91,7 +91,7 @@ public class RendererBaseTests
             .Returns<IReceiveReactor>(_ => this.mockShutDownUnsubscriber.Object)
             .Callback<IReceiveReactor>(reactor =>
             {
-                reactor.Should().NotBeNull();
+                reactor.Should().NotBeNull("it is required for unit testing.");
                 shutDownReactor = reactor;
             });
 

@@ -18,11 +18,6 @@ internal readonly record struct RenderItem<T>
     public int Layer { get; init; }
 
     /// <summary>
-    /// Gets the date and time that the <see cref="Item"/> was added for rendering.
-    /// </summary>
-    public DateTime DateTime { get; init; }
-
-    /// <summary>
     /// Gets the item to render.
     /// </summary>
     public T Item { get; init; }

@@ -25,7 +25,6 @@ public class SoundFactoryTests
     private readonly Mock<IDisposable> mockDisposeSoundUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor<DisposeSoundData>? disposeReactor;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -55,11 +54,6 @@ public class SoundFactoryTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return this.mockDisposeSoundUnsubscriber.Object;
-            })
-            .Callback<IReceiveReactor<DisposeSoundData>>((reactor) =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.disposeReactor = reactor;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
