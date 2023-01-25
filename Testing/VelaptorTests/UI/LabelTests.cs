@@ -27,6 +27,7 @@ using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 /// </summary>
 public class LabelTests
 {
+    private const int LabelLayer = int.MaxValue - 1;
     private const string TextValue = "hello world";
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IFont> mockFont;
@@ -447,7 +448,7 @@ public class LabelTests
         sut.Visible = true;
 
         // Act
-        sut.Render("test-value");
+        sut.Render("test-value", 123);
 
         // Assert
         this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
@@ -469,7 +470,7 @@ public class LabelTests
 
         // Act
         sut.LoadContent();
-        sut.Render("test-value");
+        sut.Render("test-value", 123);
 
         // Assert
         this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
@@ -493,7 +494,7 @@ public class LabelTests
         sut.LoadContent();
 
         // Act
-        sut.Render(text);
+        sut.Render(text, 123);
 
         // Assert
         this.mockFontRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
@@ -529,7 +530,7 @@ public class LabelTests
             1f,
             0f,
             Color.FromArgb(11, 22, 33, 44),
-            0), Times.Once);
+            LabelLayer), Times.Once);
     }
     #endregion
 

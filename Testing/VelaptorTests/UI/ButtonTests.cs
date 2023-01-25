@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -27,6 +28,7 @@ using Xunit;
 /// </summary>
 public class ButtonTests
 {
+    private const int BorderLayer = int.MaxValue - 2;
     private const string ButtonTextValue = "test-value";
     private const string TextureName = "sut-face-small";
     private readonly Mock<IContentLoader> mockContentLoader;
@@ -644,7 +646,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m => m.Render(expected, 0), Times.Once);
+        this.mockRectRenderer.VerifyOnce(m => m.Render(expected, BorderLayer));
     }
 
     [Fact]

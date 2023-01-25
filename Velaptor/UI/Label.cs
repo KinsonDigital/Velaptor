@@ -201,13 +201,14 @@ public class Label : ControlBase
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
-    public override void Render() => Render(this.labelText);
+    public override void Render() => Render(this.labelText, int.MaxValue - 1);
 
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
     /// <param name="text">The text to render.</param>
-    internal void Render(string text)
+    /// <param name="layer">The layer to render the label on.</param>
+    internal void Render(string text, int layer)
     {
         if (IsLoaded is false || Visible is false)
         {
@@ -223,7 +224,8 @@ public class Label : ControlBase
                 Position.Y,
                 1f,
                 0f,
-                Enabled ? Color : this.disabledColor);
+                Enabled ? Color : this.disabledColor,
+                layer);
         }
 
         base.Render();
