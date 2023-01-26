@@ -102,12 +102,10 @@ internal static class IoC
 
         IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
+        IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
+        IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
 
         IoCContainer.Register<GLFWMonitors>(Lifestyle.Singleton);
-
-        IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
-
-        IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
     }
 
