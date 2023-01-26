@@ -69,7 +69,7 @@ internal sealed class BatchingManager : IBatchingManager
                 var lastFullItemIndex = this.textureItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
-                    ? default
+                    ? this.textureItems
                     : this.textureItems[..lastFullItemIndex];
             }));
 
@@ -83,7 +83,7 @@ internal sealed class BatchingManager : IBatchingManager
                 var lastFullItemIndex = this.fontItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
-                    ? default
+                    ? this.fontItems
                     : this.fontItems[..lastFullItemIndex];
             }));
 
@@ -97,7 +97,7 @@ internal sealed class BatchingManager : IBatchingManager
                 var lastFullItemIndex = this.rectItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
-                    ? default
+                    ? this.rectItems
                     : this.rectItems[..lastFullItemIndex];
             }));
 
@@ -111,7 +111,7 @@ internal sealed class BatchingManager : IBatchingManager
                 var lastFullItemIndex = this.lineItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
-                    ? default
+                    ? this.lineItems
                     : this.lineItems[..lastFullItemIndex];
             }));
     }
