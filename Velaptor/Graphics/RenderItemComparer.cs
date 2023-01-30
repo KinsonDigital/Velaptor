@@ -16,10 +16,10 @@ internal sealed class RenderItemComparer<T> : IComparer<RenderItem<T>>
 {
     /// <summary>
     /// Compares two <see cref="RenderItem{T}"/>s. Returns a
-    /// value less than zero if the <paramref name="x"/>.<see cref="RenderItem{T}.Layer"/> is less than
-    /// <paramref name="y"/>.<see cref="RenderItem{T}.Layer"/>, zero if <paramref name="x"/>.<see cref="RenderItem{T}.Layer"/>
-    /// is equal to <paramref name="y"/>.<see cref="RenderItem{T}.Layer"/>, or a value greater than zero if
-    /// <paramref name="x"/>.<see cref="RenderItem{T}.Layer"/> is greater than <paramref name="y"/>.<see cref="RenderItem{T}.Layer"/>.
+    /// value less than zero if the <paramref name="x"/> layer is less than
+    /// the <paramref name="y"/> layer, zero if <paramref name="x"/> layer
+    /// is equal to the <paramref name="y"/> layer, or a value greater than zero if
+    /// <paramref name="x"/> layer is greater than the <paramref name="y"/> layer.
     /// </summary>
     /// <param name="x">The left side of the comparison.</param>
     /// <param name="y">The right side of the comparison.</param>

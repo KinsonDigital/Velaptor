@@ -164,7 +164,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         {
             textPos.X += font.GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
 
-            // Create the source rect
+            // Creates the source rect
             var srcRect = currentCharMetric.GlyphBounds;
             srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
             srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;

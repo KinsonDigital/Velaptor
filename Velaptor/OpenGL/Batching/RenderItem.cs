@@ -11,7 +11,7 @@ namespace Velaptor.OpenGL.Batching;
 internal readonly record struct RenderItem<T>
 {
     /// <summary>
-    /// Gets the layer that the <see cref="Item"/> should be rendered on.
+    /// Gets the layer where the <see cref="Item"/> should be rendered.
     /// </summary>
     public int Layer { get; init; }
 

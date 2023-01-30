@@ -13,7 +13,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 /// <summary>
-/// Test the <see cref="FontGlyphBatchItem"/> struct.
+/// Tests the <see cref="FontGlyphBatchItem"/> struct.
 /// </summary>
 public class FontGlyphBatchItemTests
 {

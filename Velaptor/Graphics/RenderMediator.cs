@@ -38,10 +38,10 @@ internal sealed class RenderMediator : IRenderMediator
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    /// <param name="textureItemComparer">Compares 2 texture batch items for the purpose of sorting.</param>
-    /// <param name="fontItemComparer">Compares 2 font batch items for the purpose of sorting.</param>
-    /// <param name="rectItemComparer">Compares 2 rect batch items for the purpose of sorting.</param>
-    /// <param name="lineItemComparer">Compares 2 line batch items for the purpose of sorting.</param>
+    /// <param name="textureItemComparer">Compares two texture batch items for the purpose of sorting.</param>
+    /// <param name="fontItemComparer">Compares two font batch items for the purpose of sorting.</param>
+    /// <param name="rectItemComparer">Compares two rect batch items for the purpose of sorting.</param>
+    /// <param name="lineItemComparer">Compares two line batch items for the purpose of sorting.</param>
     public RenderMediator(
         IReactableFactory reactableFactory,
         IComparer<RenderItem<TextureBatchItem>> textureItemComparer,
@@ -84,7 +84,7 @@ internal sealed class RenderMediator : IRenderMediator
         this.rectItemComparer = rectItemComparer;
         this.lineItemComparer = lineItemComparer;
 
-        // Set all of the layers to a default value of the max value of int
+        // Sets all of the layers to a default value of the max value of int
         for (var i = 0; i < this.allLayers.Length; i++)
         {
             this.allLayers.Span[i] = int.MaxValue;
@@ -158,7 +158,7 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.allLayers.Span.Sort();
 
-        // Render all of the items in a coordinated fashion
+        // Renders all of the items in a coordinated fashion
         for (var i = 0; i < this.allLayers.Length; i++)
         {
             if (this.allLayers.Span[i] == int.MaxValue)
@@ -209,7 +209,7 @@ internal sealed class RenderMediator : IRenderMediator
                     PushNotifications.RenderLinesId);
             }
 
-            // Reset the item back to the default value
+            // Resets the item back to the default value
             this.allLayers.Span[i] = int.MaxValue;
         }
 
