@@ -22,7 +22,7 @@ internal interface IBatchingManager
     /// Adds a font glyph item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    /// <param name="layer">The layer to add the item on.</param>
+    /// <param name="layer">The layer to add the item.</param>
     void AddFontItem(FontGlyphBatchItem item, int layer);
 
     /// <summary>

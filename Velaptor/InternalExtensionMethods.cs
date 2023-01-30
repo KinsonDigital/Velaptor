@@ -1482,9 +1482,9 @@ internal static class InternalExtensionMethods
     /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
     /// </summary>
     /// <param name="items">The items to check.</param>
-    /// <param name="predicate">Indicates if the item index should be returned.</param>
-    /// <typeparam name="T">The type of item in list.</typeparam>
-    /// <returns>The index of the item that the <paramref name="predicate"/> returned <c>true</c> on.</returns>
+    /// <param name="predicate">Indicates whether or not if the item index should be returned.</param>
+    /// <typeparam name="T">The type of item in the list.</typeparam>
+    /// <returns>The index of the item that the <paramref name="predicate"/> returned <c>true</c>.</returns>
     /// <remarks>
     ///     The iterating over the items will stop once the <paramref name="predicate"/> returns true.
     /// </remarks>
@@ -1509,12 +1509,12 @@ internal static class InternalExtensionMethods
     /// Returns the index of the first item that matches the given <paramref name="layer"/>.
     /// </summary>
     /// <param name="items">The items to check.</param>
-    /// <param name="layer">The layer to check for.</param>
+    /// <param name="layer">The layer to check.</param>
     /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>.</typeparam>
     /// <returns>
     ///     The index of the item in the list of <paramref name="items"/>.
     ///     <br/>
-    ///     The value of -1 will be returned if the layer can not be found.
+    ///     The value of -1 will be returned if the layer cannot be found.
     /// </returns>
     public static int FirstLayerIndex<T>(this Memory<RenderItem<T>> items, int layer)
     {
@@ -1533,7 +1533,7 @@ internal static class InternalExtensionMethods
     /// Gets the total number of items that are on the given <paramref name="layer"/>.
     /// </summary>
     /// <param name="items">The items to check.</param>
-    /// <param name="layer">The layer to check for.</param>
+    /// <param name="layer">The layer to check.</param>
     /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
     /// <returns>
     ///     The total number of items on the <paramref name="layer"/>.

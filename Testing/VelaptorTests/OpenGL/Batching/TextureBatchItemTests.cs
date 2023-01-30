@@ -13,7 +13,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 /// <summary>
-/// Test the <see cref="TextureBatchItem"/> struct.
+/// Tests the <see cref="TextureBatchItem"/> struct.
 /// </summary>
 public class TextureBatchItemTests
 {
