@@ -35,7 +35,7 @@ public class RendererBaseTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(this.mockPushReactable.Object);
     }
 
     #region Constructor Tests
@@ -91,7 +91,7 @@ public class RendererBaseTests
             .Returns<IReceiveReactor>(_ => this.mockShutDownUnsubscriber.Object)
             .Callback<IReceiveReactor>(reactor =>
             {
-                reactor.Should().NotBeNull();
+                reactor.Should().NotBeNull("it is required for unit testing.");
                 shutDownReactor = reactor;
             });
 

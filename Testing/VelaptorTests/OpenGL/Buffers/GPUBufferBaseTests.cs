@@ -5,7 +5,6 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -15,10 +14,10 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.ReactableData;
 using Xunit;
@@ -81,12 +80,12 @@ public class GPUBufferBaseTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     return this.mockGLInitUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
@@ -98,11 +97,11 @@ public class GPUBufferBaseTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     this.shutDownReactor = reactor;
                 }
@@ -114,7 +113,7 @@ public class GPUBufferBaseTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+                if (reactor.Id == PushNotifications.ViewPortSizeChangedId)
                 {
                     return this.mockViewPortSizeUnsubscriber.Object;
                 }
@@ -126,14 +125,14 @@ public class GPUBufferBaseTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.ViewPortSizeChangedId)
+                if (reactor.Id == PushNotifications.ViewPortSizeChangedId)
                 {
                     this.viewPortSizeReactor = reactor;
                 }
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
     }
 
@@ -436,27 +435,6 @@ public class GPUBufferBaseTests
 
         // Assert
         this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
-    [Fact]
-    public void ViewPortSizeReactable_WithNullMessage_ThrowsException()
-    {
-        // Arrange
-        var expected = $"There was an issue with the 'GPUBufferBase.Constructor()' subscription source";
-        expected += $" for subscription ID '{NotificationIds.ViewPortSizeChangedId}'.";
-
-        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        var act = () => this.viewPortSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expected);
     }
 
     [Fact]

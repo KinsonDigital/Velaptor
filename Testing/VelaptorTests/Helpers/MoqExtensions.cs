@@ -5,6 +5,8 @@
 namespace VelaptorTests.Helpers;
 
 using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Moq;
 using Moq.Language.Flow;
@@ -12,6 +14,8 @@ using Moq.Language.Flow;
 /// <summary>
 /// Provides extensions to the <see cref="Moq"/> library for ease of use and readability purposes.
 /// </summary>
+[DebuggerStepThrough]
+[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Can be used anytime in the future.")]
 public static class MoqExtensions
 {
     private static int callOrder = 1;
@@ -25,8 +29,8 @@ public static class MoqExtensions
     /// <param name="expectedOrder">The order sequence that the method should be invoked.</param>
     /// <typeparam name="T">The type that the setup is mocking.</typeparam>
     public static void CallbackInOrder<T>(this ISetup<T> setup, string methodName, int expectedOrder)
-        where T : class
-        => setup.Callback(() =>
+        where T : class =>
+        setup.Callback(() =>
         {
             AssertExtensions.EqualWithMessage(
                 expectedOrder,
@@ -47,8 +51,8 @@ public static class MoqExtensions
     /// <param name="expectedOrder">The order sequence that the method should be invoked.</param>
     /// <typeparam name="T">The type that the setup is mocking.</typeparam>
     public static void CallbackInOrder<T>(this ISetup<T> setup, string methodName, int id, int expectedOrder)
-        where T : class
-        => setup.Callback(() =>
+        where T : class =>
+        setup.Callback(() =>
         {
             AssertExtensions.EqualWithMessage(
                 expectedOrder,
@@ -67,8 +71,8 @@ public static class MoqExtensions
     ///   The invocation was called when it was expected to never be called.
     /// </exception>
     public static void VerifyNever<T>(this Mock<T> mock, Expression<Action<T>> expression)
-        where T : class
-        => mock.Verify(expression, Times.Never);
+        where T : class =>
+        mock.Verify(expression, Times.Never);
 
     /// <summary>
     /// Verifies that a specific invocation matching the given expression was only performed on the mock exactly one time.
@@ -81,23 +85,8 @@ public static class MoqExtensions
     ///   The invocation was called when it was expected to never be called.
     /// </exception>
     public static void VerifyOnce<T>(this Mock<T> mock, Expression<Action<T>> expression)
-        where T : class
-        => mock.Verify(expression, Times.Once);
-
-    /// <summary>
-    ///   Verifies that a specific invocation, matching the given expression, was performed on the mock.
-    ///   Use in conjunction with the default <see cref="MockBehavior.Loose"/>.
-    /// </summary>
-    /// <param name="mock">The mock object to extend.</param>
-    /// <param name="expression">Expression to verify.</param>
-    /// <param name="times">The number of times a method is expected to be called.</param>
-    /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
-    /// <exception cref="MockException">
-    ///   The invocation was not called the number of times specified by <paramref name="times"/>.
-    /// </exception>
-    public static void VerifyOnce<T>(this Mock<T> mock, Expression<Action<T>> expression, Func<Times> times)
-        where T : class
-        => mock.Verify(expression, times);
+        where T : class =>
+        mock.Verify(expression, Times.Once);
 
     /// <summary>
     ///   Verifies that a property was set on the mock exactly one time.
@@ -109,8 +98,8 @@ public static class MoqExtensions
     ///   The invocation was not called exactly one time.
     /// </exception>
     public static void VerifySetOnce<T>(this Mock<T> mock, Action<T> setterExpression)
-        where T : class
-        => mock.VerifySet(setterExpression, Times.Once);
+        where T : class =>
+        mock.VerifySet(setterExpression, Times.Once);
 
     /// <summary>
     ///   Verifies that a property was read on the mock exactly one time.
@@ -125,8 +114,8 @@ public static class MoqExtensions
     ///   The invocation was not called exactly one time.
     /// </exception>
     public static void VerifyGetOnce<T, TProperty>(this Mock<T> mock, Expression<Func<T, TProperty>> expression)
-        where T : class
-        => mock.VerifyGet(expression, Times.Once);
+        where T : class =>
+        mock.VerifyGet(expression, Times.Once);
 
     /// <summary>
     ///   Verifies that an event was removed from the mock exactly once, specifying a failure message.
@@ -139,20 +128,35 @@ public static class MoqExtensions
     ///   The invocation was not called exactly once.
     /// </exception>
     public static void VerifyRemoveOnce<T>(this Mock<T> mock, Action<T> removeExpression, string failMessage = "")
-        where T : class
-        => mock.VerifyRemove(removeExpression, Times.Once(), failMessage);
+        where T : class =>
+        mock.VerifyRemove(removeExpression, Times.Once(), failMessage);
 
     /// <summary>
     ///   Verifies that an event was added from the mock exactly once, specifying a failure message.
     /// </summary>
     /// <param name="mock">The mock object to extend.</param>
-    /// <param name="removeExpression">Expression to verify.</param>
+    /// <param name="addExpression">Expression to verify.</param>
     /// <param name="failMessage">Message to show if verification fails.</param>
     /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
     /// <exception cref="MockException">
     ///   The invocation was not called exactly once.
     /// </exception>
-    public static void VerifyAddOnce<T>(this Mock<T> mock, Action<T> removeExpression, string failMessage = "")
-        where T : class
-        => mock.VerifyAdd(removeExpression, Times.Once(), failMessage);
+    public static void VerifyAddOnce<T>(this Mock<T> mock, Action<T> addExpression, string failMessage = "")
+        where T : class =>
+        mock.VerifyAdd(addExpression, Times.Once(), failMessage);
+
+    /// <summary>
+    /// Verifies that a specific invocation matching the given expression was performed on the mock exactly by the given amount..
+    /// Use in conjunction with the default <see cref="MockBehavior.Loose"/>.
+    /// </summary>
+    /// <param name="mock">The mock object to extend.</param>
+    /// <param name="expression">Expression to verify.</param>
+    /// <param name="exactly">The exact amount that the invocation should occur.</param>
+    /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
+    /// <exception cref="MockException">
+    ///   The invocation was called when it was expected to never be called.
+    /// </exception>
+    public static void VerifyExactly<T>(this Mock<T> mock, Expression<Action<T>> expression, int exactly)
+        where T : class =>
+        mock.Verify(expression, Times.Exactly(exactly));
 }

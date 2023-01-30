@@ -12,7 +12,6 @@ using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -50,37 +49,28 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
         var portSizeReactable = reactableFactory.CreateViewPortReactable();
 
-        var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
+        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
         this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.GLInitializedId,
+            eventId: PushNotifications.GLInitializedId,
             name: glInitName,
             onReceive: Init,
             onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
 
-        var viewPortName = this.GetExecutionMemberName(nameof(NotificationIds.ViewPortSizeChangedId));
+        var viewPortName = this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId));
         this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
-            eventId: NotificationIds.ViewPortSizeChangedId,
+            eventId: PushNotifications.ViewPortSizeChangedId,
             name: viewPortName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var data = msg.GetData();
-
-                if (data is null)
-                {
-                    throw new PushNotificationException(
-                        $"{nameof(GPUBufferBase<TData>)}.Constructor()",
-                        NotificationIds.ViewPortSizeChangedId);
-                }
-
                 ViewPortSize = new SizeU(data.Width, data.Height);
             }, onUnsubscribe: () => this.viewPortSizeUnsubscriber?.Dispose()));
 

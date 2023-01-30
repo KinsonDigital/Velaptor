@@ -6,7 +6,7 @@ namespace VelaptorTests.Fakes;
 
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using NETSizeF = System.Drawing.SizeF;
 

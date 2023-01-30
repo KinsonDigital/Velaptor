@@ -2,8 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL;
+namespace Velaptor.OpenGL.Batching;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Graphics;
@@ -11,7 +12,7 @@ using Graphics;
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-internal readonly struct RectBatchItem
+internal readonly record struct RectBatchItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchItem"/> struct.
@@ -26,7 +27,6 @@ internal readonly struct RectBatchItem
     /// <param name="gradientType">The type of color gradient that will be applied to the rectangle.</param>
     /// <param name="gradientStart">The starting color of the gradient.</param>
     /// <param name="gradientStop">The ending color of the gradient.</param>
-    /// <param name="layer">The layer where the shape will be rendered.</param>
     /// <remarks>
     /// <para>
     ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
@@ -35,57 +35,32 @@ internal readonly struct RectBatchItem
     ///     The value of each corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </para>
     /// </remarks>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "The standard text is incorrect and says class instead of struct.")]
     public RectBatchItem(
-        Vector2 position = default,
-        float width = 1f,
-        float height = 1f,
-        Color color = default,
-        bool isFilled = true,
-        float borderThickness = 1f,
-        CornerRadius cornerRadius = default,
-        ColorGradient gradientType = ColorGradient.None,
-        Color gradientStart = default,
-        Color gradientStop = default,
-        int layer = 0)
+        Vector2 position,
+        float width,
+        float height,
+        Color color,
+        bool isFilled,
+        float borderThickness,
+        CornerRadius cornerRadius,
+        ColorGradient gradientType,
+        Color gradientStart,
+        Color gradientStop)
     {
         Position = position;
         Width = width;
         Height = height;
-        Color = color == Color.Empty ? Color.White : color;
+        Color = color;
         IsFilled = isFilled;
         BorderThickness = borderThickness;
-
-        if (cornerRadius == CornerRadius.Empty())
-        {
-            CornerRadius = new CornerRadius(1, 1, 1, 1);
-        }
-        else
-        {
-            var minValue = Width > height ? width : height;
-
-            cornerRadius = cornerRadius.TopLeft > minValue
-                ? CornerRadius.SetTopLeft(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.TopRight > minValue
-                ? CornerRadius.SetTopRight(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.BottomRight > minValue
-                ? CornerRadius.SetBottomRight(cornerRadius, minValue)
-                : cornerRadius;
-
-            cornerRadius = cornerRadius.BottomLeft > minValue
-                ? CornerRadius.SetBottomLeft(cornerRadius, minValue)
-                : cornerRadius;
-
-            CornerRadius = cornerRadius;
-        }
-
+        CornerRadius = cornerRadius;
         GradientType = gradientType;
-        GradientStart = gradientStart == Color.Empty ? Color.White : gradientStart;
-        GradientStop = gradientStop == Color.Empty ? Color.White : gradientStop;
-        Layer = layer;
+        GradientStart = gradientStart;
+        GradientStop = gradientStop;
     }
 
     /// <summary>
@@ -123,7 +98,7 @@ internal readonly struct RectBatchItem
     /// <summary>
     /// Gets a value indicating whether or not the rectangle is filled with a solid color.
     /// </summary>
-    public bool IsFilled { get; } = true;
+    public bool IsFilled { get; }
 
     /// <summary>
     /// Gets the thickness of the rectangle's border.
@@ -189,52 +164,18 @@ internal readonly struct RectBatchItem
     public Color GradientStop { get; }
 
     /// <summary>
-    /// Gets the layer where the shape will be rendered.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         Lower layer values will render before higher layer values.
-    ///         If two separate textures have the same layer value, they will
-    ///         rendered in the order that the render method was invoked.
-    ///     </para>
-    ///     <para>Example below:</para>
-    ///
-    ///     <b>Render Method Invoked Order:</b>
-    ///     <list type="number">
-    ///         <item>Texture 1 (Layer -10)</item>
-    ///         <item>Texture 2 (Layer -20)</item>
-    ///         <item>Texture 3 (Layer 0)</item>
-    ///         <item>Texture 4 (Layer 0)</item>
-    ///         <item>Texture 5 (Layer 4)</item>
-    ///         <item>Texture 6 (Layer 3)</item>
-    ///     </list>
-    ///
-    ///     <b>Texture Render Order:</b>
-    ///     <list type="bullet">
-    ///         <item>Texture 2</item>
-    ///         <item>Texture 1</item>
-    ///         <item>Texture 3</item>
-    ///         <item>Texture 4</item>
-    ///         <item>Texture 6</item>
-    ///         <item>Texture 5</item>
-    ///     </list>
-    /// </remarks>
-    public int Layer { get; }
-
-    /// <summary>
     /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        Position == Vector2.Zero &&
-        Width <= 1f &&
-        Height <= 1f &&
-        Color.IsEmpty &&
-        IsFilled is false &&
-        BorderThickness <= 1f &&
-        CornerRadius.IsEmpty() &&
-        GradientType == ColorGradient.None &&
-        GradientStart.IsEmpty &&
-        GradientStop.IsEmpty &&
-        Layer == 0;
+        !(Position != Vector2.Zero ||
+          Width > 0f ||
+          Height > 0f ||
+          Color.IsEmpty != true ||
+          IsFilled ||
+          CornerRadius.IsEmpty() != true ||
+          GradientType != ColorGradient.None ||
+          GradientStart.IsEmpty != true ||
+          GradientStop.IsEmpty != true ||
+          BorderThickness > 0f);
 }

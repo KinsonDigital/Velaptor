@@ -13,7 +13,6 @@ using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 
 /// <summary>
@@ -134,22 +133,12 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
     {
-        var textureDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.TextureDisposedId));
+        var textureDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId));
 
         this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveReactor<DisposeTextureData>(
-                eventId: NotificationIds.TextureDisposedId,
+                eventId: PushNotifications.TextureDisposedId,
                 name: textureDisposeName,
-                onReceiveMsg: msg =>
-                {
-                    var data = msg.GetData();
-
-                    if (data is null)
-                    {
-                        throw new PushNotificationException($"{nameof(Texture)}.Constructor()", NotificationIds.TextureDisposedId);
-                    }
-
-                    Dispose(data);
-                },
+                onReceiveData: Dispose,
                 onUnsubscribe: () => Dispose(new DisposeTextureData { TextureId = Id })));
 
         if (imageData.IsEmpty())

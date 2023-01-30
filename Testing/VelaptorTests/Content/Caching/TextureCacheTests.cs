@@ -7,7 +7,6 @@ namespace VelaptorTests.Content.Caching;
 using System;
 using System.Drawing;
 using System.IO.Abstractions;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
@@ -116,7 +115,7 @@ public class TextureCacheTests
 
         this.mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateDisposeTextureReactable()).Returns(this.mockDisposeReactable.Object);
     }
 
@@ -460,12 +459,12 @@ public class TextureCacheTests
         mockTexture.SetupGet(p => p.Id).Returns(123u);
 
         this.mockDisposeReactable.Setup(m =>
-                m.PushMessage(It.Ref<IMessage<DisposeTextureData>>.IsAny, It.IsAny<Guid>()))
-            .Callback((in IMessage<DisposeTextureData> msg, Guid _) =>
+                m.Push(It.Ref<DisposeTextureData>.IsAny, It.IsAny<Guid>()))
+            .Callback((in DisposeTextureData data, Guid _) =>
             {
-                msg.Should().NotBeNull("it is required for unit testing.");
+                data.Should().NotBeNull("it is required for unit testing.");
 
-                actual = msg.GetData();
+                actual = data;
             });
 
         MockImageData();
@@ -483,7 +482,7 @@ public class TextureCacheTests
         cache.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable
             .VerifyOnce(m =>
-                m.PushMessage(It.Ref<IMessage<DisposeTextureData>>.IsAny, NotificationIds.TextureDisposedId));
+                m.Push(It.Ref<DisposeTextureData>.IsAny, PushNotifications.TextureDisposedId));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -507,7 +506,7 @@ public class TextureCacheTests
         // Assert
         this.mockDisposeReactable
             .Verify(m =>
-                m.PushMessage(It.IsAny<IMessage<DisposeTextureData>>(), NotificationIds.TextureDisposedId), Times.Never);
+                m.Push(It.IsAny<DisposeTextureData>(), PushNotifications.TextureDisposedId), Times.Never);
     }
     #endregion
 
@@ -546,7 +545,7 @@ public class TextureCacheTests
 
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(NotificationIds.TextureDisposedId));
+        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.TextureDisposedId));
         cache.TotalCachedItems.Should().Be(0);
     }
     #endregion

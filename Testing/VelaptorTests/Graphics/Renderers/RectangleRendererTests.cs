@@ -5,7 +5,6 @@
 namespace VelaptorTests.Graphics.Renderers;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -15,16 +14,25 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Services;
 using Xunit;
+
+using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.RectBatchItem
+        >
+    >
+>;
 
 /// <summary>
 /// Tests the <see cref="RectangleRenderer"/> class.
@@ -36,11 +44,12 @@ public class RectangleRendererTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGPUBuffer<RectBatchItem>> mockGPUBuffer;
-    private readonly Mock<IBatchingService<RectBatchItem>> mockBatchingService;
+    private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
+    private readonly Mock<IDisposable> mockRenderUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor? renderReactor;
+    private RectRenderItem? renderReactor;
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
@@ -60,64 +69,165 @@ public class RectangleRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
 
-        this.mockBatchingService = new Mock<IBatchingService<RectBatchItem>>();
-        this.mockBatchingService.Name = nameof(this.mockBatchingService);
-        this.mockBatchingService.SetupGet(p => p.BatchItems)
-            .Returns(Array.Empty<RectBatchItem>().AsReadOnly());
+        this.mockBatchingManager = new Mock<IBatchingManager>();
+        this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
-        var mockRenderUnsubscriber = new Mock<IDisposable>();
+        this.mockRenderUnsubscriber = new Mock<IDisposable>();
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+            .Callback<IReceiveReactor>(reactor =>
             {
-                if (reactor.Id == NotificationIds.RenderRectsId)
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
-                    return mockRenderUnsubscriber.Object;
+                    reactor.Name.Should().Be($"RectangleRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
+                    this.batchHasBegunReactor = reactor;
                 }
 
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    this.shutDownReactor = reactor;
+                }
+            })
+            .Returns<IReceiveReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
                     return this.mockBatchBegunUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return mockShutDownUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
                 return null;
-            })
-            .Callback<IReceiveReactor>(reactor =>
+            });
+
+        var mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<RectBatchItem>>();
+        mockRectRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
+            .Callback<RectRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"RectangleRendererTests.Ctor - {nameof(PushNotifications.RenderRectsId)}");
 
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                this.renderReactor = reactor;
+            })
+            .Returns<RectRenderItem>((reactor) =>
+            {
+                if (reactor.Id == PushNotifications.RenderRectsId)
                 {
-                    this.batchHasBegunReactor = reactor;
+                    return this.mockRenderUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.RenderRectsId)
-                {
-                    this.renderReactor = reactor;
-                }
-
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
+                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
+                return null;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
+            .Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateRenderRectReactable())
+            .Returns(mockRectRenderBatchReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
         mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new RectangleRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                null,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBufferParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new RectangleRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                null,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'buffer')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullShaderParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new RectangleRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                null,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'shader')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBatchManagerParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new RectangleRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchManager')");
+    }
+    #endregion
 
     #region Method Tests
     [Fact]
@@ -129,11 +239,11 @@ public class RectangleRendererTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.renderReactor.OnReceive();
+        this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.EndGroup());
         this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
         this.mockShader.VerifyNever(m => m.Use());
         this.mockGLService.VerifyNever(m =>
@@ -149,7 +259,6 @@ public class RectangleRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()));
-        this.mockBatchingService.VerifyNever(m => m.EmptyBatch());
     }
 
     [Fact]
@@ -181,17 +290,16 @@ public class RectangleRendererTests
             CornerRadius.Empty(),
             ColorGradient.None,
             Color.Magenta,
-            Color.Magenta,
-            0);
+            Color.Magenta);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(rect);
+        sut.Render(rect, 123);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123));
     }
 
     [Fact]
@@ -223,28 +331,23 @@ public class RectangleRendererTests
             new CornerRadius(6f, 7f, 8f, 9f),
             ColorGradient.Horizontal,
             Color.FromArgb(11, 22, 33, 44),
-            Color.FromArgb(55, 66, 77, 88),
-            0);
+            Color.FromArgb(55, 66, 77, 88));
 
-        var shouldNotRenderEmptyItem = default(RectBatchItem);
+        var renderItem = new RenderItem<RectBatchItem> { Layer = 0, Item = batchItem };
 
-        var items = new[] { batchItem, shouldNotRenderEmptyItem };
-        MockRectBatchItems(items);
+        var renderItems = new Memory<RenderItem<RectBatchItem>>(new[] { renderItem });
 
-        var sut = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
-        sut.Render(rect);
 
         // Act
-        this.renderReactor.OnReceive();
+        this.renderReactor.OnReceive(renderItems);
 
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
+        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
+        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
-        this.mockGPUBuffer.VerifyNever(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex));
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
     }
 
     [Fact]
@@ -265,7 +368,7 @@ public class RectangleRendererTests
     }
     #endregion
 
-    #region Indirect Tests
+    #region Reactable Tests
     [Fact]
     public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
     {
@@ -277,19 +380,10 @@ public class RectangleRendererTests
         this.shutDownReactor.OnReceive();
 
         // Assert
-        this.mockBatchBegunUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockRenderUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
-
-    /// <summary>
-    /// Mocks the <see cref="IBatchingService{T}.BatchItems"/> property of the <see cref="IBatchingService{T}"/>.
-    /// </summary>
-    /// <param name="items">The items to store in the service.</param>
-    private void MockRectBatchItems(RectBatchItem[] items)
-    {
-        this.mockBatchingService.SetupProperty(p => p.BatchItems);
-        this.mockBatchingService.Object.BatchItems = items.ToReadOnlyCollection();
-    }
 
     /// <summary>
     /// Creates a new instance of <see cref="RectangleRenderer"/> for the purpose of testing.
@@ -301,5 +395,5 @@ public class RectangleRendererTests
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,
-            this.mockBatchingService.Object);
+            this.mockBatchingManager.Object);
 }

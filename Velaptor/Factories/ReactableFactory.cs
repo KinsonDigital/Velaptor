@@ -4,18 +4,23 @@
 
 namespace Velaptor.Factories;
 
+using System.Diagnostics.CodeAnalysis;
+using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Graphics;
+using OpenGL.Batching;
 using ReactableData;
 using Silk.NET.OpenGL;
 
 /// <summary>
 /// Creates singleton reactables.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal class ReactableFactory : IReactableFactory
 {
     /// <inheritdoc/>
-    public IPushReactable CreateNoDataReactable() => IoC.Container.GetInstance<IPushReactable>();
+    public IPushReactable CreateNoDataPushReactable() => IoC.Container.GetInstance<IPushReactable>();
 
     /// <inheritdoc/>
     public IPushReactable<GL> CreateGLReactable() => IoC.Container.GetInstance<IPushReactable<GL>>();
@@ -37,4 +42,36 @@ internal class ReactableFactory : IReactableFactory
 
     /// <inheritdoc/>
     public IPushReactable<DisposeSoundData> CreateDisposeSoundReactable() => IoC.Container.GetInstance<IPushReactable<DisposeSoundData>>();
+
+    /// <inheritdoc/>
+    public IBatchPullReactable<TextureBatchItem> CreateTexturePullBatchReactable() =>
+        IoC.Container.GetInstance<IBatchPullReactable<TextureBatchItem>>();
+
+    /// <inheritdoc/>
+    public IBatchPullReactable<FontGlyphBatchItem> CreateFontPullBatchReactable() =>
+        IoC.Container.GetInstance<IBatchPullReactable<FontGlyphBatchItem>>();
+
+    /// <inheritdoc/>
+    public IBatchPullReactable<RectBatchItem> CreateRectPullBatchReactable() =>
+        IoC.Container.GetInstance<IBatchPullReactable<RectBatchItem>>();
+
+    /// <inheritdoc/>
+    public IBatchPullReactable<LineBatchItem> CreateLinePullBatchReactable() =>
+        IoC.Container.GetInstance<IBatchPullReactable<LineBatchItem>>();
+
+    /// <inheritdoc/>
+    public IRenderBatchReactable<TextureBatchItem> CreateRenderTextureReactable() =>
+        IoC.Container.GetInstance<IRenderBatchReactable<TextureBatchItem>>();
+
+    /// <inheritdoc/>
+    public IRenderBatchReactable<FontGlyphBatchItem> CreateRenderFontReactable() =>
+        IoC.Container.GetInstance<IRenderBatchReactable<FontGlyphBatchItem>>();
+
+    /// <inheritdoc/>
+    public IRenderBatchReactable<RectBatchItem> CreateRenderRectReactable() =>
+        IoC.Container.GetInstance<IRenderBatchReactable<RectBatchItem>>();
+
+    /// <inheritdoc/>
+    public IRenderBatchReactable<LineBatchItem> CreateRenderLineReactable() =>
+        IoC.Container.GetInstance<IRenderBatchReactable<LineBatchItem>>();
 }

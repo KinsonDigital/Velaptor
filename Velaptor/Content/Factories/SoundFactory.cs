@@ -13,7 +13,6 @@ using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Guards;
 using ReactableData;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 
 /// <summary>
@@ -34,28 +33,21 @@ internal sealed class SoundFactory : ISoundFactory
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
-        var soundDisposeName = this.GetExecutionMemberName(nameof(NotificationIds.SoundDisposedId));
+        var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
         this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
-                eventId: NotificationIds.SoundDisposedId,
+                eventId: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
-                onReceiveMsg: msg =>
+                onReceiveData: data =>
                 {
-                    var data = msg.GetData();
-
-                    if (data is null)
-                    {
-                        throw new PushNotificationException($"{nameof(SoundFactory)}.Constructor()", NotificationIds.SoundDisposedId);
-                    }
-
                     this.sounds.Remove(data.SoundId);
                 }));
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }

@@ -20,6 +20,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
 using NETColor = System.Drawing.Color;
@@ -144,7 +145,7 @@ public class InternalExtensionMethodsTests
         // X and Y axis aligned rectangle rotated 45 degrees clockwise
         yield return new object[]
         {
-            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f, 0),
+            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f),
             new Vector2(135.35535f, 64.64465f),
             new Vector2(235.35535f, 164.64467f),
             new Vector2(164.64465f, 235.35533f),
@@ -549,7 +550,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.Scale(0.5f);
@@ -569,7 +570,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.FlipEnd();
@@ -592,8 +593,7 @@ public class InternalExtensionMethodsTests
             new Vector2(startX, startY),
             new Vector2(stopX, stopY),
             NETColor.White,
-            0f,
-            0);
+            0f);
 
         // Act
         var actual = line.Length();
@@ -620,7 +620,7 @@ public class InternalExtensionMethodsTests
             bottomLeftCorner,
         };
 
-        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness, lineItem.Layer);
+        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
 
         // Act
         var actual = line.CreateRectFromLine();
@@ -637,15 +637,13 @@ public class InternalExtensionMethodsTests
             new Vector2(10, 20),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP1(new Vector2(10, 20));
@@ -662,15 +660,13 @@ public class InternalExtensionMethodsTests
             new Vector2(1, 2),
             new Vector2(20, 30),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP2(new Vector2(20, 30));
@@ -687,15 +683,13 @@ public class InternalExtensionMethodsTests
             new Vector2(2, 3),
             new Vector2(1, 2),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SwapEnds();
@@ -1450,7 +1444,7 @@ public class InternalExtensionMethodsTests
     [Theory]
     [InlineData(3, 2)]
     [InlineData(40, -1)]
-    public void IndexOf_WhenInvoked_ReturnsCorrectResult(int value, int expected)
+    public void IndexOf_WithEnumerableItemsAndPredicate_ReturnsCorrectResult(int value, int expected)
     {
         // Arrange
         var items = new[] { 1, 2, 3, 4 };
@@ -1460,6 +1454,158 @@ public class InternalExtensionMethodsTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateReturnsTrue_ReturnsCorrectIndex()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-C");
+
+        // Assert
+        actual.Should().Be(1);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-D");
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(30);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerDoesNotExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(300);
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithLayerGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(20);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithNoLayersGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(200);
+
+        // Assert
+        actual.Should().Be(0);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            default,
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(-1);
     }
     #endregion
 

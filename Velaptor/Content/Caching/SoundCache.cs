@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Exceptions;
@@ -58,11 +57,11 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         this.path = path;
 
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }
@@ -153,8 +152,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
             return;
         }
 
-        var msg = MessageFactory.CreateMessage(new DisposeSoundData { SoundId = sound.Id });
-        this.disposeReactable.PushMessage(msg, NotificationIds.SoundDisposedId);
+        this.disposeReactable.Push(new DisposeSoundData { SoundId = sound.Id }, PushNotifications.SoundDisposedId);
     }
 
     /// <summary>
@@ -168,7 +166,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         }
 
         this.shutDownUnsubscriber.Dispose();
-        this.disposeReactable.Unsubscribe(NotificationIds.SoundDisposedId);
+        this.disposeReactable.Unsubscribe(PushNotifications.SoundDisposedId);
 
         this.sounds.Clear();
         this.isDisposed = true;

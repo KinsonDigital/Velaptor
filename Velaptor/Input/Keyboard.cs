@@ -11,7 +11,6 @@ using Carbonate.UniDirectional;
 using Factories;
 using Guards;
 using ReactableData;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Provides functionality for the keyboard.
@@ -31,19 +30,12 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
         var reactable = reactableFactory.CreateKeyboardReactable();
 
-        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(NotificationIds.KeyboardStateChangedId));
+        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
-            eventId: NotificationIds.KeyboardStateChangedId,
+            eventId: PushNotifications.KeyboardStateChangedId,
             name: keyboardStateChangeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var data = msg.GetData();
-
-                if (data is null)
-                {
-                    throw new PushNotificationException($"{nameof(Keyboard)}.Constructor()", NotificationIds.KeyboardStateChangedId);
-                }
-
                 this.keyStates[data.Key] = data.IsDown;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));

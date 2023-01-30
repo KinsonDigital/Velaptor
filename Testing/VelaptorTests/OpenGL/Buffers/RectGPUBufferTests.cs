@@ -9,20 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Factories;
 using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
@@ -78,7 +78,7 @@ public class RectGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId || reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
@@ -91,11 +91,11 @@ public class RectGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // EMPTY ON PURPOSE.  IGNORING THIS EVENT ID
                 }
@@ -127,7 +127,7 @@ public class RectGPUBufferTests
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
     }
@@ -232,8 +232,7 @@ public class RectGPUBufferTests
             new CornerRadius(10, 11, 12, 13),
             ColorGradient.None,
             Color.FromArgb(14, 15, 16, 17),
-            Color.FromArgb(18, 19, 20, 21),
-            0);
+            Color.FromArgb(18, 19, 20, 21));
 
         float[]? actualRawData = null;
 
@@ -244,13 +243,11 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight });
+        var viewPortSizeData = new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight };
 
         var sut = CreateSystemUnderTest();
 
-        this.viewPortSizeReactor.OnReceive(mockMessage.Object);
+        this.viewPortSizeReactor.OnReceive(viewPortSizeData);
 
         // Act
         sut.UploadVertexData(rect, 0);
@@ -266,7 +263,7 @@ public class RectGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = new RectBatchItem(gradientType: (ColorGradient)1234);
+        var rect = BatchItemFactory.CreateRectItemWithOrderedValues(gradientType: (ColorGradient)1234);
 
         var sut = CreateSystemUnderTest();
 
@@ -323,6 +320,7 @@ public class RectGPUBufferTests
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
+            isFilled: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.None,
@@ -388,6 +386,7 @@ public class RectGPUBufferTests
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
+            isFilled: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.Horizontal,
@@ -447,18 +446,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-#pragma warning disable SA1117
-        var rect = new RectBatchItem(
-            position: new Vector2(1, 2),
-            width: 3,
-            height: 4,
-            color: Color.FromArgb(5, 6, 7, 8),
-            borderThickness: 9,
-            cornerRadius: new CornerRadius(10, 11, 12, 13),
-            gradientType: ColorGradient.Vertical,
-            gradientStart: Color.FromArgb(14, 15, 16, 17),
-            gradientStop: Color.FromArgb(18, 19, 20, 21));
-#pragma warning restore SA1117
+        var rect = BatchItemFactory.CreateRectItemWithOrderedValues();
 
         var sut = CreateSystemUnderTest();
 
@@ -516,11 +504,9 @@ public class RectGPUBufferTests
                 $"{nameof(RectGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = BatchSize });
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Act
         var actual = sut.GenerateData();
@@ -593,11 +579,9 @@ public class RectGPUBufferTests
             .LoadTestData<uint[]>(string.Empty, $"{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
         var sut = CreateSystemUnderTest(false);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = BatchSize });
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Act
         var actual = sut.GenerateIndices();
@@ -621,27 +605,6 @@ public class RectGPUBufferTests
 
         // Assert
         this.mockBatchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-    }
-
-    [Fact]
-    public void BatchSizeReactable_WithNullMessageData_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(RectGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest(false);
-
-        // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
     }
     #endregion
 

@@ -15,17 +15,17 @@ public enum RenderEffects
     /// <summary>
     /// No effects are applied.
     /// </summary>
-    None = 1,
+    None = 0,
 
     /// <summary>
     /// The texture is flipped horizontally.
     /// </summary>
-    FlipHorizontally = 2,
+    FlipHorizontally = 1,
 
     /// <summary>
     /// The texture is flipped vertically.
     /// </summary>
-    FlipVertically = 4,
+    FlipVertically = 2,
 
     /// <summary>
     /// The texture is flipped horizontally and vertically.

@@ -6,7 +6,6 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
-using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using NativeInterop.OpenGL;
@@ -57,9 +56,9 @@ public interface IRenderer
         PushReactable = IoC.Container.GetInstance<IPushReactable>();
         var batchSizeReactable = IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();
 
-        const string glInitName = $"{nameof(IRenderer)}.Ctor - {nameof(NotificationIds.GLInitializedId)}";
+        const string glInitName = $"{nameof(IRenderer)}.Ctor - {nameof(PushNotifications.GLInitializedId)}";
         GLInitUnsubscriber = PushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.GLInitializedId,
+            eventId: PushNotifications.GLInitializedId,
             name: glInitName,
             onReceive: () =>
             {
@@ -71,9 +70,8 @@ public interface IRenderer
                 GLInvoker.Enable(GLEnableCap.Blend);
                 GLInvoker.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-                var msg = MessageFactory.CreateMessage(new BatchSizeData { BatchSize = BatchSize });
-                batchSizeReactable.PushMessage(msg, NotificationIds.BatchSizeSetId);
-                PushReactable.Unsubscribe(NotificationIds.BatchSizeSetId);
+                batchSizeReactable.Push(new BatchSizeData { BatchSize = BatchSize }, PushNotifications.BatchSizeSetId);
+                PushReactable.Unsubscribe(PushNotifications.BatchSizeSetId);
 
                 if (cachedClearColor is not null)
                 {
@@ -99,7 +97,7 @@ public interface IRenderer
     /// <summary>
     /// Starts the batch rendering process.  Must be called before invoking any render methods.
     /// </summary>
-    static void Begin() => PushReactable.Push(NotificationIds.RenderBatchBegunId);
+    static void Begin() => PushReactable.Push(PushNotifications.BatchHasBegunId);
 
     /// <summary>
     /// Clears the buffers.
@@ -115,7 +113,7 @@ public interface IRenderer
     /// Ends the batch process.  Calling this will render any textures
     /// still in the batch.
     /// </summary>
-    static void End() => PushReactable.Push(NotificationIds.RenderBatchEndedId);
+    static void End() => PushReactable.Push(PushNotifications.BatchHasEndedId);
 
     /// <summary>
     /// Setup all of the caching for the properties that need caching.

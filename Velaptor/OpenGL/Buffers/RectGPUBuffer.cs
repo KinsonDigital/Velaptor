@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Batching;
 using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
@@ -17,7 +18,6 @@ using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Updates data in the rectangle GPU buffer.
@@ -47,20 +47,13 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(NotificationIds.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: NotificationIds.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
-            onReceiveMsg: msg =>
+            onReceiveData: data =>
             {
-                var batchSize = msg.GetData()?.BatchSize;
-
-                if (batchSize is null)
-                {
-                    throw new PushNotificationException($"{nameof(RectGPUBuffer)}.Constructor()", NotificationIds.BatchSizeSetId);
-                }
-
-                BatchSize = batchSize.Value;
+                BatchSize = data.BatchSize;
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
@@ -347,8 +340,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             rect.CornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }
@@ -394,8 +386,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             cornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }

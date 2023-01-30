@@ -46,18 +46,18 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var glInitName = this.GetExecutionMemberName(nameof(NotificationIds.GLInitializedId));
+        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
         this.glInitReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.GLInitializedId,
+            eventId: PushNotifications.GLInitializedId,
             name: glInitName,
             onReceive: Init,
             onUnsubscribe: () => this.glInitReactorUnsubscriber?.Dispose()));
 
-        var shutDownName = this.GetExecutionMemberName(nameof(NotificationIds.SystemShuttingDownId));
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
         this.shutDownReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.SystemShuttingDownId,
+            eventId: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
 

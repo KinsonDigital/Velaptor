@@ -20,6 +20,9 @@ using Input;
 /// </summary>
 public sealed class Button : ControlBase
 {
+    private const int TextLayer = int.MaxValue - 1;
+    private const int BorderLayer = int.MaxValue - 2;
+    private const int BtnFaceLayer = int.MaxValue - 3;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const float HoverBrightness = 0.2f;
     private const float MouseDownBrightness = 0.2f;
@@ -424,7 +427,7 @@ public sealed class Button : ControlBase
         buttonFace.Height = Height;
         buttonFace.CornerRadius = CornerRadius;
 
-        this.rectRenderer.Render(buttonFace);
+        this.rectRenderer.Render(buttonFace, BtnFaceLayer);
 
         if (BorderVisible)
         {
@@ -437,7 +440,7 @@ public sealed class Button : ControlBase
             buttonBorder.Height = Height;
             buttonBorder.CornerRadius = CornerRadius;
 
-            this.rectRenderer.Render(buttonBorder);
+            this.rectRenderer.Render(buttonBorder, BorderLayer);
         }
 
         var textHeightNotTooLarge = Label?.Height <= Height;
@@ -461,7 +464,7 @@ public sealed class Button : ControlBase
                 textToRender = new string(charsToRender);
             }
 
-            Label?.Render(textToRender);
+            Label?.Render(textToRender, TextLayer);
         }
 
         base.Render();

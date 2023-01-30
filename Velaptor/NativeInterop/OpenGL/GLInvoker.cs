@@ -44,15 +44,13 @@ internal sealed class GLInvoker : IGLInvoker
     /// <param name="loggingService">Logs messages to the console and files.</param>
     public GLInvoker(IPushReactable<GL> reactable, ILoggingService loggingService)
     {
-        var glContextName = this.GetExecutionMemberName(nameof(NotificationIds.GLContextCreatedId));
+        var glContextName = this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<GL>(
-            eventId: NotificationIds.GLContextCreatedId,
+            eventId: PushNotifications.GLContextCreatedId,
             name: glContextName,
-            onReceiveMsg: msg =>
+            onReceiveData: glObj =>
             {
-                var possibleGLObj = msg.GetData();
-
-                this.gl = possibleGLObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", NotificationIds.GLContextCreatedId);
+                this.gl = glObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
 

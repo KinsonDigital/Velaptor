@@ -5,24 +5,33 @@
 namespace VelaptorTests.Graphics.Renderers;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
-using Velaptor.Services;
 using Xunit;
+
+using LineRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
+    System.Memory<
+        Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.OpenGL.Batching.LineBatchItem
+        >
+    >
+>;
 
 /// <summary>
 /// Tests the <see cref="LineRenderer"/> class.
@@ -35,13 +44,13 @@ public class LineRendererTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGPUBuffer<LineBatchItem>> mockGPUBuffer;
-    private readonly Mock<IBatchingService<LineBatchItem>> mockBatchingService;
+    private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveReactor? shutDownReactor;
+    private LineRenderItem? renderReactor;
     private IReceiveReactor? batchHasBegunReactor;
-    private IReceiveReactor? renderReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineRendererTests"/> class.
@@ -60,9 +69,7 @@ public class LineRendererTests
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<LineBatchItem>>();
 
-        this.mockBatchingService = new Mock<IBatchingService<LineBatchItem>>();
-        this.mockBatchingService.SetupGet(p => p.BatchItems)
-            .Returns(Array.Empty<LineBatchItem>().AsReadOnly());
+        this.mockBatchingManager = new Mock<IBatchingManager>();
 
         this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
         var mockRenderUnsubscriber = new Mock<IDisposable>();
@@ -70,53 +77,157 @@ public class LineRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
+                {
+                    this.batchHasBegunReactor = reactor;
+                }
+
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    this.shutDownReactor = reactor;
+                }
+            })
             .Returns<IReceiveReactor>(reactor =>
             {
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
+                if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
                     return this.mockBatchBegunUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     return this.mockShutDownUnsubscriber.Object;
                 }
 
-                if (reactor.Id == NotificationIds.RenderLinesId)
+                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
+                return null;
+            });
+
+        var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
+        mockLineRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
+            .Callback<LineRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.RenderLinesId)
+                {
+                    reactor.Name.Should().Be($"LineRendererTests.Ctor - {nameof(PushNotifications.RenderLinesId)}");
+
+                    this.renderReactor = reactor;
+                }
+            })
+            .Returns<LineRenderItem>(reactor =>
+            {
+                if (reactor.Id == PushNotifications.RenderLinesId)
                 {
                     return mockRenderUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
                 return null;
-            })
-            .Callback<IReceiveReactor>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == NotificationIds.RenderBatchBegunId)
-                {
-                    this.batchHasBegunReactor = reactor;
-                }
-
-                if (reactor.Id == NotificationIds.RenderLinesId)
-                {
-                    this.renderReactor = reactor;
-                }
-
-                if (reactor.Id == NotificationIds.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
+            .Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateRenderLineReactable())
+            .Returns(mockLineRenderBatchReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
         mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new LineRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                null,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBufferParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new LineRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                null,
+                this.mockShader.Object,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'buffer')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullShaderParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new LineRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                null,
+                this.mockBatchingManager.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'shader')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBatchManagerParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new LineRenderer(
+                this.mockGL.Object,
+                this.mockReactableFactory.Object,
+                this.mockGLService.Object,
+                this.mockGPUBuffer.Object,
+                this.mockShader.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchManager')");
+    }
+    #endregion
 
     #region Method Tests
     [Fact]
@@ -142,8 +253,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9,
-            10);
+            9);
 
         var line = new Line(
             new Vector2(1, 2),
@@ -157,7 +267,7 @@ public class LineRendererTests
         sut.Render(line, 10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
     }
 
     [Fact]
@@ -168,8 +278,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.White,
-            1u,
-            10);
+            1u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -178,7 +287,7 @@ public class LineRendererTests
         sut.RenderLine(new Vector2(1, 2), new Vector2(3, 4), 10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
      }
 
     [Fact]
@@ -189,8 +298,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            1u,
-            10);
+            1u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -203,7 +311,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
     }
 
     [Fact]
@@ -214,8 +322,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.White,
-            11u,
-            10);
+            11u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -228,7 +335,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
     }
 
     [Fact]
@@ -239,8 +346,7 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9u,
-            10);
+            9u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -254,7 +360,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingService.Verify(m => m.Add(expected), Times.Once);
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
     }
 
     [Fact]
@@ -266,27 +372,26 @@ public class LineRendererTests
         _ = CreateSystemUnderTest();
 
         // Act
-        this.renderReactor.OnReceive();
+        this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render Line Process - Nothing To Render"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
-        this.mockGLService.Verify(m => m.BeginGroup($"Render Line Process With {shaderName} Shader"), Times.Never);
-        this.mockShader.Verify(m => m.Use(), Times.Never);
-        this.mockGLService.Verify(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))), Times.Never);
-        this.mockGL.Verify(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()), Times.Never);
-        this.mockGLService.Verify(m => m.BindTexture2D(It.IsAny<uint>()), Times.Never);
-        this.mockGPUBuffer.Verify(m =>
-            m.UploadData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()), Times.Never);
-        this.mockGLService.Verify(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))), Times.Never);
-        this.mockGL.Verify(m => m.DrawElements(
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Line Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.EndGroup());
+        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Line Process With {shaderName} Shader"));
+        this.mockShader.VerifyNever(m => m.Use());
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))));
+        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+        this.mockGPUBuffer.VerifyNever(m =>
+            m.UploadData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()));
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+        this.mockGL.VerifyNever(m => m.DrawElements(
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<nint>()), Times.Never);
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
+            It.IsAny<nint>()));
     }
 
     [Fact]
@@ -305,34 +410,30 @@ public class LineRendererTests
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
-            9,
-            10);
+            9);
 
-        var shouldNotRenderEmptyItem = default(LineBatchItem);
+        var renderItem = new RenderItem<LineBatchItem> { Layer = 0, Item = batchItem };
 
-        var items = new[] { batchItem, shouldNotRenderEmptyItem };
-        MockLineBatchItems(items);
+        var renderItems = new Memory<RenderItem<LineBatchItem>>(new[] { renderItem });
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
         sut.Render(rect);
 
         // Act
-        this.renderReactor.OnReceive();
+        this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render 6 Line Elements"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
-        this.mockGPUBuffer.Verify(m => m.UploadData(batchItem, batchIndex), Times.Once);
-        this.mockGPUBuffer.Verify(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex), Times.Never);
-        this.mockBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Line Elements"));
+        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
+        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
+        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
     #endregion
 
-    #region Indirect Tests
+    #region Reactable Tests
     [Fact]
-    [Trait(Category, "Indirect Tests")]
+    [Trait(Category, "Reactable Tests")]
     public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
     {
         // Arrange
@@ -343,20 +444,10 @@ public class LineRendererTests
         this.shutDownReactor.OnReceive();
 
         // Assert
-        this.mockBatchBegunUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-        this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
-
-    /// <summary>
-    /// Mocks the <see cref="IBatchingService{T}.BatchItems"/> property of the <see cref="IBatchingService{T}"/>.
-    /// </summary>
-    /// <param name="items">The items to store in the service.</param>
-    private void MockLineBatchItems(IList<LineBatchItem> items)
-    {
-        this.mockBatchingService.SetupProperty(p => p.BatchItems);
-        this.mockBatchingService.Object.BatchItems = items.AsReadOnly();
-    }
 
     /// <summary>
     /// Creates a new instance of <see cref="LineRenderer"/> for the purpose of testing.
@@ -368,5 +459,5 @@ public class LineRendererTests
             this.mockGLService.Object,
             this.mockGPUBuffer.Object,
             this.mockShader.Object,
-            this.mockBatchingService.Object);
+            this.mockBatchingManager.Object);
 }

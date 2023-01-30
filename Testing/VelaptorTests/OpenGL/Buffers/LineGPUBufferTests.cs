@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -17,11 +16,11 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
@@ -77,7 +76,7 @@ public class LineGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId || reactor.Id == NotificationIds.SystemShuttingDownId)
+                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // RETURN NULL TO IGNORE THIS EVENT ID
                     return null!;
@@ -90,11 +89,11 @@ public class LineGPUBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == NotificationIds.GLInitializedId)
+                if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == NotificationIds.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     // EMPTY ON PURPOSE.  IGNORING THIS EVENT ID
                 }
@@ -126,7 +125,7 @@ public class LineGPUBufferTests
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataReactable()).Returns(mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
     }
@@ -245,16 +244,13 @@ public class LineGPUBufferTests
         var p2 = new Vector2(3, 4);
         var color = Color.FromArgb(4, 5, 6, 7);
         const int thickness = 8;
-        const int layer = 9;
 
-        var batchItem = new LineBatchItem(p1, p2, color, thickness, layer);
+        var batchItem = new LineBatchItem(p1, p2, color, thickness);
 
-        var mockMessage = new Mock<IMessage<ViewPortSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns<Action<Exception>?>(_ => new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight });
+        var viewPortSizeData = new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight };
 
         var sut = CreateSystemUnderTest();
-        this.viewPortSizeReactor.OnReceive(mockMessage.Object);
+        this.viewPortSizeReactor.OnReceive(viewPortSizeData);
 
         // Act
         sut.UploadVertexData(batchItem, 10);
@@ -309,11 +305,9 @@ public class LineGPUBufferTests
                 $"{nameof(LineGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = BatchSize });
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Act
         var actual = sut.GenerateData();
@@ -374,11 +368,9 @@ public class LineGPUBufferTests
                 $"{nameof(LineGPUBufferTests)}.{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(It.IsAny<Action<Exception>?>()))
-            .Returns(new BatchSizeData { BatchSize = BatchSize });
+        var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
 
-        this.batchSizeReactor.OnReceive(mockMessage.Object);
+        this.batchSizeReactor.OnReceive(batchSizeData);
 
         // Act
         var actual = sut.GenerateIndices();
@@ -402,27 +394,6 @@ public class LineGPUBufferTests
 
         // Assert
         this.mockBatchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-    }
-
-    [Fact]
-    public void BatchSizeReactable_WithNullMessageData_ThrowsException()
-    {
-        // Arrange
-        var expectedMsg = $"There was an issue with the '{nameof(LineGPUBuffer)}.Constructor()' subscription source";
-        expectedMsg += $" for subscription ID '{NotificationIds.BatchSizeSetId}'.";
-
-        var mockMessage = new Mock<IMessage<BatchSizeData>>();
-        mockMessage.Setup(m => m.GetData(null))
-            .Returns<Action<Exception>?>(_ => null);
-
-        _ = CreateSystemUnderTest(false);
-
-        // Act
-        var act = () => this.batchSizeReactor.OnReceive(mockMessage.Object);
-
-        // Assert
-        act.Should().Throw<PushNotificationException>()
-            .WithMessage(expectedMsg);
     }
     #endregion
 

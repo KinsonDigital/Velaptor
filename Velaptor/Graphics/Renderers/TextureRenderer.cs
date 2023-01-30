@@ -6,28 +6,29 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
-using System.Linq;
+using Batching;
 using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Content;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
+using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <inheritdoc cref="ITextureRenderer"/>
 internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 {
-    private readonly IBatchingService<TextureBatchItem> batchService;
+    private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGPUBuffer<TextureBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
+    private readonly IDisposable renderUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -38,36 +39,41 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
-    /// <param name="batchService">Batches items for rendering.</param>
+    /// <param name="batchManager">Batches items for rendering.</param>
     public TextureRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
         IGPUBuffer<TextureBatchItem> buffer,
         IShaderProgram shader,
-        IBatchingService<TextureBatchItem> batchService)
+        IBatchingManager batchManager)
             : base(gl, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchService);
+        EnsureThat.ParamIsNotNull(openGLService);
+        EnsureThat.ParamIsNotNull(buffer);
+        EnsureThat.ParamIsNotNull(shader);
+        EnsureThat.ParamIsNotNull(batchManager);
 
-        this.batchService = batchService;
+        this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(NotificationIds.RenderTexturesId));
-        this.renderUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderTexturesId,
-            name: batchEndName,
-            onReceive: RenderBatch));
-
-        const string renderStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(NotificationIds.RenderBatchBegunId)}";
+        const string renderStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: NotificationIds.RenderBatchBegunId,
+            eventId: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
+
+        var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
+
+        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId));
+        this.renderUnsubscriber = textureRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<TextureBatchItem>>>(
+            eventId: PushNotifications.RenderTexturesId,
+            name: renderReactorName,
+            onReceiveData: RenderBatch));
     }
 
     /// <inheritdoc/>
@@ -190,18 +196,17 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             angle,
             color,
             effects,
-            texture.Id,
-            layer);
+            texture.Id);
 
-        this.batchService.Add(itemToAdd);
+        this.batchManager.AddTextureItem(itemToAdd, layer);
     }
 
     /// <summary>
     /// Invoked every time a batch of textures is ready to be rendered.
     /// </summary>
-    private void RenderBatch()
+    private void RenderBatch(Memory<RenderItem<TextureBatchItem>> itemsToRender)
     {
-        if (this.batchService.BatchItems.Count <= 0)
+        if (itemsToRender.Length <= 0)
         {
             this.openGLService.BeginGroup("Render Texture Process - Nothing To Render");
             this.openGLService.EndGroup();
@@ -216,53 +221,41 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        var itemsToRender = this.batchService.BatchItems
-            .Where(i => i.IsEmpty() is false)
-            .Select(i => i)
-            .OrderBy(i => i.Layer)
-            .ToArray();
-
         // Only if items are available to render
-        if (itemsToRender.Length > 0)
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            for (var i = 0u; i < itemsToRender.Length; i++)
+            var batchItem = itemsToRender.Span[(int)i].Item;
+
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
+
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender.Span[(int)(i + 1)].Item.TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
+            this.openGLService.EndGroup();
+
+            if (shouldNotRender)
             {
-                var batchItem = itemsToRender[(int)i];
-
-                var isLastItem = i >= itemsToRender.Length - 1;
-                var isNotLastItem = !isLastItem;
-
-                var nextTextureIsDifferent = isNotLastItem &&
-                                             itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
-                var shouldRender = isLastItem || nextTextureIsDifferent;
-                var shouldNotRender = !shouldRender;
-
-                gpuDataIndex++;
-                totalItemsToRender++;
-
-                this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
-                this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
-                this.openGLService.EndGroup();
-
-                if (shouldNotRender)
-                {
-                    continue;
-                }
-
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-
-                var totalElements = 6u * totalItemsToRender;
-
-                this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
-                GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
-                this.openGLService.EndGroup();
-
-                totalItemsToRender = 0;
-                gpuDataIndex = -1;
+                continue;
             }
 
-            // Empties the batch
-            this.batchService.EmptyBatch();
+            this.openGLService.BindTexture2D(batchItem.TextureId);
+
+            var totalElements = 6u * totalItemsToRender;
+
+            this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
+            GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+            this.openGLService.EndGroup();
+
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         this.openGLService.EndGroup();
