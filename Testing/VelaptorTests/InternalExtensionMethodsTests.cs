@@ -1607,6 +1607,20 @@ public class InternalExtensionMethodsTests
         // Assert
         actual.Should().Be(-1);
     }
+
+    [Fact]
+    public void IncreaseBy_WhenInvoked_CorrectlyIncreasesItems()
+    {
+        // Arrange
+        var expected = new[] { 1, 2, 3, 4, 0, 0 };
+        var items = new Memory<int>(new[] { 1, 2, 3, 4, });
+
+        // Act
+        items.IncreaseBy(2);
+
+        // Assert
+        items.Span.ToArray().Should().BeEquivalentTo(expected);
+    }
     #endregion
 
     /// <summary>
