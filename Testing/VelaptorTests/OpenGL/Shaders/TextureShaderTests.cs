@@ -29,7 +29,7 @@ public class TextureShaderTests
 {
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
+    private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReceiveReactor? glInitReactor;
@@ -42,7 +42,7 @@ public class TextureShaderTests
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
+        this.mockShaderLoader = new Mock<IShaderLoaderService>();
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))

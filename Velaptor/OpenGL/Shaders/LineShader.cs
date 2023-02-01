@@ -1,4 +1,4 @@
-﻿// <copyright file="LineShader.cs" company="KinsonDigital">
+// <copyright file="LineShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -33,7 +33,7 @@ internal sealed class LineShader : ShaderProgram
     public LineShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {

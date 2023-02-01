@@ -1,4 +1,4 @@
-﻿// <copyright file="FontShader.cs" company="KinsonDigital">
+// <copyright file="FontShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -34,7 +34,7 @@ internal sealed class FontShader : ShaderProgram
     public FontShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {

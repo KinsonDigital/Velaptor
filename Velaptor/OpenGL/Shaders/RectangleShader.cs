@@ -33,7 +33,7 @@ internal sealed class RectangleShader : ShaderProgram
     public RectangleShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {

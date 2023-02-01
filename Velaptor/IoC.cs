@@ -159,8 +159,7 @@ internal static class IoC
         IoCContainer.Register<IAppSettingsService, AppSettingsService>(Lifestyle.Singleton);
         IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
-        IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);
-        IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
+        IoCContainer.Register<IShaderLoaderService, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
         IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);

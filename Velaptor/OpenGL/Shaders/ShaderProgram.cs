@@ -16,7 +16,7 @@ using Services;
 /// <inheritdoc/>
 internal abstract class ShaderProgram : IShaderProgram
 {
-    private readonly IShaderLoaderService<uint> shaderLoaderService;
+    private readonly IShaderLoaderService shaderLoaderService;
     private readonly IDisposable glInitReactorUnsubscriber;
     private readonly IDisposable shutDownReactorUnsubscriber;
     private bool isInitialized;
@@ -34,7 +34,7 @@ internal abstract class ShaderProgram : IShaderProgram
     internal ShaderProgram(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
@@ -161,7 +161,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
-        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
+        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name);
         var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
         OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
@@ -180,7 +180,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
 
-        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
+        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name);
         var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
         OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");

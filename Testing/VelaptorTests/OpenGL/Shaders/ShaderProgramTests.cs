@@ -1,4 +1,4 @@
-﻿// <copyright file="ShaderProgramTests.cs" company="KinsonDigital">
+// <copyright file="ShaderProgramTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,15 +25,13 @@ using Xunit;
 /// </summary>
 public class ShaderProgramTests
 {
-    private const string BatchSizeVarName = "BATCH_SIZE";
     private const string VertShaderSrc = "vert-sut-src";
     private const string FragShaderSrc = "frag-sut-src";
     private const string ShaderName = "UNKNOWN";
     private const uint VertexShaderId = 1234u;
     private const uint FragShaderId = 5678u;
     private const uint ShaderProgramId = 1928u;
-    private const uint DefaultBatchSize = 0u;
-    private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
+    private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -47,21 +45,16 @@ public class ShaderProgramTests
     /// </summary>
     public ShaderProgramTests()
     {
-        this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
-
-        IEnumerable<(string, uint)> vertTemplateVars = new[]
-        {
-            (BatchSizeVarName, DefaultBatchSize),
-        };
+        this.mockShaderLoader = new Mock<IShaderLoaderService>();
 
         // Sets up the vertex sut file mock.
         this.mockShaderLoader.Setup(m
-                => m.LoadVertSource(ShaderName, vertTemplateVars))
+                => m.LoadVertSource(ShaderName))
             .Returns(() => VertShaderSrc);
 
         // Sets up the fragment sut file mock.
         this.mockShaderLoader.Setup(m
-                => m.LoadFragSource(ShaderName, vertTemplateVars))
+                => m.LoadFragSource(ShaderName))
             .Returns(() => FragShaderSrc);
 
         this.mockGL = new Mock<IGLInvoker>();
@@ -199,11 +192,6 @@ public class ShaderProgramTests
     public void ReactorInit_WhenInvoked_LoadsShaderSourceCode()
     {
         // Arrange
-        IEnumerable<(string, uint)> vertTemplateVars = new[]
-        {
-            (BatchSizeVarName, 0u),
-        };
-
         CreateSystemUnderTest();
 
         // Act
@@ -211,9 +199,9 @@ public class ShaderProgramTests
 
         // Assert
         this.mockShaderLoader.Verify(m
-            => m.LoadVertSource(ShaderName, vertTemplateVars), Times.Once);
+            => m.LoadVertSource(ShaderName), Times.Once);
         this.mockShaderLoader.Verify(m
-            => m.LoadFragSource(ShaderName, vertTemplateVars), Times.Once);
+            => m.LoadFragSource(ShaderName), Times.Once);
     }
 
     [Fact]
@@ -228,9 +216,9 @@ public class ShaderProgramTests
 
         // Assert
         this.mockShaderLoader.Verify(m
-            => m.LoadVertSource(It.IsAny<string>(), It.IsAny<(string, uint)[]>()), Times.Once);
+            => m.LoadVertSource(It.IsAny<string>()), Times.Once);
         this.mockShaderLoader.Verify(m
-            => m.LoadFragSource(It.IsAny<string>(), It.IsAny<(string, uint)[]>()), Times.Once);
+            => m.LoadFragSource(It.IsAny<string>()), Times.Once);
         this.mockGL.Verify(m => m.CreateShader(It.IsAny<GLShaderType>()), Times.Exactly(2));
         this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
         this.mockGL.Verify(m => m.AttachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));

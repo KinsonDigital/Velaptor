@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureShader.cs" company="KinsonDigital">
+// <copyright file="TextureShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -34,7 +34,7 @@ internal sealed class TextureShader : ShaderProgram
     public TextureShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
