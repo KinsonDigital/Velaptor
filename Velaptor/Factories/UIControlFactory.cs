@@ -19,7 +19,6 @@ public class UIControlFactory : IUIControlFactory
     {
         var label = new Label(
             ContentLoaderFactory.CreateContentLoader(),
-            IoC.Container.GetInstance<IFont>(),
             IoC.Container.GetInstance<IAppInput<MouseState>>(),
             IoC.Container.GetInstance<IRendererFactory>())
         {
@@ -34,7 +33,6 @@ public class UIControlFactory : IUIControlFactory
     {
         var label = new Label(
             ContentLoaderFactory.CreateContentLoader(),
-            font,
             IoC.Container.GetInstance<IAppInput<MouseState>>(),
             IoC.Container.GetInstance<IRendererFactory>())
         {

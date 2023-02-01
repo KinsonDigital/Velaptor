@@ -23,6 +23,7 @@ using Input;
 public class Label : ControlBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const uint DefaultFontSize = 12;
     private readonly IContentLoader contentLoader;
     private readonly Color disabledColor = Color.DarkGray;
     private readonly IFontRenderer fontRenderer;
@@ -46,7 +47,6 @@ public class Label : ControlBase
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="font">The type of font to render the text.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
     /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
@@ -57,17 +57,15 @@ public class Label : ControlBase
     /// </exception>
     internal Label(
         IContentLoader contentLoader,
-        IFont font,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
             : base(mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(font);
         EnsureThat.ParamIsNotNull(rendererFactory);
 
         this.contentLoader = contentLoader;
-        Font = font;
+        Font = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
         this.fontRenderer = rendererFactory.CreateFontRenderer();
     }
 
@@ -169,7 +167,7 @@ public class Label : ControlBase
     /// <summary>
     /// Gets the font for the label.
     /// </summary>
-    public IFont Font { get; private set; }
+    public IFont Font { get; }
 
     /// <inheritdoc cref="ControlBase.UnloadContent"/>
     /// <exception cref="Exception">Thrown if the control has been disposed.</exception>

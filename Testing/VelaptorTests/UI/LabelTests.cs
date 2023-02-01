@@ -65,7 +65,6 @@ public class LabelTests
         {
             _ = new Label(
                 null,
-                this.mockFont.Object,
                 this.mockMouse.Object,
                 this.mockRenderFactory.Object);
         };
@@ -76,24 +75,6 @@ public class LabelTests
     }
 
     [Fact]
-    public void Ctor_WithNullFontParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Label(
-                this.mockContentLoader.Object,
-                null,
-                this.mockMouse.Object,
-                this.mockRenderFactory.Object);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'font')");
-    }
-
-    [Fact]
     public void Ctor_WithNullRendererFactoryParam_ThrowsException()
     {
         // Arrange & Act
@@ -101,7 +82,6 @@ public class LabelTests
         {
             _ = new Label(
                 this.mockContentLoader.Object,
-                this.mockFont.Object,
                 this.mockMouse.Object,
                 null);
         };
@@ -572,7 +552,6 @@ public class LabelTests
     /// <returns>The instance to test.</returns>
     private Label CreateSystemUnderTest() =>
         new (this.mockContentLoader.Object,
-            this.mockFont.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);
 }
