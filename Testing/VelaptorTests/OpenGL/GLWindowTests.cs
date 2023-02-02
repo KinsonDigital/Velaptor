@@ -533,31 +533,37 @@ public class GLWindowTests
     public void WindowState_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(WindowState)}' used in the class '{nameof(GLWindow)}' and";
+        expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
+
         this.mockSilkWindow.SetupGet(p => p.WindowState).Returns((WindowState)1234);
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<WindowState>>(() =>
         {
             _ = sut.WindowState;
-        }, "The enum 'Silk.NET.Windowing.WindowState' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]
     public void WindowState_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(StateOfWindow)}' used in the class '{nameof(GLWindow)}' and";
+        expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
+
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<StateOfWindow>>(() =>
         {
             sut.WindowState = (StateOfWindow)1234;
-        }, "The enum 'Velaptor.StateOfWindow' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]
@@ -642,32 +648,38 @@ public class GLWindowTests
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(Silk.NET.Windowing.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
+
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Silk.NET.Windowing.WindowBorder>>(() =>
         {
             _ = sut.TypeOfBorder;
-        }, "The enum 'Silk.NET.Windowing.WindowBorder' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(Velaptor.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
+
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Velaptor.WindowBorder>>(() =>
         {
             sut.TypeOfBorder = (VelaptorWindowBorder)1234;
-        }, "The enum 'Velaptor.WindowBorder' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]

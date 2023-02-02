@@ -694,34 +694,24 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: StateOfWindow.Normal,
             getterWhenNotCaching: () =>
             {
-                var enumTypeStr = nameof(Silk);
-                enumTypeStr += $".{nameof(Silk.NET)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowState)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowState switch
                 {
                     Silk.NET.Windowing.WindowState.Normal => StateOfWindow.Normal,
                     Silk.NET.Windowing.WindowState.Minimized => StateOfWindow.Minimized,
                     Silk.NET.Windowing.WindowState.Maximized => StateOfWindow.Maximized,
                     Silk.NET.Windowing.WindowState.Fullscreen => StateOfWindow.FullScreen,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<WindowState>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             },
             setterWhenNotCaching: value =>
             {
-                var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(StateOfWindow)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowState = value switch
                 {
                     StateOfWindow.Normal => Silk.NET.Windowing.WindowState.Normal,
                     StateOfWindow.Minimized => Silk.NET.Windowing.WindowState.Minimized,
                     StateOfWindow.Maximized => Silk.NET.Windowing.WindowState.Maximized,
                     StateOfWindow.FullScreen => Silk.NET.Windowing.WindowState.Fullscreen,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<StateOfWindow>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             });
 
@@ -729,34 +719,22 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: VelaptorWindowBorder.Resizable,
             getterWhenNotCaching: () =>
             {
-                var enumTypeStr = nameof(Silk);
-                enumTypeStr += $".{nameof(Silk.NET)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
-
-                // ReSharper disable once RedundantNameQualifier
-                enumTypeStr += $".{nameof(WindowBorder)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowBorder switch
                 {
                     SilkWindowBorder.Fixed => VelaptorWindowBorder.Fixed,
                     SilkWindowBorder.Hidden => VelaptorWindowBorder.Hidden,
                     SilkWindowBorder.Resizable => VelaptorWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<WindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             },
             setterWhenNotCaching: value =>
             {
-                var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(WindowBorder)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowBorder = value switch
                 {
                     VelaptorWindowBorder.Fixed => SilkWindowBorder.Fixed,
                     VelaptorWindowBorder.Hidden => SilkWindowBorder.Hidden,
                     VelaptorWindowBorder.Resizable => SilkWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<VelaptorWindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             });
     }

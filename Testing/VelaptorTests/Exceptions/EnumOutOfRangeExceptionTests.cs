@@ -5,11 +5,12 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
+using Helpers;
 using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="EnumOutOfRangeException"/> class.
+/// Tests the <see cref="EnumOutOfRangeException{T}"/> class.
 /// </summary>
 public class EnumOutOfRangeExceptionTests
 {
@@ -18,17 +19,17 @@ public class EnumOutOfRangeExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new EnumOutOfRangeException();
+        var exception = new EnumOutOfRangeException<TestEnum>();
 
         // Assert
-        Assert.Equal("The enum value is invalid because it is out of range.", exception.Message);
+        Assert.Equal($"The value of the enum '{nameof(TestEnum)}' is invalid and out of range.", exception.Message);
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new EnumOutOfRangeException("test-message");
+        var exception = new EnumOutOfRangeException<TestEnum>("test-message");
 
         // Assert
         Assert.Equal("test-message", exception.Message);
@@ -41,7 +42,7 @@ public class EnumOutOfRangeExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new EnumOutOfRangeException("test-exception", innerException);
+        var deviceException = new EnumOutOfRangeException<TestEnum>("test-exception", innerException);
 
         // Assert
         Assert.Equal("inner-exception", deviceException.InnerException.Message);
