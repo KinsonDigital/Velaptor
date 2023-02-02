@@ -16,8 +16,8 @@ internal interface IBatchingManager
     /// Adds a texture item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    /// <param name="layer">The layer to add the item on.</param>
-    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    /// <param name="layer">The layer to add the item.</param>
+    /// <param name="renderStamp">The date and time when the item was rendered.</param>
     void AddTextureItem(TextureBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
@@ -32,7 +32,7 @@ internal interface IBatchingManager
     /// Adds a rectangle item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    /// <param name="layer">The layer to add the item on.</param>
+    /// <param name="layer">The layer to add the item.</param>
     /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
     void AddRectItem(RectBatchItem item, int layer, DateTime renderStamp);
 
@@ -40,7 +40,7 @@ internal interface IBatchingManager
     /// Adds a line item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    /// <param name="layer">The layer to add the item on.</param>
+    /// <param name="layer">The layer to add the item.</param>
     /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
     void AddLineItem(LineBatchItem item, int layer, DateTime renderStamp);
 }

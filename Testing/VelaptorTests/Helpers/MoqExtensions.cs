@@ -155,7 +155,7 @@ public static class MoqExtensions
     /// <param name="failMessage">Message to show if verification fails.</param>
     /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
     /// <exception cref="MockException">
-    ///   The invocation was called when it was expected to never be called.
+    ///     The invocation was called when it was not expected to be called.
     /// </exception>
     public static void VerifyExactly<T>(this Mock<T> mock, Expression<Action<T>> expression, int exactly, string failMessage = "")
         where T : class

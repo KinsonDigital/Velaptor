@@ -60,7 +60,7 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     public bool UpdateVertexDataInvoked { get; private set; }
 
     /// <summary>
-    /// Gets the view port size for the purpose of testing.
+    /// Gets the viewport size for the purpose of testing.
     /// </summary>
     public new SizeU ViewPortSize => base.ViewPortSize;
 
@@ -70,7 +70,7 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     public new uint BatchSize => base.BatchSize;
 
     /// <summary>
-    /// Set the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
+    /// Sets the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
     /// </summary>
     protected internal override void SetupVAO() => SetupVAOInvoked = true;
 

@@ -205,7 +205,7 @@ public class Label : ControlBase
     /// Renders the <see cref="Label"/>.
     /// </summary>
     /// <param name="text">The text to render.</param>
-    /// <param name="layer">The layer to render the label on.</param>
+    /// <param name="layer">The layer to render the label.</param>
     internal void Render(string text, int layer)
     {
         if (IsLoaded is false || Visible is false)
