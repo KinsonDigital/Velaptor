@@ -32,7 +32,7 @@ public class PushNotificationsTests
     public void BatchSizeSetId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.BatchSizeSetId.Should().Be("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
+        PushNotifications.BatchSizeChangedId.Should().Be("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
     }
 
     [Fact]

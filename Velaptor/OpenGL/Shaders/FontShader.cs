@@ -42,9 +42,9 @@ internal sealed class FontShader : ShaderProgram
 
         var reactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeChangedId,
             name: batchSizeName,
             onReceiveData: data =>
             {

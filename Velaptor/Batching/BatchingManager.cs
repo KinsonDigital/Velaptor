@@ -48,9 +48,9 @@ internal sealed class BatchingManager : IBatchingManager
 
         this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeReactorName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
+        var batchSizeReactorName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
         this.batchSizeUnsubscriber = this.batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeChangedId,
             name: batchSizeReactorName,
             onReceiveData: data =>
             {
@@ -172,7 +172,7 @@ internal sealed class BatchingManager : IBatchingManager
             var newBatchSize = CalcNewBatchSize(BatchType.Texture);
             this.batchSizeReactable.Push(
                 new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture },
-                PushNotifications.BatchSizeSetId);
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.textureItems.Span[emptyItemIndex] = new RenderItem<TextureBatchItem>
@@ -196,7 +196,7 @@ internal sealed class BatchingManager : IBatchingManager
             var newBatchSize = CalcNewBatchSize(BatchType.Font);
             this.batchSizeReactable.Push(
                 new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font },
-                PushNotifications.BatchSizeSetId);
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.fontItems.Span[emptyItemIndex] = new RenderItem<FontGlyphBatchItem>
@@ -220,7 +220,7 @@ internal sealed class BatchingManager : IBatchingManager
             var newBatchSize = CalcNewBatchSize(BatchType.Rect);
             this.batchSizeReactable.Push(
                 new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect },
-                PushNotifications.BatchSizeSetId);
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.rectItems.Span[emptyItemIndex] = new RenderItem<RectBatchItem>
@@ -244,7 +244,7 @@ internal sealed class BatchingManager : IBatchingManager
             var newBatchSize = CalcNewBatchSize(BatchType.Line);
             this.batchSizeReactable.Push(
                 new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line },
-                PushNotifications.BatchSizeSetId);
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.lineItems.Span[emptyItemIndex] = new RenderItem<LineBatchItem>

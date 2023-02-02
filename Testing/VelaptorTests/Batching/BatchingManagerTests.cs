@@ -75,7 +75,7 @@ public class BatchingManagerTests
             .Callback<IReceiveReactor<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PushNotifications.BatchSizeSetId)}");
+                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PushNotifications.BatchSizeChangedId)}");
 
                 this.batchSizeReactor = reactor;
             })

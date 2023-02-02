@@ -74,10 +74,10 @@ public interface IRenderer
                 {
                     batchSizeReactable.Push(
                         new BatchSizeData { BatchSize = InitialBatchSize, TypeOfBatch = batchType },
-                        PushNotifications.BatchSizeSetId);
+                        PushNotifications.BatchSizeChangedId);
                 }
 
-                PushReactable.Unsubscribe(PushNotifications.BatchSizeSetId);
+                PushReactable.Unsubscribe(PushNotifications.BatchSizeChangedId);
 
                 if (cachedClearColor is not null)
                 {
