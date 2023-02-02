@@ -144,7 +144,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
             rectangle.GradientStart,
             rectangle.GradientStop);
 
-        this.batchManager.AddRectItem(batchItem, layer);
+        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
     }
 
     /// <summary>

@@ -121,7 +121,7 @@ public class RectangleRendererTests
 
                 this.renderReactor = reactor;
             })
-            .Returns<RectRenderItem>((reactor) =>
+            .Returns<RectRenderItem>(reactor =>
             {
                 if (reactor.Id == PushNotifications.RenderRectsId)
                 {
@@ -299,7 +299,7 @@ public class RectangleRendererTests
         sut.Render(rect, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123));
+        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123, It.IsAny<DateTime>()));
     }
 
     [Fact]

@@ -198,7 +198,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             effects,
             texture.Id);
 
-        this.batchManager.AddTextureItem(itemToAdd, layer);
+        this.batchManager.AddTextureItem(itemToAdd, layer, DateTime.Now);
     }
 
     /// <summary>

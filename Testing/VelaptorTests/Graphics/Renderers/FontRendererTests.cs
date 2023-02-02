@@ -316,7 +316,8 @@ public class FontRendererTests
         // Assert
         this.mockFont.VerifyNever(m => m.Measure(It.IsAny<string>()));
         this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
-        this.mockBatchingManager.VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()));
+        this.mockBatchingManager
+            .VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -341,7 +342,8 @@ public class FontRendererTests
         // Assert
         this.mockFont.VerifyNever(m => m.Measure(It.IsAny<string>()));
         this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
-        this.mockBatchingManager.VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()));
+        this.mockBatchingManager
+            .VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -393,7 +395,9 @@ public class FontRendererTests
         // Assert
         this.mockFont.VerifyNever(m => m.ToGlyphMetrics(It.IsAny<string>()));
         this.mockFont.VerifyNever(m => m.GetKerning(It.IsAny<uint>(), It.IsAny<uint>()));
-        this.mockBatchingManager.VerifyNever(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()));
+        this.mockBatchingManager
+            .VerifyNever(m =>
+                m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -461,8 +465,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
 
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -483,7 +488,8 @@ public class FontRendererTests
 
         // Assert
         this.mockBatchingManager
-            .VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()), renderText.Length);
+            .VerifyExactly(m =>
+                m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()), renderText.Length);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -505,8 +511,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -524,7 +531,7 @@ public class FontRendererTests
 
         // Assert
         this.mockBatchingManager
-            .VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+            .VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -546,8 +553,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -563,7 +571,8 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager
+            .VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -585,8 +594,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -605,7 +615,9 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager
+            .VerifyExactly(m =>
+                m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -627,8 +639,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -646,7 +659,9 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager
+            .VerifyExactly(m =>
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -668,8 +683,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -687,7 +703,9 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager
+            .VerifyExactly(m =>
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -709,8 +727,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -727,7 +746,9 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager
+            .VerifyExactly(m =>
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -749,8 +770,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -769,7 +791,8 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager.VerifyExactly(m =>
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 
@@ -791,8 +814,9 @@ public class FontRendererTests
         MockFontMetrics();
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
-        this.mockBatchingManager.Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>()))
-            .Callback<FontGlyphBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<FontGlyphBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchResultData.Add(item);
             });
@@ -810,7 +834,8 @@ public class FontRendererTests
             123);
 
         // Assert
-        this.mockBatchingManager.VerifyExactly(m => m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123), totalGlyphs);
+        this.mockBatchingManager.VerifyExactly(m =>
+            m.AddFontItem(It.IsAny<FontGlyphBatchItem>(), 123, It.IsAny<DateTime>()), totalGlyphs);
         actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
     }
 

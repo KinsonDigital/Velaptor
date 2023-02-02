@@ -315,9 +315,11 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
                 atlasWidth,
                 atlasHeight);
 
+            var renderStamp = DateTime.Now;
+
             foreach (var item in batchItems)
             {
-                this.batchManager.AddFontItem(item, layer);
+                this.batchManager.AddFontItem(item, layer, renderStamp);
             }
         }
     }
