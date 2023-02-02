@@ -1,4 +1,4 @@
-// <copyright file="TextureShader.cs" company="KinsonDigital">
+﻿// <copyright file="TextureShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -48,7 +48,10 @@ internal sealed class TextureShader : ShaderProgram
             name: batchSizeName,
             onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Texture)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

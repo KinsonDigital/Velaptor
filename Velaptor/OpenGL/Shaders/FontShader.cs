@@ -1,4 +1,4 @@
-// <copyright file="FontShader.cs" company="KinsonDigital">
+﻿// <copyright file="FontShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -48,7 +48,10 @@ internal sealed class FontShader : ShaderProgram
             name: batchSizeName,
             onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Font)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

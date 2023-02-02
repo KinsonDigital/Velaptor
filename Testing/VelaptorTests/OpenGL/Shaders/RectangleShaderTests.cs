@@ -118,7 +118,7 @@ public class RectangleShaderTests
     public void BatchSizeReactable_WhenReceivingBatchSizeNotification_SetsBatchSize()
     {
         // Arrange
-        var batchSizeData = new BatchSizeData { BatchSize = 123 };
+        var batchSizeData = new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Rect };
 
         var shader = CreateSystemUnderTest();
 

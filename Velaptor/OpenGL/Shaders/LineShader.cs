@@ -1,4 +1,4 @@
-// <copyright file="LineShader.cs" company="KinsonDigital">
+﻿// <copyright file="LineShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -47,7 +47,10 @@ internal sealed class LineShader : ShaderProgram
             name: batchSizeName,
             onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Line)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

@@ -47,7 +47,10 @@ internal sealed class RectangleShader : ShaderProgram
             name: batchSizeName,
             onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Rect)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
