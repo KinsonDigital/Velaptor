@@ -4,6 +4,8 @@
 
 namespace Velaptor.OpenGL.Batching;
 
+using System;
+
 /// <summary>
 /// A single batch item with associated meta-data about how it should be rendered.
 /// </summary>
@@ -19,4 +21,12 @@ internal readonly record struct RenderItem<T>
     /// Gets the item to render.
     /// </summary>
     public T Item { get; init; }
+
+    /// <summary>
+    /// Gets the date and time of when the item was set to be rendered.
+    /// </summary>
+    /// <remarks>
+    ///     This is only used between items that are on the same render layer.
+    /// </remarks>
+    public DateTime RenderStamp { get; init; }
 }

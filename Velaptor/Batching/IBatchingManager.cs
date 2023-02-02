@@ -4,6 +4,7 @@
 
 namespace Velaptor.Batching;
 
+using System;
 using OpenGL.Batching;
 
 /// <summary>
@@ -16,26 +17,30 @@ internal interface IBatchingManager
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item on.</param>
-    void AddTextureItem(TextureBatchItem item, int layer);
+    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    void AddTextureItem(TextureBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
     /// Adds a font glyph item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item.</param>
-    void AddFontItem(FontGlyphBatchItem item, int layer);
+    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    void AddFontItem(FontGlyphBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
     /// Adds a rectangle item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item on.</param>
-    void AddRectItem(RectBatchItem item, int layer);
+    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    void AddRectItem(RectBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
     /// Adds a line item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item on.</param>
-    void AddLineItem(LineBatchItem item, int layer);
+    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    void AddLineItem(LineBatchItem item, int layer, DateTime renderStamp);
 }

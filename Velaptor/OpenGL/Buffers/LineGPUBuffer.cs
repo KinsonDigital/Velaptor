@@ -1,4 +1,4 @@
-﻿// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,7 +12,6 @@ using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using GPUData;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 
@@ -40,8 +39,6 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
-
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
@@ -50,9 +47,18 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
             name: batchSizeName,
             onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Line)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -154,5 +160,18 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 }

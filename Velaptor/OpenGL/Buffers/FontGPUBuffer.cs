@@ -14,7 +14,6 @@ using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using GPUData;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 
@@ -25,7 +24,7 @@ using ReactableData;
 internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
-    private readonly IDisposable batchSizeUnsubscriber;
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
@@ -42,19 +41,26 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
-
-        var reactable = reactableFactory.CreateBatchSizeReactable();
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
-        this.batchSizeUnsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
             eventId: PushNotifications.BatchSizeSetId,
             name: batchSizeName,
             onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Font)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onUnsubscribe: () => this.batchSizeUnsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -216,5 +222,18 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         OpenGLService.UnbindVBO();
 
         OpenGLService.EndGroup();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 }

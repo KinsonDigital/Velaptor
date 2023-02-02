@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
@@ -15,7 +14,6 @@ using Exceptions;
 using Factories;
 using GPUData;
 using Graphics;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Velaptor.Exceptions;
@@ -43,10 +41,8 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
-        : base(gl, openGLService, reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
-
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
@@ -55,9 +51,18 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
             name: batchSizeName,
             onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Texture)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -97,7 +102,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         }
 
         // Construct the quad rect to determine the vertex positions sent to the GPU
-        var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, srcRectWidth, srcRectHeight);
+        var quadRect = textureQuad.DestRect with { Width = srcRectWidth, Height = srcRectHeight };
 
         // Calculate the scale on the X and Y axis to calculate the size
         var resolvedSize = textureQuad.Size - 1f;
@@ -248,5 +253,18 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 }
