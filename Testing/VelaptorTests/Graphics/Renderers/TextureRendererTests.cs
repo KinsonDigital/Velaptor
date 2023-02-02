@@ -8,7 +8,6 @@ using System;
 using System.Drawing;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Factories;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -32,7 +31,6 @@ using TextureRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
         >
     >
 >;
-
 
 /// <summary>
 /// Tests the <see cref="TextureRenderer"/> class.
@@ -351,8 +349,9 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingManager.Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>()))
-            .Callback<TextureBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchItem = item;
             });
@@ -364,7 +363,8 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123));
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -397,8 +397,9 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingManager.Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>()))
-            .Callback<TextureBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchItem = item;
             });
@@ -410,7 +411,8 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedRenderEffects, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123));
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -443,8 +445,9 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingManager.Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>()))
-            .Callback<TextureBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchItem = item;
             });
@@ -456,7 +459,8 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedClr, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123));
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -490,8 +494,9 @@ public class TextureRendererTests
 
         TextureBatchItem actualBatchItem = default;
 
-        this.mockBatchingManager.Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>()))
-            .Callback<TextureBatchItem, int>((item, _) =>
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
             {
                 actualBatchItem = item;
             });
@@ -503,7 +508,8 @@ public class TextureRendererTests
         sut.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123));
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 

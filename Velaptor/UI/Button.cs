@@ -23,14 +23,12 @@ public sealed class Button : ControlBase
     private const int TextLayer = int.MaxValue - 1;
     private const int BorderLayer = int.MaxValue - 2;
     private const int BtnFaceLayer = int.MaxValue - 3;
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const float HoverBrightness = 0.2f;
     private const float MouseDownBrightness = 0.2f;
     private const uint DefaultButtonWidth = 100;
     private const uint DefaultButtonHeight = 50;
     private const uint HorizontalMargin = 10;
     private readonly IRectangleRenderer rectRenderer;
-    private IContentLoader contentLoader = null!;
     private IUIControlFactory controlFactory = null!;
     private string cachedText = string.Empty;
     private uint cachedAutoSizeOffWidth;
@@ -182,7 +180,6 @@ public sealed class Button : ControlBase
         EnsureThat.ParamIsNotNull(controlFactory);
         EnsureThat.ParamIsNotNull(rendererFactory);
 
-        this.contentLoader = contentLoader;
         this.controlFactory = controlFactory;
         this.rectRenderer = rendererFactory.CreateRectangleRenderer();
     }
@@ -190,6 +187,7 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Gets the <see cref="Label"/> of the <see cref="Button"/>.
     /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     public Label? Label { get; private set; }
 
     /// <inheritdoc cref="IControl"/>
@@ -367,7 +365,7 @@ public sealed class Button : ControlBase
             return;
         }
 
-        Label ??= this.controlFactory.CreateLabel(this.cachedText, this.contentLoader.LoadFont(DefaultRegularFont, 12));
+        Label ??= this.controlFactory.CreateLabel(this.cachedText);
 
         Label?.LoadContent();
 
@@ -494,7 +492,6 @@ public sealed class Button : ControlBase
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     private void Init()
     {
-        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         this.controlFactory = new UIControlFactory();
         Width = DefaultButtonWidth;
         Height = DefaultButtonHeight;

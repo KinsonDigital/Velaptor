@@ -29,7 +29,7 @@ public class FontShaderTests
 {
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
+    private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReceiveReactor? glInitReactor;
@@ -42,7 +42,7 @@ public class FontShaderTests
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
+        this.mockShaderLoader = new Mock<IShaderLoaderService>();
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
@@ -171,7 +171,7 @@ public class FontShaderTests
     public void BatchSizeReactable_WhenReceivingReactableNotification_SetsBatchSize()
     {
         // Arrange
-        var batchSizeData = new BatchSizeData { BatchSize = 123 };
+        var batchSizeData = new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Font };
 
         var shader = CreateSystemUnderTest();
 
@@ -189,7 +189,7 @@ public class FontShaderTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private FontShader CreateSystemUnderTest() =>
-        new FontShader(this.mockGL.Object,
+        new(this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
             this.mockReactableFactory.Object);

@@ -169,7 +169,7 @@ public class MouseTests
         var act = () => reactor.OnReceive(mouseStateData);
 
         // Assert
-        act.Should().Throw<EnumOutOfRangeException>()
+        act.Should().Throw<EnumOutOfRangeException<MouseButton>>()
             .WithMessage(expected);
     }
     #endregion

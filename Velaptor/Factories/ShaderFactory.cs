@@ -27,7 +27,7 @@ internal sealed class ShaderFactory : IShaderFactory
     {
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService>();
         var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
 
         this.textureShader = new TextureShader(

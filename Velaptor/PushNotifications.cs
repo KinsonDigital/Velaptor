@@ -24,7 +24,7 @@ internal static class PushNotifications
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the batch size is set.
     /// </summary>
-    public static Guid BatchSizeSetId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
+    public static Guid BatchSizeChangedId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for the push notifications for when the mouse state has changed.

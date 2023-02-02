@@ -26,11 +26,16 @@ internal sealed class RenderItemComparer<T> : IComparer<RenderItem<T>>
     /// <returns>The numerical value representing how to sort the items <paramref name="x"/> and <paramref name="y"/>.</returns>
     public int Compare(RenderItem<T> x, RenderItem<T> y)
     {
-        if (x.Layer == y.Layer)
+        if (x.Layer != y.Layer)
+        {
+            return x.Layer < y.Layer ? -1 : 1;
+        }
+
+        if (x.RenderStamp == y.RenderStamp)
         {
             return 0;
         }
 
-        return x.Layer < y.Layer ? -1 : 1;
+        return x.RenderStamp < y.RenderStamp ? -1 : 1;
     }
 }

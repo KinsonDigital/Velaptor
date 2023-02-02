@@ -65,20 +65,20 @@ internal enum BatchType
     /// <summary>
     /// Texture batch.
     /// </summary>
-    Texture,
+    Texture = 1,
 
     /// <summary>
     /// Font batch.
     /// </summary>
-    Font,
+    Font = 2,
 
     /// <summary>
     /// Rectangle batch.
     /// </summary>
-    Rect,
+    Rect = 3,
 
     /// <summary>
     /// Line batch.
     /// </summary>
-    Line,
+    Line = 4,
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="LineRenderer.cs" company="KinsonDigital">
+// <copyright file="LineRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -131,7 +131,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
             color,
             thickness);
 
-        this.batchManager.AddLineItem(batchItem, layer);
+        this.batchManager.AddLineItem(batchItem, layer, DateTime.Now);
     }
 
     /// <summary>

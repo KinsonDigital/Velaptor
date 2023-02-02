@@ -50,7 +50,7 @@ public class SoundFactoryTests
 
         var mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
         mockDisposeSoundReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<DisposeSoundData>>()))
-            .Returns<IReceiveReactor<DisposeSoundData>>((reactor) =>
+            .Returns<IReceiveReactor<DisposeSoundData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return this.mockDisposeSoundUnsubscriber.Object;

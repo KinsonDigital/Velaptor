@@ -5,8 +5,10 @@
 namespace Velaptor.Batching;
 
 using System;
+using System.Linq;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Exceptions;
 using Factories;
 using Guards;
 using OpenGL.Batching;
@@ -15,6 +17,7 @@ using ReactableData;
 /// <inheritdoc/>
 internal sealed class BatchingManager : IBatchingManager
 {
+    private const float BatchIncreasePercentage = 0.5f;
     private readonly IDisposable batchSizeUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable texturePullUnsubscriber;
@@ -22,11 +25,18 @@ internal sealed class BatchingManager : IBatchingManager
     private readonly IDisposable rectPullUnsubscriber;
     private readonly IDisposable linePullUnsubscriber;
     private readonly IDisposable emptyBatchUnsubscriber;
+    private readonly IPushReactable<BatchSizeData> batchSizeReactable;
+    private readonly BatchType[] batchTypes = Enum.GetValues<BatchType>();
     private Memory<RenderItem<TextureBatchItem>> textureItems;
     private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
     private Memory<RenderItem<RectBatchItem>> rectItems;
     private Memory<RenderItem<LineBatchItem>> lineItems;
     private bool isShutDown;
+    private bool firstTimeSettingBatchSize = true;
+    private uint textureBatchSize;
+    private uint fontBatchSize;
+    private uint rectBatchSize;
+    private uint lineBatchSize;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchingManager"/> class.
@@ -36,13 +46,22 @@ internal sealed class BatchingManager : IBatchingManager
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
+        this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeReactorName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
-        this.batchSizeUnsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeSetId,
+        var batchSizeReactorName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
+        this.batchSizeUnsubscriber = this.batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+            eventId: PushNotifications.BatchSizeChangedId,
             name: batchSizeReactorName,
-            onReceiveData: data => SetupItems(data.BatchSize),
+            onReceiveData: data =>
+            {
+                if (this.firstTimeSettingBatchSize)
+                {
+                    InitBatchItems(data.BatchSize);
+                    return;
+                }
+
+                SetNewBatchSize(data.BatchSize, data.TypeOfBatch);
+            },
             onUnsubscribe: () => this.batchSizeUnsubscriber?.Dispose()));
 
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -141,114 +160,205 @@ internal sealed class BatchingManager : IBatchingManager
     public Span<RenderItem<LineBatchItem>> LineItems => this.lineItems.Span;
 
     /// <inheritdoc/>
-    public void AddTextureItem(TextureBatchItem item, int layer)
+    public void AddTextureItem(TextureBatchItem item, int layer, DateTime renderStamp)
     {
         var emptyItemIndex = this.textureItems.
             FirstItemIndex(i => i.Item.IsEmpty());
 
         if (emptyItemIndex == -1)
         {
-            // TODO: Replace this code and comment once GPU adjustment feature is added
-            // NOTE: This exception will eventually be replaced with code to increase the GPU buffer size.
-            throw new Exception("The texture batch is full.");
+            emptyItemIndex = this.textureItems.Length;
+
+            var newBatchSize = CalcNewBatchSize(BatchType.Texture);
+            this.batchSizeReactable.Push(
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture },
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.textureItems.Span[emptyItemIndex] = new RenderItem<TextureBatchItem>
         {
             Layer = layer,
             Item = item,
+            RenderStamp = renderStamp,
         };
     }
 
     /// <inheritdoc/>
-    public void AddFontItem(FontGlyphBatchItem item, int layer)
+    public void AddFontItem(FontGlyphBatchItem item, int layer, DateTime renderStamp)
     {
         var emptyItemIndex = this.fontItems.
             FirstItemIndex(i => i.Item.IsEmpty());
 
         if (emptyItemIndex == -1)
         {
-            // TODO: Replace this code and comment once GPU adjustment feature is added
-            // NOTE: This exception will eventually be replaced with code to increase the GPU buffer size.
-            throw new Exception("The font batch is full.");
+            emptyItemIndex = this.fontItems.Length;
+
+            var newBatchSize = CalcNewBatchSize(BatchType.Font);
+            this.batchSizeReactable.Push(
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font },
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.fontItems.Span[emptyItemIndex] = new RenderItem<FontGlyphBatchItem>
         {
             Layer = layer,
             Item = item,
+            RenderStamp = renderStamp,
         };
     }
 
     /// <inheritdoc/>
-    public void AddRectItem(RectBatchItem item, int layer)
+    public void AddRectItem(RectBatchItem item, int layer, DateTime renderStamp)
     {
         var emptyItemIndex = this.rectItems.
             FirstItemIndex(i => i.Item.IsEmpty());
 
         if (emptyItemIndex == -1)
         {
-            // TODO: Replace this code and comment once GPU adjustment feature is added
-            // NOTE: This exception will eventually be replaced with code to increase the GPU buffer size.
-            throw new Exception("The rect batch is full.");
+            emptyItemIndex = this.rectItems.Length;
+
+            var newBatchSize = CalcNewBatchSize(BatchType.Rect);
+            this.batchSizeReactable.Push(
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect },
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.rectItems.Span[emptyItemIndex] = new RenderItem<RectBatchItem>
         {
             Layer = layer,
             Item = item,
+            RenderStamp = renderStamp,
         };
     }
 
     /// <inheritdoc/>
-    public void AddLineItem(LineBatchItem item, int layer)
+    public void AddLineItem(LineBatchItem item, int layer, DateTime renderStamp)
     {
         var emptyItemIndex = this.lineItems.
             FirstItemIndex(i => i.Item.IsEmpty());
 
         if (emptyItemIndex == -1)
         {
-            // TODO: Replace this code and comment once GPU adjustment feature is added
-            // NOTE: This exception will eventually be replaced with code to increase the GPU buffer size.
-            throw new Exception("The line batch is full.");
+            emptyItemIndex = this.lineItems.Length;
+
+            var newBatchSize = CalcNewBatchSize(BatchType.Line);
+            this.batchSizeReactable.Push(
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line },
+                PushNotifications.BatchSizeChangedId);
         }
 
         this.lineItems.Span[emptyItemIndex] = new RenderItem<LineBatchItem>
         {
             Layer = layer,
             Item = item,
+            RenderStamp = renderStamp,
         };
     }
 
     /// <summary>
     /// Sets up all of the batches.
     /// </summary>
-    /// <param name="batchSize">The size of each batch.</param>
-    private void SetupItems(uint batchSize)
+    /// <param name="size">The size of each batch.</param>
+    private void InitBatchItems(uint size)
     {
-        this.textureItems = new RenderItem<TextureBatchItem>[batchSize];
-        for (var i = 0; i < batchSize; i++)
+        this.textureBatchSize = size;
+        this.fontBatchSize = size;
+        this.rectBatchSize = size;
+        this.lineBatchSize = size;
+
+        this.textureItems = new RenderItem<TextureBatchItem>[size];
+        for (var i = 0; i < size; i++)
         {
             this.textureItems.Span[i] = default;
         }
 
-        this.fontItems = new RenderItem<FontGlyphBatchItem>[batchSize];
-        for (var i = 0; i < batchSize; i++)
+        this.fontItems = new RenderItem<FontGlyphBatchItem>[size];
+        for (var i = 0; i < size; i++)
         {
             this.fontItems.Span[i] = default;
         }
 
-        this.rectItems = new RenderItem<RectBatchItem>[batchSize];
-        for (var i = 0; i < batchSize; i++)
+        this.rectItems = new RenderItem<RectBatchItem>[size];
+        for (var i = 0; i < size; i++)
         {
             this.rectItems.Span[i] = default;
         }
 
-        this.lineItems = new RenderItem<LineBatchItem>[batchSize];
-        for (var i = 0; i < batchSize; i++)
+        this.lineItems = new RenderItem<LineBatchItem>[size];
+        for (var i = 0; i < size; i++)
         {
             this.lineItems.Span[i] = default;
         }
+
+        this.firstTimeSettingBatchSize = false;
+    }
+
+    /// <summary>
+    /// Calculates the new batch size based on the given <paramref name="batchType"/>.
+    /// </summary>
+    /// <param name="batchType">The type of batch.</param>
+    /// <returns>The new batch size for a particular batch type.</returns>
+    /// <exception cref="EnumOutOfRangeException{T}">
+    ///     Occurs if the given <paramref name="batchType"/> is an invalid value.
+    /// </exception>
+    private uint CalcNewBatchSize(BatchType batchType) =>
+#pragma warning disable CS8524
+        batchType switch
+        {
+            BatchType.Texture => (uint)(this.textureBatchSize + (this.textureBatchSize * BatchIncreasePercentage)),
+            BatchType.Font => (uint)(this.fontBatchSize + (this.fontBatchSize * BatchIncreasePercentage)),
+            BatchType.Rect => (uint)(this.rectBatchSize + (this.rectBatchSize * BatchIncreasePercentage)),
+            BatchType.Line => (uint)(this.lineBatchSize + (this.lineBatchSize * BatchIncreasePercentage)),
+        };
+#pragma warning restore CS8524
+
+    /// <summary>
+    /// Sets the size of the batch for the given <paramref name="batchType"/> to the given <paramref name="newBatchSize"/>.
+    /// </summary>
+    /// <param name="newBatchSize">The new batch size.</param>
+    /// <param name="batchType">The type of batch.</param>
+    /// <exception cref="EnumOutOfRangeException{T}">
+    ///     Occurs if the given <paramref name="batchType"/> is an invalid value.
+    /// </exception>
+    private void SetNewBatchSize(uint newBatchSize, BatchType batchType)
+    {
+        if (this.batchTypes.Contains(batchType) is false)
+        {
+            throw new EnumOutOfRangeException<BatchType>(nameof(BatchingManager), nameof(SetNewBatchSize));
+        }
+
+#pragma warning disable CS8524
+        var increaseAmount = batchType switch
+        {
+            BatchType.Texture => newBatchSize - this.textureBatchSize,
+            BatchType.Font => newBatchSize - this.fontBatchSize,
+            BatchType.Rect => newBatchSize - this.rectBatchSize,
+            BatchType.Line => newBatchSize - this.lineBatchSize,
+        };
+#pragma warning restore CS8524
+
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+        switch (batchType)
+        {
+            case BatchType.Texture:
+                this.textureBatchSize = newBatchSize;
+                this.textureItems.IncreaseBy(increaseAmount);
+                break;
+            case BatchType.Font:
+                this.fontBatchSize = newBatchSize;
+                this.fontItems.IncreaseBy(increaseAmount);
+                break;
+            case BatchType.Rect:
+                this.rectBatchSize = newBatchSize;
+                this.rectItems.IncreaseBy(increaseAmount);
+                break;
+            case BatchType.Line:
+                this.lineBatchSize = newBatchSize;
+                this.lineItems.IncreaseBy(increaseAmount);
+                break;
+        }
+
+// ReSharper restore SwitchStatementHandlesSomeKnownEnumValuesWithDefault
     }
 
     /// <summary>

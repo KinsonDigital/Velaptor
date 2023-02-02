@@ -19,12 +19,12 @@ internal sealed class ShaderProgramFake : ShaderProgram
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for calling OpenGL functions.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for calling OpenGL functions.</param>
-    /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/> for loading shader code.</param>
+    /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService"/> for loading shader code.</param>
     /// <param name="reactableFactory">Mocked <see cref="IReactableFactory"/> for creating reactables.</param>
     public ShaderProgramFake(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {

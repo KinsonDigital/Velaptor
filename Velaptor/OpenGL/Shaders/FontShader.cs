@@ -34,7 +34,7 @@ internal sealed class FontShader : ShaderProgram
     public FontShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
+        IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
@@ -42,13 +42,16 @@ internal sealed class FontShader : ShaderProgram
 
         var reactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
         this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeChangedId,
             name: batchSizeName,
             onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Font)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }

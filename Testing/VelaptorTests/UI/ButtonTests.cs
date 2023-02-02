@@ -28,6 +28,7 @@ using Xunit;
 /// </summary>
 public class ButtonTests
 {
+    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const int BorderLayer = int.MaxValue - 2;
     private const string ButtonTextValue = "test-value";
     private const string TextureName = "sut-face-small";
@@ -77,7 +78,7 @@ public class ButtonTests
         this.mockContentLoader = new Mock<IContentLoader>();
         this.mockContentLoader.Setup(m => m.LoadTexture(TextureName))
             .Returns(this.mockTexture.Object);
-        this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
+        this.mockContentLoader.Setup(m => m.LoadFont(DefaultRegularFont, 12))
             .Returns(this.mockFont.Object);
 
         this.mockMouse = new Mock<IAppInput<MouseState>>();
@@ -93,12 +94,11 @@ public class ButtonTests
 
         this.label = new Label(
             this.mockContentLoader.Object,
-            this.mockFont.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);
 
         this.mockControlFactory = new Mock<IUIControlFactory>();
-        this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>(), It.IsAny<IFont>()))
+        this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>()))
             .Returns(this.label);
     }
 
@@ -400,6 +400,7 @@ public class ButtonTests
         // Arrange
         var sut = CreateSystemUnderTest();
         sut.LoadContent();
+        sut.LoadContent();
 
         // Act
         sut.Enabled = false;
@@ -414,7 +415,7 @@ public class ButtonTests
     public void LoadContent_WhenInvoked_LoadsContent()
     {
         // Arrange
-        this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12))
+        this.mockContentLoader.Setup(m => m.LoadFont(DefaultRegularFont, 12))
             .Returns(this.mockFont.Object);
 
         var sut = CreateSystemUnderTest();
@@ -430,7 +431,7 @@ public class ButtonTests
         sut.Text.Should().Be("test-value");
         sut.Enabled.Should().BeFalse();
         sut.Position.Should().Be(new Point(11, 22));
-        this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
+        this.mockContentLoader.VerifyOnce(m => m.LoadFont(DefaultRegularFont, 12));
     }
 
     [Fact]

@@ -25,7 +25,7 @@ public interface IRenderer
     /// <summary>
     /// The batch size.
     /// </summary>
-    private const uint BatchSize = 1000;
+    private const uint InitialBatchSize = 1000;
 
     /// <summary>
     /// The OpenGL invoker.
@@ -70,8 +70,14 @@ public interface IRenderer
                 GLInvoker.Enable(GLEnableCap.Blend);
                 GLInvoker.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-                batchSizeReactable.Push(new BatchSizeData { BatchSize = BatchSize }, PushNotifications.BatchSizeSetId);
-                PushReactable.Unsubscribe(PushNotifications.BatchSizeSetId);
+                foreach (var batchType in Enum.GetValues<BatchType>())
+                {
+                    batchSizeReactable.Push(
+                        new BatchSizeData { BatchSize = InitialBatchSize, TypeOfBatch = batchType },
+                        PushNotifications.BatchSizeChangedId);
+                }
+
+                PushReactable.Unsubscribe(PushNotifications.BatchSizeChangedId);
 
                 if (cachedClearColor is not null)
                 {

@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Fakes;
 
+using Velaptor;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Batching;
@@ -59,7 +60,17 @@ internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     public bool UpdateVertexDataInvoked { get; private set; }
 
     /// <summary>
-    /// Set the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
+    /// Gets the viewport size for the purpose of testing.
+    /// </summary>
+    public new SizeU ViewPortSize => base.ViewPortSize;
+
+    /// <summary>
+    /// Gets the batch size for the purpose of testing.
+    /// </summary>
+    public new uint BatchSize => base.BatchSize;
+
+    /// <summary>
+    /// Sets the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
     /// </summary>
     protected internal override void SetupVAO() => SetupVAOInvoked = true;
 

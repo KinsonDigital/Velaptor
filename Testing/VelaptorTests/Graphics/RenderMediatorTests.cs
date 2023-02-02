@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Factories;
 using FluentAssertions;
 using Helpers;
 using Moq;

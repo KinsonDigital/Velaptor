@@ -26,7 +26,6 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     private readonly IDisposable viewPortSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
-    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
@@ -72,7 +71,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
             onReceiveData: data =>
             {
                 ViewPortSize = new SizeU(data.Width, data.Height);
-            }, onUnsubscribe: () => this.viewPortSizeUnsubscriber?.Dispose()));
+            }));
 
         ProcessCustomAttributes();
     }
@@ -111,6 +110,11 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// Gets the size of the viewport.
     /// </summary>
     protected SizeU ViewPortSize { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether or not the buffer has been disposed.
+    /// </summary>
+    protected bool IsDisposed { get; private set; }
 
     /// <summary>
     /// Gets the invoker that makes OpenGL calls.
@@ -177,6 +181,57 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     protected internal abstract uint[] GenerateIndices();
 
     /// <summary>
+    /// Resizes the batch of data in the GPU.
+    /// </summary>
+    protected void ResizeBatch()
+    {
+        OpenGLService.BindVAO(VAO);
+
+        OpenGLService.BeginGroup($"Set size of {Name} Vertex Data");
+
+        var vertBufferData = GenerateData();
+
+        OpenGLService.BindVBO(VBO);
+        GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
+
+        OpenGLService.EndGroup();
+
+        OpenGLService.BeginGroup($"Set size of {Name} Indices Data");
+
+        this.indices = GenerateIndices();
+
+        // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
+        OpenGLService.BindEBO(this.ebo);
+        GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
+
+        OpenGLService.UnbindVBO();
+        OpenGLService.UnbindVAO();
+        OpenGLService.UnbindEBO();
+
+        OpenGLService.EndGroup();
+    }
+
+    /// <summary>
+    /// Shuts down the application by disposing of resources.
+    /// </summary>
+    protected virtual void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.viewPortSizeUnsubscriber.Dispose();
+        this.shutDownUnsubscriber.Dispose();
+
+        GL.DeleteVertexArray(VAO);
+        GL.DeleteBuffer(VBO);
+        GL.DeleteBuffer(this.ebo);
+
+        IsDisposed = true;
+    }
+
+    /// <summary>
     /// Initializes the GPU buffer.
     /// </summary>
     private void Init()
@@ -195,27 +250,13 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         OpenGLService.LabelBuffer(this.ebo, Name, OpenGLBufferType.IndexArrayObject);
 
         OpenGLService.BeginGroup($"Setup {Name} Data");
-        OpenGLService.BeginGroup($"Upload {Name} Vertex Data");
 
         IsInitialized = true;
 
-        var vertBufferData = GenerateData();
-
-        GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
-
-        OpenGLService.EndGroup();
-
-        OpenGLService.BeginGroup($"Upload {Name} Indices Data");
-
-        this.indices = GenerateIndices();
-
-        // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-        GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
-        OpenGLService.EndGroup();
-
         SetupVAO();
 
-        OpenGLService.UnbindVBO();
+        ResizeBatch();
+
         OpenGLService.UnbindVAO();
         OpenGLService.UnbindEBO();
         OpenGLService.EndGroup();
@@ -262,23 +303,5 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
                 Name = nameAttribute.Name;
             }
         }
-    }
-
-    /// <summary>
-    /// Shuts down the application by disposing of resources.
-    /// </summary>
-    private void ShutDown()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.shutDownUnsubscriber.Dispose();
-        GL.DeleteVertexArray(VAO);
-        GL.DeleteBuffer(VBO);
-        GL.DeleteBuffer(this.ebo);
-
-        this.isDisposed = true;
     }
 }

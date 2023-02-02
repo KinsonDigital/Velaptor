@@ -1421,7 +1421,7 @@ internal static class InternalExtensionMethods
     ///     integer components of a <see cref="Point"/> could result in a loss of information.
     ///     Regular casting rules apply.
     /// </remarks>
-    public static NETPoint ToPoint(this Vector2 value) => new NETPoint((int)value.X, (int)value.Y);
+    public static NETPoint ToPoint(this Vector2 value) => new((int)value.X, (int)value.Y);
 
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
@@ -1581,5 +1581,23 @@ internal static class InternalExtensionMethods
         }
 
         return -1;
+    }
+
+    /// <summary>
+    /// Increases the total amount of the given <paramref name="items"/> by the given <paramref name="amount"/>.
+    /// </summary>
+    /// <param name="items">The items to increase its total by the given <paramref name="amount"/>.</param>
+    /// <param name="amount">The amount to add to the given <paramref name="items"/>.</param>
+    /// <typeparam name="T">The arbitrary data referenced by the <paramref name="items"/> of type <see cref="Memory{T}"/>.</typeparam>
+    public static void IncreaseBy<T>(ref this Memory<T> items, uint amount)
+    {
+        var dataBackup = new Span<T>(new T[items.Length]);
+
+        // Backup the data to not lose it
+        items.Span.CopyTo(dataBackup);
+        items = new T[items.Length + amount];
+
+        // Copy the backup back to where it came from
+        dataBackup.CopyTo(items.Span);
     }
 }

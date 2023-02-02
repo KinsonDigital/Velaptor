@@ -58,7 +58,7 @@ internal sealed class Mouse : IAppInput<MouseState>
                         this.rightMouseButton.isDown = data.ButtonIsDown;
                         break;
                     default:
-                        throw new EnumOutOfRangeException($"The enum '{nameof(MouseButton)}' is out of range.");
+                        throw new EnumOutOfRangeException<MouseButton>($"The enum '{nameof(MouseButton)}' is out of range.");
                 }
             },
             onUnsubscribe: () => this.unsubscriber?.Dispose()));

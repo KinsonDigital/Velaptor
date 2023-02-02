@@ -5,6 +5,7 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
+using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
 using Carbonate.NonDirectional;
@@ -109,7 +110,7 @@ public class GPUBufferBaseTests
 
         var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
-            .Returns<IReceiveReactor<ViewPortSizeData>>((reactor) =>
+            .Returns<IReceiveReactor<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -121,7 +122,7 @@ public class GPUBufferBaseTests
                 Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReceiveReactor<ViewPortSizeData>>((reactor) =>
+            .Callback<IReceiveReactor<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -217,8 +218,8 @@ public class GPUBufferBaseTests
 
         // Assert
         this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
-        this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.Once);
-        this.mockGLService.Verify(m => m.UnbindVAO(), Times.Once);
+        this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.Exactly(2));
+        this.mockGLService.Verify(m => m.UnbindVAO(), Times.Exactly(2));
         this.mockGLService.Verify(m => m.LabelVertexArray(VertexArrayId, BufferName));
     }
 
@@ -234,7 +235,7 @@ public class GPUBufferBaseTests
         // Assert
         // These are all invoked once per quad
         this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
-        this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.Once);
+        this.mockGLService.VerifyExactly(m => m.BindVBO(VertexBufferId), 2);
         this.mockGLService.Verify(m => m.UnbindVBO(), Times.Once);
         this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, OpenGLBufferType.VertexBufferObject));
     }
@@ -251,8 +252,8 @@ public class GPUBufferBaseTests
         // Assert
         // First invoke is done creating the Vertex Buffer, the second is the index buffer
         this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
-        this.mockGLService.Verify(m => m.BindEBO(IndexBufferId), Times.Once);
-        this.mockGLService.Verify(m => m.UnbindEBO(), Times.Once);
+        this.mockGLService.Verify(m => m.BindEBO(IndexBufferId), Times.Exactly(2));
+        this.mockGLService.Verify(m => m.UnbindEBO(), Times.Exactly(2));
         this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, OpenGLBufferType.IndexArrayObject));
     }
 
@@ -331,13 +332,14 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_SetsUpProperGLGrouping()
     {
         // Arrange
+        const string setupDataGroupName = $"Setup {BufferName} Data";
+        const string uploadVertexDataGroupName = $"Set size of {BufferName} Vertex Data";
+        const string uploadIndicesDataGroupName = $"Set size of {BufferName} Indices Data";
         var totalInvokes = 0;
-        var setupDataGroupName = $"Setup {BufferName} Data";
         var setupDataGroupSequence = 0;
-        var uploadVertexDataGroupName = $"Upload {BufferName} Vertex Data";
         var uploadVertexDataGroupSequence = 0;
-        var uploadIndicesDataGroupName = $"Upload {BufferName} Indices Data";
         var uploadIndicesDataGroupSequence = 0;
+
         this.mockGLService.Setup(m => m.BeginGroup(setupDataGroupName))
             .Callback(() =>
             {
@@ -363,6 +365,7 @@ public class GPUBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
+        VerifyBatchDataIsUploadedToGPU();
         this.mockGLService.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
         this.mockGLService.Verify(m => m.BeginGroup(setupDataGroupName), Times.Once);
         this.mockGLService.Verify(m => m.BeginGroup(uploadVertexDataGroupName), Times.Once);
@@ -416,6 +419,7 @@ public class GPUBufferBaseTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
+        this.mockViewPortSizeUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
         this.mockGL.Verify(m => m.DeleteBuffer(VertexBufferId), Times.Once());
@@ -424,6 +428,81 @@ public class GPUBufferBaseTests
     #endregion
 
     #region Indirect Tests
+    [Fact]
+    public void PushReactable_WhenSubscribingToGLInitializedNotification_UsesCorrectReactorName()
+    {
+        // Arrange
+        var mockReactable = new Mock<IPushReactable>();
+        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactor =>
+            {
+                if (reactor.Id == PushNotifications.GLInitializedId)
+                {
+                    Act(reactor);
+                }
+            });
+
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
+            .Returns(mockReactable.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act & Assert
+        void Act(IReactor reactor)
+        {
+            reactor.Should().NotBeNull("it is required for this unit test.");
+            reactor.Name.Should().Be("GPUBufferFake.Ctor - GLInitializedId");
+        }
+    }
+
+    [Fact]
+    public void PushReactable_WhenSubscribingToSystemShutDownNotification_UsesCorrectReactorName()
+    {
+        // Arrange
+        var mockReactable = new Mock<IPushReactable>();
+        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+            .Callback<IReceiveReactor>(reactor =>
+            {
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    Act(reactor);
+                }
+            });
+
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
+            .Returns(mockReactable.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act & Assert
+        void Act(IReactor reactor)
+        {
+            reactor.Should().NotBeNull("it is required for this unit test.");
+            reactor.Name.Should().Be("GPUBufferFake.Ctor - SystemShuttingDownId");
+        }
+    }
+
+    [Fact]
+    public void ViewPortSizeReactable_WhenSubscribing_UsesCorrectReactorName()
+    {
+        // Arrange
+        var mockReactable = new Mock<IPushReactable<ViewPortSizeData>>();
+        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
+            .Callback<IReceiveReactor<ViewPortSizeData>>(Act);
+
+        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable())
+            .Returns(mockReactable.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act & Assert
+        void Act(IReactor reactor)
+        {
+            reactor.Should().NotBeNull("it is required for this unit test.");
+            reactor.Name.Should().Be("GPUBufferFake.Ctor - ViewPortSizeChangedId");
+        }
+    }
+
     [Fact]
     public void InitReactable_OnComplete_UnsubscribesFromReactable()
     {
@@ -438,16 +517,16 @@ public class GPUBufferBaseTests
     }
 
     [Fact]
-    public void ViewPortSizeReactable_OnComplete_UnsubscribesFromReactable()
+    public void ViewPortSizeReactable_WhenReceivingNotification_UpdatesViewPortSize()
     {
         // Arrange
-        _ = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        this.viewPortSizeReactor.OnUnsubscribe();
+        this.viewPortSizeReactor.OnReceive(new ViewPortSizeData { Width = 11, Height = 22 });
 
         // Assert
-        this.mockViewPortSizeUnsubscriber.VerifyOnce(m => m.Dispose());
+        sut.ViewPortSize.Should().BeEquivalentTo(new SizeU(11, 22));
     }
     #endregion
 
@@ -460,4 +539,22 @@ public class GPUBufferBaseTests
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockReactableFactory.Object);
+
+    /// <summary>
+    /// Verifies that the correct GPU data has been sent to the GPU.
+    /// </summary>
+    private void VerifyBatchDataIsUploadedToGPU()
+    {
+        this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.AtLeastOnce);
+
+        this.mockGL
+            .Verify(m =>
+                m.BufferData(GLBufferTarget.ArrayBuffer, new[] { 1f, 2f, 3f, 4f, }, GLBufferUsageHint.DynamicDraw), Times.AtLeastOnce);
+
+        this.mockGL
+            .Verify(m =>
+                m.BufferData(GLBufferTarget.ElementArrayBuffer, new[] { 11u, 22u, 33u, 44u, }, GLBufferUsageHint.StaticDraw), Times.AtLeastOnce);
+
+        this.mockGLService.Verify(m => m.UnbindVBO(), Times.AtLeastOnce);
+    }
 }

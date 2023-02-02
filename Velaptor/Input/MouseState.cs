@@ -72,12 +72,7 @@ public struct MouseState : IEquatable<MouseState>
             case MouseButton.RightButton:
                 return this.isRightButtonDown;
             default:
-                var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(Input)}";
-                enumTypeStr += $".{nameof(MouseButton)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
-                throw new EnumOutOfRangeException(exceptionMsg);
+                throw new EnumOutOfRangeException<MouseButton>(nameof(MouseState), nameof(IsButtonDown));
         }
     }
 
@@ -87,7 +82,20 @@ public struct MouseState : IEquatable<MouseState>
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
     /// <returns>True if the mouse button is in the up position.</returns>
-    public bool IsButtonUp(MouseButton button) => !IsButtonDown(button);
+    public bool IsButtonUp(MouseButton button)
+    {
+        switch (button)
+        {
+            case MouseButton.LeftButton:
+                return !this.isLeftButtonDown;
+            case MouseButton.MiddleButton:
+                return !this.isMiddleButtonDown;
+            case MouseButton.RightButton:
+                return !this.isRightButtonDown;
+            default:
+                throw new EnumOutOfRangeException<MouseButton>(nameof(MouseState), nameof(IsButtonUp));
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether or not the left mouse button is in the down position.

@@ -40,7 +40,7 @@ internal sealed class TextBox : ControlBase
     {
         this.contentLoader = contentLoader;
 
-        this.text = new Label(contentLoader, null, null, IoC.Container.GetInstance<IRendererFactory>())
+        this.text = new Label(contentLoader, null, IoC.Container.GetInstance<IRendererFactory>())
         {
             Position = Point.Empty,
             Text = "Textbox Text",

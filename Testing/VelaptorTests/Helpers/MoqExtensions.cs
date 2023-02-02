@@ -152,11 +152,21 @@ public static class MoqExtensions
     /// <param name="mock">The mock object to extend.</param>
     /// <param name="expression">Expression to verify.</param>
     /// <param name="exactly">The exact amount that the invocation should occur.</param>
+    /// <param name="failMessage">Message to show if verification fails.</param>
     /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
     /// <exception cref="MockException">
-    ///   The invocation was called when it was expected to never be called.
+    ///     The invocation was called when it was not expected to be called.
     /// </exception>
-    public static void VerifyExactly<T>(this Mock<T> mock, Expression<Action<T>> expression, int exactly)
-        where T : class =>
-        mock.Verify(expression, Times.Exactly(exactly));
+    public static void VerifyExactly<T>(this Mock<T> mock, Expression<Action<T>> expression, int exactly, string failMessage = "")
+        where T : class
+    {
+        if (string.IsNullOrEmpty(failMessage))
+        {
+            mock.Verify(expression, Times.Exactly(exactly));
+        }
+        else
+        {
+            mock.Verify(expression, Times.Exactly(exactly), failMessage);
+        }
+    }
 }

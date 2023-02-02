@@ -15,7 +15,6 @@ using Exceptions;
 using Factories;
 using GPUData;
 using Graphics;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 
@@ -43,19 +42,26 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
-
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeSetId));
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
         this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeSetId,
+            eventId: PushNotifications.BatchSizeChangedId,
             name: batchSizeName,
             onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Rect)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -221,6 +227,19 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 
     /// <summary>

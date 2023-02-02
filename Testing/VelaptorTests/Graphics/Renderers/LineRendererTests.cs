@@ -267,7 +267,7 @@ public class LineRendererTests
         sut.Render(line, 10);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10, It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class LineRendererTests
         sut.RenderLine(new Vector2(1, 2), new Vector2(3, 4), 10);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10, It.IsAny<DateTime>()));
      }
 
     [Fact]
@@ -311,7 +311,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10, It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10, It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class LineRendererTests
             10);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10));
+        this.mockBatchingManager.VerifyOnce(m => m.AddLineItem(expected, 10, It.IsAny<DateTime>()));
     }
 
     [Fact]
