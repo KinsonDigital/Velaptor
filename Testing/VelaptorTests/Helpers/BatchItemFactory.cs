@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Factories;
+namespace VelaptorTests.Helpers;
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

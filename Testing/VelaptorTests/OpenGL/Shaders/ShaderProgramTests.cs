@@ -1,11 +1,10 @@
-// <copyright file="ShaderProgramTests.cs" company="KinsonDigital">
+﻿// <copyright file="ShaderProgramTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
-using System.Collections.Generic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Fakes;
