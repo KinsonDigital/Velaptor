@@ -395,7 +395,7 @@ public class LineGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("LineGPUBufferTests.Ctor - BatchSizeSetId");
+            reactor.Name.Should().Be("LineGPUBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 

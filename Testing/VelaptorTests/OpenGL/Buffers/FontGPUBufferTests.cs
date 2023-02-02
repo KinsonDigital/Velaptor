@@ -366,7 +366,7 @@ public class FontGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("FontGPUBufferTests.Ctor - BatchSizeSetId");
+            reactor.Name.Should().Be("FontGPUBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
