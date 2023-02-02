@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <LangVersion>11.0</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Velaptor</RootNamespace>
     <AssemblyName>Velaptor</AssemblyName>
 
@@ -38,9 +39,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>CS7035</NoWarn>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\x64\Debug\</OutputPath>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
