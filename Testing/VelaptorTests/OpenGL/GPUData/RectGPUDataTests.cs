@@ -4,6 +4,8 @@
 
 namespace VelaptorTests.OpenGL.GPUData;
 
+using System.Linq;
+using FluentAssertions;
 using Helpers;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
@@ -27,10 +29,10 @@ public class RectGPUDataTests
         var data = new RectGPUData(vertex1, vertex2, vertex3, vertex4);
 
         // Assert
-        Assert.Equal(vertex1, data.Vertex1);
-        Assert.Equal(vertex2, data.Vertex2);
-        Assert.Equal(vertex3, data.Vertex3);
-        Assert.Equal(vertex4, data.Vertex4);
+        data.Vertex1.Should().Be(vertex1);
+        data.Vertex2.Should().Be(vertex2);
+        data.Vertex3.Should().Be(vertex3);
+        data.Vertex4.Should().Be(vertex4);
     }
     #endregion
 
@@ -41,7 +43,8 @@ public class RectGPUDataTests
         // Arrange
         const string testDataFileName = $"{nameof(RectGPUData)}TestData.json";
         var expected = TestDataLoader
-            .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName);
+            .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName)
+            .Select(i => i.value).ToArray();
 
         var data = RectGPUDataGenerator.GenerateGPUData(1);
 
@@ -49,13 +52,8 @@ public class RectGPUDataTests
         var actual = data.ToArray();
 
         // Assert
-        Assert.Equal(64, actual.Length);
-        Assert.All(expected, expectedValue =>
-        {
-            var (name, index, value) = expectedValue;
-            Assert.True(index <= actual.Length, $"Missing data item at index {index}");
-            AssertExtensions.EqualWithMessage(value, actual[index], name);
-        });
+        actual.Length.Should().Be(64);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 }

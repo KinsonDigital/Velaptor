@@ -1421,7 +1421,7 @@ internal static class InternalExtensionMethods
     ///     integer components of a <see cref="Point"/> could result in a loss of information.
     ///     Regular casting rules apply.
     /// </remarks>
-    public static NETPoint ToPoint(this Vector2 value) => new((int)value.X, (int)value.Y);
+    public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
 
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.

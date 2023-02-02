@@ -189,7 +189,7 @@ public class FontShaderTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private FontShader CreateSystemUnderTest() =>
-        new(this.mockGL.Object,
+        new (this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,
             this.mockReactableFactory.Object);
