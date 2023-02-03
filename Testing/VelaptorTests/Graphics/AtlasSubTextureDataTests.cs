@@ -21,10 +21,12 @@ public class AtlasSubTextureDataTests
     {
         // Arrange
         var expected = new Rectangle(11, 22, 33, 44);
-        var data = new AtlasSubTextureData();
+        var data = new AtlasSubTextureData
+        {
+            Bounds = new Rectangle(11, 22, 33, 44),
+        };
 
         // Act
-        data.Bounds = new Rectangle(11, 22, 33, 44);
         var actual = data.Bounds;
 
         // Assert
@@ -32,13 +34,12 @@ public class AtlasSubTextureDataTests
     }
 
     [Fact]
-    public void Name_WhenSettingValue_ReturnsCorrectResult()
+    public void Name_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var data = new AtlasSubTextureData();
+        var data = new AtlasSubTextureData { Name = "test-name" };
 
         // Act
-        data.Name = "test-name";
         var actual = data.Name;
 
         // Assert
@@ -51,7 +52,7 @@ public class AtlasSubTextureDataTests
     public void Equals_WhenComparingDifferentObjectTypes_ReturnsFalse()
     {
         // Arrange
-        var dataA = new AtlasSubTextureData();
+        var dataA = default(AtlasSubTextureData);
         var dataB = new object();
 
         // Act
@@ -65,8 +66,8 @@ public class AtlasSubTextureDataTests
     public void Equals_WhenComparingObjectsWithDifferentNameProp_ReturnsFalse()
     {
         // Arrange
-        var dataA = new AtlasSubTextureData();
-        var dataB = new AtlasSubTextureData()
+        var dataA = default(AtlasSubTextureData);
+        var dataB = new AtlasSubTextureData
         {
             Name = "DataB",
         };
@@ -82,8 +83,8 @@ public class AtlasSubTextureDataTests
     public void Equals_WhenComparingObjectsWithDifferentBoundsProp_ReturnsFalse()
     {
         // Arrange
-        var dataA = new AtlasSubTextureData();
-        var dataB = new AtlasSubTextureData()
+        var dataA = default(AtlasSubTextureData);
+        var dataB = new AtlasSubTextureData
         {
             Bounds = new Rectangle(11, 22, 33, 44),
         };
@@ -99,8 +100,8 @@ public class AtlasSubTextureDataTests
     public void Equals_WhenComparingObjectsWithDifferentFrameIndexProp_ReturnsFalse()
     {
         // Arrange
-        var dataA = new AtlasSubTextureData();
-        var dataB = new AtlasSubTextureData()
+        var dataA = default(AtlasSubTextureData);
+        var dataB = new AtlasSubTextureData
         {
             FrameIndex = 111,
         };

@@ -8,10 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Hardware;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -50,7 +50,7 @@ public class SystemMonitorTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SystemMonitor(null);
+            _ = new SystemMonitor(null);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
     #endregion

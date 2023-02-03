@@ -8,10 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Velaptor;
-using Velaptor.Content;
 using Fakes;
 using Helpers;
+using Velaptor;
+using Velaptor.Content;
 using Xunit;
 
 /// <summary>

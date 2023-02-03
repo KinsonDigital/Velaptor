@@ -15,7 +15,7 @@ public class InvalidInputException : Exception
     /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
     /// </summary>
     public InvalidInputException()
-        : base($"Invalid Input")
+        : base("Invalid Input")
     {
     }
 

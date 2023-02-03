@@ -6,12 +6,12 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Used to test that the mouse works correctly.
@@ -39,7 +39,7 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.mouseInfoLabel = new Label() { Color = Color.White };
+        this.mouseInfoLabel = new Label { Color = Color.White };
 
         this.mouseInfoLabel.LoadContent();
         this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);

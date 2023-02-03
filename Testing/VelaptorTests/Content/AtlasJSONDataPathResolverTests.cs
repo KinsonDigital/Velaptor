@@ -8,10 +8,10 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -42,7 +42,7 @@ public class AtlasJSONDataPathResolverTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasJSONDataPathResolver(null);
+            _ = new AtlasJSONDataPathResolver(null);
         }, "The parameter must not be null. (Parameter 'directory')");
     }
 

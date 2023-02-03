@@ -1,0 +1,432 @@
+[
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 315.0,
+        "Y": 0.0
+      },
+      "Size": "22, 31",
+      "X": 315.0,
+      "Y": 0.0,
+      "Width": 22.0,
+      "Height": 31.0,
+      "Left": 315.0,
+      "Top": 0.0,
+      "Right": 337.0,
+      "Bottom": 31.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 456.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 456.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 456.0,
+      "Top": 666.0,
+      "Right": 656.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "h",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 180.0,
+        "Y": 0.0
+      },
+      "Size": "18, 20",
+      "X": 180.0,
+      "Y": 0.0,
+      "Width": 18.0,
+      "Height": 20.0,
+      "Left": 180.0,
+      "Top": 0.0,
+      "Right": 198.0,
+      "Bottom": 20.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 478.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 478.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 478.0,
+      "Top": 666.0,
+      "Right": 678.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "e",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 0.0,
+        "Y": 43.0
+      },
+      "Size": "11, 31",
+      "X": 0.0,
+      "Y": 43.0,
+      "Width": 11.0,
+      "Height": 31.0,
+      "Left": 0.0,
+      "Top": 43.0,
+      "Right": 11.0,
+      "Bottom": 74.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 498.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 498.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 498.0,
+      "Top": 666.0,
+      "Right": 698.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "l",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 0.0,
+        "Y": 43.0
+      },
+      "Size": "11, 31",
+      "X": 0.0,
+      "Y": 43.0,
+      "Width": 11.0,
+      "Height": 31.0,
+      "Left": 0.0,
+      "Top": 43.0,
+      "Right": 11.0,
+      "Bottom": 74.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 510.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 510.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 510.0,
+      "Top": 666.0,
+      "Right": 710.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "l",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 135.0,
+        "Y": 43.0
+      },
+      "Size": "20, 20",
+      "X": 135.0,
+      "Y": 43.0,
+      "Width": 20.0,
+      "Height": 20.0,
+      "Left": 135.0,
+      "Top": 43.0,
+      "Right": 155.0,
+      "Bottom": 63.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 522.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 522.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 522.0,
+      "Top": 666.0,
+      "Right": 722.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "o",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 0.0,
+        "Y": 86.0
+      },
+      "Size": "32, 20",
+      "X": 0.0,
+      "Y": 86.0,
+      "Width": 32.0,
+      "Height": 20.0,
+      "Left": 0.0,
+      "Top": 86.0,
+      "Right": 32.0,
+      "Bottom": 106.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 456.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 456.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 456.0,
+      "Top": 666.0,
+      "Right": 656.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "w",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 135.0,
+        "Y": 43.0
+      },
+      "Size": "20, 20",
+      "X": 135.0,
+      "Y": 43.0,
+      "Width": 20.0,
+      "Height": 20.0,
+      "Left": 135.0,
+      "Top": 43.0,
+      "Right": 155.0,
+      "Bottom": 63.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 488.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 488.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 488.0,
+      "Top": 666.0,
+      "Right": 688.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "o",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 270.0,
+        "Y": 43.0
+      },
+      "Size": "15, 20",
+      "X": 270.0,
+      "Y": 43.0,
+      "Width": 15.0,
+      "Height": 20.0,
+      "Left": 270.0,
+      "Top": 43.0,
+      "Right": 285.0,
+      "Bottom": 63.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 510.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 510.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 510.0,
+      "Top": 666.0,
+      "Right": 710.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "r",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 0.0,
+        "Y": 43.0
+      },
+      "Size": "11, 31",
+      "X": 0.0,
+      "Y": 43.0,
+      "Width": 11.0,
+      "Height": 31.0,
+      "Left": 0.0,
+      "Top": 43.0,
+      "Right": 11.0,
+      "Bottom": 74.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 525.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 525.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 525.0,
+      "Top": 666.0,
+      "Right": 725.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "l",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 135.0,
+        "Y": 0.0
+      },
+      "Size": "22, 31",
+      "X": 135.0,
+      "Y": 0.0,
+      "Width": 22.0,
+      "Height": 31.0,
+      "Left": 135.0,
+      "Top": 0.0,
+      "Right": 157.0,
+      "Bottom": 31.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 537.0,
+        "Y": 666.0
+      },
+      "Size": "200, 100",
+      "X": 537.0,
+      "Y": 666.0,
+      "Width": 200.0,
+      "Height": 100.0,
+      "Left": 537.0,
+      "Top": 666.0,
+      "Right": 737.0,
+      "Bottom": 766.0,
+      "IsEmpty": false
+    },
+    "Glyph": "d",
+    "Size": 0.0,
+    "Angle": 0.0,
+    "TintColor": "DarkOrange",
+    "Effects": 0,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  }
+]

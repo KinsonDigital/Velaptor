@@ -7,12 +7,12 @@ namespace VelaptorTests.UI;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Fakes;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
-using Fakes;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -45,6 +45,7 @@ public class WindowTests
         }, "The parameter must not be null. (Parameter 'window')");
     }
     #endregion
+
     #region Prop Tests
     [Fact]
     public void Title_WhenSettingValue_ReturnsCorrectResult()
@@ -218,7 +219,7 @@ public class WindowTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new WindowFake(null);
+            _ = new WindowFake(null);
         }, "The parameter must not be null. (Parameter 'window')");
     }
 

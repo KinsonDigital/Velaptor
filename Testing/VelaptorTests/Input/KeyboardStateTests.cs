@@ -643,6 +643,21 @@ public class KeyboardStateTests
         // Assert
         Assert.True(actual);
     }
+
+    [Fact]
+    public void NotEqualsOperator_WhenInvokedWithEqualOperands_ReturnsTrue()
+    {
+        // Arrange
+        var stateA = default(KeyboardState);
+        var stateB = default(KeyboardState);
+        stateB.SetKeyState(KeyCode.C, true);
+
+        // Act
+        var actual = stateA != stateB;
+
+        // Assert
+        Assert.True(actual);
+    }
     #endregion
 
     private void SetAllStatesTo(bool state)

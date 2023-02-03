@@ -11,11 +11,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using Guards;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
+using Velaptor.Factories;
 
 /// <summary>
 /// Caches <see cref="ISound"/> objects for retrieval at a later time.
@@ -28,8 +30,8 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private readonly ISoundFactory soundFactory;
     private readonly IFile file;
     private readonly IPath path;
+    private readonly IPushReactable<DisposeSoundData> disposeReactable;
     private readonly IDisposable shutDownUnsubscriber;
-    private readonly IReactable<DisposeSoundData> disposeSoundsReactable;
     private bool isDisposed;
 
     /// <summary>
@@ -38,39 +40,36 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <param name="soundFactory">Creates <see cref="ISound"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Provides path related services.</param>
-    /// <param name="disposeSoundsReactable">Sends push notifications to dispose of sounds.</param>
-    /// <param name="shutDownReactable">Sends a push notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundCache(
         ISoundFactory soundFactory,
         IFile file,
         IPath path,
-        IReactable<DisposeSoundData> disposeSoundsReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(soundFactory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(disposeSoundsReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.soundFactory = soundFactory;
         this.file = file;
         this.path = path;
 
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
+        this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        this.disposeSoundsReactable = disposeSoundsReactable;
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.SystemShuttingDownId,
+            name: shutDownName,
+            onReceive: ShutDown));
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="SoundCache"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~SoundCache()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -148,10 +147,12 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     {
         this.sounds.TryRemove(cacheKey, out var sound);
 
-        if (sound is not null)
+        if (sound is null)
         {
-            this.disposeSoundsReactable.PushNotification(new DisposeSoundData(sound.Id));
+            return;
         }
+
+        this.disposeReactable.Push(new DisposeSoundData { SoundId = sound.Id }, PushNotifications.SoundDisposedId);
     }
 
     /// <summary>
@@ -164,19 +165,10 @@ internal sealed class SoundCache : IItemCache<string, ISound>
             return;
         }
 
-        var cacheKeys = this.sounds.Keys.ToArray();
+        this.shutDownUnsubscriber.Dispose();
+        this.disposeReactable.Unsubscribe(PushNotifications.SoundDisposedId);
 
-        // Dispose of all default and non default textures
-        foreach (var cacheKey in cacheKeys)
-        {
-            this.sounds.TryRemove(cacheKey, out var sound);
-
-            if (sound is not null)
-            {
-                this.disposeSoundsReactable.PushNotification(new DisposeSoundData(sound.Id));
-            }
-        }
-
+        this.sounds.Clear();
         this.isDisposed = true;
     }
 }

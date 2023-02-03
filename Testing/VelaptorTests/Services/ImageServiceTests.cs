@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using Helpers;
 using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -16,7 +17,6 @@ using SixLabors.ImageSharp.Processing;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
@@ -286,7 +286,7 @@ public class ImageServiceTests : IDisposable
     ///     As long as the pixel is inside of the given <paramref name="assertRect"/>, the pixel
     ///     color will be asserted against the given <paramref name="expectedClr"/>.
     /// </remarks>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static void AssertThatPixelsMatch(NETColor[,] pixels, uint width, uint height, NETRectangle assertRect, NETColor expectedClr)
     {
         AssertExtensions.All(pixels, width, height, (pixel, x, y) =>
@@ -327,7 +327,7 @@ public class ImageServiceTests : IDisposable
     /// Loads all of the pixel data into a two dimensional array of <see cref="NETColor"/>.
     /// </summary>
     /// <returns>The pixel data from the test comparison image.</returns>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static NETColor[,] LoadSaveResultImage(string filePath)
     {
         if (File.Exists(filePath) is false)

@@ -6,10 +6,12 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
+using NativeInterop.OpenGL;
+using ReactableData;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
@@ -19,48 +21,56 @@ using NETSizeF = System.Drawing.SizeF;
 internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     where TData : struct
 {
-    private readonly IDisposable glInitUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
+    private readonly IDisposable glInitUnsubscriber;
+    private readonly IDisposable viewPortSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
     private uint[] indices = Array.Empty<uint>();
-    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal GPUBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-        OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+        GL = gl;
+        OpenGLService = openGLService;
 
-        this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
-            _ => Init(),
-            onCompleted: () =>
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var portSizeReactable = reactableFactory.CreateViewPortReactable();
+
+        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
+        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.GLInitializedId,
+            name: glInitName,
+            onReceive: Init,
+            onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
+
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.SystemShuttingDownId,
+            name: shutDownName,
+            onReceive: ShutDown));
+
+        var viewPortName = this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId));
+        this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
+            eventId: PushNotifications.ViewPortSizeChangedId,
+            name: viewPortName,
+            onReceiveData: data =>
             {
-                this.glInitUnsubscriber?.Dispose();
-            }));
-
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
+                ViewPortSize = new SizeU(data.Width, data.Height);
             }));
 
         ProcessCustomAttributes();
@@ -69,7 +79,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// <summary>
     /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~GPUBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -79,9 +89,6 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
 
         ShutDown();
     }
-
-    /// <inheritdoc/>
-    public SizeU ViewPortSize { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the batch.
@@ -98,6 +105,16 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
     protected internal string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets the size of the viewport.
+    /// </summary>
+    protected SizeU ViewPortSize { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether or not the buffer has been disposed.
+    /// </summary>
+    protected bool IsDisposed { get; private set; }
 
     /// <summary>
     /// Gets the invoker that makes OpenGL calls.
@@ -164,6 +181,57 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     protected internal abstract uint[] GenerateIndices();
 
     /// <summary>
+    /// Resizes the batch of data in the GPU.
+    /// </summary>
+    protected void ResizeBatch()
+    {
+        OpenGLService.BindVAO(VAO);
+
+        OpenGLService.BeginGroup($"Set size of {Name} Vertex Data");
+
+        var vertBufferData = GenerateData();
+
+        OpenGLService.BindVBO(VBO);
+        GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
+
+        OpenGLService.EndGroup();
+
+        OpenGLService.BeginGroup($"Set size of {Name} Indices Data");
+
+        this.indices = GenerateIndices();
+
+        // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
+        OpenGLService.BindEBO(this.ebo);
+        GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
+
+        OpenGLService.UnbindVBO();
+        OpenGLService.UnbindVAO();
+        OpenGLService.UnbindEBO();
+
+        OpenGLService.EndGroup();
+    }
+
+    /// <summary>
+    /// Shuts down the application by disposing of resources.
+    /// </summary>
+    protected virtual void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.viewPortSizeUnsubscriber.Dispose();
+        this.shutDownUnsubscriber.Dispose();
+
+        GL.DeleteVertexArray(VAO);
+        GL.DeleteBuffer(VBO);
+        GL.DeleteBuffer(this.ebo);
+
+        IsDisposed = true;
+    }
+
+    /// <summary>
     /// Initializes the GPU buffer.
     /// </summary>
     private void Init()
@@ -182,27 +250,13 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         OpenGLService.LabelBuffer(this.ebo, Name, OpenGLBufferType.IndexArrayObject);
 
         OpenGLService.BeginGroup($"Setup {Name} Data");
-        OpenGLService.BeginGroup($"Upload {Name} Vertex Data");
 
         IsInitialized = true;
 
-        var vertBufferData = GenerateData();
-
-        GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
-
-        OpenGLService.EndGroup();
-
-        OpenGLService.BeginGroup($"Upload {Name} Indices Data");
-
-        this.indices = GenerateIndices();
-
-        // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-        GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
-        OpenGLService.EndGroup();
-
         SetupVAO();
 
-        OpenGLService.UnbindVBO();
+        ResizeBatch();
+
         OpenGLService.UnbindVAO();
         OpenGLService.UnbindEBO();
         OpenGLService.EndGroup();
@@ -249,22 +303,5 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
                 Name = nameAttribute.Name;
             }
         }
-    }
-
-    /// <summary>
-    /// Shuts down the application by disposing of resources.
-    /// </summary>
-    private void ShutDown()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        GL.DeleteVertexArray(VAO);
-        GL.DeleteBuffer(VBO);
-        GL.DeleteBuffer(this.ebo);
-
-        this.isDisposed = true;
     }
 }

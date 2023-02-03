@@ -142,7 +142,7 @@ public class EventLoggerServiceTests
     public void Event_WhenAllLoggingIsDisabled_DoesNotLogAnything()
     {
         // Arrange
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = false,
         };
@@ -172,7 +172,7 @@ public class EventLoggerServiceTests
 
         var sut = CreateService();
 
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = true,
@@ -217,7 +217,7 @@ public class EventLoggerServiceTests
         this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
 
         var sut = CreateService();
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,
@@ -249,7 +249,7 @@ public class EventLoggerServiceTests
         this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
 
         var sut = CreateService();
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,
@@ -281,7 +281,7 @@ public class EventLoggerServiceTests
         this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
 
         var sut = CreateService();
-        var appSettings = new AppSettings()
+        var appSettings = new AppSettings
         {
             LoggingEnabled = true,
             ConsoleLoggingEnabled = false,

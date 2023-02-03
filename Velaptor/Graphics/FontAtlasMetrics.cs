@@ -40,6 +40,6 @@ internal struct FontAtlasMetrics
                                                 this.Height == other.Height;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => HashCode.Combine(this.Rows, this.Columns, this.Width, this.Height);
 }

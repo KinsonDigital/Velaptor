@@ -5,11 +5,12 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
+using Carbonate.UniDirectional;
+using Factories;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
+using ReactableData;
 using Services;
-using Reactables.Core;
-using Reactables.ReactableData;
 
 /// <summary>
 /// A shader used to render text of a particular font.
@@ -26,29 +27,33 @@ internal sealed class FontShader : ShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public FontShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, shaderLoaderService, glInitReactable, shutDownReactable)
+        IShaderLoaderService shaderLoaderService,
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        var reactable = reactableFactory.CreateBatchSizeReactable();
+
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+            eventId: PushNotifications.BatchSizeChangedId,
+            name: batchSizeName,
+            onReceiveData: data =>
             {
-                BatchSize = data.BatchSize;
+                if (data.TypeOfBatch == BatchType.Font)
+                {
+                    BatchSize = data.BatchSize;
+                }
             },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

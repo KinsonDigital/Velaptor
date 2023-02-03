@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Linq;
 using Velaptor;
 using Velaptor.Factories;
-using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 
@@ -24,7 +24,6 @@ public sealed class SceneManager : IUpdatable, IDisposable
     private readonly Button nextButton;
     private readonly Button previousButton;
     private readonly IAppInput<KeyboardState> keyboard;
-    private IRenderer renderer;
     private int currentSceneIndex;
     private bool isDisposed;
     private bool isLoaded;
@@ -34,11 +33,8 @@ public sealed class SceneManager : IUpdatable, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneManager"/> class.
     /// </summary>
-    /// <param name="renderer">Renders all of the scenes.</param>
-    public SceneManager(IRenderer renderer)
+    public SceneManager()
     {
-        this.renderer = renderer;
-
         this.nextButton = new Button { Text = "-->" };
         this.nextButton.Click += (_, _) => NextScene();
 
@@ -234,16 +230,16 @@ public sealed class SceneManager : IUpdatable, IDisposable
             return;
         }
 
-        this.renderer.Clear();
-        this.renderer.Begin();
+        IRenderer.Clear();
+        IRenderer.Begin();
 
-        this.scenes[this.currentSceneIndex].Render(this.renderer);
+        this.scenes[this.currentSceneIndex].Render();
 
         // Render the scene manager UI on top of all other textures
-        this.nextButton.Render(this.renderer);
-        this.previousButton.Render(this.renderer);
+        this.nextButton.Render();
+        this.previousButton.Render();
 
-        this.renderer.End();
+        IRenderer.End();
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -278,7 +274,6 @@ public sealed class SceneManager : IUpdatable, IDisposable
 
         this.scenes.Clear();
 
-        this.renderer = null;
         this.previousButton.UnloadContent();
         this.nextButton.UnloadContent();
     }

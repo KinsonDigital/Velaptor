@@ -98,7 +98,7 @@ public static class Program
         }
         else
         {
-            // Run the game asynchronously without debug console
+            // Run the game synchronously without debug console
             RunGame().Wait();
             gameWindow.Dispose();
         }

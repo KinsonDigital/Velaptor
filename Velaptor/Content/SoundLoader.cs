@@ -11,8 +11,8 @@ using System.IO.Abstractions;
 using System.Linq;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads sound content.
@@ -29,7 +29,7 @@ public sealed class SoundLoader : ILoader<ISound>
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public SoundLoader()
     {
@@ -105,7 +105,7 @@ public sealed class SoundLoader : ILoader<ISound>
         }
         else
         {
-            throw new FileNotFoundException($"The sound file does not exist.", filePath);
+            throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
         return this.soundCache.GetItem(cacheKey);

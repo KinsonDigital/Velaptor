@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Content;
 using Content.Caching;
-using Velaptor.Content.Factories;
+using Content.Factories;
 using Content.Fonts;
 using Services;
 using IVelaptorSound = Content.ISound;
@@ -17,7 +17,7 @@ using IVelaptorSound = Content.ISound;
 /// <summary>
 /// Creates instances of a content loader.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class ContentLoaderFactory
 {
     private static IContentLoader? contentLoader;
@@ -34,7 +34,7 @@ public static class ContentLoaderFactory
         contentLoader ??= new ContentLoader(
             CreateTextureLoader(),
             CreateSoundLoader(),
-            CreateTextureAtlasLoader(),
+            CreateAtlasLoader(),
             CreateFontLoader());
 
     /// <summary>
@@ -68,7 +68,7 @@ public static class ContentLoaderFactory
     /// </summary>
     /// <returns>A loader for loading texture atlas data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left public for library users.")]
-    public static ILoader<IAtlasData> CreateTextureAtlasLoader()
+    public static ILoader<IAtlasData> CreateAtlasLoader()
     {
         if (atlasLoader is not null)
         {
@@ -77,7 +77,7 @@ public static class ContentLoaderFactory
 
         var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        var atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+        var atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         var jsonService = IoC.Container.GetInstance<IJSONService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();

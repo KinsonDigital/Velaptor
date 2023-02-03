@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Represents the current platform.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "No point in testing due to implementation being mostly dotnet code.")]
 public class Platform : IPlatform
 {
     private static readonly OSPlatform[] Platforms =
@@ -34,11 +34,6 @@ public class Platform : IPlatform
     {
         get
         {
-            if (Platforms is null)
-            {
-                throw new InvalidOperationException($"The '{nameof(IPlatform)}' implementation has not created all possible platforms.");
-            }
-
             foreach (var platform in Platforms)
             {
                 if (RuntimeInformation.IsOSPlatform(platform))

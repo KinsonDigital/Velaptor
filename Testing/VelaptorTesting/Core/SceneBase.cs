@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Graphics;
 using Velaptor.UI;
 
 /// <summary>
@@ -119,13 +118,8 @@ public abstract class SceneBase : IScene
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public virtual void Render(IRenderer renderer)
+    public virtual void Render()
     {
-        if (renderer == null)
-        {
-            throw new ArgumentNullException(nameof(renderer), "The parameter must not be null.");
-        }
-
         if (IsLoaded is false)
         {
             return;
@@ -133,7 +127,7 @@ public abstract class SceneBase : IScene
 
         foreach (var control in this.controls)
         {
-            control.Render(renderer);
+            control.Render();
         }
     }
 

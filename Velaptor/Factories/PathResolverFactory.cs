@@ -14,12 +14,12 @@ using Content.Fonts;
 /// <summary>
 /// Creates path resolver instances.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
 public static class PathResolverFactory
 {
     private static readonly IPlatform Platform;
     private static IPathResolver? texturePathResolver;
-    private static IPathResolver? textureAtlasPathResolver;
+    private static IPathResolver? atlasPathResolver;
     private static IPathResolver? soundPathResolver;
     private static IPathResolver? fontPathResolver;
     private static IPathResolver? contentFontPathResolver;
@@ -43,8 +43,8 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver to texture content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IPathResolver CreateTextureAtlasPathResolver() =>
-        textureAtlasPathResolver ??= new AtlasTexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+    public static IPathResolver CreateAtlasPathResolver() =>
+        atlasPathResolver ??= new AtlasTexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
     /// Creates a path resolver that resolves paths to fonts in the application's content directory.
@@ -65,7 +65,7 @@ public static class PathResolverFactory
             return CreateWindowsFontPathResolver();
         }
 
-        throw new NotImplementedException("Currently loading system fonts is only supported on Windows.");
+        throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
     }
 
     /// <summary>

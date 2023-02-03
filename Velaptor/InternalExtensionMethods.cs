@@ -7,18 +7,21 @@ namespace Velaptor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Graphics;
+using OpenGL;
+using OpenGL.Batching;
+using OpenGL.GPUData;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Graphics;
-using OpenGL;
-using OpenGL.GPUData;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
@@ -447,15 +450,75 @@ internal static class InternalExtensionMethods
     public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
     /// <summary>
+    /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.
+    /// </summary>
+    /// <param name="value">The string to change.</param>
+    /// <param name="str">The string to remove.</param>
+    /// <returns>The original string with the <paramref name="str"/> values removed.</returns>
+    public static string RemoveAll(this string value, string str) =>
+        string.IsNullOrEmpty(value) ? string.Empty : value.Replace(str, string.Empty);
+
+    /// <summary>
+    /// Builds a name that represents a location of where an execution took place.
+    /// </summary>
+    /// <param name="unused">The object to enable this extension method to be executed anywhere.</param>
+    /// <param name="postFixValue">The value to add to the end of the name.</param>
+    /// <param name="memberName">The name of the member invoked this method.</param>
+    /// <returns>The formatted member name of where this was invoked.</returns>
+    /// <exception cref="Exception">Occurs if the stack frame is null.</exception>
+    [SuppressMessage("ReSharper", "UnusedParameter.Global", Justification = "Helper method.")]
+    [ExcludeFromCodeCoverage]
+    public static string GetExecutionMemberName(
+        this object unused,
+        string postFixValue = "",
+        [CallerMemberName] string memberName = "")
+    {
+        string callerLocation;
+        Type? declaringType;
+        var skipFrames = 2;
+
+        do
+        {
+            var method = new StackFrame(skipFrames, false).GetMethod();
+
+            if (method is null)
+            {
+                throw new Exception("There was an issue getting the method for stack frame 2.");
+            }
+
+            declaringType = method.DeclaringType;
+
+            if (declaringType == null)
+            {
+                return method.Name;
+            }
+
+            skipFrames++;
+            callerLocation = declaringType.FullName ?? string.Empty;
+        }
+        while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+        var containsPostFixValue = string.IsNullOrEmpty(postFixValue);
+
+        callerLocation = callerLocation.Contains(".")
+            ? callerLocation.Split('.')[^1]
+            : callerLocation;
+
+        memberName = memberName == ".ctor"
+            ? "Ctor"
+            : memberName;
+
+        return $"{callerLocation}.{memberName}{(containsPostFixValue ? string.Empty : " - ")}{postFixValue}";
+    }
+
+    /// <summary>
     /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
     /// <param name="items">The items to convert.</param>
     /// <returns>The items as a read only collection.</returns>
     public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
-        items is null ?
-            new ReadOnlyCollection<T>(Array.Empty<T>()) :
-            new ReadOnlyCollection<T>(items.ToList());
+        items is null ? new ReadOnlyCollection<T>(Array.Empty<T>()) : new ReadOnlyCollection<T>(items.ToList());
 
     /// <summary>
     /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
@@ -463,7 +526,7 @@ internal static class InternalExtensionMethods
     /// </summary>
     /// <typeparam name="T">The type to suppress against.</typeparam>
     /// <param name="container">The container that the suppression applies to.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public static void SuppressDisposableTransientWarning<T>(this Container container)
     {
         var registration = container.GetRegistration(typeof(T))?.Registration;
@@ -494,7 +557,7 @@ internal static class InternalExtensionMethods
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
         where TService : class
@@ -522,7 +585,7 @@ internal static class InternalExtensionMethods
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
         where TService : class
@@ -533,26 +596,6 @@ internal static class InternalExtensionMethods
         if (suppressDisposal)
         {
             SuppressDisposableTransientWarning<TService>(container);
-        }
-    }
-
-    /// <summary>
-    /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned.
-    /// </summary>
-    /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
-    /// <param name="container">The container that the registration applies to.</param>
-    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
-    /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
-    public static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
-        where TImplementation : class
-    {
-        container.Register<TImplementation>();
-
-        if (suppressDisposal)
-        {
-            SuppressDisposableTransientWarning<TImplementation>(container);
         }
     }
 
@@ -576,40 +619,12 @@ internal static class InternalExtensionMethods
     /// <typeparamref name="TService" /> has already been registered.</exception>
     /// <exception cref="T:System.ArgumentNullException">
     /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
         where TService : class
     {
         container.Register(instanceCreator);
-
-        if (suppressDisposal)
-        {
-            SuppressDisposableTransientWarning<TService>(container);
-        }
-    }
-
-    /// <summary>
-    /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
-    /// a <typeparamref name="TService"/> is requested (transient).
-    /// </summary>
-    /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
-    /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
-    /// <param name="container">The container that the registration applies to.</param>
-    /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
-    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
-    /// <remarks>
-    ///     This method uses the container's LifestyleSelectionBehavior to select the exact
-    ///     lifestyle for the specified type. By default this will be Transient.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
-    [ExcludeFromCodeCoverage]
-    public static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
-        where TService : class
-        where TImplementation : class, TService
-    {
-        container.Register<TService, TImplementation>(lifestyle);
 
         if (suppressDisposal)
         {
@@ -1363,8 +1378,7 @@ internal static class InternalExtensionMethods
         new (p1,
             item.P2,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Sets the <see cref="LineBatchItem.P2"/> vector component of the batch item to the given <paramref name="p2"/> vector.
@@ -1376,8 +1390,7 @@ internal static class InternalExtensionMethods
         new (item.P1,
             p2,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Swaps the <see cref="LineBatchItem"/>.<see cref="LineBatchItem.P1"/> and <see cref="LineBatchItem"/>.<see cref="LineBatchItem.P2"/>
@@ -1389,8 +1402,7 @@ internal static class InternalExtensionMethods
         new (item.P2,
             item.P1,
             item.Color,
-            item.Thickness,
-            item.Layer);
+            item.Thickness);
 
     /// <summary>
     /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.
@@ -1409,7 +1421,7 @@ internal static class InternalExtensionMethods
     ///     integer components of a <see cref="Point"/> could result in a loss of information.
     ///     Regular casting rules apply.
     /// </remarks>
-    public static NETPoint ToPoint(this Vector2 value) => new NETPoint((int)value.X, (int)value.Y);
+    public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
 
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
@@ -1464,5 +1476,128 @@ internal static class InternalExtensionMethods
         }
 
         return -1;
+    }
+
+    /// <summary>
+    /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">Indicates whether or not if the item index should be returned.</param>
+    /// <typeparam name="T">The type of item in the list.</typeparam>
+    /// <returns>The index of the item that the <paramref name="predicate"/> returned <c>true</c>.</returns>
+    /// <remarks>
+    ///     The iterating over the items will stop once the <paramref name="predicate"/> returns true.
+    /// </remarks>
+    public static int FirstItemIndex<T>(this Memory<T> items, Predicate<T> predicate)
+    {
+        var index = -1;
+
+        foreach (var item in items.Span)
+        {
+            index++;
+
+            if (predicate(item))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Returns the index of the first item that matches the given <paramref name="layer"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="layer">The layer to check.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>.</typeparam>
+    /// <returns>
+    ///     The index of the item in the list of <paramref name="items"/>.
+    ///     <br/>
+    ///     The value of -1 will be returned if the layer cannot be found.
+    /// </returns>
+    public static int FirstLayerIndex<T>(this Memory<RenderItem<T>> items, int layer)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (items.Span[i].Layer == layer)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Gets the total number of items that are on the given <paramref name="layer"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="layer">The layer to check.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>
+    ///     The total number of items on the <paramref name="layer"/>.
+    /// </returns>
+    /// <remarks>
+    ///     This method assumes that the items are sorted by layer in ascending order to work properly.
+    /// </remarks>
+    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "Left for performance reasons.")]
+    public static int TotalOnLayer<T>(this Memory<RenderItem<T>> items, int layer)
+    {
+        var result = 0;
+
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            // If there is no point in checking the rest of the items
+            if (items.Span[i].Layer > layer)
+            {
+                return result;
+            }
+
+            if (items.Span[i].Layer == layer)
+            {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">The predicate to execute against each item.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>The index of the item.</returns>
+    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (predicate(items.Span[i].Item))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Increases the total amount of the given <paramref name="items"/> by the given <paramref name="amount"/>.
+    /// </summary>
+    /// <param name="items">The items to increase its total by the given <paramref name="amount"/>.</param>
+    /// <param name="amount">The amount to add to the given <paramref name="items"/>.</param>
+    /// <typeparam name="T">The arbitrary data referenced by the <paramref name="items"/> of type <see cref="Memory{T}"/>.</typeparam>
+    public static void IncreaseBy<T>(ref this Memory<T> items, uint amount)
+    {
+        var dataBackup = new Span<T>(new T[items.Length]);
+
+        // Backup the data to not lose it
+        items.Span.CopyTo(dataBackup);
+        items = new T[items.Length + amount];
+
+        // Copy the backup back to where it came from
+        dataBackup.CopyTo(items.Span);
     }
 }

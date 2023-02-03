@@ -90,6 +90,6 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
            Vertex4 == other.Vertex4;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => Vertex1.GetHashCode() + Vertex2.GetHashCode() + Vertex3.GetHashCode() + Vertex4.GetHashCode();
 }

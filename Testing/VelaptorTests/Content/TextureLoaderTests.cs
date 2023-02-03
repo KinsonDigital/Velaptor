@@ -7,11 +7,11 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -55,7 +55,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 null,
                 this.mockTexturePathResolver.Object,
                 this.mockFile.Object,
@@ -69,7 +69,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 null,
                 this.mockFile.Object,
@@ -83,7 +83,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
                 null,
@@ -97,7 +97,7 @@ public class TextureLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new TextureLoader(
+            _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
                 this.mockFile.Object,

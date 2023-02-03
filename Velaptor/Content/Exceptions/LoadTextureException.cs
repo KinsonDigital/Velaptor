@@ -15,7 +15,7 @@ public class LoadTextureException : Exception
     /// Initializes a new instance of the <see cref="LoadTextureException"/> class.
     /// </summary>
     public LoadTextureException()
-        : base($"There was an issue loading the texture.")
+        : base("There was an issue loading the texture.")
     {
     }
 

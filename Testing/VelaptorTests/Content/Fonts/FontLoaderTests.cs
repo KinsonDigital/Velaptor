@@ -8,7 +8,9 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
+using Fakes;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -42,7 +44,7 @@ public class FontLoaderTests
     private readonly Mock<IFontFactory> mockFontFactory;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<ITexture> mockFontAtlasTexture;
+    private readonly Mock<ITexture> mockAtlasTexture;
     private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IFileStreamFactory> mockFileStream;
@@ -57,7 +59,7 @@ public class FontLoaderTests
         this.filePathWithMetaData = $"{this.fontFilePath}|{this.metaData}";
         this.contentNameWithMetaData = $"{FontContentName}|{this.metaData}";
 
-        this.mockFontAtlasTexture = new Mock<ITexture>();
+        this.mockAtlasTexture = new Mock<ITexture>();
 
         this.mockFont = new Mock<IFont>();
 
@@ -68,7 +70,7 @@ public class FontLoaderTests
         };
 
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
-        this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
+        this.mockFontAtlasService.Setup(m => m.CreateAtlas(this.fontFilePath, FontSize))
             .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
         this.mockEmbeddedFontResourceService = new Mock<IEmbeddedResourceLoaderService<Stream?>>();
@@ -83,12 +85,12 @@ public class FontLoaderTests
         // Mock for both full file paths and content names with metadata
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
         this.mockTextureCache.Setup(m => m.GetItem(this.filePathWithMetaData))
-            .Returns(this.mockFontAtlasTexture.Object);
+            .Returns(this.mockAtlasTexture.Object);
 
         // Mock for both full file paths and content names with metadata
         this.mockFontFactory = new Mock<IFontFactory>();
         this.mockFontFactory.Setup(m =>
-                m.Create(this.mockFontAtlasTexture.Object,
+                m.Create(this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -427,22 +429,22 @@ public class FontLoaderTests
 
         // Check that each file was created
         this.mockFileStream.Verify(m =>
-                m.Create(defaultRegularFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultRegularFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultBoldFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultBoldFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Never);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
 
-        mockRegularFontFileStream.Verify(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()), Times.Once);
-        mockBoldFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()), Times.Once);
-        mockItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()), Times.Never);
-        mockBoldItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()), Times.Once);
+        mockRegularFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()));
+        mockBoldFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()));
+        mockItalicFontFileStream.VerifyNever(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()));
+        mockBoldItalicFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()));
     }
     #endregion
 
@@ -551,7 +553,7 @@ public class FontLoaderTests
         this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExt)).Returns(FontContentName);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExtAndMetaData)).Returns(FontContentName);
-        this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
+        this.mockFontAtlasService.Setup(m => m.CreateAtlas(this.fontFilePath, FontSize))
             .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
         var sut = CreateSystemUnderTest();
@@ -563,11 +565,11 @@ public class FontLoaderTests
         this.mockFontMetaDataParser.Verify(m => m.Parse(fileNameWithExtAndMetaData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(fileNameWithExt), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -590,11 +592,11 @@ public class FontLoaderTests
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.filePathWithMetaData), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -618,12 +620,12 @@ public class FontLoaderTests
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.contentNameWithMetaData), Times.Once);
         this.mockFontPathResolver.Verify(m => m.ResolveFilePath(FontContentName), Times.Once);
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
-        this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Verify(m => m.CreateAtlas(this.fontFilePath, FontSize), Times.Once);
         this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
 
         this.mockFontFactory.Verify(m =>
                 m.Create(
-                    this.mockFontAtlasTexture.Object,
+                    this.mockAtlasTexture.Object,
                     FontContentName,
                     this.fontFilePath,
                     FontSize,
@@ -730,7 +732,7 @@ public class FontLoaderTests
     /// </remarks>
     private static GlyphMetrics GenerateMetricData(int start)
     {
-        return new GlyphMetrics()
+        return new GlyphMetrics
         {
             Ascender = start,
             Descender = start + 1,
@@ -785,10 +787,10 @@ public class FontLoaderTests
     /// </summary>
     /// <param name="filePath">The file path to mock.</param>
     /// <returns>The mock object to verify against.</returns>
-    private Mock<Stream> MockCopyToStream(string filePath)
+    private Mock<FileSystemStreamFake> MockCopyToStream(string filePath)
     {
-        var result = new Mock<Stream>();
-        this.mockFileStream.Setup(m => m.Create(filePath, FileMode.Create, FileAccess.Write))
+        var result = new Mock<FileSystemStreamFake>();
+        this.mockFileStream.Setup(m => m.New(filePath, FileMode.Create, FileAccess.Write))
             .Returns(result.Object);
 
         return result;

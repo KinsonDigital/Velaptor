@@ -7,11 +7,11 @@ namespace VelaptorTests.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Fakes;
+using FluentAssertions;
 using Moq;
 using Velaptor.Input;
 using Velaptor.UI;
-using Fakes;
-using FluentAssertions;
 using Xunit;
 
 /// <summary>

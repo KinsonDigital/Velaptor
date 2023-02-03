@@ -21,7 +21,7 @@ public class CachingExceptionTests
         var exception = new CachingException();
 
         // Assert
-        Assert.Equal($"There was an issue caching the item.", exception.Message);
+        Assert.Equal("There was an issue caching the item.", exception.Message);
     }
 
     [Fact]

@@ -8,9 +8,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Graphics;
 using Guards;
-using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
+using NativeInterop.OpenGL;
+using Velaptor.Factories;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.
@@ -19,34 +18,34 @@ internal sealed class TextureFactory : ITextureFactory
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService mockGLService;
-    private readonly IReactable<DisposeTextureData> disposeTexturesReactable;
+    private readonly IReactableFactory reactableFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public TextureFactory()
     {
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.mockGLService = IoC.Container.GetInstance<IOpenGLService>();
-        this.disposeTexturesReactable = IoC.Container.GetInstance<IReactable<DisposeTextureData>>();
+        this.reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    /// <param name="gl">Provides access to OpenGL functions.</param>
+    /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
-    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactable<DisposeTextureData> disposeTexturesReactable)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.gl = gl;
         this.mockGLService = openGLService;
-        this.disposeTexturesReactable = disposeTexturesReactable;
+        this.reactableFactory = reactableFactory;
     }
 
     /// <inheritdoc/>
@@ -62,6 +61,6 @@ internal sealed class TextureFactory : ITextureFactory
             throw new ArgumentNullException(nameof(filePath), "The string parameter must not be null or empty.");
         }
 
-        return new Texture(this.gl, this.mockGLService, this.disposeTexturesReactable, name, filePath, imageData);
+        return new Texture(this.gl, this.mockGLService, this.reactableFactory, name, filePath, imageData);
     }
 }

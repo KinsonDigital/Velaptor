@@ -7,8 +7,8 @@ namespace VelaptorTests.OpenGL.GPUData;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
 using Velaptor.OpenGL.GPUData;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -33,15 +33,15 @@ public class RectVertexDataTests
             15);
 
         // Assert
-        Assert.Equal(new Vector2(1, 2), data.VertexPos);
-        Assert.Equal(new Vector4(3, 4, 5, 6), data.Rectangle);
-        Assert.Equal(Color.FromArgb(7, 8, 9, 10), data.Color);
-        Assert.True(data.IsFilled);
-        Assert.Equal(11, data.BorderThickness);
-        Assert.Equal(12, data.TopLeftCornerRadius);
-        Assert.Equal(13, data.BottomLeftCornerRadius);
-        Assert.Equal(14, data.BottomRightCornerRadius);
-        Assert.Equal(15, data.TopRightCornerRadius);
+        data.IsFilled.Should().BeTrue();
+        data.VertexPos.Should().Be(new Vector2(1, 2));
+        data.Rectangle.Should().Be(new Vector4(3, 4, 5, 6));
+        data.Color.Should().Be(Color.FromArgb(7, 8, 9, 10));
+        data.BorderThickness.Should().Be(11);
+        data.TopLeftCornerRadius.Should().Be(12);
+        data.BottomLeftCornerRadius.Should().Be(13);
+        data.BottomRightCornerRadius.Should().Be(14);
+        data.TopRightCornerRadius.Should().Be(15);
     }
     #endregion
 
@@ -53,15 +53,15 @@ public class RectVertexDataTests
         var actual = RectVertexData.Empty();
 
         // Assert
-        Assert.Equal(Vector2.Zero, actual.VertexPos);
-        Assert.Equal(Vector4.Zero, actual.Rectangle);
-        Assert.Equal(Color.Empty, actual.Color);
-        Assert.False(actual.IsFilled);
-        Assert.Equal(0f, actual.BorderThickness);
-        Assert.Equal(0f, actual.TopLeftCornerRadius);
-        Assert.Equal(0f, actual.BottomLeftCornerRadius);
-        Assert.Equal(0f, actual.BottomRightCornerRadius);
-        Assert.Equal(0f, actual.TopRightCornerRadius);
+        actual.IsFilled.Should().BeFalse();
+        actual.VertexPos.Should().Be(Vector2.Zero);
+        actual.Rectangle.Should().Be(Vector4.Zero);
+        actual.Color.Should().Be(Color.Empty);
+        actual.BorderThickness.Should().Be(0f);
+        actual.TopLeftCornerRadius.Should().Be(0f);
+        actual.BottomLeftCornerRadius.Should().Be(0f);
+        actual.BottomRightCornerRadius.Should().Be(0f);
+        actual.TopRightCornerRadius.Should().Be(0f);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class RectVertexDataTests
         var actual = RectVertexData.GetStride();
 
         // Assert
-        Assert.Equal(64u, actual);
+        actual.Should().Be(64u);
     }
 
     [Fact]
@@ -93,23 +93,23 @@ public class RectVertexDataTests
         var actual = data.ToArray().ToArray();
 
         // Assert
-        Assert.Equal(16, actual.Length);
-        AssertExtensions.EqualWithMessage(1f, actual[0], "Vertex Pos X");
-        AssertExtensions.EqualWithMessage(2f, actual[1], "Vertex Pos Y");
-        AssertExtensions.EqualWithMessage(3f, actual[2], "Rectangle X");
-        AssertExtensions.EqualWithMessage(4f, actual[3], "Rectangle Y");
-        AssertExtensions.EqualWithMessage(5f, actual[4], "Rectangle Width");
-        AssertExtensions.EqualWithMessage(6f, actual[5], "Rectangle Height");
-        AssertExtensions.EqualWithMessage(8, actual[6], "Color R");
-        AssertExtensions.EqualWithMessage(9, actual[7], "Color G");
-        AssertExtensions.EqualWithMessage(10, actual[8], "Color B");
-        AssertExtensions.EqualWithMessage(7, actual[9], "Color A");
-        AssertExtensions.EqualWithMessage(1, actual[10], "IsFilled");
-        AssertExtensions.EqualWithMessage(11f, actual[11], "Border Thickness");
-        AssertExtensions.EqualWithMessage(12f, actual[12], "Top Left Radius");
-        AssertExtensions.EqualWithMessage(13f, actual[13], "Bottom Left Radius");
-        AssertExtensions.EqualWithMessage(14f, actual[14], "Bottom Right Radius");
-        AssertExtensions.EqualWithMessage(15f, actual[15], "Top Right Radius");
+        actual.Length.Should().Be(16);
+        actual[0].Should().Be(1f, "the Vertex Pos X should be correct.");
+        actual[1].Should().Be(2f, "the Vertex Pos Y should be correct.");
+        actual[2].Should().Be(3f, "the Rectangle X should be correct.");
+        actual[3].Should().Be(4f, "the Rectangle Y should be correct.");
+        actual[4].Should().Be(5f, "the Rectangle Width should be correct.");
+        actual[5].Should().Be(6f, "the Rectangle Height should be correct.");
+        actual[6].Should().Be(8, "the Color R should be correct.");
+        actual[7].Should().Be(9, "the Color G should be correct.");
+        actual[8].Should().Be(10, "the Color B should be correct.");
+        actual[9].Should().Be(7, "the Color A should be correct.");
+        actual[10].Should().Be(1, "the IsFilled should be correct.");
+        actual[11].Should().Be(11f, "the Border Thickness should be correct.");
+        actual[12].Should().Be(12f, "the Top Left Radius should be correct.");
+        actual[13].Should().Be(13f, "the Bottom Left Radius should be correct.");
+        actual[14].Should().Be(14f, "the Bottom Right Radius should be correct.");
+        actual[15].Should().Be(15f, "the Top Right Radius should be correct.");
     }
     #endregion
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="Window.cs" company="KinsonDigital">
+// <copyright file="Window.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,6 @@ public abstract class Window : IWindowProps, IDisposable
     /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
-    [ExcludeFromCodeCoverage]
     protected Window(IWindow window)
     {
         EnsureThat.ParamIsNotNull(window);
@@ -43,7 +42,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="Window"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~Window()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -156,7 +155,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// <summary>
     /// Invoked when the window is loaded.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
     }
@@ -165,7 +164,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// Invoked when the window is updated.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
     }
@@ -174,7 +173,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// Invoked when the window renders its content.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
     }
@@ -182,7 +181,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// <summary>
     /// Invoked when the window is unloaded.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
     }
@@ -191,7 +190,7 @@ public abstract class Window : IWindowProps, IDisposable
     /// Invoked when the window size changes.
     /// </summary>
     /// <param name="size">The new size.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnResize(SizeU size)
     {
     }

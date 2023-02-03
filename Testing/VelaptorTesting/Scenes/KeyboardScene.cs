@@ -6,12 +6,12 @@ namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Text;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.
@@ -40,7 +40,7 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.lblInstructions = new Label()
+        this.lblInstructions = new Label
         {
             Name = "Instructions",
             Color = Color.White,
@@ -50,7 +50,7 @@ public class KeyboardScene : SceneBase
         this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
         this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
-        this.downKeys = new Label()
+        this.downKeys = new Label
         {
             Name = "DownKeys",
             Color = Color.White,

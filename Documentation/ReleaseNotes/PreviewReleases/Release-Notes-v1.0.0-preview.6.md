@@ -14,9 +14,8 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Implemented a specialized version of the .NET observable interfaces. This replaces the use of `System.IObservable` and `System.IObserver`.
-    - This gives the ability to add features to the observable pattern.
-    - NOTE: This provides the ability to do [Reactive Programming](https://en.wikipedia.org/wiki/Reactive_programming) by using the [Observable Pattern](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwj81ZHM3dL1AhVtk4kEHQkbCygQFnoECCEQAQ&url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fdotnet%2Fstandard%2Fevents%2Fobserver-design-pattern&usg=AOvVaw1J3tfvEfjKtYOxvZEXY3sk).
-2. Added a new property named `IsDefaultFont` to the `IFont` and `Font` types.
+    >💡 This gives the ability to add features to the observable pattern and to do to do [Reactive Programming](https://en.wikipedia.org/wiki/Reactive_programming) by using the [Observable Pattern](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwj81ZHM3dL1AhVtk4kEHQkbCygQFnoECCEQAQ&url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fdotnet%2Fstandard%2Fevents%2Fobserver-design-pattern&usg=AOvVaw1J3tfvEfjKtYOxvZEXY3sk).
+1. Added a new property named `IsDefaultFont` to the `IFont` and `Font` types.
     - This represents whether or not the font was loaded using the default font.
 
 ---

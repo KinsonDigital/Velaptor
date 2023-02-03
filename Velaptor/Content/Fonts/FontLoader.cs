@@ -12,8 +12,8 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
-using Velaptor.Factories;
 using Guards;
+using Velaptor.Factories;
 using Velaptor.Services;
 
 /// <summary>
@@ -46,7 +46,7 @@ public sealed class FontLoader : ILoader<IFont>
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public FontLoader()
     {
@@ -210,7 +210,7 @@ public sealed class FontLoader : ILoader<IFont>
 
         var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-        var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
+        var (_, glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
 
         var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
         var fileName = this.path.GetFileName(fullFontFilePath);
@@ -295,7 +295,7 @@ public sealed class FontLoader : ILoader<IFont>
             }
 
             using var fontFileStream = this.embeddedFontResourceService.LoadResource(fontName);
-            using var copyToStream = this.fileStream.Create(filePath, FileMode.Create, FileAccess.Write);
+            using var copyToStream = this.fileStream.New(filePath, FileMode.Create, FileAccess.Write);
 
             fontFileStream?.CopyTo(copyToStream);
         }

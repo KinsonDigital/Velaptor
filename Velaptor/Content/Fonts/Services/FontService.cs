@@ -9,18 +9,18 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using FreeTypeSharp.Native;
 using Exceptions;
-using Velaptor.Exceptions;
+using FreeTypeSharp.Native;
 using Graphics;
 using Guards;
 using NativeInterop.FreeType;
+using Velaptor.Exceptions;
 using Velaptor.Services;
 
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Waiting for changes from GitHub issue")]
 internal sealed class FontService : IFontService
 {
     private readonly IFreeTypeInvoker freeTypeInvoker;
@@ -107,7 +107,6 @@ internal sealed class FontService : IFontService
             {
                 var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
 
-                // TODO: Create helper method that can be used to simplify this 64 bit logic
                 if (Environment.Is64BitProcess)
                 {
                     metric.Ascender = (int)face.size->metrics.ascender.ToInt64() >> 6;
@@ -204,7 +203,6 @@ internal sealed class FontService : IFontService
 
         if (facePtr == nint.Zero)
         {
-            // TODO: This should invoke the error callback instead
             throw new Exception("The font face has not been created yet.");
         }
 
@@ -291,8 +289,6 @@ internal sealed class FontService : IFontService
         return result ?? string.Empty;
     }
 
-    // TODO: Convert the size parameter to uint
-
     /// <inheritdoc/>
     public float GetFontScaledLineSpacing(nint facePtr, uint sizeInPoints)
     {
@@ -332,6 +328,5 @@ internal sealed class FontService : IFontService
     /// </summary>
     private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
     {
-        // TODO: Throw custom free type exception here
     }
 }

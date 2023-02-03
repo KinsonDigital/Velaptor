@@ -5,6 +5,7 @@
 namespace Velaptor.UI;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -12,7 +13,7 @@ using System.Linq;
 using Content;
 using Content.Fonts;
 using Factories;
-using Graphics;
+using Graphics.Renderers;
 using Guards;
 using Input;
 
@@ -22,17 +23,22 @@ using Input;
 public class Label : ControlBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const uint DefaultFontSize = 12;
     private readonly IContentLoader contentLoader;
     private readonly Color disabledColor = Color.DarkGray;
+    private readonly IFontRenderer fontRenderer;
     private string labelText = string.Empty;
     private (char character, RectangleF bounds)[]? textCharBounds;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Label()
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
     }
@@ -41,22 +47,26 @@ public class Label : ControlBase
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="font">The type of font to render the text.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
+    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
     ///         <item><paramref name="contentLoader"/></item>
     ///     </list>
     /// </exception>
-    internal Label(IContentLoader contentLoader, IFont font, IAppInput<MouseState> mouse)
-        : base(mouse)
+    internal Label(
+        IContentLoader contentLoader,
+        IAppInput<MouseState> mouse,
+        IRendererFactory rendererFactory)
+            : base(mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(font);
+        EnsureThat.ParamIsNotNull(rendererFactory);
 
         this.contentLoader = contentLoader;
-        Font = font;
+        Font = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
+        this.fontRenderer = rendererFactory.CreateFontRenderer();
     }
 
     /// <summary>
@@ -77,7 +87,7 @@ public class Label : ControlBase
     /// Gets a list of all the bounds for each character of the <see cref="Label"/>.<see cref="Text"/>.
     /// </summary>
     public ReadOnlyCollection<(char character, RectangleF bounds)> CharacterBounds =>
-        this.textCharBounds.ToReadOnlyCollection();
+        this.textCharBounds?.AsReadOnly() ?? Array.Empty<(char, RectangleF)>().AsReadOnly();
 
     /// <inheritdoc/>
     public override Point Position
@@ -157,7 +167,7 @@ public class Label : ControlBase
     /// <summary>
     /// Gets the font for the label.
     /// </summary>
-    public IFont Font { get; private set; }
+    public IFont Font { get; }
 
     /// <inheritdoc cref="ControlBase.UnloadContent"/>
     /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
@@ -189,25 +199,15 @@ public class Label : ControlBase
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
-    /// <param name="renderer">Renders textures, primitives, and text.</param>
-    /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
-    public override void Render(IRenderer renderer)
-    {
-        Render(renderer, this.labelText);
-
-        base.Render(renderer);
-    }
+    public override void Render() => Render(this.labelText, int.MaxValue - 1);
 
     /// <summary>
     /// Renders the <see cref="Label"/>.
     /// </summary>
-    /// <param name="renderer">Renders textures, primitives, and text.</param>
     /// <param name="text">The text to render.</param>
-    /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
-    internal void Render(IRenderer renderer, string text)
+    /// <param name="layer">The layer to render the label.</param>
+    internal void Render(string text, int layer)
     {
-        EnsureThat.ParamIsNotNull(renderer);
-
         if (IsLoaded is false || Visible is false)
         {
             return;
@@ -215,17 +215,18 @@ public class Label : ControlBase
 
         if (string.IsNullOrEmpty(text) is false)
         {
-            renderer.Render(
+            this.fontRenderer.Render(
                 Font,
                 text,
                 Position.X,
                 Position.Y,
                 1f,
                 0f,
-                Enabled ? Color : this.disabledColor);
+                Enabled ? Color : this.disabledColor,
+                layer);
         }
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <summary>

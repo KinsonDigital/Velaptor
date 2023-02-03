@@ -5,19 +5,16 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Input;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
+using NativeInterop.OpenGL;
 using OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
 using Services;
 using UI;
 
 /// <summary>
 /// Velaptor application specific functionality.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class App
 {
     /// <summary>
@@ -53,12 +50,5 @@ public static class App
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
-            RendererFactory.CreateRenderer(width, height),
-            IoC.Container.GetInstance<IReactable<GLContextData>>(),
-            IoC.Container.GetInstance<IReactable<GLInitData>>(),
-            IoC.Container.GetInstance<IReactable<(KeyCode, bool)>>(),
-            IoC.Container.GetInstance<IReactable<(int, int)>>(),
-            IoC.Container.GetInstance<IReactable<(MouseButton, bool)>>(),
-            IoC.Container.GetInstance<IReactable<(MouseScrollDirection, int)>>(),
-            IoC.Container.GetInstance<IReactable<ShutDownData>>());
+            IoC.Container.GetInstance<IReactableFactory>());
 }

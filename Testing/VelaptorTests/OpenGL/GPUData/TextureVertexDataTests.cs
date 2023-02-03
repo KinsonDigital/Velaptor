@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL.GPUData;
 
 using System.Drawing;
 using System.Numerics;
+using FluentAssertions;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
 
@@ -32,7 +33,7 @@ public class TextureVertexDataTests
         var actual = dataA != dataB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public class TextureVertexDataTests
         var actual = dataA == dataB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
     #endregion
 
@@ -64,7 +65,7 @@ public class TextureVertexDataTests
         var actual = TextureVertexData.GetStride();
 
         // Assert
-        Assert.Equal(32u, actual);
+        actual.Should().Be(32u);
     }
 
     [Theory]
@@ -86,7 +87,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -123,7 +124,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Theory]
@@ -155,7 +156,7 @@ public class TextureVertexDataTests
         var actual = data.IsEmpty();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
     #endregion
 }

@@ -83,7 +83,7 @@ internal sealed class FontPathResolver : IPathResolver
 
             if (this.platform.CurrentPlatform != OSPlatform.Windows)
             {
-                throw new NotImplementedException(OnlyWindowsSupportMessage);
+                throw new NotSupportedException(OnlyWindowsSupportMessage);
             }
 
             return this.windowsFontPathResolver.RootDirectoryPath;
@@ -109,7 +109,7 @@ internal sealed class FontPathResolver : IPathResolver
 
             if (this.platform.CurrentPlatform != OSPlatform.Windows)
             {
-                throw new NotImplementedException(OnlyWindowsSupportMessage);
+                throw new NotSupportedException(OnlyWindowsSupportMessage);
             }
 
             return this.windowsFontPathResolver.ContentDirectoryName;
@@ -128,7 +128,7 @@ internal sealed class FontPathResolver : IPathResolver
     {
         if (this.platform.CurrentPlatform != OSPlatform.Windows)
         {
-            throw new NotImplementedException(OnlyWindowsSupportMessage);
+            throw new NotSupportedException(OnlyWindowsSupportMessage);
         }
 
         var contentFilePath = this.contentFontPathResolver.ResolveFilePath(contentName);
@@ -147,7 +147,7 @@ internal sealed class FontPathResolver : IPathResolver
     {
         if (this.platform.CurrentPlatform != OSPlatform.Windows)
         {
-            throw new NotImplementedException(OnlyWindowsSupportMessage);
+            throw new NotSupportedException(OnlyWindowsSupportMessage);
         }
 
         var contentDirPath = this.contentFontPathResolver.ResolveDirPath();

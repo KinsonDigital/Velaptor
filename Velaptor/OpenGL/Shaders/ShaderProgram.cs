@@ -6,17 +6,17 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Guards;
-using Velaptor.NativeInterop.OpenGL;
+using Carbonate.NonDirectional;
 using Exceptions;
+using Factories;
+using Guards;
+using NativeInterop.OpenGL;
 using Services;
-using Reactables.Core;
-using Reactables.ReactableData;
 
 /// <inheritdoc/>
 internal abstract class ShaderProgram : IShaderProgram
 {
-    private readonly IShaderLoaderService<uint> shaderLoaderService;
+    private readonly IShaderLoaderService shaderLoaderService;
     private readonly IDisposable glInitReactorUnsubscriber;
     private readonly IDisposable shutDownReactorUnsubscriber;
     private bool isInitialized;
@@ -27,29 +27,39 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-    /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal ShaderProgram(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IShaderLoaderService<uint> shaderLoaderService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IShaderLoaderService shaderLoaderService,
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
-        this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-        this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
+
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
+        this.glInitReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.GLInitializedId,
+            name: glInitName,
+            onReceive: Init,
+            onUnsubscribe: () => this.glInitReactorUnsubscriber?.Dispose()));
+
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
+        this.shutDownReactorUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.SystemShuttingDownId,
+            name: shutDownName,
+            onReceive: ShutDown));
 
         ProcessCustomAttributes();
     }
@@ -57,7 +67,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <summary>
     /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~ShaderProgram()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -65,7 +75,7 @@ internal abstract class ShaderProgram : IShaderProgram
             return;
         }
 
-        Dispose();
+        ShutDown();
     }
 
     /// <inheritdoc/>
@@ -122,17 +132,16 @@ internal abstract class ShaderProgram : IShaderProgram
         "ReSharper",
         "VirtualMemberNeverOverridden.Global",
         Justification = "Will be used in the future.")]
-    protected virtual void Dispose()
+    protected virtual void ShutDown()
     {
         if (IsDisposed)
         {
             return;
         }
 
-        GL.DeleteProgram(ShaderId);
-
         this.glInitReactorUnsubscriber.Dispose();
         this.shutDownReactorUnsubscriber.Dispose();
+        GL.DeleteProgram(ShaderId);
 
         IsDisposed = true;
     }
@@ -152,7 +161,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
-        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
+        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name);
         var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
         OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
@@ -164,7 +173,6 @@ internal abstract class ShaderProgram : IShaderProgram
         var infoLog = GL.GetShaderInfoLog(vertShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
         }
 
@@ -172,7 +180,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
 
-        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
+        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name);
         var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
         OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
@@ -184,7 +192,6 @@ internal abstract class ShaderProgram : IShaderProgram
         infoLog = GL.GetShaderInfoLog(fragShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            // TODO: Create custom compile shader exception
             throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
         }
 

@@ -6,20 +6,22 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Carbonate.UniDirectional;
 using CASL;
 using Factories;
-using Reactables.Core;
-using Reactables.ReactableData;
+using Guards;
+using ReactableData;
 using CASLSound = CASL.Sound;
 
 /// <summary>
 /// A single sound that can be played, paused etc.
 /// </summary>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASLSound)} implmementation changes.")]
 public sealed class Sound : ISound
 {
-    private readonly CASLSound sound;
-    private readonly IDisposable disposeUnsubscriber;
+    private IDisposable? disposeUnsubscriber;
+    private CASLSound sound = null!;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sound"/> class.
@@ -28,29 +30,24 @@ public sealed class Sound : ISound
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Sound(string filePath)
     {
-        var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
-        Id = SoundFactory.GetNewId(filePath);
-        this.sound = new CASLSound(filePath);
-        this.disposeUnsubscriber =
-            disposeReactor.Subscribe(new Reactor<DisposeSoundData>(Dispose));
+        EnsureThat.StringParamIsNotNullOrEmpty(filePath);
+
+        var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeSoundData>>();
+
+        Init(disposeReactable, filePath, soundFactory.GetNewId(filePath));
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sound"/> class.
     /// </summary>
-    /// <param name="disposeReactable">Sends a push notifications to dispose of sounds.</param>
+    /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the sound file.</param>
     /// <param name="soundId">The unique ID of the sound.</param>
-    internal Sound(IReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
-    {
-        this.disposeUnsubscriber =
-            disposeReactable.Subscribe(new Reactor<DisposeSoundData>(Dispose));
-        this.sound = new CASLSound(filePath);
-        Id = soundId;
-    }
+    internal Sound(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId) => Init(disposeReactable, filePath, soundId);
 
     /// <inheritdoc/>
-    public uint Id { get; }
+    public uint Id { get; private set; }
 
     /// <summary>
     /// Gets or sets the volume of the sound.
@@ -104,11 +101,15 @@ public sealed class Sound : ISound
         set => this.sound.PlaySpeed = value;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the name of the sound.
+    /// </summary>
     public string Name => this.sound.Name;
 
-    /// <inheritdoc/>
-    public string FilePath => this.sound.Path;
+    /// <summary>
+    /// Gets the fully qualified path to the sound file.
+    /// </summary>
+    public string FilePath => this.sound.FilePath;
 
     /// <summary>
     /// Advances the sound forward by the given amount of <paramref name="seconds"/>.
@@ -152,7 +153,7 @@ public sealed class Sound : ISound
     /// <remarks>This will set the time position back to the beginning.</remarks>
     public void Stop()
     {
-        if (this.sound.Unloaded)
+        if (this.isDisposed)
         {
             return;
         }
@@ -161,17 +162,44 @@ public sealed class Sound : ISound
     }
 
     /// <summary>
-    /// Disposes of this <see cref="Sound"/> if the ID to dispose matches this sound's <see cref="Id"/>.
+    /// <inheritdoc/>
     /// </summary>
-    /// <param name="data">The data to use to dispose of the sound.</param>
+    public void Dispose() => Dispose(new DisposeSoundData { SoundId = Id });
+
+    /// <summary>
+    /// Initializes the sound.
+    /// </summary>
+    /// <param name="disposeReactable">Sends and receives push notifications.</param>
+    /// <param name="filePath">The path to the sound file.</param>
+    /// <param name="soundId">The unique ID of the sound.</param>
+    private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
+    {
+        var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
+        this.disposeUnsubscriber =
+            disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
+                eventId: PushNotifications.SoundDisposedId,
+                name: soundDisposeName,
+                onReceiveData: Dispose,
+                onUnsubscribe: () => Dispose(new DisposeSoundData { SoundId = Id })));
+
+        this.sound = new CASLSound(filePath);
+        Id = soundId;
+    }
+
+    /// <summary>
+    /// Disposes of the sounds if this sounds <see cref="Id"/> matches the sound ID in the given <paramref name="data"/>.
+    /// </summary>
+    /// <param name="data">The data of the sound to dispose.</param>
     private void Dispose(DisposeSoundData data)
     {
-        if (Id != data.SoundId)
+        if (this.isDisposed && Id != data.SoundId)
         {
             return;
         }
 
         this.sound.Dispose();
-        this.disposeUnsubscriber.Dispose();
+        this.disposeUnsubscriber?.Dispose();
+
+        this.isDisposed = true;
     }
 }

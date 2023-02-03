@@ -8,14 +8,14 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Content;
-using Graphics;
+using Graphics.Renderers;
 
 /// <summary>
 /// Provides the ability to enter text into a box.
 /// </summary>
-[ExcludeFromCodeCoverage] // TODO: Remove this once implementation is being worked on
+[ExcludeFromCodeCoverage(Justification = "Waiting for implementation")]
 
-// TODO: Left as internal to prevent library users from using the control until it is ready
+// NOTE: Left as internal to prevent library users from using the control until it is ready
 internal sealed class TextBox : ControlBase
 {
     private const int LEFTMARGIN = 5;
@@ -40,7 +40,7 @@ internal sealed class TextBox : ControlBase
     {
         this.contentLoader = contentLoader;
 
-        this.text = new Label(contentLoader, null, null)
+        this.text = new Label(contentLoader, null, IoC.Container.GetInstance<IRendererFactory>())
         {
             Position = Point.Empty,
             Text = "Textbox Text",
@@ -99,14 +99,14 @@ internal sealed class TextBox : ControlBase
     }
 
     /// <inheritdoc/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         if (IsLoaded is false || Visible is false)
         {
             return;
         }
 
-        this.text.Render(renderer);
+        // this.text.Render(renderer);
     }
 
     /// <summary>

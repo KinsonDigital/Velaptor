@@ -16,7 +16,7 @@ using Guards;
 /// <remarks>
 ///     For more information and documentation, refer to the https://www.freetype.org/ website.
 /// </remarks>
-[ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the FreeType library.")]
 internal sealed class FreeTypeInvoker : IFreeTypeInvoker
 {
     /// <inheritdoc/>
@@ -74,7 +74,6 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
     public nint FT_Init_FreeType()
     {
         var error = FT.FT_Init_FreeType(out var result);
@@ -159,17 +158,16 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     // ReSharper restore InconsistentNaming
 
     /// <summary>
-    /// Creates n error message from the standard <c>FreeType</c> message.
+    /// Creates an error message from the standard <c>FreeType</c> message.
     /// </summary>
     /// <param name="freeTypeMsg">The error message coming from the <c>FreeType</c> library.</param>
     /// <returns>The C# friendly exception message.</returns>
     /// <remarks>
     ///     The <c>FreeType</c> error message.
     /// </remarks>
-    [ExcludeFromCodeCoverage]
     private static string CreateErrorMessage(string freeTypeMsg)
     {
-        freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);
+        freeTypeMsg = freeTypeMsg.RemoveAll("FT_Err");
 
         var result = string.Empty;
 

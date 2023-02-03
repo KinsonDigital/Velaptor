@@ -5,9 +5,9 @@
 namespace VelaptorTests.Input;
 
 using System.Drawing;
+using Helpers;
 using Velaptor.Exceptions;
 using Velaptor.Input;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -63,13 +63,16 @@ public class MouseStateTests
     public void IsButtonDown_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(MouseButton)}' used in the class '{nameof(MouseState)}' and";
+        expected += $" method '{nameof(MouseState.IsButtonDown)}' is invalid and out of range.";
+
         var state = default(MouseState);
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<MouseButton>>(() =>
         {
             state.IsButtonDown((MouseButton)1234);
-        }, "The enum 'Velaptor.Input.MouseButton' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]
@@ -139,13 +142,16 @@ public class MouseStateTests
     public void IsButtonUp_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
+        var expected = $"The value of the enum '{nameof(MouseButton)}' used in the class '{nameof(MouseState)}' and";
+        expected += $" method '{nameof(MouseState.IsButtonUp)}' is invalid and out of range.";
+
         var state = default(MouseState);
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<MouseButton>>(() =>
         {
             state.IsButtonUp((MouseButton)1234);
-        }, "The enum 'Velaptor.Input.MouseButton' is invalid because it is out of range.");
+        }, expected);
     }
 
     [Fact]

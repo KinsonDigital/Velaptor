@@ -26,7 +26,7 @@ public interface IFont : IContent
     /// <summary>
     /// Gets the font atlas texture that contains all of the bitmap data for all available glyphs for the font.
     /// </summary>
-    ITexture FontTextureAtlas { get; }
+    ITexture Atlas { get; }
 
     /// <summary>
     /// Gets or sets the size of the font in points.

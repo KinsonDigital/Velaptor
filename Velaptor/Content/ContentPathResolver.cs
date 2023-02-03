@@ -64,7 +64,7 @@ internal abstract class ContentPathResolver : IPathResolver
     {
         if (string.IsNullOrEmpty(contentName))
         {
-            throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
+            throw new ArgumentNullException(nameof(contentName), "The string parameter must not be null or empty.");
         }
 
         if (contentName.EndsWith(WinDirSeparatorChar) || contentName.EndsWith(CrossPlatDirSeparatorChar))

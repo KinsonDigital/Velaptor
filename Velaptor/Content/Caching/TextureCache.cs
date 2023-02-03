@@ -10,13 +10,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
 using Graphics;
 using Guards;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
 using Services;
+using Velaptor.Factories;
 
 /// <summary>
 /// Caches <see cref="ITexture"/> objects for retrieval at a later time.
@@ -37,7 +39,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     private readonly IFontMetaDataParser fontMetaDataParser;
     private readonly IPath path;
     private readonly IDisposable shutDownUnsubscriber;
-    private readonly IReactable<DisposeTextureData> disposeTexturesReactable;
+    private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly string[] defaultFontNames =
     {
         DefaultRegularFontName, DefaultBoldFontName,
@@ -53,44 +55,42 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <param name="fontAtlasService">Provides font atlas services.</param>
     /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
     /// <param name="path">Provides path related services.</param>
-    /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
-    /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public TextureCache(
         IImageService imageService,
         ITextureFactory textureFactory,
         IFontAtlasService fontAtlasService,
         IFontMetaDataParser fontMetaDataParser,
         IPath path,
-        IReactable<ShutDownData> shutDownReactable,
-        IReactable<DisposeTextureData> disposeTexturesReactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(imageService);
         EnsureThat.ParamIsNotNull(textureFactory);
         EnsureThat.ParamIsNotNull(fontAtlasService);
         EnsureThat.ParamIsNotNull(fontMetaDataParser);
         EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
-        EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.imageService = imageService;
         this.textureFactory = textureFactory;
         this.fontAtlasService = fontAtlasService;
         this.fontMetaDataParser = fontMetaDataParser;
         this.path = path;
-        this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
-            _ => ShutDown(),
-            onCompleted: () =>
-            {
-                this.shutDownUnsubscriber?.Dispose();
-            }));
 
-        this.disposeTexturesReactable = disposeTexturesReactable;
+        this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
+            eventId: PushNotifications.SystemShuttingDownId,
+            name: shutDownName,
+            onReceive: ShutDown));
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="TextureCache"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
     ~TextureCache()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -229,7 +229,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (isFontFile)
             {
-                var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(fullFilePath, parseResult.FontSize);
+                var (atlasImageData, _) = this.fontAtlasService.CreateAtlas(fullFilePath, parseResult.FontSize);
 
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;
@@ -246,20 +246,13 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
             if (parseResult.ContainsMetaData)
             {
-                contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
+                contentName = $"FontAtlas|{contentName}|{parseResult.MetaData}";
             }
 
             var loadedTexture = this.textureFactory.Create(contentName, fullFilePath, imageData);
 
 #if DEBUG
-            if (isFontFile)
-            {
-                AppStats.RecordLoadedTexture("Texture Atlas", contentName, loadedTexture.Id);
-            }
-            else
-            {
-                AppStats.RecordLoadedTexture("Texture", contentName, loadedTexture.Id);
-            }
+            AppStats.RecordLoadedTexture(isFontFile ? "Texture Atlas" : "Texture", contentName, loadedTexture.Id);
 #endif
 
             return loadedTexture;
@@ -271,14 +264,16 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     {
         this.textures.TryRemove(cacheKey, out var texture);
 
-        if (texture is not null)
+        if (texture is null)
         {
-            this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
-#if DEBUG
-            AppStats.ClearLoadedFont(cacheKey);
-            AppStats.RemoveLoadedTexture(texture.Id);
-#endif
+            return;
         }
+
+        this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+#if DEBUG
+        AppStats.ClearLoadedFont(cacheKey);
+        AppStats.RemoveLoadedTexture(texture.Id);
+#endif
     }
 
     /// <summary>
@@ -291,19 +286,10 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        var cacheKeys = this.textures.Keys.ToArray();
+        this.shutDownUnsubscriber.Dispose();
+        this.disposeReactable.Unsubscribe(PushNotifications.TextureDisposedId);
 
-        // Dispose of all default and non default textures
-        foreach (var cacheKey in cacheKeys)
-        {
-            this.textures.TryRemove(cacheKey, out var texture);
-
-            if (texture is not null)
-            {
-                this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
-            }
-        }
-
+        this.textures.Clear();
         this.isDisposed = true;
     }
 }

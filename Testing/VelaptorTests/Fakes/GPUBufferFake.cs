@@ -4,30 +4,28 @@
 
 namespace VelaptorTests.Fakes;
 
+using Velaptor;
+using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
 /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
 /// </summary>
-internal class GPUBufferFake : GPUBufferBase<TextureBatchItem>
+internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
-    /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization.</param>
-    /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for application shutdown..</param>
+    /// <param name="reactableFactory">Mocked <see cref="IReactableFactory"/> for creating reactables.</param>
     public GPUBufferFake(IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
     }
 
@@ -62,7 +60,17 @@ internal class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     public bool UpdateVertexDataInvoked { get; private set; }
 
     /// <summary>
-    /// Set the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
+    /// Gets the viewport size for the purpose of testing.
+    /// </summary>
+    public new SizeU ViewPortSize => base.ViewPortSize;
+
+    /// <summary>
+    /// Gets the batch size for the purpose of testing.
+    /// </summary>
+    public new uint BatchSize => base.BatchSize;
+
+    /// <summary>
+    /// Sets the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
     /// </summary>
     protected internal override void SetupVAO() => SetupVAOInvoked = true;
 

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Abstractions;
 using System.Linq;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -16,7 +17,6 @@ using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -70,7 +70,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 null,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -86,7 +86,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 null,
                 this.mockAtlasPathResolver.Object,
@@ -102,7 +102,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 null,
@@ -118,7 +118,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -134,7 +134,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -150,7 +150,7 @@ public class AtlasLoaderTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
@@ -192,7 +192,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenUsingFullFilePath_LoadsTextureAtlasData()
+    public void Load_WhenUsingFullFilePath_LoadsAtlasData()
     {
         // Arrange
         var mockAtlasData = new Mock<IAtlasData>();
@@ -268,7 +268,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenUsingJustContentName_LoadsTextureAtlasData()
+    public void Load_WhenUsingJustContentName_LoadsAtlasData()
     {
         // Arrange
         var mockAtlasData = new Mock<IAtlasData>();

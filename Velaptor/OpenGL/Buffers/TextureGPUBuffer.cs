@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,17 +6,17 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Exceptions;
-using Graphics;
-using Velaptor.NativeInterop.OpenGL;
+using Batching;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using GPUData;
-using Guards;
-using Reactables.Core;
-using Reactables.ReactableData;
+using Graphics;
+using NativeInterop.OpenGL;
+using ReactableData;
+using Velaptor.Exceptions;
 using NETRect = System.Drawing.Rectangle;
 
 /// <summary>
@@ -33,28 +33,36 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public TextureGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+            eventId: PushNotifications.BatchSizeChangedId,
+            name: batchSizeName,
+            onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Texture)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -94,7 +102,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         }
 
         // Construct the quad rect to determine the vertex positions sent to the GPU
-        var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, srcRectWidth, srcRectHeight);
+        var quadRect = textureQuad.DestRect with { Width = srcRectWidth, Height = srcRectHeight };
 
         // Calculate the scale on the X and Y axis to calculate the size
         var resolvedSize = textureQuad.Size - 1f;
@@ -121,12 +129,12 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         bottomRight = bottomRight.RotateAround(origin, angle);
         topRight = topRight.RotateAround(origin, angle);
 
-        var vertex1 = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex2 = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex3 = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        var vertex4 = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex1 = topLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex2 = bottomLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex3 = topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var vertex4 = bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
-        // Set up the corners of the sub texture to render
+        // Sets up the corners of the sub texture to render
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);
         var textureBottomLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Bottom);
         var textureTopRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Top);
@@ -245,5 +253,18 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 }

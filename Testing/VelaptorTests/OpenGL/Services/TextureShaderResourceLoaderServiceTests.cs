@@ -5,12 +5,11 @@
 namespace VelaptorTests.OpenGL.Services;
 
 using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
+using Helpers;
 using Moq;
 using Velaptor.OpenGL.Services;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -18,14 +17,10 @@ using Xunit;
 /// </summary>
 public class TextureShaderResourceLoaderServiceTests
 {
-    private const string BatchSizeVarName = "BATCH_SIZE";
-    private const string InjectionStart = "${{";
-    private const string InjectionStop = "}}";
     private const string ProcessedVertShaderSample = "uniform mat4 uTransform[10];";
     private const string TextureShaderName = "test-source";
     private const string NoProcessingFragShaderSample = "int totalClrs = 4;";
-    private readonly string unprocessedFragShaderSample = $"uniform mat4 uTransform[{InjectionStart} {BatchSizeVarName} {InjectionStop}];";
-    private readonly Mock<ITemplateProcessorService> mockShaderSrcTemplateService;
+    private readonly string unprocessedFragShaderSample = $"uniform mat4 uTransform[10];";
     private readonly Mock<IEmbeddedResourceLoaderService<string>> mockResourceLoaderService;
     private readonly Mock<IPath> mockPath;
 
@@ -34,8 +29,8 @@ public class TextureShaderResourceLoaderServiceTests
     /// </summary>
     public TextureShaderResourceLoaderServiceTests()
     {
-        var fragFileName = $"{TextureShaderName}.frag";
-        var vertFileName = $"{TextureShaderName}.vert";
+        const string fragFileName = $"{TextureShaderName}.frag";
+        const string vertFileName = $"{TextureShaderName}.vert";
 
         this.mockPath = new Mock<IPath>();
         this.mockPath.Setup(m => m.HasExtension(fragFileName)).Returns(true);
@@ -43,8 +38,6 @@ public class TextureShaderResourceLoaderServiceTests
 
         this.mockPath.Setup(m => m.HasExtension(vertFileName)).Returns(true);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(vertFileName)).Returns(TextureShaderName);
-
-        this.mockShaderSrcTemplateService = new Mock<ITemplateProcessorService>();
 
         this.mockResourceLoaderService = new Mock<IEmbeddedResourceLoaderService<string>>();
         this.mockResourceLoaderService.Setup(m
@@ -57,26 +50,12 @@ public class TextureShaderResourceLoaderServiceTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullShaderSrcTemplateServiceParam_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureShaderResourceLoaderService(
-                null,
-                this.mockResourceLoaderService.Object,
-                this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'shaderSrcTemplateService')");
-    }
-
-    [Fact]
     public void Ctor_WithNullResourceLoaderServiceParam_ThrowsException()
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new TextureShaderResourceLoaderService(
-                this.mockShaderSrcTemplateService.Object,
                 null,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'resourceLoaderService')");
@@ -89,7 +68,6 @@ public class TextureShaderResourceLoaderServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new TextureShaderResourceLoaderService(
-                this.mockShaderSrcTemplateService.Object,
                 this.mockResourceLoaderService.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'path')");
@@ -98,59 +76,14 @@ public class TextureShaderResourceLoaderServiceTests
 
     #region Method Tests
     [Fact]
-    public void LoadVerSource_WhenPropsParamAreNull_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            sut.LoadVertSource(It.IsAny<string>());
-        }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
-    }
-
-    [Fact]
-    public void LoadVertSource_WithNoProps_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            sut.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
-        }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
-    }
-
-    [Fact]
-    public void LoadVertSource_WhenBatchSizePropDoesNotExist_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            sut.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
-        }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
-    }
-
-    [Fact]
     public void LoadVertSource_WhenInvoked_ReturnsCorrectSourceCode()
     {
         // Arrange
-        // Setup the template variable mock for frag source and variables
-        this.mockShaderSrcTemplateService
-            .Setup(m
-                => m.ProcessTemplateVariables(It.IsAny<string>(), It.IsAny<IEnumerable<(string, string)>>()))
-            .Returns(ProcessedVertShaderSample);
-
         var sut = CreateSystemUnderTest();
-        var vertFileName = $"{TextureShaderName}.vert";
+        const string vertFileName = $"{TextureShaderName}.vert";
 
         // Act
-        var actual = sut.LoadVertSource(TextureShaderName, new[] { ("BATCH_SIZE", 10u) });
+        var actual = sut.LoadVertSource(TextureShaderName);
 
         // Assert
         this.mockResourceLoaderService.Verify(m => m.LoadResource(vertFileName), Times.Once);
@@ -176,5 +109,5 @@ public class TextureShaderResourceLoaderServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private TextureShaderResourceLoaderService CreateSystemUnderTest()
-        => new (this.mockShaderSrcTemplateService.Object, this.mockResourceLoaderService.Object, this.mockPath.Object);
+        => new (this.mockResourceLoaderService.Object, this.mockPath.Object);
 }

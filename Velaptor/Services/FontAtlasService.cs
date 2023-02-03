@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Fonts.Services;
+using Content.Fonts.Services;
 using Exceptions;
 using Graphics;
 using Guards;
@@ -61,7 +61,7 @@ internal sealed class FontAtlasService : IFontAtlasService
     }
 
     /// <inheritdoc/>
-    public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint sizeInPoints)
+    public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateAtlas(string fontFilePath, uint sizeInPoints)
     {
         if (string.IsNullOrEmpty(fontFilePath))
         {
@@ -90,14 +90,14 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         var glyphMetrics = this.fontService.CreateGlyphMetrics(this.facePtr, glyphIndices);
 
-        var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
+        var atlasMetrics = CalcAtlasMetrics(glyphImages);
 
         var atlasImage = new ImageData(
-            new NETColor[fontAtlasMetrics.Width, fontAtlasMetrics.Height],
-            fontAtlasMetrics.Width,
-            fontAtlasMetrics.Height);
+            new NETColor[atlasMetrics.Width, atlasMetrics.Height],
+            atlasMetrics.Width,
+            atlasMetrics.Height);
 
-        glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, fontAtlasMetrics.Columns);
+        glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, atlasMetrics.Columns);
 
         // Render each glyph image to the atlas
         foreach (var glyphImage in glyphImages)

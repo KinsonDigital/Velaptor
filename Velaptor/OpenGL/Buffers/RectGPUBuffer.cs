@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Graphics;
-using Velaptor.NativeInterop.OpenGL;
+using Batching;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using GPUData;
-using Guards;
-using Reactables.Core;
-using Reactables.ReactableData;
+using Graphics;
+using NativeInterop.OpenGL;
+using ReactableData;
 
 /// <summary>
 /// Updates data in the rectangle GPU buffer.
@@ -31,28 +32,36 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Receives a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public RectGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+            eventId: PushNotifications.BatchSizeChangedId,
+            name: batchSizeName,
+            onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Rect)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -220,6 +229,19 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         return result.ToArray();
     }
 
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
+    }
+
     /// <summary>
     /// Generates default <see cref="RectVertexData"/> for all four vertices that make
     /// up a rectangle rendering area.
@@ -337,8 +359,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             rect.CornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }
@@ -384,8 +405,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             cornerRadius,
             rect.GradientType,
             rect.GradientStart,
-            rect.GradientStop,
-            rect.Layer);
+            rect.GradientStop);
 
         return rect;
     }

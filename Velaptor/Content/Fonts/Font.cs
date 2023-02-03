@@ -12,9 +12,9 @@ using System.Linq;
 using System.Numerics;
 using Caching;
 using Exceptions;
-using Services;
 using Graphics;
 using Guards;
+using Services;
 using Velaptor.Services;
 using VelFontStyle = FontStyle;
 
@@ -75,7 +75,7 @@ public sealed class Font : IFont
         EnsureThat.ParamIsNotNull(textureCache);
         EnsureThat.StringParamIsNotNullOrEmpty(name);
 
-        FontTextureAtlas = texture;
+        Atlas = texture;
         this.fontService = fontService;
         this.fontStatsService = fontStatsService;
         this.fontAtlasService = fontAtlasService;
@@ -112,7 +112,7 @@ public sealed class Font : IFont
     public string FilePath { get; }
 
     /// <inheritdoc/>
-    public ITexture FontTextureAtlas { get; private set; }
+    public ITexture Atlas { get; private set; }
 
     /// <inheritdoc/>
     public uint Size
@@ -124,7 +124,7 @@ public sealed class Font : IFont
 
             if (this.fontInitialized && this.size > 0u)
             {
-                RebuildFontAtlasTexture();
+                RebuildAtlasTexture();
             }
         }
     }
@@ -139,7 +139,7 @@ public sealed class Font : IFont
 
             if (this.fontInitialized)
             {
-                RebuildFontAtlasTexture();
+                RebuildAtlasTexture();
             }
         }
     }
@@ -401,7 +401,7 @@ public sealed class Font : IFont
     /// Rebuilds the font atlas texture and glyph metrics.
     /// </summary>
     /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
-    private void RebuildFontAtlasTexture()
+    private void RebuildAtlasTexture()
     {
         var fontFilePath = string.Empty;
 
@@ -419,9 +419,9 @@ public sealed class Font : IFont
         }
 
         var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
-        FontTextureAtlas = this.textureCache.GetItem(filePathWithMetaData);
+        Atlas = this.textureCache.GetItem(filePathWithMetaData);
 
-        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fontFilePath, Size);
+        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fontFilePath, Size);
 
         LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 

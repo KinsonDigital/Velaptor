@@ -5,11 +5,13 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
+using Core;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Factories;
 using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.UI;
-using Core;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.
@@ -18,6 +20,7 @@ public class AnimatedGraphicsScene : SceneBase
 {
     private const int TopMargin = 50;
     private IAtlasData? mainAtlas;
+    private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
     private Label? lblInstructions;
     private int elapsedTime;
@@ -39,6 +42,10 @@ public class AnimatedGraphicsScene : SceneBase
         {
             return;
         }
+
+        var renderFactory = new RendererFactory();
+
+        this.textureRenderer = renderFactory.CreateTextureRenderer();
 
         this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("circle");
@@ -86,12 +93,12 @@ public class AnimatedGraphicsScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         var posX = ((int)MainWindow.WindowWidth / 2) - (this.frames[this.currentFrame].Bounds.Width / 2);
         var posY = ((int)MainWindow.WindowHeight / 2) - (this.frames[this.currentFrame].Bounds.Height / 2);
 
-        renderer.Render(
+        this.textureRenderer.Render(
             this.mainAtlas.Texture,
             this.frames[this.currentFrame].Bounds,
             new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
@@ -99,7 +106,7 @@ public class AnimatedGraphicsScene : SceneBase
             0f,
             Color.White,
             RenderEffects.None);
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

@@ -8,10 +8,10 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -42,7 +42,7 @@ public class SoundPathResolverTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            var unused = new SoundPathResolver(null);
+            _ = new SoundPathResolver(null);
         }, "The parameter must not be null. (Parameter 'directory')");
     }
 

@@ -4,10 +4,9 @@
 
 namespace Velaptor.Content.Factories;
 
-using System.Diagnostics.CodeAnalysis;
 using Caching;
 using Fonts;
-using Velaptor.Content.Fonts.Services;
+using Fonts.Services;
 using Graphics;
 using Guards;
 using Services;
@@ -15,7 +14,6 @@ using Services;
 /// <summary>
 /// Generates <see cref="IFont"/> instances.
 /// </summary>
-[ExcludeFromCodeCoverage]
 internal sealed class FontFactory : IFontFactory
 {
     private readonly IFontService fontService;
@@ -49,14 +47,14 @@ internal sealed class FontFactory : IFontFactory
 
     /// <inheritdoc/>
     public IFont Create(
-        ITexture textureAtlas,
+        ITexture atlasTexture,
         string name,
         string fontFilePath,
         uint size,
         bool isDefaultFont,
         GlyphMetrics[] glyphMetrics) =>
         new Font(
-            textureAtlas,
+            atlasTexture,
             this.fontService,
             this.fontStatsService,
             this.fontAtlasService,

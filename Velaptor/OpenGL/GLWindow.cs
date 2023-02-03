@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,22 +10,23 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Silk.NET.Input;
-using Silk.NET.Maths;
-using Silk.NET.Windowing;
+using Carbonate.NonDirectional;
+using Carbonate.UniDirectional;
 using Content;
-using Velaptor.Exceptions;
 using Factories;
-using Graphics;
 using Guards;
 using Input;
-using Velaptor.Input.Exceptions;
+using Input.Exceptions;
 using NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
-using Velaptor.Services;
+using NativeInterop.OpenGL;
+using ReactableData;
+using Silk.NET.Input;
+using Silk.NET.Maths;
+using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 using UI;
+using Velaptor.Exceptions;
+using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -46,14 +47,13 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ISystemMonitorService systemMonitorService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
-    private readonly IRenderer renderer;
-    private readonly IReactable<GLInitData> glInitReactable;
-    private readonly IReactable<GLContextData> glContextReactable;
-    private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
-    private readonly IReactable<(int x, int y)> mousePosReactable;
-    private readonly IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable;
-    private readonly IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable;
-    private readonly IReactable<ShutDownData> shutDownReactable;
+    private readonly IPushReactable pushReactable;
+    private readonly IPushReactable<MouseStateData> mouseReactable;
+    private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
+    private readonly IPushReactable<GL> glReactable;
+    private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
+    private readonly MouseStateData mouseStateData;
+    private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
     private bool isShuttingDown;
@@ -74,14 +74,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
-    /// <param name="renderer">Renders textures and primitives.</param>
-    /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
-    /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
-    /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
-    /// <param name="mousePosReactable">Used to send push notifications of the position of the mouse.</param>
-    /// <param name="mouseBtnReactable">Used to send push notifications of the state of the mouse buttons.</param>
-    /// <param name="mouseWheelReactable">Used to send push notifications of the state of the mouse wheel.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -93,14 +86,7 @@ internal sealed class GLWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
-        IRenderer renderer,
-        IReactable<GLContextData> glContextReactable,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<(KeyCode key, bool isDown)> keyboardReactable,
-        IReactable<(int x, int y)> mousePosReactable,
-        IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable,
-        IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
@@ -110,14 +96,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(renderer);
-        EnsureThat.ParamIsNotNull(glContextReactable);
-        EnsureThat.ParamIsNotNull(glInitReactable);
-        EnsureThat.ParamIsNotNull(keyboardReactable);
-        EnsureThat.ParamIsNotNull(mousePosReactable);
-        EnsureThat.ParamIsNotNull(mouseBtnReactable);
-        EnsureThat.ParamIsNotNull(mouseWheelReactable);
-        EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.windowFactory = windowFactory;
         this.nativeInputFactory = nativeInputFactory;
@@ -127,15 +106,15 @@ internal sealed class GLWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         ContentLoader = contentLoader;
-        this.renderer = renderer;
 
-        this.glInitReactable = glInitReactable;
-        this.glContextReactable = glContextReactable;
-        this.keyboardReactable = keyboardReactable;
-        this.mousePosReactable = mousePosReactable;
-        this.mouseBtnReactable = mouseBtnReactable;
-        this.mouseWheelReactable = mouseWheelReactable;
-        this.shutDownReactable = shutDownReactable;
+        this.pushReactable = reactableFactory.CreateNoDataPushReactable();
+        this.mouseReactable = reactableFactory.CreateMouseReactable();
+        this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
+        this.glReactable = reactableFactory.CreateGLReactable();
+        this.viewPortReactable = reactableFactory.CreateViewPortReactable();
+
+        this.mouseStateData = new MouseStateData();
+        this.keyStateData = new KeyboardKeyStateData();
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
@@ -295,6 +274,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose() => Dispose(true);
 
+    /// <summary>
+    /// Invoked when an OpenGL error occurs.
+    /// </summary>
+    private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
+
     private void RunGLWindow()
     {
         this.glWindow.Run();
@@ -337,8 +321,8 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
     private void Init(uint width, uint height)
     {
-        this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
-        this.glContextReactable.EndNotifications();
+        this.glReactable.Push(this.glWindow.CreateOpenGL(), PushNotifications.GLContextCreatedId);
+        this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
 
         this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
@@ -385,16 +369,17 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
 
+        Initialize?.Invoke();
+
         /* Send a push notification to all subscribers that OpenGL is initialized.
          * The context of initialized here is that the OpenGL context is set
-         *and the related GLFW window has been created and is ready to go.
+         * and the related GLFW window has been created and is ready to go.
          */
-        this.glInitReactable.PushNotification(default);
-        this.glInitReactable.EndNotifications();
+
+        this.pushReactable.Push(PushNotifications.GLInitializedId);
+        this.pushReactable.Unsubscribe(PushNotifications.GLInitializedId);
 
         Initialized = true;
-
-        Initialize?.Invoke();
     }
 
     /// <summary>
@@ -406,14 +391,6 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Uninitialize?.Invoke();
 
-        this.keyboardReactable.EndNotifications();
-        this.mouseBtnReactable.EndNotifications();
-        this.mousePosReactable.EndNotifications();
-        this.mouseWheelReactable.EndNotifications();
-
-        this.shutDownReactable.PushNotification(default);
-        this.shutDownReactable.EndNotifications();
-
         this.afterUnloadAction?.Invoke();
     }
 
@@ -423,15 +400,15 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void GLWindow_Resize(Vector2D<int> obj)
     {
-        var uWidth = (uint)obj.X;
-        var uHeight = (uint)obj.Y;
+        var width = (uint)obj.X;
+        var height = (uint)obj.Y;
 
-        // Update the viewport so it is the same size as the window
-        this.gl.Viewport(0, 0, uWidth, uHeight);
-        var size = new SizeU { Width = uWidth, Height = uHeight };
+        // Updates the viewport so it is the same size as the window
+        this.gl.Viewport(0, 0, width, height);
+        var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
-        this.renderer.OnResize(size);
+        this.viewPortReactable.Push(new ViewPortSizeData { Width = width, Height = height }, PushNotifications.ViewPortSizeChangedId);
     }
 
     /// <summary>
@@ -445,13 +422,17 @@ internal sealed class GLWindow : VelaptorIWindow
             return;
         }
 
-        var frameTime = new FrameTime()
+        var frameTime = new FrameTime
         {
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
         };
 
         Update?.Invoke(frameTime);
-        this.mouseWheelReactable.PushNotification((MouseScrollDirection.None, 0));
+
+        this.mouseStateData.ScrollDirection = MouseScrollDirection.None;
+        this.mouseStateData.ScrollWheelValue = 0;
+
+        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -462,7 +443,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         if (this.firstRenderInvoked is false)
         {
-            Update?.Invoke(new FrameTime()
+            Update?.Invoke(new FrameTime
             {
                 ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
             });
@@ -474,7 +455,7 @@ internal sealed class GLWindow : VelaptorIWindow
             return;
         }
 
-        var frameTime = new FrameTime()
+        var frameTime = new FrameTime
         {
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
         };
@@ -496,7 +477,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="key">The key that was pushed down.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
-        => this.keyboardReactable.PushNotification(((KeyCode)key, true));
+    {
+        this.keyStateData.Key = (KeyCode)key;
+        this.keyStateData.IsDown = true;
+
+        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+    }
 
     /// <summary>
     /// Invoked when any keyboard input key transitions from the down position to the up position.
@@ -505,7 +491,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="key">The key that was released.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
-        => this.keyboardReactable.PushNotification(((KeyCode)key, false));
+    {
+        this.keyStateData.Key = (KeyCode)key;
+        this.keyStateData.IsDown = false;
+
+        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+    }
 
     /// <summary>
     /// Invoked when any of the mouse buttons are in the down position over the window.
@@ -513,7 +504,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="mouse">The system mouse object.</param>
     /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
-        => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, true));
+    {
+        this.mouseStateData.Button = (VelaptorMouseButton)button;
+        this.mouseStateData.ButtonIsDown = true;
+
+        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+    }
 
     /// <summary>
     /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
@@ -521,7 +517,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="mouse">The system mouse object.</param>
     /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
-        => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, false));
+    {
+        this.mouseStateData.Button = (VelaptorMouseButton)button;
+        this.mouseStateData.ButtonIsDown = false;
+
+        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+    }
 
     /// <summary>
     /// Invoked when there is mouse scroll wheel input.
@@ -530,14 +531,15 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
     private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
     {
-        var wheelDirection = wheelData.Y switch
+        this.mouseStateData.ScrollWheelValue = (int)wheelData.Y;
+        this.mouseStateData.ScrollDirection = wheelData.Y switch
         {
             > 0 => MouseScrollDirection.ScrollUp,
             < 0 => MouseScrollDirection.ScrollDown,
             _ => MouseScrollDirection.None
         };
 
-        this.mouseWheelReactable.PushNotification((wheelDirection, (int)wheelData.Y));
+        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }
 
     /// <summary>
@@ -546,12 +548,12 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="mouse">The system mouse object.</param>
     /// <param name="position">The position of the mouse input.</param>
     private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
-        => this.mousePosReactable.PushNotification(((int)position.X, (int)position.Y));
+    {
+        this.mouseStateData.X = (int)position.X;
+        this.mouseStateData.Y = (int)position.Y;
 
-    /// <summary>
-    /// Invoked when an OpenGL error occurs.
-    /// </summary>
-    private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
+        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+    }
 
     /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -566,12 +568,11 @@ internal sealed class GLWindow : VelaptorIWindow
 
         if (disposing)
         {
+            this.pushReactable.UnsubscribeAll();
+
             CachedStringProps.Clear();
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
-
-            this.keyboardReactable.Dispose();
-            this.shutDownReactable.Dispose();
 
             this.gl.GLError -= GL_GLError;
 
@@ -693,34 +694,24 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: StateOfWindow.Normal,
             getterWhenNotCaching: () =>
             {
-                var enumTypeStr = nameof(Silk);
-                enumTypeStr += $".{nameof(Silk.NET)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowState)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowState switch
                 {
                     Silk.NET.Windowing.WindowState.Normal => StateOfWindow.Normal,
                     Silk.NET.Windowing.WindowState.Minimized => StateOfWindow.Minimized,
                     Silk.NET.Windowing.WindowState.Maximized => StateOfWindow.Maximized,
                     Silk.NET.Windowing.WindowState.Fullscreen => StateOfWindow.FullScreen,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<WindowState>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             },
             setterWhenNotCaching: value =>
             {
-                var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(StateOfWindow)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowState = value switch
                 {
                     StateOfWindow.Normal => Silk.NET.Windowing.WindowState.Normal,
                     StateOfWindow.Minimized => Silk.NET.Windowing.WindowState.Minimized,
                     StateOfWindow.Maximized => Silk.NET.Windowing.WindowState.Maximized,
                     StateOfWindow.FullScreen => Silk.NET.Windowing.WindowState.Fullscreen,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<StateOfWindow>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             });
 
@@ -728,34 +719,22 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: VelaptorWindowBorder.Resizable,
             getterWhenNotCaching: () =>
             {
-                var enumTypeStr = nameof(Silk);
-                enumTypeStr += $".{nameof(Silk.NET)}";
-                enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
-
-                // ReSharper disable once RedundantNameQualifier
-                enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowBorder)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 return this.glWindow.WindowBorder switch
                 {
                     SilkWindowBorder.Fixed => VelaptorWindowBorder.Fixed,
                     SilkWindowBorder.Hidden => VelaptorWindowBorder.Hidden,
                     SilkWindowBorder.Resizable => VelaptorWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<WindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             },
             setterWhenNotCaching: value =>
             {
-                var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(WindowBorder)}";
-
-                var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowBorder = value switch
                 {
                     VelaptorWindowBorder.Fixed => SilkWindowBorder.Fixed,
                     VelaptorWindowBorder.Hidden => SilkWindowBorder.Hidden,
                     VelaptorWindowBorder.Resizable => SilkWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    _ => throw new EnumOutOfRangeException<VelaptorWindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
                 };
             });
     }

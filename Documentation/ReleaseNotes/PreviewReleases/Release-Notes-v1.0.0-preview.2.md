@@ -13,16 +13,15 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. Created a new exception class that will be thrown if a keyboard was not detected in the system.
-   - The name of the new exception class is _`NoKeyboardException`_.
-2. Created a new exception class that will be thrown if a mouse was not detected in the system.
-   - The name of the new exception class is _`NoMouseException`_.
+1. Created new exception classes that will be thrown if a keyboard or mouse was not detected in the system.
+   - The name of the new keyboard exception class is _`NoKeyboardException`_.
+   - The name of the new mouse exception class is _`NoMouseException`_.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
-1. Fixed an issue with the manual testing application crashing immediately after running the application.
+1. Fixed an issue with the manual testing application that crashed immediately after running the application.
    - This required an update of the **KinsonDigital.CASL** audio library.
 
 ---

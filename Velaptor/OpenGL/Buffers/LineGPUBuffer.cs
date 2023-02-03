@@ -1,4 +1,4 @@
-﻿// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,12 +7,13 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Batching;
+using Carbonate.UniDirectional;
 using Exceptions;
+using Factories;
 using GPUData;
-using Guards;
 using NativeInterop.OpenGL;
-using Reactables.Core;
-using Reactables.ReactableData;
+using ReactableData;
 
 /// <summary>
 /// Updates data in the line GPU buffer.
@@ -28,28 +29,36 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-    /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
-    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public LineGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
-        IReactable<GLInitData> glInitReactable,
-        IReactable<BatchSizeData> batchSizeReactable,
-        IReactable<ShutDownData> shutDownReactable)
-        : base(gl, openGLService, glInitReactable, shutDownReactable)
+        IReactableFactory reactableFactory)
+            : base(gl, openGLService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(batchSizeReactable);
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
-            onNext: data =>
+        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
+            eventId: PushNotifications.BatchSizeChangedId,
+            name: batchSizeName,
+            onReceiveData: data =>
             {
+                if (data.TypeOfBatch != BatchType.Line)
+                {
+                    return;
+                }
+
                 BatchSize = data.BatchSize;
-            },
-            onCompleted: () => this.unsubscriber?.Dispose()));
+
+                if (IsInitialized)
+                {
+                    ResizeBatch();
+                }
+            }));
     }
 
     /// <inheritdoc/>
@@ -151,5 +160,18 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc/>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.unsubscriber.Dispose();
+
+        base.ShutDown();
     }
 }

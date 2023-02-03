@@ -5,8 +5,8 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using Velaptor.OpenGL;
 using Helpers;
+using Velaptor.OpenGL;
 using Xunit;
 
 /// <summary>

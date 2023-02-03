@@ -11,6 +11,7 @@ using System.Linq;
 using Content;
 using Factories;
 using Graphics;
+using Graphics.Renderers;
 using Guards;
 using Input;
 
@@ -19,13 +20,15 @@ using Input;
 /// </summary>
 public sealed class Button : ControlBase
 {
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const int TextLayer = int.MaxValue - 1;
+    private const int BorderLayer = int.MaxValue - 2;
+    private const int BtnFaceLayer = int.MaxValue - 3;
     private const float HoverBrightness = 0.2f;
     private const float MouseDownBrightness = 0.2f;
     private const uint DefaultButtonWidth = 100;
     private const uint DefaultButtonHeight = 50;
     private const uint HorizontalMargin = 10;
-    private IContentLoader contentLoader = null!;
+    private readonly IRectangleRenderer rectRenderer;
     private IUIControlFactory controlFactory = null!;
     private string cachedText = string.Empty;
     private uint cachedAutoSizeOffWidth;
@@ -36,17 +39,28 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public Button() => Init();
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    public Button()
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
+        Init();
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
     /// <param name="label">The label to display on the face of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Label? label)
     {
         EnsureThat.ParamIsNotNull(label);
+
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Label = label;
     }
@@ -55,9 +69,13 @@ public sealed class Button : ControlBase
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
     /// <param name="position">The position of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position)
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Position = position;
     }
@@ -67,10 +85,13 @@ public sealed class Button : ControlBase
     /// </summary>
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height)
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Width = width;
         Height = height;
@@ -82,10 +103,13 @@ public sealed class Button : ControlBase
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
     /// <param name="label">The label to display on the face of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height, Label? label)
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Width = width;
         Height = height;
@@ -98,10 +122,13 @@ public sealed class Button : ControlBase
     /// <param name="position">The position of the button.</param>
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height)
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Position = position;
         Width = width;
@@ -115,10 +142,13 @@ public sealed class Button : ControlBase
     /// <param name="width">The width of the button.</param>
     /// <param name="height">The height of the button.</param>
     /// <param name="label">The label to display on the face of the button.</param>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height, Label? label)
     {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+
         Init();
         Position = position;
         Width = width;
@@ -132,25 +162,32 @@ public sealed class Button : ControlBase
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="controlFactory">Creates UI controls.</param>
     /// <param name="mouse">The system mouse.</param>
+    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
     ///         <item><paramref name="contentLoader"/></item>
     ///     </list>
     /// </exception>
-    internal Button(IContentLoader contentLoader, IUIControlFactory controlFactory, IAppInput<MouseState> mouse)
+    internal Button(
+        IContentLoader contentLoader,
+        IUIControlFactory controlFactory,
+        IAppInput<MouseState> mouse,
+        IRendererFactory rendererFactory)
         : base(mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(controlFactory);
+        EnsureThat.ParamIsNotNull(rendererFactory);
 
-        this.contentLoader = contentLoader;
         this.controlFactory = controlFactory;
+        this.rectRenderer = rendererFactory.CreateRectangleRenderer();
     }
 
     /// <summary>
     /// Gets the <see cref="Label"/> of the <see cref="Button"/>.
     /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     public Label? Label { get; private set; }
 
     /// <inheritdoc cref="IControl"/>
@@ -328,7 +365,7 @@ public sealed class Button : ControlBase
             return;
         }
 
-        Label ??= this.controlFactory.CreateLabel(this.cachedText, this.contentLoader.LoadFont(DefaultRegularFont, 12));
+        Label ??= this.controlFactory.CreateLabel(this.cachedText);
 
         Label?.LoadContent();
 
@@ -364,7 +401,7 @@ public sealed class Button : ControlBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         if (IsLoaded is false || Visible is false)
         {
@@ -387,7 +424,8 @@ public sealed class Button : ControlBase
         buttonFace.Width = Width;
         buttonFace.Height = Height;
         buttonFace.CornerRadius = CornerRadius;
-        renderer.Render(buttonFace);
+
+        this.rectRenderer.Render(buttonFace, BtnFaceLayer);
 
         if (BorderVisible)
         {
@@ -400,18 +438,19 @@ public sealed class Button : ControlBase
             buttonBorder.Height = Height;
             buttonBorder.CornerRadius = CornerRadius;
 
-            renderer.Render(buttonBorder);
+            this.rectRenderer.Render(buttonBorder, BorderLayer);
         }
 
-        var textToWide = Label?.Width > Width;
         var textHeightNotTooLarge = Label?.Height <= Height;
+        var textIsTooWide = Label?.Width > Width;
         var textToRender = Label?.Text ?? string.Empty;
 
-        if (textHeightNotTooLarge)
+        if (textHeightNotTooLarge && string.IsNullOrEmpty(textToRender) is false)
         {
-            // If the text is wider than the button, figure out which characters are past
-            // the left and right edges of the button and prevent them from being rendered
-            if (textToWide && Label is not null)
+            // If the text is wider than the button, figure out which characters are physically past
+            // the left and right edges of the button and prevent them from being rendered.
+            // The reason we check for the left and right side is because the text is centered.
+            if (textIsTooWide && Label is not null)
             {
                 var textCharBounds = Label.CharacterBounds.ToArray();
 
@@ -423,10 +462,10 @@ public sealed class Button : ControlBase
                 textToRender = new string(charsToRender);
             }
 
-            Label?.Render(renderer, textToRender);
+            Label?.Render(textToRender, TextLayer);
         }
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <summary>
@@ -450,10 +489,9 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Initializes the <see cref="Button"/>.
     /// </summary>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     private void Init()
     {
-        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         this.controlFactory = new UIControlFactory();
         Width = DefaultButtonWidth;
         Height = DefaultButtonHeight;

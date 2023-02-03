@@ -7,13 +7,13 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Core;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
-using Velaptor.Graphics;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
-using Core;
 
 /// <summary>
 /// Tests out layered rendering with text.
@@ -29,6 +29,8 @@ public class LayeredTextRenderingScene : SceneBase
     private readonly int windowHalfWidth;
     private readonly int windowHalfHeight;
     private ITexture? background;
+    private ITextureRenderer? textureRenderer;
+    private IFontRenderer? fontRenderer;
     private IFont? font;
     private Vector2 whiteTextPos;
     private Vector2 orangeTextPos;
@@ -61,6 +63,11 @@ public class LayeredTextRenderingScene : SceneBase
         {
             return;
         }
+
+        var renderFactory = new RendererFactory();
+
+        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
         this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
@@ -124,10 +131,10 @@ public class LayeredTextRenderingScene : SceneBase
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render(IRenderer renderer)
+    public override void Render()
     {
         // BLUE
-        renderer.Render(
+        this.fontRenderer.Render(
             this.font,
             this.blueText,
             (int)this.blueTextPos.X,
@@ -136,7 +143,7 @@ public class LayeredTextRenderingScene : SceneBase
             (int)BlueLayer);
 
         // ORANGE
-        renderer.Render(
+        this.fontRenderer.Render(
             this.font,
             this.orangeText,
             (int)this.orangeTextPos.X,
@@ -145,7 +152,7 @@ public class LayeredTextRenderingScene : SceneBase
             (int)OrangeLayer);
 
         // WHITE
-        renderer.Render(
+        this.fontRenderer.Render(
             this.font,
             this.whiteText,
             (int)this.whiteTextPos.X,
@@ -154,9 +161,9 @@ public class LayeredTextRenderingScene : SceneBase
             (int)this.whiteLayer);
 
         // Render the checkerboard background
-        renderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
-        base.Render(renderer);
+        base.Render();
     }
 
     /// <inheritdoc cref="IScene.UnloadContent"/>

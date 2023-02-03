@@ -98,6 +98,6 @@ internal readonly struct TextureVertexData : IEquatable<TextureVertexData>
                              TintColor == Color.Empty;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
     public override int GetHashCode() => VertexPos.GetHashCode() + TextureCoord.GetHashCode() + TintColor.GetHashCode();
 }

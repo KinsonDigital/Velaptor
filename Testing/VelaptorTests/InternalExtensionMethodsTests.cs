@@ -13,14 +13,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.GPUData;
-using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
@@ -62,7 +63,7 @@ public class InternalExtensionMethodsTests
     /// <returns>The test data.</returns>
     public static IEnumerable<object[]> IsInvalidFilePathTestData()
     {
-        yield return new object[] { $@"C:\test-dir\test-file.txt", false };
+        yield return new object[] { @"C:\test-dir\test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
         yield return new object[] { string.Empty, true };
@@ -89,7 +90,7 @@ public class InternalExtensionMethodsTests
         yield return new object[] { ":C", false };
         yield return new object[] { "1:", false };
         yield return new object[] { "windowsC:system32", false };
-        yield return new object[] { $@"C:\Windows\System32", true };
+        yield return new object[] { @"C:\Windows\System32", true };
         yield return new object[] { @"C:windows", true };
         yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
     }
@@ -102,7 +103,7 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\Windows\System32", false };
+        yield return new object[] { @"\Windows\System32", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
         yield return new object[] { "C:Windows", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
@@ -119,7 +120,8 @@ public class InternalExtensionMethodsTests
     {
         yield return new object[] { string.Empty, false };
         yield return new object[] { null, false };
-        yield return new object[] { $@"\\", false };
+        yield return new object[] { @"\\", false };
+        yield return new object[] { @"directory", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
     }
@@ -143,7 +145,7 @@ public class InternalExtensionMethodsTests
         // X and Y axis aligned rectangle rotated 45 degrees clockwise
         yield return new object[]
         {
-            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f, 0),
+            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f),
             new Vector2(135.35535f, 64.64465f),
             new Vector2(235.35535f, 164.64467f),
             new Vector2(164.64465f, 235.35533f),
@@ -423,6 +425,19 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
+    public void RemoveAll_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var testValue = "keep-remove-keep-keep-remove-keep";
+
+        // Act
+        var actual = testValue.RemoveAll("remove");
+
+        // Assert
+        actual.Should().Be("keep--keep-keep--keep");
+    }
+
+    [Fact]
     public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
     {
         // Arrange
@@ -456,7 +471,7 @@ public class InternalExtensionMethodsTests
     public void ToImageData_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
-        var rowColors = new Dictionary<uint, NETColor>()
+        var rowColors = new Dictionary<uint, NETColor>
         {
             { 0, NETColor.Red },
             { 1, NETColor.Green },
@@ -535,7 +550,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.Scale(0.5f);
@@ -555,7 +570,7 @@ public class InternalExtensionMethodsTests
         var p1 = new Vector2(100, 100);
         var p2 = new Vector2(200, 200);
 
-        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f);
 
         // Act
         var actual = sut.FlipEnd();
@@ -578,8 +593,7 @@ public class InternalExtensionMethodsTests
             new Vector2(startX, startY),
             new Vector2(stopX, stopY),
             NETColor.White,
-            0f,
-            0);
+            0f);
 
         // Act
         var actual = line.Length();
@@ -606,7 +620,7 @@ public class InternalExtensionMethodsTests
             bottomLeftCorner,
         };
 
-        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness, lineItem.Layer);
+        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
 
         // Act
         var actual = line.CreateRectFromLine();
@@ -623,15 +637,13 @@ public class InternalExtensionMethodsTests
             new Vector2(10, 20),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP1(new Vector2(10, 20));
@@ -648,15 +660,13 @@ public class InternalExtensionMethodsTests
             new Vector2(1, 2),
             new Vector2(20, 30),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SetP2(new Vector2(20, 30));
@@ -673,15 +683,13 @@ public class InternalExtensionMethodsTests
             new Vector2(2, 3),
             new Vector2(1, 2),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         var item = new LineBatchItem(
             new Vector2(1, 2),
             new Vector2(2, 3),
             NETColor.FromArgb(4, 5, 6, 7),
-            8,
-            9);
+            8);
 
         // Act
         var actual = item.SwapEnds();
@@ -691,7 +699,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetVertexPos_WithInvalidVertextNumber_ThrowsException()
+    public void SetVertexPos_WithInvalidVertexNumber_ThrowsException()
     {
         // Arrange
         var gpuData = new LineGPUData(
@@ -1289,6 +1297,26 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
+    public void SetColor_WhenSettingLineGPUData_SetsColorToAllVertexData()
+    {
+        // Arrange
+        var data = new LineGPUData(
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White),
+            new LineVertexData(Vector2.Zero, NETColor.White));
+
+        // Act
+        var actual = data.SetColor(NETColor.CornflowerBlue);
+
+        // Assert
+        actual.Vertex1.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex2.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex3.Color.Should().Be(NETColor.CornflowerBlue);
+        actual.Vertex4.Color.Should().Be(NETColor.CornflowerBlue);
+    }
+
+    [Fact]
     public void GetPosition_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
@@ -1416,7 +1444,7 @@ public class InternalExtensionMethodsTests
     [Theory]
     [InlineData(3, 2)]
     [InlineData(40, -1)]
-    public void IndexOf_WhenInvoked_ReturnsCorrectResult(int value, int expected)
+    public void IndexOf_WithEnumerableItemsAndPredicate_ReturnsCorrectResult(int value, int expected)
     {
         // Arrange
         var items = new[] { 1, 2, 3, 4 };
@@ -1426,6 +1454,172 @@ public class InternalExtensionMethodsTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateReturnsTrue_ReturnsCorrectIndex()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-C");
+
+        // Assert
+        actual.Should().Be(1);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-D");
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(30);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void FirstLayerIndex_WhenLayerDoesNotExists_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 30, Item = "itemC" },
+            new () { Layer = 40, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.FirstLayerIndex(300);
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithLayerGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(20);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void TotalOnLayer_WithNoLayersGreaterThanRequestedLayer_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.TotalOnLayer(200);
+
+        // Assert
+        actual.Should().Be(0);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            default,
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(2);
+    }
+
+    [Fact]
+    public void IndexOf_WithMemoryItemsAndWhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var renderItems = new RenderItem<string>[]
+        {
+            new () { Layer = 10, Item = "itemA" },
+            new () { Layer = 20, Item = "itemB" },
+            new () { Layer = 20, Item = "itemC" },
+            new () { Layer = 30, Item = "itemD" },
+        };
+
+        var items = new Memory<RenderItem<string>>(renderItems);
+
+        // Act
+        var actual = items.IndexOf(string.IsNullOrEmpty);
+
+        // Assert
+        actual.Should().Be(-1);
+    }
+
+    [Fact]
+    public void IncreaseBy_WhenInvoked_CorrectlyIncreasesItems()
+    {
+        // Arrange
+        var expected = new[] { 1, 2, 3, 4, 0, 0 };
+        var items = new Memory<int>(new[] { 1, 2, 3, 4, });
+
+        // Act
+        items.IncreaseBy(2);
+
+        // Assert
+        items.Span.ToArray().Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -1442,7 +1636,7 @@ public class InternalExtensionMethodsTests
     ///     The <paramref name="rowColors"/> dictionary key is the zero based row index and the
     ///     value is the color to make the entire row.
     /// </remarks>
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static Image<Rgba32> CreateSixLaborsImage(int width, int height, Dictionary<uint, NETColor> rowColors)
     {
         if (height != rowColors.Count)
