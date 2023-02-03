@@ -56,16 +56,17 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Internal Changes ⚙️</h2>
 <h5 align="center">(Changes that do not affect users.  Not breaking changes, new features, or bug fixes.)</h5>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Improved internal batching of render items which has greatly improved performance.
+1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Improved internal batching of render items which includes a performance improvement.
 2. [#497](https://github.com/KinsonDigital/Velaptor/issues/497) - Improved performance by changing how buffering on the GPU is handled.
+3. [#473](https://github.com/KinsonDigital/Velaptor/issues/473) - Updated the code base for the new changes from the **KinsonDigital.Carbonate** library.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Updated **KinsonDigital.Carbonate** from _**v1.0.0-preview.12**_ to _**v1.0.0-preview.14**_
+1. [#490](https://github.com/KinsonDigital/Velaptor/issues/490) - Updated **KinsonDigital.Carbonate** from _**v1.0.0-preview.12**_ to _**v1.0.0-preview.14**_
    >💡This required significant internal changes to the codebase.
-2. [#455](https://github.com/KinsonDigital/Velaptor/issues/455) - Updated the nuget packages below:
+2. [#455](https://github.com/KinsonDigital/Velaptor/issues/455) - Updated the NuGet packages below:
    - Updated **System.IO.Abstractions** from _**v17.1.1**_ to _**v19.1.5**_
    - Updated **KinsonDigital.CASL** from _**v1.0.0-preview.10**_ to _**v1.0.0-preview.11**_
 
@@ -77,9 +78,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 1. [#451](https://github.com/KinsonDigital/Velaptor/issues/451) - Fixed badges in project **README**.
 2. [#474](https://github.com/KinsonDigital/Velaptor/issues/474) - Updated the **CICD** dotnet tool from version _**v1.0.0-preview.14**_ to _**v1.0.0-preview.15**_
 3. [#479](https://github.com/KinsonDigital/Velaptor/issues/479) - Updated all uses of the GitHub [checkout](https://github.com/marketplace/actions/checkout) action from _**v2**_ to _**v3**_ in all of the workflows.
-4. [#492](https://github.com/KinsonDigital/Velaptor/issues/492) - Added API documentation to the nuget package.
+4. [#492](https://github.com/KinsonDigital/Velaptor/issues/492) - Added API documentation to the NuGet package.
    >💡This will provide API documentation in intellisense in your preferred IDE.
-5. [#477](https://github.com/KinsonDigital/Velaptor/issues/477) - Improved grammar and spelling issues in previous preview release notes.
+5. [#394](https://github.com/KinsonDigital/Velaptor/issues/394) - Improved grammar and spelling issues in previous preview release notes.
 6. [#377](https://github.com/KinsonDigital/Velaptor/issues/377) - Moved the setup to expose the visibility of `internal`` types to the unit test project to the **Velaptor** project file.
 7. [#361](https://github.com/KinsonDigital/Velaptor/issues/361) - Improved unit tests by refactoring assertion code to use [Fluent Assertions](https://fluentassertions.com/).
-8. [#152](https://github.com/KinsonDigital/Velaptor/issues/152) - Setup the project to automatically publish unit test code coverage results to [codecov](https://about.codecov.io/).
+8. [#152](https://github.com/KinsonDigital/Velaptor/issues/152) - Set up the project to automatically publish unit test code coverage results to [codecov](https://about.codecov.io/).
