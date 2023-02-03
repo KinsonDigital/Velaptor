@@ -13,7 +13,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/451) - Improved layered rendering in the following ways:
+1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Improved layered rendering in the following ways:
    - Different types of rendering now follow the numerical layer assigned.
      >💡Example: If a texture is rendered on layer 3 and a rectangle is rendered on layer 2, the texture will be rendered on top of the rectangle regardless of the order of render calls in code.
    - Multiple items on the same layer respect layering based on the time of render in the code relative to the rest of the items on the same layer.
@@ -24,10 +24,10 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/451) - Added the breaking changes listed below:
+1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Added the breaking changes listed below:
    - Changed the numerical value of the `RenderEffects` enum.
-     >💡This was not a change the enum names.  This was required to facilitate empty checks for internal render items.
-   - Change the exception thrown by the `PathResolverFactory.CreateSystemFontPathResolver()` method when executed on non-windows platforms.
+     >💡This was not a change to the enum names.  This was required to facilitate empty checks for internal render items.
+   - Changed the exception thrown by the `PathResolverFactory.CreateSystemFontPathResolver()` method when executed on non-windows platforms.
      >💡This is temporary until other platforms can be implemented.
 2. [#451](https://github.com/KinsonDigital/Velaptor/issues/451) - All of the breaking changes are provided below:
    - Removed the method `CreateRenderer()` from the `RendererFactory` class.
@@ -39,7 +39,7 @@ As with all software, there is always a chance for issues and bugs, especially f
      - `IFontRenderer`
      - `IRectangleRenderer`
      - `ILineRenderer`
-   - The process for beginning and ending a batch has now changed. This is now done by using the `Begin()` and `End()` methods in the `IRenderer` interface.
+   - The process for beginning and ending a batch has changed. This is now done by using the `Begin()` and `End()` methods in the `IRenderer` interface.
    - The process of clearing the screen has changed. This is now done by using the `Clear()` method in the `IRenderer` interface.
    - Removed the `IRenderer` parameter from the `IDrawable.Render()` interface method.
    - Removed the `GetFrame()` method from the `IAtlasData` interface.
@@ -56,14 +56,14 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Internal Changes ⚙️</h2>
 <h5 align="center">(Changes that do not affect users.  Not breaking changes, new features, or bug fixes.)</h5>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/451) - Greatly improve internal batching of render items which as a result greatly improved performance.
+1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Improved internal batching of render items which has greatly improved performance.
 2. [#497](https://github.com/KinsonDigital/Velaptor/issues/497) - Improved performance by changing how buffering on the GPU is handled.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. [#485](https://github.com/KinsonDigital/Velaptor/issues/451) - Updated **KinsonDigital.Carbonate** from _**v1.0.0-preview.12**_ to _**v1.0.0-preview.14**_
+1. [#485](https://github.com/KinsonDigital/Velaptor/issues/485) - Updated **KinsonDigital.Carbonate** from _**v1.0.0-preview.12**_ to _**v1.0.0-preview.14**_
    >💡This required significant internal changes to the codebase.
 2. [#455](https://github.com/KinsonDigital/Velaptor/issues/455) - Updated the nuget packages below:
    - Updated **System.IO.Abstractions** from _**v17.1.1**_ to _**v19.1.5**_
@@ -82,4 +82,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 5. [#477](https://github.com/KinsonDigital/Velaptor/issues/477) - Improved grammar and spelling issues in previous preview release notes.
 6. [#377](https://github.com/KinsonDigital/Velaptor/issues/377) - Moved the setup to expose the visibility of `internal`` types to the unit test project to the **Velaptor** project file.
 7. [#361](https://github.com/KinsonDigital/Velaptor/issues/361) - Improved unit tests by refactoring assertion code to use [Fluent Assertions](https://fluentassertions.com/).
-8. [#152](https://github.com/KinsonDigital/Velaptor/issues/152) - Setup and the project to automatically publish unit test code coverage results to [codecov](https://about.codecov.io/).
+8. [#152](https://github.com/KinsonDigital/Velaptor/issues/152) - Setup the project to automatically publish unit test code coverage results to [codecov](https://about.codecov.io/).
