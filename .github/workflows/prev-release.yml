@@ -37,8 +37,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # TODO: Need to get this working and injecting the version as the name to the codecov action below
-    #       Do this once preview.3 has been released to fixed the branch issue
+    # TODO: Need to get this working and injecting the version to be used as the name of the code coverage report
+    #       Do this once preview.3 has been released for the VersionMiner action
     #       Also add this to the prod-release.yml file as well
 
     # - name: Mine Version
