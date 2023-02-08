@@ -9,7 +9,7 @@ using System;
 /// <summary>
 /// Occurs when there is an issue with one of the system monitors.
 /// </summary>
-public class SystemMonitorException : Exception
+public sealed class SystemMonitorException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemMonitorException"/> class.
