@@ -162,6 +162,7 @@ public class WindowTests
         // Arrange
         void Expected()
         {
+            // This is only used for setting the property
         }
 
         var sut = CreateSystemUnderTest();
