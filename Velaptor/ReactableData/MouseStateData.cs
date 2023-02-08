@@ -9,35 +9,35 @@ using Input;
 /// <summary>
 /// Holds the state of the mouse.
 /// </summary>
-internal sealed record MouseStateData
+internal readonly record struct MouseStateData
 {
     /// <summary>
-    /// Gets or sets the X position of the mouse.
+    /// Gets the X position of the mouse.
     /// </summary>
-    public int X { get; set; }
+    public int X { get; init; }
 
     /// <summary>
-    /// Gets or sets the Y position of the mouse.
+    /// Gets the Y position of the mouse.
     /// </summary>
-    public int Y { get; set; }
+    public int Y { get; init; }
 
     /// <summary>
-    /// Gets or sets the mouse button.
+    /// Gets the mouse button.
     /// </summary>
-    public MouseButton Button { get; set; }
+    public MouseButton Button { get; init; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the mouse button is in the down position.
+    /// Gets a value indicating whether or not the mouse button is in the down position.
     /// </summary>
-    public bool ButtonIsDown { get; set; }
+    public bool ButtonIsDown { get; init; }
 
     /// <summary>
-    /// Gets or sets the scroll wheel direction.
+    /// Gets the scroll wheel direction.
     /// </summary>
-    public MouseScrollDirection ScrollDirection { get; set; }
+    public MouseScrollDirection ScrollDirection { get; init; }
 
     /// <summary>
-    /// Gets or sets the scroll wheel value.
+    /// Gets the scroll wheel value.
     /// </summary>
-    public int ScrollWheelValue { get; set; }
+    public int ScrollWheelValue { get; init; }
 }
