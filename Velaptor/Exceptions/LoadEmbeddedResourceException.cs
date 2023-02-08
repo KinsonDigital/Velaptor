@@ -9,7 +9,7 @@ using System;
 /// <summary>
 /// Occurs when something goes wrong with loading an embedded resource.
 /// </summary>
-public class LoadEmbeddedResourceException : Exception
+public sealed class LoadEmbeddedResourceException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadEmbeddedResourceException"/> class.

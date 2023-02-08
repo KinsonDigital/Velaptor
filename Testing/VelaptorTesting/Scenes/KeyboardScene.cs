@@ -6,9 +6,8 @@ namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Text;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
@@ -27,10 +26,7 @@ public class KeyboardScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public KeyboardScene(IContentLoader contentLoader)
-        : base(contentLoader)
-        => this.keyboard = AppInputFactory.CreateKeyboard();
+    public KeyboardScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
     public override void LoadContent()
@@ -47,7 +43,7 @@ public class KeyboardScene : SceneBase
             Text = "Hit a key on the keyboard to see if it is correct.",
         };
 
-        this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
+        this.lblInstructions.Left = WindowCenter.X - (int)(this.lblInstructions.Width / 2);
         this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
         this.downKeys = new Label
@@ -95,8 +91,8 @@ public class KeyboardScene : SceneBase
             this.downKeys.Text = "No Keys Pressed";
         }
 
-        var posX = (int)MainWindow.WindowWidth / 2;
-        var posY = (int)MainWindow.WindowHeight / 2;
+        var posX = WindowCenter.X;
+        var posY = WindowCenter.Y;
 
         this.downKeys.Position = new Point(posX, posY);
 

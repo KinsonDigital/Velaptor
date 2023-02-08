@@ -11,7 +11,7 @@ using Graphics;
 /// Thrown when an invalid <see cref="RenderEffects"/> value is used.
 /// </summary>
 /// <typeparam name="T">The type of enumeration.</typeparam>
-public class EnumOutOfRangeException<T> : Exception
+public sealed class EnumOutOfRangeException<T> : Exception
     where T : Enum
 {
     /// <summary>

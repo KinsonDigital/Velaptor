@@ -7,21 +7,17 @@ namespace VelaptorTesting;
 using System;
 using System.Threading.Tasks;
 using Velaptor;
-using Velaptor.Factories;
-using Velaptor.UI;
 
 /// <summary>
 /// The main program entry point.
 /// </summary>
 public static class Program
 {
-    private static IWindow? window;
     private static MainWindow? gameWindow;
 
     public static async Task Main(string[] args)
     {
-        window = App.CreateWindow(); // Window width and height are loaded from the app settings file
-        gameWindow = new MainWindow(window);
+        gameWindow = new MainWindow();
 
         if (HasDebugConsole())
         {

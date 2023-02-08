@@ -2,31 +2,52 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTesting.Core;
+namespace Velaptor.Scene;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using Carbonate.UniDirectional;
 using Velaptor;
-using Velaptor.Content;
-using Velaptor.UI;
+using Content;
+using Factories;
+using Guards;
+using ReactableData;
+using UI;
 
 /// <summary>
 /// A base scene to be used for creating new custom scenes.
 /// </summary>
+[DebuggerDisplay("Name = {Name}({Id})")]
 public abstract class SceneBase : IScene
 {
     private readonly List<IControl> controls = new ();
+    private IDisposable? unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for a scene.</param>
-    protected SceneBase(IContentLoader contentLoader)
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    private protected SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(contentLoader);
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
         ContentLoader = contentLoader;
-        IsActive = false;
+        Init(reactableFactory);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SceneBase"/> class.
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    protected SceneBase()
+    {
+        ContentLoader = ContentLoaderFactory.CreateContentLoader();
+        Init(IoC.Container.GetInstance<IReactableFactory>());
     }
 
     /// <inheritdoc cref="IScene.Name"/>
@@ -35,7 +56,7 @@ public abstract class SceneBase : IScene
     /// <summary>
     /// Gets the list of controls that have been added to the scene.
     /// </summary>
-    public ReadOnlyCollection<IControl> Controls => this.controls.ToReadOnlyCollection();
+    public IReadOnlyList<IControl> Controls => this.controls.AsReadOnly();
 
     /// <inheritdoc cref="IScene.Id"/>
     public Guid Id { get; } = Guid.NewGuid();
@@ -43,39 +64,27 @@ public abstract class SceneBase : IScene
     /// <inheritdoc cref="IScene.Name"/>
     public bool IsLoaded { get; private set; }
 
-    /// <inheritdoc cref="IScene.IsActive"/>
-    public bool IsActive { get; set; }
+    /// <inheritdoc/>
+    public SizeU WindowSize { get; private set; }
+
+    /// <inheritdoc/>
+    public Point WindowCenter => new ((int)WindowSize.Width / 2, (int)WindowSize.Height / 2);
+
+    /// <inheritdoc/>
+    public IContentLoader ContentLoader { get; }
 
     /// <summary>
     /// Gets a value indicating whether or not the scene has been disposed.
     /// </summary>
     protected bool IsDisposed { get; private set; }
 
-    /// <summary>
-    /// Gets the content loader to load scene content.
-    /// </summary>
-    protected IContentLoader ContentLoader { get; }
-
-    /// <inheritdoc cref="IScene.AddControl"/>
+    /// <inheritdoc/>
     public void AddControl(IControl control) => this.controls.Add(control);
 
-    /// <inheritdoc cref="IScene.RemoveControl"/>
+    /// <inheritdoc/>
     public void RemoveControl(IControl control) => this.controls.Remove(control);
 
-    /// <summary>
-    /// Gets all of the controls that match the given type <typeparamref name="TControlType"/>.
-    /// </summary>
-    /// <typeparam name="TControlType">The type of control to return.</typeparam>
-    /// <returns>A list of controls whose type that matches the type <typeparamref name="TControlType"/>.</returns>
-    public IControl[] GetControls<TControlType>()
-        where TControlType : IControl
-    {
-        return (from c in this.controls
-            where c is TControlType
-            select c).ToArray();
-    }
-
-    /// <inheritdoc cref="IScene.LoadContent"/>
+    /// <inheritdoc/>
     public virtual void LoadContent()
     {
         foreach (var control in this.controls)
@@ -86,7 +95,7 @@ public abstract class SceneBase : IScene
         IsLoaded = true;
     }
 
-    /// <inheritdoc cref="IScene.UnloadContent"/>
+    /// <inheritdoc/>
     public virtual void UnloadContent()
     {
         if (!IsLoaded)
@@ -94,19 +103,16 @@ public abstract class SceneBase : IScene
             return;
         }
 
-        foreach (var control in this.controls)
-        {
-            control.UnloadContent();
-        }
+        UnloadAllControls();
 
         this.controls.Clear();
         IsLoaded = false;
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc/>
     public virtual void Update(FrameTime frameTime)
     {
-        if (IsLoaded is false || IsActive is false)
+        if (IsLoaded is false)
         {
             return;
         }
@@ -117,7 +123,7 @@ public abstract class SceneBase : IScene
         }
     }
 
-    /// <inheritdoc cref="IDrawable.Render"/>
+    /// <inheritdoc/>
     public virtual void Render()
     {
         if (IsLoaded is false)
@@ -151,14 +157,39 @@ public abstract class SceneBase : IScene
 
         if (disposing)
         {
-            foreach (var control in this.controls)
-            {
-                control.UnloadContent();
-            }
+            UnloadAllControls();
 
             this.controls.Clear();
+
+            this.unsubscriber?.Dispose();
         }
 
         IsDisposed = true;
+    }
+
+    private void UnloadAllControls()
+    {
+        foreach (var control in this.controls)
+        {
+            control.UnloadContent();
+        }
+    }
+
+    /// <summary>
+    /// Initializes the manager.
+    /// </summary>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    private void Init(IReactableFactory reactableFactory)
+    {
+        var reactorName = this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId));
+        var winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+
+        this.unsubscriber = winSizeReactable.Subscribe(new ReceiveReactor<WindowSizeData>(
+            eventId: PushNotifications.WindowSizeChangedId,
+            name: reactorName,
+            onReceiveData: data =>
+            {
+                WindowSize = new SizeU(data.Width, data.Height);
+            }));
     }
 }

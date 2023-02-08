@@ -27,7 +27,7 @@ jobs:
       run: |
         $pullRequestNumber = "${{ github.ref }}".Replace("refs/pull/", "").Replace("/merge", "");
         Write-Host "Pull Request Number: $pullRequestNumber";
-        Write-Host "::set-output name=pr-number::$pullRequestNumber";
+        "pr-number=$pullRequestNumber" >> $env:GITHUB_OUTPUT;
 
     - name: Run Preview Release PR Status Check
       run: dotnet cicd PrevReleasePRStatusCheck --pull-request-number ${{ steps.get-pr-number.outputs.pr-number }}

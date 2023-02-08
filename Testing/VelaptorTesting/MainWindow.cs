@@ -7,11 +7,11 @@ namespace VelaptorTesting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Core;
 using Scenes;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.UI;
 
 /// <summary>
@@ -25,121 +25,142 @@ public class MainWindow : Window
         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
         'U', 'V', 'W', 'X', 'Y', 'Z',
     };
-    private readonly SceneManager sceneManager;
+    private readonly IAppInput<KeyboardState> keyboard;
+    private readonly Button nextButton;
+    private readonly Button previousButton;
+    private KeyboardState prevKeyState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainWindow"/> class.
     /// </summary>
-    /// <param name="window">The native window implementation.</param>
-    public MainWindow(IWindow window)
-        : base(window)
+    public MainWindow()
     {
-        var contentLoader = ContentLoaderFactory.CreateContentLoader();
+        this.keyboard = AppInputFactory.CreateKeyboard();
 
-        WindowWidth = Width;
-        WindowHeight = Height;
+        this.nextButton = new Button { Text = "-->" };
+        this.previousButton = new Button { Text = "<--" };
 
         IRenderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.sceneManager = new SceneManager();
-
-        var textRenderingScene = new TextRenderingScene(contentLoader)
+        var textRenderingScene = new TextRenderingScene
         {
             Name = SplitByUpperCase(nameof(TextRenderingScene)),
         };
 
-        var layeredTextRenderingScene = new LayeredTextRenderingScene(contentLoader)
+        var layeredTextRenderingScene = new LayeredTextRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
         };
 
-        var keyboardScene = new KeyboardScene(contentLoader)
+        var keyboardScene = new KeyboardScene
         {
             Name = SplitByUpperCase(nameof(KeyboardScene)),
         };
 
-        var mouseScene = new MouseScene(contentLoader)
+        var mouseScene = new MouseScene
         {
             Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
-        var layeredRenderingScene = new LayeredTextureRenderingScene(contentLoader)
+        var layeredRenderingScene = new LayeredTextureRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         };
 
-        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene(contentLoader)
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
         {
             Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
         };
 
-        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene(contentLoader)
+        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
         {
             Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         };
 
-        var rectScene = new RectangleScene(ContentLoader)
+        var rectScene = new RectangleScene
         {
             Name = SplitByUpperCase(nameof(RectangleScene)),
         };
 
-        var layeredRectScene = new LayeredRectRenderingScene(contentLoader)
+        var layeredRectScene = new LayeredRectRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
         };
 
-        var lineScene = new LineRenderingScene(contentLoader)
+        var lineScene = new LineRenderingScene
         {
             Name = SplitByUpperCase(nameof(LineRenderingScene)),
         };
 
-        var layeredLineScene = new LayeredLineRenderingScene(contentLoader)
+        var layeredLineScene = new LayeredLineRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
         };
 
-        var soundScene = new SoundScene(ContentLoader)
+        var soundScene = new SoundScene
         {
             Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
-        this.sceneManager.AddScene(textRenderingScene, true);
-        this.sceneManager.AddScene(layeredTextRenderingScene);
-        this.sceneManager.AddScene(keyboardScene);
-        this.sceneManager.AddScene(mouseScene);
-        this.sceneManager.AddScene(layeredRenderingScene);
-        this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
-        this.sceneManager.AddScene(renderAnimatedGraphicsScene);
-        this.sceneManager.AddScene(rectScene);
-        this.sceneManager.AddScene(layeredRectScene);
-        this.sceneManager.AddScene(lineScene);
-        this.sceneManager.AddScene(layeredLineScene);
-        this.sceneManager.AddScene(soundScene);
+        SceneManager.AddScene(textRenderingScene, true);
+        SceneManager.AddScene(layeredTextRenderingScene);
+        SceneManager.AddScene(keyboardScene);
+        SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(layeredRenderingScene);
+        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        SceneManager.AddScene(renderAnimatedGraphicsScene);
+        SceneManager.AddScene(rectScene);
+        SceneManager.AddScene(layeredRectScene);
+        SceneManager.AddScene(lineScene);
+        SceneManager.AddScene(layeredLineScene);
+        SceneManager.AddScene(soundScene);
     }
-
-    /// <summary>
-    /// Gets the width of the window.
-    /// </summary>
-    public static uint WindowWidth { get; private set; }
-
-    /// <summary>
-    /// Gets the height of the window.
-    /// </summary>
-    public static uint WindowHeight { get; private set; }
 
     /// <inheritdoc cref="Window.OnLoad"/>
     protected override void OnLoad()
     {
-        this.sceneManager.LoadContent();
+        const int buttonSpacing = 15;
+        const int rightMargin = 15;
+
+        this.nextButton.Click += (_, _) => SceneManager.NextScene();
+
+        this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
+
+        this.nextButton.LoadContent();
+        this.previousButton.LoadContent();
+
+        var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
+        var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
+        this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
+        this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
+
+        SceneManager.LoadContent();
         base.OnLoad();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
     protected override void OnUpdate(FrameTime frameTime)
     {
-        this.sceneManager.Update(frameTime);
+        SceneManager.Update(frameTime);
 
-        Title = $"Scene: {this.sceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
+        Title = $"Scene: {SceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
+
+        var currentKeyState = this.keyboard.GetState();
+
+        if (currentKeyState.IsKeyUp(KeyCode.PageDown) && this.prevKeyState.IsKeyDown(KeyCode.PageDown))
+        {
+            SceneManager.NextScene();
+        }
+
+        if (currentKeyState.IsKeyUp(KeyCode.PageUp) && this.prevKeyState.IsKeyDown(KeyCode.PageUp))
+        {
+            SceneManager.PreviousScene();
+        }
+
+        this.nextButton.Update(frameTime);
+        this.previousButton.Update(frameTime);
+
+        this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
     }
@@ -147,25 +168,26 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnDraw"/>
     protected override void OnDraw(FrameTime frameTime)
     {
-        this.sceneManager.Render();
+        IRenderer.Clear();
+        IRenderer.Begin();
 
+        SceneManager.Render();
+
+        // Render the scene manager UI on top of all other textures
+        this.nextButton.Render();
+        this.previousButton.Render();
+
+        IRenderer.End();
         base.OnDraw(frameTime);
     }
 
     /// <inheritdoc cref="Window.OnUnload"/>
     protected override void OnUnload()
     {
-        this.sceneManager.UnloadContent();
+        this.previousButton.UnloadContent();
+        this.nextButton.UnloadContent();
+
         base.OnUnload();
-    }
-
-    /// <inheritdoc cref="Window.OnResize"/>
-    protected override void OnResize(SizeU size)
-    {
-        WindowWidth = Width;
-        WindowHeight = Height;
-
-        base.OnResize(size);
     }
 
     /// <summary>

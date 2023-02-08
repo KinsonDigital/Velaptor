@@ -12,6 +12,7 @@ using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Scene;
 using Velaptor.UI;
 using Xunit;
 
@@ -22,6 +23,7 @@ public class WindowTests
 {
     private readonly Mock<IWindow> mockWindow;
     private readonly Mock<IContentLoader> mockContentLoader;
+    private readonly Mock<ISceneManager> mockSceneManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -29,6 +31,7 @@ public class WindowTests
     public WindowTests()
     {
         this.mockContentLoader = new Mock<IContentLoader>();
+        this.mockSceneManager = new Mock<ISceneManager>();
 
         this.mockWindow = new Mock<IWindow>();
         this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
@@ -41,8 +44,18 @@ public class WindowTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new WindowFake(null);
+            _ = new WindowFake(null, this.mockSceneManager.Object);
         }, "The parameter must not be null. (Parameter 'window')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullSceneManagerParam_ThrowsException()
+    {
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        {
+            _ = new WindowFake(this.mockWindow.Object, null);
+        }, "The parameter must not be null. (Parameter 'sceneManager')");
     }
     #endregion
 
@@ -214,16 +227,6 @@ public class WindowTests
 
     #region Method tests
     [Fact]
-    public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new WindowFake(null);
-        }, "The parameter must not be null. (Parameter 'window')");
-    }
-
-    [Fact]
     public void Show_WhenInvoked_ShowsWindow()
     {
         // Arrange
@@ -271,5 +274,5 @@ public class WindowTests
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object);
+    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object, this.mockSceneManager.Object);
 }
