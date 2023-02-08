@@ -16,7 +16,7 @@ using CASLSound = CASL.Sound;
 /// <summary>
 /// A single sound that can be played, paused etc.
 /// </summary>
-[ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASLSound)} implmementation changes.")]
+[ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASLSound)} implementation changes.")]
 public sealed class Sound : ISound
 {
     private IDisposable? disposeUnsubscriber;

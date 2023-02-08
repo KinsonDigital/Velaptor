@@ -108,7 +108,7 @@ public class TextureGPUBufferTests
         var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
             .Callback<IReceiveReactor<ViewPortSizeData>>(reactor => this.viewPortSizeReactor = reactor)
-            .Returns<IReceiveReactor<ViewPortSizeData>>((reactor) =>
+            .Returns<IReceiveReactor<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
