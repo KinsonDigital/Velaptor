@@ -52,9 +52,8 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
-    private MouseStateData mouseStateData;
     private readonly IPushReactable<WindowSizeData> winSizeReactable;
-    private readonly KeyboardKeyStateData keyStateData;
+    private MouseStateData mouseStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
     private bool isShuttingDown;

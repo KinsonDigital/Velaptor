@@ -29,6 +29,16 @@ public abstract class SceneBase : IScene
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    protected SceneBase()
+    {
+        ContentLoader = ContentLoaderFactory.CreateContentLoader();
+        Init(IoC.Container.GetInstance<IReactableFactory>());
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SceneBase"/> class.
+    /// </summary>
     /// <param name="contentLoader">Loads content for a scene.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private protected SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
@@ -38,16 +48,6 @@ public abstract class SceneBase : IScene
 
         ContentLoader = contentLoader;
         Init(reactableFactory);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SceneBase"/> class.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    protected SceneBase()
-    {
-        ContentLoader = ContentLoaderFactory.CreateContentLoader();
-        Init(IoC.Container.GetInstance<IReactableFactory>());
     }
 
     /// <inheritdoc cref="IScene.Name"/>
