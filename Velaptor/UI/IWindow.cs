@@ -69,7 +69,7 @@ public interface IWindow : IDisposable
     int UpdateFrequency { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the buffers should]
+    /// Gets or sets a value indicating whether or not the buffers should
     /// be automatically cleared before rendering any textures.
     /// </summary>
     /// <remarks>

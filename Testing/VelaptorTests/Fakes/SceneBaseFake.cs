@@ -11,7 +11,7 @@ using Velaptor.Scene;
 /// <summary>
 /// Used for testing the abstract <see cref="SceneBase"/> class.
 /// </summary>
-internal class SceneBaseFake : SceneBase
+internal sealed class SceneBaseFake : SceneBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBaseFake"/> class.

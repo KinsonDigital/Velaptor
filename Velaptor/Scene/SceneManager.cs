@@ -7,6 +7,7 @@ namespace Velaptor.Scene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Exceptions;
 using Velaptor;
 
 /// <summary>
@@ -43,14 +44,7 @@ public sealed class SceneManager : ISceneManager
     {
         if (SceneExists(scene.Id))
         {
-            var midSection = string.IsNullOrEmpty(scene.Name)
-                ? $"with the ID '{scene.Id}'"
-                : $"'{scene.Name}' with the ID '{scene.Id}'";
-            var exceptionMsg = $"The scene {midSection} already exists.";
-
-            // TODO: Create custom exception for this
-            // if not, only use the GUID
-            throw new Exception(exceptionMsg);
+            throw new SceneAlreadyExistsException(scene.Name, scene.Id);
         }
 
         // If the scene is to be set to active, set all of the other scenes to false first.

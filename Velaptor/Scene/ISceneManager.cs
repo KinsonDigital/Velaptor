@@ -85,7 +85,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// </summary>
     /// <param name="id">The ID of the scene.</param>
     /// <returns>
-    ///     <c>true</c> if a scened exists with the given id.
+    ///     <c>true</c> if a scene exists with the given ID.
     /// </returns>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool SceneExists(Guid id);

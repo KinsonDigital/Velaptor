@@ -67,31 +67,17 @@ public class SceneManagerTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData(
-        "test-scene",
-        "2ab9a4ff-03cb-46e6-8e5f-99989567d968",
-        "The scene 'test-scene' with the ID '2ab9a4ff-03cb-46e6-8e5f-99989567d968' already exists.")]
-    [InlineData(
-        null,
-        "b2c7123b-6044-4c6d-b79b-4086f3f89939",
-        "The scene with the ID 'b2c7123b-6044-4c6d-b79b-4086f3f89939' already exists.")]
-    [InlineData(
-        "",
-        "c0b7410a-356d-488c-8b62-cb48a30b76e5",
-        "The scene with the ID 'c0b7410a-356d-488c-8b62-cb48a30b76e5' already exists.")]
-    public void AddScene_WhenSceneWithIdAlreadyExists_ThrowsException(
-        string name,
-        Guid id,
-        string expected)
+    [Fact]
+    public void AddScene_WhenSceneWithIdAlreadyExists_ThrowsException()
     {
         // Arrange
+        var sceneId = Guid.NewGuid();
         var mockSceneA = new Mock<IScene>();
-        mockSceneA.SetupGet(p => p.Id).Returns(id);
+        mockSceneA.SetupGet(p => p.Id).Returns(sceneId);
 
         var mockSceneB = new Mock<IScene>();
-        mockSceneB.SetupGet(p => p.Name).Returns(name);
-        mockSceneB.SetupGet(p => p.Id).Returns(id);
+        mockSceneB.SetupGet(p => p.Name).Returns("test-name");
+        mockSceneB.SetupGet(p => p.Id).Returns(sceneId);
 
         var sut = new SceneManager();
         sut.AddScene(mockSceneA.Object);
@@ -101,7 +87,7 @@ public class SceneManagerTests
 
         // Assert
         act.Should().Throw<Exception>()
-            .WithMessage(expected);
+            .WithMessage($"The scene 'test-name' with the ID '{sceneId}' already exists.");
     }
 
     [Fact]
