@@ -359,18 +359,13 @@ public class TextRenderingScene : SceneBase
             select (int)b.Height).ToArray().Sum();
         totalHeight += (buttons.Length - 1) * VertButtonSpacing;
         var totalHalfHeight = totalHeight / 2;
-        var buttonColStart = WindowCenter.Y - totalHalfHeight;
 
         IControl? prevButton = null;
 
         foreach (var button in buttons)
         {
             button.Left = LeftMargin;
-
-            button.Top = prevButton is null
-                ? button.Top = buttonColStart
-                : button.Top = prevButton.Bottom + VertButtonSpacing;
-
+            button.Top = prevButton?.Bottom + VertButtonSpacing ?? WindowCenter.Y - totalHalfHeight;
             prevButton = button;
         }
 

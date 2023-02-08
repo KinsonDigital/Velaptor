@@ -215,17 +215,13 @@ public class SoundScene : SceneBase
         totalWidth += (buttons.Length - 1) * HoriBtnSpacing;
 
         var totalHalfWidth = totalWidth / 2;
-        var buttonRowStart = WindowCenter.X - totalHalfWidth;
 
         IControl? prevButton = null;
 
         foreach (var button in buttons)
         {
             button.Bottom = (int)(WindowSize.Height - BottomMargin);
-            button.Left = prevButton is null
-                ? button.Left = buttonRowStart
-                : button.Left = prevButton.Right + HoriBtnSpacing;
-
+            button.Left = prevButton?.Right + HoriBtnSpacing ?? WindowCenter.X - totalHalfWidth;
             prevButton = button;
         }
     }
@@ -239,17 +235,13 @@ public class SoundScene : SceneBase
         totalHeight += (labels.Length - 1) * VertLabelSpacing;
 
         var totalHalfHeight = totalHeight / 2;
-        var buttonColStart = WindowCenter.Y - totalHalfHeight;
 
         IControl? prevLabel = null;
 
         foreach (var label in labels)
         {
             label.Left = LeftMargin;
-            label.Top = prevLabel is null
-                ? label.Top = buttonColStart
-                : label.Top = prevLabel.Bottom + VertLabelSpacing;
-
+            label.Top = prevLabel?.Bottom + VertLabelSpacing ?? WindowCenter.Y - totalHalfHeight;
             prevLabel = label;
         }
     }
