@@ -488,6 +488,7 @@ public class RectangleScene : SceneBase
             select (int)b.Height).ToArray().Sum();
         totalHeight += (buttons.Length - 1) * VertButtonSpacing;
         var totalHalfHeight = totalHeight / 2;
+        var buttonColStart = WindowCenter.Y - totalHalfHeight;
 
         IControl? prevButton = null;
 
@@ -496,7 +497,7 @@ public class RectangleScene : SceneBase
             button.Left = LeftMargin;
 
             button.Top = prevButton is null
-                ? button.Top = WindowCenter.Y - totalHalfHeight
+                ? button.Top = buttonColStart
                 : button.Top = prevButton.Bottom + VertButtonSpacing;
 
             prevButton = button;
@@ -559,6 +560,7 @@ public class RectangleScene : SceneBase
             select (int)b.Width).ToArray().Sum();
         totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
         var totalHalfWidth = totalWidth / 2;
+        var buttonRowStart = WindowCenter.X - totalHalfWidth;
 
         IControl? prevButton = null;
 
@@ -567,7 +569,7 @@ public class RectangleScene : SceneBase
             button.Bottom = (int)(WindowSize.Height - BottomMargin);
 
             button.Left = prevButton is null
-                ? button.Left = WindowCenter.X - totalHalfWidth
+                ? button.Left = buttonRowStart
                 : button.Left = prevButton.Right + HoriButtonSpacing;
 
             prevButton = button;

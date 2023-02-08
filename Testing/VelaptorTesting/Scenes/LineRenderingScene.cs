@@ -35,13 +35,6 @@ public class LineRenderingScene : SceneBase
     private Vector2 instructionsPos;
     private bool mouseEnteredAtLeastOnce;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LineRenderingScene"/> class.
-    /// </summary>
-    public LineRenderingScene()
-    {
-    }
-
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {

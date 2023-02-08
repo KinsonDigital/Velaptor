@@ -31,7 +31,7 @@ public abstract class SceneBase : IScene
     /// </summary>
     /// <param name="contentLoader">Loads content for a scene.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    internal SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
+    private protected SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(reactableFactory);

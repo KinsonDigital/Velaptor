@@ -27,6 +27,9 @@ public sealed class SceneManager : ISceneManager
             .Select(s => s.scene?.Id ?? Guid.Empty).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
+    public void AddScene(IScene scene) => AddScene(scene, false);
+
+    /// <inheritdoc/>
     /// <remarks>
     ///     If no scenes exist in the manager, the scene will be active even if the <paramref name="setToActive"/>
     ///     parameter is set to <c>false</c>.
@@ -36,7 +39,7 @@ public sealed class SceneManager : ISceneManager
     /// <exception cref="Exception">
     ///     Thrown if a scene with with the given <paramref name="scene"/>'s ID already exists.
     /// </exception>
-    public void AddScene(IScene scene, bool setToActive = false)
+    public void AddScene(IScene scene, bool setToActive)
     {
         if (SceneExists(scene.Id))
         {

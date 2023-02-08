@@ -24,26 +24,26 @@ public abstract class Window : IWindow
     /// <summary>
     /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
-    /// <param name="window">The window implementation that contains the window functionality.</param>
-    /// <param name="sceneManager">Manages scenes.</param>
-    internal Window(IWindow window, ISceneManager sceneManager)
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    protected Window()
     {
-        EnsureThat.ParamIsNotNull(window);
-        EnsureThat.ParamIsNotNull(sceneManager);
-
-        this.nativeWindow = window;
-        SceneManager = sceneManager;
+        this.nativeWindow = WindowFactory.CreateWindow();
+        SceneManager = IoC.Container.GetInstance<ISceneManager>();
         Init();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    protected Window()
+    /// <param name="window">The window implementation that contains the window functionality.</param>
+    /// <param name="sceneManager">Manages scenes.</param>
+    private protected Window(IWindow window, ISceneManager sceneManager)
     {
-        this.nativeWindow = WindowFactory.CreateWindow();
-        SceneManager = IoC.Container.GetInstance<ISceneManager>();
+        EnsureThat.ParamIsNotNull(window);
+        EnsureThat.ParamIsNotNull(sceneManager);
+
+        this.nativeWindow = window;
+        SceneManager = sceneManager;
         Init();
     }
 

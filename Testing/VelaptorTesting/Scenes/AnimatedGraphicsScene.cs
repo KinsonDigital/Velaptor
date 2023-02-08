@@ -26,13 +26,6 @@ public class AnimatedGraphicsScene : SceneBase
     private int elapsedTime;
     private int currentFrame;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
-    /// </summary>
-    public AnimatedGraphicsScene()
-    {
-    }
-
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {

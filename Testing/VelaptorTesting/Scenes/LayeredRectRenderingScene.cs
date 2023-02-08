@@ -84,33 +84,39 @@ public class LayeredRectRenderingScene : SceneBase
         this.instructionsX = (int)(this.instructionTextSize.Width / 2) + 25;
         this.instructionsY = (int)(this.instructionTextSize.Height / 2) + 25;
 
-        this.orangeRect = default;
-        this.orangeRect.Position = new Vector2(WindowCenter.X - 100, WindowCenter.Y);
-        this.orangeRect.Width = RectWidth;
-        this.orangeRect.Height = RectHeight;
-        this.orangeRect.IsFilled = true;
-        this.orangeRect.Color = Color.FromArgb(255, 193, 105, 46);
-        this.orangeRect.CornerRadius = new CornerRadius(15f, 50f, 15f, 50f);
+        this.orangeRect = this.orangeRect with
+        {
+            Position = new Vector2(WindowCenter.X - 100, WindowCenter.Y),
+            Width = RectWidth,
+            Height = RectHeight,
+            IsFilled = true,
+            Color = Color.FromArgb(255, 193, 105, 46),
+            CornerRadius = new CornerRadius(15f, 50f, 15f, 50f),
+        };
 
-        this.blueRect = default;
-        this.blueRect.Position = new Vector2(
+        this.blueRect = this.blueRect with
+        {
+            Position = new Vector2(
             this.orangeRect.Position.X - this.orangeRect.HalfWidth,
-            this.orangeRect.Position.Y + this.orangeRect.HalfHeight);
-        this.blueRect.Width = RectWidth;
-        this.blueRect.Height = RectHeight;
-        this.blueRect.IsFilled = true;
-        this.blueRect.Color = Color.SteelBlue;
-        this.blueRect.CornerRadius = new CornerRadius(40f, 10f, 40f, 10f);
+            this.orangeRect.Position.Y + this.orangeRect.HalfHeight),
+            Width = RectWidth,
+            Height = RectHeight,
+            IsFilled = true,
+            Color = Color.SteelBlue,
+            CornerRadius = new CornerRadius(40f, 10f, 40f, 10f),
+        };
 
-        this.whiteRect = default;
-        this.whiteRect.Position = new Vector2(
-            this.orangeRect.Position.X - (this.orangeRect.HalfWidth / 2f),
-            this.orangeRect.Position.Y + (this.orangeRect.HalfHeight / 2f));
-        this.whiteRect.Width = RectWidth;
-        this.whiteRect.Height = RectHeight;
-        this.whiteRect.IsFilled = true;
-        this.whiteRect.Color = Color.AntiqueWhite;
-        this.whiteRect.CornerRadius = new CornerRadius(20f, 20f, 20f, 20f);
+        this.whiteRect = this.whiteRect with
+        {
+            Position = new Vector2(
+                this.orangeRect.Position.X - (this.orangeRect.HalfWidth / 2f),
+                this.orangeRect.Position.Y + (this.orangeRect.HalfHeight / 2f)),
+            Width = RectWidth,
+            Height = RectHeight,
+            IsFilled = true,
+            Color = Color.AntiqueWhite,
+            CornerRadius = new CornerRadius(20f, 20f, 20f, 20f),
+        };
 
         base.LoadContent();
     }

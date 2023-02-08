@@ -28,7 +28,6 @@ public class MainWindow : Window
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly Button nextButton;
     private readonly Button previousButton;
-    private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -146,14 +145,14 @@ public class MainWindow : Window
 
         Title = $"Scene: {SceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
 
-        this.currentKeyState = this.keyboard.GetState();
+        var currentKeyState = this.keyboard.GetState();
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.PageDown) && this.prevKeyState.IsKeyDown(KeyCode.PageDown))
+        if (currentKeyState.IsKeyUp(KeyCode.PageDown) && this.prevKeyState.IsKeyDown(KeyCode.PageDown))
         {
             SceneManager.NextScene();
         }
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.PageUp) && this.prevKeyState.IsKeyDown(KeyCode.PageUp))
+        if (currentKeyState.IsKeyUp(KeyCode.PageUp) && this.prevKeyState.IsKeyDown(KeyCode.PageUp))
         {
             SceneManager.PreviousScene();
         }
@@ -161,7 +160,7 @@ public class MainWindow : Window
         this.nextButton.Update(frameTime);
         this.previousButton.Update(frameTime);
 
-        this.prevKeyState = this.currentKeyState;
+        this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
     }
