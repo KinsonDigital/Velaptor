@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class CachingExceptionTests
         var exception = new CachingException();
 
         // Assert
-        Assert.Equal("There was an issue caching the item.", exception.Message);
+        exception.Message.Should().Be("There was an issue caching the item.");
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class CachingExceptionTests
         var exception = new CachingException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -44,8 +45,8 @@ public class CachingExceptionTests
         var deviceException = new CachingException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }

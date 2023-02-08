@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class CachingMetaDataExceptionTests
         var exception = new CachingMetaDataException();
 
         // Assert
-        Assert.Equal("There was an issue with caching the metadata.", exception.Message);
+        exception.Message.Should().Be("There was an issue with caching the metadata.");
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class CachingMetaDataExceptionTests
         var exception = new CachingMetaDataException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -44,8 +45,8 @@ public class CachingMetaDataExceptionTests
         var deviceException = new CachingMetaDataException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }
