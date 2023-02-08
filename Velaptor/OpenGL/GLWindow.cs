@@ -20,11 +20,11 @@ using Input.Exceptions;
 using NativeInterop.GLFW;
 using NativeInterop.OpenGL;
 using ReactableData;
+using Scene;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
-using UI;
 using Velaptor.Exceptions;
 using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
@@ -52,6 +52,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
+    private readonly IPushReactable<WindowSizeData> winSizeReactable;
     private readonly MouseStateData mouseStateData;
     private readonly KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
@@ -74,6 +75,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
+    /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public GLWindow(
         uint width,
@@ -86,6 +88,7 @@ internal sealed class GLWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
+        ISceneManager sceneManager,
         IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(windowFactory);
@@ -96,6 +99,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
+        EnsureThat.ParamIsNotNull(sceneManager);
         EnsureThat.ParamIsNotNull(reactableFactory);
 
         this.windowFactory = windowFactory;
@@ -106,12 +110,14 @@ internal sealed class GLWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         ContentLoader = contentLoader;
+        SceneManager = sceneManager;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
         this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
         this.glReactable = reactableFactory.CreateGLReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
+        this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
 
         this.mouseStateData = new MouseStateData();
         this.keyStateData = new KeyboardKeyStateData();
@@ -189,6 +195,9 @@ internal sealed class GLWindow : VelaptorIWindow
 
     /// <inheritdoc/>
     public IContentLoader ContentLoader { get; set; }
+
+    /// <inheritdoc/>
+    public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
     public int UpdateFrequency
@@ -389,6 +398,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         this.isShuttingDown = true;
 
+        SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
         this.afterUnloadAction?.Invoke();
@@ -396,7 +406,7 @@ internal sealed class GLWindow : VelaptorIWindow
 
     /// <summary>
     /// Invoked every time the native window size changes and invokes the
-    /// <see cref="IWindowActions.WinResize"/> event.
+    /// <see cref="VelaptorIWindow.WinResize"/> event.
     /// </summary>
     private void GLWindow_Resize(Vector2D<int> obj)
     {
@@ -409,6 +419,7 @@ internal sealed class GLWindow : VelaptorIWindow
         WinResize?.Invoke(size);
 
         this.viewPortReactable.Push(new ViewPortSizeData { Width = width, Height = height }, PushNotifications.ViewPortSizeChangedId);
+        this.winSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
     }
 
     /// <summary>

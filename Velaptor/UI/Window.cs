@@ -9,127 +9,159 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
 using Content;
+using Factories;
 using Guards;
+using Scene;
 
 /// <summary>
 /// A system window where graphics can be rendered.
 /// </summary>
-public abstract class Window : IWindowProps, IDisposable
+public abstract class Window : IWindow
 {
-    private readonly IWindow window;
+    private readonly IWindow nativeWindow;
     private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
-    protected Window(IWindow window)
+    /// <param name="sceneManager">Manages scenes.</param>
+    internal Window(IWindow window, ISceneManager sceneManager)
     {
         EnsureThat.ParamIsNotNull(window);
-        this.window = window;
+        EnsureThat.ParamIsNotNull(sceneManager);
 
-        this.window.Initialize = OnLoad;
-        this.window.Uninitialize = OnUnload;
-        this.window.Update = OnUpdate;
-        this.window.Draw = OnDraw;
-        this.window.WinResize = OnResize;
-
-        // Set the update frequency to default value of 60
-        // just in case the IWindow implementation is not
-        this.window.UpdateFrequency = 60;
+        this.nativeWindow = window;
+        SceneManager = sceneManager;
+        Init();
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="Window"/> class.
+    /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
-    ~Window()
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    protected Window()
     {
-        if (UnitTestDetector.IsRunningFromUnitTest)
-        {
-            return;
-        }
+        this.nativeWindow = WindowFactory.CreateWindow();
+        SceneManager = IoC.Container.GetInstance<ISceneManager>();
+        Init();
+    }
 
-        Dispose(false);
+    /// <inheritdoc/>
+    public Action? Initialize
+    {
+        get => this.nativeWindow.Initialize;
+        set => this.nativeWindow.Initialize = value;
+    }
+
+    /// <inheritdoc/>
+    public Action<FrameTime>? Update
+    {
+        get => this.nativeWindow.Update;
+        set => this.nativeWindow.Update = value;
+    }
+
+    /// <inheritdoc/>
+    public Action<FrameTime>? Draw
+    {
+        get => this.nativeWindow.Draw;
+        set => this.nativeWindow.Draw = value;
+    }
+
+    /// <inheritdoc/>
+    public Action<SizeU>? WinResize
+    {
+        get => this.nativeWindow.WinResize;
+        set => this.nativeWindow.WinResize = value;
+    }
+
+    /// <inheritdoc/>
+    public Action? Uninitialize
+    {
+        get => this.nativeWindow.Uninitialize;
+        set => this.nativeWindow.Uninitialize = value;
     }
 
     /// <inheritdoc/>
     public string Title
     {
-        get => this.window.Title;
-        set => this.window.Title = value;
+        get => this.nativeWindow.Title;
+        set => this.nativeWindow.Title = value;
     }
 
     /// <inheritdoc/>
     public Vector2 Position
     {
-        get => this.window.Position;
-        set => this.window.Position = value;
+        get => this.nativeWindow.Position;
+        set => this.nativeWindow.Position = value;
     }
 
     /// <inheritdoc/>
     public uint Width
     {
-        get => this.window.Width;
-        set => this.window.Width = value;
+        get => this.nativeWindow.Width;
+        set => this.nativeWindow.Width = value;
     }
 
     /// <inheritdoc/>
     public uint Height
     {
-        get => this.window.Height;
-        set => this.window.Height = value;
+        get => this.nativeWindow.Height;
+        set => this.nativeWindow.Height = value;
     }
 
     /// <inheritdoc/>
     public int UpdateFrequency
     {
-        get => this.window.UpdateFrequency;
-        set => this.window.UpdateFrequency = value;
+        get => this.nativeWindow.UpdateFrequency;
+        set => this.nativeWindow.UpdateFrequency = value;
     }
 
     /// <inheritdoc/>
     public bool AutoClearBuffer
     {
-        get => this.window.AutoClearBuffer;
-        set => this.window.AutoClearBuffer = value;
+        get => this.nativeWindow.AutoClearBuffer;
+        set => this.nativeWindow.AutoClearBuffer = value;
     }
 
     /// <inheritdoc/>
     public bool MouseCursorVisible
     {
-        get => this.window.MouseCursorVisible;
-        set => this.window.MouseCursorVisible = value;
+        get => this.nativeWindow.MouseCursorVisible;
+        set => this.nativeWindow.MouseCursorVisible = value;
     }
 
     /// <inheritdoc/>
     public StateOfWindow WindowState
     {
-        get => this.window.WindowState;
-        set => this.window.WindowState = value;
+        get => this.nativeWindow.WindowState;
+        set => this.nativeWindow.WindowState = value;
     }
 
     /// <inheritdoc/>
     public WindowBorder TypeOfBorder
     {
-        get => this.window.TypeOfBorder;
-        set => this.window.TypeOfBorder = value;
+        get => this.nativeWindow.TypeOfBorder;
+        set => this.nativeWindow.TypeOfBorder = value;
     }
 
     /// <inheritdoc/>
     public IContentLoader ContentLoader
     {
-        get => this.window.ContentLoader;
-        set => this.window.ContentLoader = value;
+        get => this.nativeWindow.ContentLoader;
+        set => this.nativeWindow.ContentLoader = value;
     }
 
     /// <inheritdoc/>
-    public bool Initialized => this.window.Initialized;
+    public ISceneManager SceneManager { get; private set; }
+
+    /// <inheritdoc/>
+    public bool Initialized => this.nativeWindow.Initialized;
 
     /// <summary>
     /// Shows the window.
     /// </summary>
-    public void Show() => this.window.Show();
+    public void Show() => this.nativeWindow.Show();
 
     /// <summary>
     /// Shows the window asynchronously.
@@ -141,7 +173,10 @@ public abstract class Window : IWindowProps, IDisposable
     ///     This runs the window on another thread.
     /// </remarks>
     public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null) =>
-        await this.window.ShowAsync(afterStart, afterUnload).ConfigureAwait(true);
+        await this.nativeWindow.ShowAsync(afterStart, afterUnload).ConfigureAwait(true);
+
+    /// <inheritdoc/>
+    public void Close() => this.nativeWindow.Close();
 
     /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -196,6 +231,22 @@ public abstract class Window : IWindowProps, IDisposable
     }
 
     /// <summary>
+    /// Initializes the window.
+    /// </summary>
+    private void Init()
+    {
+        this.nativeWindow.Initialize = OnLoad;
+        this.nativeWindow.Update = OnUpdate;
+        this.nativeWindow.Draw = OnDraw;
+        this.nativeWindow.WinResize = OnResize;
+        this.nativeWindow.Uninitialize = OnUnload;
+
+        // Set the update frequency to default value of 60
+        // just in case the IWindow implementation is not
+        this.nativeWindow.UpdateFrequency = 60;
+    }
+
+    /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
     /// </summary>
     /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
@@ -208,7 +259,7 @@ public abstract class Window : IWindowProps, IDisposable
 
         if (disposing)
         {
-            this.window.Dispose();
+            this.nativeWindow.Dispose();
         }
 
         this.isDisposed = true;
