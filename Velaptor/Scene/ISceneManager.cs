@@ -38,7 +38,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// <param name="scene">The scene to add.</param>
     /// <param name="setToActive">
     ///     When set to <c>true</c>, the scene being added will be set to active and
-    ///     the all other scenes will bet set to inactive.
+    ///     all other scenes will bet set to inactive.
     /// </param>
     public void AddScene(IScene scene, bool setToActive);
 
