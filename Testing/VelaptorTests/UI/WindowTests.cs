@@ -122,6 +122,7 @@ public class WindowTests
         // Arrange
         void Expected(FrameTime a)
         {
+            // This is only used for setting the property
         }
 
         var sut = CreateSystemUnderTest();
