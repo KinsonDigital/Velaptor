@@ -7,7 +7,7 @@ namespace Velaptor.ReactableData;
 /// <summary>
 /// Holds the size of the window.
 /// </summary>
-internal record WindowSizeData
+internal readonly record struct WindowSizeData
 {
     /// <summary>
     /// Gets the width of the window.
