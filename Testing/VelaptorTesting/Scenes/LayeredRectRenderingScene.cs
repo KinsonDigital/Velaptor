@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -29,8 +29,6 @@ public class LayeredRectRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly int windowHalfHeight;
-    private readonly int windowHalfWidth;
     private ITexture? background;
     private IFont? font;
     private RectShape orangeRect;
@@ -53,14 +51,7 @@ public class LayeredRectRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public LayeredRectRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
-        this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
-    }
+    public LayeredRectRenderingScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -76,7 +67,7 @@ public class LayeredRectRenderingScene : SceneBase
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
+        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         this.font = ContentLoader.LoadFont(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
@@ -94,9 +85,7 @@ public class LayeredRectRenderingScene : SceneBase
         this.instructionsY = (int)(this.instructionTextSize.Height / 2) + 25;
 
         this.orangeRect = default;
-        this.orangeRect.Position = new Vector2(
-            this.windowHalfWidth - 100,
-            this.windowHalfHeight);
+        this.orangeRect.Position = new Vector2(WindowCenter.X - 100, WindowCenter.Y);
         this.orangeRect.Width = RectWidth;
         this.orangeRect.Height = RectHeight;
         this.orangeRect.IsFilled = true;
@@ -264,9 +253,9 @@ public class LayeredRectRenderingScene : SceneBase
         }
 
         // Right edge containment
-        if (this.whiteRect.Position.X > MainWindow.WindowWidth - this.whiteRect.HalfWidth)
+        if (this.whiteRect.Position.X > WindowSize.Width - this.whiteRect.HalfWidth)
         {
-            this.whiteRect.Position = new Vector2(MainWindow.WindowWidth - this.whiteRect.HalfWidth, this.whiteRect.Position.Y);
+            this.whiteRect.Position = new Vector2(WindowSize.Width - this.whiteRect.HalfWidth, this.whiteRect.Position.Y);
         }
 
         // Top edge containment
@@ -276,9 +265,9 @@ public class LayeredRectRenderingScene : SceneBase
         }
 
         // Bottom edge containment
-        if (this.whiteRect.Position.Y > MainWindow.WindowHeight - this.whiteRect.HalfHeight)
+        if (this.whiteRect.Position.Y > WindowSize.Height - this.whiteRect.HalfHeight)
         {
-            this.whiteRect.Position = new Vector2(this.whiteRect.Position.X, MainWindow.WindowHeight - this.whiteRect.HalfHeight);
+            this.whiteRect.Position = new Vector2(this.whiteRect.Position.X, WindowSize.Height - this.whiteRect.HalfHeight);
         }
     }
 }

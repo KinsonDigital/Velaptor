@@ -5,11 +5,11 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Linq;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
@@ -26,7 +26,6 @@ public class TextRenderingScene : SceneBase
     private const float AngularVelocity = 10f;
     private const float SizeChangeAmount = 0.5f;
     private const string SingleLineText = "Change me using the buttons to the left.";
-    private readonly Point windowCenter;
     private readonly string multiLineText = $"Change me using{Environment.NewLine}the buttons to the left.";
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
@@ -47,16 +46,6 @@ public class TextRenderingScene : SceneBase
     private bool isClrSet;
     private float angle;
     private float renderSize = 1f;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
-    /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public TextRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader) =>
-        this.windowCenter = new Point(
-            (int)(MainWindow.WindowWidth / 2f),
-            (int)(MainWindow.WindowHeight / 2f));
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -254,6 +243,24 @@ public class TextRenderingScene : SceneBase
 
         ContentLoader.UnloadFont(this.textFont);
 
+        this.btnRotateCW = null;
+        this.btnRotateCCW = null;
+        this.btnIncreaseRenderSize = null;
+        this.btnDecreaseRenderSize = null;
+        this.btnSetMultiLine = null;
+        this.btnSetColor = null;
+        this.btnSetStyle = null;
+        this.btnIncreaseFontSize = null;
+        this.btnDecreaseFontSize = null;
+        this.cwButtonDown = false;
+        this.ccwButtonDown = false;
+        this.increaseRenderSizeBtnDown = false;
+        this.decreaseRenderBtnDown = false;
+        this.isMultiLine = true;
+        this.isClrSet = false;
+        this.angle = 0f;
+        this.renderSize = 1f;
+
         base.UnloadContent();
     }
 
@@ -295,8 +302,8 @@ public class TextRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        var xPos = (int)(MainWindow.WindowWidth / 2f);
-        var yPos = (int)MainWindow.WindowHeight / 2;
+        var xPos = WindowCenter.X;
+        var yPos = WindowCenter.Y;
 
         this.fontRenderer.Render(
             this.textFont,
@@ -340,9 +347,8 @@ public class TextRenderingScene : SceneBase
             nameof(this.btnIncreaseFontSize),
             nameof(this.btnDecreaseFontSize),
         };
-        var buttons = (from c in GetControls<Button>()
-            where excludeList.Contains(c.Name)
-            select c).ToArray();
+
+        var buttons = Controls.Where(c => excludeList.Contains(c.Name)).ToImmutableArray();
 
         if (buttons.Length <= 0)
         {
@@ -361,7 +367,7 @@ public class TextRenderingScene : SceneBase
             button.Left = LeftMargin;
 
             button.Top = prevButton is null
-                ? button.Top = this.windowCenter.Y - totalHalfHeight
+                ? button.Top = WindowCenter.Y - totalHalfHeight
                 : button.Top = prevButton.Bottom + VertButtonSpacing;
 
             prevButton = button;

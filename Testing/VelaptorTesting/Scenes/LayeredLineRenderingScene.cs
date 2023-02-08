@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -27,8 +27,6 @@ public class LayeredLineRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
-    private readonly float windowHalfWidth;
-    private readonly float windowHalfHeight;
     private ITexture? background;
     private IFontRenderer? fontRenderer;
     private ITextureRenderer? textureRenderer;
@@ -50,14 +48,7 @@ public class LayeredLineRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public LayeredLineRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowHalfWidth = MainWindow.WindowWidth / 2f;
-        this.windowHalfHeight = MainWindow.WindowHeight / 2f;
-    }
+    public LayeredLineRenderingScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
@@ -74,7 +65,7 @@ public class LayeredLineRenderingScene : SceneBase
         this.lineRenderer = renderFactory.CreateLineRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
+        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
         this.font.Style = FontStyle.Bold;
@@ -89,26 +80,26 @@ public class LayeredLineRenderingScene : SceneBase
 
         this.instructionTextSize = this.font.Measure(this.instructions);
         this.instructionsPos = new Vector2(
-            this.windowHalfWidth,
+            WindowCenter.X,
             (this.instructionTextSize.Height / 2) + 25);
 
         this.orangeLine = default;
         this.orangeLine.Color = Color.FromArgb(255, 193, 105, 46);
         this.orangeLine.Thickness = 20;
-        this.orangeLine.P1 = new Vector2(this.windowHalfWidth, this.windowHalfHeight - 100);
-        this.orangeLine.P2 = new Vector2(this.windowHalfWidth, this.windowHalfHeight + 100);
+        this.orangeLine.P1 = new Vector2(WindowCenter.X, WindowCenter.Y - 100);
+        this.orangeLine.P2 = new Vector2(WindowCenter.X, WindowCenter.Y + 100);
 
         this.blueLine = default;
         this.blueLine.Color = Color.SteelBlue;
         this.blueLine.Thickness = 15;
-        this.blueLine.P1 = new Vector2(this.windowHalfWidth - 100, this.windowHalfHeight - 100);
-        this.blueLine.P2 = new Vector2(this.windowHalfWidth + 100, this.windowHalfHeight + 100);
+        this.blueLine.P1 = new Vector2(WindowCenter.X - 100, WindowCenter.Y - 100);
+        this.blueLine.P2 = new Vector2(WindowCenter.X + 100, WindowCenter.Y + 100);
 
         this.whiteLine = default;
         this.whiteLine.Color = Color.AntiqueWhite;
         this.whiteLine.Thickness = 10;
-        this.whiteLine.P1 = new Vector2(this.windowHalfWidth - 100, this.windowHalfHeight);
-        this.whiteLine.P2 = new Vector2(this.windowHalfWidth + 100, this.windowHalfHeight);
+        this.whiteLine.P1 = new Vector2(WindowCenter.X - 100, WindowCenter.Y);
+        this.whiteLine.P2 = new Vector2(WindowCenter.X + 100, WindowCenter.Y);
 
         base.LoadContent();
     }

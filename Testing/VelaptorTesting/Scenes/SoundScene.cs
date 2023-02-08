@@ -5,10 +5,11 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
@@ -19,7 +20,6 @@ public class SoundScene : SceneBase
     private const int HoriBtnSpacing = 10;
     private const int VertLabelSpacing = 15;
     private const int LeftMargin = 10;
-    private readonly Point windowCenter;
     private Label? lblDescription;
     private Label? lblState;
     private Label? lblCurrentTime;
@@ -32,13 +32,6 @@ public class SoundScene : SceneBase
     private Button? btnRewind10Sec;
     private Button? btnRepeat;
     private ISound? sound;
-
-    public SoundScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.windowCenter.X = (int)MainWindow.WindowWidth / 2;
-        this.windowCenter.Y = (int)MainWindow.WindowHeight / 2;
-    }
 
     public override void LoadContent()
     {
@@ -215,7 +208,8 @@ public class SoundScene : SceneBase
 
     private void LayoutButtonsBottom()
     {
-        var buttons = GetControls<Button>();
+        var buttons = Controls.Where(c => c is Button).ToImmutableArray();
+
         var totalWidth = (from l in buttons
             select (int)l.Width).ToArray().Sum();
         totalWidth += (buttons.Length - 1) * HoriBtnSpacing;
@@ -226,9 +220,9 @@ public class SoundScene : SceneBase
 
         foreach (var button in buttons)
         {
-            button.Bottom = (int)(MainWindow.WindowHeight - BottomMargin);
+            button.Bottom = (int)(WindowSize.Height - BottomMargin);
             button.Left = prevButton is null
-                ? button.Left = this.windowCenter.X - totalHalfWidth
+                ? button.Left = WindowCenter.X - totalHalfWidth
                 : button.Left = prevButton.Right + HoriBtnSpacing;
 
             prevButton = button;
@@ -237,7 +231,7 @@ public class SoundScene : SceneBase
 
     private void PerformLabelLayout()
     {
-        var labels = GetControls<Label>();
+        var labels = Controls.Where(c => c is Label).ToImmutableArray();
         var totalHeight = (from b in labels
             select (int)b.Height).ToArray().Sum();
 
@@ -251,7 +245,7 @@ public class SoundScene : SceneBase
         {
             label.Left = LeftMargin;
             label.Top = prevLabel is null
-                ? label.Top = this.windowCenter.Y - totalHalfHeight
+                ? label.Top = WindowCenter.Y - totalHalfHeight
                 : label.Top = prevLabel.Bottom + VertLabelSpacing;
 
             prevLabel = label;

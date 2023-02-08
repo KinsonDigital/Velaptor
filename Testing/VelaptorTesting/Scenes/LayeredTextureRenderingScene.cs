@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -27,8 +27,6 @@ public class LayeredTextureRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
-    private readonly int windowHalfWidth;
-    private readonly int windowHalfHeight;
     private ITexture? background;
     private ITextureRenderer? textureRenderer;
     private IFontRenderer? fontRenderer;
@@ -54,14 +52,7 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public LayeredTextureRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
-        this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
-    }
+    public LayeredTextureRenderingScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -77,7 +68,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
+        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         this.font = ContentLoader.LoadFont(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
@@ -101,8 +92,8 @@ public class LayeredTextureRenderingScene : SceneBase
         this.blueBoxData = this.atlas.GetFrames("blue-box")[0];
 
         // Set the default white box position
-        this.orangeBoxPos.X = this.windowHalfWidth - 100;
-        this.orangeBoxPos.Y = this.windowHalfHeight;
+        this.orangeBoxPos.X = WindowCenter.X - 100;
+        this.orangeBoxPos.Y = WindowCenter.Y;
 
         // Set the default blue box position
         this.blueBoxPos.X = this.orangeBoxPos.X - (this.orangeBoxData.Bounds.Width / 2f);
@@ -287,9 +278,9 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         // Right edge containment
-        if (this.whiteBoxPos.X > MainWindow.WindowWidth - halfWidth)
+        if (this.whiteBoxPos.X > WindowSize.Width - halfWidth)
         {
-            this.whiteBoxPos.X = MainWindow.WindowWidth - halfWidth;
+            this.whiteBoxPos.X = WindowSize.Width - halfWidth;
         }
 
         // Top edge containment
@@ -299,9 +290,9 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         // Bottom edge containment
-        if (this.whiteBoxPos.Y > MainWindow.WindowHeight - halfHeight)
+        if (this.whiteBoxPos.Y > WindowSize.Height - halfHeight)
         {
-            this.whiteBoxPos.Y = MainWindow.WindowHeight - halfHeight;
+            this.whiteBoxPos.Y = WindowSize.Height - halfHeight;
         }
     }
 }

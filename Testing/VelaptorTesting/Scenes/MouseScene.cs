@@ -6,9 +6,8 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
@@ -26,9 +25,7 @@ public class MouseScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public MouseScene(IContentLoader contentLoader)
-        : base(contentLoader)
+    public MouseScene()
         => this.mouse = AppInputFactory.CreateMouse();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -42,7 +39,7 @@ public class MouseScene : SceneBase
         this.mouseInfoLabel = new Label { Color = Color.White };
 
         this.mouseInfoLabel.LoadContent();
-        this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);
+        this.mouseInfoLabel.Position = new Point(WindowCenter.X, WindowCenter.Y);
 
         AddControl(this.mouseInfoLabel);
 
