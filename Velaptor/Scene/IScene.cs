@@ -2,11 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTesting.Core;
+namespace Velaptor.Scene;
 
 using System;
+using System.Drawing;
+using Content;
 using Velaptor;
-using Velaptor.UI;
+using UI;
 
 /// <summary>
 /// Represents a single scene that can be rendered to the screen.
@@ -29,9 +31,19 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     bool IsLoaded { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the scene is active.
+    /// Gets the size of the window.
     /// </summary>
-    bool IsActive { get; set; }
+    SizeU WindowSize { get; }
+
+    /// <summary>
+    /// Gets the center of the window.
+    /// </summary>
+    Point WindowCenter { get; }
+
+    /// <summary>
+    /// Gets the content loader.
+    /// </summary>
+    IContentLoader ContentLoader { get; }
 
     /// <summary>
     /// Loads the scene content.

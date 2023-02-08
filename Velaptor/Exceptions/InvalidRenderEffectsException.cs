@@ -10,7 +10,7 @@ using Graphics;
 /// <summary>
 /// Thrown when an invalid <see cref="RenderEffects"/> value is used.
 /// </summary>
-public class InvalidRenderEffectsException : Exception
+public sealed class InvalidRenderEffectsException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InvalidRenderEffectsException"/> class.

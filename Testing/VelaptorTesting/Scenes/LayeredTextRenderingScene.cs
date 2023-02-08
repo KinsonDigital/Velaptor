@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -26,8 +26,6 @@ public class LayeredTextRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
-    private readonly int windowHalfWidth;
-    private readonly int windowHalfHeight;
     private ITexture? background;
     private ITextureRenderer? textureRenderer;
     private IFontRenderer? fontRenderer;
@@ -47,14 +45,7 @@ public class LayeredTextRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextRenderingScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public LayeredTextRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
-        this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
-    }
+    public LayeredTextRenderingScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -70,7 +61,7 @@ public class LayeredTextRenderingScene : SceneBase
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
+        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         this.font = ContentLoader.LoadFont(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
@@ -86,8 +77,8 @@ public class LayeredTextRenderingScene : SceneBase
         this.whiteText = string.Join(Environment.NewLine, whiteLines);
 
         this.whiteTextSize = this.font.Measure(this.whiteText);
-        this.whiteTextPos.X = this.windowHalfWidth;
-        this.whiteTextPos.Y = this.windowHalfHeight - (MainWindow.WindowHeight / 6f);
+        this.whiteTextPos.X = WindowCenter.X;
+        this.whiteTextPos.Y = WindowCenter.Y - (WindowSize.Height / 6f);
 
         var orangeLines = new[]
         {
@@ -99,8 +90,8 @@ public class LayeredTextRenderingScene : SceneBase
         this.orangeText = string.Join(Environment.NewLine, orangeLines);
 
         // Set the default white box position
-        this.orangeTextPos.X = this.windowHalfWidth;
-        this.orangeTextPos.Y = this.windowHalfHeight;
+        this.orangeTextPos.X = WindowCenter.X;
+        this.orangeTextPos.Y = WindowCenter.Y;
 
         var blueLines = new[]
         {
@@ -110,8 +101,8 @@ public class LayeredTextRenderingScene : SceneBase
         this.blueText = string.Join(Environment.NewLine, blueLines);
 
         // Set the default blue box position
-        this.blueTextPos.X = this.windowHalfWidth;
-        this.blueTextPos.Y = this.windowHalfHeight + (MainWindow.WindowHeight / 6f);
+        this.blueTextPos.X = WindowCenter.X;
+        this.blueTextPos.Y = WindowCenter.Y + (WindowSize.Height / 6f);
 
         base.LoadContent();
     }
@@ -264,9 +255,9 @@ public class LayeredTextRenderingScene : SceneBase
         }
 
         // Right edge containment
-        if (this.whiteTextPos.X > MainWindow.WindowWidth - halfWidth)
+        if (this.whiteTextPos.X > WindowSize.Width - halfWidth)
         {
-            this.whiteTextPos.X = MainWindow.WindowWidth - halfWidth;
+            this.whiteTextPos.X = WindowSize.Width - halfWidth;
         }
 
         // Top edge containment
@@ -276,9 +267,9 @@ public class LayeredTextRenderingScene : SceneBase
         }
 
         // Bottom edge containment
-        if (this.whiteTextPos.Y > MainWindow.WindowHeight - halfHeight)
+        if (this.whiteTextPos.Y > WindowSize.Height - halfHeight)
         {
-            this.whiteTextPos.Y = MainWindow.WindowHeight - halfHeight;
+            this.whiteTextPos.Y = WindowSize.Height - halfHeight;
         }
     }
 }
