@@ -13,7 +13,7 @@ using Velaptor;
 /// <summary>
 /// Manages scenes by loading and unloading content, updating, and rendering scenes.
 /// </summary>
-public sealed class SceneManager : ISceneManager
+internal sealed class SceneManager : ISceneManager
 {
     private readonly List<(IScene? scene, bool isActive)> scenes = new ();
     private bool isDisposed;
