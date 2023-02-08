@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Abstractions;
 using System.Linq;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -67,8 +67,8 @@ public class AtlasLoaderTests
     [Fact]
     public void Ctor_WithNullTextureCacheParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new AtlasLoader(
                 null,
@@ -77,46 +77,60 @@ public class AtlasLoaderTests
                 this.mockJSONService.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'textureCache')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
     }
 
     [Fact]
     public void Ctor_WithNullAtlasDataFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            _ = new AtlasLoader(
+       _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 null,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'atlasDataFactory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'atlasDataFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullAtlasDataPathResolverParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            _ = new AtlasLoader(
+       _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 null,
                 this.mockJSONService.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'atlasDataPathResolver')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'atlasDataPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullJSONServiceParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new AtlasLoader(
                 this.mockTextureCache.Object,
@@ -125,14 +139,19 @@ public class AtlasLoaderTests
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'jsonService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'jsonService')");
     }
 
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new AtlasLoader(
                 this.mockTextureCache.Object,
@@ -141,23 +160,33 @@ public class AtlasLoaderTests
                 this.mockJSONService.Object,
                 null,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            _ = new AtlasLoader(
+           _ = new AtlasLoader(
                 this.mockTextureCache.Object,
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
                 this.mockFile.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
     #endregion
 
@@ -170,11 +199,12 @@ public class AtlasLoaderTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            sut.Load(value);
-        }, "The string parameter must not be null or empty. (Parameter 'contentNameOrPath')");
+        // Act
+        var act = () => sut.Load(value);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentNameOrPath')");
     }
 
     [Fact]
@@ -184,11 +214,12 @@ public class AtlasLoaderTests
         const string extension = ".txt";
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadAtlasException>(() =>
-        {
-            sut.Load($"{DirPath}/{AtlasContentName}{extension}");
-        }, "When performing full content file path loads, the files must be a '.png' or '.json' extension.");
+        // Act
+        var act = () => sut.Load($"{DirPath}/{AtlasContentName}{extension}");
+
+        // Assert
+        act.Should().Throw<LoadAtlasException>()
+            .WithMessage("When performing full content file path loads, the files must be a '.png' or '.json' extension.");
     }
 
     [Fact]
@@ -213,7 +244,7 @@ public class AtlasLoaderTests
         this.mockFile.Verify(m => m.ReadAllText(AtlasDataFilePath), Times.Once());
         this.mockJSONService.Verify(m => m.Deserialize<AtlasSubTextureData[]>(FakeJSONData), Times.Once);
         this.mockAtlasDataFactory.Verify(m => m.Create(atlasData, DirPath, $"{AtlasContentName}"));
-        Assert.Same(mockAtlasData.Object, actual);
+        actual.Should().BeSameAs(mockAtlasData.Object);
     }
 
     [Fact]
@@ -233,11 +264,12 @@ public class AtlasLoaderTests
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(AtlasDataExtension);
         this.mockPath.Setup(m => m.GetDirectoryName(invalidFilePath)).Returns(dirPath);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadAtlasException>(() =>
-        {
-            sut.Load(invalidFilePath);
-        }, expected);
+        // Act
+        var act = () => sut.Load(invalidFilePath);
+
+        // Assert
+        act.Should().Throw<LoadAtlasException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -260,11 +292,12 @@ public class AtlasLoaderTests
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(TextureExtension);
         this.mockPath.Setup(m => m.GetDirectoryName(invalidImageFilePath)).Returns(dirPath);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadAtlasException>(() =>
-        {
-            sut.Load(invalidImageFilePath);
-        }, expected);
+        // Act
+        var act = () => sut.Load(invalidImageFilePath);
+
+        // Assert
+        act.Should().Throw<LoadAtlasException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -287,7 +320,7 @@ public class AtlasLoaderTests
         this.mockFile.Verify(m => m.ReadAllText(AtlasDataFilePath), Times.Once());
         this.mockJSONService.Verify(m => m.Deserialize<AtlasSubTextureData[]>(FakeJSONData), Times.Once);
         this.mockAtlasDataFactory.Verify(m => m.Create(atlasData, DirPath, AtlasContentName));
-        Assert.Same(mockAtlasData.Object, actual);
+        actual.Should().BeSameAs(mockAtlasData.Object);
     }
 
     [Fact]
@@ -299,11 +332,12 @@ public class AtlasLoaderTests
 
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert1
-        AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
-        {
-            sut.Load(AtlasContentName);
-        }, $"There was an issue deserializing the JSON atlas data file at '{AtlasDataFilePath}'.");
+        // Act
+        var act = () => sut.Load(AtlasContentName);
+
+        // Assert
+        act.Should().Throw<LoadContentException>()
+            .WithMessage($"There was an issue deserializing the JSON atlas data file at '{AtlasDataFilePath}'.");
     }
 
     [Fact]
@@ -321,11 +355,12 @@ public class AtlasLoaderTests
         var atlasData = MockAtlasJSONData().ToArray();
         MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, AtlasContentName);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadAtlasException>(() =>
-        {
-            sut.Load(DirPath);
-        }, expected);
+        // Act
+        var act = () => sut.Load(DirPath);
+
+        // Assert
+        act.Should().Throw<LoadAtlasException>()
+            .WithMessage(expected);
     }
 
     [Fact]
