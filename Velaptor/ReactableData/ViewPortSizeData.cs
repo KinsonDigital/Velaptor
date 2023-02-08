@@ -7,15 +7,15 @@ namespace Velaptor.ReactableData;
 /// <summary>
 /// Holds the size of the viewport.
 /// </summary>
-internal sealed record ViewPortSizeData
+internal readonly record struct ViewPortSizeData
 {
     /// <summary>
-    /// Gets or sets the width of the viewport.
+    /// Gets the width of the viewport.
     /// </summary>
-    public uint Width { get; set; }
+    public uint Width { get; init; }
 
     /// <summary>
-    /// Gets or sets the height of the viewport.
+    /// Gets the height of the viewport.
     /// </summary>
-    public uint Height { get; set; }
+    public uint Height { get; init; }
 }

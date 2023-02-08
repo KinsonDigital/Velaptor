@@ -346,9 +346,6 @@ public class TextureGPUBufferTests
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnReceive();
 
-        // var batchSizeData = new BatchSizeData { BatchSize = BatchSize };
-        // this.batchSizeReactor.OnReceive(batchSizeData);
-
         // Act
         var actual = sut.GenerateData();
 

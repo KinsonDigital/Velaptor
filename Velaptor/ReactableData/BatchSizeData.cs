@@ -7,7 +7,7 @@ namespace Velaptor.ReactableData;
 /// <summary>
 /// Holds data for the size of the batch.
 /// </summary>
-internal readonly struct BatchSizeData
+internal readonly record struct BatchSizeData
 {
     /// <summary>
     /// Gets the data.

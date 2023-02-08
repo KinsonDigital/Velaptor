@@ -53,8 +53,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> winSizeReactable;
-    private readonly MouseStateData mouseStateData;
-    private readonly KeyboardKeyStateData keyStateData;
+    private MouseStateData mouseStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
     private bool isShuttingDown;
@@ -119,8 +118,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
 
-        this.mouseStateData = new MouseStateData();
-        this.keyStateData = new KeyboardKeyStateData();
+        this.mouseStateData = default;
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
@@ -440,8 +438,11 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Update?.Invoke(frameTime);
 
-        this.mouseStateData.ScrollDirection = MouseScrollDirection.None;
-        this.mouseStateData.ScrollWheelValue = 0;
+        this.mouseStateData = this.mouseStateData with
+        {
+            ScrollDirection = MouseScrollDirection.None,
+            ScrollWheelValue = 0,
+        };
 
         this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }
@@ -489,10 +490,9 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
     {
-        this.keyStateData.Key = (KeyCode)key;
-        this.keyStateData.IsDown = true;
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
 
-        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -503,10 +503,9 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
     {
-        this.keyStateData.Key = (KeyCode)key;
-        this.keyStateData.IsDown = false;
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
 
-        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -516,8 +515,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData.Button = (VelaptorMouseButton)button;
-        this.mouseStateData.ButtonIsDown = true;
+        this.mouseStateData = this.mouseStateData with
+        {
+            Button = (VelaptorMouseButton)button,
+            ButtonIsDown = true,
+        };
 
         this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }
@@ -529,8 +531,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData.Button = (VelaptorMouseButton)button;
-        this.mouseStateData.ButtonIsDown = false;
+        this.mouseStateData = this.mouseStateData with
+        {
+            Button = (VelaptorMouseButton)button,
+            ButtonIsDown = false,
+        };
 
         this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }
@@ -542,12 +547,15 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
     private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
     {
-        this.mouseStateData.ScrollWheelValue = (int)wheelData.Y;
-        this.mouseStateData.ScrollDirection = wheelData.Y switch
+        this.mouseStateData = this.mouseStateData with
         {
-            > 0 => MouseScrollDirection.ScrollUp,
-            < 0 => MouseScrollDirection.ScrollDown,
-            _ => MouseScrollDirection.None
+            ScrollWheelValue = (int)wheelData.Y,
+            ScrollDirection = wheelData.Y switch
+            {
+                > 0 => MouseScrollDirection.ScrollUp,
+                < 0 => MouseScrollDirection.ScrollDown,
+                _ => MouseScrollDirection.None
+            },
         };
 
         this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
@@ -560,8 +568,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="position">The position of the mouse input.</param>
     private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
     {
-        this.mouseStateData.X = (int)position.X;
-        this.mouseStateData.Y = (int)position.Y;
+        this.mouseStateData = this.mouseStateData with
+        {
+            X = (int)position.X,
+            Y = (int)position.Y,
+        };
 
         this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
     }

@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 /// Represents the current platform.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "No point in testing due to implementation being mostly dotnet code.")]
-public class Platform : IPlatform
+public sealed class Platform : IPlatform
 {
     private static readonly OSPlatform[] Platforms =
     {
