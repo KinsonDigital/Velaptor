@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Xunit;
@@ -22,11 +23,11 @@ public class AtlasTexturePathResolverTests
         var mockDirectory = new Mock<IDirectory>();
 
         // Act
-        var resolver = new AtlasTexturePathResolver(mockDirectory.Object);
-        var actual = resolver.ContentDirectoryName;
+        var sut = new AtlasTexturePathResolver(mockDirectory.Object);
+        var actual = sut.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Atlas", actual);
+        actual.Should().Be("Atlas");
     }
     #endregion
 }
