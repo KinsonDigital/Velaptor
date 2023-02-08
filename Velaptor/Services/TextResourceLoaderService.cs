@@ -18,7 +18,7 @@ using Exceptions;
 internal sealed class TextResourceLoaderService : IEmbeddedResourceLoaderService<string>
 {
     /// <summary>
-    /// Loads embedded text file resources that match the given <param name="name"></param>.
+    /// Loads embedded text file resources that match the given <paramref name="name"/>.
     /// </summary>
     /// <param name="name">The name of the embedded text file.</param>
     /// <returns>The embedded text file content.</returns>

@@ -21,7 +21,7 @@ internal sealed class EmbeddedFontResourceService : IEmbeddedResourceLoaderServi
     private const string FontResourcePath = "Velaptor.Content.Fonts.EmbeddedResources.";
 
     /// <summary>
-    /// Loads a <see cref="Stream"/> to an embedded font file resource that matches the given <param name="name"></param>.
+    /// Loads a <see cref="Stream"/> to an embedded font file resource that matches the given <paramref name="name"/>.
     /// </summary>
     /// <param name="name">The name of the embedded font file.</param>
     /// <returns>The stream to the embedded file data.</returns>

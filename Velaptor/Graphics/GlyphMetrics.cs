@@ -125,7 +125,7 @@ public struct GlyphMetrics : IEquatable<GlyphMetrics>
     /// <inheritdoc cref="object.Equals(object?)"/>
     public override bool Equals(object? obj) => obj is GlyphMetrics metric && Equals(metric);
 
-    /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+    /// <inheritdoc cref="IEquatable{T}"/>
     public bool Equals(GlyphMetrics other) =>
         Glyph == other.Glyph &&
         GlyphBounds.Equals(other.GlyphBounds) &&

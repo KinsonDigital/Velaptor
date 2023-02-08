@@ -83,7 +83,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     }
 
     /// <summary>
-    /// Loads texture atlas data using the given <param name="contentNameOrPath"></param>.
+    /// Loads texture atlas data using the given <paramref name="contentNameOrPath"/>.
     /// </summary>
     /// <param name="contentNameOrPath">The content name or file path to the atlas data.</param>
     /// <returns>The loaded atlas data.</returns>

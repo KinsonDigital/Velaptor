@@ -303,7 +303,7 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Initializes window related setup before the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+    /// Initializes window related setup before the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="IView.Load"/>
     /// event is fired.
     /// </summary>
     private void PreInit()
@@ -319,7 +319,7 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Initializes window related setup after the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+    /// Initializes window related setup after the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="IView.Load"/>
     /// event is fired.
     /// </summary>
     /// <param name="width">The width of the window.</param>

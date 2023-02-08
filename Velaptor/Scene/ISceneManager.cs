@@ -43,7 +43,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     public void AddScene(IScene scene, bool setToActive);
 
     /// <summary>
-    /// Removes the scene that matches the given <see cref="sceneId"/>.
+    /// Removes the scene that matches the given <paramref name="sceneId"/>.
     /// </summary>
     /// <param name="sceneId">The ID of the scene to remove.</param>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used for library users.")]
