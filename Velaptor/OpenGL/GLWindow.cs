@@ -53,7 +53,6 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private MouseStateData mouseStateData;
-    private KeyboardKeyStateData keyStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
     private bool isShuttingDown;
@@ -114,7 +113,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
 
         this.mouseStateData = default;
-        this.keyStateData = default;
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
@@ -481,9 +479,9 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
     {
-        this.keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
 
-        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
@@ -494,9 +492,9 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
     {
-        this.keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
 
-        this.keyboardReactable.Push(this.keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
     }
 
     /// <summary>
