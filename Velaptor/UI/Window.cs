@@ -153,7 +153,7 @@ public abstract class Window : IWindow
     }
 
     /// <inheritdoc/>
-    public ISceneManager SceneManager { get; private set; }
+    public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
     public bool Initialized => this.nativeWindow.Initialized;
@@ -226,6 +226,7 @@ public abstract class Window : IWindow
     /// </summary>
     /// <param name="size">The new size.</param>
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
     protected virtual void OnResize(SizeU size)
     {
     }

@@ -8,6 +8,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Fakes;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
@@ -35,6 +36,11 @@ public class WindowTests
 
         this.mockWindow = new Mock<IWindow>();
         this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
+        this.mockWindow.SetupProperty(m => m.Initialize);
+        this.mockWindow.SetupProperty(m => m.Update);
+        this.mockWindow.SetupProperty(m => m.Draw);
+        this.mockWindow.SetupProperty(m => m.WinResize);
+        this.mockWindow.SetupProperty(m => m.Uninitialize);
     }
 
     #region Constructor Tests
@@ -57,9 +63,119 @@ public class WindowTests
             _ = new WindowFake(this.mockWindow.Object, null);
         }, "The parameter must not be null. (Parameter 'sceneManager')");
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsSceneManagerProp()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager.Object);
+    }
     #endregion
 
     #region Prop Tests
+    [Fact]
+    public void Initialize_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        void Expected()
+        {
+            // This is only used for setting the property
+        }
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize = Expected;
+        var actual = sut.Initialize;
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(actual);
+    }
+
+    [Fact]
+    public void Update_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        void Expected(FrameTime a)
+        {
+            // This is only used for setting the property
+        }
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Update = Expected;
+        var actual = sut.Update;
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(actual);
+    }
+
+    [Fact]
+    public void Draw_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        void Expected(FrameTime a)
+        {
+            // This is only used for setting the property
+        }
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Draw = Expected;
+        var actual = sut.Draw;
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(actual);
+    }
+
+    [Fact]
+    public void WinResize_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        void Expected(SizeU a)
+        {
+            // This is only used for setting the property
+        }
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.WinResize = Expected;
+        var actual = sut.WinResize;
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(actual);
+    }
+
+    [Fact]
+    public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        void Expected()
+        {
+            // This is only used for setting the property
+        }
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Uninitialize = Expected;
+        var actual = sut.Uninitialize;
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(actual);
+    }
+
     [Fact]
     public void Title_WhenSettingValue_ReturnsCorrectResult()
     {
@@ -237,6 +353,19 @@ public class WindowTests
 
         // Assert
         this.mockWindow.Verify(m => m.Show(), Times.Once());
+    }
+
+    [Fact]
+    public void Close_WhenInvoked_ClosesWindow()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Close();
+
+        // Assert
+        this.mockWindow.VerifyOnce(m => m.Close());
     }
 
     [Fact]

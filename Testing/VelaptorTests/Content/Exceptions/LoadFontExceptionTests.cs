@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -18,20 +19,20 @@ public class LoadFontExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new LoadFontException();
+        var sut = new LoadFontException();
 
         // Assert
-        Assert.Equal("There was an issue loading the font.", exception.Message);
+        sut.Message.Should().Be("There was an issue loading the font.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new LoadFontException("test-message");
+        var sut = new LoadFontException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -41,11 +42,11 @@ public class LoadFontExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new LoadFontException("test-exception", innerException);
+        var sut = new LoadFontException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }

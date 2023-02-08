@@ -7,7 +7,7 @@ namespace VelaptorTests.Content.Fonts.Services;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -56,11 +56,12 @@ public class FontStatsServiceTests
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullFontServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new FontStatsService(
                 null,
@@ -68,14 +69,19 @@ public class FontStatsServiceTests
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fontService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontService')");
     }
 
     [Fact]
     public void Ctor_WithNullContentFontPathResolverParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new FontStatsService(
                 this.mockFontService.Object,
@@ -83,14 +89,19 @@ public class FontStatsServiceTests
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'contentFontPathResolver')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentFontPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullSysFontPathResolverParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new FontStatsService(
                 this.mockFontService.Object,
@@ -98,14 +109,19 @@ public class FontStatsServiceTests
                 null,
                 this.mockDirectory.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'sysFontPathResolver')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'sysFontPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new FontStatsService(
                 this.mockFontService.Object,
@@ -113,14 +129,19 @@ public class FontStatsServiceTests
                 this.mockSystemFontPathResolver.Object,
                 null,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new FontStatsService(
                 this.mockFontService.Object,
@@ -128,7 +149,12 @@ public class FontStatsServiceTests
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
     #endregion
 
@@ -174,14 +200,14 @@ public class FontStatsServiceTests
             new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.AppContent },
         };
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        service.GetContentStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
-        var actual = service.GetContentStatsForFontFamily(fontFamily);
+        sut.GetContentStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
+        var actual = sut.GetContentStatsForFontFamily(fontFamily);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -225,14 +251,14 @@ public class FontStatsServiceTests
             new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.System },
         };
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        service.GetSystemStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
-        var actual = service.GetSystemStatsForFontFamily(fontFamily);
+        sut.GetSystemStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
+        var actual = sut.GetSystemStatsForFontFamily(fontFamily);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -277,13 +303,13 @@ public class FontStatsServiceTests
             new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.Unknown },
         };
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = service.GetSystemStatsForFontFamily(fontFamily);
+        var actual = sut.GetSystemStatsForFontFamily(fontFamily);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -291,7 +317,7 @@ public class FontStatsServiceTests
     /// Creates a new service for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontStatsService CreateService() => new (
+    private FontStatsService CreateSystemUnderTest() => new (
         this.mockFontService.Object,
         this.mockContentPathResolver.Object,
         this.mockSystemFontPathResolver.Object,
