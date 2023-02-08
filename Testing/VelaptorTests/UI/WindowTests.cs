@@ -61,6 +61,17 @@ public class WindowTests
 
     #region Prop Tests
     [Fact]
+    public void Initialize_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+
+        // Assert
+    }
+
+    [Fact]
     public void Title_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange

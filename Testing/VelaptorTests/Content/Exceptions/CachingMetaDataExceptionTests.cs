@@ -19,20 +19,20 @@ public class CachingMetaDataExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new CachingMetaDataException();
+        var sut = new CachingMetaDataException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue with caching the metadata.");
+        sut.Message.Should().Be("There was an issue with caching the metadata.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new CachingMetaDataException("test-message");
+        var sut = new CachingMetaDataException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -42,11 +42,11 @@ public class CachingMetaDataExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new CachingMetaDataException("test-exception", innerException);
+        var sut = new CachingMetaDataException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }

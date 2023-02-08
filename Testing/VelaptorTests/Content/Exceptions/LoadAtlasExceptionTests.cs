@@ -19,20 +19,20 @@ public class LoadAtlasExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new LoadAtlasException();
+        var sut = new LoadAtlasException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue loading the atlas data.");
+        sut.Message.Should().Be("There was an issue loading the atlas data.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new LoadAtlasException("test-message");
+        var sut = new LoadAtlasException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -42,11 +42,11 @@ public class LoadAtlasExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new LoadAtlasException("test-exception", innerException);
+        var sut = new LoadAtlasException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }

@@ -253,11 +253,11 @@ public class TextureCacheTests
     public void TotalCachedItems_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var cache = CreateCache();
-        cache.GetItem(TextureFilePath);
+        var sut = CreateSystemUnderTest();
+        sut.GetItem(TextureFilePath);
 
         // Act
-        var actual = cache.TotalCachedItems;
+        var actual = sut.TotalCachedItems;
 
         // Assert
         actual.Should().Be(1);
@@ -268,11 +268,11 @@ public class TextureCacheTests
     {
         // Arrange
         var expected = new[] { TextureFilePath }.AsReadOnly();
-        var cache = CreateCache();
-        cache.GetItem(TextureFilePath);
+        var sut = CreateSystemUnderTest();
+        sut.GetItem(TextureFilePath);
 
         // Act
-        var actual = cache.CacheKeys;
+        var actual = sut.CacheKeys;
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -286,10 +286,10 @@ public class TextureCacheTests
     public void GetItem_WithNullOrEmptyFilePath_ThrowsException(string filePath)
     {
         // Arrange
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(filePath);
+        var act = () => sut.GetItem(filePath);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -300,7 +300,7 @@ public class TextureCacheTests
     public void GetItem_WhenFileIsNotATextureOrFontWithNoMetaData_ThrowsException()
     {
         // Arrange
-        var invalidFileType = $"{TextureDirPath}/{TextureName}.txt";
+        const string invalidFileType = $"{TextureDirPath}/{TextureName}.txt";
         this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
         this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
             .Returns(() => new FontMetaDataParseResult(
@@ -309,10 +309,10 @@ public class TextureCacheTests
                 string.Empty,
                 string.Empty,
                 0));
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(invalidFileType);
+        var act = () => sut.GetItem(invalidFileType);
 
         // Assert
         act.Should().Throw<CachingException>()
@@ -325,8 +325,8 @@ public class TextureCacheTests
         // Arrange
         const string extension = ".txt";
         const string metaData = "|size:12";
-        var nonFontFilePath = $"{FontDirPath}/{FontName}{extension}";
-        var nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
+        const string nonFontFilePath = $"{FontDirPath}/{FontName}{extension}";
+        const string nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
 
         this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFontFilePathWithMetaData))
@@ -336,10 +336,10 @@ public class TextureCacheTests
                 nonFontFilePath,
                 metaData,
                 12));
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(nonFontFilePathWithMetaData);
+        var act = () => sut.GetItem(nonFontFilePathWithMetaData);
 
         // Assert
         act.Should().Throw<CachingException>()
@@ -351,7 +351,7 @@ public class TextureCacheTests
     {
         // Arrange
         const string metaData = "|size:12";
-        var nonFullFilePath = $"{FontName}{FontExtension}{metaData}";
+        const string nonFullFilePath = $"{FontName}{FontExtension}{metaData}";
         this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(FontExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
             .Returns(() => new FontMetaDataParseResult(
@@ -360,10 +360,10 @@ public class TextureCacheTests
                 nonFullFilePath,
                 metaData,
                 12));
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(nonFullFilePath);
+        var act = () => sut.GetItem(nonFullFilePath);
 
         // Assert
         act.Should().Throw<CachingException>()
@@ -375,7 +375,7 @@ public class TextureCacheTests
     {
         // Arrange
         const string metaData = "|size12";
-        var fullFilePath = $"{FontDirPath}/{FontName}{FontExtension}{metaData}";
+        const string fullFilePath = $"{FontDirPath}/{FontName}{FontExtension}{metaData}";
         this.mockPath.Setup(m => m.GetExtension(fullFilePath)).Returns(FontExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(fullFilePath))
             .Returns(() => new FontMetaDataParseResult(
@@ -384,10 +384,10 @@ public class TextureCacheTests
                 fullFilePath,
                 metaData,
                 12));
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(fullFilePath);
+        var act = () => sut.GetItem(fullFilePath);
 
         // Assert
         act.Should().Throw<CachingMetaDataException>()
@@ -398,7 +398,7 @@ public class TextureCacheTests
     public void GetItem_WhenTexturePathIsNotFullFilePath_ThrowsException()
     {
         // Arrange
-        var nonFullFilePath = $"{TextureName}{TextureExtension}";
+        const string nonFullFilePath = $"{TextureName}{TextureExtension}";
         this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(TextureExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
             .Returns(() => new FontMetaDataParseResult(
@@ -407,10 +407,10 @@ public class TextureCacheTests
                 string.Empty,
                 string.Empty,
                 0));
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(nonFullFilePath);
+        var act = () => sut.GetItem(nonFullFilePath);
 
         // Assert
         act.Should().Throw<CachingException>()
@@ -422,11 +422,11 @@ public class TextureCacheTests
     {
         // Arrange
         MockTextureParseResult();
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actualA = cache.GetItem(TextureFilePath);
-        var actualB = cache.GetItem(TextureFilePath);
+        var actualA = sut.GetItem(TextureFilePath);
+        var actualB = sut.GetItem(TextureFilePath);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(TextureFilePath), Times.Exactly(2));
@@ -444,11 +444,11 @@ public class TextureCacheTests
     {
         // Arrange
         MockFontParseResult();
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actualA = cache.GetItem(this.fontFilePathWithMetaData);
-        var actualB = cache.GetItem(this.fontFilePathWithMetaData);
+        var actualA = sut.GetItem(this.fontFilePathWithMetaData);
+        var actualB = sut.GetItem(this.fontFilePathWithMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.fontFilePathWithMetaData), Times.Exactly(2));
@@ -476,10 +476,10 @@ public class TextureCacheTests
 
         MockTextureParseResult();
 
-        var cache = CreateCache();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => cache.GetItem(FontFilePath);
+        var act = () => sut.GetItem(FontFilePath);
 
         // Assert
         act.Should().Throw<CachingMetaDataException>()
@@ -508,16 +508,16 @@ public class TextureCacheTests
         MockImageData();
         MockTextureCreation(mockTexture.Object);
 
-        var cache = CreateCache();
-        _ = cache.GetItem(TextureFilePath);
+        var sut = CreateSystemUnderTest();
+        _ = sut.GetItem(TextureFilePath);
 
         // Act
-        var act = () => cache.Unload(TextureFilePath);
+        var act = () => sut.Unload(TextureFilePath);
 
         // Assert
         act.Should().NotThrow<NullReferenceException>();
 
-        cache.TotalCachedItems.Should().Be(0);
+        sut.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable
             .VerifyOnce(m =>
                 m.Push(It.Ref<DisposeTextureData>.IsAny, PushNotifications.TextureDisposedId));
@@ -535,11 +535,11 @@ public class TextureCacheTests
         MockImageData();
         MockTextureCreation(mockTexture.Object);
 
-        var cache = CreateCache();
-        cache.GetItem(TextureFilePath);
+        var sut = CreateSystemUnderTest();
+        sut.GetItem(TextureFilePath);
 
         // Act
-        cache.Unload("non-existing-texture");
+        sut.Unload("non-existing-texture");
 
         // Assert
         this.mockDisposeReactable
@@ -573,9 +573,9 @@ public class TextureCacheTests
         MockTextureCreation(mockTextureA.Object, "textureA", texturePathA);
         MockTextureCreation(mockTextureB.Object, "textureB", texturePathB);
 
-        var cache = CreateCache();
-        cache.GetItem(texturePathA);
-        cache.GetItem(texturePathB);
+        var sut = CreateSystemUnderTest();
+        sut.GetItem(texturePathA);
+        sut.GetItem(texturePathB);
 
         // Act
         this.shutDownReactor?.OnReceive();
@@ -584,7 +584,7 @@ public class TextureCacheTests
         // Assert
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.TextureDisposedId));
-        cache.TotalCachedItems.Should().Be(0);
+        sut.TotalCachedItems.Should().Be(0);
     }
     #endregion
 
@@ -592,7 +592,7 @@ public class TextureCacheTests
     /// Creates a new instance of <see cref="TextureCache"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureCache CreateCache() =>
+    private TextureCache CreateSystemUnderTest() =>
         new (this.mockImageService.Object,
             this.mockTextureFactory.Object,
             this.mockFontAtlasService.Object,

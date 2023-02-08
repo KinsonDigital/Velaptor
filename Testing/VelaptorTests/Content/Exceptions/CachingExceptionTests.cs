@@ -19,20 +19,20 @@ public class CachingExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new CachingException();
+        var sut = new CachingException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue caching the item.");
+        sut.Message.Should().Be("There was an issue caching the item.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new CachingException("test-message");
+        var sut = new CachingException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -42,11 +42,11 @@ public class CachingExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new CachingException("test-exception", innerException);
+        var sut = new CachingException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }
