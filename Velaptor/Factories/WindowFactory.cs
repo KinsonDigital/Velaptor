@@ -1,4 +1,4 @@
-﻿// <copyright file="App.cs" company="KinsonDigital">
+﻿// <copyright file="WindowFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
 using NativeInterop.OpenGL;
 using OpenGL;
+using Scene;
 using Services;
 using UI;
 
@@ -15,7 +16,7 @@ using UI;
 /// Velaptor application specific functionality.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-public static class App
+internal static class WindowFactory
 {
     /// <summary>
     /// Creates an instance of a Velaptor window implementation.
@@ -50,5 +51,6 @@ public static class App
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             ContentLoaderFactory.CreateContentLoader(),
+            IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>());
 }

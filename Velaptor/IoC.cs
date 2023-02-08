@@ -26,6 +26,7 @@ using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Services;
 using ReactableData;
+using Scene;
 using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
@@ -76,6 +77,7 @@ internal static class IoC
 
         SetupReactables();
 
+        IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<RectBatchItem>>, RenderItemComparer<RectBatchItem>>(Lifestyle.Singleton);
@@ -193,6 +195,7 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<WindowSizeData>, PushReactable<WindowSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
