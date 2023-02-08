@@ -42,7 +42,6 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// </param>
     public void AddScene(IScene scene, bool setToActive);
 
-
     /// <summary>
     /// Removes the scene that matches the given <see cref="sceneId"/>.
     /// </summary>
