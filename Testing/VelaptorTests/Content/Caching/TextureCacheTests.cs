@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Caching;
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
@@ -123,8 +124,8 @@ public class TextureCacheTests
     [Fact]
     public void Ctor_WithNullImageServiceParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 null,
@@ -133,14 +134,19 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'imageService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'imageService')");
     }
 
     [Fact]
     public void Ctor_WithNullTextureFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 this.mockImageService.Object,
@@ -149,14 +155,19 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'textureFactory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'textureFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullFontAtlasServiceParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 this.mockImageService.Object,
@@ -165,14 +176,19 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'fontAtlasService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
     public void Ctor_WithNullFontMetaDataParserParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 this.mockImageService.Object,
@@ -181,14 +197,19 @@ public class TextureCacheTests
                 null,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 this.mockImageService.Object,
@@ -197,14 +218,19 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 null,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
 
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureCache(
                 this.mockImageService.Object,
@@ -213,7 +239,12 @@ public class TextureCacheTests
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -229,13 +260,14 @@ public class TextureCacheTests
         var actual = cache.TotalCachedItems;
 
         // Assert
-        Assert.Equal(1, actual);
+        actual.Should().Be(1);
     }
 
     [Fact]
     public void CacheKeys_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
+        var expected = new[] { TextureFilePath }.AsReadOnly();
         var cache = CreateCache();
         cache.GetItem(TextureFilePath);
 
@@ -243,8 +275,7 @@ public class TextureCacheTests
         var actual = cache.CacheKeys;
 
         // Assert
-        Assert.Single(actual);
-        Assert.Equal(TextureFilePath, actual[0]);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -257,11 +288,12 @@ public class TextureCacheTests
         // Arrange
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            cache.GetItem(filePath);
-        }, "The string parameter must not be null or empty. (Parameter 'textureFilePath')");
+        // Act
+        var act = () => cache.GetItem(filePath);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'textureFilePath')");
     }
 
     [Fact]
@@ -279,11 +311,12 @@ public class TextureCacheTests
                 0));
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingException>(() =>
-        {
-            cache.GetItem(invalidFileType);
-        }, $"Texture caching must be a '{TextureExtension}' file type.");
+        // Act
+        var act = () => cache.GetItem(invalidFileType);
+
+        // Assert
+        act.Should().Throw<CachingException>()
+            .WithMessage($"Texture caching must be a '{TextureExtension}' file type.");
     }
 
     [Fact]
@@ -305,11 +338,12 @@ public class TextureCacheTests
                 12));
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingException>(() =>
-        {
-            cache.GetItem(nonFontFilePathWithMetaData);
-        }, $"Font caching must be a '{FontExtension}' file type.");
+        // Act
+        var act = () => cache.GetItem(nonFontFilePathWithMetaData);
+
+        // Assert
+        act.Should().Throw<CachingException>()
+            .WithMessage($"Font caching must be a '{FontExtension}' file type.");
     }
 
     [Fact]
@@ -328,11 +362,12 @@ public class TextureCacheTests
                 12));
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingException>(() =>
-        {
-            cache.GetItem(nonFullFilePath);
-        }, $"The font file path '{nonFullFilePath}' must be a fully qualified file path of type '{FontExtension}'.");
+        // Act
+        var act = () => cache.GetItem(nonFullFilePath);
+
+        // Assert
+        act.Should().Throw<CachingException>()
+            .WithMessage($"The font file path '{nonFullFilePath}' must be a fully qualified file path of type '{FontExtension}'.");
     }
 
     [Fact]
@@ -351,11 +386,12 @@ public class TextureCacheTests
                 12));
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            cache.GetItem(fullFilePath);
-        }, $"The metadata '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
+        // Act
+        var act = () => cache.GetItem(fullFilePath);
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage($"The metadata '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
     }
 
     [Fact]
@@ -373,11 +409,12 @@ public class TextureCacheTests
                 0));
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingException>(() =>
-        {
-            cache.GetItem(nonFullFilePath);
-        }, $"The texture file path '{nonFullFilePath}' must be a fully qualified file path of type '{TextureExtension}'.");
+        // Act
+        var act = () => cache.GetItem(nonFullFilePath);
+
+        // Assert
+        act.Should().Throw<CachingException>()
+            .WithMessage($"The texture file path '{nonFullFilePath}' must be a fully qualified file path of type '{TextureExtension}'.");
     }
 
     [Fact]
@@ -399,7 +436,7 @@ public class TextureCacheTests
         this.mockTextureFactory.Verify(m =>
             m.Create(TextureName, TextureFilePath, this.textureImageData), Times.Once);
 
-        Assert.Same(actualA, actualB);
+        actualB.Should().BeSameAs(actualA);
     }
 
     [Fact]
@@ -426,7 +463,7 @@ public class TextureCacheTests
         this.mockTextureFactory.Verify(m =>
             m.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData), Times.Once);
 
-        Assert.Same(actualA, actualB);
+        actualB.Should().BeSameAs(actualA);
     }
 
     [Fact]
@@ -441,11 +478,12 @@ public class TextureCacheTests
 
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            cache.GetItem(FontFilePath);
-        }, expected);
+        // Act
+        var act = () => cache.GetItem(FontFilePath);
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage(expected);
     }
 
     [Fact]
