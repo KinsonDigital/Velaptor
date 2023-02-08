@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Caching;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
@@ -78,57 +79,77 @@ public class SoundCacheTests
     [Fact]
     public void Ctor_WithNullSoundFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundCache(
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'soundFactory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'soundFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 null,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 null,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
 
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundCache(
                 this.mockSoundFactory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -144,13 +165,14 @@ public class SoundCacheTests
         var actual = cache.TotalCachedItems;
 
         // Assert
-        Assert.Equal(1, actual);
+        actual.Should().Be(1);
     }
 
     [Fact]
     public void CacheKeys_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
+        var expected = new[] { OggSoundFilePath }.AsReadOnly();
         var cache = CreateCache();
         cache.GetItem(OggSoundFilePath);
 
@@ -158,8 +180,7 @@ public class SoundCacheTests
         var actual = cache.CacheKeys;
 
         // Assert
-        Assert.Single(actual);
-        Assert.Equal(OggSoundFilePath, actual[0]);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -172,11 +193,12 @@ public class SoundCacheTests
         // Arrange
         var cache = CreateCache();
 
-        // Act, & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            cache.GetItem(filePath);
-        }, "The string parameter must not be null or empty. (Parameter 'soundFilePath')");
+        // Act
+        var act = () => cache.GetItem(filePath);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'soundFilePath')");
     }
 
     [Fact]
@@ -187,18 +209,19 @@ public class SoundCacheTests
         const string soundName = "test-sound";
         const string invalidExtension = ".txt";
         const string soundFilePath = $"{dirPath}/{soundName}{invalidExtension}";
-        var exceptionMsg = $"Sound file type '{invalidExtension}' is not supported.";
-        exceptionMsg += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
+        var expected = $"Sound file type '{invalidExtension}' is not supported.";
+        expected += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
         this.mockPath.Setup(m => m.GetExtension(soundFilePath)).Returns(invalidExtension);
 
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadSoundException>(() =>
-        {
-            cache.GetItem(soundFilePath);
-        }, exceptionMsg);
+        // Act
+        var act = () => cache.GetItem(soundFilePath);
+
+        // Assert
+        act.Should().Throw<LoadSoundException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -209,11 +232,12 @@ public class SoundCacheTests
         this.mockFile.Setup(m => m.Exists(OggSoundFilePath)).Returns(false);
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            cache.GetItem(OggSoundFilePath);
-        }, $"The '{OggFileExtension}' sound file does not exist.");
+        // Act
+        var act = () => cache.GetItem(OggSoundFilePath);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The '{OggFileExtension}' sound file does not exist.");
     }
 
     [Fact]
@@ -224,11 +248,12 @@ public class SoundCacheTests
         this.mockFile.Setup(m => m.Exists(Mp3SoundFilePath)).Returns(false);
         var cache = CreateCache();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            cache.GetItem(Mp3SoundFilePath);
-        }, $"The '{Mp3FileExtension}' sound file does not exist.");
+        // Act
+        var act = () => cache.GetItem(Mp3SoundFilePath);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The '{Mp3FileExtension}' sound file does not exist.");
     }
 
     [Fact]
@@ -257,16 +282,16 @@ public class SoundCacheTests
         var oggSound = cache.GetItem(OggSoundFilePath);
 
         // Assert
-        Assert.NotNull(mp3Sound);
-        Assert.NotNull(oggSound);
+        mp3Sound.Should().NotBeNull();
+        oggSound.Should().NotBeNull();
 
-        Assert.NotSame(mp3Sound, oggSound);
+        oggSound.Should().NotBeSameAs(mp3Sound);
 
-        Assert.Equal(123u, mp3Sound.Id);
-        Assert.Equal(456u, oggSound.Id);
+        mp3Sound.Id.Should().Be(123u);
+        oggSound.Id.Should().Be(456u);
 
-        Assert.Equal(Mp3SoundFilePath, mp3Sound.FilePath);
-        Assert.Equal(OggSoundFilePath, oggSound.FilePath);
+        mp3Sound.FilePath.Should().Be(Mp3SoundFilePath);
+        oggSound.FilePath.Should().Be(OggSoundFilePath);
     }
 
     [Fact]
