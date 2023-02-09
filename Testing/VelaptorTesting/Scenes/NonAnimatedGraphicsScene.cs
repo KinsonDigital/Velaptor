@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -23,8 +23,6 @@ public class NonAnimatedGraphicsScene : SceneBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly int windowHalfWidth;
-    private readonly int windowHalfHeight;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData octagonData;
     private ITextureRenderer? textureRenderer;
@@ -39,14 +37,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public NonAnimatedGraphicsScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
-        this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
-    }
+    public NonAnimatedGraphicsScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -90,6 +81,7 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         ContentLoader.UnloadAtlas(this.mainAtlas);
         ContentLoader.UnloadFont(this.font);
+        this.renderEffects = RenderEffects.None;
 
         this.mainAtlas = null;
 
@@ -147,8 +139,8 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        var posX = this.windowHalfWidth - (this.octagonData.Bounds.Width / 2);
-        var posY = this.windowHalfHeight - (this.octagonData.Bounds.Height / 2);
+        var posX = WindowCenter.X - (this.octagonData.Bounds.Width / 2);
+        var posY = WindowCenter.Y - (this.octagonData.Bounds.Height / 2);
 
         var instructionsX = (int)(this.textSize.Width / 2) + 25;
         var instructionsY = (int)(this.textSize.Height / 2) + 25;

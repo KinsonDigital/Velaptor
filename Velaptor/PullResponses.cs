@@ -9,7 +9,7 @@ using System;
 /// <summary>
 /// Contains unique GUIDs for the request notification system.
 /// </summary>
-public static class PullResponses
+internal static class PullResponses
 {
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for request notifications for returning texture batch items.

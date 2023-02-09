@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -18,20 +19,20 @@ public class CachingExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new CachingException();
+        var sut = new CachingException();
 
         // Assert
-        Assert.Equal("There was an issue caching the item.", exception.Message);
+        sut.Message.Should().Be("There was an issue caching the item.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new CachingException("test-message");
+        var sut = new CachingException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -41,11 +42,11 @@ public class CachingExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new CachingException("test-exception", innerException);
+        var sut = new CachingException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }

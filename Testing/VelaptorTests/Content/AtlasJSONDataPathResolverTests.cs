@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -39,11 +39,16 @@ public class AtlasJSONDataPathResolverTests
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new AtlasJSONDataPathResolver(null);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -53,11 +58,11 @@ public class AtlasJSONDataPathResolverTests
         var mockDirectory = new Mock<IDirectory>();
 
         // Act
-        var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
-        var actual = resolver.ContentDirectoryName;
+        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
+        var actual = sut.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Atlas", actual);
+        actual.Should().Be("Atlas");
     }
     #endregion
 
@@ -77,13 +82,14 @@ public class AtlasJSONDataPathResolverTests
                 };
             });
 
-        var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
+        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            resolver.ResolveFilePath(ContentName);
-        }, $"The texture atlas data file '{this.contentFilePath}' does not exist.");
+        // Act
+        var act = () => sut.ResolveFilePath(ContentName);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The texture atlas data file '{this.contentFilePath}' does not exist.");
     }
 
     [Theory]
@@ -104,13 +110,13 @@ public class AtlasJSONDataPathResolverTests
                 };
             });
 
-        var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
+        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
 
         // Act
-        var actual = resolver.ResolveFilePath(contentName);
+        var actual = sut.ResolveFilePath(contentName);
 
         // Assert
-        Assert.Equal(this.contentFilePath, actual);
+        actual.Should().Be(this.contentFilePath);
     }
     #endregion
 }

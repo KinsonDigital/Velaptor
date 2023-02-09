@@ -56,7 +56,7 @@ internal sealed class SoundFactory : ISoundFactory
     [ExcludeFromCodeCoverage(Justification = "Cannot test this until the Create() method can be tested.  Waiting for CASL improvements.")]
     public ReadOnlyDictionary<uint, string> Sounds => new (this.sounds);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public uint GetNewId(string filePath)
     {
         var newId = this.sounds.Count <= 0

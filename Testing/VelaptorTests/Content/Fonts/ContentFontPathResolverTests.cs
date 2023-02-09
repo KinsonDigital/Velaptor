@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content.Fonts;
@@ -38,27 +38,33 @@ public class ContentFontPathResolverTests
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new ContentFontPathResolver(null);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'Directory')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ContentDirectoryName;
+        var actual = sut.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Fonts", actual);
+        actual.Should().Be("Fonts");
     }
     #endregion
 
@@ -80,13 +86,13 @@ public class ContentFontPathResolverTests
                 };
             });
 
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveFilePath(contentName);
+        var actual = sut.ResolveFilePath(contentName);
 
         // Assert
-        Assert.Equal(this.contentFilePath, actual);
+        actual.Should().Be(this.contentFilePath);
     }
     #endregion
 
@@ -94,5 +100,5 @@ public class ContentFontPathResolverTests
     /// Creates a new instance of <see cref="ContentFontPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ContentFontPathResolver CreateResolver() => new (this.mockDirectory.Object);
+    private ContentFontPathResolver CreateSystemUnderTest() => new (this.mockDirectory.Object);
 }

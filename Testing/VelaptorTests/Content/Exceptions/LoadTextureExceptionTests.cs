@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -18,20 +19,20 @@ public class LoadTextureExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new LoadTextureException();
+        var sut = new LoadTextureException();
 
         // Assert
-        Assert.Equal("There was an issue loading the texture.", exception.Message);
+        sut.Message.Should().Be("There was an issue loading the texture.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new LoadTextureException("test-message");
+        var sut = new LoadTextureException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        sut.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -41,11 +42,11 @@ public class LoadTextureExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new LoadTextureException("test-exception", innerException);
+        var sut = new LoadTextureException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        sut.InnerException.Message.Should().Be("inner-exception");
+        sut.Message.Should().Be("test-exception");
     }
     #endregion
 }

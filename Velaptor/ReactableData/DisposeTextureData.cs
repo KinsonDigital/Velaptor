@@ -7,10 +7,10 @@ namespace Velaptor.ReactableData;
 /// <summary>
 /// Holds data for the disposing of a texture.
 /// </summary>
-internal sealed record DisposeTextureData
+internal readonly record struct DisposeTextureData
 {
     /// <summary>
-    /// Gets or sets the texture ID.
+    /// Gets the texture ID.
     /// </summary>
-    public uint TextureId { get; set; }
+    public uint TextureId { get; init; }
 }

@@ -9,15 +9,15 @@ using Input;
 /// <summary>
 /// Holds the state of a keyboard key.
 /// </summary>
-public sealed record KeyboardKeyStateData
+internal readonly record struct KeyboardKeyStateData
 {
     /// <summary>
-    /// Gets or sets the key code.
+    /// Gets the key code.
     /// </summary>
-    public KeyCode Key { get; set; }
+    public KeyCode Key { get; init; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the current <see cref="Key"/> is in the down position.
+    /// Gets a value indicating whether or not the current <see cref="Key"/> is in the down position.
     /// </summary>
-    public bool IsDown { get; set; }
+    public bool IsDown { get; init; }
 }

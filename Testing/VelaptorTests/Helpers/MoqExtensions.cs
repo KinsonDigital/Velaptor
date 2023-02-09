@@ -5,7 +5,6 @@
 namespace VelaptorTests.Helpers;
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Moq;
@@ -14,7 +13,6 @@ using Moq.Language.Flow;
 /// <summary>
 /// Provides extensions to the <see cref="Moq"/> library for ease of use and readability purposes.
 /// </summary>
-[DebuggerStepThrough]
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Can be used anytime in the future.")]
 public static class MoqExtensions
 {

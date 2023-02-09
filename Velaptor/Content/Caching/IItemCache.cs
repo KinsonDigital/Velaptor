@@ -26,7 +26,7 @@ public interface IItemCache<TCacheKey, out TCacheType>
     ReadOnlyCollection<TCacheKey> CacheKeys { get;  }
 
     /// <summary>
-    /// Gets a cached item that matches the given <param name="cacheKey"></param>.
+    /// Gets a cached item that matches the given <paramref name="cacheKey"/>.
     /// </summary>
     /// <param name="cacheKey">The unique key to identify a cached item.</param>
     /// <returns>The cached item.</returns>
@@ -37,7 +37,7 @@ public interface IItemCache<TCacheKey, out TCacheType>
     TCacheType GetItem(TCacheKey cacheKey);
 
     /// <summary>
-    /// Unloads a cached item that matches the given <param name="cacheKey"></param>.
+    /// Unloads a cached item that matches the given <paramref name="cacheKey"/>.
     /// </summary>
     /// <param name="cacheKey">The unique key to identify a cached item.</param>
     void Unload(TCacheKey cacheKey);

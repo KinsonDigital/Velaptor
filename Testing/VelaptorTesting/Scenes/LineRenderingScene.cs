@@ -7,7 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -31,20 +31,9 @@ public class LineRenderingScene : SceneBase
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
-    private float halfWidth;
-    private float halfHeight;
     private string instructions = string.Empty;
     private Vector2 instructionsPos;
     private bool mouseEnteredAtLeastOnce;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LineRenderingScene"/> class.
-    /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public LineRenderingScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-    }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
@@ -57,14 +46,11 @@ public class LineRenderingScene : SceneBase
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
         this.mouse = AppInputFactory.CreateMouse();
 
-        this.halfWidth = MainWindow.WindowWidth / 2f;
-        this.halfHeight = MainWindow.WindowHeight / 2f;
-
         this.line = default;
         this.line.Color = Color.SteelBlue;
         this.line.Thickness = 20;
-        this.line.P1 = new Vector2(this.halfWidth, this.halfHeight);
-        this.line.P2 = new Vector2(this.halfWidth + 100, this.halfHeight);
+        this.line.P1 = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.line.P2 = new Vector2(WindowCenter.X + 100, WindowCenter.Y);
 
         var instructionLines = new[]
         {
@@ -75,7 +61,7 @@ public class LineRenderingScene : SceneBase
 
         this.instructions = string.Join(Environment.NewLine, instructionLines);
         var textSize = this.font.Measure(this.instructions);
-        this.instructionsPos = new Vector2(this.halfWidth, (textSize.Height / 2) + 20);
+        this.instructionsPos = new Vector2(WindowCenter.X, (textSize.Height / 2) + 20);
 
         base.LoadContent();
     }

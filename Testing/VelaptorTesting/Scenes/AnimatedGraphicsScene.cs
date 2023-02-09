@@ -5,7 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -25,15 +25,6 @@ public class AnimatedGraphicsScene : SceneBase
     private Label? lblInstructions;
     private int elapsedTime;
     private int currentFrame;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
-    /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public AnimatedGraphicsScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -56,7 +47,7 @@ public class AnimatedGraphicsScene : SceneBase
 
         AddControl(this.lblInstructions);
 
-        this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
+        this.lblInstructions.Left = WindowCenter.X - (int)(this.lblInstructions.Width / 2);
         this.lblInstructions.Top = TopMargin;
 
         base.LoadContent();
@@ -95,8 +86,8 @@ public class AnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        var posX = ((int)MainWindow.WindowWidth / 2) - (this.frames[this.currentFrame].Bounds.Width / 2);
-        var posY = ((int)MainWindow.WindowHeight / 2) - (this.frames[this.currentFrame].Bounds.Height / 2);
+        var posX = WindowCenter.X - (this.frames[this.currentFrame].Bounds.Width / 2);
+        var posY = WindowCenter.Y - (this.frames[this.currentFrame].Bounds.Height / 2);
 
         this.textureRenderer.Render(
             this.mainAtlas.Texture,

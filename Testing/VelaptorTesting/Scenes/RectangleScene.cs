@@ -5,12 +5,12 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Core;
+using Velaptor.Scene;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -30,7 +30,6 @@ public class RectangleScene : SceneBase
     private const int VertButtonSpacing = 10;
     private const int HoriButtonSpacing = 10;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
-    private readonly Point windowCenter;
     private readonly IAppInput<KeyboardState> keyboard;
     private IFontRenderer? fontRenderer;
     private IRectangleRenderer? rectRenderer;
@@ -62,13 +61,7 @@ public class RectangleScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="RectangleScene"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the scene.</param>
-    public RectangleScene(IContentLoader contentLoader)
-        : base(contentLoader)
-    {
-        this.keyboard = AppInputFactory.CreateKeyboard();
-        this.windowCenter = new Point((int)(MainWindow.WindowWidth / 2f), (int)(MainWindow.WindowHeight / 2f));
-    }
+    public RectangleScene() => this.keyboard = AppInputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -80,7 +73,7 @@ public class RectangleScene : SceneBase
 
         this.rectangle = new RectShape
         {
-            Position = new Vector2(this.windowCenter.X, this.windowCenter.Y),
+            Position = new Vector2(WindowCenter.X, WindowCenter.Y),
             Width = 100,
             Height = 100,
             Color = Color.CornflowerBlue,
@@ -105,7 +98,7 @@ public class RectangleScene : SceneBase
         };
         this.instructions = string.Join(Environment.NewLine, lines);
         var size = this.font.Measure(this.instructions);
-        this.instructionsPos = new Vector2(MainWindow.WindowWidth / 2f, 25 + (size.Height / 2f));
+        this.instructionsPos = new Vector2(WindowCenter.X, 25 + (size.Height / 2f));
 
         CreateButtons();
 
@@ -488,9 +481,8 @@ public class RectangleScene : SceneBase
             nameof(this.btnIncreaseBorderThickness),
             nameof(this.btnDecreaseBorderThickness),
         };
-        var buttons = (from c in GetControls<Button>()
-            where excludeList.Contains(c.Name)
-            select c).ToArray();
+
+        var buttons = Controls.Where(c => excludeList.Contains(c.Name)).ToImmutableArray();
 
         var totalHeight = (from b in buttons
             select (int)b.Height).ToArray().Sum();
@@ -502,11 +494,7 @@ public class RectangleScene : SceneBase
         foreach (var button in buttons)
         {
             button.Left = LeftMargin;
-
-            button.Top = prevButton is null
-                ? button.Top = this.windowCenter.Y - totalHalfHeight
-                : button.Top = prevButton.Bottom + VertButtonSpacing;
-
+            button.Top = prevButton?.Bottom + VertButtonSpacing ?? WindowCenter.Y - totalHalfHeight;
             prevButton = button;
         }
     }
@@ -527,9 +515,8 @@ public class RectangleScene : SceneBase
             nameof(this.btnIncreaseTopRightRadius),
             nameof(this.btnDecreaseTopRightRadius),
         };
-        var buttons = (from c in GetControls<Button>()
-            where includeList.Contains(c.Name)
-            select c).ToArray();
+
+        var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
 
         var totalHeight = (from b in buttons
             select (int)b.Height).ToArray().Sum();
@@ -540,11 +527,9 @@ public class RectangleScene : SceneBase
 
         foreach (var button in buttons)
         {
-            button.Right = (int)(MainWindow.WindowWidth - RightMargin);
+            button.Right = (int)(WindowSize.Width - RightMargin);
 
-            button.Top = prevButton is null
-                ? button.Top = this.windowCenter.Y - totalHalfHeight
-                : button.Top = prevButton.Bottom + VertButtonSpacing;
+            button.Top = prevButton?.Bottom + VertButtonSpacing ?? WindowCenter.Y - totalHalfHeight;
 
             prevButton = button;
         }
@@ -561,25 +546,21 @@ public class RectangleScene : SceneBase
             nameof(this.btnGradClrStart),
             nameof(this.btnGradClrStop),
         };
-        var buttons = (from c in GetControls<Button>()
-            where includeList.Contains(c.Name)
-            select c).ToArray();
+
+        var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
 
         var totalWidth = (from b in buttons
             select (int)b.Width).ToArray().Sum();
         totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
         var totalHalfWidth = totalWidth / 2;
+        var buttonRowStart = WindowCenter.X - totalHalfWidth;
 
         IControl? prevButton = null;
 
         foreach (var button in buttons)
         {
-            button.Bottom = (int)(MainWindow.WindowHeight - BottomMargin);
-
-            button.Left = prevButton is null
-                ? button.Left = this.windowCenter.X - totalHalfWidth
-                : button.Left = prevButton.Right + HoriButtonSpacing;
-
+            button.Bottom = (int)(WindowSize.Height - BottomMargin);
+            button.Left = prevButton?.Right + HoriButtonSpacing ?? buttonRowStart;
             prevButton = button;
         }
     }
@@ -624,9 +605,9 @@ public class RectangleScene : SceneBase
         }
 
         // Right edge containment
-        if (this.rectangle.Position.X > MainWindow.WindowWidth - this.rectangle.HalfWidth)
+        if (this.rectangle.Position.X > WindowSize.Width - this.rectangle.HalfWidth)
         {
-            this.rectangle.Position = new Vector2(MainWindow.WindowWidth - this.rectangle.HalfWidth, this.rectangle.Position.Y);
+            this.rectangle.Position = new Vector2(WindowSize.Width - this.rectangle.HalfWidth, this.rectangle.Position.Y);
         }
 
         // Top edge containment
@@ -636,9 +617,9 @@ public class RectangleScene : SceneBase
         }
 
         // Bottom edge containment
-        if (this.rectangle.Position.Y > MainWindow.WindowHeight - this.rectangle.HalfHeight)
+        if (this.rectangle.Position.Y > WindowSize.Height - this.rectangle.HalfHeight)
         {
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X, MainWindow.WindowHeight - this.rectangle.HalfHeight);
+            this.rectangle.Position = new Vector2(this.rectangle.Position.X, WindowSize.Height - this.rectangle.HalfHeight);
         }
     }
 

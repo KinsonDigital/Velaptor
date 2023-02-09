@@ -28,6 +28,8 @@
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)
+
+![Codacy grade](https://img.shields.io/codacy/grade/ac26b169bfb54e0fad4433d538e7d397?color=2F8840&logo=codacy)
 ![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
@@ -42,6 +44,8 @@
 <!--
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)
+
+![Codacy grade](https://img.shields.io/codacy/grade/ac26b169bfb54e0fad4433d538e7d397?color=2F8840&logo=codacy)
 ![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)

@@ -257,7 +257,7 @@ internal enum GLTextureTarget
 /// <summary>
 /// Specifies what kind of primitives to render.
 /// <para>
-///     Unused in the <see cref="IGLInvoker.DrawElements(GLPrimitiveType, uint, GLDrawElementsType, System.nint)"/>.
+///     Unused in the <see cref="IGLInvoker.DrawElements(GLPrimitiveType, uint, GLDrawElementsType, nint)"/>.
 /// </para>
 /// </summary>
 internal enum GLPrimitiveType
@@ -271,7 +271,7 @@ internal enum GLPrimitiveType
 /// <summary>
 /// Specifies the type of values in the indices when drawing elements.
 /// <para>
-///     Used for the OpenGL function <see cref="IGLInvoker.DrawElements(GLPrimitiveType, uint, GLDrawElementsType, System.nint)"/>.
+///     Used for the OpenGL function <see cref="IGLInvoker.DrawElements(GLPrimitiveType, uint, GLDrawElementsType, nint)"/>.
 /// </para>
 /// </summary>
 internal enum GLDrawElementsType

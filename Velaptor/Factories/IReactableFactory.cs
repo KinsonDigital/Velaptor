@@ -36,7 +36,13 @@ internal interface IReactableFactory
     IPushReactable<BatchSizeData> CreateBatchSizeReactable();
 
     /// <summary>
-    /// Creates a view port reactable.
+    /// Creates a window size reactable.
+    /// </summary>
+    /// <returns>The reactable.</returns>
+    IPushReactable<WindowSizeData> CreateWindowSizeReactable();
+
+    /// <summary>
+    /// Creates a viewport reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
     IPushReactable<ViewPortSizeData> CreateViewPortReactable();
