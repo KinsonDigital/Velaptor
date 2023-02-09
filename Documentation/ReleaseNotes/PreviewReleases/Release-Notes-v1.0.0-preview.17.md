@@ -13,7 +13,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. [#506](https://github.com/KinsonDigital/Velaptor/issues/506) - Added the ability to create and manage scenes.  The following types have been added.
+1. [#506](https://github.com/KinsonDigital/Velaptor/issues/506) - Added the ability to create and manage scenes.  The following types have been added:
    - `IScene`
      >💡Used for creating your own completely custom scenes.
    - `SceneBase`  
@@ -44,25 +44,25 @@ As with all software, there is always a chance for issues and bugs, especially f
    - Changed the `SizeU` struct to a `readonly record struct`.
      >💡This was done for performance gains.
    - Removed the `IWindowActions` interface.
-     >💡The members of of this interface were moved to the `IWindow` interface.
+     >💡The members of this interface were moved to the `IWindow` interface.
    - Removed the `IWindowProps` interface.
-     >💡The members of of this interface were moved to the `IWindow` interface.
+     >💡The members of this interface were moved to the `IWindow` interface.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
-1. [#352](https://github.com/KinsonDigital/Velaptor/issues/352) - Refactored the unit test assertion code for the following classes to use the [Fluent Assertions](https://fluentassertions.com/) library.
+1. [#352](https://github.com/KinsonDigital/Velaptor/issues/352) - Refactored the unit test assertion code to use the [Fluent Assertions](https://fluentassertions.com/) library for the following classes:
    - `AtlasJSONDataPathResolverTests`
    - `AtlasLoaderTests`
    - `AtlasTexturePathResolverTests`
-2. [#350](https://github.com/KinsonDigital/Velaptor/issues/350) - Refactored the unit test assertion code for the following classes to use the [Fluent Assertions](https://fluentassertions.com/) library.
+2. [#350](https://github.com/KinsonDigital/Velaptor/issues/350) - Refactored the unit test assertion code to use the [Fluent Assertions](https://fluentassertions.com/) library for the following classes:
    - `LoadFontExceptionTests`
    - `LoadTextureExceptionTests`
    - `ContentFontPathResolverTests`
    - `FontStatsServiceTests`
-3. [#349](https://github.com/KinsonDigital/Velaptor/issues/349) - Refactored the unit test assertion code for the following classes to use the [Fluent Assertions](https://fluentassertions.com/) library.
+3. [#349](https://github.com/KinsonDigital/Velaptor/issues/349) - Refactored the unit test assertion code to use the [Fluent Assertions](https://fluentassertions.com/) library for the following classes:
    - `SoundCacheTests`
    - `TextureCacheTests`
    - `CachingExceptionTests`
