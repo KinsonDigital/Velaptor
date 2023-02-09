@@ -1,6 +1,6 @@
 ---
 exclude_paths:
-  - "**/Testing/**"
+  - "/Testing/**"
   - "Documentation/**"
   - ".idea/**"
   - ".nuke/**"
