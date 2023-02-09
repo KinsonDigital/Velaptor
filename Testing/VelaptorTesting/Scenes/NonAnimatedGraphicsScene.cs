@@ -81,6 +81,7 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         ContentLoader.UnloadAtlas(this.mainAtlas);
         ContentLoader.UnloadFont(this.font);
+        this.renderEffects = RenderEffects.None;
 
         this.mainAtlas = null;
 
