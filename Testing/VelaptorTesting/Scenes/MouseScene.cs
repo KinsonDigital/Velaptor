@@ -17,16 +17,10 @@ using Velaptor.UI;
 /// </summary>
 public class MouseScene : SceneBase
 {
-    private readonly IAppInput<MouseState> mouse;
+    private IAppInput<MouseState> mouse;
     private Label? mouseInfoLabel;
     private MouseState currentMouseState;
     private MouseScrollDirection scrollDirection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MouseScene"/> class.
-    /// </summary>
-    public MouseScene()
-        => this.mouse = AppInputFactory.CreateMouse();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -36,6 +30,7 @@ public class MouseScene : SceneBase
             return;
         }
 
+        this.mouse = AppInputFactory.CreateMouse();
         this.mouseInfoLabel = new Label { Color = Color.White };
 
         this.mouseInfoLabel.LoadContent();
@@ -66,5 +61,20 @@ public class MouseScene : SceneBase
         this.mouseInfoLabel.Text = mouseInfo;
 
         base.Update(frameTime);
+    }
+
+    public override void UnloadContent()
+    {
+        if (!IsLoaded || IsDisposed)
+        {
+            return;
+        }
+
+        this.currentMouseState = default;
+        this.scrollDirection = MouseScrollDirection.None;
+        this.mouseInfoLabel = null;
+        this.mouse = default;
+
+        base.UnloadContent();
     }
 }
