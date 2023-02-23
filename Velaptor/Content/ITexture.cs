@@ -10,7 +10,7 @@ namespace Velaptor.Content;
 public interface ITexture : IContent
 {
     /// <summary>
-    /// Gets he ID of the texture.
+    /// Gets the ID of the texture.
     /// </summary>
     uint Id { get; }
 
