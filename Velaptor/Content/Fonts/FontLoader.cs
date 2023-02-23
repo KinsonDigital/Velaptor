@@ -67,7 +67,7 @@ public sealed class FontLoader : ILoader<IFont>
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.
     /// </summary>
-    /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
+    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
     /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>

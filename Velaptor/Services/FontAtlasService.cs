@@ -40,7 +40,7 @@ internal sealed class FontAtlasService : IFontAtlasService
     /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
     /// </summary>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
-    /// <param name="imageService">Manages image data.</param>
+    /// <param name="imageService">Provides image related services.</param>
     /// <param name="systemMonitorService">Provides information about the system monitors.</param>
     /// <param name="file">Performs operations with files.</param>
     public FontAtlasService(

@@ -23,7 +23,7 @@ public sealed class ContentLoader : IContentLoader
     /// <param name="textureLoader">Loads textures.</param>
     /// <param name="soundLoader">Loads sounds.</param>
     /// <param name="atlasLoader">Loads a texture atlas.</param>
-    /// <param name="fontLoader">Loads fonts for rendering test.</param>
+    /// <param name="fontLoader">Loads fonts for rendering text.</param>
     public ContentLoader(
         ILoader<ITexture> textureLoader,
         ILoader<ISound> soundLoader,

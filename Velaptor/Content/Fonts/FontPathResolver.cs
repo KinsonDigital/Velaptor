@@ -36,7 +36,7 @@ internal sealed class FontPathResolver : IPathResolver
     /// Initializes a new instance of the <see cref="FontPathResolver"/> class.
     /// </summary>
     /// <param name="contentFontPathResolver">
-    /// Resolves the path to the font path in the currently set content directory.
+    /// Resolves paths to the application's content directory.
     /// </param>
     /// <param name="windowsFontPathResolver">
     /// Resolves the path to the Windows system fonts directory.

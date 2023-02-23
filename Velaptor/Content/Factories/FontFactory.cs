@@ -25,8 +25,8 @@ internal sealed class FontFactory : IFontFactory
     /// Initializes a new instance of the <see cref="FontFactory"/> class.
     /// </summary>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
-    /// <param name="fontStatsService">Provides font stat services.</param>
-    /// <param name="fontAtlasService">Provides services for building font atlas textures.</param>
+    /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
+    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
     public FontFactory(
         IFontService fontService,

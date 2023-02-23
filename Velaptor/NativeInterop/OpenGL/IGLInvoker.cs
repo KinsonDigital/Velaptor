@@ -405,7 +405,7 @@ internal interface IGLInvoker : IDisposable
     ///     QueryBuffer, ShaderStorageBuffer, TextureBuffer, TransformFeedbackBuffer, or
     ///     UniformBuffer.
     /// </param>
-    /// <param name="buffer">Specifies the name of a buffer object.</param>
+    /// <param name="buffer">Buffers data to the GPU.</param>
     void BindBuffer(GLBufferTarget target, uint buffer);
 
     /// <summary>

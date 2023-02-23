@@ -39,7 +39,7 @@ public abstract class SceneBase : IScene
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for a scene.</param>
+    /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private protected SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
     {
