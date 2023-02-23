@@ -14,7 +14,7 @@ using Guards;
 /// </summary>
 /// <remarks>
 ///     The location of fonts will first be checked in the default content location
-///     '&lt;app-dir&gt;/Content/Fonts' directory.  If the font exists in this directory, it will be loaded.
+///     <c>./Content/Fonts</c> directory.  If the font exists in this directory, it will be loaded.
 ///     If the font does not exist in that location, then the path will be resolved to the current
 ///     operating system font location.
 /// <para/>
