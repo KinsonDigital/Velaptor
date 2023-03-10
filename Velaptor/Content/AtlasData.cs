@@ -31,7 +31,7 @@ public sealed class AtlasData : IAtlasData
     /// </summary>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="directory">Performs operations with directories.</param>
-    /// <param name="path">Performs path related operations.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <param name="atlasSubTextureData">The sub texture data of all sub textures in the atlas.</param>
     /// <param name="dirPath">The path to the content.</param>
     /// <param name="atlasName">The name of the atlas.</param>
