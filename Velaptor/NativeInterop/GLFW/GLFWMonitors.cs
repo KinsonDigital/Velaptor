@@ -24,7 +24,7 @@ internal sealed class GLFWMonitors : IMonitors
     /// <summary>
     /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
     /// </summary>
-    /// <param name="glfwInvoker">Used to make calls to GLFW.</param>
+    /// <param name="glfwInvoker">Invokes GLFW functions.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
     {
