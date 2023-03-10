@@ -30,7 +30,7 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.mouse = AppInputFactory.CreateMouse();
+        this.mouse = InputFactory.CreateMouse();
         this.mouseInfoLabel = new Label { Color = Color.White };
 
         this.mouseInfoLabel.LoadContent();

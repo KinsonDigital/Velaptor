@@ -61,7 +61,7 @@ public class RectangleScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="RectangleScene"/> class.
     /// </summary>
-    public RectangleScene() => this.keyboard = AppInputFactory.CreateKeyboard();
+    public RectangleScene() => this.keyboard = InputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
