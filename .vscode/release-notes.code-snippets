@@ -22,7 +22,23 @@
 		"body": [
 			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) - "
 		],
-		"description": "Link to the issue"
+		"description": "Link to an issue"
+	},
+	"PR Link": {
+		"scope": "markdown",
+		"prefix": "pr-link",
+		"body": [
+			"[#${1:PR #}](https://github.com/KinsonDigital/Velaptor/pull/${1:PR #}) - "
+		],
+		"description": "Link to a pull request"
+	},
+	"PR Dependency Update": {
+		"scope": "markdown",
+		"prefix": "pr-dep-update",
+		"body": [
+			"[#${1:PR #}](https://github.com/KinsonDigital/Velaptor/pull/${1:PR #}) - Updated **${2:packge name}** from _**v${3:from version}**_ to _**v${4:to version}**_"
+		],
+		"description": "Link to a pull request for a dependency update."
 	},
 	"Issue Link (Outside Contributor)": {
 		"scope": "markdown",
@@ -30,7 +46,7 @@
 		"body": [
 			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) ([@${2:Repo Owner}🙏🏼](https://github.com/${2:Repo Owner})) - "
 		],
-		"description": "Link to the issue with outside contributor"
+		"description": "Link to an issue with outside contributor"
 	},
 	"Outside Contributor": {
 		"scope": "markdown",
