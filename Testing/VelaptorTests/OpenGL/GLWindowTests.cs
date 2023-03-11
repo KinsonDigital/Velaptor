@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -860,7 +860,7 @@ public class GLWindowTests
     }
 
     [Fact]
-    public async void ShowAsync_WhenInvoked_StartsInternalShowTask()
+    public async Task ShowAsync_WhenInvoked_StartsInternalShowTask()
     {
         // Arrange
         this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))
@@ -879,7 +879,7 @@ public class GLWindowTests
     }
 
     [Fact]
-    public async void ShowAsync_WhenAfterStartParamIsNotNull_ExecutesAtCorrectTime()
+    public async Task ShowAsync_WhenAfterStartParamIsNotNull_ExecutesAtCorrectTime()
     {
         // Arrange
         var taskServiceSetActionInvoked = false;
@@ -902,7 +902,7 @@ public class GLWindowTests
     }
 
     [Fact]
-    public async void ShowAsync_WhenAfterUnloadParamIsNotNull_ExecutesActionParamAfterWindowUnloads()
+    public async Task ShowAsync_WhenAfterUnloadParamIsNotNull_ExecutesActionParamAfterWindowUnloads()
     {
         // Arrange
         this.mockSilkWindow.Setup(m => m.Close())
