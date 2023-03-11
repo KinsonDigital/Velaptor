@@ -39,7 +39,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// </summary>
     /// <param name="soundFactory">Creates <see cref="ISound"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
-    /// <param name="path">Provides path related services.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundCache(
         ISoundFactory soundFactory,

@@ -42,9 +42,9 @@ public class LineRenderingScene : SceneBase
         this.lineRenderer = renderFactory.CreateLineRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
-        this.keyboard = AppInputFactory.CreateKeyboard();
+        this.keyboard = InputFactory.CreateKeyboard();
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
-        this.mouse = AppInputFactory.CreateMouse();
+        this.mouse = InputFactory.CreateMouse();
 
         this.line = default;
         this.line.Color = Color.SteelBlue;

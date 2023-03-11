@@ -14,7 +14,7 @@ using Guards;
 /// </summary>
 /// <remarks>
 ///     The location of fonts will first be checked in the default content location
-///     '&lt;app-dir&gt;/Content/Fonts' directory.  If the font exists in this directory, it will be loaded.
+///     <c>./Content/Fonts</c> directory.  If the font exists in this directory, it will be loaded.
 ///     If the font does not exist in that location, then the path will be resolved to the current
 ///     operating system font location.
 /// <para/>
@@ -23,12 +23,12 @@ using Guards;
 ///     Other systems will be supported in a future releases.
 /// </para>
 /// </remarks>
-internal sealed class FontPathResolver : IPathResolver
+internal sealed class FontPathResolver : IContentPathResolver
 {
     private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
     private readonly IPlatform platform;
-    private readonly IPathResolver windowsFontPathResolver;
-    private readonly IPathResolver contentFontPathResolver;
+    private readonly IContentPathResolver windowsFontPathResolver;
+    private readonly IContentPathResolver contentFontPathResolver;
     private readonly IDirectory directory;
     private readonly IFile file;
 
@@ -36,7 +36,7 @@ internal sealed class FontPathResolver : IPathResolver
     /// Initializes a new instance of the <see cref="FontPathResolver"/> class.
     /// </summary>
     /// <param name="contentFontPathResolver">
-    /// Resolves the path to the font path in the currently set content directory.
+    /// Resolves paths to the application's content directory.
     /// </param>
     /// <param name="windowsFontPathResolver">
     /// Resolves the path to the Windows system fonts directory.
@@ -45,8 +45,8 @@ internal sealed class FontPathResolver : IPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     public FontPathResolver(
-        IPathResolver contentFontPathResolver,
-        IPathResolver windowsFontPathResolver,
+        IContentPathResolver contentFontPathResolver,
+        IContentPathResolver windowsFontPathResolver,
         IFile file,
         IDirectory directory,
         IPlatform platform)

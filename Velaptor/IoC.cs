@@ -152,6 +152,7 @@ internal static class IoC
     /// </summary>
     private static void SetupServices()
     {
+        IoCContainer.Register<IAppService, AppService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleService, ConsoleService>(Lifestyle.Singleton);
         IoCContainer.Register<IDateTimeService, DateTimeService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleLoggerService, ConsoleLoggerService>(Lifestyle.Singleton);

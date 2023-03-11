@@ -8,6 +8,7 @@ using System;
 using System.Drawing;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
+using Exceptions;
 using NativeInterop.OpenGL;
 using OpenGL;
 using ReactableData;
@@ -101,9 +102,26 @@ public interface IRenderer
     }
 
     /// <summary>
+    /// Initializes the renderer.  This kicks off the static ctor which in turn pushes init notifications
+    /// across the application.
+    /// </summary>
+    internal static void Init()
+    {
+        // Left empty on purpose.  This is to invoke the static ctor.
+    }
+
+    /// <summary>
     /// Starts the batch rendering process.  Must be called before invoking any render methods.
     /// </summary>
-    static void Begin() => PushReactable.Push(PushNotifications.BatchHasBegunId);
+    static void Begin()
+    {
+        if (!isInitialized)
+        {
+            throw new RendererException($"The '{nameof(IRenderer)}' is not initialized.");
+        }
+
+        PushReactable.Push(PushNotifications.BatchHasBegunId);
+    }
 
     /// <summary>
     /// Clears the buffers.
@@ -113,20 +131,36 @@ public interface IRenderer
     ///     This is to make sure smearing does not occur during texture
     ///     movement or animation.
     /// </remarks>
-    static void Clear() => GLInvoker.Clear(GLClearBufferMask.ColorBufferBit);
+    static void Clear()
+    {
+        if (!isInitialized)
+        {
+            throw new RendererException($"The '{nameof(IRenderer)}' is not initialized.");
+        }
+
+        GLInvoker.Clear(GLClearBufferMask.ColorBufferBit);
+    }
 
     /// <summary>
     /// Ends the batch process.  Calling this will render any textures
     /// still in the batch.
     /// </summary>
-    static void End() => PushReactable.Push(PushNotifications.BatchHasEndedId);
+    static void End()
+    {
+        if (!isInitialized)
+        {
+            throw new RendererException($"The '{nameof(IRenderer)}' is not initialized.");
+        }
+
+        PushReactable.Push(PushNotifications.BatchHasEndedId);
+    }
 
     /// <summary>
     /// Setup all of the caching for the properties that need caching.
     /// </summary>
     private static void SetupCaches() =>
         cachedClearColor = new CachedValue<Color>(
-            Color.CornflowerBlue,
+            Color.FromArgb(255, 16, 29, 36),
             () =>
             {
                 var colorValues = new float[4];

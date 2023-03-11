@@ -188,7 +188,7 @@ internal static class InternalExtensionMethods
     /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
     /// is a fully qualified path.
     /// </summary>
-    /// <param name="path">The path to check.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <returns><c>true</c> if valid.</returns>
     /// <example>
     /// <list type="number">
@@ -250,7 +250,7 @@ internal static class InternalExtensionMethods
     /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
     /// is an invalid, fully qualified path.
     /// </summary>
-    /// <param name="path">The path to check.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <returns><c>true</c> if invalid.</returns>
     /// <example>
     /// <list type="number">
@@ -282,7 +282,7 @@ internal static class InternalExtensionMethods
     /// <summary>
     /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
     /// </summary>
-    /// <param name="path">The path to check.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <returns>True if <paramref name="path"/> contains a valid drive.</returns>
     /// <example>
     /// <list type="number">
@@ -362,7 +362,7 @@ internal static class InternalExtensionMethods
     /// <summary>
     /// Returns a value indicating whether or not the given <paramref name="path"/> is valid.
     /// </summary>
-    /// <param name="path">The path to check.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <returns>True if the <paramref name="path"/> is valid.</returns>
     /// <example>
     /// <list type="number">
@@ -441,7 +441,7 @@ internal static class InternalExtensionMethods
     /// <summary>
     /// Converts the given <paramref name="path"/> to a cross platform path.
     /// </summary>
-    /// <param name="path">The file or directory path.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
     /// <returns>
     ///     This changes all '\' characters to '/' characters.

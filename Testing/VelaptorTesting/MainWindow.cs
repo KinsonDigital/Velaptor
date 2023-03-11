@@ -35,7 +35,7 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
-        this.keyboard = AppInputFactory.CreateKeyboard();
+        this.keyboard = InputFactory.CreateKeyboard();
 
         this.nextButton = new Button { Text = "-->" };
         this.previousButton = new Button { Text = "<--" };

@@ -24,8 +24,8 @@ public class FontPathResolverTests
     private const string ContentDirNameInContentLocation = "ContentFonts";
     private const string RootDirInWindowsLocation = @"C:\Windows\";
     private const string ContentDirNameInWindowsLocation = "WinFonts";
-    private readonly Mock<IPathResolver> mockContentPathResolver;
-    private readonly Mock<IPathResolver> mockWindowsPathResolver;
+    private readonly Mock<IContentPathResolver> mockContentPathResolver;
+    private readonly Mock<IContentPathResolver> mockWindowsPathResolver;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IPlatform> mockPlatform;
@@ -35,11 +35,11 @@ public class FontPathResolverTests
     /// </summary>
     public FontPathResolverTests()
     {
-        this.mockContentPathResolver = new Mock<IPathResolver>();
+        this.mockContentPathResolver = new Mock<IContentPathResolver>();
         this.mockContentPathResolver.Setup(p => p.RootDirectoryPath).Returns(RootDirInContentLocation);
         this.mockContentPathResolver.Setup(p => p.ContentDirectoryName).Returns(ContentDirNameInContentLocation);
 
-        this.mockWindowsPathResolver = new Mock<IPathResolver>();
+        this.mockWindowsPathResolver = new Mock<IContentPathResolver>();
         this.mockWindowsPathResolver.Setup(p => p.RootDirectoryPath).Returns(RootDirInWindowsLocation);
         this.mockWindowsPathResolver.Setup(p => p.ContentDirectoryName).Returns(ContentDirNameInWindowsLocation);
 

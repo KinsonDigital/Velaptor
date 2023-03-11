@@ -33,7 +33,7 @@ public class AtlasLoaderTests
     private const string AtlasDataFilePath = $"{DirPath}/{AtlasContentName}{AtlasDataExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
     private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
-    private readonly Mock<IPathResolver> mockAtlasPathResolver;
+    private readonly Mock<IContentPathResolver> mockAtlasPathResolver;
     private readonly Mock<IJSONService> mockJSONService;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
@@ -46,7 +46,7 @@ public class AtlasLoaderTests
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
         this.mockAtlasDataFactory = new Mock<IAtlasDataFactory>();
 
-        this.mockAtlasPathResolver = new Mock<IPathResolver>();
+        this.mockAtlasPathResolver = new Mock<IContentPathResolver>();
         this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(DirPath);
 
         this.mockJSONService = new Mock<IJSONService>();

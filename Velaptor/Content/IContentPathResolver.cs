@@ -1,4 +1,4 @@
-// <copyright file="IPathResolver.cs" company="KinsonDigital">
+// <copyright file="IContentPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace Velaptor.Content;
 /// <summary>
 /// Resolves file paths.
 /// </summary>
-public interface IPathResolver
+public interface IContentPathResolver
 {
     /// <summary>
     /// Gets the root directory of the content.

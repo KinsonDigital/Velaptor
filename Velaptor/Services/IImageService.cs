@@ -22,7 +22,7 @@ internal interface IImageService
     /// <summary>
     /// Saves the given <paramref name="image"/> to the given <paramref name="path"/>.
     /// </summary>
-    /// <param name="path">The path of where to save the file.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <param name="image">The image to save to a file.</param>
     /// <remarks>
     ///     Saves the image in the PNG file format.

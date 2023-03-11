@@ -16,8 +16,8 @@ internal sealed class FontStatsService : IFontStatsService
     private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
     private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
     private readonly IFontService fontService;
-    private readonly IPathResolver sysFontPathResolver;
-    private readonly IPathResolver contentFontPathResolver;
+    private readonly IContentPathResolver sysFontPathResolver;
+    private readonly IContentPathResolver contentPathResolver;
     private readonly IDirectory directory;
     private readonly IPath path;
 
@@ -25,25 +25,25 @@ internal sealed class FontStatsService : IFontStatsService
     /// Initializes a new instance of the <see cref="FontStatsService"/> class.
     /// </summary>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
-    /// <param name="contentFontPathResolver">Resolves paths to the application's content directory.</param>
+    /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
     /// <param name="sysFontPathResolver">Resolves paths to the systems font directory.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Processes directory and file paths.</param>
     public FontStatsService(
         IFontService fontService,
-        IPathResolver contentFontPathResolver,
-        IPathResolver sysFontPathResolver,
+        IContentPathResolver contentPathResolver,
+        IContentPathResolver sysFontPathResolver,
         IDirectory directory,
         IPath path)
     {
         EnsureThat.ParamIsNotNull(fontService);
-        EnsureThat.ParamIsNotNull(contentFontPathResolver);
+        EnsureThat.ParamIsNotNull(contentPathResolver);
         EnsureThat.ParamIsNotNull(sysFontPathResolver);
         EnsureThat.ParamIsNotNull(directory);
         EnsureThat.ParamIsNotNull(path);
 
         this.fontService = fontService;
-        this.contentFontPathResolver = contentFontPathResolver;
+        this.contentPathResolver = contentPathResolver;
         this.sysFontPathResolver = sysFontPathResolver;
         this.directory = directory;
         this.path = path;
@@ -62,7 +62,7 @@ internal sealed class FontStatsService : IFontStatsService
             return foundFamilyItems;
         }
 
-        var fontFiles = this.directory.GetFiles(this.contentFontPathResolver.ResolveDirPath(), $"*{FontFileExtension}");
+        var fontFiles = this.directory.GetFiles(this.contentPathResolver.ResolveDirPath(), $"*{FontFileExtension}");
 
         var results =
             (from filePath in fontFiles
@@ -128,7 +128,7 @@ internal sealed class FontStatsService : IFontStatsService
     /// <returns>The source of the font.</returns>
     private FontSource GetFontSource(string fileOrDirPath)
     {
-        var contentFontDirPath = this.contentFontPathResolver.ResolveDirPath().ToLower();
+        var contentFontDirPath = this.contentPathResolver.ResolveDirPath().ToLower();
         var sysFontDirPath = this.sysFontPathResolver.ResolveDirPath().ToLower();
 
         fileOrDirPath = (this.path.GetDirectoryName(fileOrDirPath) ?? string.Empty).ToLower();

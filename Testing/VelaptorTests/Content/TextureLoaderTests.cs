@@ -24,7 +24,7 @@ public class TextureLoaderTests
     private const string TextureFileName = "test-texture";
     private const string TextureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
-    private readonly Mock<IPathResolver> mockTexturePathResolver;
+    private readonly Mock<IContentPathResolver> mockTexturePathResolver;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -33,7 +33,7 @@ public class TextureLoaderTests
     /// </summary>
     public TextureLoaderTests()
     {
-        this.mockTexturePathResolver = new Mock<IPathResolver>();
+        this.mockTexturePathResolver = new Mock<IContentPathResolver>();
         this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
             .Returns(TextureFilePath);
 

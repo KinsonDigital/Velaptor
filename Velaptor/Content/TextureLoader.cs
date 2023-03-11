@@ -20,7 +20,7 @@ public sealed class TextureLoader : ILoader<ITexture>
 {
     private const string TextureFileExtension = ".png";
     private readonly IItemCache<string, ITexture> textureCache;
-    private readonly IPathResolver texturePathResolver;
+    private readonly IContentPathResolver texturePathResolver;
     private readonly IFile file;
     private readonly IPath path;
 
@@ -49,7 +49,7 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// </exception>
     internal TextureLoader(
         IItemCache<string, ITexture> textureCache,
-        IPathResolver texturePathResolver,
+        IContentPathResolver texturePathResolver,
         IFile file,
         IPath path)
     {

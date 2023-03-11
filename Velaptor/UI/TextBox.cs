@@ -35,7 +35,7 @@ internal sealed class TextBox : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="TextBox"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads content for the control.</param>
+    /// <param name="contentLoader">Loads various kinds of content.</param>
     public TextBox(IContentLoader contentLoader)
     {
         this.contentLoader = contentLoader;

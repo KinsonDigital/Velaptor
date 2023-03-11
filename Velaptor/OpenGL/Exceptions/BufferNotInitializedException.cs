@@ -5,11 +5,14 @@
 namespace Velaptor.OpenGL.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 /// <summary>
 /// Thrown when a buffer has not been initialized.
 /// </summary>
-public class BufferNotInitializedException : Exception
+[Serializable]
+public sealed class BufferNotInitializedException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferNotInitializedException"/> class.
@@ -38,6 +41,17 @@ public class BufferNotInitializedException : Exception
     /// </param>
     public BufferNotInitializedException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BufferNotInitializedException"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private BufferNotInitializedException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }

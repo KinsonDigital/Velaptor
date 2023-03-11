@@ -5,12 +5,15 @@
 namespace Velaptor.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 using Graphics;
 
 /// <summary>
 /// Thrown when an invalid <see cref="RenderEffects"/> value is used.
 /// </summary>
 /// <typeparam name="T">The type of enumeration.</typeparam>
+[Serializable]
 public sealed class EnumOutOfRangeException<T> : Exception
     where T : Enum
 {
@@ -50,6 +53,17 @@ public sealed class EnumOutOfRangeException<T> : Exception
     /// </param>
     public EnumOutOfRangeException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnumOutOfRangeException{T}"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private EnumOutOfRangeException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }
