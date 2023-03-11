@@ -1,4 +1,4 @@
-﻿// <copyright file="ShaderNotInitializedException.cs" company="KinsonDigital">
+// <copyright file="ShaderNotInitializedException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when a shader has not been initialized.
 /// </summary>
 public class ShaderNotInitializedException : Exception
+public sealed class ShaderNotInitializedException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderNotInitializedException"/> class.

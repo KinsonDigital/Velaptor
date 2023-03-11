@@ -1,4 +1,4 @@
-﻿// <copyright file="LoadContentException.cs" company="KinsonDigital">
+// <copyright file="LoadContentException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue loading content.
 /// </summary>
 public class LoadContentException : Exception
+public sealed class LoadContentException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadContentException"/> class.

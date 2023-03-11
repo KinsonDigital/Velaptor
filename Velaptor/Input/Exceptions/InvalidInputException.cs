@@ -1,4 +1,4 @@
-﻿// <copyright file="InvalidInputException.cs" company="KinsonDigital">
+// <copyright file="InvalidInputException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Occurs when invalid input has occured.
 /// </summary>
 public class InvalidInputException : Exception
+public sealed class InvalidInputException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InvalidInputException"/> class.

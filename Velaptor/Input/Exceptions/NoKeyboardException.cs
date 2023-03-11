@@ -1,4 +1,4 @@
-﻿// <copyright file="NoKeyboardException.cs" company="KinsonDigital">
+// <copyright file="NoKeyboardException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Occurs when a keyboard has not been detected in the system.
 /// </summary>
 public class NoKeyboardException : Exception
+public sealed class NoKeyboardException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NoKeyboardException"/> class.

@@ -1,4 +1,4 @@
-﻿// <copyright file="CachingMetaDataException.cs" company="KinsonDigital">
+// <copyright file="CachingMetaDataException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue with processing metadata, when loading fonts during the caching process.
 /// </summary>
 public class CachingMetaDataException : Exception
+public sealed class CachingMetaDataException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingMetaDataException"/> class.

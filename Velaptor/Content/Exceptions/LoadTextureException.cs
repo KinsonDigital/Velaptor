@@ -1,4 +1,4 @@
-﻿// <copyright file="LoadTextureException.cs" company="KinsonDigital">
+// <copyright file="LoadTextureException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue loading textures.
 /// </summary>
 public class LoadTextureException : Exception
+public sealed class LoadTextureException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadTextureException"/> class.

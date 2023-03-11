@@ -1,4 +1,4 @@
-﻿// <copyright file="CachingException.cs" company="KinsonDigital">
+// <copyright file="CachingException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue caching items.
 /// </summary>
 public class CachingException : Exception
+public sealed class CachingException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingException"/> class.

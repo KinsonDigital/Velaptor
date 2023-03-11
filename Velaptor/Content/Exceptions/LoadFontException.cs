@@ -1,4 +1,4 @@
-﻿// <copyright file="LoadFontException.cs" company="KinsonDigital">
+// <copyright file="LoadFontException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue loading fonts.
 /// </summary>
 public class LoadFontException : Exception
+public sealed class LoadFontException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadFontException"/> class.

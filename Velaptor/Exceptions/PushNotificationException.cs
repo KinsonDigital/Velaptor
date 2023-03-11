@@ -1,4 +1,4 @@
-﻿// <copyright file="PushNotificationException.cs" company="KinsonDigital">
+// <copyright file="PushNotificationException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue with the push notification system.
 /// </summary>
 internal sealed class PushNotificationException : Exception
+public sealed class PushNotificationException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PushNotificationException"/> class.

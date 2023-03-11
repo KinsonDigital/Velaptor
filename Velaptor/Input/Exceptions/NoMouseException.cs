@@ -1,4 +1,4 @@
-﻿// <copyright file="NoMouseException.cs" company="KinsonDigital">
+// <copyright file="NoMouseException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Occurs when a mouse has not been detected in the system.
 /// </summary>
 public class NoMouseException : Exception
+public sealed class NoMouseException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NoMouseException"/> class.

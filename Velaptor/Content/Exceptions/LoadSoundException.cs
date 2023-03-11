@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue loading sounds.
 /// </summary>
 public class LoadSoundException : Exception
+public sealed class LoadSoundException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadSoundException"/> class.

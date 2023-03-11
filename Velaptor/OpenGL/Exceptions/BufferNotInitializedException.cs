@@ -1,4 +1,4 @@
-﻿// <copyright file="BufferNotInitializedException.cs" company="KinsonDigital">
+// <copyright file="BufferNotInitializedException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when a buffer has not been initialized.
 /// </summary>
 public class BufferNotInitializedException : Exception
+public sealed class BufferNotInitializedException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferNotInitializedException"/> class.

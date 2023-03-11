@@ -1,4 +1,4 @@
-﻿// <copyright file="LoadAtlasException.cs" company="KinsonDigital">
+// <copyright file="LoadAtlasException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System;
 /// Thrown when there is an issue loading atlas data content.
 /// </summary>
 public class LoadAtlasException : Exception
+public sealed class LoadAtlasException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadAtlasException"/> class.
