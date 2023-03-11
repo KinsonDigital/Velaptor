@@ -94,7 +94,7 @@ public class FontStatsServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentFontPathResolver')");
+            .WithMessage("The parameter must not be null. (Parameter 'contentPathResolver')");
     }
 
     [Fact]
