@@ -1,15 +1,17 @@
-// <copyright file="NoKeyboardException.cs" company="KinsonDigital">
+﻿// <copyright file="NoKeyboardException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Input.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 /// <summary>
 /// Occurs when a keyboard has not been detected in the system.
 /// </summary>
-public class NoKeyboardException : Exception
+[Serializable]
 public sealed class NoKeyboardException : Exception
 {
     /// <summary>
@@ -38,6 +40,17 @@ public sealed class NoKeyboardException : Exception
     /// </param>
     public NoKeyboardException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NoKeyboardException"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private NoKeyboardException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }

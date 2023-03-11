@@ -1,15 +1,17 @@
-// <copyright file="ShaderNotInitializedException.cs" company="KinsonDigital">
+﻿// <copyright file="ShaderNotInitializedException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.OpenGL.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 /// <summary>
 /// Thrown when a shader has not been initialized.
 /// </summary>
-public class ShaderNotInitializedException : Exception
+[Serializable]
 public sealed class ShaderNotInitializedException : Exception
 {
     /// <summary>
@@ -39,6 +41,17 @@ public sealed class ShaderNotInitializedException : Exception
     /// </param>
     public ShaderNotInitializedException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShaderNotInitializedException"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private ShaderNotInitializedException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }

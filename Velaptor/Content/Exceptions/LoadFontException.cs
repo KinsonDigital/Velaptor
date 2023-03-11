@@ -1,15 +1,17 @@
-// <copyright file="LoadFontException.cs" company="KinsonDigital">
+﻿// <copyright file="LoadFontException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Content.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 /// <summary>
 /// Thrown when there is an issue loading fonts.
 /// </summary>
-public class LoadFontException : Exception
+[Serializable]
 public sealed class LoadFontException : Exception
 {
     /// <summary>
@@ -38,6 +40,17 @@ public sealed class LoadFontException : Exception
     /// </param>
     public LoadFontException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoadFontException"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private LoadFontException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }
