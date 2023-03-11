@@ -11,7 +11,7 @@ using System.Reflection;
 /// <summary>
 /// Manages the content source.
 /// </summary>
-internal abstract class ContentPathResolver : IPathResolver
+internal abstract class ContentPathResolver : IContentPathResolver
 {
     private const char WinDirSeparatorChar = '\\';
     private const char CrossPlatDirSeparatorChar = '/';

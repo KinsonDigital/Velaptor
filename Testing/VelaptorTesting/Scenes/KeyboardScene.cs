@@ -26,7 +26,7 @@ public class KeyboardScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
     /// </summary>
-    public KeyboardScene() => this.keyboard = AppInputFactory.CreateKeyboard();
+    public KeyboardScene() => this.keyboard = InputFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
     public override void LoadContent()

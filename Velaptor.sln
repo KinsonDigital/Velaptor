@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -13,16 +13,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}"
 	ProjectSection(SolutionItems) = preProject
-		.codacy.yml = .codacy.yml
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		BACKERS.md = BACKERS.md
-		codecov.yml = codecov.yml
-		code_of_conduct.md = code_of_conduct.md
-		CONTRIBUTING.md = CONTRIBUTING.md
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE.md = LICENSE.md
 		README.md = README.md
+		codecov.yml = codecov.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTesting", "Testing\VelaptorTesting\VelaptorTesting.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
@@ -47,18 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 		.github\workflows\prod-release.yml = .github\workflows\prod-release.yml
 		.github\workflows\triage-issue.yml = .github\workflows\triage-issue.yml
 		.github\workflows\unit-test-pr-status-check.yml = .github\workflows\unit-test-pr-status-check.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{15894CC9-D3C9-4B03-9F44-61D34AEDEEB0}"
-	ProjectSection(SolutionItems) = preProject
-		Documentation\Branching.md = Documentation\Branching.md
-		Documentation\TableOfContents.md = Documentation\TableOfContents.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EnvironmentalSetup", "EnvironmentalSetup", "{386C07F0-D74D-4750-BB8B-E222611D5068}"
-	ProjectSection(SolutionItems) = preProject
-		Documentation\EnvironmentSetup\LinuxDevEnvSetup.md = Documentation\EnvironmentSetup\LinuxDevEnvSetup.md
-		Documentation\EnvironmentSetup\WindowsDevEnvSetup.md = Documentation\EnvironmentSetup\WindowsDevEnvSetup.md
 	EndProjectSection
 EndProject
 Global
@@ -102,8 +87,6 @@ Global
 		{C6AFDF55-196C-41D6-9174-0A03A934586F} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{E248AD89-D6AB-4183-88F1-133875647706} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
 		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {E248AD89-D6AB-4183-88F1-133875647706}
-		{15894CC9-D3C9-4B03-9F44-61D34AEDEEB0} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
-		{386C07F0-D74D-4750-BB8B-E222611D5068} = {15894CC9-D3C9-4B03-9F44-61D34AEDEEB0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

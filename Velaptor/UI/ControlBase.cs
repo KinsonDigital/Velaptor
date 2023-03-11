@@ -32,7 +32,7 @@ public abstract class ControlBase : IControl
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
-    protected ControlBase() => this.mouse = AppInputFactory.CreateMouse();
+    protected ControlBase() => this.mouse = InputFactory.CreateMouse();
 
     /// <inheritdoc cref="IControl.Click"/>
     public event EventHandler<EventArgs>? Click;

@@ -369,7 +369,7 @@ public class WindowTests
     }
 
     [Fact]
-    public async void ShowAsync_WhenInvoked_ShowsInternalWindow()
+    public async Task ShowAsync_WhenInvoked_ShowsInternalWindow()
     {
         // Arrange
         this.mockWindow.Setup(m => m.ShowAsync(null, null))

@@ -5,11 +5,14 @@
 namespace Velaptor.Content.Exceptions;
 
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 /// <summary>
 /// Thrown when there is an issue loading atlas data content.
 /// </summary>
-public class LoadAtlasException : Exception
+[Serializable]
+public sealed class LoadAtlasException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadAtlasException"/> class.
@@ -37,6 +40,17 @@ public class LoadAtlasException : Exception
     /// </param>
     public LoadAtlasException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoadAtlasException"/> class.
+    /// </summary>
+    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
+    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    private LoadAtlasException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
     {
     }
 }

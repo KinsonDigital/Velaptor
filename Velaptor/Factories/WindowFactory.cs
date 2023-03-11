@@ -43,6 +43,7 @@ internal static class WindowFactory
         => new GLWindow(
             width,
             height,
+            IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IWindowFactory>(),
             IoC.Container.GetInstance<INativeInputFactory>(),
             IoC.Container.GetInstance<IGLInvoker>(),

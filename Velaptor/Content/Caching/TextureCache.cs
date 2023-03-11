@@ -54,7 +54,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
-    /// <param name="path">Provides path related services.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public TextureCache(
         IImageService imageService,

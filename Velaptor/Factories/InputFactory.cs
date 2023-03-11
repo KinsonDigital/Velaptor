@@ -1,4 +1,4 @@
-﻿// <copyright file="AppInputFactory.cs" company="KinsonDigital">
+﻿// <copyright file="InputFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,19 +11,17 @@ using Input;
 /// Generates input type objects for processing input such as the keyboard and mouse.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-public static class AppInputFactory
+public static class InputFactory
 {
     /// <summary>
     /// Creates a keyboard object.
     /// </summary>
     /// <returns>The keyboard singleton object.</returns>
-    public static IAppInput<KeyboardState> CreateKeyboard() =>
-        (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<KeyboardState>>()) !;
+    public static IAppInput<KeyboardState> CreateKeyboard() => IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
     /// <summary>
     /// Creates a mouse object.
     /// </summary>
     /// <returns>The keyboard singleton object.</returns>
-    public static IAppInput<MouseState> CreateMouse() =>
-        (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<MouseState>>()) !;
+    public static IAppInput<MouseState> CreateMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
 }
