@@ -133,6 +133,7 @@ public static class ContentLoaderFactory
 
         var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
         var embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
+        var contentPathResolver = PathResolverFactory.CreateContentFontPathResolver();
         var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
         var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var fontFactory = IoC.Container.GetInstance<IFontFactory>();
@@ -145,6 +146,7 @@ public static class ContentLoaderFactory
         fontLoader = new FontLoader(
             fontAtlasService,
             embeddedFontResourceService,
+            contentPathResolver,
             fontPathResolver,
             textureCache,
             fontFactory,

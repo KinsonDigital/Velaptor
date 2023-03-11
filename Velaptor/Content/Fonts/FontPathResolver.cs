@@ -23,12 +23,12 @@ using Guards;
 ///     Other systems will be supported in a future releases.
 /// </para>
 /// </remarks>
-internal sealed class FontPathResolver : IPathResolver
+internal sealed class FontPathResolver : IContentPathResolver
 {
     private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
     private readonly IPlatform platform;
-    private readonly IPathResolver windowsFontPathResolver;
-    private readonly IPathResolver contentFontPathResolver;
+    private readonly IContentPathResolver windowsFontPathResolver;
+    private readonly IContentPathResolver contentFontPathResolver;
     private readonly IDirectory directory;
     private readonly IFile file;
 
@@ -45,8 +45,8 @@ internal sealed class FontPathResolver : IPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     public FontPathResolver(
-        IPathResolver contentFontPathResolver,
-        IPathResolver windowsFontPathResolver,
+        IContentPathResolver contentFontPathResolver,
+        IContentPathResolver windowsFontPathResolver,
         IFile file,
         IDirectory directory,
         IPlatform platform)

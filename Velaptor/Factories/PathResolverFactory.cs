@@ -18,12 +18,12 @@ using Content.Fonts;
 public static class PathResolverFactory
 {
     private static readonly IPlatform Platform;
-    private static IPathResolver? texturePathResolver;
-    private static IPathResolver? atlasPathResolver;
-    private static IPathResolver? soundPathResolver;
-    private static IPathResolver? fontPathResolver;
-    private static IPathResolver? contentFontPathResolver;
-    private static IPathResolver? windowsFontPathResolver;
+    private static IContentPathResolver? texturePathResolver;
+    private static IContentPathResolver? atlasPathResolver;
+    private static IContentPathResolver? soundPathResolver;
+    private static IContentPathResolver? fontPathResolver;
+    private static IContentPathResolver? contentFontPathResolver;
+    private static IContentPathResolver? windowsFontPathResolver;
 
     /// <summary>
     /// Initializes static members of the <see cref="PathResolverFactory"/> class.
@@ -35,7 +35,7 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver to texture content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IPathResolver CreateTexturePathResolver() =>
+    public static IContentPathResolver CreateTexturePathResolver() =>
         texturePathResolver ??= new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver to texture content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IPathResolver CreateAtlasPathResolver() =>
+    public static IContentPathResolver CreateAtlasPathResolver() =>
         atlasPathResolver ??= new AtlasTexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
@@ -51,14 +51,14 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver instance.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IPathResolver CreateContentFontPathResolver() =>
+    public static IContentPathResolver CreateContentFontPathResolver() =>
         contentFontPathResolver ??= new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
     /// Creates a path resolver that resolves paths to fonts in the system's font directory.
     /// </summary>
     /// <returns>The resolver instance.</returns>
-    public static IPathResolver CreateSystemFontPathResolver()
+    public static IContentPathResolver CreateSystemFontPathResolver()
     {
         if (Platform.CurrentPlatform == OSPlatform.Windows)
         {
@@ -72,7 +72,7 @@ public static class PathResolverFactory
     /// Creates a path resolver that resolves paths to font content.
     /// </summary>
     /// <returns>The resolver to atlas content.</returns>
-    public static IPathResolver CreateFontPathResolver()
+    public static IContentPathResolver CreateFontPathResolver()
     {
         var contentPathResolver = new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
 
@@ -89,7 +89,7 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver to sound content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IPathResolver CreateSoundPathResolver() =>
+    public static IContentPathResolver CreateSoundPathResolver() =>
         soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
@@ -97,7 +97,7 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver instance.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left internal for future access")]
-    internal static IPathResolver CreateWindowsFontPathResolver() =>
+    internal static IContentPathResolver CreateWindowsFontPathResolver() =>
         windowsFontPathResolver ??= new WindowsFontPathResolver(
             IoC.Container.GetInstance<IDirectory>(),
             IoC.Container.GetInstance<IPlatform>());

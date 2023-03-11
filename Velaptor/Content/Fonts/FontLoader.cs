@@ -29,7 +29,8 @@ public sealed class FontLoader : ILoader<IFont>
     private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
-    private readonly IPathResolver fontPathResolver;
+    private readonly IContentPathResolver contentPathResolver;
+    private readonly IContentPathResolver fontPathResolver;
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IFontFactory fontFactory;
     private readonly IFontMetaDataParser fontMetaDataParser;
@@ -52,6 +53,7 @@ public sealed class FontLoader : ILoader<IFont>
     {
         this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
         this.embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
+        this.contentPathResolver = PathResolverFactory.CreateContentFontPathResolver();
         this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
         this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
@@ -69,6 +71,7 @@ public sealed class FontLoader : ILoader<IFont>
     /// </summary>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
+    /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
     /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
@@ -83,7 +86,8 @@ public sealed class FontLoader : ILoader<IFont>
     internal FontLoader(
         IFontAtlasService fontAtlasService,
         IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
-        IPathResolver fontPathResolver,
+        IContentPathResolver contentPathResolver,
+        IContentPathResolver fontPathResolver,
         IItemCache<string, ITexture> textureCache,
         IFontFactory fontFactory,
         IFontMetaDataParser fontMetaDataParser,
@@ -94,6 +98,7 @@ public sealed class FontLoader : ILoader<IFont>
     {
         EnsureThat.ParamIsNotNull(fontAtlasService);
         EnsureThat.ParamIsNotNull(embeddedFontResourceService);
+        EnsureThat.ParamIsNotNull(contentPathResolver);
         EnsureThat.ParamIsNotNull(fontPathResolver);
         EnsureThat.ParamIsNotNull(textureCache);
         EnsureThat.ParamIsNotNull(fontFactory);
@@ -103,16 +108,17 @@ public sealed class FontLoader : ILoader<IFont>
         EnsureThat.ParamIsNotNull(fileStream);
         EnsureThat.ParamIsNotNull(path);
 
-        this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
-        this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");
-        this.fontPathResolver = fontPathResolver ?? throw new ArgumentNullException(nameof(fontPathResolver), "The parameter must not be null.");
-        this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
-        this.fontFactory = fontFactory ?? throw new ArgumentNullException(nameof(fontFactory), "The parameter must not be null.");
-        this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
-        this.directory = directory ?? throw new ArgumentNullException(nameof(directory), "The parameter must not be null.");
-        this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
-        this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream), "The parameter must not be null.");
-        this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+        this.fontAtlasService = fontAtlasService;
+        this.embeddedFontResourceService = embeddedFontResourceService;
+        this.contentPathResolver = contentPathResolver;
+        this.fontPathResolver = fontPathResolver;
+        this.textureCache = textureCache;
+        this.fontFactory = fontFactory;
+        this.fontMetaDataParser = fontMetaDataParser;
+        this.directory = directory;
+        this.file = file;
+        this.fileStream = fileStream;
+        this.path = path;
 
         SetupDefaultFonts();
     }
@@ -268,15 +274,10 @@ public sealed class FontLoader : ILoader<IFont>
     /// </summary>
     private void SetupDefaultFonts()
     {
-        var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimDirSeparatorFromEnd()}{this.path.AltDirectorySeparatorChar}";
+        var separator = this.path.AltDirectorySeparatorChar;
+        var contentDirPath = this.contentPathResolver.RootDirectoryPath;
         var contentDirName = this.fontPathResolver.ContentDirectoryName;
-        var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
-
-        // Create the content directory if it does not exist
-        if (this.directory.Exists(rootDirPath) is false)
-        {
-            this.directory.CreateDirectory(rootDirPath);
-        }
+        var fontContentDirPath = $"{contentDirPath}{separator}{contentDirName}";
 
         // Create the font content directory if it does not exist
         if (this.directory.Exists(fontContentDirPath) is false)
@@ -286,7 +287,7 @@ public sealed class FontLoader : ILoader<IFont>
 
         foreach (var fontName in this.defaultFontNames)
         {
-            var filePath = $"{fontContentDirPath}{fontName}";
+            var filePath = $"{fontContentDirPath}{separator}{fontName}";
 
             // If the regular font does not exist in the font content directory, extract it from the embedded resources
             if (this.file.Exists(filePath) is not false)

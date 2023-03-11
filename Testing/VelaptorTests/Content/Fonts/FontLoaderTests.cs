@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -29,9 +29,10 @@ public class FontLoaderTests
     private const int FontSize = 12;
     private const string FontExtension = ".ttf";
     private const string FontDirName = "fonts";
-    private const string ContentDirPath = @"C:/content/";
+    private const string AppDirPath = "C:/app";
+    private const string ContentDirPath = @$"C:/{AppDirPath}/content";
     private const string FontContentName = "test-font";
-    private const string FontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
+    private const string FontContentDirPath = $@"{ContentDirPath}/{FontDirName}";
     private readonly string metaData = $"size:{FontSize}";
     private readonly string fontFilePath;
     private readonly string filePathWithMetaData;
@@ -39,7 +40,8 @@ public class FontLoaderTests
     private readonly GlyphMetrics[] glyphMetricData;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IEmbeddedResourceLoaderService<Stream?>> mockEmbeddedFontResourceService;
-    private readonly Mock<IPathResolver> mockFontPathResolver;
+    private readonly Mock<IContentPathResolver> mockContentPathResolver;
+    private readonly Mock<IContentPathResolver> mockFontPathResolver;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
     private readonly Mock<IFontFactory> mockFontFactory;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
@@ -55,7 +57,7 @@ public class FontLoaderTests
     /// </summary>
     public FontLoaderTests()
     {
-        this.fontFilePath = $@"{ContentDirPath}{FontDirName}\{FontContentName}{FontExtension}";
+        this.fontFilePath = $@"{ContentDirPath}{FontDirName}/{FontContentName}{FontExtension}";
         this.filePathWithMetaData = $"{this.fontFilePath}|{this.metaData}";
         this.contentNameWithMetaData = $"{FontContentName}|{this.metaData}";
 
@@ -75,12 +77,15 @@ public class FontLoaderTests
 
         this.mockEmbeddedFontResourceService = new Mock<IEmbeddedResourceLoaderService<Stream?>>();
 
+        this.mockContentPathResolver = new Mock<IContentPathResolver>();
+        this.mockContentPathResolver.SetupGet(p => p.RootDirectoryPath).Returns(ContentDirPath);
+
         // Mock for full file paths with metadata
-        this.mockFontPathResolver = new Mock<IPathResolver>();
+        this.mockFontPathResolver = new Mock<IContentPathResolver>();
         this.mockFontPathResolver.SetupGet(p => p.RootDirectoryPath).Returns(ContentDirPath);
         this.mockFontPathResolver.SetupGet(p => p.ContentDirectoryName).Returns(FontDirName);
 
-        this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
+        this.mockFontPathResolver.Setup(p => p.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
 
         // Mock for both full file paths and content names with metadata
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
@@ -144,6 +149,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 null,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -169,6 +175,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 null,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -186,6 +193,31 @@ public class FontLoaderTests
     }
 
     [Fact]
+    public void Ctor_WithNullContentPathResolver_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontLoader(
+                this.mockFontAtlasService.Object,
+                this.mockEmbeddedFontResourceService.Object,
+                null,
+                this.mockFontPathResolver.Object,
+                this.mockTextureCache.Object,
+                this.mockFontFactory.Object,
+                this.mockFontMetaDataParser.Object,
+                this.mockDirectory.Object,
+                this.mockFile.Object,
+                this.mockFileStream.Object,
+                this.mockPath.Object);
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentPathResolver')");
+    }
+
+    [Fact]
     public void Ctor_WithNullFontPathResolver_ThrowsException()
     {
         // Arrange & Act
@@ -194,6 +226,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 null,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -218,6 +251,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 null,
                 this.mockFontFactory.Object,
@@ -242,6 +276,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 null,
@@ -266,6 +301,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -289,6 +325,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -313,6 +350,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -337,6 +375,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -361,6 +400,7 @@ public class FontLoaderTests
             _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
+                this.mockContentPathResolver.Object,
                 this.mockFontPathResolver.Object,
                 this.mockTextureCache.Object,
                 this.mockFontFactory.Object,
@@ -414,11 +454,9 @@ public class FontLoaderTests
         CreateSystemUnderTest();
 
         // Assert
-        this.mockFontPathResolver.VerifyGet(p => p.RootDirectoryPath, Times.Once);
         this.mockFontPathResolver.VerifyGet(p => p.ContentDirectoryName, Times.Once);
 
         // Check for directory existence
-        this.mockDirectory.Verify(m => m.Exists(ContentDirPath), Times.Once);
         this.mockDirectory.Verify(m => m.Exists(FontContentDirPath), Times.Once);
 
         // Each file was verified if it exists
@@ -758,6 +796,7 @@ public class FontLoaderTests
     private FontLoader CreateSystemUnderTest() => new (
         this.mockFontAtlasService.Object,
         this.mockEmbeddedFontResourceService.Object,
+        this.mockContentPathResolver.Object,
         this.mockFontPathResolver.Object,
         this.mockTextureCache.Object,
         this.mockFontFactory.Object,

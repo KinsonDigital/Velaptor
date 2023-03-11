@@ -27,7 +27,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     private const string AtlasDataExtension = ".json";
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IAtlasDataFactory atlasDataFactory;
-    private readonly IPathResolver atlasDataPathResolver;
+    private readonly IContentPathResolver atlasDataPathResolver;
     private readonly IJSONService jsonService;
     private readonly IFile file;
     private readonly IPath path;
@@ -62,7 +62,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     internal AtlasLoader(
         IItemCache<string, ITexture> textureCache,
         IAtlasDataFactory atlasDataFactory,
-        IPathResolver atlasDataPathResolver,
+        IContentPathResolver atlasDataPathResolver,
         IJSONService jsonService,
         IFile file,
         IPath path)

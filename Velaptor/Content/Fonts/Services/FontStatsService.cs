@@ -16,8 +16,8 @@ internal sealed class FontStatsService : IFontStatsService
     private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
     private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
     private readonly IFontService fontService;
-    private readonly IPathResolver sysFontPathResolver;
-    private readonly IPathResolver contentFontPathResolver;
+    private readonly IContentPathResolver sysFontPathResolver;
+    private readonly IContentPathResolver contentFontPathResolver;
     private readonly IDirectory directory;
     private readonly IPath path;
 
@@ -31,8 +31,8 @@ internal sealed class FontStatsService : IFontStatsService
     /// <param name="path">Processes directory and file paths.</param>
     public FontStatsService(
         IFontService fontService,
-        IPathResolver contentFontPathResolver,
-        IPathResolver sysFontPathResolver,
+        IContentPathResolver contentFontPathResolver,
+        IContentPathResolver sysFontPathResolver,
         IDirectory directory,
         IPath path)
     {

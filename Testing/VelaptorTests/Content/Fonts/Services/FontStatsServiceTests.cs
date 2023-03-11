@@ -26,8 +26,8 @@ public class FontStatsServiceTests
     private readonly string fullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
     private readonly string fullSystemFontDirPath = $@"{RootSystemDirPath}{DirNameForSystemPath}\";
     private readonly Mock<IFontService> mockFontService;
-    private readonly Mock<IPathResolver> mockSystemFontPathResolver;
-    private readonly Mock<IPathResolver> mockContentPathResolver;
+    private readonly Mock<IContentPathResolver> mockSystemFontPathResolver;
+    private readonly Mock<IContentPathResolver> mockContentPathResolver;
     private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IPath> mockPath;
 
@@ -38,13 +38,13 @@ public class FontStatsServiceTests
     {
         this.mockFontService = new Mock<IFontService>();
 
-        this.mockContentPathResolver = new Mock<IPathResolver>();
+        this.mockContentPathResolver = new Mock<IContentPathResolver>();
         this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
             .Returns(this.fullContentFontDirPath);
         this.mockContentPathResolver.SetupGet(p => p.ContentDirectoryName)
             .Returns(DirNameForContentPath);
 
-        this.mockSystemFontPathResolver = new Mock<IPathResolver>();
+        this.mockSystemFontPathResolver = new Mock<IContentPathResolver>();
         this.mockSystemFontPathResolver.Setup(m => m.ResolveDirPath())
             .Returns(this.fullSystemFontDirPath);
         this.mockSystemFontPathResolver.SetupGet(p => p.ContentDirectoryName)

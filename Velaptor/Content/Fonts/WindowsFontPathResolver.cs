@@ -13,7 +13,7 @@ using Guards;
 /// <summary>
 /// Resolves paths to Windows system fonts.
 /// </summary>
-internal sealed class WindowsFontPathResolver : IPathResolver
+internal sealed class WindowsFontPathResolver : IContentPathResolver
 {
     private const char CrossPlatDirSeparatorChar = '/';
     private const string FileExtension = ".ttf";

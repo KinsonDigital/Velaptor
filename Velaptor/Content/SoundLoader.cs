@@ -22,7 +22,7 @@ public sealed class SoundLoader : ILoader<ISound>
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
     private readonly IItemCache<string, ISound> soundCache;
-    private readonly IPathResolver soundPathResolver;
+    private readonly IContentPathResolver soundPathResolver;
     private readonly IFile file;
     private readonly IPath path;
 
@@ -51,7 +51,7 @@ public sealed class SoundLoader : ILoader<ISound>
     /// </exception>
     internal SoundLoader(
         IItemCache<string, ISound> soundCache,
-        IPathResolver soundPathResolver,
+        IContentPathResolver soundPathResolver,
         IFile file,
         IPath path)
     {

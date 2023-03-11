@@ -26,7 +26,7 @@ public class SoundLoaderTests
     private readonly string oggSoundFilePath;
     private readonly string mp3SoundFilePath;
     private readonly Mock<IItemCache<string, ISound>> mockSoundCache;
-    private readonly Mock<IPathResolver> mockSoundPathResolver;
+    private readonly Mock<IContentPathResolver> mockSoundPathResolver;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -39,7 +39,7 @@ public class SoundLoaderTests
         this.mp3SoundFilePath = $"{SoundDirPath}{SoundName}{Mp3FileExtension}";
 
         this.mockSoundCache = new Mock<IItemCache<string, ISound>>();
-        this.mockSoundPathResolver = new Mock<IPathResolver>();
+        this.mockSoundPathResolver = new Mock<IContentPathResolver>();
 
         this.mockFile = new Mock<IFile>();
         this.mockPath = new Mock<IPath>();
