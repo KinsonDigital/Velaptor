@@ -14,7 +14,6 @@ using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Content;
 using Factories;
-using Graphics.Renderers;
 using Guards;
 using Input;
 using Input.Exceptions;
@@ -41,6 +40,7 @@ using VelaptorWindowBorder = WindowBorder;
 /// </summary>
 internal sealed class GLWindow : VelaptorIWindow
 {
+    private readonly IAppService appService;
     private readonly IWindowFactory windowFactory;
     private readonly INativeInputFactory nativeInputFactory;
     private readonly IGLInvoker gl;
@@ -67,6 +67,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
+    /// <param name="appService">Provides application relates services.</param>
     /// <param name="windowFactory">Creates a window object.</param>
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
@@ -80,6 +81,7 @@ internal sealed class GLWindow : VelaptorIWindow
     public GLWindow(
         uint width,
         uint height,
+        IAppService appService,
         IWindowFactory windowFactory,
         INativeInputFactory nativeInputFactory,
         IGLInvoker glInvoker,
@@ -91,6 +93,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ISceneManager sceneManager,
         IReactableFactory reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(appService);
         EnsureThat.ParamIsNotNull(windowFactory);
         EnsureThat.ParamIsNotNull(nativeInputFactory);
         EnsureThat.ParamIsNotNull(glInvoker);
@@ -102,6 +105,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(sceneManager);
         EnsureThat.ParamIsNotNull(reactableFactory);
 
+        this.appService = appService;
         this.windowFactory = windowFactory;
         this.nativeInputFactory = nativeInputFactory;
         this.gl = glInvoker;
@@ -353,7 +357,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
 
-        IRenderer.Init();
+        this.appService.Init();
     }
 
     /// <summary>

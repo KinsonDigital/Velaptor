@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
@@ -45,6 +46,7 @@ using VelaptorWindowBorder = Velaptor.WindowBorder;
 /// </summary>
 public class GLWindowTests
 {
+    private readonly Mock<IAppService> mockAppService;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IGLFWInvoker> mockGLFW;
     private readonly Mock<IGLContext> mockGLContext;
@@ -72,6 +74,7 @@ public class GLWindowTests
     /// </summary>
     public GLWindowTests()
     {
+        this.mockAppService = new Mock<IAppService>();
         this.mockGLContext = new Mock<IGLContext>();
         this.mockSilkWindow = new Mock<SilkWindow>();
         this.mockSilkWindow.SetupGet(p => p.GLContext).Returns(this.mockGLContext.Object);
@@ -108,6 +111,29 @@ public class GLWindowTests
 
     #region Contructor Tests
     [Fact]
+    public void Ctor_WithNullAppServiceParam_ThrowsException()
+    {
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        {
+            _ = new GLWindow(
+                It.IsAny<uint>(),
+                It.IsAny<uint>(),
+                null,
+                this.mockWindowFactory.Object,
+                this.mockNativeInputFactory.Object,
+                this.mockGL.Object,
+                this.mockGLFW.Object,
+                this.mockMonitorService.Object,
+                this.mockPlatform.Object,
+                this.mockTaskService.Object,
+                this.mockContentLoader.Object,
+                this.mockSceneManager.Object,
+                this.mockReactableFactory.Object);
+        }, "The parameter must not be null. (Parameter 'appService')");
+    }
+
+    [Fact]
     public void Ctor_WithNullWindowFactoryParam_ThrowsException()
     {
         // Act & Assert
@@ -116,6 +142,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 null,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -138,6 +165,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 null,
                 this.mockGL.Object,
@@ -160,6 +188,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 null,
@@ -182,6 +211,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -204,6 +234,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -226,6 +257,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -248,6 +280,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -270,6 +303,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -292,6 +326,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -314,6 +349,7 @@ public class GLWindowTests
             _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
+                this.mockAppService.Object,
                 this.mockWindowFactory.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
@@ -945,6 +981,8 @@ public class GLWindowTests
         this.mockPushReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.GLInitializedId));
 
         Assert.True(initializeInvoked, $"The action '{nameof(Velaptor.UI.IWindow)}.{nameof(Velaptor.UI.IWindow.Initialize)}' must be invoked");
+
+        this.mockAppService.VerifyOnce(m => m.Init());
     }
 
     [Fact]
@@ -1343,6 +1381,7 @@ public class GLWindowTests
         => new (
             width,
             height,
+            this.mockAppService.Object,
             this.mockWindowFactory.Object,
             this.mockNativeInputFactory.Object,
             this.mockGL.Object,
