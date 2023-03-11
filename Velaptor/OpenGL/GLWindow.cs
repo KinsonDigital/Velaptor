@@ -14,6 +14,7 @@ using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Content;
 using Factories;
+using Graphics.Renderers;
 using Guards;
 using Input;
 using Input.Exceptions;
@@ -351,6 +352,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glInputContext.Mice[0].MouseUp += GLMouseInput_MouseUp;
         this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
+
+        IRenderer.Init();
     }
 
     /// <summary>
