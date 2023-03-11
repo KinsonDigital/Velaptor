@@ -160,7 +160,7 @@ public interface IRenderer
     /// </summary>
     private static void SetupCaches() =>
         cachedClearColor = new CachedValue<Color>(
-            Color.CornflowerBlue,
+            Color.FromArgb(255, 16, 29, 36),
             () =>
             {
                 var colorValues = new float[4];
