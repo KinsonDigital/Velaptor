@@ -17,9 +17,8 @@ using Velaptor.UI;
 /// </summary>
 public class MouseScene : SceneBase
 {
-    private IAppInput<MouseState> mouse;
+    private IAppInput<MouseState>? mouse;
     private Label? mouseInfoLabel;
-    private MouseState currentMouseState;
     private MouseScrollDirection scrollDirection;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -44,16 +43,16 @@ public class MouseScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
-        this.currentMouseState = this.mouse.GetState();
+        var currentMouseState = this.mouse.GetState();
 
-        var mouseInfo = $"Mouse Position: {this.currentMouseState.GetX()}, {this.currentMouseState.GetY()}";
-        mouseInfo += $"{Environment.NewLine}Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-        mouseInfo += $"{Environment.NewLine}Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-        mouseInfo += $"{Environment.NewLine}Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
+        var mouseInfo = $"Mouse Position: {currentMouseState.GetX()}, {currentMouseState.GetY()}";
+        mouseInfo += $"{Environment.NewLine}Left Button: {(currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
+        mouseInfo += $"{Environment.NewLine}Right Button: {(currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
+        mouseInfo += $"{Environment.NewLine}Middle Button: {(currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
 
-        if (this.currentMouseState.GetScrollWheelValue() != 0)
+        if (currentMouseState.GetScrollWheelValue() != 0)
         {
-            this.scrollDirection = this.currentMouseState.GetScrollDirection();
+            this.scrollDirection = currentMouseState.GetScrollDirection();
         }
 
         mouseInfo += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
@@ -70,7 +69,6 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.currentMouseState = default;
         this.scrollDirection = MouseScrollDirection.None;
         this.mouseInfoLabel = null;
         this.mouse = default;

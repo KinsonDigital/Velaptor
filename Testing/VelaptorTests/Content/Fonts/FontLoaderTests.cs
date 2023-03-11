@@ -1,4 +1,4 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -420,15 +420,15 @@ public class FontLoaderTests
     public void Ctor_WhenFontContentDirectoryDoesNotExist_CreatesFontContentDirectory()
     {
         // Arrange
-        var defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
-        var defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
-        var defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
-        var defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
+        const string defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
+        const string defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
+        const string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
+        const string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
 
-        var defaultRegularFontFilePath = $"{FontContentDirPath}{defaultRegularFontName}";
-        var defaultBoldFontFilePath = $"{FontContentDirPath}{defaultBoldFontName}";
-        var defaultItalicFontFilePath = $"{FontContentDirPath}{defaultItalicFontName}";
-        var defaultBoldItalicFontFilePath = $"{FontContentDirPath}{defaultBoldItalicFontName}";
+        const string defaultRegularFontFilePath = $"{FontContentDirPath}/{defaultRegularFontName}";
+        const string defaultBoldFontFilePath = $"{FontContentDirPath}/{defaultBoldFontName}";
+        const string defaultItalicFontFilePath = $"{FontContentDirPath}/{defaultItalicFontName}";
+        const string defaultBoldItalicFontFilePath = $"{FontContentDirPath}/{defaultBoldItalicFontName}";
 
         var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
         var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
