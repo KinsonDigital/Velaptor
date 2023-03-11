@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.codacy.yml = .codacy.yml
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		code_of_conduct.md = code_of_conduct.md
 		BACKERS.md = BACKERS.md
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE.md = LICENSE.md
