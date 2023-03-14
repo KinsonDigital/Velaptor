@@ -29,7 +29,7 @@ v
         Write-Host "Pull Request Number: $pullRequestNumber";
         "pr-number=$pullRequestNumber" >> $env:GITHUB_OUTPUT;
 
-    - name: Run Feature PR Status Check
+    - name: Run Preview Feature PR Status Check
       run: dotnet cicd PreviewFeaturePRStatusCheck --pull-request-number ${{ steps.get-pr-number.outputs.pr-number }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
