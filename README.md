@@ -38,7 +38,7 @@ Velaptor is a 2D game development framework written in modern C# that strives to
 <h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
 
 ### **Cross-Platform**
-We strive for **Velaptor** to be a cross platform library by using as many cross platform dependencies as possible. If a dependency cannot be found, then the appropriate platform specific implementations will be used.
+We strive for **Velaptor** to be a cross platform. We do this by using as many cross platform dependencies as possible. If a cross platform dependency cannot be found, then the appropriate platform specific implementations will be used.
 
 ### **Easy To Use**
 One of the goals of this library is to make it easy to use.  We aim for naming, documentation and usability of the API to be first class.
@@ -60,7 +60,7 @@ Loaded content such as images and sounds are cached for better performance.  If 
 
 <h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
 
-  Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
+  Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
