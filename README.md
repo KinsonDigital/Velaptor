@@ -25,17 +25,17 @@
 </div>
 
 
-<h2 style="font-weight:bold;border:0" align="center" >!! NOTICE !!</h2>
+<h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
 
 This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and provide feedback.  That is what open source is all about. 🥳
 
 <br/>
 
-<h2 style="font-weight:bold;border:0" align="center">📖 About Velaptor 📖</h2>
+<h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
 
 Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult which is why **Velaptor** was developed.  It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few.  This way you can just concentrate on developing your game or multi-media application.
 
-<h2 style="font-weight:bold;border:0" align="center">✨ Features ✨</h2>
+<h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
 
 ### **Cross-Platform**
 We strive for **Velaptor** to be a cross platform library by using as many cross platform dependencies as possible. If a dependency cannot be found, then the appropriate platform specific implementations will be used.
@@ -58,25 +58,25 @@ Loaded content such as images and sounds are cached for better performance.  If 
 
 <br/>
 
-<h2 style="font-weight:bold;border:0" align="center">📃 Documentation and Resources 📃</h2>
+<h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
 
   Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
-<h2 style="font-weight:bold;border:0" align="center">🙏🏼 Contributing 🙏🏼</h2>
+<h2 style="font-weight:bold;" align="center">🙏🏼 Contributing 🙏🏼</h2>
 
 Interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/master/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via one-time or recurring donation.
 
 
-<h2 style="font-weight:bold;border:0" align="center">🔧 Maintainers 🔧</h2>
+<h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
 
 - [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Calvin Wilkinson](https://twitter.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
 - [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Kristen Wilkinson](https://twitter.com/kswilky) (KinsonDigital GitHub Organization - Project Management, Documentation, Tester)
 
 <br/>
 
-<h2 style="font-weight:bold;border:0" align="center">🚔 Licensing And Governance 🚔</h2>
+<h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
 
 
 <div align="center">
