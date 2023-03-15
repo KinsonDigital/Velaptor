@@ -11,19 +11,18 @@
 
 <div align="center">
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)
+[![Prod PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prod-release-pr-status-check.yml)
+[![Prev PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prev-release-pr-status-check.yml)
 
 ![Codacy grade](https://img.shields.io/codacy/grade/ac26b169bfb54e0fad4433d538e7d397?color=2F8840&logo=codacy)
-![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)
+[![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/release%2Fv1.0.0)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
-![Nuget](https://img.shields.io/nuget/dt/KinsonDigital.Velaptor?color=0094FF&label=nuget%20downloads&logo=nuget)
+[![Nuget Downloads](https://img.shields.io/nuget/dt/KinsonDigital.Velaptor?color=0094FF&label=nuget%20downloads&logo=nuget)](https://www.nuget.org/stats/packages/KinsonDigital.Velaptor?groupby=Version)
 
 [![Good First GitHub Issues](https://img.shields.io/github/issues/kinsondigital/Velaptor/good%20first%20issue?color=7057ff&label=Good%20First%20Issues)](https://github.com/KinsonDigital/Velaptor/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 [![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=chat%20on%20discord&logo=discord&logoColor=white)](https://discord.gg/qewu6fNgv7)
 </div>
-
 
 <h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
 
