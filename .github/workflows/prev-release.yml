@@ -31,8 +31,9 @@ jobs:
         TwitterAccessTokenSecret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
 
 
-  public-code-coverage:
+  public-code-coverage-results:
     runs-on: ubuntu-latest
+    needs: preview_release
     name: Publish Code Coverage Results
     steps:
     - uses: actions/checkout@v3
