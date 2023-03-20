@@ -70,8 +70,9 @@ Interested in contributing? If so, click [here](https://github.com/KinsonDigital
 
 <h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
 
-- [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Calvin Wilkinson](https://twitter.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
-- [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Kristen Wilkinson](https://twitter.com/kswilky) (KinsonDigital GitHub Organization - Project Management, Documentation, Tester)
+  [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Calvin Wilkinson](https://twitter.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
+
+  [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Kristen Wilkinson](https://twitter.com/kswilky) (KinsonDigital GitHub Organization - Project Management, Documentation, Tester)
 
 <br/>
 
@@ -80,10 +81,10 @@ Interested in contributing? If so, click [here](https://github.com/KinsonDigital
 
 <div align="center">
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=flat)](code_of_conduct.md)
-![GitHub](https://img.shields.io/github/license/kinsondigital/velaptor)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=flat)](https://github.com/KinsonDigital/.github/blob/master/docs/code_of_conduct.md)
+[![GitHub](https://img.shields.io/github/license/kinsondigital/CASL)](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/LICENSE.md)
 </div>
 
 
-This software is distributed under the very permissive [MIT license](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/LICENSE.md) and all dependencies are distributed under MIT-compatible licenses.
+This software is distributed under the very permissive MIT license and all dependencies are distributed under MIT-compatible licenses.
 This project has adopted the code of conduct defined by the **Contributor Covenant** to clarify expected behavior in our community.
