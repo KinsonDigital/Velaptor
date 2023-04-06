@@ -14,6 +14,14 @@
 [![Prod PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prod-release-pr-status-check.yml)
 [![Prev PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prev-release-pr-status-check.yml)
 
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+
 ![Codacy grade](https://img.shields.io/codacy/grade/ac26b169bfb54e0fad4433d538e7d397?color=2F8840&logo=codacy)
 [![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/release%2Fv1.0.0)
 
