@@ -7,6 +7,7 @@ namespace Velaptor.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Carbonate.UniDirectional;
 using Graphics;
 using Guards;
@@ -29,20 +30,45 @@ public sealed class Texture : ITexture
     /// Initializes a new instance of the <see cref="Texture"/> class.
     /// </summary>
     /// <param name="name">The name of the texture.</param>
-    /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="imageData"/> is empty.</exception>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    public Texture(string name, ImageData imageData)
+    {
+        EnsureThat.StringParamIsNotNullOrEmpty(name);
+
+        if (string.IsNullOrEmpty(imageData.FilePath))
+        {
+            throw new ArgumentException("The image data must have a file path associated with it.", nameof(imageData));
+        }
+
+        this.gl = IoC.Container.GetInstance<IGLInvoker>();
+        this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
+        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
+
+        FilePath = imageData.FilePath;
+        Init(disposeReactable, name, imageData);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Texture"/> class.
+    /// </summary>
+    /// <param name="name">The name of the texture.</param>
+    /// <param name="filePath">The file path to the image file.</param>
+    /// <exception cref="FileNotFoundException">Thrown if the <paramref name="filePath"/> is not found.</exception>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public Texture(string name, string filePath, ImageData imageData)
+    public Texture(string name, string filePath)
     {
         EnsureThat.StringParamIsNotNullOrEmpty(name);
         EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
-
+        var imageLoader = IoC.Container.GetInstance<IImageLoader>();
         var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
 
+        var imageData = imageLoader.LoadImage(filePath);
         FilePath = filePath;
         Init(disposeReactable, name, imageData);
     }
@@ -90,7 +116,7 @@ public sealed class Texture : ITexture
             return;
         }
 
-        Dispose(new DisposeTextureData { TextureId = Id });
+        Unload(new DisposeTextureData { TextureId = Id });
     }
 
     /// <inheritdoc/>
@@ -112,7 +138,7 @@ public sealed class Texture : ITexture
     /// Disposes of the texture if this texture's <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
-    private void Dispose(DisposeTextureData data)
+    private void Unload(DisposeTextureData data)
     {
         if (this.isDisposed || Id != data.TextureId)
         {
@@ -138,8 +164,8 @@ public sealed class Texture : ITexture
         this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveReactor<DisposeTextureData>(
                 eventId: PushNotifications.TextureDisposedId,
                 name: textureDisposeName,
-                onReceiveData: Dispose,
-                onUnsubscribe: () => Dispose(new DisposeTextureData { TextureId = Id })));
+                onReceiveData: Unload,
+                onUnsubscribe: () => Unload(new DisposeTextureData { TextureId = Id })));
 
         if (imageData.IsEmpty())
         {
