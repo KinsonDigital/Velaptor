@@ -1,4 +1,4 @@
-// <copyright file="TextureRendererTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -37,7 +37,6 @@ using TextureRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
 /// </summary>
 public class TextureRendererTests
 {
-    private const uint TextureShaderId = 1111u;
     private const uint TextureId = 456u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
@@ -57,15 +56,8 @@ public class TextureRendererTests
     public TextureRendererTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
-
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockGLService.Setup(m => m.ProgramLinkedSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.ShaderCompiledSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
-
         this.mockShader = new Mock<IShaderProgram>();
-        this.mockShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
-
         this.mockGPUBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
@@ -133,10 +125,6 @@ public class TextureRendererTests
             .Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateRenderTextureReactable())
             .Returns(mockTextureRenderBatchReactable.Object);
-
-        var mockFontTextureAtlas = new Mock<ITexture>();
-        mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
-        mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
     }
 
     #region Constructor Tests
