@@ -49,9 +49,10 @@ public static class TestHelpers
     /// <param name="color">The color to set all of the <see cref="ImageData.Pixels"/>.</param>
     /// <param name="width">The width of the image that the pixels represent.</param>
     /// <param name="height">The height of the image that the pixels represent.</param>
+    /// <param name="filePath">The path to the file where the data came from.</param>
     /// <returns>The struct to test.</returns>
-    public static ImageData CreateImageData(NETColor color, uint width, uint height)
-        => new (CreatePixels(color, width, height), width, height);
+    public static ImageData CreateImageData(NETColor color, uint width, uint height, string filePath = "")
+        => new (CreatePixels(color, width, height), width, height, filePath);
 
     /// <summary>
     /// Returns all of the pixels from the given <paramref name="image"/>

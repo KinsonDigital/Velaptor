@@ -7,6 +7,7 @@ namespace VelaptorTests.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Helpers;
 using Velaptor.Graphics;
 using Xunit;
@@ -58,6 +59,18 @@ public class ImageDataTests
         {
             _ = new ImageData(new Color[1, 2], 1, 22);
         }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string filePath)
+    {
+        // Arrange & Act
+        var sut = new ImageData(null, 1, 1, filePath);
+
+        // Assert
+        sut.FilePath.Should().BeEmpty();
     }
     #endregion
 
@@ -196,8 +209,8 @@ public class ImageDataTests
     public void Equals_WhenBothAreSameTypeAndIsEqual_ReturnsTrue()
     {
         // Arrange
-        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
-        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
+        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
+        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
 
         // Act
         var actual = imageDataA.Equals(imageDataB);
@@ -332,6 +345,22 @@ public class ImageDataTests
 
         // Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(10, 20, null, "10 x 20")]
+    [InlineData(10, 20, "", "10 x 20")]
+    [InlineData(10, 20, "test-file", "10 x 20 | test-file")]
+    public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string filePath, string expected)
+    {
+        // Arrange
+        var sut = new ImageData(new Color[width, height], width, height, filePath);
+
+        // Act
+        var actual = sut.ToString();
+
+        // Assert
+        actual.Should().Be(expected);
     }
     #endregion
 
