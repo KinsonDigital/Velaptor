@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureRendererTests.cs" company="KinsonDigital">
+// <copyright file="TextureRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -361,6 +361,53 @@ public class TextureRendererTests
 
         // Act
         sut.Render(mockTexture.Object, 10, 20, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    public void Render_WhenInvoking5ParamOverloadWithAngle_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int textureId = 1234;
+        const int expectedX = 10;
+        const int expectedY = 20;
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            180f,
+            Color.White,
+            RenderEffects.None,
+            textureId);
+
+        var mockTexture = new Mock<ITexture>();
+        mockTexture.SetupGet(p => p.Id).Returns(textureId);
+        mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+        mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+            {
+                actualBatchItem = item;
+            });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, 10, 20, 180, 123);
 
         // Assert
         this.mockBatchingManager
