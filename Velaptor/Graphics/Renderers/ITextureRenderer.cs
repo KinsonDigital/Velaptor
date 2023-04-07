@@ -55,7 +55,7 @@ public interface ITextureRenderer
     void Render(ITexture texture, int x, int y, int layer = 0);
 
     /// <summary>
-    /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
+    /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates and the given <paramref name="angle"/>.
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
