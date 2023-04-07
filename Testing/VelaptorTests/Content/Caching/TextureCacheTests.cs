@@ -253,6 +253,8 @@ public class TextureCacheTests
     public void TotalCachedItems_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
 
@@ -267,6 +269,8 @@ public class TextureCacheTests
     public void CacheKeys_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var expected = new[] { TextureFilePath }.AsReadOnly();
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
@@ -302,6 +306,7 @@ public class TextureCacheTests
         // Arrange
         const string invalidFileType = $"{TextureDirPath}/{TextureName}.txt";
         this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
             .Returns(() => new FontMetaDataParseResult(
                 false,
@@ -329,6 +334,7 @@ public class TextureCacheTests
         const string nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
 
         this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFontFilePathWithMetaData))
             .Returns(() => new FontMetaDataParseResult(
                 true,
@@ -421,6 +427,8 @@ public class TextureCacheTests
     public void GetItem_WhenGettingTexture_CachesAndReturnsSameTexture()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockTextureParseResult();
         var sut = CreateSystemUnderTest();
 
@@ -443,6 +451,7 @@ public class TextureCacheTests
     public void GetItem_WhenGettingFontAtlasTexture_CachesAndReturnsSameAtlasTexture()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         MockFontParseResult();
         var sut = CreateSystemUnderTest();
 
@@ -474,6 +483,8 @@ public class TextureCacheTests
         expected += $"{Environment.NewLine}Font Content Path MetaData Syntax: <file-path>|size:<font-size>";
         expected += $"{Environment.NewLine}Example: C:/Windows/Fonts/my-font.ttf|size:12";
 
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockTextureParseResult();
 
         var sut = CreateSystemUnderTest();
@@ -496,6 +507,8 @@ public class TextureCacheTests
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(123u);
 
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         this.mockDisposeReactable.Setup(m =>
                 m.Push(It.Ref<DisposeTextureData>.IsAny, It.IsAny<Guid>()))
             .Callback((in DisposeTextureData data, Guid _) =>
@@ -531,7 +544,8 @@ public class TextureCacheTests
         // Arrange
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(123u);
-
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockImageData();
         MockTextureCreation(mockTexture.Object);
 
@@ -568,6 +582,7 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetExtension(texturePathB)).Returns(TextureExtension);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(texturePathA)).Returns("textureA");
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(texturePathB)).Returns("textureB");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         MockImageData();
         MockTextureCreation(mockTextureA.Object, "textureA", texturePathA);

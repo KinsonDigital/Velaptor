@@ -73,11 +73,10 @@ public sealed class SoundLoader : ILoader<ISound>
     /// <returns>The loaded sound.</returns>
     public ISound Load(string contentPathOrName)
     {
-        var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
         string filePath;
         string cacheKey;
 
-        if (isFullFilePath)
+        if (this.path.IsPathRooted(contentPathOrName))
         {
             filePath = contentPathOrName;
             cacheKey = filePath;
@@ -115,7 +114,7 @@ public sealed class SoundLoader : ILoader<ISound>
     [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
     public void Unload(string contentNameOrPath)
     {
-        var isInvalidFullFilePath = contentNameOrPath.HasInvalidFullFilePathSyntax();
+        var isInvalidFullFilePath = !this.path.IsPathRooted(contentNameOrPath);
 
         string filePath;
 
