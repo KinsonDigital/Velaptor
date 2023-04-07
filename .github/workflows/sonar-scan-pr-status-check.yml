@@ -19,7 +19,7 @@ on:
 jobs:
   sonar_analyze_code:
     name: Analyze Code
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 11
         uses: actions/setup-java@v3
@@ -39,7 +39,7 @@ jobs:
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
-          path: ~\sonar\cache
+          path: ~/sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
@@ -47,24 +47,24 @@ jobs:
         id: cache-sonar-scanner
         uses: actions/cache@v3
         with:
-          path: .\.sonar\scanner
+          path: ./.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+          New-Item -Path ./.sonar/scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
       - name: Build and Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"KinsonDigital_Velaptor" /o:"kinsondigital" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"KinsonDigital_Velaptor" /o:"kinsondigital" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
 
           dotnet clean "${{ github.workspace }}/Velaptor/Velaptor.csproj";
           dotnet build "${{ github.workspace }}/Velaptor/Velaptor.csproj" -c Debug;
 
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
