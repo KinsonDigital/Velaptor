@@ -1,4 +1,4 @@
-// <copyright file="ImageData.cs" company="KinsonDigital">
+﻿// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -219,16 +219,6 @@ public readonly record struct ImageData
         }
 
         if (FilePath != other.FilePath)
-        {
-            return false;
-        }
-
-        if (Width != other.Width)
-        {
-            return false;
-        }
-
-        if (Height != other.Height)
         {
             return false;
         }

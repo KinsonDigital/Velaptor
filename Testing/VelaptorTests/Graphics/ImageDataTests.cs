@@ -1,4 +1,4 @@
-// <copyright file="ImageDataTests.cs" company="KinsonDigital">
+﻿// <copyright file="ImageDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -276,6 +276,20 @@ public class ImageDataTests
 
         // Assert
         Assert.False(actual);
+    }
+
+    [Fact]
+    public void Equals_WhenFilePathsAreNotEqual_ReturnsFalse()
+    {
+        // Arrange
+        var sutA = new ImageData(new Color[2, 2], 2, 2, "itemA");
+        var sutB = new ImageData(new Color[2, 2], 2, 2, "itemB");
+
+        // Act
+        var actual = sutA.Equals(sutB);
+
+        // Assert
+        actual.Should().BeFalse();
     }
 
     [Fact]
