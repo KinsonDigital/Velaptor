@@ -254,7 +254,6 @@ public class TextureCacheTests
     {
         // Arrange
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
 
@@ -270,7 +269,6 @@ public class TextureCacheTests
     {
         // Arrange
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var expected = new[] { TextureFilePath }.AsReadOnly();
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
@@ -428,7 +426,6 @@ public class TextureCacheTests
     {
         // Arrange
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockTextureParseResult();
         var sut = CreateSystemUnderTest();
 
@@ -484,7 +481,6 @@ public class TextureCacheTests
         expected += $"{Environment.NewLine}Example: C:/Windows/Fonts/my-font.ttf|size:12";
 
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockTextureParseResult();
 
         var sut = CreateSystemUnderTest();
@@ -508,7 +504,6 @@ public class TextureCacheTests
         mockTexture.SetupGet(p => p.Id).Returns(123u);
 
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         this.mockDisposeReactable.Setup(m =>
                 m.Push(It.Ref<DisposeTextureData>.IsAny, It.IsAny<Guid>()))
             .Callback((in DisposeTextureData data, Guid _) =>
@@ -545,7 +540,6 @@ public class TextureCacheTests
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(123u);
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         MockImageData();
         MockTextureCreation(mockTexture.Object);
 
