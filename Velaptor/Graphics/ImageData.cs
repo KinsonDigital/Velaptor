@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageData.cs" company="KinsonDigital">
+// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -132,6 +132,62 @@ public readonly record struct ImageData
         }
 
         return this;
+    }
+
+    /// <summary>
+    /// Flips the image horizontally.
+    /// </summary>
+    public void FlipHorizontally()
+    {
+        var newPixels = new Color[Width, Height];
+
+        // Flip the pixels horizontally
+        for (var x = 0; x < Width; x++)
+        {
+            for (var y = 0; y < Height; y++)
+            {
+                var newX = Width - 1 - x;
+
+                newPixels[newX, y] = Pixels[x, y];
+            }
+        }
+
+        // Set the new pixels
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                Pixels[x, y] = newPixels[x, y];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Flips the image vertically.
+    /// </summary>
+    public void FlipVertically()
+    {
+        var newPixels = new Color[Width, Height];
+
+        // Flip the pixels horizontally
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                var newY = Height - 1 - y;
+
+                newPixels[x, newY] = Pixels[x, y];
+            }
+        }
+
+        // Set the new pixels
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                Pixels[x, y] = newPixels[x, y];
+            }
+        }
     }
 
     /// <summary>

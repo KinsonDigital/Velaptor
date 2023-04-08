@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageDataTests.cs" company="KinsonDigital">
+// <copyright file="ImageDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -141,6 +141,62 @@ public class ImageDataTests
         // Last 2 columns
         Assert.All(col8, clr => Assert.True(ClrMatches(clr, Color.Blue)));
         Assert.All(col9, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+    }
+
+    [Fact]
+    public void FlipHorizontally_WhenInvoked_FlipsImageHorizontally()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[4, 4], 4, 4);
+
+        // Set the first 2 columns to blue
+        sut = TestHelpers.SetColumnColorTo(sut, 0, Color.Blue);
+        sut = TestHelpers.SetColumnColorTo(sut, 1, Color.Blue);
+
+        // Set the last 2 columns to yellow
+        sut = TestHelpers.SetColumnColorTo(sut, 2, Color.Yellow);
+        sut = TestHelpers.SetColumnColorTo(sut, 3, Color.Yellow);
+
+        // Act
+        sut.FlipHorizontally();
+        var col0 = TestHelpers.GetColumn(sut, 0);
+        var col1 = TestHelpers.GetColumn(sut, 1);
+        var col2 = TestHelpers.GetColumn(sut, 2);
+        var col3 = TestHelpers.GetColumn(sut, 3);
+
+        // Assert
+        col0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        col1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        col2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        col3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+    }
+
+    [Fact]
+    public void FlipVertically_WhenInvoked_FlipsImageVertically()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[4, 4], 4, 4);
+
+        // Set the first 2 rows to blue
+        sut = TestHelpers.SetRowColorTo(sut, 0, Color.Blue);
+        sut = TestHelpers.SetRowColorTo(sut, 1, Color.Blue);
+
+        // Set the last 2 rows to yellow
+        sut = TestHelpers.SetRowColorTo(sut, 2, Color.Yellow);
+        sut = TestHelpers.SetRowColorTo(sut, 3, Color.Yellow);
+
+        // Act
+        sut.FlipVertically();
+        var row0 = TestHelpers.GetRow(sut, 0);
+        var row1 = TestHelpers.GetRow(sut, 1);
+        var row2 = TestHelpers.GetRow(sut, 2);
+        var row3 = TestHelpers.GetRow(sut, 3);
+
+        // Assert
+        row0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        row1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        row2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        row3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
     }
 
     [Fact]

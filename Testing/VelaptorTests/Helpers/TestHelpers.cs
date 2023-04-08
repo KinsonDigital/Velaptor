@@ -202,6 +202,56 @@ public static class TestHelpers
     }
 
     /// <summary>
+    /// Sets the given <paramref name="column"/> in the given <paramref name="image"/> to the given <paramref name="clr"/>.
+    /// </summary>
+    /// <param name="image">The image to change.</param>
+    /// <param name="column">The column to change.</param>
+    /// <param name="clr">The color to set the row to.</param>
+    /// <returns>The changed image.</returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the given <paramref name="column"/> is outside of bounds of the given <paramref name="image"/>.
+    /// </exception>
+    public static ImageData SetColumnColorTo(ImageData image, int column, NETColor clr)
+    {
+        if (column < 0 || column > image.Width - 1)
+        {
+            throw new Exception($"The column '{column}' does not exist.");
+        }
+
+        for (var y = 0; y < image.Height; y++)
+        {
+            image.Pixels[column, y] = clr;
+        }
+
+        return image;
+    }
+
+    /// <summary>
+    /// Sets the given <paramref name="row"/> in the given <paramref name="image"/> to the given <paramref name="clr"/>.
+    /// </summary>
+    /// <param name="image">The image to change.</param>
+    /// <param name="row">The row to change.</param>
+    /// <param name="clr">The color to set the row to.</param>
+    /// <returns>The changed image.</returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the given <paramref name="row"/> is outside of bounds of the given <paramref name="image"/>.
+    /// </exception>
+    public static ImageData SetRowColorTo(ImageData image, int row, NETColor clr)
+    {
+        if (row < 0 || row > image.Height - 1)
+        {
+            throw new Exception($"The row '{row}' does not exist.");
+        }
+
+        for (var x = 0; x < image.Width; x++)
+        {
+            image.Pixels[x, row] = clr;
+        }
+
+        return image;
+    }
+
+    /// <summary>
     /// Creates a new two dimensional array of pixel colors using the given <paramref name="color"/>
     /// with enough pixels to fill an image that has the given <paramref name="width"/> and <paramref name="height"/>.
     /// </summary>
