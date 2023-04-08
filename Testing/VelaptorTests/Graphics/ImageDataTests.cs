@@ -61,6 +61,21 @@ public class ImageDataTests
         }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
     }
 
+    [Fact]
+    public void Ctor_WhenInvoked_FlipStatesSetToCorrectValues()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[2, 2], 2, 2);
+
+        // Act
+        var actualHorizontalFlip = sut.IsFlippedHorizontally;
+        var actualVerticalFlip = sut.IsFlippedVertically;
+
+        // Assert
+        actualHorizontalFlip.Should().BeFalse();
+        actualVerticalFlip.Should().BeFalse();
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -169,6 +184,7 @@ public class ImageDataTests
         col1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
         col2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
         col3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        sut.IsFlippedHorizontally.Should().BeTrue();
     }
 
     [Fact]
@@ -197,6 +213,7 @@ public class ImageDataTests
         row1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
         row2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
         row3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        sut.IsFlippedVertically.Should().BeTrue();
     }
 
     [Fact]

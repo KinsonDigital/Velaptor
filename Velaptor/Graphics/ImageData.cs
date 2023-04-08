@@ -14,6 +14,8 @@ using System.Text;
 /// </summary>
 public readonly record struct ImageData
 {
+    private readonly bool[] flipState = { false, false };
+
     /// <summary>
     /// Gets the pixel colors of the image.
     /// </summary>
@@ -41,6 +43,16 @@ public readonly record struct ImageData
     /// </summary>
     /// <remarks>This is only for reference.</remarks>
     public string FilePath { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether or not the image is flipped horizontally.
+    /// </summary>
+    public bool IsFlippedHorizontally => this.flipState[0];
+
+    /// <summary>
+    /// Gets a value indicating whether or not the image is flipped vertically.
+    /// </summary>
+    public bool IsFlippedVertically => this.flipState[1];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageData"/> struct.
@@ -160,6 +172,8 @@ public readonly record struct ImageData
                 Pixels[x, y] = newPixels[x, y];
             }
         }
+
+        this.flipState[0] = !this.flipState[0];
     }
 
     /// <summary>
@@ -188,6 +202,8 @@ public readonly record struct ImageData
                 Pixels[x, y] = newPixels[x, y];
             }
         }
+
+        this.flipState[1] = !this.flipState[1];
     }
 
     /// <summary>
