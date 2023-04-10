@@ -188,7 +188,7 @@ public class SoundLoaderTests
     [Theory]
     [InlineData(SoundName, "")]
     [InlineData(SoundName, ".txt")]
-    public void Load_WhenLoadingOggSoundByFileNameNameOnly_LoadsOggSound(string contentName, string extension)
+    public void Load_WhenLoadingOggSoundByFileNameOnly_LoadsOggSound(string contentName, string extension)
     {
         // Arrange
         this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);

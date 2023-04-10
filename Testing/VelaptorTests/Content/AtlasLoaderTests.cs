@@ -326,7 +326,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenAtlasImageDataFileDoesNotExist_ThrowsException()
+    public void Load_WhenAtlasImageFileDoesNotExist_ThrowsException()
     {
         // Arrange
         const string jsonContentName = "missing-file";
