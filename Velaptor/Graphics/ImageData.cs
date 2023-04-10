@@ -39,7 +39,7 @@ public readonly record struct ImageData
     public uint Height { get; }
 
     /// <summary>
-    /// Gets the file path of where the image exists.
+    /// Gets the file path of the image.
     /// </summary>
     /// <remarks>This is only for reference.</remarks>
     public string FilePath { get; }
@@ -62,7 +62,7 @@ public readonly record struct ImageData
     /// <param name="height">The height of the image.</param>
     /// <param name="filePath">The file path of where the image exists.</param>
     /// <remarks>
-    ///     The <paramref name="filePath"/> is used for debugging purposes only.
+    ///     The <paramref name="filePath"/> is used for reference only.
     /// </remarks>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",

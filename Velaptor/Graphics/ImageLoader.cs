@@ -52,8 +52,9 @@ public class ImageLoader : IImageLoader
     /// </summary>
     /// <param name="filePath">The relative or absolute file path to the image.</param>
     /// <remarks>
-    ///     If the <paramref name="filePath"/> is a relative path, then the path will be resolved
+    ///     If the <paramref name="filePath"/> is a relative path, it will be resolved
     ///     to the content directory of the application.
+    ///     <br/>
     ///     The default content directory is <b>Content/Graphics/</b>.
     /// </remarks>
     /// <returns>The image data.</returns>
