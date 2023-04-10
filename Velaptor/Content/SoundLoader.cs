@@ -112,19 +112,19 @@ public sealed class SoundLoader : ILoader<ISound>
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-    public void Unload(string contentNameOrPath)
+    public void Unload(string contentPathOrName)
     {
-        var isInvalidFullFilePath = !this.path.IsPathRooted(contentNameOrPath);
+        var isInvalidFullFilePath = !this.path.IsPathRooted(contentPathOrName);
 
         string filePath;
 
         if (isInvalidFullFilePath)
         {
-            filePath = this.soundPathResolver.ResolveFilePath(contentNameOrPath);
+            filePath = this.soundPathResolver.ResolveFilePath(contentPathOrName);
         }
         else
         {
-            filePath = contentNameOrPath;
+            filePath = contentPathOrName;
         }
 
         this.soundCache.Unload(filePath);

@@ -94,5 +94,5 @@ public sealed class TextureLoader : ILoader<ITexture>
     }
 
     /// <inheritdoc/>
-    public void Unload(string contentNameOrPath) => this.textureCache.Unload(contentNameOrPath);
+    public void Unload(string contentPathOrName) => this.textureCache.Unload(contentPathOrName);
 }
