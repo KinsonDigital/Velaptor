@@ -23,6 +23,7 @@ public sealed class SoundLoader : ILoader<ISound>
     private const string Mp3FileExtension = ".mp3";
     private readonly IItemCache<string, ISound> soundCache;
     private readonly IContentPathResolver soundPathResolver;
+    private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
 
@@ -37,6 +38,7 @@ public sealed class SoundLoader : ILoader<ISound>
         this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
+        this.directory = IoC.Container.GetInstance<IDirectory>();
     }
 
     /// <summary>
@@ -44,6 +46,7 @@ public sealed class SoundLoader : ILoader<ISound>
     /// </summary>
     /// <param name="soundCache">Caches textures for later use.</param>
     /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+    /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
@@ -52,16 +55,19 @@ public sealed class SoundLoader : ILoader<ISound>
     internal SoundLoader(
         IItemCache<string, ISound> soundCache,
         IContentPathResolver soundPathResolver,
+        IDirectory directory,
         IFile file,
         IPath path)
     {
         EnsureThat.ParamIsNotNull(soundCache);
         EnsureThat.ParamIsNotNull(soundPathResolver);
+        EnsureThat.ParamIsNotNull(directory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
 
         this.soundCache = soundCache;
         this.soundPathResolver = soundPathResolver;
+        this.directory = directory;
         this.file = file;
         this.path = path;
     }
@@ -71,62 +77,63 @@ public sealed class SoundLoader : ILoader<ISound>
     /// </summary>
     /// <param name="contentPathOrName">The full file path or name of the sound to load.</param>
     /// <returns>The loaded sound.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     public ISound Load(string contentPathOrName)
     {
-        var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
-        string filePath;
-        string cacheKey;
+        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
 
-        if (isFullFilePath)
-        {
-            filePath = contentPathOrName;
-            cacheKey = filePath;
-        }
-        else
-        {
-            contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-            filePath = this.soundPathResolver.ResolveFilePath(contentPathOrName);
-            cacheKey = filePath;
-        }
+        var isPathRooted = this.path.IsPathRooted(contentPathOrName);
 
-        if (this.file.Exists(filePath))
+        if (!isPathRooted)
         {
-            var fileExtension = this.path.GetExtension(filePath);
-            var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
-            var isInvalidExtension = validExtensions.All(e => e != fileExtension);
+            var contentDirPath = this.soundPathResolver.ResolveDirPath();
 
-            if (isInvalidExtension)
+            if (this.directory.Exists(contentDirPath) is false)
             {
-                var exceptionMsg = $"The file '{filePath}' must be a sound file with";
-                exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
-
-                throw new LoadSoundException(exceptionMsg);
+                this.directory.CreateDirectory(contentDirPath);
             }
         }
-        else
+
+        var filePath = isPathRooted
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
+
+        if (!this.file.Exists(filePath))
         {
             throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
-        return this.soundCache.GetItem(cacheKey);
+        var fileExtension = this.path.GetExtension(filePath);
+        var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
+        var isInvalidExtension = validExtensions.All(e => e != fileExtension);
+
+        if (!isInvalidExtension)
+        {
+            return this.soundCache.GetItem(filePath);
+        }
+
+        var exceptionMsg = $"The file '{filePath}' must be a sound file with";
+        exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
+
+        throw new LoadSoundException(exceptionMsg);
     }
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-    public void Unload(string contentNameOrPath)
+    public void Unload(string contentPathOrName)
     {
-        var isInvalidFullFilePath = contentNameOrPath.HasInvalidFullFilePathSyntax();
-
-        string filePath;
-
-        if (isInvalidFullFilePath)
-        {
-            filePath = this.soundPathResolver.ResolveFilePath(contentNameOrPath);
-        }
-        else
-        {
-            filePath = contentNameOrPath;
-        }
+        var filePath = this.path.IsPathRooted(contentPathOrName)
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
 
         this.soundCache.Unload(filePath);
     }

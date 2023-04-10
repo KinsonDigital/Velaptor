@@ -185,101 +185,6 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
-    /// is a fully qualified path.
-    /// </summary>
-    /// <param name="path">Processes directory and file paths.</param>
-    /// <returns><c>true</c> if valid.</returns>
-    /// <example>
-    /// <list type="number">
-    ///     <item>Value of <c>null</c> will return <c>false</c>.</item>
-    ///     <item><c>null</c> or <c>empty</c> will returns <c>false</c>.</item>
-    ///     <item>
-    ///         Start with a drive letter.
-    ///         <para>Value of <c>C:/</c> will return <c>true</c>.</para>
-    ///     </item>
-    ///     <item>
-    ///         Contains at least one directory.
-    ///         <para>will return <c>true</c>: C:/my-directory</para>
-    ///     </item>
-    ///     <item>
-    ///         Must contain a file name with file extension.
-    ///         <list type="bullet">
-    ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>true</c>.</item>
-    ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>false</c></item>
-    ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>false</c></item>
-    ///         </list>
-    ///     </item>
-    /// </list>
-    /// </example>
-    /// <remarks>
-    ///     This does not check if the path exists.  It is for valid path syntax checks only.
-    /// </remarks>
-    public static bool HasValidFullFilePathSyntax(this string path)
-    {
-        // Must not be null or empty
-        if (string.IsNullOrEmpty(path))
-        {
-            return false;
-        }
-
-        // Must have a drive letter
-        if (path.Contains(':') is false && path.DoesNotStartWith(':'))
-        {
-            return false;
-        }
-
-        path = path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
-
-        if (path.Contains(CrossPlatDirSeparatorChar) is false)
-        {
-            return false;
-        }
-
-        // Must have a directory path
-        if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))
-        {
-            return false;
-        }
-
-        // Must have a file name with an extension
-        return !string.IsNullOrEmpty(Path.GetFileName(path)) && !string.IsNullOrEmpty(Path.GetExtension(path));
-    }
-
-    /// <summary>
-    /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
-    /// is an invalid, fully qualified path.
-    /// </summary>
-    /// <param name="path">Processes directory and file paths.</param>
-    /// <returns><c>true</c> if invalid.</returns>
-    /// <example>
-    /// <list type="number">
-    ///     <item>Value of <c>null</c> will return <c>true</c>.</item>
-    ///     <item><c>null</c> or <c>empty</c> will returns <c>true</c>.</item>
-    ///     <item>
-    ///         Start with a drive letter
-    ///         <para>Value of <c>C:/</c> will return <c>false</c>.</para>
-    ///     </item>
-    ///     <item>
-    ///         Contains at least one directory
-    ///         <para>will return <c>false</c>: C:/my-directory</para>
-    ///     </item>
-    ///     <item>
-    ///         Must contain a file name with a file extension.
-    ///         <list type="bullet">
-    ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>false</c>.</item>
-    ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>true</c></item>
-    ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>true</c></item>
-    ///         </list>
-    ///     </item>
-    /// </list>
-    /// </example>
-    /// <remarks>
-    ///     This does not check if the path exists.  This is for valid path syntax checks only.
-    /// </remarks>
-    public static bool HasInvalidFullFilePathSyntax(this string path) => !HasValidFullFilePathSyntax(path);
-
-    /// <summary>
     /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
     /// </summary>
     /// <param name="path">Processes directory and file paths.</param>
@@ -730,7 +635,6 @@ internal static class InternalExtensionMethods
         paths.Select(p => p.Contains(WinDirSeparatorChar)
                 ? p.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar)
                 : p)
-            .ToArray()
             .ToReadOnlyCollection();
 
     /// <summary>

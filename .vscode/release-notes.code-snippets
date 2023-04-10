@@ -32,6 +32,14 @@
 		],
 		"description": "Link to a pull request"
 	},
+	"Issue Dependency Update": {
+		"scope": "markdown",
+		"prefix": "issue-dep-update",
+		"body": [
+			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) - Updated **${2:packge name}** from _**v${3:from version}**_ to _**v${4:to version}**_"
+		],
+		"description": "Link to an issue for a dependency update."
+	},
 	"PR Dependency Update": {
 		"scope": "markdown",
 		"prefix": "pr-dep-update",

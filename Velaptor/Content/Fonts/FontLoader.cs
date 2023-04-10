@@ -174,7 +174,7 @@ public sealed class FontLoader : ILoader<IFont>
                 // If the file path is a full file path, leave it be.
                 // If it is not, then it is a content name and could be a file name with an extension.
                 // If this is the case, remove the extension
-                if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax() is false)
+                if (this.path.IsPathRooted(parseResult.MetaDataPrefix) is false)
                 {
                     var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
@@ -202,7 +202,7 @@ public sealed class FontLoader : ILoader<IFont>
             throw new CachingMetaDataException(exceptionMsg);
         }
 
-        fullFontFilePath = fullFontFilePath.HasValidFullFilePathSyntax()
+        fullFontFilePath = this.path.IsPathRooted(fullFontFilePath)
             ? parseResult.MetaDataPrefix
             : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 
@@ -242,7 +242,7 @@ public sealed class FontLoader : ILoader<IFont>
         {
             if (parseResult.IsValid)
             {
-                var fullFilePath = parseResult.MetaDataPrefix.HasValidFullFilePathSyntax()
+                var fullFilePath = this.path.IsPathRooted(parseResult.MetaDataPrefix)
                     ? parseResult.MetaDataPrefix
                     : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 

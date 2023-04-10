@@ -89,6 +89,27 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
     /// </exception>
+    public void Render(ITexture texture, int x, int y, float angle, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, srcRect, destRect, 1, angle, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
     public void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0) =>
         Render(texture, x, y, Color.White, effects, layer);
 

@@ -37,7 +37,6 @@ using TextureRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
 /// </summary>
 public class TextureRendererTests
 {
-    private const uint TextureShaderId = 1111u;
     private const uint TextureId = 456u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
@@ -57,15 +56,8 @@ public class TextureRendererTests
     public TextureRendererTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
-
         this.mockGLService = new Mock<IOpenGLService>();
-        this.mockGLService.Setup(m => m.ProgramLinkedSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.ShaderCompiledSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
-
         this.mockShader = new Mock<IShaderProgram>();
-        this.mockShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
-
         this.mockGPUBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
@@ -133,10 +125,6 @@ public class TextureRendererTests
             .Returns(mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateRenderTextureReactable())
             .Returns(mockTextureRenderBatchReactable.Object);
-
-        var mockFontTextureAtlas = new Mock<ITexture>();
-        mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
-        mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
     }
 
     #region Constructor Tests
@@ -361,6 +349,53 @@ public class TextureRendererTests
 
         // Act
         sut.Render(mockTexture.Object, 10, 20, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    public void Render_WhenInvoking5ParamOverloadWithAngle_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int textureId = 1234;
+        const int expectedX = 10;
+        const int expectedY = 20;
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        var expectedSrcRect = new RectangleF(0f, 0f, expectedWidth, expectedHeight);
+        var expectedDestRect = new RectangleF(expectedX, expectedY, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            180f,
+            Color.White,
+            RenderEffects.None,
+            textureId);
+
+        var mockTexture = new Mock<ITexture>();
+        mockTexture.SetupGet(p => p.Id).Returns(textureId);
+        mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+        mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        this.mockBatchingManager
+            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()))
+            .Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+            {
+                actualBatchItem = item;
+            });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, 10, 20, 180, 123);
 
         // Assert
         this.mockBatchingManager

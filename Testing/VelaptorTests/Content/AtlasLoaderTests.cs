@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO.Abstractions;
 using System.Linq;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -35,6 +36,7 @@ public class AtlasLoaderTests
     private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
     private readonly Mock<IContentPathResolver> mockAtlasPathResolver;
     private readonly Mock<IJSONService> mockJSONService;
+    private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -50,6 +52,8 @@ public class AtlasLoaderTests
         this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(DirPath);
 
         this.mockJSONService = new Mock<IJSONService>();
+
+        this.mockDirectory = new Mock<IDirectory>();
 
         this.mockFile = new Mock<IFile>();
         this.mockFile.Setup(m => m.ReadAllText(AtlasDataFilePath))
@@ -75,6 +79,7 @@ public class AtlasLoaderTests
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         };
@@ -96,6 +101,7 @@ public class AtlasLoaderTests
                 null,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         };
@@ -117,6 +123,7 @@ public class AtlasLoaderTests
                 this.mockAtlasDataFactory.Object,
                 null,
                 this.mockJSONService.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         };
@@ -137,6 +144,7 @@ public class AtlasLoaderTests
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
                 null,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         };
@@ -145,6 +153,28 @@ public class AtlasLoaderTests
         act.Should()
             .Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'jsonService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullDirectoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AtlasLoader(
+                this.mockTextureCache.Object,
+                this.mockAtlasDataFactory.Object,
+                this.mockAtlasPathResolver.Object,
+                this.mockJSONService.Object,
+                null,
+                this.mockFile.Object,
+                this.mockPath.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -158,6 +188,7 @@ public class AtlasLoaderTests
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
+                this.mockDirectory.Object,
                 null,
                 this.mockPath.Object);
         };
@@ -179,6 +210,7 @@ public class AtlasLoaderTests
                 this.mockAtlasDataFactory.Object,
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 null);
         };
@@ -204,7 +236,7 @@ public class AtlasLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentNameOrPath')");
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -212,6 +244,8 @@ public class AtlasLoaderTests
     {
         // Arrange
         const string extension = ".txt";
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -219,7 +253,26 @@ public class AtlasLoaderTests
 
         // Assert
         act.Should().Throw<LoadAtlasException>()
-            .WithMessage("When performing full content file path loads, the files must be a '.png' or '.json' extension.");
+            .WithMessage("When loading atlas data with fully qualified paths, the files must be a '.png' or '.json' extension.");
+    }
+
+    [Fact]
+    public void Load_WhenContentDirPathDoesNotExist_CreateDirectory()
+    {
+        // Arrange
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(".png");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(DirPath);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Load("test-content");
+
+        // Assert
+        this.mockAtlasPathResolver.VerifyOnce(m => m.ResolveDirPath());
+        this.mockDirectory.VerifyOnce(m => m.CreateDirectory(DirPath));
     }
 
     [Fact]
@@ -231,6 +284,7 @@ public class AtlasLoaderTests
         var sut = CreateSystemUnderTest();
 
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(TextureExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var atlasData = MockAtlasJSONData().ToArray();
         MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, $"{AtlasContentName}");
@@ -240,7 +294,6 @@ public class AtlasLoaderTests
 
         // Assert
         this.mockPath.Verify(m => m.GetFileNameWithoutExtension(AtlasImageFilePath), Times.Once);
-        this.mockPath.Verify(m => m.GetDirectoryName(AtlasImageFilePath), Times.Once);
         this.mockFile.Verify(m => m.ReadAllText(AtlasDataFilePath), Times.Once());
         this.mockJSONService.Verify(m => m.Deserialize<AtlasSubTextureData[]>(FakeJSONData), Times.Once);
         this.mockAtlasDataFactory.Verify(m => m.Create(atlasData, DirPath, $"{AtlasContentName}"));
@@ -248,21 +301,21 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenAtlasJSONDataFileDoNotExist_ThrowsException()
+    public void Load_WhenAtlasJSONDataFileDoesNotExist_ThrowsException()
     {
         // Arrange
-        const string dirPath = @"C:/app-dir/content/atlas";
         const string contentName = "missing-json-file";
-        const string invalidFilePath = $"{dirPath}/{contentName}{AtlasDataExtension}";
+        const string invalidFilePath = $"{DirPath}/{contentName}{AtlasDataExtension}";
         var sut = CreateSystemUnderTest();
 
-        var expected = $"The atlas data directory '{dirPath}' does not contain the";
-        expected += $" required '{dirPath}/{contentName}{AtlasDataExtension}' atlas data file.";
+        var expected = $"The atlas data directory '{DirPath}' does not contain the";
+        expected += $" required '{DirPath}/{contentName}{AtlasDataExtension}' atlas data file.";
 
         this.mockFile.Setup(m => m.Exists(invalidFilePath)).Returns(false);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(invalidFilePath)).Returns(contentName);
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(AtlasDataExtension);
-        this.mockPath.Setup(m => m.GetDirectoryName(invalidFilePath)).Returns(dirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(invalidFilePath)).Returns(DirPath);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         // Act
         var act = () => sut.Load(invalidFilePath);
@@ -273,24 +326,24 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WhenAtlasImageDataFileDoNotExist_ThrowsException()
+    public void Load_WhenAtlasImageFileDoesNotExist_ThrowsException()
     {
         // Arrange
-        const string dirPath = @"C:/app-dir/content/atlas";
         const string jsonContentName = "missing-file";
         const string imageContentName = "missing-file";
-        const string validJSONFilePath = $"{dirPath}/{jsonContentName}{AtlasDataExtension}";
-        const string invalidImageFilePath = $"{dirPath}/{imageContentName}{TextureExtension}";
+        const string validJSONFilePath = $"{DirPath}/{jsonContentName}{AtlasDataExtension}";
+        const string invalidImageFilePath = $"{DirPath}/{imageContentName}{TextureExtension}";
         var sut = CreateSystemUnderTest();
 
-        var expected = $"The atlas data directory '{dirPath}' does not contain the";
-        expected += $" required '{dirPath}/{imageContentName}{TextureExtension}' atlas image file.";
+        var expected = $"The atlas data directory '{DirPath}' does not contain the";
+        expected += $" required '{DirPath}/{imageContentName}{TextureExtension}' atlas image file.";
 
         this.mockFile.Setup(m => m.Exists(validJSONFilePath)).Returns(true);
         this.mockFile.Setup(m => m.Exists(invalidImageFilePath)).Returns(false);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(invalidImageFilePath)).Returns(imageContentName);
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(TextureExtension);
-        this.mockPath.Setup(m => m.GetDirectoryName(invalidImageFilePath)).Returns(dirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(invalidImageFilePath)).Returns(DirPath);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         // Act
         var act = () => sut.Load(invalidImageFilePath);
@@ -341,29 +394,6 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WithDirPath_ThrowsException()
-    {
-        // Arrange
-        var expected = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
-        expected += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
-        expected += $"The path must be a fully qualified file path or content item name{Environment.NewLine}";
-        expected += @"located in the application's './Content/Atlas' directory.";
-        var mockAtlasData = new Mock<IAtlasData>();
-
-        var sut = CreateSystemUnderTest();
-
-        var atlasData = MockAtlasJSONData().ToArray();
-        MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, AtlasContentName);
-
-        // Act
-        var act = () => sut.Load(DirPath);
-
-        // Assert
-        act.Should().Throw<LoadAtlasException>()
-            .WithMessage(expected);
-    }
-
-    [Fact]
     public void Unload_WhenInvoked_UnloadsAtlas()
     {
         // Arrange
@@ -408,6 +438,7 @@ public class AtlasLoaderTests
             this.mockAtlasDataFactory.Object,
             this.mockAtlasPathResolver.Object,
             this.mockJSONService.Object,
+            this.mockDirectory.Object,
             this.mockFile.Object,
             this.mockPath.Object);
 

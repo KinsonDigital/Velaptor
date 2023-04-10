@@ -39,44 +39,6 @@ public class InternalExtensionMethodsTests
     // ReSharper disable HeapView.BoxingAllocation
 
     /// <summary>
-    /// Provides unit test data for the <see cref="InternalExtensionMethods.HasValidFullFilePathSyntax"/>() method.
-    /// </summary>
-    /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> HasValidFullFilePathSyntaxTestData()
-    {
-        yield return new object[] { "C:windows", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", false };
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { "non-path-value", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { @"C:\test-dir\test-file.txt", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", true };
-    }
-
-    /// <summary>
-    /// Provides unit test data for the <see cref="InternalExtensionMethods.HasInvalidFullFilePathSyntax"/>() method.
-    /// </summary>
-    /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsInvalidFilePathTestData()
-    {
-        yield return new object[] { @"C:\test-dir\test-file.txt", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
-        yield return new object[] { string.Empty, true };
-        yield return new object[] { null, true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", true };
-        yield return new object[] { "non-path-value", true };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
-        yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", true };
-        yield return new object[] { "C:windows", true };
-    }
-
-    /// <summary>
     /// Provides unit test data for the <see cref="InternalExtensionMethods.HasValidDriveSyntax"/>() method.
     /// </summary>
     /// <returns>The test data.</returns>
@@ -315,28 +277,6 @@ public class InternalExtensionMethodsTests
     {
         // Act
         var actual = value.GetLastDirName();
-
-        // Assert
-        Assert.Equal(expected, actual);
-    }
-
-    [Theory]
-    [MemberData(nameof(HasValidFullFilePathSyntaxTestData))]
-    public void HasValidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-    {
-        // Act
-        var actual = path.HasValidFullFilePathSyntax();
-
-        // Assert
-        Assert.Equal(expected, actual);
-    }
-
-    [Theory]
-    [MemberData(nameof(IsInvalidFilePathTestData))]
-    public void HasInvalidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-    {
-        // Act
-        var actual = path.HasInvalidFullFilePathSyntax();
 
         // Assert
         Assert.Equal(expected, actual);

@@ -7,10 +7,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.18</Version>
+    <Version>1.0.0-preview.19</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.18</FileVersion>
+    <FileVersion>1.0.0-preview.19</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -29,7 +29,6 @@
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
-    <PackageReleaseNotes>https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/ReleaseNotes/PreviewReleases/Release-Notes-v1.0.0-preview.14.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KinsonDigital/Velaptor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -105,7 +104,7 @@
     <PackageReference Include="FreeTypeSharp" Version="1.1.3" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.14" />
     <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.11" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -114,14 +113,14 @@
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Silk.NET" Version="2.16.0" />
+    <PackageReference Include="Silk.NET" Version="2.17.0" />
     <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="19.2.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="19.2.4" />
   </ItemGroup>
 
 </Project>

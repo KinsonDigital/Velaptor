@@ -49,9 +49,10 @@ public static class TestHelpers
     /// <param name="color">The color to set all of the <see cref="ImageData.Pixels"/>.</param>
     /// <param name="width">The width of the image that the pixels represent.</param>
     /// <param name="height">The height of the image that the pixels represent.</param>
+    /// <param name="filePath">The path to the file where the data came from.</param>
     /// <returns>The struct to test.</returns>
-    public static ImageData CreateImageData(NETColor color, uint width, uint height)
-        => new (CreatePixels(color, width, height), width, height);
+    public static ImageData CreateImageData(NETColor color, uint width, uint height, string filePath = "")
+        => new (CreatePixels(color, width, height), width, height, filePath);
 
     /// <summary>
     /// Returns all of the pixels from the given <paramref name="image"/>
@@ -198,6 +199,56 @@ public static class TestHelpers
         }
 
         return columnPixels.ToArray();
+    }
+
+    /// <summary>
+    /// Sets the given <paramref name="column"/> in the given <paramref name="image"/> to the given <paramref name="clr"/>.
+    /// </summary>
+    /// <param name="image">The image to change.</param>
+    /// <param name="column">The column to change.</param>
+    /// <param name="clr">The color to set the row to.</param>
+    /// <returns>The changed image.</returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the given <paramref name="column"/> is outside of bounds of the given <paramref name="image"/>.
+    /// </exception>
+    public static ImageData SetColumnColorTo(ImageData image, int column, NETColor clr)
+    {
+        if (column < 0 || column > image.Width - 1)
+        {
+            throw new Exception($"The column '{column}' does not exist.");
+        }
+
+        for (var y = 0; y < image.Height; y++)
+        {
+            image.Pixels[column, y] = clr;
+        }
+
+        return image;
+    }
+
+    /// <summary>
+    /// Sets the given <paramref name="row"/> in the given <paramref name="image"/> to the given <paramref name="clr"/>.
+    /// </summary>
+    /// <param name="image">The image to change.</param>
+    /// <param name="row">The row to change.</param>
+    /// <param name="clr">The color to set the row to.</param>
+    /// <returns>The changed image.</returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the given <paramref name="row"/> is outside of bounds of the given <paramref name="image"/>.
+    /// </exception>
+    public static ImageData SetRowColorTo(ImageData image, int row, NETColor clr)
+    {
+        if (row < 0 || row > image.Height - 1)
+        {
+            throw new Exception($"The row '{row}' does not exist.");
+        }
+
+        for (var x = 0; x < image.Width; x++)
+        {
+            image.Pixels[x, row] = clr;
+        }
+
+        return image;
     }
 
     /// <summary>

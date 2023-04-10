@@ -30,7 +30,7 @@ public class FontLoaderTests
     private const string FontExtension = ".ttf";
     private const string FontDirName = "fonts";
     private const string AppDirPath = "C:/app";
-    private const string ContentDirPath = @$"C:/{AppDirPath}/content";
+    private const string ContentDirPath = @$"{AppDirPath}/content";
     private const string FontContentName = "test-font";
     private const string FontContentDirPath = $@"{ContentDirPath}/{FontDirName}";
     private readonly string metaData = $"size:{FontSize}";
@@ -561,6 +561,7 @@ public class FontLoaderTests
     {
         // Arrange
         this.mockFile.Setup(m => m.Exists(this.fontFilePath)).Returns(false);
+        this.mockPath.Setup(m => m.IsPathRooted(this.fontFilePath)).Returns(true);
 
         var expected = $"The font content item '{this.fontFilePath}' does not exist.";
 
@@ -622,6 +623,7 @@ public class FontLoaderTests
     public void Load_WhenUsingFullFilePathWithMetaData_LoadsFont()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -734,6 +736,7 @@ public class FontLoaderTests
     public void Unload_WhenUnloadingWithFullFilePathAndMetaData_UnloadsFonts()
     {
         // Arrange
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string>())).Returns(true);
         var sut = CreateSystemUnderTest();
 
         // Act

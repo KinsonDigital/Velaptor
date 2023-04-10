@@ -157,7 +157,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             // If the metadata is valid and the prefix is a full qualified file path
             if (parseResult.IsValid)
             {
-                if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax())
+                if (this.path.IsPathRooted(parseResult.MetaDataPrefix))
                 {
                     fileNameWithoutExtension = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
@@ -192,7 +192,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         }
         else
         {
-            if (textureFilePath.HasValidFullFilePathSyntax())
+            if (this.path.IsPathRooted(textureFilePath))
             {
                 fileNameWithoutExtension = this.path.GetFileNameWithoutExtension(textureFilePath);
 
