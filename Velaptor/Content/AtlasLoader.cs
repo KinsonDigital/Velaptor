@@ -6,6 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Caching;
@@ -21,7 +22,6 @@ using Velaptor.Factories;
 /// </summary>
 public sealed class AtlasLoader : ILoader<IAtlasData>
 {
-    private const char WinDirSeparatorChar = '\\';
     private const char CrossPlatDirSeparatorChar = '/';
     private const string TextureExtension = ".png";
     private const string AtlasDataExtension = ".json";
@@ -29,6 +29,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     private readonly IAtlasDataFactory atlasDataFactory;
     private readonly IContentPathResolver atlasDataPathResolver;
     private readonly IJSONService jsonService;
+    private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
 
@@ -43,6 +44,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
         this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
         this.atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         this.jsonService = IoC.Container.GetInstance<IJSONService>();
+        this.directory = IoC.Container.GetInstance<IDirectory>();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
     }
@@ -54,6 +56,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// <param name="atlasDataFactory">Generates <see cref="IAtlasData"/> instances.</param>
     /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
     /// <param name="jsonService">Provides JSON related services.</param>
+    /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
@@ -64,6 +67,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
         IAtlasDataFactory atlasDataFactory,
         IContentPathResolver atlasDataPathResolver,
         IJSONService jsonService,
+        IDirectory directory,
         IFile file,
         IPath path)
     {
@@ -71,6 +75,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
         EnsureThat.ParamIsNotNull(atlasDataFactory);
         EnsureThat.ParamIsNotNull(atlasDataPathResolver);
         EnsureThat.ParamIsNotNull(jsonService);
+        EnsureThat.ParamIsNotNull(directory);
         EnsureThat.ParamIsNotNull(file);
         EnsureThat.ParamIsNotNull(path);
 
@@ -78,6 +83,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
         this.atlasDataFactory = atlasDataFactory;
         this.atlasDataPathResolver = atlasDataPathResolver;
         this.jsonService = jsonService;
+        this.directory = directory;
         this.file = file;
         this.path = path;
     }
@@ -87,15 +93,16 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// </summary>
     /// <param name="contentPathOrName">The content name or file path to the atlas data.</param>
     /// <returns>The loaded atlas data.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     Occurs if <paramref name="contentPathOrName"/> is null or empty.
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
     /// </exception>
-    /// <exception cref="LoadAtlasException">
-    ///     If the given full file path is not a <c>Texture(.png)</c> or <c>Atlas Data(.json)</c> file.
-    /// </exception>
-    /// <exception cref="LoadContentException">
-    ///     Occurs if directory path is used.  A non path content name or fully qualified file path is required.
-    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     /// <remarks>
     /// Valid Values:
     /// <list type="bullet">
@@ -112,18 +119,21 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// </remarks>
     public IAtlasData Load(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentPathOrName))
+        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
+
+        var isPathRooted = this.path.IsPathRooted(contentPathOrName);
+        var contentDirPath = isPathRooted
+            ? this.path.GetDirectoryName(contentPathOrName) ?? string.Empty
+            : this.atlasDataPathResolver.ResolveDirPath();
+
+        if (!isPathRooted && this.directory.Exists(contentDirPath) is false)
         {
-            throw new ArgumentNullException(
-                nameof(contentPathOrName),
-                "The string parameter must not be null or empty.");
+            this.directory.CreateDirectory(contentDirPath);
         }
 
-        var isFullFilePath = this.path.IsPathRooted(contentPathOrName);
         string name;
-        string dirPath;
 
-        if (isFullFilePath)
+        if (isPathRooted)
         {
             var validExtensions = new[] { TextureExtension, AtlasDataExtension };
             var extension = this.path.GetExtension(contentPathOrName);
@@ -137,9 +147,6 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
             }
 
             name = this.path.GetFileNameWithoutExtension(contentPathOrName);
-
-            dirPath = (this.path.GetDirectoryName(contentPathOrName) ?? string.Empty)
-                .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
         }
         else
         {
@@ -156,26 +163,23 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
             // Remove a possible file extension and return just the 'name' of the content.
             // The name of the content should always match the name of the file without the extension
             name = this.path.GetFileNameWithoutExtension(contentPathOrName);
-
-            // Resolve to the application's content directory where atlas data is located
-            dirPath = this.atlasDataPathResolver.ResolveDirPath();
         }
 
-        var atlasDataFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{name}{AtlasDataExtension}";
+        var atlasDataFilePath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{name}{AtlasDataExtension}";
 
         if (this.file.Exists(atlasDataFilePath) is false)
         {
-            var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
+            var exceptionMsg = $"The atlas data directory '{contentDirPath}' does not contain the";
             exceptionMsg += $" required '{atlasDataFilePath}' atlas data file.";
 
             throw new LoadAtlasException(exceptionMsg);
         }
 
-        var atlasImageFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{name}{TextureExtension}";
+        var atlasImageFilePath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{name}{TextureExtension}";
 
         if (this.file.Exists(atlasImageFilePath) is false)
         {
-            var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
+            var exceptionMsg = $"The atlas data directory '{contentDirPath}' does not contain the";
             exceptionMsg += $" required '{atlasImageFilePath}' atlas image file.";
 
             throw new LoadAtlasException(exceptionMsg);
@@ -189,11 +193,11 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
             throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.");
         }
 
-        var atlasName = isFullFilePath
+        var atlasName = isPathRooted
             ? name
             : contentPathOrName;
 
-        return this.atlasDataFactory.Create(subTextureData, dirPath, atlasName);
+        return this.atlasDataFactory.Create(subTextureData, contentDirPath, atlasName);
     }
 
     /// <inheritdoc/>

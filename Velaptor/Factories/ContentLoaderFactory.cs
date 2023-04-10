@@ -81,6 +81,7 @@ public static class ContentLoaderFactory
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
         var atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         var jsonService = IoC.Container.GetInstance<IJSONService>();
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
@@ -89,6 +90,7 @@ public static class ContentLoaderFactory
             atlasDataFactory,
             atlasDataPathResolver,
             jsonService,
+            directory,
             file,
             path);
 
