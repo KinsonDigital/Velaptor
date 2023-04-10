@@ -73,59 +73,37 @@ public sealed class SoundLoader : ILoader<ISound>
     /// <returns>The loaded sound.</returns>
     public ISound Load(string contentPathOrName)
     {
-        string filePath;
-        string cacheKey;
+        var filePath = this.path.IsPathRooted(contentPathOrName)
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
 
-        if (this.path.IsPathRooted(contentPathOrName))
-        {
-            filePath = contentPathOrName;
-            cacheKey = filePath;
-        }
-        else
-        {
-            contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-            filePath = this.soundPathResolver.ResolveFilePath(contentPathOrName);
-            cacheKey = filePath;
-        }
-
-        if (this.file.Exists(filePath))
-        {
-            var fileExtension = this.path.GetExtension(filePath);
-            var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
-            var isInvalidExtension = validExtensions.All(e => e != fileExtension);
-
-            if (isInvalidExtension)
-            {
-                var exceptionMsg = $"The file '{filePath}' must be a sound file with";
-                exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
-
-                throw new LoadSoundException(exceptionMsg);
-            }
-        }
-        else
+        if (!this.file.Exists(filePath))
         {
             throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
-        return this.soundCache.GetItem(cacheKey);
+        var fileExtension = this.path.GetExtension(filePath);
+        var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
+        var isInvalidExtension = validExtensions.All(e => e != fileExtension);
+
+        if (!isInvalidExtension)
+        {
+            return this.soundCache.GetItem(filePath);
+        }
+
+        var exceptionMsg = $"The file '{filePath}' must be a sound file with";
+        exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
+
+        throw new LoadSoundException(exceptionMsg);
     }
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
     public void Unload(string contentPathOrName)
     {
-        var isInvalidFullFilePath = !this.path.IsPathRooted(contentPathOrName);
-
-        string filePath;
-
-        if (isInvalidFullFilePath)
-        {
-            filePath = this.soundPathResolver.ResolveFilePath(contentPathOrName);
-        }
-        else
-        {
-            filePath = contentPathOrName;
-        }
+        var filePath = this.path.IsPathRooted(contentPathOrName)
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
 
         this.soundCache.Unload(filePath);
     }
