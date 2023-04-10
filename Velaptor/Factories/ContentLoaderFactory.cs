@@ -51,12 +51,14 @@ public static class ContentLoaderFactory
 
         var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         textureLoader = new TextureLoader(
             textureCache,
             texturePathResolver,
+            directory,
             file,
             path);
 
@@ -79,6 +81,7 @@ public static class ContentLoaderFactory
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
         var atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
         var jsonService = IoC.Container.GetInstance<IJSONService>();
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
@@ -87,6 +90,7 @@ public static class ContentLoaderFactory
             atlasDataFactory,
             atlasDataPathResolver,
             jsonService,
+            directory,
             file,
             path);
 
@@ -107,12 +111,14 @@ public static class ContentLoaderFactory
 
         var soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
         var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         soundLoader = new SoundLoader(
             soundCache,
             soundPathResolver,
+            directory,
             file,
             path);
 

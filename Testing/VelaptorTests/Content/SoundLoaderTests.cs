@@ -7,6 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor.Content;
@@ -27,6 +28,7 @@ public class SoundLoaderTests
     private readonly string mp3SoundFilePath;
     private readonly Mock<IItemCache<string, ISound>> mockSoundCache;
     private readonly Mock<IContentPathResolver> mockSoundPathResolver;
+    private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -41,6 +43,7 @@ public class SoundLoaderTests
         this.mockSoundCache = new Mock<IItemCache<string, ISound>>();
         this.mockSoundPathResolver = new Mock<IContentPathResolver>();
 
+        this.mockDirectory = new Mock<IDirectory>();
         this.mockFile = new Mock<IFile>();
         this.mockPath = new Mock<IPath>();
     }
@@ -55,6 +58,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 null,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'soundCache')");
@@ -69,6 +73,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 null,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'soundPathResolver')");
@@ -83,6 +88,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 null,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'file')");
@@ -97,6 +103,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'path')");
@@ -104,6 +111,22 @@ public class SoundLoaderTests
     #endregion
 
     #region Method Tests
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Load_WithNullOrEmptyParam_ThrowsException(string content)
+    {
+        // Arrange
+        var sut = CreateSoundLoader();
+
+        // Act
+        var act = () => sut.Load(content);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+    }
+
     [Fact]
     public void Load_WithInvalidExtensionForFullFilePath_ThrowsException()
     {
@@ -143,17 +166,36 @@ public class SoundLoaderTests
         }, expectedMsg);
     }
 
+    [Fact]
+    public void Load_WhenContentDirPathDoesNotExist_CreateDirectory()
+    {
+        // Arrange
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(".ogg");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockSoundPathResolver.Setup(m => m.ResolveDirPath()).Returns(SoundDirPath);
+
+        var sut = CreateSoundLoader();
+
+        // Act
+        sut.Load("test-content");
+
+        // Assert
+        this.mockSoundPathResolver.VerifyOnce(m => m.ResolveDirPath());
+        this.mockDirectory.VerifyOnce(m => m.CreateDirectory(SoundDirPath));
+    }
+
     [Theory]
     [InlineData(SoundName, "")]
     [InlineData(SoundName, ".txt")]
-    public void Load_WhenLoadingOggSoundByName_LoadsOggSound(string contentName, string extension)
+    public void Load_WhenLoadingOggSoundByFileNameOnly_LoadsOggSound(string contentName, string extension)
     {
         // Arrange
-        this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(true);
-        this.mockPath.Setup(m => m.GetExtension(this.oggSoundFilePath)).Returns(OggFileExtension);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}"))
-            .Returns(contentName);
-        this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilePath);
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(OggFileExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+            .Returns(this.oggSoundFilePath);
 
         var loader = CreateSoundLoader();
 
@@ -162,19 +204,23 @@ public class SoundLoaderTests
 
         // Assert
         this.mockSoundCache.Verify(m => m.GetItem(this.oggSoundFilePath), Times.Once);
+        this.mockPath.VerifyOnce(m => m.IsPathRooted($"{contentName}{extension}"));
+        this.mockSoundPathResolver.VerifyOnce(m => m.ResolveFilePath($"{contentName}{extension}"));
+        this.mockFile.VerifyOnce(m => m.Exists(this.oggSoundFilePath));
+        this.mockPath.VerifyOnce(m => m.GetExtension(this.oggSoundFilePath));
     }
 
     [Theory]
     [InlineData(SoundName, "")]
     [InlineData(SoundName, ".txt")]
-    public void Load_WhenLoadingMp3SoundByName_LoadsMp3Sound(string contentName, string extension)
+    public void Load_WhenLoadingMp3SoundByFileNameOnly_LoadsMp3Sound(string contentName, string extension)
     {
         // Arrange
-        this.mockFile.Setup(m => m.Exists(this.mp3SoundFilePath)).Returns(true);
-        this.mockPath.Setup(m => m.GetExtension(this.mp3SoundFilePath)).Returns(Mp3FileExtension);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}"))
-            .Returns(contentName);
-        this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.mp3SoundFilePath);
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(Mp3FileExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+            .Returns(this.mp3SoundFilePath);
 
         var loader = CreateSoundLoader();
 
@@ -183,6 +229,10 @@ public class SoundLoaderTests
 
         // Assert
         this.mockSoundCache.Verify(m => m.GetItem(this.mp3SoundFilePath), Times.Once);
+        this.mockPath.VerifyOnce(m => m.IsPathRooted($"{contentName}{extension}"));
+        this.mockSoundPathResolver.VerifyOnce(m => m.ResolveFilePath($"{contentName}{extension}"));
+        this.mockFile.VerifyOnce(m => m.Exists(this.mp3SoundFilePath));
+        this.mockPath.VerifyOnce(m => m.GetExtension(this.mp3SoundFilePath));
     }
 
     [Fact]
@@ -232,6 +282,7 @@ public class SoundLoaderTests
     private SoundLoader CreateSoundLoader() => new (
         this.mockSoundCache.Object,
         this.mockSoundPathResolver.Object,
+        this.mockDirectory.Object,
         this.mockFile.Object,
         this.mockPath.Object);
 }

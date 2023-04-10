@@ -5,7 +5,6 @@
 namespace Velaptor.Graphics;
 
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Abstractions;
 using Content;
 using Factories;

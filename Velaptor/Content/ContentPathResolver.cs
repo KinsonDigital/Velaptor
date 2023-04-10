@@ -48,15 +48,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
     public string ContentDirectoryName
     {
         get => this.contentDirName;
-        set
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new Exception($"The '{nameof(ContentDirectoryName)}' must not be null or empty.");
-            }
-
-            this.contentDirName = value.GetLastDirName();
-        }
+        set => this.contentDirName = value.GetLastDirName();
     }
 
     /// <inheritdoc/>

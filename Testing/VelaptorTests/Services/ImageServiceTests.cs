@@ -110,7 +110,6 @@ public class ImageServiceTests : IDisposable
                 pixelClr = x switch
                 {
                     >= 0 and <= 3 when y is >= 0 and <= 3 => NETColor.FromArgb(255, 128, 128, 128),
-                    >= 4 and <= 7 when y is >= 0 and <= 3 => NETColor.FromArgb(255, 255, 0, 0),
                     _ => pixelClr
                 };
 
@@ -118,9 +117,6 @@ public class ImageServiceTests : IDisposable
                 {
                     case >= 0 and <= 3 when y is >= 4 and <= 7:
                         pixelClr = NETColor.FromArgb(255, 0, 255, 0); // Green | Bottom Left Corner
-                        break;
-                    case >= 4 and <= 7 when y is >= 4 and <= 7:
-                        pixelClr = NETColor.FromArgb(255, 0, 0, 255); // Blue | Bottom Right Corner
                         break;
                 }
 
