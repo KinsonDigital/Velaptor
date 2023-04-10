@@ -73,21 +73,9 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
     public ITexture Load(string contentPathOrName)
     {
-        var isFullFilePath = this.path.IsPathRooted(contentPathOrName);
-        string filePath;
-        string cacheKey;
-
-        if (isFullFilePath)
-        {
-            filePath = contentPathOrName;
-            cacheKey = filePath;
-        }
-        else
-        {
-            contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-            filePath = this.texturePathResolver.ResolveFilePath(contentPathOrName);
-            cacheKey = filePath;
-        }
+        var filePath = this.path.IsPathRooted(contentPathOrName)
+            ? contentPathOrName
+            : this.texturePathResolver.ResolveFilePath(contentPathOrName);
 
         if (this.file.Exists(filePath))
         {
@@ -102,7 +90,7 @@ public sealed class TextureLoader : ILoader<ITexture>
             throw new FileNotFoundException($"The texture file '{filePath}' does not exist.", filePath);
         }
 
-        return this.textureCache.GetItem(cacheKey);
+        return this.textureCache.GetItem(filePath);
     }
 
     /// <inheritdoc/>

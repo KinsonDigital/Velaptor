@@ -7,6 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor.Content;
@@ -34,9 +35,6 @@ public class TextureLoaderTests
     public TextureLoaderTests()
     {
         this.mockTexturePathResolver = new Mock<IContentPathResolver>();
-        this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
-            .Returns(TextureFilePath);
-
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
         this.mockFile = new Mock<IFile>();
@@ -132,12 +130,12 @@ public class TextureLoaderTests
     public void Load_WhenLoadingAppContentByName_LoadsTexture(string contentName, string extension)
     {
         // Arrange
+        this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+            .Returns(TextureFilePath);
         var mockTexture = new Mock<ITexture>();
 
         this.mockTextureCache.Setup(m => m.GetItem(TextureFilePath))
             .Returns(mockTexture.Object);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
 
         var sut = CreateSystemUnderTest();
 
@@ -145,8 +143,7 @@ public class TextureLoaderTests
         var actual = sut.Load($"{contentName}{extension}");
 
         // Assert
-        Assert.NotNull(actual);
-        Assert.Same(mockTexture.Object, actual);
+        actual.Should().Be(mockTexture.Object);
     }
 
     [Fact]
