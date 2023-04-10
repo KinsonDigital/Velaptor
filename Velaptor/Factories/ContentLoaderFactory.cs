@@ -51,12 +51,14 @@ public static class ContentLoaderFactory
 
         var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         textureLoader = new TextureLoader(
             textureCache,
             texturePathResolver,
+            directory,
             file,
             path);
 

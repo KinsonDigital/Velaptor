@@ -26,6 +26,7 @@ public class TextureLoaderTests
     private const string TextureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
     private readonly Mock<IContentPathResolver> mockTexturePathResolver;
+    private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -36,6 +37,7 @@ public class TextureLoaderTests
     {
         this.mockTexturePathResolver = new Mock<IContentPathResolver>();
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
+        this.mockDirectory = new Mock<IDirectory>();
 
         this.mockFile = new Mock<IFile>();
         this.mockFile.Setup(m => m.Exists(TextureFilePath)).Returns(true);
@@ -56,6 +58,7 @@ public class TextureLoaderTests
             _ = new TextureLoader(
                 null,
                 this.mockTexturePathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'textureCache')");
@@ -70,9 +73,30 @@ public class TextureLoaderTests
             _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 null,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'texturePathResolver')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullDirectoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new TextureLoader(
+                this.mockTextureCache.Object,
+                this.mockTexturePathResolver.Object,
+                null,
+                this.mockFile.Object,
+                this.mockPath.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -84,6 +108,7 @@ public class TextureLoaderTests
             _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
+                this.mockDirectory.Object,
                 null,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'file')");
@@ -98,6 +123,7 @@ public class TextureLoaderTests
             _ = new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'path')");
@@ -105,6 +131,22 @@ public class TextureLoaderTests
     #endregion
 
     #region Method Tests
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Load_WithNullOrEmptyParam_ThrowsException(string content)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load(content);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+    }
+
     [Fact]
     public void Load_WhenLoadingContentWithFullPath_LoadsTexture()
     {
@@ -163,6 +205,25 @@ public class TextureLoaderTests
     }
 
     [Fact]
+    public void Load_WhenContentDirPathDoesNotExist_CreateDirectory()
+    {
+        // Arrange
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(".png");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockTexturePathResolver.Setup(m => m.ResolveDirPath()).Returns(TextureDirPath);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Load("test-content");
+
+        // Assert
+        this.mockTexturePathResolver.VerifyOnce(m => m.ResolveDirPath());
+        this.mockDirectory.VerifyOnce(m => m.CreateDirectory(TextureDirPath));
+    }
+
+    [Fact]
     public void Load_WhenFileExistsButIsNotATextureContentFile_ThrowsException()
     {
         // Arrange
@@ -202,6 +263,7 @@ public class TextureLoaderTests
     private TextureLoader CreateSystemUnderTest()
         => new (this.mockTextureCache.Object,
             this.mockTexturePathResolver.Object,
+            this.mockDirectory.Object,
             this.mockFile.Object,
             this.mockPath.Object);
 }
