@@ -109,12 +109,14 @@ public static class ContentLoaderFactory
 
         var soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
         var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+        var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         soundLoader = new SoundLoader(
             soundCache,
             soundPathResolver,
+            directory,
             file,
             path);
 

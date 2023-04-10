@@ -7,6 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor.Content;
@@ -27,6 +28,7 @@ public class SoundLoaderTests
     private readonly string mp3SoundFilePath;
     private readonly Mock<IItemCache<string, ISound>> mockSoundCache;
     private readonly Mock<IContentPathResolver> mockSoundPathResolver;
+    private readonly Mock<IDirectory> mockDirectory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
 
@@ -41,6 +43,7 @@ public class SoundLoaderTests
         this.mockSoundCache = new Mock<IItemCache<string, ISound>>();
         this.mockSoundPathResolver = new Mock<IContentPathResolver>();
 
+        this.mockDirectory = new Mock<IDirectory>();
         this.mockFile = new Mock<IFile>();
         this.mockPath = new Mock<IPath>();
     }
@@ -55,6 +58,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 null,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'soundCache')");
@@ -69,6 +73,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 null,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'soundPathResolver')");
@@ -83,6 +88,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 null,
                 this.mockPath.Object);
         }, "The parameter must not be null. (Parameter 'file')");
@@ -97,6 +103,7 @@ public class SoundLoaderTests
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
+                this.mockDirectory.Object,
                 this.mockFile.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'path')");
@@ -104,6 +111,22 @@ public class SoundLoaderTests
     #endregion
 
     #region Method Tests
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Load_WithNullOrEmptyParam_ThrowsException(string content)
+    {
+        // Arrange
+        var sut = CreateSoundLoader();
+
+        // Act
+        var act = () => sut.Load(content);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+    }
+
     [Fact]
     public void Load_WithInvalidExtensionForFullFilePath_ThrowsException()
     {
@@ -141,6 +164,25 @@ public class SoundLoaderTests
         {
             loader.Load(this.oggSoundFilePath);
         }, expectedMsg);
+    }
+
+    [Fact]
+    public void Load_WhenContentDirPathDoesNotExist_CreateDirectory()
+    {
+        // Arrange
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
+        this.mockPath.Setup(m => m.GetExtension(It.IsAny<string?>())).Returns(".ogg");
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
+        this.mockSoundPathResolver.Setup(m => m.ResolveDirPath()).Returns(SoundDirPath);
+
+        var sut = CreateSoundLoader();
+
+        // Act
+        sut.Load("test-content");
+
+        // Assert
+        this.mockSoundPathResolver.VerifyOnce(m => m.ResolveDirPath());
+        this.mockDirectory.VerifyOnce(m => m.CreateDirectory(SoundDirPath));
     }
 
     [Theory]
@@ -240,6 +282,7 @@ public class SoundLoaderTests
     private SoundLoader CreateSoundLoader() => new (
         this.mockSoundCache.Object,
         this.mockSoundPathResolver.Object,
+        this.mockDirectory.Object,
         this.mockFile.Object,
         this.mockPath.Object);
 }
