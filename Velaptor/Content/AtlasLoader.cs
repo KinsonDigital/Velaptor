@@ -131,7 +131,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
             this.directory.CreateDirectory(contentDirPath);
         }
 
-        string name;
+        var name = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
         if (isPathRooted)
         {
@@ -145,24 +145,6 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
                 throw new LoadAtlasException(exceptionMsg);
             }
-
-            name = this.path.GetFileNameWithoutExtension(contentPathOrName);
-        }
-        else
-        {
-            if (contentPathOrName.HasValidFullDirPathSyntax() || contentPathOrName.HasValidUNCPathSyntax())
-            {
-                var exceptionMsg = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
-                exceptionMsg += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
-                exceptionMsg += $"The path must be a fully qualified file path or content item name{Environment.NewLine}";
-                exceptionMsg += @"located in the application's './Content/Atlas' directory.";
-
-                throw new LoadAtlasException(exceptionMsg);
-            }
-
-            // Remove a possible file extension and return just the 'name' of the content.
-            // The name of the content should always match the name of the file without the extension
-            name = this.path.GetFileNameWithoutExtension(contentPathOrName);
         }
 
         var atlasDataFilePath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{name}{AtlasDataExtension}";

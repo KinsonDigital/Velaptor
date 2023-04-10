@@ -394,29 +394,6 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Load_WithDirPath_ThrowsException()
-    {
-        // Arrange
-        var expected = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
-        expected += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
-        expected += $"The path must be a fully qualified file path or content item name{Environment.NewLine}";
-        expected += @"located in the application's './Content/Atlas' directory.";
-        var mockAtlasData = new Mock<IAtlasData>();
-
-        var sut = CreateSystemUnderTest();
-
-        var atlasData = MockAtlasJSONData().ToArray();
-        MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, AtlasContentName);
-
-        // Act
-        var act = () => sut.Load(DirPath);
-
-        // Assert
-        act.Should().Throw<LoadAtlasException>()
-            .WithMessage(expected);
-    }
-
-    [Fact]
     public void Unload_WhenInvoked_UnloadsAtlas()
     {
         // Arrange
