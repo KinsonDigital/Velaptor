@@ -140,7 +140,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
             if (validExtensions.All(e => e != extension))
             {
-                var exceptionMsg = "When performing full content file path loads,";
+                var exceptionMsg = "When loading atlas data with fully qualified paths,";
                 exceptionMsg += $" the files must be a '{TextureExtension}' or '{AtlasDataExtension}' extension.";
 
                 throw new LoadAtlasException(exceptionMsg);

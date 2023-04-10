@@ -253,7 +253,7 @@ public class AtlasLoaderTests
 
         // Assert
         act.Should().Throw<LoadAtlasException>()
-            .WithMessage("When performing full content file path loads, the files must be a '.png' or '.json' extension.");
+            .WithMessage("When loading atlas data with fully qualified paths, the files must be a '.png' or '.json' extension.");
     }
 
     [Fact]
