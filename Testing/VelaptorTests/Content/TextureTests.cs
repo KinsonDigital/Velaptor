@@ -53,9 +53,9 @@ public class TextureTests
             {
                 this.imageData.Pixels[x, y] = y switch
                 {
-                    0 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0), // Row 1
-                    1 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0), // Row 2
-                    2 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255), // Row 3
+                    0 => Color.FromArgb(255, 255, 0, 0), // Row 1
+                    1 => Color.FromArgb(255, 0, 255, 0), // Row 2
+                    2 => Color.FromArgb(255, 0, 0, 255), // Row 3
                     _ => throw new Exception($"Row '{y}' does not exist when setting up image data for test."),
                 };
 
@@ -95,8 +95,79 @@ public class TextureTests
     }
 
     #region Constructor Tests
+    #region Public Constructors
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void PublicCtor_WithNameAndImageDataOverloadAndNullOrEmptyNameParam_ThrowsException(string name)
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture(name, default(ImageData));
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Ctor_WithNameAndImageDataOverloadAndNullOrEmptyImageDataFilePath_ThrowsException(string filePath)
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, filePath));
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The image data must have a file path associated with it. (Parameter 'imageData')");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Ctor_WithNameAndFilePathOverloadAndNullOrEmptyNameParam_ThrowsException(string name)
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture(name, "test-path");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Ctor_WithNameAndFilePathOverloadAndNullOrEmptyFilePathParam_ThrowsException(string filePath)
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture("test-name", filePath);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
+    }
+    #endregion
+
+    #region Internal Constructors
     [Fact]
-    public void Ctor_WithNullGLParam_ThrowsException()
+    public void InternalCtor_WithNullGLParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -112,7 +183,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    public void InternalCtor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -128,7 +199,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
+    public void InternalCtor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -146,7 +217,7 @@ public class TextureTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Ctor_WithEmptyOrNullNameParam_ThrowsException(string name)
+    public void InternalCtor_WithEmptyOrNullNameParam_ThrowsException(string name)
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -164,7 +235,7 @@ public class TextureTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Ctor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
+    public void InternalCtor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -180,7 +251,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void Ctor_WithEmptyImageData_ThrowsException()
+    public void InternalCtor_WithEmptyImageData_ThrowsException()
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
@@ -190,7 +261,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
+    public void InternalCtor_WhenInvoked_UploadsTextureDataToGPU()
     {
         // Arrange
         var expectedPixelData = new List<byte>();
@@ -260,6 +331,7 @@ public class TextureTests
         this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
         this.mockGLService.Verify(m => m.UnbindTexture2D(), Times.Once);
     }
+    #endregion
     #endregion
 
     #region Prop Tests

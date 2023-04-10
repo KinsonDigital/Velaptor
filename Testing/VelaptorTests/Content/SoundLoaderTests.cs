@@ -112,6 +112,7 @@ public class SoundLoaderTests
         var invalidSoundFilePath = $"{SoundDirPath}{SoundName}{invalidExtension}";
         this.mockFile.Setup(m => m.Exists(invalidSoundFilePath)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(invalidSoundFilePath)).Returns(invalidExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var expectedMsg = $"The file '{invalidSoundFilePath}' must be a sound file with";
         expectedMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
@@ -191,6 +192,7 @@ public class SoundLoaderTests
         this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(this.oggSoundFilePath)).Returns(OggFileExtension);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(SoundName)).Returns(SoundName);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
         this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilePath);
 
         var loader = CreateSoundLoader();
@@ -209,6 +211,7 @@ public class SoundLoaderTests
         // Arrange
         this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(this.oggSoundFilePath)).Returns(OggFileExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(this.oggSoundFilePath)).Returns(this.oggSoundFilePath);
 
         var loader = CreateSoundLoader();

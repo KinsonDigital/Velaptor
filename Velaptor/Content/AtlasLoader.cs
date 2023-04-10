@@ -83,12 +83,12 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     }
 
     /// <summary>
-    /// Loads texture atlas data using the given <paramref name="contentNameOrPath"/>.
+    /// Loads texture atlas data using the given <paramref name="contentPathOrName"/>.
     /// </summary>
-    /// <param name="contentNameOrPath">The content name or file path to the atlas data.</param>
+    /// <param name="contentPathOrName">The content name or file path to the atlas data.</param>
     /// <returns>The loaded atlas data.</returns>
     /// <exception cref="ArgumentNullException">
-    ///     Occurs if <paramref name="contentNameOrPath"/> is null or empty.
+    ///     Occurs if <paramref name="contentPathOrName"/> is null or empty.
     /// </exception>
     /// <exception cref="LoadAtlasException">
     ///     If the given full file path is not a <c>Texture(.png)</c> or <c>Atlas Data(.json)</c> file.
@@ -110,23 +110,23 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     ///     <item>C:/Atlas/MyAtlas.txt</item>
     /// </list>
     /// </remarks>
-    public IAtlasData Load(string contentNameOrPath)
+    public IAtlasData Load(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentNameOrPath))
+        if (string.IsNullOrEmpty(contentPathOrName))
         {
             throw new ArgumentNullException(
-                nameof(contentNameOrPath),
+                nameof(contentPathOrName),
                 "The string parameter must not be null or empty.");
         }
 
-        var isFullFilePath = contentNameOrPath.HasValidFullFilePathSyntax();
+        var isFullFilePath = this.path.IsPathRooted(contentPathOrName);
         string name;
         string dirPath;
 
         if (isFullFilePath)
         {
             var validExtensions = new[] { TextureExtension, AtlasDataExtension };
-            var extension = this.path.GetExtension(contentNameOrPath);
+            var extension = this.path.GetExtension(contentPathOrName);
 
             if (validExtensions.All(e => e != extension))
             {
@@ -136,14 +136,14 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
                 throw new LoadAtlasException(exceptionMsg);
             }
 
-            name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
+            name = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
-            dirPath = (this.path.GetDirectoryName(contentNameOrPath) ?? string.Empty)
+            dirPath = (this.path.GetDirectoryName(contentPathOrName) ?? string.Empty)
                 .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
         }
         else
         {
-            if (contentNameOrPath.HasValidFullDirPathSyntax() || contentNameOrPath.HasValidUNCPathSyntax())
+            if (contentPathOrName.HasValidFullDirPathSyntax() || contentPathOrName.HasValidUNCPathSyntax())
             {
                 var exceptionMsg = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
                 exceptionMsg += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
@@ -155,7 +155,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
             // Remove a possible file extension and return just the 'name' of the content.
             // The name of the content should always match the name of the file without the extension
-            name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
+            name = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
             // Resolve to the application's content directory where atlas data is located
             dirPath = this.atlasDataPathResolver.ResolveDirPath();
@@ -191,7 +191,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
         var atlasName = isFullFilePath
             ? name
-            : contentNameOrPath;
+            : contentPathOrName;
 
         return this.atlasDataFactory.Create(subTextureData, dirPath, atlasName);
     }

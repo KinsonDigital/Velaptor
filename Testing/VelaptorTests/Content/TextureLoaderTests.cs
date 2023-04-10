@@ -114,6 +114,7 @@ public class TextureLoaderTests
         var mockTexture = new Mock<ITexture>();
         this.mockTextureCache.Setup(m => m.GetItem(TextureFilePath))
             .Returns(mockTexture.Object);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var sut = CreateSystemUnderTest();
 
@@ -153,6 +154,7 @@ public class TextureLoaderTests
     {
         // Arrange
         this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var sut = CreateSystemUnderTest();
 
@@ -171,6 +173,7 @@ public class TextureLoaderTests
         const string filePathWithInvalidExtension = $"{TextureDirPath}/{TextureFileName}{extension}";
         this.mockFile.Setup(m => m.Exists(filePathWithInvalidExtension)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(filePathWithInvalidExtension)).Returns(extension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var sut = CreateSystemUnderTest();
 

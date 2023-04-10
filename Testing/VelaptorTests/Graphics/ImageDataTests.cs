@@ -7,6 +7,7 @@ namespace VelaptorTests.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Helpers;
 using Velaptor.Graphics;
 using Xunit;
@@ -58,6 +59,33 @@ public class ImageDataTests
         {
             _ = new ImageData(new Color[1, 2], 1, 22);
         }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_FlipStatesSetToCorrectValues()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[2, 2], 2, 2);
+
+        // Act
+        var actualHorizontalFlip = sut.IsFlippedHorizontally;
+        var actualVerticalFlip = sut.IsFlippedVertically;
+
+        // Assert
+        actualHorizontalFlip.Should().BeFalse();
+        actualVerticalFlip.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string filePath)
+    {
+        // Arrange & Act
+        var sut = new ImageData(null, 1, 1, filePath);
+
+        // Assert
+        sut.FilePath.Should().BeEmpty();
     }
     #endregion
 
@@ -131,6 +159,64 @@ public class ImageDataTests
     }
 
     [Fact]
+    public void FlipHorizontally_WhenInvoked_FlipsImageHorizontally()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[4, 4], 4, 4);
+
+        // Set the first 2 columns to blue
+        sut = TestHelpers.SetColumnColorTo(sut, 0, Color.Blue);
+        sut = TestHelpers.SetColumnColorTo(sut, 1, Color.Blue);
+
+        // Set the last 2 columns to yellow
+        sut = TestHelpers.SetColumnColorTo(sut, 2, Color.Yellow);
+        sut = TestHelpers.SetColumnColorTo(sut, 3, Color.Yellow);
+
+        // Act
+        sut.FlipHorizontally();
+        var col0 = TestHelpers.GetColumn(sut, 0);
+        var col1 = TestHelpers.GetColumn(sut, 1);
+        var col2 = TestHelpers.GetColumn(sut, 2);
+        var col3 = TestHelpers.GetColumn(sut, 3);
+
+        // Assert
+        col0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        col1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        col2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        col3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        sut.IsFlippedHorizontally.Should().BeTrue();
+    }
+
+    [Fact]
+    public void FlipVertically_WhenInvoked_FlipsImageVertically()
+    {
+        // Arrange
+        var sut = new ImageData(new Color[4, 4], 4, 4);
+
+        // Set the first 2 rows to blue
+        sut = TestHelpers.SetRowColorTo(sut, 0, Color.Blue);
+        sut = TestHelpers.SetRowColorTo(sut, 1, Color.Blue);
+
+        // Set the last 2 rows to yellow
+        sut = TestHelpers.SetRowColorTo(sut, 2, Color.Yellow);
+        sut = TestHelpers.SetRowColorTo(sut, 3, Color.Yellow);
+
+        // Act
+        sut.FlipVertically();
+        var row0 = TestHelpers.GetRow(sut, 0);
+        var row1 = TestHelpers.GetRow(sut, 1);
+        var row2 = TestHelpers.GetRow(sut, 2);
+        var row3 = TestHelpers.GetRow(sut, 3);
+
+        // Assert
+        row0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        row1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
+        row2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        row3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
+        sut.IsFlippedVertically.Should().BeTrue();
+    }
+
+    [Fact]
     public void DrawImage_WithWidthAndHeightLargerThanTarget_DrawsPartialSourceImageOntoTarget()
     {
         // Arrange
@@ -193,11 +279,25 @@ public class ImageDataTests
     }
 
     [Fact]
+    public void Equals_WhenFilePathsAreNotEqual_ReturnsFalse()
+    {
+        // Arrange
+        var sutA = new ImageData(new Color[2, 2], 2, 2, "itemA");
+        var sutB = new ImageData(new Color[2, 2], 2, 2, "itemB");
+
+        // Act
+        var actual = sutA.Equals(sutB);
+
+        // Assert
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
     public void Equals_WhenBothAreSameTypeAndIsEqual_ReturnsTrue()
     {
         // Arrange
-        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
-        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
+        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
+        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
 
         // Act
         var actual = imageDataA.Equals(imageDataB);
@@ -332,6 +432,22 @@ public class ImageDataTests
 
         // Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(10, 20, null, "10 x 20")]
+    [InlineData(10, 20, "", "10 x 20")]
+    [InlineData(10, 20, "test-file", "10 x 20 | test-file")]
+    public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string filePath, string expected)
+    {
+        // Arrange
+        var sut = new ImageData(new Color[width, height], width, height, filePath);
+
+        // Act
+        var actual = sut.ToString();
+
+        // Assert
+        actual.Should().Be(expected);
     }
     #endregion
 

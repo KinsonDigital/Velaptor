@@ -73,7 +73,7 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
     public ITexture Load(string contentPathOrName)
     {
-        var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
+        var isFullFilePath = this.path.IsPathRooted(contentPathOrName);
         string filePath;
         string cacheKey;
 

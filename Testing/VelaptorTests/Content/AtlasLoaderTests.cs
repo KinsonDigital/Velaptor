@@ -204,7 +204,7 @@ public class AtlasLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentNameOrPath')");
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -212,6 +212,8 @@ public class AtlasLoaderTests
     {
         // Arrange
         const string extension = ".txt";
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -231,6 +233,7 @@ public class AtlasLoaderTests
         var sut = CreateSystemUnderTest();
 
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(TextureExtension);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         var atlasData = MockAtlasJSONData().ToArray();
         MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, $"{AtlasContentName}");
@@ -263,6 +266,7 @@ public class AtlasLoaderTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(invalidFilePath)).Returns(contentName);
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(AtlasDataExtension);
         this.mockPath.Setup(m => m.GetDirectoryName(invalidFilePath)).Returns(dirPath);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         // Act
         var act = () => sut.Load(invalidFilePath);
@@ -291,6 +295,7 @@ public class AtlasLoaderTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(invalidImageFilePath)).Returns(imageContentName);
         this.mockPath.Setup(m => m.GetExtension(It.IsAny<string>())).Returns(TextureExtension);
         this.mockPath.Setup(m => m.GetDirectoryName(invalidImageFilePath)).Returns(dirPath);
+        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
 
         // Act
         var act = () => sut.Load(invalidImageFilePath);
