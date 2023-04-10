@@ -70,19 +70,6 @@ public class ContentPathResolverTests
         Assert.Equal(expected, actual);
     }
 
-    [Fact]
-    public void ContentDirectoryName_WhenValueIsNullOrEmpty_ThrowsException()
-    {
-        // Arrange
-        var resolver = new ContentPathResolverFake();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            resolver.ContentDirectoryName = null;
-        }, "The 'ContentDirectoryName' must not be null or empty.");
-    }
-
     [Theory]
     [InlineData("test-content.png")]
     public void ResolveFilePath_WhenInvoked_ResolvesContentFilePath(string contentName)

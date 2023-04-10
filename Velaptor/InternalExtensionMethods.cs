@@ -635,7 +635,6 @@ internal static class InternalExtensionMethods
         paths.Select(p => p.Contains(WinDirSeparatorChar)
                 ? p.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar)
                 : p)
-            .ToArray()
             .ToReadOnlyCollection();
 
     /// <summary>
