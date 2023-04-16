@@ -14,6 +14,7 @@ using Velaptor.OpenGL.Batching;
 /// <summary>
 /// Creates batch items instances to ease the process of creating and maintaining unit tests.
 /// </summary>
+[SuppressMessage("csharpsquid", "S107", Justification = "Not required for unit testing.")]
 internal static class BatchItemFactory
 {
     public static TextureBatchItem CreateTextureItem(
@@ -23,7 +24,7 @@ internal static class BatchItemFactory
         float angle = 0f,
         Color clr = default,
         RenderEffects effects = RenderEffects.None,
-        int textureId = 0) =>
+        uint textureId = 0) =>
         new (srcRect,
             destRect,
             size,
