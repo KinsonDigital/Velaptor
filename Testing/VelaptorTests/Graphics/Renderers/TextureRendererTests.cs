@@ -227,7 +227,7 @@ public class TextureRendererTests
         {
             sut.Render(
                 new Mock<ITexture>().Object,
-                It.IsAny<Rectangle>(),
+                new Rectangle(10, 20, 30, 40),
                 It.IsAny<Rectangle>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
@@ -238,7 +238,9 @@ public class TextureRendererTests
 
     [Theory]
     [InlineData(0, 20)]
+    [InlineData(-10, 20)]
     [InlineData(10, 0)]
+    [InlineData(10, -20)]
     public void Render_WithSourceRectWithNoWidthOrHeight_ThrowsException(int width, int height)
     {
         // Arrange
@@ -271,7 +273,7 @@ public class TextureRendererTests
         {
             sut.Render(
                 null,
-                It.IsAny<Rectangle>(),
+                new Rectangle(10, 20, 30, 40),
                 It.IsAny<Rectangle>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
@@ -699,8 +701,34 @@ public class TextureRendererTests
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
+    [Theory]
+    [InlineData(0f, 10f)]
+    [InlineData(10f, 0f)]
+    public void Render_With8ParamOverloadAndSrcRectWidthOrHeightIsZero_ThrowsException(
+        int srcRectWidth,
+        int srcRectHeight)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        var act = () => sut.Render(
+            MockTexture(TextureId),
+            new Rectangle(10, 20, srcRectWidth, srcRectHeight),
+            It.IsAny<Rectangle>(),
+            It.IsAny<float>(),
+            It.IsAny<float>(),
+            It.IsAny<Color>(),
+            It.IsAny<RenderEffects>());
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
+    }
+
     [Fact]
-    public void Render_WhenInvoked_RendersTexture()
+    public void Render_With8ParamOverload_RendersTexture()
     {
         // Arrange
         const uint itemABatchIndex = 0;

@@ -1,4 +1,4 @@
-// <copyright file="TextureRenderer.cs" company="KinsonDigital">
+﻿// <copyright file="TextureRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -227,6 +227,11 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         RenderEffects effects,
         int layer = 0)
     {
+        if (srcRect.Width <= 0 || srcRect.Height <= 0)
+        {
+            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
+        }
+
         RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
     }
 
