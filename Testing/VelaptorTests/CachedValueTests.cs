@@ -6,7 +6,7 @@
 namespace VelaptorTests;
 
 using System;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Xunit;
@@ -17,25 +17,31 @@ public class CachedValueTests
     [Fact]
     public void Ctor_WithNullGetterWhenNotCachingParam_ThrowsException()
     {
-        // Arrange
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new CachedValue<int>(123, null, _ => { });
-        }, "The parameter must not be null. (Parameter 'getterWhenNotCaching')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'getterWhenNotCaching')");
     }
 
     [Fact]
     public void Ctor_WithNullSetterWhenNotCachingParam_ThrowsException()
     {
-        // Arrange
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new CachedValue<int>(123, () => 0, null);
-        }, "The parameter must not be null. (Parameter 'setterWhenNotCaching')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'setterWhenNotCaching')");
     }
 
     [Fact]
@@ -53,8 +59,8 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
-        Assert.Equal(0, externalSystemValue);
+        actual.Should().Be(1234);
+        externalSystemValue.Should().Be(0);
     }
 
     [Fact]
@@ -72,7 +78,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
     #endregion
 
@@ -95,7 +101,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
 
     [Fact]
@@ -116,7 +122,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
     #endregion
 
@@ -134,7 +140,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
 
     [Fact]
@@ -153,7 +159,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
 
     [Fact]
@@ -171,7 +177,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        Assert.Equal(5678, actual);
+        actual.Should().Be(5678);
     }
 
     [Fact]
@@ -191,7 +197,7 @@ public class CachedValueTests
         cachedValue.SetValue(1234);
 
         // Assert
-        Assert.Equal(1234, actual);
+        actual.Should().Be(1234);
     }
     #endregion
 }
