@@ -31,7 +31,7 @@ internal static class BatchItemFactory
             angle,
             clr,
             effects,
-            (uint)textureId);
+            textureId);
 
     /// <summary>
     /// Creates a new instance of a <see cref="TextureBatchItem"/> for the purpose of testing.
