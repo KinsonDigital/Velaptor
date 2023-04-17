@@ -5,6 +5,7 @@
 namespace VelaptorTests.UI;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
 using Fakes;
@@ -384,6 +385,7 @@ public class WindowTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfMangedResources()
     {
         // Arrange
