@@ -311,7 +311,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void Render_WhenInvoking4ParamOverload_AddsCorrectItemToBatch()
+    public void Render_With4ParamAndIntPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
         const int expectedWidth = 111;
@@ -349,7 +349,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void Render_WhenInvoking5ParamOverloadWithAngle_AddsCorrectItemToBatch()
+    public void Render_With5ParamAndIntPosOverloadWithAngle_AddsCorrectItemToBatch()
     {
         // Arrange
         const int expectedWidth = 111;
@@ -387,7 +387,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void Render_WhenInvoking5ParamOverloadWithEffects_AddsCorrectItemToBatch()
+    public void Render_With5ParamAndIntPosOverloadWithEffects_AddsCorrectItemToBatch()
     {
         // Arrange
         const int expectedWidth = 111;
@@ -426,7 +426,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void Render_WhenInvoking5ParamOverloadWithColor_AddsCorrectItemToBatch()
+    public void Render_With5ParamAndIntPosOverloadWithColor_AddsCorrectItemToBatch()
     {
         // Arrange
         const int expectedWidth = 111;
@@ -465,7 +465,7 @@ public class TextureRendererTests
     }
 
     [Fact]
-    public void Render_WhenInvoking6ParamOverload_AddsCorrectItemToBatch()
+    public void Render_With6ParamAndIntPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
         const int expectedWidth = 111;
