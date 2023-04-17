@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureRenderer.cs" company="KinsonDigital">
+// <copyright file="TextureRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -103,7 +103,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -140,7 +140,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -169,7 +169,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -206,7 +206,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -225,8 +225,10 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         float angle,
         Color color,
         RenderEffects effects,
-        int layer = 0) =>
-        RenderBase(texture, srcRect, destRect, size, angle, color, effects, layer);
+        int layer = 0)
+    {
+        RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
+    }
 
     /// <summary>
     /// Shuts down the application by disposing resources.
@@ -254,8 +256,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// </exception>
     private void RenderBase(
         ITexture texture,
-        NETRect srcRect,
-        NETRect destRect,
+        (NETRect srcRect, NETRect destRect) rects,
         float size,
         float angle,
         Color color,
@@ -272,9 +273,11 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
+        (Rectangle srcRect, Rectangle destRect) = rects;
+
         if (srcRect.Width <= 0 || srcRect.Height <= 0)
         {
-            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
+            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(rects));
         }
 
         var itemToAdd = new TextureBatchItem(
