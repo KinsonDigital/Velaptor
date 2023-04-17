@@ -6,6 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
+using System.Numerics;
 using Content;
 
 /// <summary>
@@ -222,6 +223,211 @@ public interface ITextureRenderer
     ///     </list>
     /// </remarks>
     void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0);
+
+    /// <summary>
+    /// Renders the given texture at the given <paramref name="pos"/> coordinates.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="pos">The location of the texture.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, Vector2 pos, int layer = 0);
+
+    /// <summary>
+    /// Renders the given texture at the given <paramref name="pos"/> coordinates and the given <paramref name="angle"/>.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="pos">The location of the texture.</param>
+    /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, Vector2 pos, float angle, int layer = 0);
+
+    /// <summary>
+    /// Renders the given texture at the given <paramref name="pos"/> coordinates.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="pos">The location of the texture.</param>
+    /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, Vector2 pos, RenderEffects effects, int layer = 0);
+
+    /// <summary>
+    /// Renders the given texture at the given <paramref name="pos"/> coordinates.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="pos">The location of the texture.</param>
+    /// <param name="color">The color to apply to the texture.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, Vector2 pos, Color color, int layer = 0);
+
+    /// <summary>
+    /// Renders the given texture at the given <paramref name="pos"/> coordinates.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="pos">The location of the texture.</param>
+    /// <param name="color">The color to apply to the texture.</param>
+    /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, Vector2 pos, Color color, RenderEffects effects, int layer = 0);
 
     /// <summary>
     /// Renders the given <see cref="Texture"/> using the given parameters.

@@ -6,6 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using System.Drawing;
+using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
@@ -102,7 +103,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -139,7 +140,73 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, srcRect, destRect, 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, int layer = 0) =>
+        Render(texture, (int)pos.X, (int)pos.Y, Color.White, RenderEffects.None, layer);
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, float angle, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, RenderEffects effects, int layer = 0) =>
+        Render(texture, (int)pos.X, (int)pos.Y, Color.White, effects, layer);
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, Color color, int layer = 0) =>
+        Render(texture, (int)pos.X, (int)pos.Y, color, RenderEffects.None, layer);
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, Color color, RenderEffects effects, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -158,8 +225,15 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         float angle,
         Color color,
         RenderEffects effects,
-        int layer = 0) =>
-        RenderBase(texture, srcRect, destRect, size, angle, color, effects, layer);
+        int layer = 0)
+    {
+        if (srcRect.Width <= 0 || srcRect.Height <= 0)
+        {
+            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
+        }
+
+        RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
+    }
 
     /// <summary>
     /// Shuts down the application by disposing resources.
@@ -187,8 +261,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// </exception>
     private void RenderBase(
         ITexture texture,
-        NETRect srcRect,
-        NETRect destRect,
+        (NETRect srcRect, NETRect destRect) rects,
         float size,
         float angle,
         Color color,
@@ -205,9 +278,11 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
+        (Rectangle srcRect, Rectangle destRect) = rects;
+
         if (srcRect.Width <= 0 || srcRect.Height <= 0)
         {
-            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
+            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(rects));
         }
 
         var itemToAdd = new TextureBatchItem(

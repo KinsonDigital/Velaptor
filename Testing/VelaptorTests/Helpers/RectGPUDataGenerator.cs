@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Helpers;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
@@ -11,6 +12,7 @@ using Velaptor.OpenGL.GPUData;
 /// <summary>
 /// Helps generate <see cref="RectVertexData"/> easily for the purpose of testing.
 /// </summary>
+[SuppressMessage("csharpsquid", "S101", Justification = "Class naming is fine.")]
 internal static class RectGPUDataGenerator
 {
     /// <summary>

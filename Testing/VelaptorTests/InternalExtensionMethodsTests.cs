@@ -131,7 +131,7 @@ public class InternalExtensionMethodsTests
         var actual = stringToCheck.DoesNotStartWith(character);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -146,7 +146,7 @@ public class InternalExtensionMethodsTests
         var actual = stringToCheck.DoesNotStartWith(stringValue);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -161,7 +161,7 @@ public class InternalExtensionMethodsTests
         var actual = stringToCheck.DoesNotEndWith(character);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public class InternalExtensionMethodsTests
         var actual = stringToCheck.DoesNotEndWith(stringValue);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -195,7 +195,7 @@ public class InternalExtensionMethodsTests
         var actual = content.TrimLeftOf(value, trimChar);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -214,7 +214,7 @@ public class InternalExtensionMethodsTests
         var actual = content.TrimRightOf(value, trimChar);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -232,7 +232,7 @@ public class InternalExtensionMethodsTests
         var actual = value.OnlyContainsDrive();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [TheoryForWindows]
@@ -257,7 +257,7 @@ public class InternalExtensionMethodsTests
         var actual = value.GetLastDirName();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [TheoryForLinux]
@@ -279,7 +279,7 @@ public class InternalExtensionMethodsTests
         var actual = value.GetLastDirName();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -290,7 +290,7 @@ public class InternalExtensionMethodsTests
         var actual = dirPath.HasValidDriveSyntax();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -301,7 +301,7 @@ public class InternalExtensionMethodsTests
         var actual = dirPath.HasValidFullDirPathSyntax();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -312,7 +312,7 @@ public class InternalExtensionMethodsTests
         var actual = path.HasValidUNCPathSyntax();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -328,7 +328,7 @@ public class InternalExtensionMethodsTests
         var actual = value.TrimNewLineFromEnd();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -349,7 +349,7 @@ public class InternalExtensionMethodsTests
         var actual = value.TrimDirSeparatorFromEnd();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -387,8 +387,8 @@ public class InternalExtensionMethodsTests
         var actual = numbers.ToReadOnlyCollection();
 
         // Assert
-        Assert.NotNull(actual);
-        Assert.Empty(actual);
+        actual.Should().NotBeNull();
+        actual.Should().BeEmpty();
     }
 
     [Fact]
@@ -404,7 +404,7 @@ public class InternalExtensionMethodsTests
         var actualPixels = GetSixLaborPixels(sixLaborsImage);
 
         // Assert
-        Assert.Equal(expectedPixels, actualPixels);
+        actualPixels.Should().BeEquivalentTo(expectedPixels);
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public class InternalExtensionMethodsTests
         var actual = sixLaborsImage.ToImageData();
 
         // Assert
-        Assert.Equal(expectedPixels, actual.Pixels);
+        actual.Pixels.Should().BeEquivalentTo(expectedPixels);
     }
 
     [Fact]
@@ -434,11 +434,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -469,15 +470,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(new Vector2(1111f, 2222f), actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.VertexPos.Should().Be(new Vector2(1111f, 2222f));
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -692,10 +693,9 @@ public class InternalExtensionMethodsTests
         var gpuData = GenerateGPUDataInSequence(0);
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        var act = () => gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)1234);
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -726,15 +726,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(new Vector4(1111f, 2222f, 3333f, 4444f), actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -748,10 +748,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetRectangle(new Vector4(111, 222, 333, 444));
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.Rectangle);
-        Assert.Equal(expected, actual.Vertex2.Rectangle);
-        Assert.Equal(expected, actual.Vertex3.Rectangle);
-        Assert.Equal(expected, actual.Vertex4.Rectangle);
+        actual.Vertex1.Rectangle.Should().Be(expected);
+        actual.Vertex2.Rectangle.Should().Be(expected);
+        actual.Vertex3.Rectangle.Should().Be(expected);
+        actual.Vertex4.Rectangle.Should().Be(expected);
     }
 
     [Fact]
@@ -760,11 +760,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetIsFilled(It.IsAny<bool>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetIsFilled(It.IsAny<bool>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -795,15 +796,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.True(actual.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        actual.IsFilled.Should().BeTrue();
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -816,10 +817,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetIsFilled(true);
 
         // Assert
-        Assert.True(actual.Vertex1.IsFilled);
-        Assert.True(actual.Vertex2.IsFilled);
-        Assert.True(actual.Vertex3.IsFilled);
-        Assert.True(actual.Vertex4.IsFilled);
+        actual.Vertex1.IsFilled.Should().BeTrue();
+        actual.Vertex2.IsFilled.Should().BeTrue();
+        actual.Vertex3.IsFilled.Should().BeTrue();
+        actual.Vertex4.IsFilled.Should().BeTrue();
     }
 
     [Fact]
@@ -828,11 +829,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -863,15 +865,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.Equal(expectedVertex.IsFilled, actual.IsFilled);
-        Assert.Equal(123f, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        actual.BorderThickness.Should().Be(123f);
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.IsFilled.Should().Be(expectedVertex.IsFilled);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -885,10 +887,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetBorderThickness(123f);
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.BorderThickness);
-        Assert.Equal(expected, actual.Vertex2.BorderThickness);
-        Assert.Equal(expected, actual.Vertex3.BorderThickness);
-        Assert.Equal(expected, actual.Vertex4.BorderThickness);
+        actual.Vertex1.BorderThickness.Should().Be(expected);
+        actual.Vertex2.BorderThickness.Should().Be(expected);
+        actual.Vertex3.BorderThickness.Should().Be(expected);
+        actual.Vertex4.BorderThickness.Should().Be(expected);
     }
 
     [Fact]
@@ -897,11 +899,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -932,15 +935,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(1234f, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.TopLeftCornerRadius.Should().Be(1234f);
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -954,10 +957,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetTopLeftCornerRadius(123f);
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.TopLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex2.TopLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex3.TopLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex4.TopLeftCornerRadius);
+        actual.Vertex1.TopLeftCornerRadius.Should().Be(expected);
+        actual.Vertex2.TopLeftCornerRadius.Should().Be(expected);
+        actual.Vertex3.TopLeftCornerRadius.Should().Be(expected);
+        actual.Vertex4.TopLeftCornerRadius.Should().Be(expected);
     }
 
     [Fact]
@@ -966,11 +969,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -1001,15 +1005,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(1234f, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.BottomLeftCornerRadius.Should().Be(1234f);
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -1023,10 +1027,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetBottomLeftCornerRadius(123f);
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.BottomLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex2.BottomLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex3.BottomLeftCornerRadius);
-        Assert.Equal(expected, actual.Vertex4.BottomLeftCornerRadius);
+        actual.Vertex1.BottomLeftCornerRadius.Should().Be(expected);
+        actual.Vertex2.BottomLeftCornerRadius.Should().Be(expected);
+        actual.Vertex3.BottomLeftCornerRadius.Should().Be(expected);
+        actual.Vertex4.BottomLeftCornerRadius.Should().Be(expected);
     }
 
     [Fact]
@@ -1035,11 +1039,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -1070,15 +1075,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(1234f, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.BottomRightCornerRadius.Should().Be(1234f);
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -1092,10 +1097,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetBottomRightCornerRadius(123f);
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.BottomRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex2.BottomRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex3.BottomRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex4.BottomRightCornerRadius);
+        actual.Vertex1.BottomRightCornerRadius.Should().Be(expected);
+        actual.Vertex2.BottomRightCornerRadius.Should().Be(expected);
+        actual.Vertex3.BottomRightCornerRadius.Should().Be(expected);
+        actual.Vertex4.BottomRightCornerRadius.Should().Be(expected);
     }
 
     [Fact]
@@ -1104,11 +1109,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -1139,15 +1145,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(expectedVertex.Color, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(1234f, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.TopRightCornerRadius.Should().Be(1234f);
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(expectedVertex.Color);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
     }
 
     [Fact]
@@ -1161,10 +1167,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetTopRightCornerRadius(123f);
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.TopRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex2.TopRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex3.TopRightCornerRadius);
-        Assert.Equal(expected, actual.Vertex4.TopRightCornerRadius);
+        actual.Vertex1.TopRightCornerRadius.Should().Be(expected);
+        actual.Vertex2.TopRightCornerRadius.Should().Be(expected);
+        actual.Vertex3.TopRightCornerRadius.Should().Be(expected);
+        actual.Vertex4.TopRightCornerRadius.Should().Be(expected);
     }
 
     [Fact]
@@ -1173,11 +1179,12 @@ public class InternalExtensionMethodsTests
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            gpuData.SetColor(It.IsAny<NETColor>(), (VertexNumber)1234);
-        }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetColor(It.IsAny<NETColor>(), (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
     }
 
     [Theory]
@@ -1208,15 +1215,15 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
-        Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
-        Assert.Equal(NETColor.Blue, actual.Color);
-        Assert.False(expectedVertex.IsFilled);
-        Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
-        Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
-        Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
-        Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        expectedVertex.IsFilled.Should().BeFalse();
+        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
+        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.Color.Should().Be(NETColor.Blue);
+        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -1230,10 +1237,10 @@ public class InternalExtensionMethodsTests
         var actual = gpuData.SetColor(NETColor.FromArgb(220, 230, 240, 250));
 
         // Assert
-        Assert.Equal(expected, actual.Vertex1.Color);
-        Assert.Equal(expected, actual.Vertex2.Color);
-        Assert.Equal(expected, actual.Vertex3.Color);
-        Assert.Equal(expected, actual.Vertex4.Color);
+        actual.Vertex1.Color.Should().Be(expected);
+        actual.Vertex2.Color.Should().Be(expected);
+        actual.Vertex3.Color.Should().Be(expected);
+        actual.Vertex4.Color.Should().Be(expected);
     }
 
     [Fact]
@@ -1266,8 +1273,8 @@ public class InternalExtensionMethodsTests
         var actual = rect.GetPosition();
 
         // Assert
-        Assert.Equal(11f, actual.X);
-        Assert.Equal(22f, actual.Y);
+        actual.X.Should().Be(11f);
+        actual.Y.Should().Be(22f);
     }
 
     [Fact]
@@ -1280,7 +1287,7 @@ public class InternalExtensionMethodsTests
         var actual = values.TrimAllEnds();
 
         // Assert
-        Assert.All(actual, i => Assert.Equal("item", i));
+        actual.Should().AllBe("item");
     }
 
     [Fact]
@@ -1293,7 +1300,7 @@ public class InternalExtensionMethodsTests
         var actual = values.TrimAllEnds('~');
 
         // Assert
-        Assert.All(actual, i => Assert.Equal("item", i));
+        actual.Should().AllBe("item");
     }
 
     [Theory]
@@ -1310,8 +1317,8 @@ public class InternalExtensionMethodsTests
         var actual = paths.NormalizePaths();
 
         // Assert
-        Assert.Single(actual);
-        Assert.Equal(expected, actual[0]);
+        actual.Should().ContainSingle();
+        actual[0].Should().Be(expected);
     }
 
     [Fact]
@@ -1324,8 +1331,8 @@ public class InternalExtensionMethodsTests
         var actual = point.ToVector2();
 
         // Assert
-        Assert.Equal(11f, actual.X);
-        Assert.Equal(22f, actual.Y);
+        actual.X.Should().Be(11f);
+        actual.Y.Should().Be(22f);
     }
 
     [Fact]
@@ -1338,8 +1345,8 @@ public class InternalExtensionMethodsTests
         var actual = point.ToPoint();
 
         // Assert
-        Assert.Equal(11f, actual.X);
-        Assert.Equal(22f, actual.Y);
+        actual.X.Should().Be(11);
+        actual.Y.Should().Be(22);
     }
 
     [Fact]
@@ -1350,7 +1357,7 @@ public class InternalExtensionMethodsTests
 
         var untilPredicate = new Predicate<int>(_ =>
         {
-            Assert.True(false, "The 'untilPredicate' should not be invoked with 0 queue items.");
+            Assert.Fail("The 'untilPredicate' should not be invoked with 0 queue items.");
             return false;
         });
 
@@ -1377,8 +1384,8 @@ public class InternalExtensionMethodsTests
         queue.DequeueWhile(untilPredicate);
 
         // Assert
-        Assert.Equal(2, totalInvokes);
-        Assert.Empty(queue);
+        totalInvokes.Should().Be(2);
+        queue.Should().BeEmpty();
     }
 
     [Theory]
@@ -1581,7 +1588,7 @@ public class InternalExtensionMethodsTests
     {
         if (height != rowColors.Count)
         {
-            Assert.True(false, $"The height '{height}' of the image must match the total number of row colors '{rowColors.Count}'.");
+            Assert.Fail($"The height '{height}' of the image must match the total number of row colors '{rowColors.Count}'.");
         }
 
         var availableRows = rowColors.Keys.ToArray();
@@ -1590,7 +1597,7 @@ public class InternalExtensionMethodsTests
         {
             if (row > height - 1)
             {
-                Assert.True(false, $"The row '{row}' is not within the range of rows for the image height '{height}' for the definition of row colors.");
+                Assert.Fail($"The row '{row}' is not within the range of rows for the image height '{height}' for the definition of row colors.");
             }
         }
 
