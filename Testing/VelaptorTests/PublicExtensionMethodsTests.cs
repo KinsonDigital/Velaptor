@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Helpers;
+using FluentAssertions;
 using Velaptor;
 using Velaptor.Graphics;
 using Xunit;
@@ -64,35 +64,35 @@ public class PublicExtensionMethodsTests
     public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveResult()
     {
         // Act & Assert
-        Assert.Equal(123f, (-123f).ForcePositive());
+        (-123f).ForcePositive().Should().Be(123f);
     }
 
     [Fact]
     public void ForcePositive_WhenUsingPositiveValue_ReturnsPositiveResult()
     {
         // Act & Assert
-        Assert.Equal(123f, 123f.ForcePositive());
+        123f.ForcePositive().Should().Be(123f);
     }
 
     [Fact]
     public void ForceNegative_WhenUsingPositiveValue_ReturnsNegativeResult()
     {
         // Act & Assert
-        Assert.Equal(-123f, 123f.ForceNegative());
+        123f.ForceNegative().Should().Be(-123f);
     }
 
     [Fact]
     public void ForceNegative_WhenUsingNegativeValue_ReturnsNegativeResult()
     {
         // Act & Assert
-        Assert.Equal(-123f, (-123f).ForceNegative());
+        (-123f).ForceNegative().Should().Be(-123f);
     }
 
     [Fact]
     public void ToRadians_WhenInvoking_ReturnsCorrectResult()
     {
         // Act & Assert
-        Assert.Equal(70710.06f, 1234.1234f.ToDegrees());
+        1234.1234f.ToDegrees().Should().Be(70710.06f);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class PublicExtensionMethodsTests
         var actual = vectorToRotate.RotateAround(origin, angle);
 
         // Assert
-        Assert.Equal(expected.X, actual.X);
-        Assert.Equal(expected.Y, actual.Y);
+        actual.X.Should().Be(expected.X);
+        actual.Y.Should().Be(expected.Y);
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public class PublicExtensionMethodsTests
         var actual = vectorToRotate.RotateAround(origin, angle, false);
 
         // Assert
-        Assert.Equal(expected.X, actual.X);
-        Assert.Equal(expected.Y, actual.Y);
+        actual.X.Should().Be(expected.X);
+        actual.Y.Should().Be(expected.Y);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class PublicExtensionMethodsTests
         var actual = color.ToVector4();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -165,10 +165,10 @@ public class PublicExtensionMethodsTests
         var actual = color.IncreaseBrightness(brightness);
 
         // Assert
-        AssertExtensions.EqualWithMessage(expectedAlpha, actual.A, $"{nameof(Color.A)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedRed, actual.R, $"{nameof(Color.R)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedGreen, actual.G, $"{nameof(Color.G)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedBlue, actual.B, $"{nameof(Color.B)} value incorrect.");
+        actual.A.Should().Be(expectedAlpha);
+        actual.R.Should().Be(expectedRed);
+        actual.G.Should().Be(expectedGreen);
+        actual.B.Should().Be(expectedBlue);
     }
 
     [Theory]
@@ -193,10 +193,10 @@ public class PublicExtensionMethodsTests
         var actual = color.DecreaseBrightness(brightness);
 
         // Assert
-        AssertExtensions.EqualWithMessage(expectedAlpha, actual.A, $"{nameof(Color.A)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedRed, actual.R, $"{nameof(Color.R)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedGreen, actual.G, $"{nameof(Color.G)} value incorrect.");
-        AssertExtensions.EqualWithMessage(expectedBlue, actual.B, $"{nameof(Color.B)} value incorrect.");
+        actual.A.Should().Be(expectedAlpha);
+        actual.R.Should().Be(expectedRed);
+        actual.G.Should().Be(expectedGreen);
+        actual.B.Should().Be(expectedBlue);
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public class PublicExtensionMethodsTests
         var actual = rect.GetPosition();
 
         // Assert
-        Assert.Equal(1, actual.X);
-        Assert.Equal(2, actual.Y);
+        actual.X.Should().Be(1);
+        actual.Y.Should().Be(2);
     }
 
     [Theory]
@@ -228,7 +228,7 @@ public class PublicExtensionMethodsTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -246,7 +246,7 @@ public class PublicExtensionMethodsTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -264,7 +264,7 @@ public class PublicExtensionMethodsTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class PublicExtensionMethodsTests
         var actual = testValue.MapValue(0, 1_000, 0, 100_000);
 
         // Assert
-        Assert.Equal(50_000, actual);
+        actual.Should().Be(50_000);
     }
 
     [Theory]
@@ -289,7 +289,7 @@ public class PublicExtensionMethodsTests
         var actual = value.ApplySize(2f);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -301,7 +301,7 @@ public class PublicExtensionMethodsTests
         var actual = value.ApplySize(2f);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -314,8 +314,8 @@ public class PublicExtensionMethodsTests
         var actual = rect.ApplySize(2f);
 
         // Assert
-        Assert.Equal(30f, actual.Width);
-        Assert.Equal(60f, actual.Height);
+        actual.Width.Should().Be(30f);
+        actual.Height.Should().Be(60f);
     }
 
     [Fact]
@@ -328,10 +328,10 @@ public class PublicExtensionMethodsTests
         var actual = rect.ApplySize(2f);
 
         // Assert
-        Assert.Equal(3f, actual.X);
-        Assert.Equal(6f, actual.Y);
-        Assert.Equal(30f, actual.Width);
-        Assert.Equal(60f, actual.Height);
+        actual.X.Should().Be(3f);
+        actual.Y.Should().Be(6f);
+        actual.Width.Should().Be(30f);
+        actual.Height.Should().Be(60f);
     }
 
     [Fact]
@@ -358,50 +358,41 @@ public class PublicExtensionMethodsTests
         var actual = metrics.ApplySize(2f);
 
         // Assert
-        Assert.Equal('V', actual.Glyph);
-        Assert.Equal(new RectangleF(6f, 12f, 18f, 24f), actual.GlyphBounds);
-        Assert.Equal(6f, actual.Ascender);
-        Assert.Equal(6f, actual.Descender);
-        Assert.Equal(6f, actual.HorizontalAdvance);
-        Assert.Equal(6f, actual.HoriBearingX);
-        Assert.Equal(6f, actual.HoriBearingY);
-        Assert.Equal(6f, actual.GlyphWidth);
-        Assert.Equal(6f, actual.GlyphHeight);
-        Assert.Equal(6f, actual.XMin);
-        Assert.Equal(6f, actual.XMax);
-        Assert.Equal(6f, actual.YMax);
-        Assert.Equal(6f, actual.YMin);
-        Assert.Equal(123u, actual.CharIndex);
+        actual.GlyphBounds.Should().Be(new RectangleF(6f, 12f, 18f, 24f));
+        actual.Glyph.Should().Be('V');
+        actual.Ascender.Should().Be(6f);
+        actual.Descender.Should().Be(6f);
+        actual.HorizontalAdvance.Should().Be(6f);
+        actual.HoriBearingX.Should().Be(6f);
+        actual.HoriBearingY.Should().Be(6f);
+        actual.GlyphWidth.Should().Be(6f);
+        actual.GlyphHeight.Should().Be(6f);
+        actual.XMin.Should().Be(6f);
+        actual.XMax.Should().Be(6f);
+        actual.YMax.Should().Be(6f);
+        actual.YMin.Should().Be(6f);
+        actual.CharIndex.Should().Be(123u);
     }
 
     [Fact]
     public void IsLetter_WithLetters_ReturnsTrue()
     {
         // Act & Assert
-        Assert.All(this.letters, character =>
-        {
-            Assert.True(character.IsLetter());
-        });
+        this.letters.Should().AllSatisfy(l => l.IsLetter().Should().BeTrue());
     }
 
     [Fact]
     public void IsLetter_WithNonLetters_ReturnsFalse()
     {
         // Act & Assert
-        Assert.All(this.nonLetters, character =>
-        {
-            Assert.False(character.IsLetter());
-        });
+        this.nonLetters.Should().AllSatisfy(l => l.IsLetter().Should().BeFalse());
     }
 
     [Fact]
     public void IsNotLetter_WithNonLetters_ReturnsTrue()
     {
         // Act & Assert
-        Assert.All(this.nonLetters, character =>
-        {
-            Assert.True(character.IsNotLetter());
-        });
+        this.nonLetters.Should().AllSatisfy(l => l.IsNotLetter().Should().BeTrue());
     }
 
     [Theory]
@@ -419,7 +410,7 @@ public class PublicExtensionMethodsTests
         var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -435,7 +426,7 @@ public class PublicExtensionMethodsTests
         var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -448,7 +439,7 @@ public class PublicExtensionMethodsTests
         var actual = value.OnlyContainsLetters();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -461,7 +452,7 @@ public class PublicExtensionMethodsTests
         var actual = value.DoesNotOnlyContainsLetters();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
     #endregion
 }

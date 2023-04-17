@@ -48,21 +48,31 @@ public class WindowTests
     [Fact]
     public void Ctor_WithNullWindowParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new WindowFake(null, this.mockSceneManager.Object);
-        }, "The parameter must not be null. (Parameter 'window')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'window')");
     }
 
     [Fact]
     public void Ctor_WithNullSceneManagerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new WindowFake(this.mockWindow.Object, null);
-        }, "The parameter must not be null. (Parameter 'sceneManager')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'sceneManager')");
     }
 
     [Fact]
@@ -338,7 +348,7 @@ public class WindowTests
         var actual = sut.Initialized;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
     #endregion
 
