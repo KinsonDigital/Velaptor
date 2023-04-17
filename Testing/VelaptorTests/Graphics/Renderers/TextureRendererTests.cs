@@ -6,6 +6,7 @@ namespace VelaptorTests.Graphics.Renderers;
 
 using System;
 using System.Drawing;
+using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
@@ -497,6 +498,200 @@ public class TextureRendererTests
 
         // Act
         sut.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
+    }
+
+    [Fact]
+    public void Render_With4ParamAndVectorPosOverload_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+            {
+                actualBatchItem = item;
+            });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    public void Render_With5ParamAndVectorPosOverloadWithAngle_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            180f,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    public void Render_With5ParamAndVectorPosOverloadWithEffects_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        const RenderEffects expectedRenderEffects = RenderEffects.FlipHorizontally;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            Color.White,
+            expectedRenderEffects,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedRenderEffects, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
+    }
+
+    [Fact]
+    public void Render_With5ParamAndVectorPosOverloadWithColor_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+        var expectedClr = Color.FromArgb(11, 22, 33, 44);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            expectedClr,
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedClr, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
+    }
+
+    [Fact]
+    public void Render_With6ParamAndVectorPosOverload_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        const RenderEffects expectedRenderEffects = RenderEffects.FlipVertically;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+        var expectedClr = Color.FromArgb(11, 22, 33, 44);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            expectedClr,
+            expectedRenderEffects,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedClr, expectedRenderEffects, 123);
 
         // Assert
         this.mockBatchingManager
