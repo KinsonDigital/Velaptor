@@ -378,20 +378,6 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
-    {
-        // Arrange
-        IEnumerable<int>? numbers = null;
-
-        // Act
-        var actual = numbers.ToReadOnlyCollection();
-
-        // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeEmpty();
-    }
-
-    [Fact]
     public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
@@ -1314,7 +1300,7 @@ public class InternalExtensionMethodsTests
         var paths = new[] { path };
 
         // Act
-        var actual = paths.NormalizePaths();
+        var actual = paths.NormalizePaths().ToArray();
 
         // Assert
         actual.Should().ContainSingle();

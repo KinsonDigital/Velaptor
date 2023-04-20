@@ -417,15 +417,6 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
-    /// <param name="items">The items to convert.</param>
-    /// <returns>The items as a read only collection.</returns>
-    public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
-        items is null ? new ReadOnlyCollection<T>(Array.Empty<T>()) : new ReadOnlyCollection<T>(items.ToList());
-
-    /// <summary>
     /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
     /// inherit from <see cref="IDisposable"/>.
     /// </summary>
@@ -631,11 +622,10 @@ internal static class InternalExtensionMethods
     /// <remarks>
     ///     A normalized path is a path that has all of its directory separators all the same to the value of <c>'/'</c>.
     /// </remarks>
-    public static ReadOnlyCollection<string> NormalizePaths(this IEnumerable<string> paths) =>
+    public static IReadOnlyCollection<string> NormalizePaths(this IEnumerable<string> paths) =>
         paths.Select(p => p.Contains(WinDirSeparatorChar)
                 ? p.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar)
-                : p)
-            .ToReadOnlyCollection();
+                : p).ToArray().AsReadOnly();
 
     /// <summary>
     /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.

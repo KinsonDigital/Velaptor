@@ -4,7 +4,7 @@
 
 namespace Velaptor.Services;
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Hardware;
 
 /// <summary>
@@ -15,7 +15,7 @@ internal interface ISystemMonitorService
     /// <summary>
     /// Gets a list of all of the monitors in the system.
     /// </summary>
-    ReadOnlyCollection<SystemMonitor> Monitors { get; }
+    IReadOnlyCollection<SystemMonitor> Monitors { get; }
 
     /// <summary>
     /// Gets the primary monitor in the system.

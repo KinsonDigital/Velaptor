@@ -797,7 +797,7 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkInputContext.Setup(p => p.Keyboards)
-            .Returns(Array.Empty<IKeyboard>().ToReadOnlyCollection());
+            .Returns(Array.Empty<IKeyboard>().AsReadOnly());
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
 
@@ -813,7 +813,7 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkInputContext.Setup(p => p.Mice)
-            .Returns(Array.Empty<IMouse>().ToReadOnlyCollection());
+            .Returns(Array.Empty<IMouse>().AsReadOnly());
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
 
@@ -1430,7 +1430,7 @@ public class GLWindowTests
         this.mockSilkKeyboard = new Mock<IKeyboard>();
         var keyboards = new List<IKeyboard> { this.mockSilkKeyboard.Object };
         this.mockSilkInputContext.Setup(p => p.Keyboards)
-            .Returns(keyboards.ToReadOnlyCollection());
+            .Returns(keyboards.AsReadOnly());
     }
 
     /// <summary>
@@ -1447,6 +1447,6 @@ public class GLWindowTests
         var mice = new List<IMouse> { this.mockSilkMouse.Object };
 
         this.mockSilkInputContext.Setup(p => p.Mice)
-            .Returns(mice.ToReadOnlyCollection());
+            .Returns(mice.AsReadOnly());
     }
 }

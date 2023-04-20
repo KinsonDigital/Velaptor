@@ -5,7 +5,6 @@
 namespace Velaptor.Content.Fonts;
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -70,7 +69,7 @@ public interface IFont : IContent
     /// Gets the list of metrics for all of the glyphs supported by the font.
     /// </summary>
     /// <returns>The glyph metrics.</returns>
-    ReadOnlyCollection<GlyphMetrics> Metrics { get; }
+    IReadOnlyCollection<GlyphMetrics> Metrics { get; }
 
     /// <summary>
     /// Measures the width and height bounds of the given <paramref name="text"/>.

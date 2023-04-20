@@ -6,7 +6,7 @@ namespace Velaptor.Content.Caching;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
@@ -84,7 +84,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     public int TotalCachedItems => this.sounds.Count;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<string> CacheKeys => new (this.sounds.Keys.ToArray());
+    public IReadOnlyCollection<string> CacheKeys => this.sounds.Keys.ToArray().AsReadOnly();
 
     /// <summary>
     /// Gets a sound using the given <paramref name="soundFilePath"/>.
