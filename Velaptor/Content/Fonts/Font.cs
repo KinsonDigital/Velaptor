@@ -191,36 +191,19 @@ public sealed class Font : IFont
     /// <returns>The list of glyph metrics of the given <paramref name="text"/>.</returns>
     public GlyphMetrics[] ToGlyphMetrics(string text)
     {
-        var textGlyphs = new List<GlyphMetrics>();
-
-        foreach (var metric in this.metrics)
-        {
-            if (text.Contains(metric.Glyph))
-            {
-                textGlyphs.Add(metric);
-            }
-        }
-
         var result = new List<GlyphMetrics>();
 
         foreach (var character in text)
         {
-            foreach (var m in textGlyphs)
+            // If the character is a valid glyph
+            if (this.availableGlyphCharacters.Contains(character))
             {
-                var isInvalid = this.availableGlyphCharacters.Contains(character) is false;
-
-                if (isInvalid)
-                {
-                    result.Add(this.invalidGlyph);
-                    break;
-                }
-
-                if (m.Glyph != character)
-                {
-                    continue;
-                }
-
-                result.Add(m);
+                var glyphIndex = this.metrics.IndexOf(metric => metric.Glyph == character);
+                result.Add(this.metrics[glyphIndex]);
+            }
+            else
+            {
+                result.Add(this.invalidGlyph);
             }
         }
 
