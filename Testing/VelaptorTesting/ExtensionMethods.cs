@@ -4,22 +4,10 @@
 
 namespace VelaptorTesting;
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Velaptor.Graphics;
 
 public static class ExtensionMethods
 {
-    /// <summary>
-    /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
-    /// <param name="items">The items to convert.</param>
-    /// <returns>The items as a read only collection.</returns>
-    public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
-        => new (items.ToList());
-
     public static CornerRadius IncreaseTopLeft(this CornerRadius radius, float amount)
     {
         return new CornerRadius(radius.TopLeft + amount, radius.BottomLeft, radius.BottomRight, radius.TopRight);

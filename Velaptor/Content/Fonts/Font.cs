@@ -6,7 +6,6 @@ namespace Velaptor.Content.Fonts;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -150,8 +149,8 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public IEnumerable<FontStyle> AvailableStylesForFamily
         => this.fontStats is null
-            ? Array.Empty<VelFontStyle>().ToReadOnlyCollection()
-            : this.fontStats.Select(s => s.Style).ToReadOnlyCollection();
+            ? Array.Empty<VelFontStyle>().AsReadOnly()
+            : this.fontStats.Select(s => s.Style).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
     public string FamilyName { get; }
@@ -163,7 +162,7 @@ public sealed class Font : IFont
     public float LineSpacing { get; private set; }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
+    public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
 
     /// <inheritdoc/>
     public SizeF Measure(string text)

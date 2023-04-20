@@ -5,6 +5,8 @@
 namespace VelaptorTests.Services;
 
 using System;
+using System.Collections;
+using System.Linq;
 using Helpers;
 using Moq;
 using Velaptor;
@@ -61,10 +63,10 @@ public class SystemMonitorServiceTests
         var service = new SystemMonitorService(mockMonitors.Object);
 
         // Act
-        var actual = service.Monitors;
+        var actual = service.Monitors.ToArray();
 
         // Assert
-        Assert.Single(actual);
+        Assert.Single((IEnumerable)actual);
         Assert.Same(monitor, actual[0]);
     }
 

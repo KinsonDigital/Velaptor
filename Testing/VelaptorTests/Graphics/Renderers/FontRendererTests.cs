@@ -942,7 +942,7 @@ public class FontRendererTests
     private void MockFontMetrics()
     {
         this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics[]>(string.Empty, GlyphTestDataFileName).ToList();
-        this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
+        this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().AsReadOnly());
     }
 
     /// <summary>

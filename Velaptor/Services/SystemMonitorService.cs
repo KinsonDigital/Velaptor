@@ -5,6 +5,7 @@
 namespace Velaptor.Services;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -37,7 +38,7 @@ internal sealed class SystemMonitorService : ISystemMonitorService
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<SystemMonitor> Monitors =>
+    public IReadOnlyCollection<SystemMonitor> Monitors =>
         this.monitors is null ?
             new ReadOnlyCollection<SystemMonitor>(Array.Empty<SystemMonitor>()) :
             new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
