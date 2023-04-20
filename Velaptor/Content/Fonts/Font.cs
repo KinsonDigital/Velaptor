@@ -176,58 +176,10 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        var leftCharacterIndex = 0u;
-
         text = text.TrimNewLineFromEnd();
-
         var lines = text.Split(Environment.NewLine).TrimAllEnds();
 
-        SizeF MeasureLine(IEnumerable<GlyphMetrics> charMetrics)
-        {
-            var width = 0f;
-            var height = 0f;
-
-            // Total all of the space between each character, except the space before the first character.
-            // Also takes into account any kerning.
-            foreach (var currentCharacter in charMetrics)
-            {
-                width += HasKerning
-                    ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, currentCharacter.CharIndex)
-                    : 0;
-
-                width += currentCharacter.HorizontalAdvance;
-
-                height = currentCharacter.GlyphHeight > height
-                    ? currentCharacter.GlyphHeight
-                    : height;
-
-                leftCharacterIndex = currentCharacter.CharIndex;
-            }
-
-            return new SizeF(width, height);
-        }
-
-        var lineSizes = new List<SizeF>();
-
-        var totalHeight = 0f;
-
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var lineGlyphs = ToGlyphMetrics(lines[i]);
-
-            const float verticalOffset = 0f;
-
-            var isLastLine = i == lines.Length - 1;
-
-            var lineSize = MeasureLine(lineGlyphs);
-            totalHeight += lineSize.Height;
-            totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
-            totalHeight += verticalOffset;
-
-            lineSizes.Add(lineSize);
-        }
-
-        var largestWidth = lineSizes.Max(l => l.Width);
+        var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
         return new SizeF(largestWidth, totalHeight);
     }
@@ -425,5 +377,68 @@ public sealed class Font : IFont
         LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 
         this.metrics = glyphMetrics;
+    }
+
+    /// <summary>
+    /// Returns the size of a single line of text represented by the given <paramref name="charMetrics"/>.
+    /// </summary>
+    /// <param name="charMetrics">The character metrics of the line of text.</param>
+    /// <returns>The size of the line of text.</returns>
+    private SizeF MeasureLine(IEnumerable<GlyphMetrics> charMetrics)
+    {
+        var width = 0f;
+        var height = 0f;
+        var leftCharacterIndex = 0u;
+
+        // Total all of the space between each character, except the space before the first character.
+        // Also takes into account any kerning.
+        foreach (var currentCharacter in charMetrics)
+        {
+            width += HasKerning
+                ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, currentCharacter.CharIndex)
+                : 0;
+
+            width += currentCharacter.HorizontalAdvance;
+
+            height = currentCharacter.GlyphHeight > height
+                ? currentCharacter.GlyphHeight
+                : height;
+
+            leftCharacterIndex = currentCharacter.CharIndex;
+        }
+
+        return new SizeF(width, height);
+    }
+
+    /// <summary>
+    /// Calculates the dimensions of the given <paramref name="lines"/> of text.
+    /// </summary>
+    /// <param name="lines">The lines to use in the measurement.</param>
+    /// <returns>The dimensions of all the lines.</returns>
+    private (float maxWidth, float totalHeight) CalcTextDimensions(IReadOnlyList<string> lines)
+    {
+        var maxWidth = 0f;
+        var totalHeight = 0f;
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var lineGlyphs = ToGlyphMetrics(lines[i]);
+
+            const float verticalOffset = 0f;
+
+            var isLastLine = i == lines.Count - 1;
+
+            var lineSize = MeasureLine(lineGlyphs);
+            totalHeight += lineSize.Height;
+            totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
+            totalHeight += verticalOffset;
+
+            if (lineSize.Width > maxWidth)
+            {
+                maxWidth = lineSize.Width;
+            }
+        }
+
+        return (maxWidth, totalHeight);
     }
 }
