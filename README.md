@@ -1,6 +1,6 @@
 
 <div align="center">
-    <a href="#"><img align="center" src="./Documentation/Images/velaptor-logo.png" height="96"></a>
+    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/release/v1.0.0/Documentation/Images/velaptor-logo.png" height="96"></a>
     <br />
   
 </div>
