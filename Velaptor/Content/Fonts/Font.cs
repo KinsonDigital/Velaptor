@@ -383,23 +383,23 @@ public sealed class Font : IFont
         var height = 0f;
         var leftCharacterIndex = 0u;
 
-        var charMetrics = ToGlyphMetrics(line);
-
-        // Total all of the space between each character, except the space before the first character.
-        // Also takes into account any kerning.
-        foreach (var currentCharacter in charMetrics)
+        foreach (var character in line)
         {
+            var charMetric = this.availableGlyphCharacters.Contains(character)
+                ? this.metrics[this.metrics.IndexOf(metric => metric.Glyph == character)]
+                : this.invalidGlyph;
+
             width += HasKerning
-                ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, currentCharacter.CharIndex)
+                ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, charMetric.CharIndex)
                 : 0;
 
-            width += currentCharacter.HorizontalAdvance;
+            width += charMetric.HorizontalAdvance;
 
-            height = currentCharacter.GlyphHeight > height
-                ? currentCharacter.GlyphHeight
+            height = charMetric.GlyphHeight > height
+                ? charMetric.GlyphHeight
                 : height;
 
-            leftCharacterIndex = currentCharacter.CharIndex;
+            leftCharacterIndex = charMetric.CharIndex;
         }
 
         return new SizeF(width, height);
