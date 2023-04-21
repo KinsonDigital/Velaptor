@@ -50,6 +50,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName)Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="MeasureTextPerf" />
   </ItemGroup>
 
   <ItemGroup>

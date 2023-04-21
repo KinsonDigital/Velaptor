@@ -47,6 +47,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 		.github\workflows\unit-test-pr-status-check.yml = .github\workflows\unit-test-pr-status-check.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeasureTextPerf", "Performance\MeasureTextPerf\MeasureTextPerf.csproj", "{8690A40A-D3B2-488B-92B6-5771C21010E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{0F186A14-6114-4CC0-850E-2E062A55CF52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -79,6 +83,14 @@ Global
 		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release|x64.Build.0 = Release|x64
 		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release-Console|x64.ActiveCfg = Release|x64
 		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release-Console|x64.Build.0 = Release|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Debug|x64.ActiveCfg = Debug|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Debug|x64.Build.0 = Debug|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Debug-Console|x64.ActiveCfg = Debug|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Debug-Console|x64.Build.0 = Debug|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release|x64.ActiveCfg = Release|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release|x64.Build.0 = Release|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release-Console|x64.ActiveCfg = Release|x64
+		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release-Console|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +100,7 @@ Global
 		{C6AFDF55-196C-41D6-9174-0A03A934586F} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{E248AD89-D6AB-4183-88F1-133875647706} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
 		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {E248AD89-D6AB-4183-88F1-133875647706}
+		{8690A40A-D3B2-488B-92B6-5771C21010E0} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

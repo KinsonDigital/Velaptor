@@ -7,7 +7,7 @@
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
-        <RootNamespace>FontMeasurePerf</RootNamespace>
+        <NoWarn>CA1852</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
