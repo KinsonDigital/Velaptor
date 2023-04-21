@@ -163,7 +163,10 @@ public sealed class Font : IFont
     public float LineSpacing { get; private set; }
 
     /// <inheritdoc/>
-    public bool CacheMeasurements { get; set; } = true;
+    public bool CacheEnabled { get; set; } = true;
+
+    /// <inheritdoc/>
+    public int MaxCacheSize { get; set; } = 1000;
 
     /// <inheritdoc/>
     public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
@@ -180,7 +183,7 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        if (CacheMeasurements && this.textSizeCache.TryGetValue(text, out SizeF measure))
+        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
         {
             return measure;
         }
@@ -192,10 +195,7 @@ public sealed class Font : IFont
 
         var textSize = new SizeF(largestWidth, totalHeight);
 
-        if (CacheMeasurements)
-        {
-            this.textSizeCache.Add(text, textSize);
-        }
+        AddToCache(text, textSize);
 
         return textSize;
     }
@@ -288,6 +288,29 @@ public sealed class Font : IFont
     }
 
     /// <summary>
+    /// Adds the given text and size to the cache.
+    /// </summary>
+    /// <param name="text">The text to add.</param>
+    /// <param name="textSize">The size of the text to add.</param>
+    private void AddToCache(string text, SizeF textSize)
+    {
+        if (CacheEnabled is false)
+        {
+            return;
+        }
+
+        this.textSizeCache.Add(text, textSize);
+
+        if (this.textSizeCache.Count <= MaxCacheSize)
+        {
+            return;
+        }
+
+        var removeKey = this.textSizeCache.Keys.First();
+        this.textSizeCache.Remove(removeKey);
+    }
+
+    /// <summary>
     /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
     /// </summary>
     /// <param name="filePath">The file path to the font file.</param>
@@ -333,12 +356,9 @@ public sealed class Font : IFont
 
         var missingFontStats = new List<FontStats>();
 
-        foreach (var missingStat in systemFontStats)
+        foreach (var missingStat in systemFontStats.Where(s => missingStyles.Contains(s.Style)))
         {
-            if (missingStyles.Contains(missingStat.Style))
-            {
-                missingFontStats.Add(missingStat);
-            }
+            missingFontStats.Add(missingStat);
         }
 
         var newList = new List<FontStats>();

@@ -335,16 +335,14 @@ public class FontTests : IDisposable
     }
 
     [Fact]
-    public void Ctor_WhenInvoked_SetsCachingMeasurementsPropToCorrectDefaultValue()
+    public void Ctor_WhenInvoked_PropsSetToCorrectDefaultValues()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act
-        var actual = sut.CacheMeasurements;
-
-        // Assert
-        actual.Should().BeTrue();
+        // Act & Assert
+        sut.CacheEnabled.Should().BeTrue();
+        sut.MaxCacheSize.Should().Be(1000);
     }
     #endregion
 
@@ -470,17 +468,31 @@ public class FontTests : IDisposable
     }
 
     [Fact]
+    public void CacheEnabled_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.CacheEnabled = false;
+        var actual = sut.CacheEnabled;
+
+        // Assert
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
     public void CacheMeasurements_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.CacheMeasurements = false;
-        var actual = sut.CacheMeasurements;
+        sut.MaxCacheSize = 100;
+        var actual = sut.MaxCacheSize;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.Should().Be(100);
     }
     #endregion
 
@@ -529,7 +541,7 @@ public class FontTests : IDisposable
         MockGlyphKernings(text);
 
         var font = CreateSystemUnderTest();
-        font.CacheMeasurements = useCaching;
+        font.CacheEnabled = useCaching;
 
         // Act
         var actual = font.Measure(text);
