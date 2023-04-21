@@ -163,6 +163,9 @@ public sealed class Font : IFont
     public float LineSpacing { get; private set; }
 
     /// <inheritdoc/>
+    public bool CacheMeasurements { get; set; } = true;
+
+    /// <inheritdoc/>
     public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
 
     /// <inheritdoc/>
@@ -177,7 +180,7 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        if (this.textSizeCache.TryGetValue(text, out SizeF measure))
+        if (CacheMeasurements && this.textSizeCache.TryGetValue(text, out SizeF measure))
         {
             return measure;
         }
@@ -189,7 +192,10 @@ public sealed class Font : IFont
 
         var textSize = new SizeF(largestWidth, totalHeight);
 
-        this.textSizeCache.Add(text, textSize);
+        if (CacheMeasurements)
+        {
+            this.textSizeCache.Add(text, textSize);
+        }
 
         return textSize;
     }

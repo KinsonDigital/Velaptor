@@ -59,6 +59,7 @@ public class Benchmarks
             12u,
             true,
             metricData);
+        this.font.CacheMeasurements = true;
     }
 
     /// <summary>

@@ -333,6 +333,19 @@ public class FontTests : IDisposable
         actualFilePath.Should().Be(this.fontFilePath);
         actualIsDefaultFont.Should().BeTrue();
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsCachingMeasurementsPropToCorrectDefaultValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actual = sut.CacheMeasurements;
+
+        // Assert
+        actual.Should().BeTrue();
+    }
     #endregion
 
     #region Prop Tests
@@ -455,6 +468,20 @@ public class FontTests : IDisposable
         this.mockFontAtlasService.VerifyNever(m => m.CreateAtlas(It.IsAny<string>(), It.IsAny<uint>()));
         this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<nint>(), 0u));
     }
+
+    [Fact]
+    public void CacheMeasurements_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.CacheMeasurements = false;
+        var actual = sut.CacheMeasurements;
+
+        // Assert
+        actual.Should().BeFalse();
+    }
     #endregion
 
     #region Method Tests
@@ -489,8 +516,10 @@ public class FontTests : IDisposable
         actual.Height.Should().Be(0);
     }
 
-    [Fact]
-    public void Measure_WhenInvoked_ReturnsCorrectResult()
+    [Theory]
+    [InlineData(true, 10)]
+    [InlineData(false, 20)]
+    public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
         // Arrange
         var text = $"hello{Environment.NewLine}world";
@@ -499,24 +528,21 @@ public class FontTests : IDisposable
         this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
         MockGlyphKernings(text);
 
-        var font = new Font(
-            this.mockTexture.Object,
-            this.mockFontService.Object,
-            this.mockFontStatsService.Object,
-            this.mockFontAtlasService.Object,
-            this.mockTextureCache.Object,
-            "test-name",
-            DirPath,
-            It.IsAny<uint>(),
-            It.IsAny<bool>(),
-            this.glyphMetrics.Values.ToArray());
+        var font = CreateSystemUnderTest();
+        font.CacheMeasurements = useCaching;
 
         // Act
         var actual = font.Measure(text);
+        font.Measure(text);
 
         // Assert
-        actual.Width.Should().Be(103);
-        actual.Height.Should().Be(31);
+        actual.Width.Should().Be(153);
+        actual.Height.Should().Be(33);
+
+        this.mockFontService
+            .Verify(m =>
+                m.GetKerning(It.IsAny<IntPtr>(), It.IsAny<uint>(), It.IsAny<uint>()),
+                    Times.Exactly(executeKerningCount));
     }
 
     [Fact]
