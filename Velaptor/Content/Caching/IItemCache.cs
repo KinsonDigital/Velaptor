@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TCacheKey">The unique key assigned for a particular cached item.</typeparam>
 /// <typeparam name="TCacheType">The type of item being cached.</typeparam>
-public interface IItemCache<TCacheKey, out TCacheType>
+public interface IItemCache<in TCacheKey, out TCacheType>
 {
     /// <summary>
     /// Gets the total number of cached items.
