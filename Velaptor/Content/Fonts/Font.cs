@@ -27,6 +27,7 @@ public sealed class Font : IFont
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
+    private readonly Dictionary<string, SizeF> textSizeCache = new ();
     private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
@@ -176,12 +177,21 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
+        if (this.textSizeCache.TryGetValue(text, out SizeF measure))
+        {
+            return measure;
+        }
+
         text = text.TrimNewLineFromEnd();
         var lines = text.Split(Environment.NewLine).TrimAllEnds();
 
         var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
-        return new SizeF(largestWidth, totalHeight);
+        var textSize = new SizeF(largestWidth, totalHeight);
+
+        this.textSizeCache.Add(text, textSize);
+
+        return textSize;
     }
 
     /// <summary>
@@ -363,15 +373,17 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Returns the size of a single line of text represented by the given <paramref name="charMetrics"/>.
+    /// Returns the size of the given single line of <paramref name="line"/>.
     /// </summary>
-    /// <param name="charMetrics">The character metrics of the line of text.</param>
+    /// <param name="line">The line of text to measure.</param>
     /// <returns>The size of the line of text.</returns>
-    private SizeF MeasureLine(IEnumerable<GlyphMetrics> charMetrics)
+    private SizeF MeasureLine(string line)
     {
         var width = 0f;
         var height = 0f;
         var leftCharacterIndex = 0u;
+
+        var charMetrics = ToGlyphMetrics(line);
 
         // Total all of the space between each character, except the space before the first character.
         // Also takes into account any kerning.
@@ -405,16 +417,11 @@ public sealed class Font : IFont
 
         for (var i = 0; i < lines.Count; i++)
         {
-            var lineGlyphs = ToGlyphMetrics(lines[i]);
-
-            const float verticalOffset = 0f;
+            var lineSize = MeasureLine(lines[i]);
 
             var isLastLine = i == lines.Count - 1;
-
-            var lineSize = MeasureLine(lineGlyphs);
             totalHeight += lineSize.Height;
             totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
-            totalHeight += verticalOffset;
 
             if (lineSize.Width > maxWidth)
             {
