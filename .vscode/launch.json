@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Testing/VelaptorTests/bin/Debug/net7.0/VelaptorTests.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Testing/VelaptorTests",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug (VelaptorTesting)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Testing/VelaptorTesting/bin/x64/Debug/net7.0/VelaptorTesting.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/Testing/VelaptorTesting",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+    ]
+}
