@@ -4,8 +4,7 @@
 
 namespace VelaptorTests.Services;
 
-using System;
-using Helpers;
+using FluentAssertions;
 using Velaptor.Services;
 using Xunit;
 
@@ -44,27 +43,12 @@ public class FontMetaDataParserTests
         // Act
         var actual = parser.Parse(stringToParse);
 
-        var failureMsg = "Expected Results:";
-        failureMsg +=  $"{Environment.NewLine}Contains Metadata: {containsMetaData}";
-        failureMsg += $"{Environment.NewLine}Is Valid: {isValid}";
-        failureMsg += $"{Environment.NewLine}Metadata Prefix: {metaDataPrefix}";
-        failureMsg += $"{Environment.NewLine}Metadata: {(string.IsNullOrEmpty(metaData) ? "Null Or Empty" : metaData)}";
-        failureMsg += $"{Environment.NewLine}Font Size: {fontSize}";
-
-        failureMsg += $"{Environment.NewLine}Actual Results:";
-        failureMsg += $"{Environment.NewLine}Contains Metadata: {actual.ContainsMetaData}";
-        failureMsg += $"{Environment.NewLine}Is Valid: {actual.IsValid}";
-        failureMsg += $"{Environment.NewLine}Metadata Prefix: {actual.MetaDataPrefix}";
-        failureMsg += $"{Environment.NewLine}Metadata: {(string.IsNullOrEmpty(actual.MetaData) ? "Null Or Empty" : actual.MetaData)}";
-        failureMsg += $"{Environment.NewLine}Font Size: {actual.FontSize}";
-        failureMsg += $"{Environment.NewLine}------------------------------------------------------------------------------------------";
-
         // Assert
-        AssertExtensions.EqualWithMessage(containsMetaData, actual.ContainsMetaData, failureMsg);
-        AssertExtensions.EqualWithMessage(isValid, actual.IsValid, failureMsg);
-        AssertExtensions.EqualWithMessage(metaDataPrefix, actual.MetaDataPrefix, failureMsg);
-        AssertExtensions.EqualWithMessage(metaData, actual.MetaData, failureMsg);
-        AssertExtensions.EqualWithMessage(fontSize, actual.FontSize, failureMsg);
+        actual.ContainsMetaData.Should().Be(containsMetaData);
+        actual.IsValid.Should().Be(isValid);
+        actual.MetaDataPrefix.Should().Be(metaDataPrefix);
+        actual.MetaData.Should().Be(metaData);
+        actual.FontSize.Should().Be(fontSize);
     }
     #endregion
 }
