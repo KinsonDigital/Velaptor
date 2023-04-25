@@ -34,3 +34,19 @@ public enum RenderLayer
     /// </summary>
     Five = 40, // Free spot
 }
+
+/// <summary>
+/// Different kinds of shapes.
+/// </summary>
+public enum ShapeType
+{
+    /// <summary>
+    /// A rectangle.
+    /// </summary>
+    Rectangle = 1,
+
+    /// <summary>
+    /// An ellipse.
+    /// </summary>
+    Circle = 2,
+}
