@@ -29,16 +29,16 @@ public class RenderMediatorTests
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IComparer<RenderItem<TextureBatchItem>>> mockTextureComparer;
     private readonly Mock<IComparer<RenderItem<FontGlyphBatchItem>>> mockFontComparer;
-    private readonly Mock<IComparer<RenderItem<RectEllipseBatchItem>>> mockRectComparer;
+    private readonly Mock<IComparer<RenderItem<ShapeBatchItem>>> mockRectComparer;
     private readonly Mock<IComparer<RenderItem<LineBatchItem>>> mockLineComparer;
     private readonly Mock<IRenderBatchReactable<TextureBatchItem>> mockTextureRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<FontGlyphBatchItem>> mockFontRenderBatchReactable;
-    private readonly Mock<IRenderBatchReactable<RectEllipseBatchItem>> mockRectRenderBatchReactable;
+    private readonly Mock<IRenderBatchReactable<ShapeBatchItem>> mockRectRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<LineBatchItem>> mockLineRenderBatchReactable;
 
     private readonly Mock<IBatchPullReactable<TextureBatchItem>> mockTexturePullReactable;
     private readonly Mock<IBatchPullReactable<FontGlyphBatchItem>> mockFontPullReactable;
-    private readonly Mock<IBatchPullReactable<RectEllipseBatchItem>> mockRectPullReactable;
+    private readonly Mock<IBatchPullReactable<ShapeBatchItem>> mockRectPullReactable;
     private readonly Mock<IBatchPullReactable<LineBatchItem>> mockLinePullReactable;
 
     private IReceiveReactor? endBatchReactor;
@@ -90,12 +90,12 @@ public class RenderMediatorTests
 
         this.mockTexturePullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
         this.mockFontPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
-        this.mockRectPullReactable = new Mock<IBatchPullReactable<RectEllipseBatchItem>>();
+        this.mockRectPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
         this.mockLinePullReactable = new Mock<IBatchPullReactable<LineBatchItem>>();
 
         this.mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
         this.mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
-        this.mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<RectEllipseBatchItem>>();
+        this.mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
         this.mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -121,7 +121,7 @@ public class RenderMediatorTests
 
         this.mockTextureComparer = new Mock<IComparer<RenderItem<TextureBatchItem>>>();
         this.mockFontComparer = new Mock<IComparer<RenderItem<FontGlyphBatchItem>>>();
-        this.mockRectComparer = new Mock<IComparer<RenderItem<RectEllipseBatchItem>>>();
+        this.mockRectComparer = new Mock<IComparer<RenderItem<ShapeBatchItem>>>();
         this.mockLineComparer = new Mock<IComparer<RenderItem<LineBatchItem>>>();
     }
 
@@ -268,7 +268,7 @@ public class RenderMediatorTests
             .Returns<Guid>(_ => new Memory<RenderItem<FontGlyphBatchItem>>(fontItems));
 
         this.mockRectPullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
-            .Returns<Guid>(_ => new Memory<RenderItem<RectEllipseBatchItem>>(rectItems));
+            .Returns<Guid>(_ => new Memory<RenderItem<ShapeBatchItem>>(rectItems));
 
         this.mockLinePullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
             .Returns<Guid>(_ => new Memory<RenderItem<LineBatchItem>>(lineItems));
@@ -282,7 +282,7 @@ public class RenderMediatorTests
             .Callback(AssertFontItems);
 
         this.mockRectRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<RectEllipseBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny, It.IsAny<Guid>()))
             .Callback(AssertRectItems);
 
         this.mockLineRenderBatchReactable
@@ -312,7 +312,7 @@ public class RenderMediatorTests
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertRectItems(in Memory<RenderItem<RectEllipseBatchItem>> data, Guid eventId)
+        void AssertRectItems(in Memory<RenderItem<ShapeBatchItem>> data, Guid eventId)
         {
             eventId.Should().Be(PushNotifications.RenderRectsId);
             data.Span.ToArray().Should().HaveCount(2);

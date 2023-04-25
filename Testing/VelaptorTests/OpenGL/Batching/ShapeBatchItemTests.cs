@@ -1,4 +1,4 @@
-﻿// <copyright file="RectEllipseBatchItemTests.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeBatchItemTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,17 +14,17 @@ using Xunit;
 using Xunit.Abstractions;
 
 /// <summary>
-/// Tests the <see cref="RectEllipseBatchItem"/> struct.
+/// Tests the <see cref="ShapeBatchItem"/> struct.
 /// </summary>
-public class RectEllipseBatchItemTests
+public class ShapeBatchItemTests
 {
     private readonly ITestOutputHelper testOutputHelper;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectEllipseBatchItemTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeBatchItemTests"/> class.
     /// </summary>
     /// <param name="testOutputHelper">Provides test output.</param>
-    public RectEllipseBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
+    public ShapeBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
 
     /// <summary>
     /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
@@ -204,7 +204,7 @@ public class RectEllipseBatchItemTests
     public void Ctor_WhenInvoked_CorrectlySetsProperties()
     {
         // Arrange & Act
-        var sut = new RectEllipseBatchItem(
+        var sut = new ShapeBatchItem(
             new Vector2(1, 2),
             3,
             4,
@@ -248,7 +248,7 @@ public class RectEllipseBatchItemTests
         bool expected)
     {
         // Arrange
-        var sut = new RectEllipseBatchItem(
+        var sut = new ShapeBatchItem(
             position,
             width,
             height,

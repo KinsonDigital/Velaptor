@@ -156,14 +156,14 @@ internal static class BatchItemFactory
     }
 
     /// <summary>
-    /// Creates a new instance of a <see cref="RectEllipseBatchItem"/> for the purpose of testing.
+    /// Creates a new instance of a <see cref="ShapeBatchItem"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static RectEllipseBatchItem CreateRectItemWithOrderedValues(
+    public static ShapeBatchItem CreateRectItemWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
@@ -186,14 +186,14 @@ internal static class BatchItemFactory
                 gradientStop == default ? Color.FromArgb(18, 19, 20, 21) : gradientStop);
 
     /// <summary>
-    /// Creates new instances of a <see cref="RectEllipseBatchItem"/> for the purpose of testing.
+    /// Creates new instances of a <see cref="ShapeBatchItem"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static RectEllipseBatchItem[] CreateRectItemsWithOrderedValues(
+    public static ShapeBatchItem[] CreateRectItemsWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
@@ -206,7 +206,7 @@ internal static class BatchItemFactory
         Color gradientStop = default,
         int totalItems = 1)
     {
-        var result = new List<RectEllipseBatchItem>();
+        var result = new List<ShapeBatchItem>();
 
         for (var i = 0; i < totalItems; i++)
         {

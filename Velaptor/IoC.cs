@@ -80,7 +80,7 @@ internal static class IoC
         IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);
-        IoCContainer.Register<IComparer<RenderItem<RectEllipseBatchItem>>, RenderItemComparer<RectEllipseBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IComparer<RenderItem<ShapeBatchItem>>, RenderItemComparer<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<LineBatchItem>>, RenderItemComparer<LineBatchItem>>(Lifestyle.Singleton);
 
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
@@ -119,7 +119,7 @@ internal static class IoC
     {
         IoCContainer.Register<IGPUBuffer<TextureBatchItem>, TextureGPUBuffer>(Lifestyle.Singleton);
         IoCContainer.Register<IGPUBuffer<FontGlyphBatchItem>, FontGPUBuffer>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBuffer<RectEllipseBatchItem>, RectGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<ShapeBatchItem>, RectGPUBuffer>(Lifestyle.Singleton);
         IoCContainer.Register<IGPUBuffer<LineBatchItem>, LineGPUBuffer>(Lifestyle.Singleton);
     }
 
@@ -205,12 +205,12 @@ internal static class IoC
 
         IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchPullReactable<FontGlyphBatchItem>, BatchPullReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchPullReactable<RectEllipseBatchItem>, BatchPullReactable<RectEllipseBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchPullReactable<ShapeBatchItem>, BatchPullReactable<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchPullReactable<LineBatchItem>, BatchPullReactable<LineBatchItem>>(Lifestyle.Singleton);
 
         IoCContainer.Register<IRenderBatchReactable<TextureBatchItem>, RenderBatchReactable<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<FontGlyphBatchItem>, RenderBatchReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);
-        IoCContainer.Register<IRenderBatchReactable<RectEllipseBatchItem>, RenderBatchReactable<RectEllipseBatchItem>>(Lifestyle.Singleton);
+        IoCContainer.Register<IRenderBatchReactable<ShapeBatchItem>, RenderBatchReactable<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
     }
 }

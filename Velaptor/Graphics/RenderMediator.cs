@@ -18,15 +18,15 @@ internal sealed class RenderMediator : IRenderMediator
     private readonly IPushReactable pushReactable;
     private readonly IBatchPullReactable<TextureBatchItem> texturePullReactable;
     private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
-    private readonly IBatchPullReactable<RectEllipseBatchItem> rectPullReactable;
+    private readonly IBatchPullReactable<ShapeBatchItem> rectPullReactable;
     private readonly IBatchPullReactable<LineBatchItem> linePullReactable;
     private readonly IRenderBatchReactable<TextureBatchItem> textureRenderBatchReactable;
     private readonly IRenderBatchReactable<FontGlyphBatchItem> fontRenderBatchReactable;
-    private readonly IRenderBatchReactable<RectEllipseBatchItem> rectRenderBatchReactable;
+    private readonly IRenderBatchReactable<ShapeBatchItem> rectRenderBatchReactable;
     private readonly IRenderBatchReactable<LineBatchItem> lineRenderBatchReactable;
     private readonly IComparer<RenderItem<TextureBatchItem>> textureItemComparer;
     private readonly IComparer<RenderItem<FontGlyphBatchItem>> fontItemComparer;
-    private readonly IComparer<RenderItem<RectEllipseBatchItem>> rectItemComparer;
+    private readonly IComparer<RenderItem<ShapeBatchItem>> rectItemComparer;
     private readonly IComparer<RenderItem<LineBatchItem>> lineItemComparer;
     private readonly IDisposable endBatchUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
@@ -46,7 +46,7 @@ internal sealed class RenderMediator : IRenderMediator
         IReactableFactory reactableFactory,
         IComparer<RenderItem<TextureBatchItem>> textureItemComparer,
         IComparer<RenderItem<FontGlyphBatchItem>> fontItemComparer,
-        IComparer<RenderItem<RectEllipseBatchItem>> rectItemComparer,
+        IComparer<RenderItem<ShapeBatchItem>> rectItemComparer,
         IComparer<RenderItem<LineBatchItem>> lineItemComparer)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);

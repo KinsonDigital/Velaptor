@@ -174,7 +174,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(RectEllipseBatchItem);
+        var rect = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -199,7 +199,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(RectEllipseBatchItem);
+        var rect = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -232,7 +232,7 @@ public class RectGPUBufferTests
 
         var arrayRegions = CreateArrayRegions(16, 4);
 
-        var rect = new RectEllipseBatchItem(
+        var rect = new ShapeBatchItem(
             new Vector2(1, 2),
             3,
             4,
@@ -325,7 +325,7 @@ public class RectGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new RectEllipseBatchItem(
+        var rect = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,
@@ -391,7 +391,7 @@ public class RectGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new RectEllipseBatchItem(
+        var rect = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,

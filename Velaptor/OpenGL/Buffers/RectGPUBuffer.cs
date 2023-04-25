@@ -22,7 +22,7 @@ using ReactableData;
 /// Updates data in the rectangle GPU buffer.
 /// </summary>
 [GPUBufferName("Rectangle")]
-internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
+internal sealed class RectGPUBuffer : GPUBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
@@ -65,7 +65,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
     }
 
     /// <inheritdoc/>
-    protected internal override void UploadVertexData(RectEllipseBatchItem rectShape, uint batchIndex)
+    protected internal override void UploadVertexData(ShapeBatchItem rectShape, uint batchIndex)
     {
         OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
 
@@ -307,7 +307,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
     ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="rect"/>
     ///     is an invalid value.
     /// </exception>
-    private static RectGPUData ApplyColor(RectGPUData data, RectEllipseBatchItem rect)
+    private static RectGPUData ApplyColor(RectGPUData data, ShapeBatchItem rect)
     {
         switch (rect.GradientType)
         {
@@ -340,7 +340,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectEllipseBatchItem ProcessBorderThicknessLimit(RectEllipseBatchItem rect)
+    private static ShapeBatchItem ProcessBorderThicknessLimit(ShapeBatchItem rect)
     {
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
@@ -349,7 +349,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
             : rect.BorderThickness;
         newBorderThickness = newBorderThickness < 1f ? 1f : newBorderThickness;
 
-        rect = new RectEllipseBatchItem(
+        rect = new ShapeBatchItem(
             rect.Position,
             rect.Width,
             rect.Height,
@@ -373,7 +373,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectEllipseBatchItem ProcessCornerRadiusLimits(RectEllipseBatchItem rect)
+    private static ShapeBatchItem ProcessCornerRadiusLimits(ShapeBatchItem rect)
     {
         /*
          * Always have the smallest value between the width and height (divided by 2)
@@ -395,7 +395,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectEllipseBatchItem>
         cornerRadius = cornerRadius.BottomRight < 0 ? CornerRadius.SetBottomRight(cornerRadius, 0) : cornerRadius;
         cornerRadius = cornerRadius.TopRight < 0 ? CornerRadius.SetTopRight(cornerRadius, 0) : cornerRadius;
 
-        rect = new RectEllipseBatchItem(
+        rect = new ShapeBatchItem(
             rect.Position,
             rect.Width,
             rect.Height,

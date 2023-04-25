@@ -83,7 +83,7 @@ public sealed class RendererFactory : IRendererFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var openGLService = IoC.Container.GetInstance<IOpenGLService>();
-        var buffer = IoC.Container.GetInstance<IGPUBuffer<RectEllipseBatchItem>>();
+        var buffer = IoC.Container.GetInstance<IGPUBuffer<ShapeBatchItem>>();
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
         var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
