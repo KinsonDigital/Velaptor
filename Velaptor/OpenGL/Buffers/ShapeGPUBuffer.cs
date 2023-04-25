@@ -1,4 +1,4 @@
-// <copyright file="RectGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="ShapeGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -22,13 +23,14 @@ using ReactableData;
 /// Updates data in the rectangle GPU buffer.
 /// </summary>
 [GPUBufferName("Rectangle")]
-internal sealed class RectGPUBuffer : GPUBufferBase<ShapeBatchItem>
+[SuppressMessage("csharpsquid", "S101", Justification = "GPU is an acceptable acronym.")]
+internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectGPUBuffer"/> class.
+    /// Initializes a new instance of the <see cref="ShapeGPUBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -36,7 +38,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<ShapeBatchItem>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public RectGPUBuffer(
+    public ShapeGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)

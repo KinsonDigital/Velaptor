@@ -119,7 +119,7 @@ internal static class IoC
     {
         IoCContainer.Register<IGPUBuffer<TextureBatchItem>, TextureGPUBuffer>(Lifestyle.Singleton);
         IoCContainer.Register<IGPUBuffer<FontGlyphBatchItem>, FontGPUBuffer>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBuffer<ShapeBatchItem>, RectGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGPUBuffer<ShapeBatchItem>, ShapeGPUBuffer>(Lifestyle.Singleton);
         IoCContainer.Register<IGPUBuffer<LineBatchItem>, LineGPUBuffer>(Lifestyle.Singleton);
     }
 

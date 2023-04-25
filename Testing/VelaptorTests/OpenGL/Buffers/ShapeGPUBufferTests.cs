@@ -1,4 +1,4 @@
-// <copyright file="RectGPUBufferTests.cs" company="KinsonDigital">
+// <copyright file="ShapeGPUBufferTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,9 +30,9 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="RectGPUBuffer"/> class.
+/// Tests the <see cref="ShapeGPUBuffer"/> class.
 /// </summary>
-public class RectGPUBufferTests
+public class ShapeGPUBufferTests
 {
     private const uint VAO = 123u;
     private const uint VBO = 456u;
@@ -51,9 +51,9 @@ public class RectGPUBufferTests
     private bool vboGenerated;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectGPUBufferTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeGPUBufferTests"/> class.
     /// </summary>
-    public RectGPUBufferTests()
+    public ShapeGPUBufferTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
@@ -489,7 +489,7 @@ public class RectGPUBufferTests
         // Arrange
         var executionLocations = new List<string>
         {
-            $"1 time in the '{nameof(RectGPUBuffer.PrepareForUpload)}()' method.",
+            $"1 time in the '{nameof(ShapeGPUBuffer.PrepareForUpload)}()' method.",
             $"1 time in the '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
@@ -509,7 +509,7 @@ public class RectGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<float[]>(string.Empty,
-                $"{nameof(RectGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
+                $"{nameof(ShapeGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
         // Act
@@ -609,7 +609,7 @@ public class RectGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("RectGPUBufferTests.Ctor - BatchSizeChangedId");
+            reactor.Name.Should().Be("ShapeGPUBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -729,13 +729,13 @@ public class RectGPUBufferTests
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="RectGPUBuffer"/> class for the purpose of testing.
+    /// Creates a new instance of <see cref="ShapeGPUBuffer"/> class for the purpose of testing.
     /// </summary>
     /// <param name="initialize">If true, will mock the initialization of the mocked sut.</param>
     /// <returns>The instance to test.</returns>
-    private RectGPUBuffer CreateSystemUnderTest(bool initialize = true)
+    private ShapeGPUBuffer CreateSystemUnderTest(bool initialize = true)
     {
-        var result = new RectGPUBuffer(
+        var result = new ShapeGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockReactableFactory.Object);
