@@ -1,4 +1,4 @@
-﻿// <copyright file="RectBatchItem.cs" company="KinsonDigital">
+﻿// <copyright file="RectEllipseBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,10 +12,10 @@ using Graphics;
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-internal readonly record struct RectBatchItem
+internal readonly record struct RectEllipseBatchItem
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectBatchItem"/> struct.
+    /// Initializes a new instance of the <see cref="RectEllipseBatchItem"/> struct.
     /// </summary>
     /// <param name="position">The position of the rectangle.</param>
     /// <param name="width">The width of the rectangle.</param>
@@ -39,7 +39,7 @@ internal readonly record struct RectBatchItem
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The standard text is incorrect and says class instead of struct.")]
-    public RectBatchItem(
+    public RectEllipseBatchItem(
         Vector2 position,
         float width,
         float height,

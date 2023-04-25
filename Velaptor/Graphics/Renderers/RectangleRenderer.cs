@@ -21,7 +21,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<RectBatchItem> buffer;
+    private readonly IGPUBuffer<RectEllipseBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
@@ -40,7 +40,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<RectBatchItem> buffer,
+        IGPUBuffer<RectEllipseBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)
@@ -66,7 +66,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         var rectRenderBatchReactable = reactableFactory.CreateRenderRectReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderRectsId));
-        this.renderUnsubscriber = rectRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<RectBatchItem>>>(
+        this.renderUnsubscriber = rectRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<RectEllipseBatchItem>>>(
             eventId: PushNotifications.RenderRectsId,
             name: renderReactorName,
             onReceiveData: RenderBatch));
@@ -132,7 +132,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
             throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
-        var batchItem = new RectBatchItem(
+        var batchItem = new RectEllipseBatchItem(
             rectangle.Position,
             rectangle.Width,
             rectangle.Height,
@@ -150,7 +150,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// <summary>
     /// Invoked every time a batch of rectangles is ready to be rendered.
     /// </summary>
-    private void RenderBatch(Memory<RenderItem<RectBatchItem>> itemsToRender)
+    private void RenderBatch(Memory<RenderItem<RectEllipseBatchItem>> itemsToRender)
     {
         if (itemsToRender.Length <= 0)
         {

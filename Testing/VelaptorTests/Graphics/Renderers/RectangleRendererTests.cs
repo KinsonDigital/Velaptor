@@ -29,7 +29,7 @@ using Xunit;
 using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
     System.Memory<
         Velaptor.OpenGL.Batching.RenderItem<
-            Velaptor.OpenGL.Batching.RectBatchItem
+            Velaptor.OpenGL.Batching.RectEllipseBatchItem
         >
     >
 >;
@@ -43,7 +43,7 @@ public class RectangleRendererTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGPUBuffer<RectBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGPUBuffer<RectEllipseBatchItem>> mockGPUBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockRenderUnsubscriber;
@@ -67,7 +67,7 @@ public class RectangleRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.SetupGet(p => p.ShaderId).Returns(RectShaderId);
 
-        this.mockGPUBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
+        this.mockGPUBuffer = new Mock<IGPUBuffer<RectEllipseBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
@@ -111,7 +111,7 @@ public class RectangleRendererTests
                 return null;
             });
 
-        var mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<RectBatchItem>>();
+        var mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<RectEllipseBatchItem>>();
         mockRectRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
             .Callback<RectRenderItem>(reactor =>
@@ -251,7 +251,7 @@ public class RectangleRendererTests
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
         this.mockGPUBuffer.VerifyNever(m =>
-            m.UploadData(It.IsAny<RectBatchItem>(), It.IsAny<uint>()));
+            m.UploadData(It.IsAny<RectEllipseBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
         this.mockGL.VerifyNever(m => m.DrawElements(
@@ -280,7 +280,7 @@ public class RectangleRendererTests
             GradientStop = Color.Magenta,
         };
 
-        var expected = new RectBatchItem(
+        var expected = new RectEllipseBatchItem(
             new Vector2(11, 22),
             33u,
             44u,
@@ -321,7 +321,7 @@ public class RectangleRendererTests
         rect.GradientStop = Color.FromArgb(55, 66, 77, 88);
         rect.GradientType = ColorGradient.Horizontal;
 
-        var batchItem = new RectBatchItem(
+        var batchItem = new RectEllipseBatchItem(
             new Vector2(1, 2),
             3,
             4,
@@ -333,9 +333,9 @@ public class RectangleRendererTests
             Color.FromArgb(11, 22, 33, 44),
             Color.FromArgb(55, 66, 77, 88));
 
-        var renderItem = new RenderItem<RectBatchItem> { Layer = 0, Item = batchItem };
+        var renderItem = new RenderItem<RectEllipseBatchItem> { Layer = 0, Item = batchItem };
 
-        var renderItems = new Memory<RenderItem<RectBatchItem>>(new[] { renderItem });
+        var renderItems = new Memory<RenderItem<RectEllipseBatchItem>>(new[] { renderItem });
 
         _ = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
