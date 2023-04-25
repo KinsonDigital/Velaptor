@@ -5,7 +5,6 @@
 namespace VelaptorTests.Graphics.Renderers;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
@@ -231,8 +230,7 @@ public class ShapeRendererTests
 
     #region Method Tests
     [Fact]
-    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void Render_WhenInvoked_AddsRectToBatch()
+    public void Render_WhenRenderingRect_AddsRectToBatch()
     {
         // Arrange
         var rect = new RectShape
@@ -272,8 +270,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
-    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void Render_WhenInvoked_RendersRectangle()
+    public void Render_WhenRenderingRect_RendersRectangle()
     {
         // Arrange
         const uint batchIndex = 0;
@@ -320,8 +317,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
-    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
-    public void Render_WhenBegunHasNotBeenInvoked_ThrowsException()
+    public void Render_WhenRenderingRectAndBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
         const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
@@ -330,6 +326,105 @@ public class ShapeRendererTests
 
         // Act
         var act = () => sut.Render(rect);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage(expected);
+    }
+
+    [Fact]
+    public void Render_WhenRenderingEllipse_AddsEllipseToBatch()
+    {
+        // Arrange
+        var ellipse = new CircleShape
+        {
+            Position = new Vector2(11, 22),
+            Diameter = 33u,
+            IsFilled = true,
+            BorderThickness = 0,
+            Color = Color.White,
+            GradientType = ColorGradient.None,
+            GradientStart = Color.Magenta,
+            GradientStop = Color.Magenta,
+        };
+
+        var expected = new ShapeBatchItem(
+            new Vector2(11, 22),
+            33u,
+            33u,
+            Color.White,
+            true,
+            0,
+            new CornerRadius(33),
+            ColorGradient.None,
+            Color.Magenta,
+            Color.Magenta);
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(ellipse, 123);
+
+        // Assert
+        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123, It.IsAny<DateTime>()));
+    }
+
+    [Fact]
+    public void Render_WhenRenderingEllipse_RendersEllipse()
+    {
+        // Arrange
+        const uint batchIndex = 0;
+
+        var ellipse = default(CircleShape);
+        ellipse.Position = new Vector2(1, 2);
+        ellipse.Diameter = 3;
+        ellipse.Color = Color.FromArgb(99, 100, 110, 120);
+        ellipse.IsFilled = true;
+        ellipse.BorderThickness = 5;
+        ellipse.GradientStart = Color.FromArgb(11, 22, 33, 44);
+        ellipse.GradientStop = Color.FromArgb(55, 66, 77, 88);
+        ellipse.GradientType = ColorGradient.Horizontal;
+
+        var batchItem = new ShapeBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(99, 100, 110, 120),
+            true,
+            5,
+            new CornerRadius(4f),
+            ColorGradient.Horizontal,
+            Color.FromArgb(11, 22, 33, 44),
+            Color.FromArgb(55, 66, 77, 88));
+
+        var renderItem = new RenderItem<ShapeBatchItem> { Layer = 0, Item = batchItem };
+
+        var renderItems = new Memory<RenderItem<ShapeBatchItem>>(new[] { renderItem });
+
+        _ = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        this.renderReactor.OnReceive(renderItems);
+
+        // Assert
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
+        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
+        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
+        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+    }
+
+    [Fact]
+    public void Render_WhenRenderingEllipseAndBegunHasNotBeenInvoked_ThrowsException()
+    {
+        // Arrange
+        const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
+        var ellipse = default(CircleShape);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(ellipse);
 
         // Assert
         act.Should().Throw<InvalidOperationException>()

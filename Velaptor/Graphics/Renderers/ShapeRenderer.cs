@@ -73,59 +73,7 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle, int layer = 0) => RenderBase(rectangle, layer);
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
-    }
-
-    /// <inheritdoc cref="IShapeRenderer.Render(RectShape,int)"/>
-    /// <param name="rectangle">The rectangle to render.</param>
-    /// <param name="layer">The layer to render the rectangle.</param>
-    /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> method has not been called before rendering.
-    /// </exception>
-    /// <remarks>
-    ///     <para>
-    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If two separate textures have the same <paramref name="layer"/> value, they will
-    ///         render in the order that the method was invoked.
-    ///     </para>
-    ///     <para>Example below:</para>
-    ///
-    ///     <b>Render Method Invoked Order:</b>
-    ///     <list type="number">
-    ///         <item>Texture 1 (Layer -10)</item>
-    ///         <item>Texture 2 (Layer -20)</item>
-    ///         <item>Texture 3 (Layer 0)</item>
-    ///         <item>Texture 4 (Layer 0)</item>
-    ///         <item>Texture 5 (Layer 4)</item>
-    ///         <item>Texture 6 (Layer 3)</item>
-    ///     </list>
-    ///
-    ///     <b>Texture Render Order:</b>
-    ///     <list type="bullet">
-    ///         <item>Texture 2</item>
-    ///         <item>Texture 1</item>
-    ///         <item>Texture 3</item>
-    ///         <item>Texture 4</item>
-    ///         <item>Texture 6</item>
-    ///         <item>Texture 5</item>
-    ///     </list>
-    /// </remarks>
-    private void RenderBase(RectShape rectangle, int layer = 0)
+    public void Render(RectShape rectangle, int layer = 0)
     {
         if (this.hasBegun is false)
         {
@@ -145,6 +93,45 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
             rectangle.GradientStop);
 
         this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
+    }
+
+    /// <inheritdoc/>
+    public void Render(CircleShape circle, int layer = 0)
+    {
+        if (this.hasBegun is false)
+        {
+            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+        }
+
+        var batchItem = new ShapeBatchItem(
+            circle.Position,
+            circle.Diameter,
+            circle.Diameter,
+            circle.Color,
+            circle.IsFilled,
+            circle.BorderThickness,
+            new CornerRadius(circle.Diameter),
+            circle.GradientType,
+            circle.GradientStart,
+            circle.GradientStop);
+
+        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
+    }
+
+    /// <summary>
+    /// Shuts down the application by disposing resources.
+    /// </summary>
+    protected override void ShutDown()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        this.renderUnsubscriber.Dispose();
+        this.renderBatchBegunUnsubscriber.Dispose();
+
+        base.ShutDown();
     }
 
     /// <summary>
