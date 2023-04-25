@@ -399,10 +399,10 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Returns the size of the given single line of <paramref name="line"/>.
+    /// Returns the size of the given single <paramref name="line"/> of text.
     /// </summary>
     /// <param name="line">The line of text to measure.</param>
-    /// <returns>The size of the line of text.</returns>
+    /// <returns>The size of the <paramref name="line"/> of text.</returns>
     private SizeF MeasureLine(string line)
     {
         var width = 0f;

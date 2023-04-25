@@ -71,7 +71,7 @@ public interface IFont : IContent
     bool CacheEnabled { get; set; }
 
     /// <summary>
-    /// Gets the maximum number of measurements to cache.
+    /// Gets or sets the maximum number of measurements to cache.
     /// </summary>
     int MaxCacheSize { get; set; }
 
