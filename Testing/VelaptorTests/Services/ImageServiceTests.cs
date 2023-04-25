@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using SixLabors.ImageSharp;
@@ -51,14 +52,20 @@ public class ImageServiceTests : IDisposable
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new ImageService(null);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
     #endregion
 
@@ -69,27 +76,28 @@ public class ImageServiceTests : IDisposable
     public void Load_WithNullOrEmptyParam_ThrowsException(string value)
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            service.Load(value);
-        }, "The image file was not found.");
+        // Act
+        var act = () => service.Load(value);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage("The image file was not found.");
     }
 
     [Fact]
     public void Load_WhenInvoked_ProperlyLoadsImage()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
         var expected = TestHelpers.ToPixelColors(this.testCompareImage);
 
         // Act
         var imageData = service.Load(this.testAssetFilePath);
 
         // Assert
-        Assert.Equal(expected, imageData.Pixels);
+        imageData.Pixels.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -126,7 +134,7 @@ public class ImageServiceTests : IDisposable
 
         var imageData = new ImageData(expectedPixelData, width, height);
 
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
         var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
 
         // Act
@@ -134,15 +142,16 @@ public class ImageServiceTests : IDisposable
         var actualSavedPixelData = LoadSaveResultImage(saveResultImageFilePath);
 
         // Assert
-        Assert.Equal(expectedPixelData, actualSavedPixelData);
+        actualSavedPixelData.Should().BeEquivalentTo(expectedPixelData);
     }
 
     [Fact]
     public void FlipVertically_WhenInvoked_FlipsImageVertically()
     {
         // Arrange
-        var service = CreateService();
-        var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var service = CreateSystemUnderTest();
+
+        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
         // Act
         var flippedImage = service.FlipVertically(comparisonSample);
@@ -187,8 +196,8 @@ public class ImageServiceTests : IDisposable
     public void FlipHorizontally_WhenInvoked_FlipsImageVertically()
     {
         // Arrange
-        var service = CreateService();
-        var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var service = CreateSystemUnderTest();
+        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
         // Act
         var flippedImage = service.FlipHorizontally(comparisonSample);
@@ -245,7 +254,7 @@ public class ImageServiceTests : IDisposable
         var destImage = TestHelpers.CreateImageData(NETColor.FromArgb(255, 255, 255, 255), 8, 8);
         TestHelpers.SaveImageForTest(destImage, $"{nameof(Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination)}-DestImage");
 
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var actual = service.Draw(srcImage, destImage, new NETPoint(3, 3));
@@ -285,38 +294,23 @@ public class ImageServiceTests : IDisposable
     [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static void AssertThatPixelsMatch(NETColor[,] pixels, uint width, uint height, NETRectangle assertRect, NETColor expectedClr)
     {
-        AssertExtensions.All(pixels, width, height, (pixel, x, y) =>
+        for (var y = 0; y < height; y++)
         {
-            if (!assertRect.Contains(x, y))
+            for (var x = 0; x < width; x++)
             {
-                return;
+                if (!assertRect.Contains(x, y))
+                {
+                    continue;
+                }
+
+                var pixel = pixels[x, y];
+
+                expectedClr.A.Should().Be(pixel.A);
+                expectedClr.R.Should().Be(pixel.R);
+                expectedClr.G.Should().Be(pixel.G);
+                expectedClr.B.Should().Be(pixel.B);
             }
-
-            var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
-            AssertExtensions.True(
-                pixel.A == expectedClr.A,
-                message,
-                $"Alpha {expectedClr.A}",
-                $"Alpha {pixel.A}");
-
-            AssertExtensions.True(
-                pixel.R == expectedClr.R,
-                message,
-                $"Red {expectedClr.R}",
-                $"Red {pixel.R}");
-
-            AssertExtensions.True(
-                pixel.G == expectedClr.G,
-                message,
-                $"Green {expectedClr.G}",
-                $"Green {pixel.G}");
-
-            AssertExtensions.True(
-                pixel.B == expectedClr.B,
-                message,
-                $"Blue {expectedClr.B}",
-                $"Red {pixel.B}");
-        });
+        }
     }
 
     /// <summary>
@@ -357,39 +351,8 @@ public class ImageServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-    /// to the type of <see cref="ImageData"/>.
-    /// </summary>
-    /// <param name="image">The image to convert.</param>
-    /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-    private static ImageData ToImageData(Image<Rgba32> image)
-    {
-        var pixelData = new NETColor[image.Width, image.Height];
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            var row = y;
-            image.ProcessPixelRows(accessor =>
-            {
-                var pixelRowSpan = accessor.GetRowSpan(row);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    pixelData[x, row] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            });
-        }
-
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
-    }
-
-    /// <summary>
-    /// Creates a new inst ance of <see cref="ImageService"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="ImageService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ImageService CreateService() => new (this.mockFile.Object);
+    private ImageService CreateSystemUnderTest() => new (this.mockFile.Object);
 }

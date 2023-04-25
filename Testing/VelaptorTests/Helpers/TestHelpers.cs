@@ -252,6 +252,37 @@ public static class TestHelpers
     }
 
     /// <summary>
+    /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+    /// to the type <see cref="ImageData"/>.
+    /// </summary>
+    /// <param name="image">The image to convert.</param>
+    /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+    public static ImageData ToImageData(this Image<Rgba32> image)
+    {
+        var pixelData = new NETColor[image.Width, image.Height];
+
+        for (var y = 0; y < image.Height; y++)
+        {
+            var row = y;
+            image.ProcessPixelRows(accessor =>
+            {
+                var pixelRowSpan = accessor.GetRowSpan(row);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, row] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            });
+        }
+
+        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+    }
+
+    /// <summary>
     /// Creates a new two dimensional array of pixel colors using the given <paramref name="color"/>
     /// with enough pixels to fill an image that has the given <paramref name="width"/> and <paramref name="height"/>.
     /// </summary>
@@ -303,36 +334,5 @@ public static class TestHelpers
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-    /// to the type <see cref="ImageData"/>.
-    /// </summary>
-    /// <param name="image">The image to convert.</param>
-    /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-    private static ImageData ToImageData(Image<Rgba32> image)
-    {
-        var pixelData = new NETColor[image.Width, image.Height];
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            var row = y;
-            image.ProcessPixelRows(accessor =>
-            {
-                var pixelRowSpan = accessor.GetRowSpan(row);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    pixelData[x, row] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            });
-        }
-
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
     }
 }
