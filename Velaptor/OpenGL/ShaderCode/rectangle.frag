@@ -11,7 +11,7 @@ const uint BOTTOM_RIGHT_CORNER = 3;
 const uint TOP_RIGHT_CORNER = 4;
 
 /*
-    pass_shape can represent either a rectangle or an ellipse.
+    pass_shape can represent either a rectangle or an circle.
     The center of either shape is the position represented by
     vec4.x and vec4.y.  The width is represented by vec4.z
     and the height is represented by vec4.w
@@ -54,13 +54,12 @@ struct Rectangle
 };
 
 /*
-    Represents an ellipse to be rendered to the screen.
+    Represents an circle to be rendered to the screen.
 */
-struct Ellipse
+struct Circle
 {
     vec2 Position;
-    float RadiusX;
-    float RadiusY;
+    float Radius;
 };
 
 float borderThickness = 1.0; // The clamped border thickness
@@ -85,9 +84,9 @@ float squared(float value)
     @param(Rectangle rect) - The rectangle that contains the corner circle.
     @param(uint cornerType) - The corner of where to put the circle.
 
-    @returns(Ellipse) - A circle in a particular corner of the rectangle.
+    @returns(Circle) - A circle in a particular corner of the rectangle.
 */
-Ellipse createCornerCircle(Rectangle rect, uint cornerType)
+Circle createCornerCircle(Rectangle rect, uint cornerType)
 {
     float halfWidth = rect.Width / 2.0;
     float halfHeight = rect.Height / 2.0;
@@ -96,31 +95,27 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
     float bottomRightRadius = clamp(pass_bottomRightCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
     float topRightRadius = clamp(pass_topRightCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
 
-    Ellipse result;
+    Circle result;
 
     switch (cornerType)
     {
         case TOP_LEFT_CORNER:
-            result.RadiusX = topLeftRadius;
-            result.RadiusY = topLeftRadius;
+            result.Radius = topLeftRadius;
             result.Position.x = (rect.Position.x - halfWidth) + topLeftRadius;
             result.Position.y = (rect.Position.y - halfHeight) + topLeftRadius;
             break;
         case BOTTOM_LEFT_CORNER:
-            result.RadiusX = bottomLeftRadius;
-            result.RadiusY = bottomLeftRadius;
+            result.Radius = bottomLeftRadius;
             result.Position.x = (rect.Position.x - halfWidth) + bottomLeftRadius;
             result.Position.y = (rect.Position.y + halfHeight) - bottomLeftRadius;
             break;
         case BOTTOM_RIGHT_CORNER:
-            result.RadiusX = bottomRightRadius;
-            result.RadiusY = bottomRightRadius;
+            result.Radius = bottomRightRadius;
             result.Position.x = (rect.Position.x + halfWidth) - bottomRightRadius;
             result.Position.y = (rect.Position.y + halfHeight) - bottomRightRadius;
             break;
         case TOP_RIGHT_CORNER:
-            result.RadiusX = topRightRadius;
-            result.RadiusY = topRightRadius;
+            result.Radius = topRightRadius;
             result.Position.x = (rect.Position.x + halfWidth) - topRightRadius;
             result.Position.y = (rect.Position.y - halfHeight) + topRightRadius;
             break;
@@ -130,15 +125,15 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
 }
 
 /*
-    @summary - Gets a value indicating whether or not the given 'ellipse' contains
+    @summary - Gets a value indicating whether or not the given 'circle' contains
     the current pixel in a corner of the rectangle that matches the given 'cornerType'.
 
-    @param(Ellipse ellipse) - The ellipse that may or may not contain the current pixel.
-    @param(uint cornerType) - The type of corner where the 'ellipse' exists.
+    @param(Circle circle) - The circle that may or may not contain the current pixel.
+    @param(uint cornerType) - The type of corner where the 'circle' exists.
 
-    @returns(bool) - True if the pixel is contained by the corner 'ellipse'.
+    @returns(bool) - True if the pixel is contained by the corner 'circle'.
 */
-bool containedByEllipse(Ellipse ellipse, uint cornerType)
+bool containedByCircle(Circle circle, uint cornerType)
 {
     // If the corner does not have a radius, then it cannot be contained.
     // This is an optimization.  There is no point in doing the expensive
@@ -173,22 +168,22 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
 
     // Refer to link below for more information
     // https://www.geeksforgeeks.org/check-if-a-point-is-inside-outside-or-on-the-ellipse/
-    return squared(gl_FragCoord.x - ellipse.Position.x) /
-        squared(ellipse.RadiusX) +
-        squared(gl_FragCoord.y - ellipse.Position.y) /
-        squared(ellipse.RadiusY) <= 1.0;
+    return squared(gl_FragCoord.x - circle.Position.x) /
+        squared(circle.Radius) +
+        squared(gl_FragCoord.y - circle.Position.y) /
+        squared(circle.Radius) <= 1.0;
 }
 
 /*
     @summary - Returns a value indicating whether or not the current pixel is in the
-    given quadrant in the given 'cornerEllipse' based on the 'cornerType'.
+    given quadrant in the given 'cornerCircle' based on the 'cornerType'.
 
-    @param(Ellipse cornerEllipse) - The ellipse that may or may not contain the current pixel in its quadrant.
-    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+    @param(Circle cornerCircle) - The circle that may or may not contain the current pixel in its quadrant.
+    @param(uint cornerType) - The type of corner that the 'cornerCircle' exists in.
 
-    @returns(bool) - True if the pixel is in the correct quadrant of the given 'cornerEllipse'.
+    @returns(bool) - True if the pixel is in the correct quadrant of the given 'cornerCircle'.
 */
-bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
+bool inCorrectCircleQuadrant(Circle cornerCircle, uint cornerType)
 {
     /* NOTE:
         No need to check for containment if the radius is zero
@@ -201,19 +196,19 @@ bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
     {
         case TOP_LEFT_CORNER:
             result = pass_topLeftCornerRadius < 0.0 ||
-                gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
+                gl_FragCoord.x < cornerCircle.Position.x && gl_FragCoord.y < cornerCircle.Position.y;
             break;
         case BOTTOM_LEFT_CORNER:
             result = pass_bottomLeftCornerRadius < 0.0 ||
-                gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
+                gl_FragCoord.x < cornerCircle.Position.x && gl_FragCoord.y > cornerCircle.Position.y;
             break;
         case BOTTOM_RIGHT_CORNER:
             result = pass_bottomRightCornerRadius < 0.0 ||
-                gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
+                gl_FragCoord.x > cornerCircle.Position.x && gl_FragCoord.y > cornerCircle.Position.y;
             break;
         case TOP_RIGHT_CORNER:
             result = pass_topRightCornerRadius < 0.0 ||
-                gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
+                gl_FragCoord.x > cornerCircle.Position.x && gl_FragCoord.y < cornerCircle.Position.y;
             break;
     }
 
@@ -222,31 +217,31 @@ bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
 
 /*
     @summary - Returns a value indicating whether or not the current pixel is
-    in the given 'cornerEllipse' based on the 'cornerType'.
+    in the given 'cornerCircle' based on the 'cornerType'.
 
-    @param(Ellipse cornerEllipse) - The ellipse that is in a corner that matches the given 'cornerType'.
-    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+    @param(Circle cornerCircle) - The circle that is in a corner that matches the given 'cornerType'.
+    @param(uint cornerType) - The type of corner that the 'cornerCircle' exists in.
 
     @returns(bool) - True if the pixel is in the correct corner of the rectangle corner.
 */
-bool inRectCorner(Ellipse cornerEllipse, uint cornerType)
+bool inRectCorner(Circle cornerCircle, uint cornerType)
 {
-    return containedByEllipse(cornerEllipse, cornerType) && inCorrectEllipseQuadrant(cornerEllipse, cornerType);
+    return containedByCircle(cornerCircle, cornerType) && inCorrectCircleQuadrant(cornerCircle, cornerType);
 }
 
 /*
     @summary - Returns a value indicating whether or not the current pixel is
     in the tip of the rectangle's corner outside of the given
-    'cornerEllipse' based on the given 'cornerType'.
+    'cornerCircle' based on the given 'cornerType'.
 
-    @param(Ellipse cornerEllipse) - The ellipse that is in a corner that matches the given 'cornerType'.
-    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+    @param(Circle cornerCircle) - The circle that is in a corner that matches the given 'cornerType'.
+    @param(uint cornerType) - The type of corner that the 'cornerCircle' exists in.
 
     @returns(bool) - True if the pixel is in the correct corner tip of the rectangle corner.
 */
-bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
+bool inRectCornerTip(Circle cornerCircle, uint cornerType)
 {
-    return !containedByEllipse(cornerEllipse, cornerType) && inCorrectEllipseQuadrant(cornerEllipse, cornerType);
+    return !containedByCircle(cornerCircle, cornerType) && inCorrectCircleQuadrant(cornerCircle, cornerType);
 }
 
 /*
@@ -276,20 +271,20 @@ bool containedByRect(Rectangle rect)
     bool inAnyCorners;
     bool notInAnyCornerTips;
 
-    Ellipse topLeftEllipse = createCornerCircle(rect, TOP_LEFT_CORNER);
-    Ellipse bottomLeftEllipse = createCornerCircle(rect, BOTTOM_LEFT_CORNER);
-    Ellipse bottomRightEllipse = createCornerCircle(rect, BOTTOM_RIGHT_CORNER);
-    Ellipse topRightEllipse = createCornerCircle(rect, TOP_RIGHT_CORNER);
+    Circle topLeftCircle = createCornerCircle(rect, TOP_LEFT_CORNER);
+    Circle bottomLeftCircle = createCornerCircle(rect, BOTTOM_LEFT_CORNER);
+    Circle bottomRightCircle = createCornerCircle(rect, BOTTOM_RIGHT_CORNER);
+    Circle topRightCircle = createCornerCircle(rect, TOP_RIGHT_CORNER);
 
-    inTopLeftCorner = inRectCorner(topLeftEllipse, TOP_LEFT_CORNER);
-    inBottomLeftCorner = inRectCorner(bottomLeftEllipse, BOTTOM_LEFT_CORNER);
-    inBottomRightCorner = inRectCorner(bottomRightEllipse, BOTTOM_RIGHT_CORNER);
-    inTopRightCorner = inRectCorner(topRightEllipse, TOP_RIGHT_CORNER);
+    inTopLeftCorner = inRectCorner(topLeftCircle, TOP_LEFT_CORNER);
+    inBottomLeftCorner = inRectCorner(bottomLeftCircle, BOTTOM_LEFT_CORNER);
+    inBottomRightCorner = inRectCorner(bottomRightCircle, BOTTOM_RIGHT_CORNER);
+    inTopRightCorner = inRectCorner(topRightCircle, TOP_RIGHT_CORNER);
 
-    inTopLeftRectTip = inRectCornerTip(topLeftEllipse, TOP_LEFT_CORNER);
-    inBottomLeftRectTip = inRectCornerTip(bottomLeftEllipse, BOTTOM_LEFT_CORNER);
-    inBottomRightRectTip = inRectCornerTip(bottomRightEllipse, BOTTOM_RIGHT_CORNER);
-    inTopRightRectTip = inRectCornerTip(topRightEllipse, TOP_RIGHT_CORNER);
+    inTopLeftRectTip = inRectCornerTip(topLeftCircle, TOP_LEFT_CORNER);
+    inBottomLeftRectTip = inRectCornerTip(bottomLeftCircle, BOTTOM_LEFT_CORNER);
+    inBottomRightRectTip = inRectCornerTip(bottomRightCircle, BOTTOM_RIGHT_CORNER);
+    inTopRightRectTip = inRectCornerTip(topRightCircle, TOP_RIGHT_CORNER);
 
     inAnyCorners = inTopLeftCorner || inBottomLeftCorner || inBottomRightCorner || inTopRightCorner;
     notInAnyCornerTips = !inTopLeftRectTip && !inBottomLeftRectTip && !inBottomRightRectTip && !inTopRightRectTip;
