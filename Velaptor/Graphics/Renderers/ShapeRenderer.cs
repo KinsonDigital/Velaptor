@@ -1,4 +1,4 @@
-﻿// <copyright file="RectangleRenderer.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,8 +16,8 @@ using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
 
-/// <inheritdoc cref="IRectangleRenderer"/>
-internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
+/// <inheritdoc cref="IShapeRenderer"/>
+internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
@@ -28,7 +28,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     private bool hasBegun;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectangleRenderer"/> class.
+    /// Initializes a new instance of the <see cref="ShapeRenderer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
@@ -36,7 +36,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
-    public RectangleRenderer(
+    public ShapeRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
@@ -91,7 +91,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         base.ShutDown();
     }
 
-    /// <inheritdoc cref="IRectangleRenderer.Render(RectShape,int)"/>
+    /// <inheritdoc cref="IShapeRenderer.Render(RectShape,int)"/>
     /// <param name="rectangle">The rectangle to render.</param>
     /// <param name="layer">The layer to render the rectangle.</param>
     /// <exception cref="InvalidOperationException">

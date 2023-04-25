@@ -1,4 +1,4 @@
-﻿// <copyright file="IRectangleRenderer.cs" company="KinsonDigital">
+﻿// <copyright file="IShapeRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ using System;
 /// <summary>
 /// Renders rectangles to the screen.
 /// </summary>
-public interface IRectangleRenderer
+public interface IShapeRenderer
 {
     /// <summary>
     /// Renders the given <paramref name="rectangle"/>.

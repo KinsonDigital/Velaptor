@@ -32,7 +32,7 @@ public class RectangleScene : SceneBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
     private IFontRenderer? fontRenderer;
-    private IRectangleRenderer? rectRenderer;
+    private IShapeRenderer? shapeRenderer;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -69,7 +69,7 @@ public class RectangleScene : SceneBase
         var renderFactory = new RendererFactory();
 
         this.fontRenderer = renderFactory.CreateFontRenderer();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.shapeRenderer = renderFactory.CreateShapeRenderer();
 
         this.rectangle = new RectShape
         {
@@ -123,7 +123,7 @@ public class RectangleScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.rectRenderer.Render(this.rectangle);
+        this.shapeRenderer.Render(this.rectangle);
 
         this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
 

@@ -39,7 +39,7 @@ public class ButtonTests
     private readonly Mock<IAppInput<MouseState>> mockMouse;
     private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Label label;
-    private readonly Mock<IRectangleRenderer> mockRectRenderer;
+    private readonly Mock<IShapeRenderer> mockShapeRenderer;
     private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
@@ -83,12 +83,12 @@ public class ButtonTests
 
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
-        this.mockRectRenderer = new Mock<IRectangleRenderer>();
+        this.mockShapeRenderer = new Mock<IShapeRenderer>();
         this.mockFontRenderer = new Mock<IFontRenderer>();
 
         this.mockRenderFactory = new Mock<IRendererFactory>();
-        this.mockRenderFactory.Setup(m => m.CreateRectangleRenderer())
-            .Returns(this.mockRectRenderer.Object);
+        this.mockRenderFactory.Setup(m => m.CreateShapeRenderer())
+            .Returns(this.mockShapeRenderer.Object);
         this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
             .Returns(this.mockFontRenderer.Object);
 
@@ -473,7 +473,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
@@ -489,7 +489,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
@@ -524,7 +524,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(expected, It.IsAny<int>()), Times.Once);
     }
 
@@ -541,7 +541,7 @@ public class ButtonTests
         this.mockMouse.Setup(m => m.GetState())
             .Returns(mouseState);
 
-        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+        this.mockShapeRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
@@ -593,7 +593,7 @@ public class ButtonTests
                 };
             });
 
-        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+        this.mockShapeRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
@@ -647,7 +647,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.VerifyOnce(m => m.Render(expected, BorderLayer));
+        this.mockShapeRenderer.VerifyOnce(m => m.Render(expected, BorderLayer));
     }
 
     [Fact]

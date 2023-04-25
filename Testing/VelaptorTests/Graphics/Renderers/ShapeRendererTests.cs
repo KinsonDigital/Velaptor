@@ -1,4 +1,4 @@
-﻿// <copyright file="RectangleRendererTests.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -35,9 +35,9 @@ using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
 >;
 
 /// <summary>
-/// Tests the <see cref="RectangleRenderer"/> class.
+/// Tests the <see cref="ShapeRenderer"/> class.
 /// </summary>
-public class RectangleRendererTests
+public class ShapeRendererTests
 {
     private const uint RectShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
@@ -53,9 +53,9 @@ public class RectangleRendererTests
     private IReceiveReactor? shutDownReactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectangleRendererTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeRendererTests"/> class.
     /// </summary>
-    public RectangleRendererTests()
+    public ShapeRendererTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
 
@@ -84,7 +84,7 @@ public class RectangleRendererTests
 
                 if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
-                    reactor.Name.Should().Be($"RectangleRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
+                    reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
                     this.batchHasBegunReactor = reactor;
                 }
 
@@ -117,7 +117,7 @@ public class RectangleRendererTests
             .Callback<RectRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"RectangleRendererTests.Ctor - {nameof(PushNotifications.RenderRectsId)}");
+                reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.RenderRectsId)}");
 
                 this.renderReactor = reactor;
             })
@@ -150,7 +150,7 @@ public class RectangleRendererTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectangleRenderer(
+            _ = new ShapeRenderer(
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 null,
@@ -171,7 +171,7 @@ public class RectangleRendererTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectangleRenderer(
+            _ = new ShapeRenderer(
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
@@ -192,7 +192,7 @@ public class RectangleRendererTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectangleRenderer(
+            _ = new ShapeRenderer(
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
@@ -213,7 +213,7 @@ public class RectangleRendererTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectangleRenderer(
+            _ = new ShapeRenderer(
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
@@ -386,10 +386,10 @@ public class RectangleRendererTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="RectangleRenderer"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="ShapeRenderer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private RectangleRenderer CreateSystemUnderTest()
+    private ShapeRenderer CreateSystemUnderTest()
         => new (this.mockGL.Object,
             this.mockReactableFactory.Object,
             this.mockGLService.Object,

@@ -17,7 +17,7 @@ public sealed class RendererFactory : IRendererFactory
 {
     private static ITextureRenderer? textureRenderer;
     private static IFontRenderer? fontRenderer;
-    private static IRectangleRenderer? rectangleRenderer;
+    private static IShapeRenderer? shapeRenderer;
     private static ILineRenderer? lineRenderer;
 
     /// <inheritdoc/>
@@ -73,11 +73,11 @@ public sealed class RendererFactory : IRendererFactory
     }
 
     /// <inheritdoc/>
-    public IRectangleRenderer CreateRectangleRenderer()
+    public IShapeRenderer CreateShapeRenderer()
     {
-        if (rectangleRenderer is not null)
+        if (shapeRenderer is not null)
         {
-            return rectangleRenderer;
+            return shapeRenderer;
         }
 
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
@@ -87,7 +87,7 @@ public sealed class RendererFactory : IRendererFactory
         var shader = IoC.Container.GetInstance<IShaderFactory>().CreateRectShader();
         var batchManager = IoC.Container.GetInstance<IBatchingManager>();
 
-        rectangleRenderer = new RectangleRenderer(
+        shapeRenderer = new ShapeRenderer(
             glInvoker,
             reactableFactory,
             openGLService,
@@ -95,7 +95,7 @@ public sealed class RendererFactory : IRendererFactory
             shader,
             batchManager);
 
-        return rectangleRenderer;
+        return shapeRenderer;
     }
 
     /// <inheritdoc/>

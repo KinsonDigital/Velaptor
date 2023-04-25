@@ -40,7 +40,7 @@ public class LayeredRectRenderingScene : SceneBase
     private Vector2 rectStateTextPos;
     private SizeF instructionTextSize;
     private ITextureRenderer? textureRenderer;
-    private IRectangleRenderer? rectRenderer;
+    private IShapeRenderer? shapeRenderer;
     private IFontRenderer? fontRenderer;
     private RenderLayer whiteLayer = RenderLayer.One;
     private int instructionsX;
@@ -63,7 +63,7 @@ public class LayeredRectRenderingScene : SceneBase
 
         var renderFactory = new RendererFactory();
         this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.shapeRenderer = renderFactory.CreateShapeRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
@@ -137,9 +137,9 @@ public class LayeredRectRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.rectRenderer.Render(this.blueRect, (int)BlueLayer);
-        this.rectRenderer.Render(this.orangeRect, (int)OrangeLayer);
-        this.rectRenderer.Render(this.whiteRect, (int)this.whiteLayer);
+        this.shapeRenderer.Render(this.blueRect, (int)BlueLayer);
+        this.shapeRenderer.Render(this.orangeRect, (int)OrangeLayer);
+        this.shapeRenderer.Render(this.whiteRect, (int)this.whiteLayer);
 
         // Render the checkerboard background
         this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
