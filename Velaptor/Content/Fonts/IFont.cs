@@ -66,6 +66,16 @@ public interface IFont : IContent
     float LineSpacing { get; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether or not to cache the measurements of the text.
+    /// </summary>
+    bool CacheEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of measurements to cache.
+    /// </summary>
+    int MaxCacheSize { get; set; }
+
+    /// <summary>
     /// Gets the list of metrics for all of the glyphs supported by the font.
     /// </summary>
     /// <returns>The glyph metrics.</returns>
