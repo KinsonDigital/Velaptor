@@ -177,7 +177,6 @@ public struct CircleShape
     public bool IsEmpty() =>
         Position == Vector2.Zero &&
         Diameter <= 1f &&
-        Radius <= 1f &&
         Color.IsEmpty &&
         IsFilled is false &&
         BorderThickness <= 1f &&

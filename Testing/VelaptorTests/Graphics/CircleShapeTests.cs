@@ -1,4 +1,4 @@
-﻿// <copyright file="EllipseShapeTests.cs" company="KinsonDigital">
+﻿// <copyright file="CircleShapeTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,12 +13,12 @@ using Velaptor.Graphics;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="EllipseShape"/> struct.
+/// Tests the <see cref="CircleShape"/> struct.
 /// </summary>
-public class EllipseShapeTests
+public class CircleShapeTests
 {
     /// <summary>
-    /// Provides test data for the <see cref="EllipseShape.IsEmpty"/> method unit test.
+    /// Provides test data for the <see cref="CircleShape.IsEmpty"/> method unit test.
     /// </summary>
     /// <returns>The data to use during the test.</returns>
     public static IEnumerable<object[]> IsEmptyTestData()
@@ -26,8 +26,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -39,8 +38,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             new Vector2(44, 44), // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -52,8 +50,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            44f, // Width
-            1f, // Height
+            44f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -65,21 +62,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            44f, // Height
-            Color.Empty, // Color
-            false, // IsFilled
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.FromArgb(44, 44, 44, 44), // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -91,8 +74,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             true, // IsFilled
             1f, // Border Thickness
@@ -104,8 +86,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             44f, // Border Thickness
@@ -117,8 +98,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -130,8 +110,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -143,8 +122,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -156,8 +134,7 @@ public class EllipseShapeTests
         yield return new object[]
         {
             Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
+            1f, // Diameter
             Color.Empty, // Color
             false, // IsFilled
             1f, // Border Thickness
@@ -177,13 +154,12 @@ public class EllipseShapeTests
     public void Ctor_WhenInvoked_SetsDefaultValues()
     {
         // Arrange & Act
-        var sut = new EllipseShape();
+        var sut = new CircleShape();
 
         // Assert
         sut.IsFilled.Should().BeTrue();
         sut.Position.Should().Be(Vector2.Zero);
-        sut.Width.Should().Be(1f);
-        sut.Height.Should().Be(1f);
+        sut.Diameter.Should().Be(1f);
         sut.Color.Should().Be(Color.White);
         sut.BorderThickness.Should().Be(1f);
         sut.GradientType.Should().Be(ColorGradient.None);
@@ -194,72 +170,45 @@ public class EllipseShapeTests
 
     #region Prop Tests
     [Theory]
-    [InlineData(0, 1)]
-    [InlineData(-10f, 1)]
-    [InlineData(123, 123)]
-    public void Width_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
+    [InlineData(0, 1, 0.5f)]
+    [InlineData(-10f, 1, 0.5f)]
+    [InlineData(123, 123, 61.5f)]
+    public void Diameter_WhenSettingValue_ReturnsCorrectResult(float value, float expectedDiameter, float expectedRadius)
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
 
         // Act
-        sut.Width = value;
-        var actual = sut.Width;
+        sut.Diameter = value;
+        var actualDiameter = sut.Diameter;
+        var actualRadius = sut.Radius;
 
         // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData(0, 1)]
-    [InlineData(-10f, 1)]
-    [InlineData(123, 123)]
-    public void Height_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
-    {
-        // Arrange
-        var sut = default(EllipseShape);
-
-        // Act
-        sut.Height = value;
-        var actual = sut.Height;
-
-        // Assert
-        actual.Should().Be(expected);
+        actualDiameter.Should().Be(expectedDiameter);
+        actualRadius.Should().Be(expectedRadius);
     }
 
     [Fact]
-    public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
+    public void Radius_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
-        sut.Width = 100;
+        var sut = default(CircleShape);
+        sut.Radius = 50;
 
         // Act
-        var actual = sut.HalfWidth;
+        var actualRadius = sut.Radius;
+        var actualDiameter = sut.Diameter;
 
         // Assert
-        actual.Should().Be(50f);
-    }
-
-    [Fact]
-    public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var sut = default(EllipseShape);
-        sut.Height = 100;
-
-        // Act
-        var actual = sut.HalfHeight;
-
-        // Assert
-        actual.Should().Be(50f);
+        actualRadius.Should().Be(50f);
+        actualDiameter.Should().Be(100f);
     }
 
     [Fact]
     public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
 
         // Act
         sut.BorderThickness = 123f;
@@ -273,10 +222,9 @@ public class EllipseShapeTests
     public void Top_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = new Vector2(100, 100);
-        sut.Width = 100;
-        sut.Height = 50;
+        sut.Diameter = 50;
 
         // Act
         sut.Top = 40f;
@@ -292,10 +240,9 @@ public class EllipseShapeTests
     public void Right_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = new Vector2(200, 100);
-        sut.Width = 100;
-        sut.Height = 50;
+        sut.Diameter = 100;
 
         // Act
         sut.Right = 100f;
@@ -311,10 +258,9 @@ public class EllipseShapeTests
     public void Bottom_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = new Vector2(100, 100);
-        sut.Width = 100;
-        sut.Height = 50;
+        sut.Diameter = 50;
 
         // Act
         sut.Bottom = 40f;
@@ -330,10 +276,9 @@ public class EllipseShapeTests
     public void Left_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = new Vector2(200, 100);
-        sut.Width = 100;
-        sut.Height = 50;
+        sut.Diameter = 100;
 
         // Act
         sut.Left = 100f;
@@ -351,8 +296,7 @@ public class EllipseShapeTests
     [MemberData(nameof(IsEmptyTestData))]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
         Vector2 position,
-        float width,
-        float height,
+        float diameter,
         Color color,
         bool isFilled,
         float borderThickness,
@@ -362,10 +306,9 @@ public class EllipseShapeTests
         bool expected)
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = position;
-        sut.Width = width;
-        sut.Height = height;
+        sut.Diameter = diameter;
         sut.Color = color;
         sut.IsFilled = isFilled;
         sut.BorderThickness = borderThickness;
@@ -384,10 +327,9 @@ public class EllipseShapeTests
     public void Empty_WhenInvoked_EmptiesStruct()
     {
         // Arrange
-        var sut = default(EllipseShape);
+        var sut = default(CircleShape);
         sut.Position = new Vector2(1, 2);
-        sut.Width = 3f;
-        sut.Height = 4f;
+        sut.Diameter = 3f;
         sut.Color = Color.FromArgb(5, 6, 7, 8);
         sut.IsFilled = true;
         sut.BorderThickness = 9f;
@@ -401,8 +343,7 @@ public class EllipseShapeTests
         // Assert
         sut.IsFilled.Should().BeFalse();
         sut.Position.Should().Be(Vector2.Zero);
-        sut.Width.Should().Be(1f);
-        sut.Height.Should().Be(1f);
+        sut.Diameter.Should().Be(1f);
         sut.Color.Should().Be(Color.Empty);
         sut.BorderThickness.Should().Be(0f);
         sut.GradientType.Should().Be(ColorGradient.None);
