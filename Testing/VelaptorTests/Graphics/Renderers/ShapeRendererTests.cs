@@ -231,37 +231,6 @@ public class ShapeRendererTests
 
     #region Method Tests
     [Fact]
-    public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
-    {
-        // Arrange
-        const string shaderName = "TestRectShader";
-        this.mockShader.SetupGet(p => p.Name).Returns(shaderName);
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.renderReactor.OnReceive(default);
-
-        // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"));
-        this.mockGLService.VerifyOnce(m => m.EndGroup());
-        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
-        this.mockShader.VerifyNever(m => m.Use());
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
-        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
-        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGPUBuffer.VerifyNever(m =>
-            m.UploadData(It.IsAny<ShapeBatchItem>(), It.IsAny<uint>()));
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
-        this.mockGL.VerifyNever(m => m.DrawElements(
-            It.IsAny<GLPrimitiveType>(),
-            It.IsAny<uint>(),
-            It.IsAny<GLDrawElementsType>(),
-            It.IsAny<nint>()));
-    }
-
-    [Fact]
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used for testing")]
     public void Render_WhenInvoked_AddsRectToBatch()
     {
@@ -382,6 +351,37 @@ public class ShapeRendererTests
         // Assert
         this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockRenderUnsubscriber.VerifyOnce(m => m.Dispose());
+    }
+
+    [Fact]
+    public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
+    {
+        // Arrange
+        const string shaderName = "TestRectShader";
+        this.mockShader.SetupGet(p => p.Name).Returns(shaderName);
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.renderReactor.OnReceive(default);
+
+        // Assert
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.EndGroup());
+        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
+        this.mockShader.VerifyNever(m => m.Use());
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
+        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+        this.mockGPUBuffer.VerifyNever(m =>
+            m.UploadData(It.IsAny<ShapeBatchItem>(), It.IsAny<uint>()));
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+        this.mockGL.VerifyNever(m => m.DrawElements(
+            It.IsAny<GLPrimitiveType>(),
+            It.IsAny<uint>(),
+            It.IsAny<GLDrawElementsType>(),
+            It.IsAny<nint>()));
     }
     #endregion
 
