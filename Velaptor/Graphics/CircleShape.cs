@@ -120,16 +120,16 @@ public record struct CircleShape
     public Color Color { get; set; } = Color.White;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the circle is filled or empty.
+    /// Gets or sets a value indicating whether or not the circle is solid.
     /// </summary>
-    public bool IsFilled { get; set; } = true;
+    public bool IsSolid { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the thickness of the circle's border.
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Only visible if the <see cref="IsFilled"/> property is set to <c>false</c>.
+    ///     Only visible if the <see cref="IsSolid"/> property is set to <c>false</c>.
     /// </para>
     /// </remarks>
     public float BorderThickness
@@ -193,7 +193,7 @@ public record struct CircleShape
         Position == Vector2.Zero &&
         Diameter <= 1f &&
         Color.IsEmpty &&
-        IsFilled is false &&
+        IsSolid is false &&
         BorderThickness <= 1f &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
@@ -207,7 +207,7 @@ public record struct CircleShape
         Position = Vector2.Zero;
         Diameter = 0;
         Color = Color.Empty;
-        IsFilled = false;
+        IsSolid = false;
         BorderThickness = 0u;
         GradientType = ColorGradient.None;
         GradientStart = Color.Empty;

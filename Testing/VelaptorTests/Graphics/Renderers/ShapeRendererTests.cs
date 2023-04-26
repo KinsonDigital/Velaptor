@@ -238,7 +238,7 @@ public class ShapeRendererTests
             Position = new Vector2(11, 22),
             Width = 33u,
             Height = 44u,
-            IsFilled = true,
+            IsSolid = true,
             BorderThickness = 0,
             CornerRadius = CornerRadius.Empty(),
             Color = Color.White,
@@ -280,7 +280,7 @@ public class ShapeRendererTests
         rect.Width = 3;
         rect.Height = 4;
         rect.Color = Color.FromArgb(99, 100, 110, 120);
-        rect.IsFilled = true;
+        rect.IsSolid = true;
         rect.BorderThickness = 5;
         rect.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
         rect.GradientStart = Color.FromArgb(11, 22, 33, 44);
@@ -340,7 +340,7 @@ public class ShapeRendererTests
         {
             Position = new Vector2(11, 22),
             Diameter = 33u,
-            IsFilled = true,
+            IsSolid = true,
             BorderThickness = 0,
             Color = Color.White,
             GradientType = ColorGradient.None,
@@ -380,7 +380,7 @@ public class ShapeRendererTests
         circle.Position = new Vector2(1, 2);
         circle.Diameter = 3;
         circle.Color = Color.FromArgb(99, 100, 110, 120);
-        circle.IsFilled = true;
+        circle.IsSolid = true;
         circle.BorderThickness = 5;
         circle.GradientStart = Color.FromArgb(11, 22, 33, 44);
         circle.GradientStop = Color.FromArgb(55, 66, 77, 88);

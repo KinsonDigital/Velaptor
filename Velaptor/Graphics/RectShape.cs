@@ -136,16 +136,16 @@ public record struct RectShape
     public Color Color { get; set; } = Color.White;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the rectangle is filled or empty.
+    /// Gets or sets a value indicating whether or not the rectangle is solid.
     /// </summary>
-    public bool IsFilled { get; set; } = true;
+    public bool IsSolid { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the thickness of the rectangle's border.
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Ignored if the <see cref="IsFilled"/> property is set to <c>true</c>.
+    ///     Ignored if the <see cref="IsSolid"/> property is set to <c>true</c>.
     /// </para>
     ///
     /// <para>
@@ -212,7 +212,7 @@ public record struct RectShape
         Width <= 1f &&
         Height <= 1f &&
         Color.IsEmpty &&
-        IsFilled is false &&
+        IsSolid is false &&
         BorderThickness <= 1f &&
         CornerRadius.IsEmpty() &&
         GradientType == ColorGradient.None &&
@@ -228,7 +228,7 @@ public record struct RectShape
         Width = 0;
         Height = 0;
         Color = Color.Empty;
-        IsFilled = false;
+        IsSolid = false;
         BorderThickness = 0u;
         CornerRadius = new CornerRadius(0f, 0f, 0f, 0f);
         GradientType = ColorGradient.None;

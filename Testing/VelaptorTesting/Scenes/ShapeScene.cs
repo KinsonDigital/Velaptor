@@ -49,7 +49,7 @@ public class ShapeScene : SceneBase
     private Button? btnDecreaseWidth;
     private Button? btnIncreaseHeight;
     private Button? btnDecreaseHeight;
-    private Button? btnIsFilled;
+    private Button? btnIsSolid;
     private Button? btnSolidFillClr;
     private Button? btnIncreaseBorderThickness;
     private Button? btnDecreaseBorderThickness;
@@ -91,7 +91,7 @@ public class ShapeScene : SceneBase
             GradientType = ColorGradient.None,
             GradientStart = Color.IndianRed,
             GradientStop = Color.IndianRed,
-            IsFilled = true,
+            IsSolid = true,
         };
 
         this.circle = new CircleShape
@@ -103,7 +103,7 @@ public class ShapeScene : SceneBase
             GradientStart = Color.IndianRed,
             GradientStop = Color.IndianRed,
             BorderThickness = 10f,
-            IsFilled = false,
+            IsSolid = false,
         };
 
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
@@ -252,12 +252,12 @@ public class ShapeScene : SceneBase
         };
         this.btnDecreaseHeight.MouseDown += (_, _) => this.rectangle.DecreaseHeight(5);
 
-        this.btnIsFilled = new Button
+        this.btnIsSolid = new Button
         {
-            Text = $"Is Filled: {(this.shapeType == ShapeType.Rectangle ? this.rectangle.IsFilled : this.circle.IsFilled)}",
-            Name = nameof(this.btnIsFilled),
+            Text = $"Is Solid: {(this.shapeType == ShapeType.Rectangle ? this.rectangle.IsSolid : this.circle.IsSolid)}",
+            Name = nameof(this.btnIsSolid),
         };
-        this.btnIsFilled.Click += btnIsFilled_Click;
+        this.btnIsSolid.Click += btnIsSolid_Click;
 
         this.btnSolidFillClr = new Button
         {
@@ -270,7 +270,7 @@ public class ShapeScene : SceneBase
         {
             Text = "Border Thickness +",
             Name = nameof(this.btnIncreaseBorderThickness),
-            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsFilled : !this.circle.IsFilled,
+            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsSolid : !this.circle.IsSolid,
         };
         this.btnIncreaseBorderThickness.MouseDown += btnIncreaseBorderThickness_MouseDown;
 
@@ -278,7 +278,7 @@ public class ShapeScene : SceneBase
         {
             Text = "Border Thickness -",
             Name = nameof(this.btnDecreaseBorderThickness),
-            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsFilled : !this.circle.IsFilled,
+            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsSolid : !this.circle.IsSolid,
         };
         this.btnDecreaseBorderThickness.MouseDown += btnDecreaseBorderThickness_MouseDown;
 
@@ -403,7 +403,7 @@ public class ShapeScene : SceneBase
         AddControl(this.btnDecreaseWidth);
         AddControl(this.btnIncreaseHeight);
         AddControl(this.btnDecreaseHeight);
-        AddControl(this.btnIsFilled);
+        AddControl(this.btnIsSolid);
         AddControl(this.btnSolidFillClr);
         AddControl(this.btnIncreaseBorderThickness);
         AddControl(this.btnDecreaseBorderThickness);
@@ -423,7 +423,7 @@ public class ShapeScene : SceneBase
         this.circleButtons.Add(nameof(this.btnIncCircleDiam));
         this.circleButtons.Add(nameof(this.btnDecCircleDiam));
         this.circleButtons.Add(nameof(this.btnShapeType));
-        this.circleButtons.Add(nameof(this.btnIsFilled));
+        this.circleButtons.Add(nameof(this.btnIsSolid));
         this.circleButtons.Add(nameof(this.btnSolidFillClr));
         this.circleButtons.Add(nameof(this.btnIncreaseBorderThickness));
         this.circleButtons.Add(nameof(this.btnDecreaseBorderThickness));
@@ -437,7 +437,7 @@ public class ShapeScene : SceneBase
         this.rectButtons.Add(nameof(this.btnDecreaseWidth));
         this.rectButtons.Add(nameof(this.btnIncreaseHeight));
         this.rectButtons.Add(nameof(this.btnDecreaseHeight));
-        this.rectButtons.Add(nameof(this.btnIsFilled));
+        this.rectButtons.Add(nameof(this.btnIsSolid));
         this.rectButtons.Add(nameof(this.btnSolidFillClr));
         this.rectButtons.Add(nameof(this.btnIncreaseBorderThickness));
         this.rectButtons.Add(nameof(this.btnDecreaseBorderThickness));
@@ -460,27 +460,27 @@ public class ShapeScene : SceneBase
     // Element should begin with upper-case letter
     #pragma warning disable SA1300
     #region Control Events
-    private void btnIsFilled_Click(object? sender, EventArgs e)
+    private void btnIsSolid_Click(object? sender, EventArgs e)
     {
-        bool isFilled;
+        bool isSolid;
 
         switch (this.shapeType)
         {
             case ShapeType.Rectangle:
-                this.rectangle.IsFilled = !this.rectangle.IsFilled;
-                isFilled = this.rectangle.IsFilled;
+                this.rectangle.IsSolid = !this.rectangle.IsSolid;
+                isSolid = this.rectangle.IsSolid;
                 break;
             case ShapeType.Circle:
-                this.circle.IsFilled = !this.circle.IsFilled;
-                isFilled = this.circle.IsFilled;
+                this.circle.IsSolid = !this.circle.IsSolid;
+                isSolid = this.circle.IsSolid;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
-        this.btnIsFilled.Text = isFilled ? "Is Filled: true" : "Is Filled: false";
-        this.btnIncreaseBorderThickness.Enabled = !isFilled;
-        this.btnDecreaseBorderThickness.Enabled = !isFilled;
+        this.btnIsSolid.Text = isSolid ? "Is Solid: true" : "Is Solid: false";
+        this.btnIncreaseBorderThickness.Enabled = !isSolid;
+        this.btnDecreaseBorderThickness.Enabled = !isSolid;
         LayoutButtonsLeftSide();
     }
 
@@ -679,7 +679,7 @@ public class ShapeScene : SceneBase
             nameof(this.btnDecreaseWidth),
             nameof(this.btnIncreaseHeight),
             nameof(this.btnDecreaseHeight),
-            nameof(this.btnIsFilled),
+            nameof(this.btnIsSolid),
             nameof(this.btnSolidFillClr),
             nameof(this.btnIncreaseBorderThickness),
             nameof(this.btnDecreaseBorderThickness),

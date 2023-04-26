@@ -456,7 +456,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(new Vector2(1111f, 2222f));
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
@@ -712,7 +712,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
         actual.Color.Should().Be(expectedVertex.Color);
@@ -741,13 +741,13 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetIsFilled_WithInvalidVertexValue_ThrowsException()
+    public void SetAsSolid_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetIsFilled(It.IsAny<bool>(), (VertexNumber)1234);
+        var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)1234);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -759,7 +759,7 @@ public class InternalExtensionMethodsTests
     [InlineData((int)VertexNumber.Two)]
     [InlineData((int)VertexNumber.Three)]
     [InlineData((int)VertexNumber.Four)]
-    public void SetIsFilled_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+    public void SetAsSolid_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
@@ -775,14 +775,14 @@ public class InternalExtensionMethodsTests
         // Act
         var actual = vertexNumber switch
         {
-            VertexNumber.One => gpuData.SetIsFilled(true, vertexNumber).Vertex1,
-            VertexNumber.Two => gpuData.SetIsFilled(true, vertexNumber).Vertex2,
-            VertexNumber.Three => gpuData.SetIsFilled(true, vertexNumber).Vertex3,
-            VertexNumber.Four => gpuData.SetIsFilled(true, vertexNumber).Vertex4,
+            VertexNumber.One => gpuData.SetAsSolid(true, vertexNumber).Vertex1,
+            VertexNumber.Two => gpuData.SetAsSolid(true, vertexNumber).Vertex2,
+            VertexNumber.Three => gpuData.SetAsSolid(true, vertexNumber).Vertex3,
+            VertexNumber.Four => gpuData.SetAsSolid(true, vertexNumber).Vertex4,
         };
 
         // Assert
-        actual.IsFilled.Should().BeTrue();
+        actual.IsSolid.Should().BeTrue();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
@@ -794,19 +794,19 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetIsFilled_WhenUpdatingAll_ReturnsCorrectResult()
+    public void SetAsSolid_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
         // Act
-        var actual = gpuData.SetIsFilled(true);
+        var actual = gpuData.SetAsSolid(true);
 
         // Assert
-        actual.Vertex1.IsFilled.Should().BeTrue();
-        actual.Vertex2.IsFilled.Should().BeTrue();
-        actual.Vertex3.IsFilled.Should().BeTrue();
-        actual.Vertex4.IsFilled.Should().BeTrue();
+        actual.Vertex1.IsSolid.Should().BeTrue();
+        actual.Vertex2.IsSolid.Should().BeTrue();
+        actual.Vertex3.IsSolid.Should().BeTrue();
+        actual.Vertex4.IsSolid.Should().BeTrue();
     }
 
     [Fact]
@@ -855,7 +855,7 @@ public class InternalExtensionMethodsTests
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
-        actual.IsFilled.Should().Be(expectedVertex.IsFilled);
+        actual.IsSolid.Should().Be(expectedVertex.IsSolid);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
         actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
         actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
@@ -921,7 +921,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.TopLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -991,7 +991,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1061,7 +1061,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1131,7 +1131,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.TopRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1201,7 +1201,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(NETColor.Blue);

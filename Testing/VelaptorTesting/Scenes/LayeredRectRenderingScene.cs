@@ -89,7 +89,7 @@ public class LayeredRectRenderingScene : SceneBase
             Position = new Vector2(WindowCenter.X - 100, WindowCenter.Y),
             Width = RectWidth,
             Height = RectHeight,
-            IsFilled = true,
+            IsSolid = true,
             Color = Color.FromArgb(255, 193, 105, 46),
             CornerRadius = new CornerRadius(15f, 50f, 15f, 50f),
         };
@@ -101,7 +101,7 @@ public class LayeredRectRenderingScene : SceneBase
             this.orangeRect.Position.Y + this.orangeRect.HalfHeight),
             Width = RectWidth,
             Height = RectHeight,
-            IsFilled = true,
+            IsSolid = true,
             Color = Color.SteelBlue,
             CornerRadius = new CornerRadius(40f, 10f, 40f, 10f),
         };
@@ -113,7 +113,7 @@ public class LayeredRectRenderingScene : SceneBase
                 this.orangeRect.Position.Y + (this.orangeRect.HalfHeight / 2f)),
             Width = RectWidth,
             Height = RectHeight,
-            IsFilled = true,
+            IsSolid = true,
             Color = Color.AntiqueWhite,
             CornerRadius = new CornerRadius(20f, 20f, 20f, 20f),
         };

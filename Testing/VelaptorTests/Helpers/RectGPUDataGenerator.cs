@@ -45,7 +45,7 @@ internal static class RectGPUDataGenerator
         var color = GenerateColor((byte)next, out var nextByte);
         next = nextByte;
 
-        const bool isFilled = true;
+        const bool isSolid = true;
 
         var borderThicknessRadius = next;
 
@@ -63,7 +63,7 @@ internal static class RectGPUDataGenerator
             pos,
             rect,
             color,
-            isFilled,
+            isSolid,
             borderThicknessRadius,
             topLeftRadius,
             bottomLeftRadius,

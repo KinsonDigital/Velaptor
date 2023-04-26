@@ -104,7 +104,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
 
         data = ApplyColor(data, rectShape);
 
-        data = data.SetIsFilled(rectShape.IsFilled);
+        data = data.SetAsSolid(rectShape.IsSolid);
 
         data = data.SetBorderThickness(rectShape.BorderThickness);
         data = data.SetTopLeftCornerRadius(rectShape.CornerRadius.TopLeft);
@@ -172,14 +172,14 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, colorOffset);
         GL.EnableVertexAttribArray(2);
 
-        // IsFilled
-        const uint isFilledOffset = colorOffset + colorSize;
-        const uint isFilledSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(3, 1, GLVertexAttribPointerType.Float, false, stride, isFilledOffset);
+        // IsSolid
+        const uint isSolidOffset = colorOffset + colorSize;
+        const uint isSolidSize = 1u * sizeof(float);
+        GL.VertexAttribPointer(3, 1, GLVertexAttribPointerType.Float, false, stride, isSolidOffset);
         GL.EnableVertexAttribArray(3);
 
         // Border Thickness
-        const uint borderThicknessOffset = isFilledOffset + isFilledSize;
+        const uint borderThicknessOffset = isSolidOffset + isSolidSize;
         const uint borderThicknessSize = 1u * sizeof(float);
         GL.VertexAttribPointer(4, 1, GLVertexAttribPointerType.Float, false, stride, borderThicknessOffset);
         GL.EnableVertexAttribArray(4);
@@ -356,7 +356,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
             rect.Width,
             rect.Height,
             rect.Color,
-            rect.IsFilled,
+            rect.IsSolid,
             newBorderThickness,
             rect.CornerRadius,
             rect.GradientType,
@@ -402,7 +402,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
             rect.Width,
             rect.Height,
             rect.Color,
-            rect.IsFilled,
+            rect.IsSolid,
             rect.BorderThickness,
             cornerRadius,
             rect.GradientType,

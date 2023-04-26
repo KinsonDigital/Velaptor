@@ -21,7 +21,7 @@ internal readonly record struct ShapeBatchItem
     /// <param name="width">The width of the shape.</param>
     /// <param name="height">The height of the shape.</param>
     /// <param name="color">The color of the shape.</param>
-    /// <param name="isFilled">If true, a solid shape.</param>
+    /// <param name="isSolid">If true, a solid shape.</param>
     /// <param name="borderThickness">The thickness of the shape's border.</param>
     /// <param name="cornerRadius">The radius of each corner of the shape.</param>
     /// <param name="gradientType">The type of color gradient that will be applied to the shape.</param>
@@ -29,7 +29,7 @@ internal readonly record struct ShapeBatchItem
     /// <param name="gradientStop">The ending color of the gradient.</param>
     /// <remarks>
     /// <para>
-    ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
+    ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isSolid"/> parameter is set to <c>true</c>.
     /// </para>
     /// <para>
     ///     The value of each corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
@@ -44,7 +44,7 @@ internal readonly record struct ShapeBatchItem
         float width,
         float height,
         Color color,
-        bool isFilled,
+        bool isSolid,
         float borderThickness,
         CornerRadius cornerRadius,
         ColorGradient gradientType,
@@ -55,7 +55,7 @@ internal readonly record struct ShapeBatchItem
         Width = width;
         Height = height;
         Color = color;
-        IsFilled = isFilled;
+        IsSolid = isSolid;
         BorderThickness = borderThickness;
         CornerRadius = cornerRadius;
         GradientType = gradientType;
@@ -96,16 +96,16 @@ internal readonly record struct ShapeBatchItem
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the shape is filled with a solid color.
+    /// Gets a value indicating whether or not the shape is a solid color.
     /// </summary>
-    public bool IsFilled { get; }
+    public bool IsSolid { get; }
 
     /// <summary>
     /// Gets the thickness of the shape's border.
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Ignored if the <see cref="IsFilled"/> property is set to <c>true</c>.
+    ///     Ignored if the <see cref="IsSolid"/> property is set to <c>true</c>.
     /// </para>
     ///
     /// <para>
@@ -172,7 +172,7 @@ internal readonly record struct ShapeBatchItem
         Width > 0f ||
         Height > 0f ||
         !Color.IsEmpty ||
-        IsFilled ||
+        IsSolid ||
         !CornerRadius.IsEmpty() ||
         GradientType != ColorGradient.None ||
         !GradientStart.IsEmpty ||

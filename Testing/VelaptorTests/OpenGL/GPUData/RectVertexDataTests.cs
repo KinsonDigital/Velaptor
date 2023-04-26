@@ -33,7 +33,7 @@ public class RectVertexDataTests
             15);
 
         // Assert
-        data.IsFilled.Should().BeTrue();
+        data.IsSolid.Should().BeTrue();
         data.VertexPos.Should().Be(new Vector2(1, 2));
         data.Rectangle.Should().Be(new Vector4(3, 4, 5, 6));
         data.Color.Should().Be(Color.FromArgb(7, 8, 9, 10));
@@ -53,7 +53,7 @@ public class RectVertexDataTests
         var actual = RectVertexData.Empty();
 
         // Assert
-        actual.IsFilled.Should().BeFalse();
+        actual.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(Vector2.Zero);
         actual.Rectangle.Should().Be(Vector4.Zero);
         actual.Color.Should().Be(Color.Empty);
@@ -104,7 +104,7 @@ public class RectVertexDataTests
         actual[7].Should().Be(9, "the Color G should be correct.");
         actual[8].Should().Be(10, "the Color B should be correct.");
         actual[9].Should().Be(7, "the Color A should be correct.");
-        actual[10].Should().Be(1, "the IsFilled should be correct.");
+        actual[10].Should().Be(1, "the IsSolid should be correct.");
         actual[11].Should().Be(11f, "the Border Thickness should be correct.");
         actual[12].Should().Be(12f, "the Top Left Radius should be correct.");
         actual[13].Should().Be(13f, "the Bottom Left Radius should be correct.");

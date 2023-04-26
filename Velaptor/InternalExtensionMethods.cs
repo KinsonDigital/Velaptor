@@ -648,7 +648,7 @@ internal static class InternalExtensionMethods
             pos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -688,7 +688,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             rect,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -723,14 +723,14 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Updates the <see cref="RectVertexData.IsFilled"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+    /// Updates the <see cref="RectVertexData.IsSolid"/> setting of a vertex using the given <paramref name="vertexNumber"/>
     /// for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="isFilled">The is filled setting to apply to a vertex.</param>
+    /// <param name="isSolid">The solid setting to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
-    public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled, VertexNumber vertexNumber)
+    public static RectGPUData SetAsSolid(this RectGPUData gpuData, bool isSolid, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
         {
@@ -745,7 +745,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            isFilled,
+            isSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -764,17 +764,17 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Updates the <see cref="RectVertexData.IsFilled"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="RectVertexData.IsSolid"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="isFilled">The setting to apply to all vertex data.</param>
+    /// <param name="isSolid">The setting to apply to all vertex data.</param>
     /// <returns>The updated GPU data.</returns>
-    public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled)
+    public static RectGPUData SetAsSolid(this RectGPUData gpuData, bool isSolid)
     {
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.One);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Two);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Three);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Four);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.One);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Two);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Three);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Four);
 
         return gpuData;
     }
@@ -784,7 +784,7 @@ internal static class InternalExtensionMethods
     /// for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="borderThickness">The is filled setting to apply to a vertex.</param>
+    /// <param name="borderThickness">The border thickness to apply to the vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
     public static RectGPUData SetBorderThickness(this RectGPUData gpuData, float borderThickness, VertexNumber vertexNumber)
@@ -802,7 +802,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             borderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -859,7 +859,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             topLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -916,7 +916,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             bottomLeftCornerRadius,
@@ -973,7 +973,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -1030,7 +1030,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -1087,7 +1087,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,

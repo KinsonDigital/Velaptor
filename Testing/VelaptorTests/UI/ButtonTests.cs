@@ -499,7 +499,7 @@ public class ButtonTests
         // Arrange
         var expected = default(RectShape);
         expected.Position = new Vector2(400f, 600f);
-        expected.IsFilled = true;
+        expected.IsSolid = true;
         expected.BorderThickness = 0u;
         expected.Color = Color.DarkGray;
         expected.Width = 100u;
@@ -625,7 +625,7 @@ public class ButtonTests
         // Arrange
         var expected = default(RectShape);
         expected.Position = new Vector2(1, 2);
-        expected.IsFilled = false;
+        expected.IsSolid = false;
         expected.BorderThickness = 3;
         expected.Color = Color.CornflowerBlue;
         expected.Width = 4;

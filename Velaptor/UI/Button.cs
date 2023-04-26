@@ -419,7 +419,7 @@ public sealed class Button : ControlBase
 
         var buttonFace = default(RectShape);
         buttonFace.Position = Position.ToVector2();
-        buttonFace.IsFilled = true;
+        buttonFace.IsSolid = true;
         buttonFace.Color = faceColor;
         buttonFace.Width = Width;
         buttonFace.Height = Height;
@@ -431,7 +431,7 @@ public sealed class Button : ControlBase
         {
             var buttonBorder = default(RectShape);
             buttonBorder.Position = Position.ToVector2();
-            buttonBorder.IsFilled = false;
+            buttonBorder.IsSolid = false;
             buttonBorder.BorderThickness = BorderThickness;
             buttonBorder.Color = Enabled ? BorderColor : BorderColor.DecreaseBrightness(0.25f);
             buttonBorder.Width = Width;

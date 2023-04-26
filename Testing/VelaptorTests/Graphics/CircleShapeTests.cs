@@ -28,7 +28,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -40,7 +40,7 @@ public class CircleShapeTests
             new Vector2(44, 44), // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -52,7 +52,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             44f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -64,7 +64,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.FromArgb(44, 44, 44, 44), // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -76,7 +76,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            true, // IsFilled
+            true, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -88,7 +88,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             44f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -100,7 +100,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.Horizontal, // Gradient Type
             Color.Empty, // Gradient Start
@@ -112,7 +112,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.FromArgb(44, 44, 44, 44), // Gradient Start
@@ -124,7 +124,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -136,7 +136,7 @@ public class CircleShapeTests
             Vector2.Zero, // Position
             1f, // Diameter
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             1f, // Border Thickness
             ColorGradient.None, // Gradient Type
             Color.Empty, // Gradient Start
@@ -157,7 +157,7 @@ public class CircleShapeTests
         var sut = new CircleShape();
 
         // Assert
-        sut.IsFilled.Should().BeTrue();
+        sut.IsSolid.Should().BeTrue();
         sut.Position.Should().Be(Vector2.Zero);
         sut.Diameter.Should().Be(1f);
         sut.Color.Should().Be(Color.White);
@@ -177,7 +177,7 @@ public class CircleShapeTests
     {
         // Arrange
         var sut = default(CircleShape);
-        sut.IsFilled = true;
+        sut.IsSolid = true;
         sut.BorderThickness = 2f;
 
         // Act
@@ -200,7 +200,7 @@ public class CircleShapeTests
     {
         // Arrange
         var sut = default(CircleShape);
-        sut.IsFilled = false;
+        sut.IsSolid = false;
         sut.Diameter = 100f;
         sut.BorderThickness = 10f;
 
@@ -321,7 +321,7 @@ public class CircleShapeTests
         Vector2 position,
         float diameter,
         Color color,
-        bool isFilled,
+        bool isSolid,
         float borderThickness,
         ColorGradient gradientType,
         Color gradientStart,
@@ -333,7 +333,7 @@ public class CircleShapeTests
         sut.Position = position;
         sut.Diameter = diameter;
         sut.Color = color;
-        sut.IsFilled = isFilled;
+        sut.IsSolid = isSolid;
         sut.BorderThickness = borderThickness;
         sut.GradientType = gradientType;
         sut.GradientStart = gradientStart;
@@ -354,7 +354,7 @@ public class CircleShapeTests
         sut.Position = new Vector2(1, 2);
         sut.Diameter = 3f;
         sut.Color = Color.FromArgb(5, 6, 7, 8);
-        sut.IsFilled = true;
+        sut.IsSolid = true;
         sut.BorderThickness = 9f;
         sut.GradientType = ColorGradient.Horizontal;
         sut.GradientStart = Color.FromArgb(14, 15, 16, 17);
@@ -364,7 +364,7 @@ public class CircleShapeTests
         sut.Empty();
 
         // Assert
-        sut.IsFilled.Should().BeFalse();
+        sut.IsSolid.Should().BeFalse();
         sut.Position.Should().Be(Vector2.Zero);
         sut.Diameter.Should().Be(1f);
         sut.Color.Should().Be(Color.Empty);

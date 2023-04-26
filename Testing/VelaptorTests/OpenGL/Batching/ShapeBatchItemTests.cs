@@ -38,7 +38,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -53,7 +53,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -68,7 +68,7 @@ public class ShapeBatchItemTests
             10f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -83,7 +83,7 @@ public class ShapeBatchItemTests
             0f, // Width
             10f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -98,7 +98,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.FromArgb(10, 20, 30, 40), // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -113,13 +113,13 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            true, // IsFilled
+            true, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
             Color.Empty, // GradientStart
             Color.Empty, // GradientStop
-            "isFilled", // TEST NAME
+            "isSolid", // TEST NAME
             false, // Expected Result
         };
         yield return new object[]
@@ -128,7 +128,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             10f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -143,7 +143,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             new CornerRadius(1, 2, 3, 4), // CornerRadius
             ColorGradient.None, // GradientType
@@ -158,7 +158,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.Horizontal, // GradientType
@@ -173,7 +173,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -188,7 +188,7 @@ public class ShapeBatchItemTests
             0f, // Width
             0f, // Height
             Color.Empty, // Color
-            false, // IsFilled
+            false, // IsSolid
             0f, // BorderThickness
             CornerRadius.Empty(), // CornerRadius
             ColorGradient.None, // GradientType
@@ -221,7 +221,7 @@ public class ShapeBatchItemTests
         sut.Width.Should().Be(3);
         sut.Height.Should().Be(4);
         sut.Color.Should().Be(Color.FromArgb(5, 6, 7, 8));
-        sut.IsFilled.Should().Be(true);
+        sut.IsSolid.Should().Be(true);
         sut.BorderThickness.Should().Be(9);
         sut.CornerRadius.Should().Be(new CornerRadius(10, 11, 12, 13));
         sut.GradientType.Should().Be(ColorGradient.Horizontal);
@@ -238,7 +238,7 @@ public class ShapeBatchItemTests
         float width,
         float height,
         Color color,
-        bool isFilled,
+        bool isSolid,
         float borderThickness,
         CornerRadius cornerRadius,
         ColorGradient gradientType,
@@ -253,7 +253,7 @@ public class ShapeBatchItemTests
             width,
             height,
             color,
-            isFilled,
+            isSolid,
             borderThickness,
             cornerRadius,
             gradientType,
