@@ -15,6 +15,7 @@ public record struct RectShape
 {
     private float width = 1f;
     private float height = 1f;
+    private float borderThickness = 1f;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectShape"/> struct.
@@ -152,7 +153,19 @@ public record struct RectShape
     ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </para>
     /// </remarks>
-    public float BorderThickness { get; set; } = 1f;
+    public float BorderThickness
+    {
+        readonly get => this.borderThickness;
+        set
+        {
+            var smallestDimension = this.width < this.height ? this.width : this.height;
+
+            value = value > smallestDimension ? smallestDimension : value;
+            value = value < 1f ? 1f : value;
+
+            this.borderThickness = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the radius of each corner of the rectangle.

@@ -503,58 +503,28 @@ public class ShapeScene : SceneBase
 
     private void btnIncreaseBorderThickness_MouseDown(object? sender, EventArgs e)
     {
-        var maxValue = this.shapeType switch
-        {
-            ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f,
-            ShapeType.Circle => this.circle.Diameter,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-
-        var newValue = this.shapeType switch
-        {
-            ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
-            ShapeType.Circle => this.circle.BorderThickness >= maxValue ? 0 : 1,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-
         switch (this.shapeType)
         {
             case ShapeType.Rectangle:
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness += newValue;
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness += 1;
                 break;
             case ShapeType.Circle:
-                this.circle.BorderThickness = this.circle.BorderThickness += newValue;
+                this.circle.BorderThickness = this.circle.BorderThickness += 1;
                 break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
     private void btnDecreaseBorderThickness_MouseDown(object? sender, EventArgs e)
     {
-        var maxValue = this.shapeType switch
-        {
-            ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f,
-            ShapeType.Circle => this.circle.Diameter,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-
-        var newValue = this.shapeType switch
-            {
-                ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
-                ShapeType.Circle => 1,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
         switch (this.shapeType)
         {
             case ShapeType.Rectangle:
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= newValue;
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= 1;
                 break;
             case ShapeType.Circle:
-                this.circle.BorderThickness = this.circle.BorderThickness -= newValue;
+                this.circle.BorderThickness = this.circle.BorderThickness -= 1;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

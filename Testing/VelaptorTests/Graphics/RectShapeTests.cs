@@ -267,18 +267,28 @@ public class RectShapeTests
         Assert.Equal(50f, actual);
     }
 
-    [Fact]
-    public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
+    [Theory]
+    [InlineData(75f, 100f, 10f, 10f)]
+    [InlineData(100f, 75f, 20f, 20f)]
+    [InlineData(100f, 75f, 90f, 75f)]
+    [InlineData(100f, 100f, -30f, 1f)]
+    public void BorderThickness_WhenSettingValue_ReturnsCorrectResult(
+        float width,
+        float height,
+        float borderThickness,
+        float expected)
     {
         // Arrange
         var rect = default(RectShape);
+        rect.Width = width;
+        rect.Height = height;
 
         // Act
-        rect.BorderThickness = 123f;
+        rect.BorderThickness = borderThickness;
         var actual = rect.BorderThickness;
 
         // Assert
-        Assert.Equal(123f, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -433,8 +443,8 @@ public class RectShapeTests
         // Arrange
         var rect = default(RectShape);
         rect.Position = new Vector2(1, 2);
-        rect.Width = 3f;
-        rect.Height = 4f;
+        rect.Width = 50f;
+        rect.Height = 60f;
         rect.Color = Color.FromArgb(5, 6, 7, 8);
         rect.IsSolid = true;
         rect.BorderThickness = 9f;
@@ -452,7 +462,7 @@ public class RectShapeTests
         Assert.Equal(1f, rect.Height);
         Assert.Equal(Color.Empty, rect.Color);
         Assert.False(rect.IsSolid);
-        Assert.Equal(0f, rect.BorderThickness);
+        Assert.Equal(1f, rect.BorderThickness);
         Assert.Equal(new CornerRadius(0f, 0f, 0f, 0f), rect.CornerRadius);
         Assert.Equal(ColorGradient.None, rect.GradientType);
         Assert.Equal(Color.Empty, rect.GradientStart);
