@@ -77,9 +77,9 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         };
 
-        var rectScene = new RectangleScene
+        var shapeScene = new ShapeScene
         {
-            Name = SplitByUpperCase(nameof(RectangleScene)),
+            Name = SplitByUpperCase(nameof(ShapeScene)),
         };
 
         var layeredRectScene = new LayeredRectRenderingScene
@@ -109,7 +109,7 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
-        SceneManager.AddScene(rectScene);
+        SceneManager.AddScene(shapeScene);
         SceneManager.AddScene(layeredRectScene);
         SceneManager.AddScene(lineScene);
         SceneManager.AddScene(layeredLineScene);

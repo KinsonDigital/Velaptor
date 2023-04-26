@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Silk.NET.Vulkan;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content.Fonts;
@@ -34,13 +33,15 @@ public class ShapeScene : SceneBase
     private const int HoriButtonSpacing = 10;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
+    private readonly List<string> rectButtons = new ();
+    private readonly List<string> circleButtons = new ();
     private IFontRenderer? fontRenderer;
     private IShapeRenderer? shapeRenderer;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
     private CircleShape circle;
-    private ShapeType shapeType = ShapeType.Rectangle;
+    private ShapeType shapeType = ShapeType.Circle;
     private Button? btnShapeType;
     private Button? btnIncCircleDiam;
     private Button? btnDecCircleDiam;
@@ -63,10 +64,10 @@ public class ShapeScene : SceneBase
     private Button? btnGradientType;
     private Button? btnGradClrStart;
     private Button? btnGradClrStop;
-    private Vector2 instructionsPos;
-    private string instructions = string.Empty;
-    private List<string> rectButtons = new ();
-    private List<string> circleButtons = new ();
+    private string rectInstructions = string.Empty;
+    private string circleInstructions = string.Empty;
+    private Vector2 rectInstructionsPos;
+    private Vector2 circleInstructionsPos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -101,25 +102,39 @@ public class ShapeScene : SceneBase
             GradientType = ColorGradient.None,
             GradientStart = Color.IndianRed,
             GradientStop = Color.IndianRed,
-            IsFilled = true,
+            BorderThickness = 10f,
+            IsFilled = false,
         };
 
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
-        var lines = new[]
+        var rectLines = new[]
         {
-            "                    Instructions",
+            "                    Rectangle Instructions",
             "----------------------------------------------",
-            "Rectangle Movement: Arrow Keys",
+            "Movement: Arrow Keys",
             "Size:",
             "   Increase Width: Shift + Right Arrow",
             "   Decrease Width: Shift + Left Arrow",
-            "   Increase Height: Shift + Down Arrow",
-            "   Decrease Height: Shift + Up Arrow",
+            "   Increase Height: Shift + Up Arrow",
+            "   Decrease Height: Shift + Down Arrow",
         };
-        this.instructions = string.Join(Environment.NewLine, lines);
-        var size = this.font.Measure(this.instructions);
-        this.instructionsPos = new Vector2(WindowCenter.X, 25 + (size.Height / 2f));
+        this.rectInstructions = string.Join(Environment.NewLine, rectLines);
+        var rectInstructionsSize = this.font.Measure(this.rectInstructions);
+        this.rectInstructionsPos = new Vector2(WindowCenter.X, 25 + (rectInstructionsSize.Height / 2f));
+
+        var circleLines = new[]
+        {
+            "                    Circle Instructions",
+            "----------------------------------------------",
+            "Movement: Arrow Keys",
+            "Size:",
+            "   Increase Diameter: Shift + Up Or Right Arrow",
+            "   Decrease Diameter: Shift + Down Or Left Arrow",
+        };
+        this.circleInstructions = string.Join(Environment.NewLine, circleLines);
+        var circleInstructionsSize = this.font.Measure(this.circleInstructions);
+        this.circleInstructionsPos = new Vector2(WindowCenter.X, 25 + (circleInstructionsSize.Height / 2f));
 
         CreateButtons();
 
@@ -135,7 +150,7 @@ public class ShapeScene : SceneBase
     {
         this.currentKeyState = this.keyboard.GetState();
 
-        MoveRect(frameTime);
+        MoveShape(frameTime);
         ChangeRectSize(frameTime);
 
         base.Update(frameTime);
@@ -147,14 +162,28 @@ public class ShapeScene : SceneBase
         switch (this.shapeType)
         {
             case ShapeType.Rectangle:
-                this.shapeRenderer.Render(this.rectangle);
+                this.shapeRenderer.Render(this.rectangle, 1);
                 break;
             case ShapeType.Circle:
-                this.shapeRenderer.Render(this.circle);
+                this.shapeRenderer.Render(this.circle, 1);
                 break;
         }
 
-        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
+        var instructionText = this.shapeType switch
+        {
+            ShapeType.Rectangle => this.rectInstructions,
+            ShapeType.Circle => this.circleInstructions,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        var instructionPos = this.shapeType switch
+        {
+            ShapeType.Rectangle => this.rectInstructionsPos,
+            ShapeType.Circle => this.circleInstructionsPos,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        this.fontRenderer.Render(this.font, instructionText, instructionPos, Color.White, 2);
 
         base.Render();
     }
@@ -171,26 +200,17 @@ public class ShapeScene : SceneBase
         Justification = "Not required.")]
     private void CreateButtons()
     {
-        this.btnShapeType = new Button { Text = "Rectangle", Name = nameof(this.btnShapeType), };
-        this.btnShapeType.MouseUp += (_, _) =>
+        this.btnShapeType = new Button
         {
-            this.shapeType = this.shapeType switch
-            {
-                ShapeType.Rectangle => ShapeType.Circle,
-                ShapeType.Circle => ShapeType.Rectangle,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            this.btnShapeType.Text = this.shapeType switch
+            Text = this.shapeType switch
             {
                 ShapeType.Rectangle => "Rectangle",
                 ShapeType.Circle => "Circle",
                 _ => throw new ArgumentOutOfRangeException()
-            };
-
-            ShowButtonsForShape();
-            LayoutButtonsLeftSide();
+            },
+            Name = nameof(this.btnShapeType),
         };
+        this.btnShapeType.Click += btnShapeType_Click;
 
         this.btnIncCircleDiam = new Button { Text = "Diameter +", Name = nameof(this.btnIncCircleDiam), };
         this.btnIncCircleDiam.MouseDown += (_, _) =>
@@ -234,119 +254,33 @@ public class ShapeScene : SceneBase
 
         this.btnIsFilled = new Button
         {
-            Text = "Is Filled: true",
+            Text = $"Is Filled: {(this.shapeType == ShapeType.Rectangle ? this.rectangle.IsFilled : this.circle.IsFilled)}",
             Name = nameof(this.btnIsFilled),
         };
-        this.btnIsFilled.Click += (_, _) =>
-        {
-            var isFilled = false;
-
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.IsFilled = !this.rectangle.IsFilled;
-                    isFilled = this.rectangle.IsFilled;
-                    break;
-                case ShapeType.Circle:
-                    this.circle.IsFilled = !this.circle.IsFilled;
-                    isFilled = this.circle.IsFilled;
-                    break;
-            }
-
-            this.btnIsFilled.Text = isFilled ? "Is Filled: true" : "Is Filled: false";
-            this.btnIncreaseBorderThickness.Enabled = !isFilled;
-            this.btnDecreaseBorderThickness.Enabled = !isFilled;
-        };
+        this.btnIsFilled.Click += btnIsFilled_Click;
 
         this.btnSolidFillClr = new Button
         {
             Text = "Solid Fill Clr: Blue",
             Name = nameof(this.btnSolidFillClr),
         };
-        this.btnSolidFillClr.Click += (_, _) =>
-        {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
-                    break;
-                case ShapeType.Circle:
-                    this.circle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
-                    break;
-            }
-        };
+        this.btnSolidFillClr.Click += btnSolidFillClr_Click;
 
         this.btnIncreaseBorderThickness = new Button
         {
             Text = "Border Thickness +",
             Name = nameof(this.btnIncreaseBorderThickness),
-            Enabled = false,
+            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsFilled : !this.circle.IsFilled,
         };
-        this.btnIncreaseBorderThickness.MouseDown += (_, _) =>
-        {
-            var maxValue = this.shapeType switch
-            {
-                ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
-                    ? this.rectangle.Width
-                    : this.rectangle.Height) / 2f,
-                ShapeType.Circle => this.circle.Diameter,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
-            var newValue = this.shapeType switch
-            {
-                ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
-                ShapeType.Circle => this.circle.BorderThickness >= maxValue ? 0 : 1,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.BorderThickness = this.rectangle.BorderThickness += newValue;
-                    break;
-                case ShapeType.Circle:
-                    this.circle.BorderThickness = this.circle.BorderThickness += newValue;
-                    break;
-            }
-        };
+        this.btnIncreaseBorderThickness.MouseDown += btnIncreaseBorderThickness_MouseDown;
 
         this.btnDecreaseBorderThickness = new Button
         {
             Text = "Border Thickness -",
             Name = nameof(this.btnDecreaseBorderThickness),
-            Enabled = false,
+            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsFilled : !this.circle.IsFilled,
         };
-        this.btnDecreaseBorderThickness.MouseDown += (_, _) =>
-        {
-            var maxValue = this.shapeType switch
-            {
-                ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
-                    ? this.rectangle.Width
-                    : this.rectangle.Height) / 2f,
-                ShapeType.Circle => this.circle.Diameter,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
-            var newValue = this.shapeType switch
-            {
-                ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
-                ShapeType.Circle => this.circle.BorderThickness >= maxValue ? 0 : 1,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.BorderThickness = this.rectangle.BorderThickness -= newValue;
-                    break;
-                case ShapeType.Circle:
-                    this.circle.BorderThickness = this.circle.BorderThickness -= newValue;
-                    break;
-            }
-        };
+        this.btnDecreaseBorderThickness.MouseDown += btnDecreaseBorderThickness_MouseDown;
 
         this.btnIncreaseTopLeftRadius = new Button
         {
@@ -355,14 +289,9 @@ public class ShapeScene : SceneBase
         };
         this.btnIncreaseTopLeftRadius.MouseDown += (_, _) =>
         {
-            var maxValue = (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f;
+            var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
 
-            var newValue = this.rectangle.CornerRadius.TopLeft > maxValue
-                ? 0
-                : 1;
-
+            var newValue = this.rectangle.CornerRadius.TopLeft > maxValue ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(newValue);
         };
 
@@ -373,10 +302,7 @@ public class ShapeScene : SceneBase
         };
         this.btnDecreaseTopLeftRadius.MouseDown += (_, _) =>
         {
-            var newValue = this.rectangle.CornerRadius.TopLeft <= 0
-                ? 0
-                : 1;
-
+            var newValue = this.rectangle.CornerRadius.TopLeft <= 0 ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(newValue);
         };
 
@@ -387,14 +313,8 @@ public class ShapeScene : SceneBase
         };
         this.btnIncreaseBottomLeftRadius.MouseDown += (_, _) =>
         {
-            var maxValue = (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f;
-
-            var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue
-                ? 0
-                : 1;
-
+            var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
+            var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(newValue);
         };
 
@@ -405,10 +325,7 @@ public class ShapeScene : SceneBase
         };
         this.btnDecreaseBottomLeftRadius.MouseDown += (_, _) =>
         {
-            var newValue = this.rectangle.CornerRadius.BottomLeft <= 0
-                ? 0
-                : 1;
-
+            var newValue = this.rectangle.CornerRadius.BottomLeft <= 0 ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(newValue);
         };
 
@@ -419,14 +336,8 @@ public class ShapeScene : SceneBase
         };
         this.btnIncreaseBottomRightRadius.MouseDown += (_, _) =>
         {
-            var maxValue = (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f;
-
-            var newValue = this.rectangle.CornerRadius.BottomRight > maxValue
-                ? 0
-                : 1;
-
+            var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
+            var newValue = this.rectangle.CornerRadius.BottomRight > maxValue ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(newValue);
         };
 
@@ -437,10 +348,7 @@ public class ShapeScene : SceneBase
         };
         this.btnDecreaseBottomRightRadius.MouseDown += (_, _) =>
         {
-            var newValue = this.rectangle.CornerRadius.BottomRight <= 0
-                ? 0
-                : 1;
-
+            var newValue = this.rectangle.CornerRadius.BottomRight <= 0 ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(newValue);
         };
 
@@ -451,14 +359,8 @@ public class ShapeScene : SceneBase
         };
         this.btnIncreaseTopRightRadius.MouseDown += (_, _) =>
         {
-            var maxValue = (this.rectangle.Width > this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2f;
-
-            var newValue = this.rectangle.CornerRadius.TopRight > maxValue
-                ? 0
-                : 1;
-
+            var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
+            var newValue = this.rectangle.CornerRadius.TopRight > maxValue ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(newValue);
         };
 
@@ -469,10 +371,7 @@ public class ShapeScene : SceneBase
         };
         this.btnDecreaseTopRightRadius.MouseDown += (_, _) =>
         {
-            var newValue = this.rectangle.CornerRadius.TopRight <= 0
-                ? 0
-                : 1;
-
+            var newValue = this.rectangle.CornerRadius.TopRight <= 0 ? 0 : 1;
             this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(newValue);
         };
 
@@ -481,71 +380,21 @@ public class ShapeScene : SceneBase
             Text = "Gradient Type: None",
             Name = nameof(this.btnGradientType),
         };
-        this.btnGradientType.Click += (_, _) =>
-        {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.GradientType = this.rectangle.GradientType.SwapGradient();
-                    break;
-                case ShapeType.Circle:
-                    this.circle.GradientType = this.circle.GradientType.SwapGradient();
-                    break;
-            }
-
-            this.btnGradientType.Text = this.shapeType switch
-            {
-                ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
-                ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            LayoutButtonsBottom();
-        };
+        this.btnGradientType.Click += btnGradientType_Click;
 
         this.btnGradClrStart = new Button
         {
             Text = "Grad Clr Start: Red",
             Name = nameof(this.btnGradClrStart),
         };
-        this.btnGradClrStart.Click += (_, _) =>
-        {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
-                    break;
-                case ShapeType.Circle:
-                    this.circle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
-                    break;
-            }
-
-            LayoutButtonsBottom();
-        };
+        this.btnGradClrStart.Click += btnGradClrStart_Click;
 
         this.btnGradClrStop = new Button
         {
             Text = "Grad Clr Stop: Red",
             Name = nameof(this.btnGradClrStop),
         };
-        this.btnGradClrStop.Click += (_, _) =>
-        {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
-                    break;
-                case ShapeType.Circle:
-                    this.circle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                        color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
-                    break;
-            }
-
-            LayoutButtonsBottom();
-        };
+        this.btnGradClrStop.Click += btnGradClrStop_Click;
 
         AddControl(this.btnShapeType);
         AddControl(this.btnIncCircleDiam);
@@ -607,6 +456,214 @@ public class ShapeScene : SceneBase
         ShowButtonsForShape();
         LayoutButtonsLeftSide();
     }
+
+    // Element should begin with upper-case letter
+    #pragma warning disable SA1300
+    #region Control Events
+    private void btnIsFilled_Click(object? sender, EventArgs e)
+    {
+        bool isFilled;
+
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.IsFilled = !this.rectangle.IsFilled;
+                isFilled = this.rectangle.IsFilled;
+                break;
+            case ShapeType.Circle:
+                this.circle.IsFilled = !this.circle.IsFilled;
+                isFilled = this.circle.IsFilled;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        this.btnIsFilled.Text = isFilled ? "Is Filled: true" : "Is Filled: false";
+        this.btnIncreaseBorderThickness.Enabled = !isFilled;
+        this.btnDecreaseBorderThickness.Enabled = !isFilled;
+        LayoutButtonsLeftSide();
+    }
+
+    private void btnSolidFillClr_Click(object? sender, EventArgs e)
+    {
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
+                break;
+            case ShapeType.Circle:
+                this.circle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
+                break;
+        }
+
+        LayoutButtonsLeftSide();
+    }
+
+    private void btnIncreaseBorderThickness_MouseDown(object? sender, EventArgs e)
+    {
+        var maxValue = this.shapeType switch
+        {
+            ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
+                ? this.rectangle.Width
+                : this.rectangle.Height) / 2f,
+            ShapeType.Circle => this.circle.Diameter,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+
+        var newValue = this.shapeType switch
+        {
+            ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
+            ShapeType.Circle => this.circle.BorderThickness >= maxValue ? 0 : 1,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness += newValue;
+                break;
+            case ShapeType.Circle:
+                this.circle.BorderThickness = this.circle.BorderThickness += newValue;
+                break;
+        }
+    }
+
+    private void btnDecreaseBorderThickness_MouseDown(object? sender, EventArgs e)
+    {
+        var maxValue = this.shapeType switch
+        {
+            ShapeType.Rectangle => (this.rectangle.Width > this.rectangle.Height
+                ? this.rectangle.Width
+                : this.rectangle.Height) / 2f,
+            ShapeType.Circle => this.circle.Diameter,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+
+        var newValue = this.shapeType switch
+            {
+                ShapeType.Rectangle => this.rectangle.BorderThickness >= maxValue ? 0 : 1,
+                ShapeType.Circle => 1,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= newValue;
+                break;
+            case ShapeType.Circle:
+                this.circle.BorderThickness = this.circle.BorderThickness -= newValue;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void btnShapeType_Click(object? sender, EventArgs e)
+    {
+        this.shapeType = this.shapeType switch
+        {
+            ShapeType.Rectangle => ShapeType.Circle,
+            ShapeType.Circle => ShapeType.Rectangle,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        this.btnShapeType.Text = this.shapeType switch
+        {
+            ShapeType.Rectangle => "Rectangle",
+            ShapeType.Circle => "Circle",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        this.btnGradientType.Text = this.shapeType switch
+        {
+            ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
+            ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        this.btnSolidFillClr.Enabled = this.shapeType switch
+        {
+            ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
+            ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        ShowButtonsForShape();
+        LayoutButtonsLeftSide();
+        LayoutButtonsBottom();
+    }
+
+    private void btnGradientType_Click(object? sender, EventArgs e)
+    {
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.GradientType = this.rectangle.GradientType.SwapGradient();
+                break;
+            case ShapeType.Circle:
+                this.circle.GradientType = this.circle.GradientType.SwapGradient();
+                break;
+        }
+
+        this.btnGradientType.Text = this.shapeType switch
+        {
+            ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
+            ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        this.btnSolidFillClr.Enabled = this.shapeType switch
+        {
+            ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
+            ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        LayoutButtonsBottom();
+    }
+
+    private void btnGradClrStop_Click(object? sender, EventArgs e)
+    {
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
+                break;
+            case ShapeType.Circle:
+                this.circle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        LayoutButtonsBottom();
+    }
+
+    private void btnGradClrStart_Click(object? sender, EventArgs e)
+    {
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
+                break;
+            case ShapeType.Circle:
+                this.circle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
+                    color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        LayoutButtonsBottom();
+    }
+    #endregion
+    #pragma warning restore SA1300
 
     /// <summary>
     /// Lays out the buttons on the left side of the scene.
@@ -716,93 +773,143 @@ public class ShapeScene : SceneBase
         var rectControls = Controls.Where(c => this.rectButtons.Contains(c.Name) && c is Button).ToImmutableArray();
         var circleControls = Controls.Where(c => this.circleButtons.Contains(c.Name) && c is Button).ToImmutableArray();
 
+        // Set all buttons to be false to start off
+        foreach (var ctrl in Controls)
+        {
+            ctrl.Visible = false;
+        }
+
         switch (this.shapeType)
         {
             case ShapeType.Rectangle:
-                foreach (var button in circleControls)
-                {
-                    button.Visible = this.shapeType == ShapeType.Circle;
-                }
-
                 foreach (var button in rectControls)
                 {
                     button.Visible = this.shapeType == ShapeType.Rectangle;
                 }
+
                 break;
             case ShapeType.Circle:
-                foreach (var button in rectControls)
-                {
-                    button.Visible = this.shapeType == ShapeType.Rectangle;
-                }
-
                 foreach (var button in circleControls)
                 {
                     button.Visible = this.shapeType == ShapeType.Circle;
                 }
+
                 break;
         }
     }
 
     /// <summary>
-    /// Moves the rectangle using the keyboard arrow keys.
+    /// Moves the shape using the keyboard arrow keys.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
-    private void MoveRect(FrameTime frameTime)
+    private void MoveShape(FrameTime frameTime)
     {
         if (this.currentKeyState.AnyShiftKeysDown())
         {
             return;
         }
 
-        var value = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
+        var velocity = Vector2.Zero;
+        var displacement = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Left))
         {
-            this.rectangle.Position -= new Vector2(value, 0f);
+            velocity.X -= displacement;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Right))
         {
-            this.rectangle.Position += new Vector2(value, 0f);
+            velocity.X += displacement;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Up))
         {
-            this.rectangle.Position -= new Vector2(0f, value);
+            velocity.Y -= displacement;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Down))
         {
-            this.rectangle.Position += new Vector2(0f, value);
+            velocity.Y += displacement;
         }
 
-        // Left edge containment1
-        if (this.rectangle.Position.X < this.rectangle.HalfWidth)
+        var shapePos = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.Position
+            : this.circle.Position;
+
+        shapePos += velocity;
+
+        switch (this.shapeType)
         {
-            this.rectangle.Position = new Vector2(this.rectangle.HalfWidth, this.rectangle.Position.Y);
+            case ShapeType.Rectangle:
+                this.rectangle.Position = shapePos;
+                break;
+            case ShapeType.Circle:
+                this.circle.Position = shapePos;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        ContainShape();
+    }
+
+    /// <summary>
+    /// Contains the current shape within the window.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown with an invalid <see cref="ShapeType"/>.</exception>
+    private void ContainShape()
+    {
+        var shapePos = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.Position
+            : this.circle.Position;
+
+        var overlapX = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.HalfWidth
+            : this.circle.Radius;
+
+        var overlapY = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.HalfHeight
+            : this.circle.Radius;
+
+        // Left edge containment
+        if (shapePos.X < overlapX)
+        {
+            shapePos = shapePos with { X = overlapX };
         }
 
         // Right edge containment
-        if (this.rectangle.Position.X > WindowSize.Width - this.rectangle.HalfWidth)
+        if (shapePos.X > WindowSize.Width - overlapX)
         {
-            this.rectangle.Position = new Vector2(WindowSize.Width - this.rectangle.HalfWidth, this.rectangle.Position.Y);
+            shapePos = shapePos with { X = WindowSize.Width - overlapX };
         }
 
         // Top edge containment
-        if (this.rectangle.Position.Y < this.rectangle.HalfHeight)
+        if (shapePos.Y < overlapY)
         {
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X, this.rectangle.HalfHeight);
+            shapePos = shapePos with { Y = overlapY };
         }
 
         // Bottom edge containment
-        if (this.rectangle.Position.Y > WindowSize.Height - this.rectangle.HalfHeight)
+        if (shapePos.Y > WindowSize.Height - overlapY)
         {
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X, WindowSize.Height - this.rectangle.HalfHeight);
+            shapePos = shapePos with { Y = WindowSize.Height - overlapY };
+        }
+
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.Position = shapePos;
+                break;
+            case ShapeType.Circle:
+                this.circle.Position = shapePos;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
     /// <summary>
-    /// Changes the size of the rectangle using the keyboard keys.
+    /// Changes the size of the shape using the keyboard keys.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
     private void ChangeRectSize(FrameTime frameTime)
@@ -812,26 +919,56 @@ public class ShapeScene : SceneBase
             return;
         }
 
-        var value = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
+        var width = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.Width
+            : this.circle.Diameter;
+        var height = this.shapeType == ShapeType.Rectangle
+            ? this.rectangle.Height
+            : this.circle.Diameter;
+
+        var size = new Vector2(width, height);
+        var diameterChange = 0f;
+        var change = Vector2.Zero;
+
+        var newValue = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Left))
         {
-            this.rectangle.Width -= value;
+            change.X -= newValue;
+            diameterChange -= newValue;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Right))
         {
-            this.rectangle.Width += value;
+            change.X += newValue;
+            diameterChange += newValue;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Up))
         {
-            this.rectangle.Height -= value;
+            change.Y += newValue;
+            diameterChange += newValue;
         }
 
         if (this.currentKeyState.IsKeyDown(KeyCode.Down))
         {
-            this.rectangle.Height += value;
+            change.Y -= newValue;
+            diameterChange -= newValue;
+        }
+
+        size += change;
+
+        switch (this.shapeType)
+        {
+            case ShapeType.Rectangle:
+                this.rectangle.Width = size.X;
+                this.rectangle.Height = size.Y;
+                break;
+            case ShapeType.Circle:
+                this.circle.Diameter += diameterChange;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
