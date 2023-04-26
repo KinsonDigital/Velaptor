@@ -456,7 +456,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(new Vector2(1111f, 2222f));
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
@@ -488,7 +488,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void Flip_WhenInvoked_ReturnsCorrectResult()
+    public void FlipEnd_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
         var expectedP1 = new Vector2(100, 100);
@@ -505,6 +505,22 @@ public class InternalExtensionMethodsTests
         // Assert
         actual.P1.Should().Be(expectedP1);
         actual.P2.Should().Be(expectedP2);
+    }
+
+    [Fact]
+    public void Clamp_WhenInvoked_ClampsRadiusValues()
+    {
+        // Arrange
+        var sut = new CornerRadius(200f, 200, -200f, -200f);
+
+        // Act
+        sut = sut.Clamp(0f, 100f);
+
+        // Assert
+        sut.TopLeft.Should().Be(100f);
+        sut.BottomLeft.Should().Be(100f);
+        sut.BottomRight.Should().Be(0f);
+        sut.TopRight.Should().Be(0f);
     }
 
     [Fact]
@@ -712,7 +728,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
         actual.Color.Should().Be(expectedVertex.Color);
@@ -741,13 +757,13 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetIsFilled_WithInvalidVertexValue_ThrowsException()
+    public void SetAsSolid_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetIsFilled(It.IsAny<bool>(), (VertexNumber)1234);
+        var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)1234);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -759,7 +775,7 @@ public class InternalExtensionMethodsTests
     [InlineData((int)VertexNumber.Two)]
     [InlineData((int)VertexNumber.Three)]
     [InlineData((int)VertexNumber.Four)]
-    public void SetIsFilled_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+    public void SetAsSolid_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
@@ -775,14 +791,14 @@ public class InternalExtensionMethodsTests
         // Act
         var actual = vertexNumber switch
         {
-            VertexNumber.One => gpuData.SetIsFilled(true, vertexNumber).Vertex1,
-            VertexNumber.Two => gpuData.SetIsFilled(true, vertexNumber).Vertex2,
-            VertexNumber.Three => gpuData.SetIsFilled(true, vertexNumber).Vertex3,
-            VertexNumber.Four => gpuData.SetIsFilled(true, vertexNumber).Vertex4,
+            VertexNumber.One => gpuData.SetAsSolid(true, vertexNumber).Vertex1,
+            VertexNumber.Two => gpuData.SetAsSolid(true, vertexNumber).Vertex2,
+            VertexNumber.Three => gpuData.SetAsSolid(true, vertexNumber).Vertex3,
+            VertexNumber.Four => gpuData.SetAsSolid(true, vertexNumber).Vertex4,
         };
 
         // Assert
-        actual.IsFilled.Should().BeTrue();
+        actual.IsSolid.Should().BeTrue();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
@@ -794,19 +810,19 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetIsFilled_WhenUpdatingAll_ReturnsCorrectResult()
+    public void SetAsSolid_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
 
         // Act
-        var actual = gpuData.SetIsFilled(true);
+        var actual = gpuData.SetAsSolid(true);
 
         // Assert
-        actual.Vertex1.IsFilled.Should().BeTrue();
-        actual.Vertex2.IsFilled.Should().BeTrue();
-        actual.Vertex3.IsFilled.Should().BeTrue();
-        actual.Vertex4.IsFilled.Should().BeTrue();
+        actual.Vertex1.IsSolid.Should().BeTrue();
+        actual.Vertex2.IsSolid.Should().BeTrue();
+        actual.Vertex3.IsSolid.Should().BeTrue();
+        actual.Vertex4.IsSolid.Should().BeTrue();
     }
 
     [Fact]
@@ -855,7 +871,7 @@ public class InternalExtensionMethodsTests
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(expectedVertex.Color);
-        actual.IsFilled.Should().Be(expectedVertex.IsFilled);
+        actual.IsSolid.Should().Be(expectedVertex.IsSolid);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
         actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
         actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
@@ -921,7 +937,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.TopLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -991,7 +1007,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1061,7 +1077,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1131,7 +1147,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.TopRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
@@ -1201,7 +1217,7 @@ public class InternalExtensionMethodsTests
         };
 
         // Assert
-        expectedVertex.IsFilled.Should().BeFalse();
+        expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
         actual.Rectangle.Should().Be(expectedVertex.Rectangle);
         actual.Color.Should().Be(NETColor.Blue);
@@ -1553,6 +1569,76 @@ public class InternalExtensionMethodsTests
 
         // Assert
         items.Span.ToArray().Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ToBatchItem_WithRectShapeOverload_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new ShapeBatchItem(new Vector2(1, 2),
+            100f,
+            90f,
+            NETColor.FromArgb(5, 6, 7, 8),
+            true,
+            30f,
+            new CornerRadius(10, 11, 12, 13),
+            ColorGradient.Horizontal,
+            NETColor.FromArgb(14, 15, 16, 17),
+            NETColor.FromArgb(18, 19, 20, 21));
+
+        var sut = new RectShape
+        {
+            Position = new Vector2(1, 2),
+            Width = 100,
+            Height = 90,
+            Color = NETColor.FromArgb(5,6,7,8),
+            IsSolid = true,
+            BorderThickness = 30,
+            CornerRadius = new CornerRadius(10, 11, 12, 13),
+            GradientType = ColorGradient.Horizontal,
+            GradientStart = NETColor.FromArgb(14, 15, 16, 17),
+            GradientStop = NETColor.FromArgb(18, 19, 20, 21),
+        };
+
+        // Act
+        var actual = sut.ToBatchItem();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ToBatchItem_WithCircleShapeOverload_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new ShapeBatchItem(new Vector2(1, 2),
+            100f,
+            100f,
+            NETColor.FromArgb(4, 5, 6, 7),
+            true,
+            50f,
+            new CornerRadius(50f),
+            ColorGradient.Horizontal,
+            NETColor.FromArgb(9, 10, 11, 12),
+            NETColor.FromArgb(13, 14, 15, 16));
+
+        var sut = new CircleShape
+        {
+            Position = new Vector2(1, 2),
+            Diameter = 100,
+            Color = NETColor.FromArgb(4, 5, 6, 7),
+            IsSolid = true,
+            BorderThickness = 50,
+            GradientType = ColorGradient.Horizontal,
+            GradientStart = NETColor.FromArgb(9, 10, 11, 12),
+            GradientStop = NETColor.FromArgb(13, 14, 15, 16),
+        };
+
+        // Act
+        var actual = sut.ToBatchItem();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 

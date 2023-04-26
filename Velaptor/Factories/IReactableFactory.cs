@@ -87,7 +87,7 @@ internal interface IReactableFactory
     /// Creates a reactable for pulling rectangle batch data.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IBatchPullReactable<RectBatchItem> CreateRectPullBatchReactable();
+    IBatchPullReactable<ShapeBatchItem> CreateRectPullBatchReactable();
 
     /// <summary>
     /// Creates a reactable for pulling line batch data.
@@ -111,7 +111,7 @@ internal interface IReactableFactory
     /// Creates a reactable for pushing rect batch data to the rect renderer.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IRenderBatchReactable<RectBatchItem> CreateRenderRectReactable();
+    IRenderBatchReactable<ShapeBatchItem> CreateRenderRectReactable();
 
     /// <summary>
     /// Creates a reactable for pushing line batch data to the line renderer.

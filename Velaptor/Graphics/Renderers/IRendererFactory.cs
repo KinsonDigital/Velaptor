@@ -24,11 +24,11 @@ public interface IRendererFactory
     IFontRenderer CreateFontRenderer();
 
     /// <summary>
-    /// Creates an instance of the <see cref="IRectangleRenderer"/>.
+    /// Creates an instance of the <see cref="IShapeRenderer"/>.
     /// </summary>
     /// <returns>The rectangle renderer.</returns>
     /// <remarks><c>NOTE:</c> the renderer is a singleton.</remarks>
-    IRectangleRenderer CreateRectangleRenderer();
+    IShapeRenderer CreateShapeRenderer();
 
     /// <summary>
     /// Creates an instance of the <see cref="ILineRenderer"/>.

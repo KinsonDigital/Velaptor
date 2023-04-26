@@ -55,8 +55,8 @@ internal class ReactableFactory : IReactableFactory
         IoC.Container.GetInstance<IBatchPullReactable<FontGlyphBatchItem>>();
 
     /// <inheritdoc/>
-    public IBatchPullReactable<RectBatchItem> CreateRectPullBatchReactable() =>
-        IoC.Container.GetInstance<IBatchPullReactable<RectBatchItem>>();
+    public IBatchPullReactable<ShapeBatchItem> CreateRectPullBatchReactable() =>
+        IoC.Container.GetInstance<IBatchPullReactable<ShapeBatchItem>>();
 
     /// <inheritdoc/>
     public IBatchPullReactable<LineBatchItem> CreateLinePullBatchReactable() =>
@@ -71,8 +71,8 @@ internal class ReactableFactory : IReactableFactory
         IoC.Container.GetInstance<IRenderBatchReactable<FontGlyphBatchItem>>();
 
     /// <inheritdoc/>
-    public IRenderBatchReactable<RectBatchItem> CreateRenderRectReactable() =>
-        IoC.Container.GetInstance<IRenderBatchReactable<RectBatchItem>>();
+    public IRenderBatchReactable<ShapeBatchItem> CreateRenderRectReactable() =>
+        IoC.Container.GetInstance<IRenderBatchReactable<ShapeBatchItem>>();
 
     /// <inheritdoc/>
     public IRenderBatchReactable<LineBatchItem> CreateRenderLineReactable() =>

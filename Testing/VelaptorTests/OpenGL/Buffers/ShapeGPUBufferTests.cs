@@ -1,4 +1,4 @@
-// <copyright file="RectGPUBufferTests.cs" company="KinsonDigital">
+// <copyright file="ShapeGPUBufferTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,9 +30,9 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="RectGPUBuffer"/> class.
+/// Tests the <see cref="ShapeGPUBuffer"/> class.
 /// </summary>
-public class RectGPUBufferTests
+public class ShapeGPUBufferTests
 {
     private const uint VAO = 123u;
     private const uint VBO = 456u;
@@ -51,9 +51,9 @@ public class RectGPUBufferTests
     private bool vboGenerated;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectGPUBufferTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeGPUBufferTests"/> class.
     /// </summary>
-    public RectGPUBufferTests()
+    public ShapeGPUBufferTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
@@ -174,7 +174,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(RectBatchItem);
+        var rect = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -199,7 +199,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(RectBatchItem);
+        var rect = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -232,7 +232,7 @@ public class RectGPUBufferTests
 
         var arrayRegions = CreateArrayRegions(16, 4);
 
-        var rect = new RectBatchItem(
+        var rect = new ShapeBatchItem(
             new Vector2(1, 2),
             3,
             4,
@@ -325,12 +325,12 @@ public class RectGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new RectBatchItem(
+        var rect = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
-            isFilled: true,
+            isSolid: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.None,
@@ -391,12 +391,12 @@ public class RectGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new RectBatchItem(
+        var rect = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,
             color: Color.FromArgb(5, 6, 7, 8),
-            isFilled: true,
+            isSolid: true,
             borderThickness: 9,
             cornerRadius: new CornerRadius(10, 11, 12, 13),
             gradientType: ColorGradient.Horizontal,
@@ -489,7 +489,7 @@ public class RectGPUBufferTests
         // Arrange
         var executionLocations = new List<string>
         {
-            $"1 time in the '{nameof(RectGPUBuffer.PrepareForUpload)}()' method.",
+            $"1 time in the '{nameof(ShapeGPUBuffer.PrepareForUpload)}()' method.",
             $"1 time in the '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
@@ -509,7 +509,7 @@ public class RectGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<float[]>(string.Empty,
-                $"{nameof(RectGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
+                $"{nameof(ShapeGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
         // Act
@@ -529,7 +529,7 @@ public class RectGPUBufferTests
             (0u, 2, false, 64u, 0u, "VertexPosition"),
             (1u, 4, false, 64u, 8u, "Rectangle"),
             (2u, 4, false, 64u, 24u, "Color"),
-            (3u, 1, false, 64u, 40u, "IsFilled"),
+            (3u, 1, false, 64u, 40u, "IsSolid"),
             (4u, 1, false, 64u, 44u, "BorderThickness"),
             (5u, 1, false, 64u, 48u, "TopLeftRadius"),
             (6u, 1, false, 64u, 52u, "BottomLeftRadius"),
@@ -541,7 +541,7 @@ public class RectGPUBufferTests
             (0u, "VertexPosition"),
             (1u, "Rectangle"),
             (2u, "Color"),
-            (3u, "IsFilled"),
+            (3u, "IsSolid"),
             (4u, "BorderThickness"),
             (5u, "TopLeftRadius"),
             (6u, "BottomLeftRadius"),
@@ -609,7 +609,7 @@ public class RectGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("RectGPUBufferTests.Ctor - BatchSizeChangedId");
+            reactor.Name.Should().Be("ShapeGPUBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -690,7 +690,7 @@ public class RectGPUBufferTests
                 (offset + 0, offset + 1, $"Vertex {i} Position"),
                 (offset + 2, offset + 5, $"Vertex {i} Rectangle"),
                 (offset + 6, offset + 9, $"Vertex {i} Color"),
-                (offset + 10, offset + 10, $"Vertex {i} Is Filled"),
+                (offset + 10, offset + 10, $"Vertex {i} Is Solid"),
                 (offset + 11, offset + 11, $"Vertex {i} Border Thickness"),
                 (offset + 12, offset + 12, $"Vertex {i} Top Left Radius"),
                 (offset + 13, offset + 13, $"Vertex {i} Bottom Left Radius"),
@@ -729,13 +729,13 @@ public class RectGPUBufferTests
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="RectGPUBuffer"/> class for the purpose of testing.
+    /// Creates a new instance of <see cref="ShapeGPUBuffer"/> class for the purpose of testing.
     /// </summary>
     /// <param name="initialize">If true, will mock the initialization of the mocked sut.</param>
     /// <returns>The instance to test.</returns>
-    private RectGPUBuffer CreateSystemUnderTest(bool initialize = true)
+    private ShapeGPUBuffer CreateSystemUnderTest(bool initialize = true)
     {
-        var result = new RectGPUBuffer(
+        var result = new ShapeGPUBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockReactableFactory.Object);

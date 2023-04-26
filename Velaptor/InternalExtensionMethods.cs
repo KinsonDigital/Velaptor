@@ -628,6 +628,7 @@ internal static class InternalExtensionMethods
 
     /// <summary>
     /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
+    /// The end result will also be converted to NDC coordinates.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="pos">The position to apply to a vertex.</param>
@@ -648,7 +649,7 @@ internal static class InternalExtensionMethods
             pos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -662,6 +663,39 @@ internal static class InternalExtensionMethods
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+        };
+#pragma warning restore CS8524
+    }
+
+    /// <summary>
+    /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
+    /// </summary>
+    /// <param name="gpuData">The GPU data to update.</param>
+    /// <param name="pos">The position to apply to a vertex.</param>
+    /// <param name="vertexNumber">The vertex to update.</param>
+    /// <returns>The updated GPU data.</returns>
+    public static LineGPUData SetVertexPos(this LineGPUData gpuData, Vector2 pos, VertexNumber vertexNumber)
+    {
+        var oldVertex = vertexNumber switch
+        {
+            VertexNumber.One => gpuData.Vertex1,
+            VertexNumber.Two => gpuData.Vertex2,
+            VertexNumber.Three => gpuData.Vertex3,
+            VertexNumber.Four => gpuData.Vertex4,
+            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+        };
+
+        var newVertexData = new LineVertexData(
+            pos,
+            oldVertex.Color);
+
+#pragma warning disable CS8524
+        return vertexNumber switch
+        {
+            VertexNumber.One => new LineGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+            VertexNumber.Two => new LineGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+            VertexNumber.Three => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+            VertexNumber.Four => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
         };
 #pragma warning restore CS8524
     }
@@ -688,7 +722,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             rect,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -723,14 +757,14 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Updates the <see cref="RectVertexData.IsFilled"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+    /// Updates the <see cref="RectVertexData.IsSolid"/> setting of a vertex using the given <paramref name="vertexNumber"/>
     /// for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="isFilled">The is filled setting to apply to a vertex.</param>
+    /// <param name="isSolid">The solid setting to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
-    public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled, VertexNumber vertexNumber)
+    public static RectGPUData SetAsSolid(this RectGPUData gpuData, bool isSolid, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
         {
@@ -745,7 +779,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            isFilled,
+            isSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -764,17 +798,17 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Updates the <see cref="RectVertexData.IsFilled"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="RectVertexData.IsSolid"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="isFilled">The setting to apply to all vertex data.</param>
+    /// <param name="isSolid">The setting to apply to all vertex data.</param>
     /// <returns>The updated GPU data.</returns>
-    public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled)
+    public static RectGPUData SetAsSolid(this RectGPUData gpuData, bool isSolid)
     {
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.One);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Two);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Three);
-        gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Four);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.One);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Two);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Three);
+        gpuData = gpuData.SetAsSolid(isSolid, VertexNumber.Four);
 
         return gpuData;
     }
@@ -784,7 +818,7 @@ internal static class InternalExtensionMethods
     /// for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="borderThickness">The is filled setting to apply to a vertex.</param>
+    /// <param name="borderThickness">The border thickness to apply to the vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
     public static RectGPUData SetBorderThickness(this RectGPUData gpuData, float borderThickness, VertexNumber vertexNumber)
@@ -802,7 +836,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             borderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -859,7 +893,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             topLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -916,7 +950,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             bottomLeftCornerRadius,
@@ -973,7 +1007,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -1030,7 +1064,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             oldVertex.Color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -1087,7 +1121,7 @@ internal static class InternalExtensionMethods
             oldVertex.VertexPos,
             oldVertex.Rectangle,
             color,
-            oldVertex.IsFilled,
+            oldVertex.IsSolid,
             oldVertex.BorderThickness,
             oldVertex.TopLeftCornerRadius,
             oldVertex.BottomLeftCornerRadius,
@@ -1119,39 +1153,6 @@ internal static class InternalExtensionMethods
         gpuData = gpuData.SetColor(color, VertexNumber.Four);
 
         return gpuData;
-    }
-
-    /// <summary>
-    /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
-    /// </summary>
-    /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="pos">The position to apply to a vertex.</param>
-    /// <param name="vertexNumber">The vertex to update.</param>
-    /// <returns>The updated GPU data.</returns>
-    public static LineGPUData SetVertexPos(this LineGPUData gpuData, Vector2 pos, VertexNumber vertexNumber)
-    {
-        var oldVertex = vertexNumber switch
-        {
-            VertexNumber.One => gpuData.Vertex1,
-            VertexNumber.Two => gpuData.Vertex2,
-            VertexNumber.Three => gpuData.Vertex3,
-            VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
-        };
-
-        var newVertexData = new LineVertexData(
-            pos,
-            oldVertex.Color);
-
-#pragma warning disable CS8524
-        return vertexNumber switch
-        {
-            VertexNumber.One => new LineGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
-            VertexNumber.Two => new LineGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
-            VertexNumber.Three => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
-            VertexNumber.Four => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-        };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -1205,6 +1206,23 @@ internal static class InternalExtensionMethods
         var result = line.SetP2(translatedStop);
 
         return result;
+    }
+
+    /// <summary>
+    /// Clamps all the radius values between the given <paramref name="min"/> and <paramref name="max"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to clamp.</param>
+    /// <param name="min">The clamp minimum.</param>
+    /// <param name="max">The clamp maximum.</param>
+    /// <returns>The result after clamping has been applied.</returns>
+    public static CornerRadius Clamp(this CornerRadius cornerRadius, float min, float max)
+    {
+        var topLeft = Math.Clamp(cornerRadius.TopLeft, min, max);
+        var bottomLeft = Math.Clamp(cornerRadius.BottomLeft, min, max);
+        var bottomRight = Math.Clamp(cornerRadius.BottomRight, min, max);
+        var topRight = Math.Clamp(cornerRadius.TopRight, min, max);
+
+        return new CornerRadius(topLeft, bottomLeft, bottomRight, topRight);
     }
 
     /// <summary>
@@ -1372,6 +1390,26 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
+    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">The predicate to execute against each item.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>The index of the item.</returns>
+    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (predicate(items.Span[i].Item))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
     /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
     /// </summary>
     /// <param name="items">The items to check.</param>
@@ -1457,26 +1495,6 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
-    /// </summary>
-    /// <param name="items">The items to check.</param>
-    /// <param name="predicate">The predicate to execute against each item.</param>
-    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
-    /// <returns>The index of the item.</returns>
-    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
-    {
-        for (var i = 0; i < items.Span.Length; i++)
-        {
-            if (predicate(items.Span[i].Item))
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    /// <summary>
     /// Increases the total amount of the given <paramref name="items"/> by the given <paramref name="amount"/>.
     /// </summary>
     /// <param name="items">The items to increase its total by the given <paramref name="amount"/>.</param>
@@ -1493,4 +1511,38 @@ internal static class InternalExtensionMethods
         // Copy the backup back to where it came from
         dataBackup.CopyTo(items.Span);
     }
+
+    /// <summary>
+    /// Converts the given <paramref name="rect"/> to a <see cref="ShapeBatchItem"/>.
+    /// </summary>
+    /// <param name="rect">The circle shape to convert.</param>
+    /// <returns>The batch item.</returns>
+    public static ShapeBatchItem ToBatchItem(this RectShape rect) =>
+        new (rect.Position,
+            rect.Width,
+            rect.Height,
+            rect.Color,
+            rect.IsSolid,
+            rect.BorderThickness,
+            rect.CornerRadius,
+            rect.GradientType,
+            rect.GradientStart,
+            rect.GradientStop);
+
+    /// <summary>
+    /// Converts the given <paramref name="circle"/> to a <see cref="ShapeBatchItem"/>.
+    /// </summary>
+    /// <param name="circle">The circle shape to convert.</param>
+    /// <returns>The batch item.</returns>
+    public static ShapeBatchItem ToBatchItem(this CircleShape circle) =>
+        new (circle.Position,
+            circle.Diameter,
+            circle.Diameter,
+            circle.Color,
+            circle.IsSolid,
+            circle.BorderThickness,
+            new CornerRadius(circle.Diameter / 2f),
+            circle.GradientType,
+            circle.GradientStart,
+            circle.GradientStop);
 }

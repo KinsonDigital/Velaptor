@@ -41,7 +41,7 @@ public class BatchingManagerTests
     private IReceiveReactor? emptyBatchReactor;
     private IRespondReactor<Memory<RenderItem<TextureBatchItem>>>? textureBatchPullReactor;
     private IRespondReactor<Memory<RenderItem<FontGlyphBatchItem>>>? fontBatchPullReactor;
-    private IRespondReactor<Memory<RenderItem<RectBatchItem>>>? rectBatchPullReactor;
+    private IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>? rectBatchPullReactor;
     private IRespondReactor<Memory<RenderItem<LineBatchItem>>>? lineBatchPullReactor;
 
     /// <summary>
@@ -169,10 +169,10 @@ public class BatchingManagerTests
                 return null;
             });
 
-        var mockRectBatchPullReactable = new Mock<IBatchPullReactable<RectBatchItem>>();
+        var mockRectBatchPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
         mockRectBatchPullReactable
-            .Setup(m => m.Subscribe(It.IsAny<IRespondReactor<Memory<RenderItem<RectBatchItem>>>>()))
-            .Callback<IRespondReactor<Memory<RenderItem<RectBatchItem>>>>(reactor =>
+            .Setup(m => m.Subscribe(It.IsAny<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>()))
+            .Callback<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -181,7 +181,7 @@ public class BatchingManagerTests
                     this.rectBatchPullReactor = reactor;
                 }
             })
-            .Returns<IRespondReactor<Memory<RenderItem<RectBatchItem>>>>(reactor =>
+            .Returns<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetRectItemsId)}");
@@ -321,7 +321,7 @@ public class BatchingManagerTests
             expected.Should().BeEquivalentTo(default(RenderItem<FontGlyphBatchItem>)));
 
         sut.RectItems.ToArray().Should().AllSatisfy(expected =>
-            expected.Should().BeEquivalentTo(default(RenderItem<RectBatchItem>)));
+            expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
 
         sut.LineItems.ToArray().Should().AllSatisfy(expected =>
             expected.Should().BeEquivalentTo(default(RenderItem<LineBatchItem>)));
@@ -348,7 +348,7 @@ public class BatchingManagerTests
 
         sut.RectItems.ToArray().Should().HaveCount(2);
         sut.RectItems.ToArray().Should()
-            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<RectBatchItem>)));
+            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
 
         sut.LineItems.ToArray().Should().HaveCount(2);
         sut.LineItems.ToArray().Should()
@@ -646,9 +646,9 @@ public class BatchingManagerTests
         var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
         var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30);
 
-        var expectedA = new RenderItem<RectBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
-        var expectedB = new RenderItem<RectBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
-        var expectedC = new RenderItem<RectBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
+        var expectedA = new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
+        var expectedB = new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
+        var expectedC = new RenderItem<ShapeBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
         this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
             .Callback((in BatchSizeData _, Guid _) =>
@@ -697,8 +697,8 @@ public class BatchingManagerTests
         sut.AddRectItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.RectItems.ToArray().Should().Contain(new RenderItem<RectBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.RectItems.ToArray().Should().Contain(new RenderItem<RectBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.RectItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.RectItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
 
     [Fact]

@@ -39,7 +39,7 @@ public class ButtonTests
     private readonly Mock<IAppInput<MouseState>> mockMouse;
     private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Label label;
-    private readonly Mock<IRectangleRenderer> mockRectRenderer;
+    private readonly Mock<IShapeRenderer> mockShapeRenderer;
     private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
@@ -83,12 +83,12 @@ public class ButtonTests
 
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
-        this.mockRectRenderer = new Mock<IRectangleRenderer>();
+        this.mockShapeRenderer = new Mock<IShapeRenderer>();
         this.mockFontRenderer = new Mock<IFontRenderer>();
 
         this.mockRenderFactory = new Mock<IRendererFactory>();
-        this.mockRenderFactory.Setup(m => m.CreateRectangleRenderer())
-            .Returns(this.mockRectRenderer.Object);
+        this.mockRenderFactory.Setup(m => m.CreateShapeRenderer())
+            .Returns(this.mockShapeRenderer.Object);
         this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
             .Returns(this.mockFontRenderer.Object);
 
@@ -473,7 +473,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
@@ -489,7 +489,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(It.IsAny<RectShape>(), It.IsAny<int>()), Times.Never);
     }
 
@@ -499,8 +499,7 @@ public class ButtonTests
         // Arrange
         var expected = default(RectShape);
         expected.Position = new Vector2(400f, 600f);
-        expected.IsFilled = true;
-        expected.BorderThickness = 0u;
+        expected.IsSolid = true;
         expected.Color = Color.DarkGray;
         expected.Width = 100u;
         expected.Height = 50f;
@@ -516,7 +515,7 @@ public class ButtonTests
         sut.AutoSize = false;
         sut.Width = 100;
         sut.Height = 50;
-        sut.BorderThickness = 123u;
+        sut.BorderThickness = 0u;
         sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
         sut.LoadContent();
 
@@ -524,7 +523,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.Verify(m =>
+        this.mockShapeRenderer.Verify(m =>
             m.Render(expected, It.IsAny<int>()), Times.Once);
     }
 
@@ -541,7 +540,7 @@ public class ButtonTests
         this.mockMouse.Setup(m => m.GetState())
             .Returns(mouseState);
 
-        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+        this.mockShapeRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
@@ -593,7 +592,7 @@ public class ButtonTests
                 };
             });
 
-        this.mockRectRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+        this.mockShapeRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape, int>((rectangle, _) => btnFace = rectangle);
 
         var sut = CreateSystemUnderTest();
@@ -625,7 +624,7 @@ public class ButtonTests
         // Arrange
         var expected = default(RectShape);
         expected.Position = new Vector2(1, 2);
-        expected.IsFilled = false;
+        expected.IsSolid = false;
         expected.BorderThickness = 3;
         expected.Color = Color.CornflowerBlue;
         expected.Width = 4;
@@ -647,7 +646,7 @@ public class ButtonTests
         sut.Render();
 
         // Assert
-        this.mockRectRenderer.VerifyOnce(m => m.Render(expected, BorderLayer));
+        this.mockShapeRenderer.VerifyOnce(m => m.Render(expected, BorderLayer));
     }
 
     [Fact]

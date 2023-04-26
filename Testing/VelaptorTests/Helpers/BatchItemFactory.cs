@@ -156,19 +156,19 @@ internal static class BatchItemFactory
     }
 
     /// <summary>
-    /// Creates a new instance of a <see cref="RectBatchItem"/> for the purpose of testing.
+    /// Creates a new instance of a <see cref="ShapeBatchItem"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static RectBatchItem CreateRectItemWithOrderedValues(
+    public static ShapeBatchItem CreateRectItemWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
         Color color = default,
-        bool isFilled = false,
+        bool isSolid = false,
         float borderThickness = 0f,
         CornerRadius cornerRadius = default,
         ColorGradient gradientType = ColorGradient.None,
@@ -178,7 +178,7 @@ internal static class BatchItemFactory
                 width == 0 ? 3 : width,
                 height == 0 ? 4 : height,
                 color == default ? Color.FromArgb(5, 6, 7, 8) : color,
-                isFilled,
+                isSolid,
                 borderThickness == 0 ? 9 : borderThickness,
                 cornerRadius == default ? new CornerRadius(10, 11, 12, 13) : cornerRadius,
                 gradientType == ColorGradient.None ? ColorGradient.Vertical : gradientType,
@@ -186,19 +186,19 @@ internal static class BatchItemFactory
                 gradientStop == default ? Color.FromArgb(18, 19, 20, 21) : gradientStop);
 
     /// <summary>
-    /// Creates new instances of a <see cref="RectBatchItem"/> for the purpose of testing.
+    /// Creates new instances of a <see cref="ShapeBatchItem"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static RectBatchItem[] CreateRectItemsWithOrderedValues(
+    public static ShapeBatchItem[] CreateRectItemsWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
         Color color = default,
-        bool isFilled = false,
+        bool isSolid = false,
         float borderThickness = 0f,
         CornerRadius cornerRadius = default,
         ColorGradient gradientType = ColorGradient.None,
@@ -206,7 +206,7 @@ internal static class BatchItemFactory
         Color gradientStop = default,
         int totalItems = 1)
     {
-        var result = new List<RectBatchItem>();
+        var result = new List<ShapeBatchItem>();
 
         for (var i = 0; i < totalItems; i++)
         {
@@ -215,7 +215,7 @@ internal static class BatchItemFactory
                 width,
                 height,
                 color,
-                isFilled,
+                isSolid,
                 borderThickness,
                 cornerRadius,
                 gradientType,
