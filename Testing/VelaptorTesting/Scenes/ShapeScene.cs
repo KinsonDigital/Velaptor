@@ -970,5 +970,13 @@ public class ShapeScene : SceneBase
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        this.rectangle.Width = this.rectangle.Width > WindowSize.Width ? WindowSize.Width : this.rectangle.Width;
+        this.rectangle.Height = this.rectangle.Height > WindowSize.Height ? WindowSize.Height : this.rectangle.Height;
+
+        var smallestWindowSize = WindowSize.Width < WindowSize.Height ? WindowSize.Width : WindowSize.Height;
+        this.circle.Diameter = this.circle.Diameter > smallestWindowSize ? smallestWindowSize : this.circle.Diameter;
+
+        ContainShape();
     }
 }
