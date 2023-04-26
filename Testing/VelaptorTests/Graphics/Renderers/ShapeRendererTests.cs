@@ -333,10 +333,10 @@ public class ShapeRendererTests
     }
 
     [Fact]
-    public void Render_WhenRenderingEllipse_AddsEllipseToBatch()
+    public void Render_WhenRenderingCircle_AddsCircleToBatch()
     {
         // Arrange
-        var ellipse = new CircleShape
+        var circle = new CircleShape
         {
             Position = new Vector2(11, 22),
             Diameter = 33u,
@@ -364,27 +364,27 @@ public class ShapeRendererTests
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(ellipse, 123);
+        sut.Render(circle, 123);
 
         // Assert
         this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123, It.IsAny<DateTime>()));
     }
 
     [Fact]
-    public void Render_WhenRenderingEllipse_RendersEllipse()
+    public void Render_WhenRenderingCircle_RendersCircle()
     {
         // Arrange
         const uint batchIndex = 0;
 
-        var ellipse = default(CircleShape);
-        ellipse.Position = new Vector2(1, 2);
-        ellipse.Diameter = 3;
-        ellipse.Color = Color.FromArgb(99, 100, 110, 120);
-        ellipse.IsFilled = true;
-        ellipse.BorderThickness = 5;
-        ellipse.GradientStart = Color.FromArgb(11, 22, 33, 44);
-        ellipse.GradientStop = Color.FromArgb(55, 66, 77, 88);
-        ellipse.GradientType = ColorGradient.Horizontal;
+        var circle = default(CircleShape);
+        circle.Position = new Vector2(1, 2);
+        circle.Diameter = 3;
+        circle.Color = Color.FromArgb(99, 100, 110, 120);
+        circle.IsFilled = true;
+        circle.BorderThickness = 5;
+        circle.GradientStart = Color.FromArgb(11, 22, 33, 44);
+        circle.GradientStop = Color.FromArgb(55, 66, 77, 88);
+        circle.GradientType = ColorGradient.Horizontal;
 
         var batchItem = new ShapeBatchItem(
             new Vector2(1, 2),
@@ -416,15 +416,15 @@ public class ShapeRendererTests
     }
 
     [Fact]
-    public void Render_WhenRenderingEllipseAndBegunHasNotBeenInvoked_ThrowsException()
+    public void Render_WhenRenderingCircleAndBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
         const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
-        var ellipse = default(CircleShape);
+        var circle = default(CircleShape);
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Render(ellipse);
+        var act = () => sut.Render(circle);
 
         // Assert
         act.Should().Throw<InvalidOperationException>()

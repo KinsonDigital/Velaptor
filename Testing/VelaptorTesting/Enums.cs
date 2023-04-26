@@ -46,7 +46,7 @@ public enum ShapeType
     Rectangle = 1,
 
     /// <summary>
-    /// An ellipse.
+    /// A circle.
     /// </summary>
     Circle = 2,
 }
