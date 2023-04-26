@@ -628,6 +628,7 @@ internal static class InternalExtensionMethods
 
     /// <summary>
     /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
+    /// The end result will also be converted to NDC coordinates.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="pos">The position to apply to a vertex.</param>
@@ -1205,6 +1206,23 @@ internal static class InternalExtensionMethods
         var result = line.SetP2(translatedStop);
 
         return result;
+    }
+
+    /// <summary>
+    /// Clamps all the radius values between the given <paramref name="min"/> and <paramref name="max"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to clamp.</param>
+    /// <param name="min">The clamp minimum.</param>
+    /// <param name="max">The clamp maximum.</param>
+    /// <returns>The result after clamping has been applied.</returns>
+    public static CornerRadius Clamp(this CornerRadius cornerRadius, float min, float max)
+    {
+        var topLeft = Math.Clamp(cornerRadius.TopLeft, min, max);
+        var bottomLeft = Math.Clamp(cornerRadius.BottomLeft, min, max);
+        var bottomRight = Math.Clamp(cornerRadius.BottomRight, min, max);
+        var topRight = Math.Clamp(cornerRadius.TopRight, min, max);
+
+        return new CornerRadius(topLeft, bottomLeft, bottomRight, topRight);
     }
 
     /// <summary>

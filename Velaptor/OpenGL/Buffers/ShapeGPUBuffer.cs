@@ -7,7 +7,6 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
@@ -82,23 +81,21 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         rectShape = ProcessCornerRadiusLimits(rectShape);
 
         var data = RectGPUData.Empty();
-        var halfWidth = rectShape.Width / 2f;
-        var halfHeight = rectShape.Height / 2f;
 
-        var left = rectShape.Position.X - halfWidth;
-        var bottom = rectShape.Position.Y + halfHeight;
-        var right = rectShape.Position.X + halfWidth;
-        var top = rectShape.Position.Y - halfHeight;
+        var left = rectShape.Position.X - rectShape.HalfWidth;
+        var bottom = rectShape.Position.Y + rectShape.HalfHeight;
+        var right = rectShape.Position.X + rectShape.HalfWidth;
+        var top = rectShape.Position.Y - rectShape.HalfHeight;
 
-        var topLeft = new Vector2(left, top);
-        var bottomLeft = new Vector2(left, bottom);
-        var bottomRight = new Vector2(right, bottom);
-        var topRight = new Vector2(right, top);
+        var topLeft = new Vector2(left, top).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var bottomLeft = new Vector2(left, bottom).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var bottomRight = new Vector2(right, bottom).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
+        var topRight = new Vector2(right, top).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
 
-        data = data.SetVertexPos(topLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height), VertexNumber.One);
-        data = data.SetVertexPos(bottomLeft.ToNDC(ViewPortSize.Width, ViewPortSize.Height), VertexNumber.Two);
-        data = data.SetVertexPos(topRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height), VertexNumber.Three);
-        data = data.SetVertexPos(bottomRight.ToNDC(ViewPortSize.Width, ViewPortSize.Height), VertexNumber.Four);
+        data = data.SetVertexPos(topLeft, VertexNumber.One);
+        data = data.SetVertexPos(bottomLeft, VertexNumber.Two);
+        data = data.SetVertexPos(topRight, VertexNumber.Three);
+        data = data.SetVertexPos(bottomRight, VertexNumber.Four);
 
         data = data.SetRectangle(new Vector4(rectShape.Position.X, rectShape.Position.Y, rectShape.Width, rectShape.Height));
 
@@ -155,57 +152,32 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     {
         var stride = RectVertexData.GetStride();
 
-        // Vertex Position
-        const uint vertexPosSize = 2u * sizeof(float);
-        GL.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, stride, 0);
-        GL.EnableVertexAttribArray(0);
+        var attrComponentSizes = new[]
+        {
+            2u, // Vertex Position
+            4u, // Rectangle
+            4u, // Color
+            1u, // IsSolid
+            1u, // Border Thickness
+            1u, // Top Left Corner Radius
+            1u, // Bottom Left Corner Radius
+            1u, // Bottom Right Corner Radius
+            1u, // Top Right Corner Radius
+        };
 
-        // Rectangle
-        const uint rectOffset = vertexPosSize;
-        const uint rectSize = 4u * sizeof(float);
-        GL.VertexAttribPointer(1, 4, GLVertexAttribPointerType.Float, false, stride, rectOffset);
-        GL.EnableVertexAttribArray(1);
+        var prevAttrByteSize = 0u;
+        for (var i = 0u; i < attrComponentSizes.Length; i++)
+        {
+            var totalAttrComponents = attrComponentSizes[i];
 
-        // Color
-        const uint colorOffset = rectOffset + rectSize;
-        const uint colorSize = 4u * sizeof(float);
-        GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, colorOffset);
-        GL.EnableVertexAttribArray(2);
+            var offset = i == 0 ? 0 : prevAttrByteSize;
+            var attrByteSize = totalAttrComponents * sizeof(float);
 
-        // IsSolid
-        const uint isSolidOffset = colorOffset + colorSize;
-        const uint isSolidSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(3, 1, GLVertexAttribPointerType.Float, false, stride, isSolidOffset);
-        GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(i, (int)totalAttrComponents, GLVertexAttribPointerType.Float, false, stride, offset);
+            GL.EnableVertexAttribArray(i);
 
-        // Border Thickness
-        const uint borderThicknessOffset = isSolidOffset + isSolidSize;
-        const uint borderThicknessSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(4, 1, GLVertexAttribPointerType.Float, false, stride, borderThicknessOffset);
-        GL.EnableVertexAttribArray(4);
-
-        // Top Left Corner Radius
-        const uint topLeftRadiusOffset = borderThicknessOffset + borderThicknessSize;
-        const uint topLeftRadiusSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(5, 1, GLVertexAttribPointerType.Float, false, stride, topLeftRadiusOffset);
-        GL.EnableVertexAttribArray(5);
-
-        // Bottom Left Corner Radius
-        const uint bottomLeftRadiusOffset = topLeftRadiusOffset + topLeftRadiusSize;
-        const uint bottomLeftRadiusSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(6, 1, GLVertexAttribPointerType.Float, false, stride, bottomLeftRadiusOffset);
-        GL.EnableVertexAttribArray(6);
-
-        // Bottom Right Corner Radius
-        const uint bottomRightRadiusOffset = bottomLeftRadiusOffset + bottomLeftRadiusSize;
-        const uint bottomRightRadiusSize = 1u * sizeof(float);
-        GL.VertexAttribPointer(7, 1, GLVertexAttribPointerType.Float, false, stride, bottomRightRadiusOffset);
-        GL.EnableVertexAttribArray(7);
-
-        // Top Right Corner Radius
-        const uint topRightRadiusOffset = bottomRightRadiusOffset + bottomRightRadiusSize;
-        GL.VertexAttribPointer(8, 1, GLVertexAttribPointerType.Float, false, stride, topRightRadiusOffset);
-        GL.EnableVertexAttribArray(8);
+            prevAttrByteSize += attrByteSize;
+        }
     }
 
     /// <inheritdoc/>
@@ -249,54 +221,13 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     /// up a rectangle rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>
-    private static RectVertexData[] GenerateVertexData()
-    {
-        var vertex1 = new RectVertexData(
-            new Vector2(-1.0f, 1.0f),
-            Vector4.Zero,
-            Color.Empty,
-            false,
-            1f,
-            0f,
-            0f,
-            0f,
-            0f);
-
-        var vertex2 = new RectVertexData(
-            new Vector2(-1.0f, -1.0f),
-            Vector4.Zero,
-            Color.Empty,
-            false,
-            1f,
-            0f,
-            0f,
-            0f,
-            0f);
-
-        var vertex3 = new RectVertexData(
-            new Vector2(1.0f, 1.0f),
-            Vector4.Zero,
-            Color.Empty,
-            false,
-            1f,
-            0f,
-            0f,
-            0f,
-            0f);
-
-        var vertex4 = new RectVertexData(
-            new Vector2(1.0f, 1.0f),
-            Vector4.Zero,
-            Color.Empty,
-            false,
-            1f,
-            0f,
-            0f,
-            0f,
-            0f);
-
-        return new[] { vertex1, vertex2, vertex3, vertex4 };
-    }
+    private static RectVertexData[] GenerateVertexData() => new[]
+        {
+            RectVertexData.New(-1.0f, 1.0f),
+            RectVertexData.New(-1.0f, -1.0f),
+            RectVertexData.New(1.0f, 1.0f),
+            RectVertexData.New(1.0f, 1.0f),
+        };
 
     /// <summary>
     /// Applies the color of the given <paramref name="rect"/> shape to the rectangle
@@ -385,17 +316,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
          */
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
-        var cornerRadius = rect.CornerRadius;
-
-        cornerRadius = cornerRadius.TopLeft > largestValueAllowed ? CornerRadius.SetTopLeft(cornerRadius, largestValueAllowed) : cornerRadius;
-        cornerRadius = cornerRadius.BottomLeft > largestValueAllowed ? CornerRadius.SetBottomLeft(cornerRadius, largestValueAllowed) : cornerRadius;
-        cornerRadius = cornerRadius.BottomRight > largestValueAllowed ? CornerRadius.SetBottomRight(cornerRadius, largestValueAllowed) : cornerRadius;
-        cornerRadius = cornerRadius.TopRight > largestValueAllowed ? CornerRadius.SetTopRight(cornerRadius, largestValueAllowed) : cornerRadius;
-
-        cornerRadius = cornerRadius.TopLeft < 0 ? CornerRadius.SetTopLeft(cornerRadius, 0) : cornerRadius;
-        cornerRadius = cornerRadius.BottomLeft < 0 ? CornerRadius.SetBottomLeft(cornerRadius, 0) : cornerRadius;
-        cornerRadius = cornerRadius.BottomRight < 0 ? CornerRadius.SetBottomRight(cornerRadius, 0) : cornerRadius;
-        cornerRadius = cornerRadius.TopRight < 0 ? CornerRadius.SetTopRight(cornerRadius, 0) : cornerRadius;
+        var clampedCornerRadius = rect.CornerRadius.Clamp(0, largestValueAllowed);
 
         rect = new ShapeBatchItem(
             rect.Position,
@@ -404,7 +325,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
             rect.Color,
             rect.IsSolid,
             rect.BorderThickness,
-            cornerRadius,
+            clampedCornerRadius,
             rect.GradientType,
             rect.GradientStart,
             rect.GradientStop);

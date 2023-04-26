@@ -136,6 +136,23 @@ internal readonly struct RectVertexData
     public static uint GetStride() => Stride;
 
     /// <summary>
+    /// Creates a new instance of a <see cref="RectVertexData"/> struct with the given <paramref name="position"/>.
+    /// </summary>
+    /// <param name="x">The X component of the position.</param>
+    /// <param name="y">The Y component of the position.</param>
+    /// <returns>The new instance.</returns>
+    public static RectVertexData New(float x, float y) =>
+        new (new Vector2(x, y),
+            Vector4.Zero,
+            Color.Empty,
+            false,
+            1f,
+            0f,
+            0f,
+            0f,
+            0f);
+
+    /// <summary>
     /// Returns all of the vertex data as an array or ordered values.
     /// </summary>
     /// <returns>All of the vertex data values.</returns>

@@ -488,7 +488,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void Flip_WhenInvoked_ReturnsCorrectResult()
+    public void FlipEnd_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
         var expectedP1 = new Vector2(100, 100);
@@ -505,6 +505,22 @@ public class InternalExtensionMethodsTests
         // Assert
         actual.P1.Should().Be(expectedP1);
         actual.P2.Should().Be(expectedP2);
+    }
+
+    [Fact]
+    public void Clamp_WhenInvoked_ClampsRadiusValues()
+    {
+        // Arrange
+        var sut = new CornerRadius(200f, 200, -200f, -200f);
+
+        // Act
+        sut = sut.Clamp(0f, 100f);
+
+        // Assert
+        sut.TopLeft.Should().Be(100f);
+        sut.BottomLeft.Should().Be(100f);
+        sut.BottomRight.Should().Be(0f);
+        sut.TopRight.Should().Be(0f);
     }
 
     [Fact]
