@@ -667,6 +667,39 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
+    /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
+    /// </summary>
+    /// <param name="gpuData">The GPU data to update.</param>
+    /// <param name="pos">The position to apply to a vertex.</param>
+    /// <param name="vertexNumber">The vertex to update.</param>
+    /// <returns>The updated GPU data.</returns>
+    public static LineGPUData SetVertexPos(this LineGPUData gpuData, Vector2 pos, VertexNumber vertexNumber)
+    {
+        var oldVertex = vertexNumber switch
+        {
+            VertexNumber.One => gpuData.Vertex1,
+            VertexNumber.Two => gpuData.Vertex2,
+            VertexNumber.Three => gpuData.Vertex3,
+            VertexNumber.Four => gpuData.Vertex4,
+            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+        };
+
+        var newVertexData = new LineVertexData(
+            pos,
+            oldVertex.Color);
+
+#pragma warning disable CS8524
+        return vertexNumber switch
+        {
+            VertexNumber.One => new LineGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+            VertexNumber.Two => new LineGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+            VertexNumber.Three => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+            VertexNumber.Four => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+        };
+#pragma warning restore CS8524
+    }
+
+    /// <summary>
     /// Updates the <see cref="RectVertexData.Rectangle"/> of a vertex using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
@@ -1122,39 +1155,6 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
-    /// </summary>
-    /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="pos">The position to apply to a vertex.</param>
-    /// <param name="vertexNumber">The vertex to update.</param>
-    /// <returns>The updated GPU data.</returns>
-    public static LineGPUData SetVertexPos(this LineGPUData gpuData, Vector2 pos, VertexNumber vertexNumber)
-    {
-        var oldVertex = vertexNumber switch
-        {
-            VertexNumber.One => gpuData.Vertex1,
-            VertexNumber.Two => gpuData.Vertex2,
-            VertexNumber.Three => gpuData.Vertex3,
-            VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
-        };
-
-        var newVertexData = new LineVertexData(
-            pos,
-            oldVertex.Color);
-
-#pragma warning disable CS8524
-        return vertexNumber switch
-        {
-            VertexNumber.One => new LineGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
-            VertexNumber.Two => new LineGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
-            VertexNumber.Three => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
-            VertexNumber.Four => new LineGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-        };
-#pragma warning restore CS8524
-    }
-
-    /// <summary>
     /// Sets the color of the <see cref="LineGPUData"/> to the given <paramref name="color"/>.
     /// </summary>
     /// <param name="gpuData">The line GPU data.</param>
@@ -1372,6 +1372,26 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
+    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
+    /// </summary>
+    /// <param name="items">The items to check.</param>
+    /// <param name="predicate">The predicate to execute against each item.</param>
+    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
+    /// <returns>The index of the item.</returns>
+    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
+    {
+        for (var i = 0; i < items.Span.Length; i++)
+        {
+            if (predicate(items.Span[i].Item))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
     /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
     /// </summary>
     /// <param name="items">The items to check.</param>
@@ -1454,26 +1474,6 @@ internal static class InternalExtensionMethods
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Returns the index of the first item that returns <c>true</c> with the given <paramref name="predicate"/>.
-    /// </summary>
-    /// <param name="items">The items to check.</param>
-    /// <param name="predicate">The predicate to execute against each item.</param>
-    /// <typeparam name="T">The type of <see cref="RenderItem{T}"/>s.</typeparam>
-    /// <returns>The index of the item.</returns>
-    public static int IndexOf<T>(this Memory<RenderItem<T>> items, Predicate<T> predicate)
-    {
-        for (var i = 0; i < items.Span.Length; i++)
-        {
-            if (predicate(items.Span[i].Item))
-            {
-                return i;
-            }
-        }
-
-        return -1;
     }
 
     /// <summary>
