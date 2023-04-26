@@ -56,6 +56,8 @@ public record struct CircleShape
     /// </summary>
     /// <remarks>
     /// This is half of the <see cref="Diameter"/>.
+    /// <br/>
+    /// Changing the radius will automatically update the <see cref="Diameter"/>.
     /// </remarks>
     public float Radius
     {
