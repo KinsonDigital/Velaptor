@@ -85,8 +85,13 @@ public class CircleShapeTests
         };
         yield return new object[]
         {
+            /* NOTE:
+             * The diameter in this test data must be greater than the border thickness
+             * multiplied by 2.  This is because we need to have the diameter large enough
+             * to not restrict the value of the border thickness below the value of 44.
+             */
             Vector2.Zero, // Position
-            1f, // Diameter
+            100f, // Diameter
             Color.Empty, // Color
             false, // IsSolid
             44f, // Border Thickness
@@ -170,45 +175,19 @@ public class CircleShapeTests
 
     #region Prop Tests
     [Theory]
-    [InlineData(0, 1, 0.5f)]
-    [InlineData(-10f, 1, 0.5f)]
-    [InlineData(123, 123, 61.5f)]
-    public void Diameter_WhenSettingValue_ReturnsCorrectResult(float value, float expectedDiameter, float expectedRadius)
+    [InlineData(100, 100f)]
+    [InlineData(-10f, 1f)]
+    public void Diameter_WhenSettingValue_ReturnsCorrectResult(float value, float expectedDiameter)
     {
         // Arrange
         var sut = default(CircleShape);
-        sut.IsSolid = true;
-        sut.BorderThickness = 2f;
 
         // Act
         sut.Diameter = value;
-        var actualDiameter = sut.Diameter;
-        var actualRadius = sut.Radius;
+        var actual = sut.Diameter;
 
         // Assert
-        actualDiameter.Should().Be(expectedDiameter);
-        actualRadius.Should().Be(expectedRadius);
-        sut.BorderThickness.Should().Be(2f);
-    }
-
-    [Theory]
-    [InlineData(200f, 20f)]
-    [InlineData(50f, 5f)]
-    public void Diameter_WhenChangingDiameterWithEmptyCircle_ProportionallyUpdatesBorderThickness(
-        float newDiameter,
-        float expectedBorderThickness)
-    {
-        // Arrange
-        var sut = default(CircleShape);
-        sut.IsSolid = false;
-        sut.Diameter = 100f;
-        sut.BorderThickness = 10f;
-
-        // Act
-        sut.Diameter = newDiameter;
-
-        // Assert
-        sut.BorderThickness.Should().Be(expectedBorderThickness);
+        actual.Should().Be(expectedDiameter);
     }
 
     [Fact]
@@ -227,18 +206,23 @@ public class CircleShapeTests
         actualDiameter.Should().Be(100f);
     }
 
-    [Fact]
-    public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
+    [Theory]
+    [InlineData(25, 25f)]
+    [InlineData(50, 50f)]
+    [InlineData(75, 50f)]
+    [InlineData(-10, 1f)]
+    public void BorderThickness_WhenSettingValue_ReturnsCorrectResult(float thickness, float expected)
     {
         // Arrange
         var sut = default(CircleShape);
+        sut.Diameter = 100f;
 
         // Act
-        sut.BorderThickness = 123f;
+        sut.BorderThickness = thickness;
         var actual = sut.BorderThickness;
 
         // Assert
-        actual.Should().Be(123f);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -352,10 +336,10 @@ public class CircleShapeTests
         // Arrange
         var sut = default(CircleShape);
         sut.Position = new Vector2(1, 2);
-        sut.Diameter = 3f;
+        sut.Diameter = 50f;
         sut.Color = Color.FromArgb(5, 6, 7, 8);
         sut.IsSolid = true;
-        sut.BorderThickness = 9f;
+        sut.BorderThickness = 10f;
         sut.GradientType = ColorGradient.Horizontal;
         sut.GradientStart = Color.FromArgb(14, 15, 16, 17);
         sut.GradientStop = Color.FromArgb(18, 19, 20, 21);
@@ -368,7 +352,7 @@ public class CircleShapeTests
         sut.Position.Should().Be(Vector2.Zero);
         sut.Diameter.Should().Be(1f);
         sut.Color.Should().Be(Color.Empty);
-        sut.BorderThickness.Should().Be(0f);
+        sut.BorderThickness.Should().Be(1f);
         sut.GradientType.Should().Be(ColorGradient.None);
         sut.GradientStart.Should().Be(Color.Empty);
         sut.GradientStop.Should().Be(Color.Empty);

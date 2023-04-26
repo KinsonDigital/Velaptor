@@ -130,6 +130,8 @@ public record struct CircleShape
     /// <remarks>
     /// <para>
     ///     Only visible if the <see cref="IsSolid"/> property is set to <c>false</c>.
+    ///     <br/>
+    ///     The border thickness is automatically restricted to a value no greater than the <see cref="Radius"/>.
     /// </para>
     /// </remarks>
     public float BorderThickness
@@ -191,10 +193,10 @@ public record struct CircleShape
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
         Position == Vector2.Zero &&
+        BorderThickness <= 1f &&
         Diameter <= 1f &&
         Color.IsEmpty &&
         IsSolid is false &&
-        BorderThickness <= 1f &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
         GradientStop.IsEmpty;
@@ -205,10 +207,10 @@ public record struct CircleShape
     public void Empty()
     {
         Position = Vector2.Zero;
-        Diameter = 0;
+        Diameter = 1f;
         Color = Color.Empty;
         IsSolid = false;
-        BorderThickness = 0u;
+        BorderThickness = 1u;
         GradientType = ColorGradient.None;
         GradientStart = Color.Empty;
         GradientStop = Color.Empty;
