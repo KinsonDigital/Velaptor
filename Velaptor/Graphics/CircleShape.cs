@@ -36,7 +36,7 @@ public record struct CircleShape
     public Vector2 Position { get; set; } = Vector2.Zero;
 
     /// <summary>
-    /// Gets or sets the width of the circle.
+    /// Gets or sets the diameter of the circle.
     /// </summary>
     /// <remarks>
     ///     The diameter is restricted to a minimum value of one.
@@ -64,7 +64,7 @@ public record struct CircleShape
     }
 
     /// <summary>
-    /// Gets or sets the top location of the circle.
+    /// Gets or sets the top location of the top of the circle on the Y axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the circle.
@@ -76,7 +76,7 @@ public record struct CircleShape
     }
 
     /// <summary>
-    /// Gets or sets the right location of the circle.
+    /// Gets or sets the location of the right side of the circle on the X axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the circle.
@@ -88,7 +88,7 @@ public record struct CircleShape
     }
 
     /// <summary>
-    /// Gets or sets the bottom location of the circle.
+    /// Gets or sets the bottom location of the bottom of the circle on the Y axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the circle.
@@ -100,7 +100,7 @@ public record struct CircleShape
     }
 
     /// <summary>
-    /// Gets or sets the Left location of the circle.
+    /// Gets or sets the location of the left side of the circle on the X axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the circle.

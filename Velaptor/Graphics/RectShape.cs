@@ -80,7 +80,7 @@ public record struct RectShape
     public float HalfHeight => Height / 2f;
 
     /// <summary>
-    /// Gets or sets the top location of the rectangle.
+    /// Gets or sets the location of the top of the rectangle on the Y axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the rectangle.
@@ -92,7 +92,7 @@ public record struct RectShape
     }
 
     /// <summary>
-    /// Gets or sets the right location of the rectangle.
+    /// Gets or sets the location of the right side of the rectangle on the X axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the rectangle.
@@ -104,7 +104,7 @@ public record struct RectShape
     }
 
     /// <summary>
-    /// Gets or sets the bottom location of the rectangle.
+    /// Gets or sets the location of the bottom of the rectangle on the Y axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the rectangle.
@@ -116,7 +116,7 @@ public record struct RectShape
     }
 
     /// <summary>
-    /// Gets or sets the Left location of the rectangle.
+    /// Gets or sets the location of the left side of the rectangle on the X axis.
     /// </summary>
     /// <remarks>
     ///     Will automatically update the <see cref="Position"/> of the rectangle.
