@@ -177,6 +177,8 @@ public class CircleShapeTests
     {
         // Arrange
         var sut = default(CircleShape);
+        sut.IsFilled = true;
+        sut.BorderThickness = 2f;
 
         // Act
         sut.Diameter = value;
@@ -186,6 +188,27 @@ public class CircleShapeTests
         // Assert
         actualDiameter.Should().Be(expectedDiameter);
         actualRadius.Should().Be(expectedRadius);
+        sut.BorderThickness.Should().Be(2f);
+    }
+
+    [Theory]
+    [InlineData(200f, 20f)]
+    [InlineData(50f, 5f)]
+    public void Diameter_WhenChangingDiameterWithEmptyCircle_ProportionallyUpdatesBorderThickness(
+        float newDiameter,
+        float expectedBorderThickness)
+    {
+        // Arrange
+        var sut = default(CircleShape);
+        sut.IsFilled = false;
+        sut.Diameter = 100f;
+        sut.BorderThickness = 10f;
+
+        // Act
+        sut.Diameter = newDiameter;
+
+        // Assert
+        sut.BorderThickness.Should().Be(expectedBorderThickness);
     }
 
     [Fact]

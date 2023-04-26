@@ -4,19 +4,25 @@
 
 namespace Velaptor.Graphics;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents an circle shape with various attributes.
+/// Represents a circle shape with various attributes.
 /// </summary>
-public struct CircleShape
+public record struct CircleShape
 {
     private float diameter = 1f;
+    private float borderThickness = 1f;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CircleShape"/> struct.
     /// </summary>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "Standard text is correct.  Reported incorrectly.")]
     public CircleShape()
     {
     }
@@ -25,7 +31,7 @@ public struct CircleShape
     /// Gets or sets the position of the circle.
     /// </summary>
     /// <remarks>
-    ///     This position is the center of the circle.
+    ///     This position is relative to the center of the circle.
     /// </remarks>
     public Vector2 Position { get; set; } = Vector2.Zero;
 
@@ -41,7 +47,6 @@ public struct CircleShape
         set
         {
             value = value < 1f ? 1f : value;
-
             this.diameter = value;
         }
     }
@@ -124,10 +129,20 @@ public struct CircleShape
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Ignored if the <see cref="IsFilled"/> property is set to <c>true</c>.
+    ///     Only visible if the <see cref="IsFilled"/> property is set to <c>false</c>.
     /// </para>
     /// </remarks>
-    public float BorderThickness { get; set; } = 1f;
+    public float BorderThickness
+    {
+        get => this.borderThickness;
+        set
+        {
+            value = value > Radius ? Radius : value;
+            value = value < 1f ? 1f : value;
+
+            this.borderThickness = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the type of color gradient that will be applied to the circle.
