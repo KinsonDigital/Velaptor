@@ -14,7 +14,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
 1. [#541](https://github.com/KinsonDigital/Velaptor/issues/541) - Fixed a bug where creating a new `Window` object would throw an exception related to fonts.
-    > **Note** This was due to the system trying to create the default fonts
+    > 💡 This was due to the system trying to create the default fonts
     > but instead trying to overwrite an OS font which would throw a permission exception.
 
 ---

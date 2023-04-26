@@ -6,7 +6,6 @@ namespace Velaptor.Content.Fonts;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -28,6 +27,7 @@ public sealed class Font : IFont
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
+    private readonly Dictionary<string, SizeF> textSizeCache = new ();
     private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
@@ -150,8 +150,8 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public IEnumerable<FontStyle> AvailableStylesForFamily
         => this.fontStats is null
-            ? Array.Empty<VelFontStyle>().ToReadOnlyCollection()
-            : this.fontStats.Select(s => s.Style).ToReadOnlyCollection();
+            ? Array.Empty<VelFontStyle>().AsReadOnly()
+            : this.fontStats.Select(s => s.Style).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
     public string FamilyName { get; }
@@ -163,7 +163,13 @@ public sealed class Font : IFont
     public float LineSpacing { get; private set; }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
+    public bool CacheEnabled { get; set; } = true;
+
+    /// <inheritdoc/>
+    public int MaxCacheSize { get; set; } = 1000;
+
+    /// <inheritdoc/>
+    public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
 
     /// <inheritdoc/>
     public SizeF Measure(string text)
@@ -177,60 +183,21 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        var leftCharacterIndex = 0u;
+        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
+        {
+            return measure;
+        }
 
         text = text.TrimNewLineFromEnd();
-
         var lines = text.Split(Environment.NewLine).TrimAllEnds();
 
-        SizeF MeasureLine(IEnumerable<GlyphMetrics> charMetrics)
-        {
-            var width = 0f;
-            var height = 0f;
+        var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
-            // Total all of the space between each character, except the space before the first character.
-            // Also takes into account any kerning.
-            foreach (var currentCharacter in charMetrics)
-            {
-                width += HasKerning
-                    ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, currentCharacter.CharIndex)
-                    : 0;
+        var textSize = new SizeF(largestWidth, totalHeight);
 
-                width += currentCharacter.HorizontalAdvance;
+        AddToCache(text, textSize);
 
-                height = currentCharacter.GlyphHeight > height
-                    ? currentCharacter.GlyphHeight
-                    : height;
-
-                leftCharacterIndex = currentCharacter.CharIndex;
-            }
-
-            return new SizeF(width, height);
-        }
-
-        var lineSizes = new List<SizeF>();
-
-        var totalHeight = 0f;
-
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var lineGlyphs = ToGlyphMetrics(lines[i]);
-
-            const float verticalOffset = 0f;
-
-            var isLastLine = i == lines.Length - 1;
-
-            var lineSize = MeasureLine(lineGlyphs);
-            totalHeight += lineSize.Height;
-            totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
-            totalHeight += verticalOffset;
-
-            lineSizes.Add(lineSize);
-        }
-
-        var largestWidth = lineSizes.Max(l => l.Width);
-
-        return new SizeF(largestWidth, totalHeight);
+        return textSize;
     }
 
     /// <summary>
@@ -240,36 +207,19 @@ public sealed class Font : IFont
     /// <returns>The list of glyph metrics of the given <paramref name="text"/>.</returns>
     public GlyphMetrics[] ToGlyphMetrics(string text)
     {
-        var textGlyphs = new List<GlyphMetrics>();
-
-        foreach (var metric in this.metrics)
-        {
-            if (text.Contains(metric.Glyph))
-            {
-                textGlyphs.Add(metric);
-            }
-        }
-
         var result = new List<GlyphMetrics>();
 
         foreach (var character in text)
         {
-            foreach (var m in textGlyphs)
+            // If the character is a valid glyph
+            if (this.availableGlyphCharacters.Contains(character))
             {
-                var isInvalid = this.availableGlyphCharacters.Contains(character) is false;
-
-                if (isInvalid)
-                {
-                    result.Add(this.invalidGlyph);
-                    break;
-                }
-
-                if (m.Glyph != character)
-                {
-                    continue;
-                }
-
-                result.Add(m);
+                var glyphIndex = this.metrics.IndexOf(metric => metric.Glyph == character);
+                result.Add(this.metrics[glyphIndex]);
+            }
+            else
+            {
+                result.Add(this.invalidGlyph);
             }
         }
 
@@ -338,6 +288,29 @@ public sealed class Font : IFont
     }
 
     /// <summary>
+    /// Adds the given text and size to the cache.
+    /// </summary>
+    /// <param name="text">The text to add.</param>
+    /// <param name="textSize">The size of the text to add.</param>
+    private void AddToCache(string text, SizeF textSize)
+    {
+        if (CacheEnabled is false)
+        {
+            return;
+        }
+
+        this.textSizeCache.Add(text, textSize);
+
+        if (this.textSizeCache.Count <= MaxCacheSize)
+        {
+            return;
+        }
+
+        var removeKey = this.textSizeCache.Keys.First();
+        this.textSizeCache.Remove(removeKey);
+    }
+
+    /// <summary>
     /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
     /// </summary>
     /// <param name="filePath">The file path to the font file.</param>
@@ -383,12 +356,9 @@ public sealed class Font : IFont
 
         var missingFontStats = new List<FontStats>();
 
-        foreach (var missingStat in systemFontStats)
+        foreach (var missingStat in systemFontStats.Where(s => missingStyles.Contains(s.Style)))
         {
-            if (missingStyles.Contains(missingStat.Style))
-            {
-                missingFontStats.Add(missingStat);
-            }
+            missingFontStats.Add(missingStat);
         }
 
         var newList = new List<FontStats>();
@@ -426,5 +396,65 @@ public sealed class Font : IFont
         LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 
         this.metrics = glyphMetrics;
+    }
+
+    /// <summary>
+    /// Returns the size of the given single <paramref name="line"/> of text.
+    /// </summary>
+    /// <param name="line">The line of text to measure.</param>
+    /// <returns>The size of the <paramref name="line"/> of text.</returns>
+    private SizeF MeasureLine(string line)
+    {
+        var width = 0f;
+        var height = 0f;
+        var leftCharacterIndex = 0u;
+
+        foreach (var character in line)
+        {
+            var charMetric = this.availableGlyphCharacters.Contains(character)
+                ? this.metrics[this.metrics.IndexOf(metric => metric.Glyph == character)]
+                : this.invalidGlyph;
+
+            width += HasKerning
+                ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, charMetric.CharIndex)
+                : 0;
+
+            width += charMetric.HorizontalAdvance;
+
+            height = charMetric.GlyphHeight > height
+                ? charMetric.GlyphHeight
+                : height;
+
+            leftCharacterIndex = charMetric.CharIndex;
+        }
+
+        return new SizeF(width, height);
+    }
+
+    /// <summary>
+    /// Calculates the dimensions of the given <paramref name="lines"/> of text.
+    /// </summary>
+    /// <param name="lines">The lines to use in the measurement.</param>
+    /// <returns>The dimensions of all the lines.</returns>
+    private (float maxWidth, float totalHeight) CalcTextDimensions(IReadOnlyList<string> lines)
+    {
+        var maxWidth = 0f;
+        var totalHeight = 0f;
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var lineSize = MeasureLine(lines[i]);
+
+            var isLastLine = i == lines.Count - 1;
+            totalHeight += lineSize.Height;
+            totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
+
+            if (lineSize.Width > maxWidth)
+            {
+                maxWidth = lineSize.Width;
+            }
+        }
+
+        return (maxWidth, totalHeight);
     }
 }

@@ -28,7 +28,7 @@ public sealed class Button : ControlBase
     private const uint DefaultButtonWidth = 100;
     private const uint DefaultButtonHeight = 50;
     private const uint HorizontalMargin = 10;
-    private readonly IRectangleRenderer rectRenderer;
+    private readonly IShapeRenderer rectRenderer;
     private IUIControlFactory controlFactory = null!;
     private string cachedText = string.Empty;
     private uint cachedAutoSizeOffWidth;
@@ -43,7 +43,7 @@ public sealed class Button : ControlBase
     public Button()
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
     }
@@ -59,7 +59,7 @@ public sealed class Button : ControlBase
         EnsureThat.ParamIsNotNull(label);
 
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Label = label;
@@ -74,7 +74,7 @@ public sealed class Button : ControlBase
     public Button(Point position)
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -90,7 +90,7 @@ public sealed class Button : ControlBase
     public Button(uint width, uint height)
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Width = width;
@@ -108,7 +108,7 @@ public sealed class Button : ControlBase
     public Button(uint width, uint height, Label? label)
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Width = width;
@@ -127,7 +127,7 @@ public sealed class Button : ControlBase
     public Button(Point position, uint width, uint height)
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -147,7 +147,7 @@ public sealed class Button : ControlBase
     public Button(Point position, uint width, uint height, Label? label)
     {
         var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateRectangleRenderer();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -181,7 +181,7 @@ public sealed class Button : ControlBase
         EnsureThat.ParamIsNotNull(rendererFactory);
 
         this.controlFactory = controlFactory;
-        this.rectRenderer = rendererFactory.CreateRectangleRenderer();
+        this.rectRenderer = rendererFactory.CreateShapeRenderer();
     }
 
     /// <summary>
@@ -419,7 +419,7 @@ public sealed class Button : ControlBase
 
         var buttonFace = default(RectShape);
         buttonFace.Position = Position.ToVector2();
-        buttonFace.IsFilled = true;
+        buttonFace.IsSolid = true;
         buttonFace.Color = faceColor;
         buttonFace.Width = Width;
         buttonFace.Height = Height;
@@ -431,7 +431,7 @@ public sealed class Button : ControlBase
         {
             var buttonBorder = default(RectShape);
             buttonBorder.Position = Position.ToVector2();
-            buttonBorder.IsFilled = false;
+            buttonBorder.IsSolid = false;
             buttonBorder.BorderThickness = BorderThickness;
             buttonBorder.Color = Enabled ? BorderColor : BorderColor.DecreaseBrightness(0.25f);
             buttonBorder.Width = Width;

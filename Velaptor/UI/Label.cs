@@ -6,7 +6,6 @@ namespace Velaptor.UI;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
@@ -86,7 +85,7 @@ public class Label : ControlBase
     /// <summary>
     /// Gets a list of all the bounds for each character of the <see cref="Label"/>.<see cref="Text"/>.
     /// </summary>
-    public ReadOnlyCollection<(char character, RectangleF bounds)> CharacterBounds =>
+    public IReadOnlyCollection<(char character, RectangleF bounds)> CharacterBounds =>
         this.textCharBounds?.AsReadOnly() ?? Array.Empty<(char, RectangleF)>().AsReadOnly();
 
     /// <inheritdoc/>

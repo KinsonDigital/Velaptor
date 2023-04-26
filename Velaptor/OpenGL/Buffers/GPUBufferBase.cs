@@ -278,9 +278,9 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         {
             attributes = Attribute.GetCustomAttributes(typeof(FontGPUBuffer));
         }
-        else if (currentType == typeof(RectGPUBuffer))
+        else if (currentType == typeof(ShapeGPUBuffer))
         {
-            attributes = Attribute.GetCustomAttributes(typeof(RectGPUBuffer));
+            attributes = Attribute.GetCustomAttributes(typeof(ShapeGPUBuffer));
         }
         else if (currentType == typeof(LineGPUBuffer))
         {

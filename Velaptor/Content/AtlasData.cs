@@ -6,7 +6,6 @@ namespace Velaptor.Content;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -87,7 +86,7 @@ public sealed class AtlasData : IAtlasData
     ///     Will not return duplicate names of animating sub textures.
     ///     Animating sub textures will have identical names.
     /// </remarks>
-    public ReadOnlyCollection<string> SubTextureNames
+    public IReadOnlyCollection<string> SubTextureNames
     {
         get
         {
@@ -102,7 +101,7 @@ public sealed class AtlasData : IAtlasData
                 }
             }
 
-            return result.ToReadOnlyCollection();
+            return result.AsReadOnly();
         }
     }
 

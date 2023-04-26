@@ -65,9 +65,9 @@ internal sealed class ImageService : IImageService
     }
 
     /// <inheritdoc/>
-    public void Save(string path, ImageData imageData)
+    public void Save(string path, ImageData image)
     {
-        var rgba32Image = imageData.ToSixLaborImage();
+        var rgba32Image = image.ToSixLaborImage();
 
         rgba32Image.SaveAsPng(path);
         rgba32Image.Dispose();

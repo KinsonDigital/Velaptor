@@ -27,7 +27,7 @@ internal readonly struct RectVertexData
     /// <param name="vertexPos">The position of the vertex.</param>
     /// <param name="rectangle">The rectangle components.</param>
     /// <param name="color">The fill or border color.</param>
-    /// <param name="isFilled">True if the rectangle is filled.</param>
+    /// <param name="isSolid">True if the rectangle is a solid color.</param>
     /// <param name="borderThickness">The thickness of the border.</param>
     /// <param name="topLeftCornerRadius">The top left corner radius.</param>
     /// <param name="bottomLeftCornerRadius">The bottom left corner radius.</param>
@@ -37,7 +37,7 @@ internal readonly struct RectVertexData
         Vector2 vertexPos,
         Vector4 rectangle,
         Color color,
-        bool isFilled,
+        bool isSolid,
         float borderThickness,
         float topLeftCornerRadius,
         float bottomLeftCornerRadius,
@@ -47,7 +47,7 @@ internal readonly struct RectVertexData
         VertexPos = vertexPos;
         Rectangle = rectangle;
         Color = color;
-        IsFilled = isFilled;
+        IsSolid = isSolid;
         BorderThickness = borderThickness;
         TopLeftCornerRadius = topLeftCornerRadius;
         BottomLeftCornerRadius = bottomLeftCornerRadius;
@@ -78,18 +78,18 @@ internal readonly struct RectVertexData
     /// Gets the color of the rectangle.
     /// </summary>
     /// <remarks>
-    ///     This is the solid color if the entire rectangle <see cref="IsFilled"/> is set to <c>true</c>
-    ///     and is the solid color of the rectangle border if <see cref="IsFilled"/> is set to <c>false</c>.
+    ///     This is the solid color if the entire rectangle <see cref="IsSolid"/> is set to <c>true</c>
+    ///     and is the solid color of the rectangle border if <see cref="IsSolid"/> is set to <c>false</c>.
     /// </remarks>
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the rectangle will be rendered as a filled rectangle.
+    /// Gets a value indicating whether or not the rectangle will be rendered as a solid rectangle.
     /// </summary>
-    public bool IsFilled { get; }
+    public bool IsSolid { get; }
 
     /// <summary>
-    /// Gets the thickness of the rectangle border if the <see cref="IsFilled"/> is set to <c>false</c>.
+    /// Gets the thickness of the rectangle border if the <see cref="IsSolid"/> is set to <c>false</c>.
     /// </summary>
     public float BorderThickness { get; }
 
@@ -136,6 +136,23 @@ internal readonly struct RectVertexData
     public static uint GetStride() => Stride;
 
     /// <summary>
+    /// Creates a new instance of a <see cref="RectVertexData"/> struct with the given <paramref name="position"/>.
+    /// </summary>
+    /// <param name="x">The X component of the position.</param>
+    /// <param name="y">The Y component of the position.</param>
+    /// <returns>The new instance.</returns>
+    public static RectVertexData New(float x, float y) =>
+        new (new Vector2(x, y),
+            Vector4.Zero,
+            Color.Empty,
+            false,
+            1f,
+            0f,
+            0f,
+            0f,
+            0f);
+
+    /// <summary>
     /// Returns all of the vertex data as an array or ordered values.
     /// </summary>
     /// <returns>All of the vertex data values.</returns>
@@ -153,7 +170,7 @@ internal readonly struct RectVertexData
         result.AddRange(Rectangle.ToArray());
         result.AddRange(Color.ToArray());
 
-        result.Add(IsFilled ? 1f : 0f);
+        result.Add(IsSolid ? 1f : 0f);
         result.Add(BorderThickness);
         result.Add(TopLeftCornerRadius);
         result.Add(BottomLeftCornerRadius);

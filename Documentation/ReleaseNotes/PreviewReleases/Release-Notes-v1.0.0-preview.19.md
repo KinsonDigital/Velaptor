@@ -15,7 +15,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 1. [#550](https://github.com/KinsonDigital/Velaptor/issues/550) - Added the ability to automatically create the content directories while the application during runtime.
 2. [#551](https://github.com/KinsonDigital/Velaptor/issues/551) - Created new types `ImageLoader` class and `IImageLoader` interface to easily load images.
-   > **Note** This gives the user the ability to do pre-processing on the pixels of an image before using it to create a `Texture`.
+   > 💡 This gives the user the ability to do pre-processing on the pixels of an image before using it to create a `Texture`.
 3. [#551](https://github.com/KinsonDigital/Velaptor/issues/551) - Added a new constructor to the `Texture` class.  The new constructor signature is `Texture(string name, ImageData imageData)`.
 4. [#559](https://github.com/KinsonDigital/Velaptor/issues/559) - Added a new overload to the `ITextureRenderer` interface and `TextureRenderer` class.
 
@@ -51,7 +51,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 8. [#568](https://github.com/KinsonDigital/Velaptor/issues/568) - Updated various badges in the project _**README**_ file.
 9. [#548](https://github.com/KinsonDigital/Velaptor/issues/548) - Made simple changes to the preview release workflow.
 10. [#548](https://github.com/KinsonDigital/Velaptor/issues/548) - Removed the [dependabot](https://docs.github.com/en/code-security/dependabot) tool.
-    > **Note** This is replaced with renovate.
+    > 💡 This is replaced with renovate.
 11. [#549](https://github.com/KinsonDigital/Velaptor/issues/549) - Changed the code coverage requirement threshold from automatic to 85%.
 12. [#555](https://github.com/KinsonDigital/Velaptor/issues/555) - Removed and cleaned up pre-processing comments from the project _**README**_ file.
 13. [#553](https://github.com/KinsonDigital/Velaptor/issues/553) - Fixed issue with the workflow for running status checks for preview features.

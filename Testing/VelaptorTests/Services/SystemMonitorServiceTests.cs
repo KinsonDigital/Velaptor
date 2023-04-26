@@ -1,11 +1,12 @@
-// <copyright file="SystemMonitorServiceTests.cs" company="KinsonDigital">
+ // <copyright file="SystemMonitorServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTests.Services;
 
 using System;
-using Helpers;
+using System.Linq;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Hardware;
@@ -22,11 +23,16 @@ public class SystemMonitorServiceTests
     [Fact]
     public void Ctor_WithNullMonitorsParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SystemMonitorService(null);
-        }, "The parameter must not be null. (Parameter 'monitors')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'monitors')");
     }
     #endregion
 
@@ -45,7 +51,7 @@ public class SystemMonitorServiceTests
         var actual = service.Monitors;
 
         // Assert
-        Assert.Empty(actual);
+        actual.Should().BeEmpty();
     }
 
     [Fact]
@@ -61,23 +67,22 @@ public class SystemMonitorServiceTests
         var service = new SystemMonitorService(mockMonitors.Object);
 
         // Act
-        var actual = service.Monitors;
+        var actual = service.Monitors.ToArray();
 
         // Assert
-        Assert.Single(actual);
-        Assert.Same(monitor, actual[0]);
+        actual.Should().HaveCount(1);
+        actual[0].Should().Be(monitor);
     }
 
-    [Theory]
-    [InlineData(true, false)]
-    public void MainMonitor_WhenGettingValue_ReturnsCorrectResult(bool isMainMonitor, bool expected)
+    [Fact]
+    public void MainMonitor_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
         var mockPlatform = new Mock<IPlatform>();
         var mockMonitors = new Mock<IMonitors>();
         var monitor = new SystemMonitor(mockPlatform.Object)
         {
-            IsMain = isMainMonitor,
+            IsMain = true,
         };
         mockMonitors.SetupGet(m => m.SystemMonitors)
             .Returns(new[] { monitor });
@@ -88,7 +93,7 @@ public class SystemMonitorServiceTests
         var actual = service.MainMonitor;
 
         // Assert
-        Assert.Equal(expected, actual is null);
+        actual.Should().NotBeNull();
     }
     #endregion
 

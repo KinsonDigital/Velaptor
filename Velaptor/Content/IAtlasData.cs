@@ -4,7 +4,7 @@
 
 namespace Velaptor.Content;
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Graphics;
 
 /// <summary>
@@ -17,7 +17,7 @@ public interface IAtlasData : IContent
     /// </summary>
     // ReSharper disable once UnusedMemberInSuper.Global
     // ReSharper disable once ReturnTypeCanBeEnumerable.Global
-    ReadOnlyCollection<string> SubTextureNames { get; }
+    IReadOnlyCollection<string> SubTextureNames { get; }
 
     /// <summary>
     /// Gets the the texture of the atlas.

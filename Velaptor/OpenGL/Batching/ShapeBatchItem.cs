@@ -1,4 +1,4 @@
-﻿// <copyright file="RectBatchItem.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,24 +12,27 @@ using Graphics;
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-internal readonly record struct RectBatchItem
+internal readonly record struct ShapeBatchItem
 {
+    private readonly float halfWidth;
+    private readonly float halfHeight;
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectBatchItem"/> struct.
+    /// Initializes a new instance of the <see cref="ShapeBatchItem"/> struct.
     /// </summary>
-    /// <param name="position">The position of the rectangle.</param>
-    /// <param name="width">The width of the rectangle.</param>
-    /// <param name="height">The height of the rectangle.</param>
-    /// <param name="color">The color of the rectangle.</param>
-    /// <param name="isFilled">If true, a solid rectangle.</param>
-    /// <param name="borderThickness">The thickness of the rectangle's border.</param>
-    /// <param name="cornerRadius">The radius of each corner of the rectangle.</param>
-    /// <param name="gradientType">The type of color gradient that will be applied to the rectangle.</param>
+    /// <param name="position">The position of the shape.</param>
+    /// <param name="width">The width of the shape.</param>
+    /// <param name="height">The height of the shape.</param>
+    /// <param name="color">The color of the shape.</param>
+    /// <param name="isSolid">If true, a solid shape.</param>
+    /// <param name="borderThickness">The thickness of the shape's border.</param>
+    /// <param name="cornerRadius">The radius of each corner of the shape.</param>
+    /// <param name="gradientType">The type of color gradient that will be applied to the shape.</param>
     /// <param name="gradientStart">The starting color of the gradient.</param>
     /// <param name="gradientStop">The ending color of the gradient.</param>
     /// <remarks>
     /// <para>
-    ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
+    ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isSolid"/> parameter is set to <c>true</c>.
     /// </para>
     /// <para>
     ///     The value of each corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
@@ -39,12 +42,12 @@ internal readonly record struct RectBatchItem
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The standard text is incorrect and says class instead of struct.")]
-    public RectBatchItem(
+    public ShapeBatchItem(
         Vector2 position,
         float width,
         float height,
         Color color,
-        bool isFilled,
+        bool isSolid,
         float borderThickness,
         CornerRadius cornerRadius,
         ColorGradient gradientType,
@@ -53,9 +56,11 @@ internal readonly record struct RectBatchItem
     {
         Position = position;
         Width = width;
+        this.halfWidth = Width / 2f;
         Height = height;
+        this.halfHeight = Height / 2f;
         Color = color;
-        IsFilled = isFilled;
+        IsSolid = isSolid;
         BorderThickness = borderThickness;
         CornerRadius = cornerRadius;
         GradientType = gradientType;
@@ -64,15 +69,15 @@ internal readonly record struct RectBatchItem
     }
 
     /// <summary>
-    /// Gets the position of the rectangle.
+    /// Gets the position of the shape.
     /// </summary>
     /// <remarks>
-    ///     This is the center of the rectangle.
+    ///     This is the center of the shape.
     /// </remarks>
     public Vector2 Position { get; }
 
     /// <summary>
-    /// Gets the width of the rectangle.
+    /// Gets the width of the shape.
     /// </summary>
     /// <remarks>
     ///     The width is restricted to a minimum value of 1.
@@ -80,7 +85,7 @@ internal readonly record struct RectBatchItem
     public float Width { get; }
 
     /// <summary>
-    /// Gets the height of the rectangle.
+    /// Gets the height of the shape.
     /// </summary>
     /// <remarks>
     ///     The height is restricted to a minimum value of 1.
@@ -88,7 +93,17 @@ internal readonly record struct RectBatchItem
     public float Height { get; }
 
     /// <summary>
-    /// Gets the color of the rectangle.
+    /// Gets the half width of the shape.
+    /// </summary>
+    public float HalfWidth => this.halfWidth;
+
+    /// <summary>
+    /// Gets the half height of the shape.
+    /// </summary>
+    public float HalfHeight => this.halfHeight;
+
+    /// <summary>
+    /// Gets the color of the shape.
     /// </summary>
     /// <remarks>
     ///     Ignored if the <see cref="GradientType"/> is set to any value other than <see cref="ColorGradient.None"/>.
@@ -96,16 +111,16 @@ internal readonly record struct RectBatchItem
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the rectangle is filled with a solid color.
+    /// Gets a value indicating whether or not the shape is a solid color.
     /// </summary>
-    public bool IsFilled { get; }
+    public bool IsSolid { get; }
 
     /// <summary>
-    /// Gets the thickness of the rectangle's border.
+    /// Gets the thickness of the shape's border.
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Ignored if the <see cref="IsFilled"/> property is set to <c>true</c>.
+    ///     Ignored if the <see cref="IsSolid"/> property is set to <c>true</c>.
     /// </para>
     ///
     /// <para>
@@ -115,7 +130,7 @@ internal readonly record struct RectBatchItem
     public float BorderThickness { get; }
 
     /// <summary>
-    /// Gets the radius of each corner of the rectangle.
+    /// Gets the radius of each corner of the shape.
     /// </summary>
     /// <remarks>
     ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
@@ -123,25 +138,25 @@ internal readonly record struct RectBatchItem
     public CornerRadius CornerRadius { get; }
 
     /// <summary>
-    /// Gets the type of color gradient that will be applied to the rectangle.
+    /// Gets the type of color gradient that will be applied to the shape.
     /// </summary>
     /// <remarks>
     /// <para>
     ///     A value of <see cref="ColorGradient.None"/> will use the <see cref="Color"/>
-    ///     property and render the rectangle with a solid color.
+    ///     property and render the shape with a solid color.
     /// </para>
     ///
     /// <para>
     ///     A value of <see cref="ColorGradient.Horizontal"/> will ignore the <see cref="Color"/>
     ///     property and use the <see cref="GradientStart"/> <see cref="GradientStop"/> properties.
-    ///     This will render the rectangle with <see cref="GradientStart"/> color on the left side and gradually
+    ///     This will render the shape with <see cref="GradientStart"/> color on the left side and gradually
     ///     render it to the right side as the <see cref="GradientStop"/> color.
     /// </para>
     ///
     /// <para>
     ///     A value of <see cref="ColorGradient.Vertical"/> will ignore the <see cref="Color"/>
     ///     property and use the <see cref="GradientStart"/> and <see cref="GradientStop"/> properties.
-    ///     This will render the rectangle with <see cref="GradientStart"/> color on the top and gradually
+    ///     This will render the shape with <see cref="GradientStart"/> color on the top and gradually
     ///     render it to the bottom as the <see cref="GradientStop"/> color.
     /// </para>
     /// </remarks>
@@ -169,13 +184,13 @@ internal readonly record struct RectBatchItem
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
         !(Position != Vector2.Zero ||
-          Width > 0f ||
-          Height > 0f ||
-          Color.IsEmpty != true ||
-          IsFilled ||
-          CornerRadius.IsEmpty() != true ||
-          GradientType != ColorGradient.None ||
-          GradientStart.IsEmpty != true ||
-          GradientStop.IsEmpty != true ||
-          BorderThickness > 0f);
+        Width > 0f ||
+        Height > 0f ||
+        !Color.IsEmpty ||
+        IsSolid ||
+        !CornerRadius.IsEmpty() ||
+        GradientType != ColorGradient.None ||
+        !GradientStart.IsEmpty ||
+        !GradientStop.IsEmpty ||
+        BorderThickness > 0f);
 }

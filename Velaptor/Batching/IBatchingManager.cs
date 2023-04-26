@@ -34,7 +34,7 @@ internal interface IBatchingManager
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item.</param>
     /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
-    void AddRectItem(RectBatchItem item, int layer, DateTime renderStamp);
+    void AddRectItem(ShapeBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
     /// Adds a line item to the batch.

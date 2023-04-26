@@ -29,7 +29,7 @@ internal sealed class BatchingManager : IBatchingManager
     private readonly BatchType[] batchTypes = Enum.GetValues<BatchType>();
     private Memory<RenderItem<TextureBatchItem>> textureItems;
     private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
-    private Memory<RenderItem<RectBatchItem>> rectItems;
+    private Memory<RenderItem<ShapeBatchItem>> rectItems;
     private Memory<RenderItem<LineBatchItem>> lineItems;
     private bool isShutDown;
     private bool firstTimeSettingBatchSize = true;
@@ -108,7 +108,7 @@ internal sealed class BatchingManager : IBatchingManager
 
         var rectPullReactable = reactableFactory.CreateRectPullBatchReactable();
         var rectPullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetRectItemsId));
-        this.rectPullUnsubscriber = rectPullReactable.Subscribe(new RespondReactor<Memory<RenderItem<RectBatchItem>>>(
+        this.rectPullUnsubscriber = rectPullReactable.Subscribe(new RespondReactor<Memory<RenderItem<ShapeBatchItem>>>(
             respondId: PullResponses.GetRectItemsId,
             name: rectPullReactorName,
             onRespond: () =>
@@ -151,7 +151,7 @@ internal sealed class BatchingManager : IBatchingManager
     /// Gets the rectangle items.
     /// </summary>
     /// <remarks>USED FOR UNIT TESTING.</remarks>
-    public Span<RenderItem<RectBatchItem>> RectItems => this.rectItems.Span;
+    public Span<RenderItem<ShapeBatchItem>> RectItems => this.rectItems.Span;
 
     /// <summary>
     /// Gets the line items.
@@ -208,7 +208,7 @@ internal sealed class BatchingManager : IBatchingManager
     }
 
     /// <inheritdoc/>
-    public void AddRectItem(RectBatchItem item, int layer, DateTime renderStamp)
+    public void AddRectItem(ShapeBatchItem item, int layer, DateTime renderStamp)
     {
         var emptyItemIndex = this.rectItems.
             FirstItemIndex(i => i.Item.IsEmpty());
@@ -223,7 +223,7 @@ internal sealed class BatchingManager : IBatchingManager
                 PushNotifications.BatchSizeChangedId);
         }
 
-        this.rectItems.Span[emptyItemIndex] = new RenderItem<RectBatchItem>
+        this.rectItems.Span[emptyItemIndex] = new RenderItem<ShapeBatchItem>
         {
             Layer = layer,
             Item = item,
@@ -278,7 +278,7 @@ internal sealed class BatchingManager : IBatchingManager
             this.fontItems.Span[i] = default;
         }
 
-        this.rectItems = new RenderItem<RectBatchItem>[size];
+        this.rectItems = new RenderItem<ShapeBatchItem>[size];
         for (var i = 0; i < size; i++)
         {
             this.rectItems.Span[i] = default;

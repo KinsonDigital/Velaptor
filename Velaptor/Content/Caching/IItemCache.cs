@@ -4,7 +4,7 @@
 
 namespace Velaptor.Content.Caching;
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TCacheKey">The unique key assigned for a particular cached item.</typeparam>
 /// <typeparam name="TCacheType">The type of item being cached.</typeparam>
-public interface IItemCache<TCacheKey, out TCacheType>
+public interface IItemCache<in TCacheKey, out TCacheType>
 {
     /// <summary>
     /// Gets the total number of cached items.
@@ -23,7 +23,7 @@ public interface IItemCache<TCacheKey, out TCacheType>
     /// <summary>
     /// Gets the list of all cache keys.
     /// </summary>
-    ReadOnlyCollection<TCacheKey> CacheKeys { get;  }
+    IReadOnlyCollection<string> CacheKeys { get;  }
 
     /// <summary>
     /// Gets a cached item that matches the given <paramref name="cacheKey"/>.

@@ -6,7 +6,7 @@ namespace Velaptor.Content.Caching;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
@@ -105,7 +105,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     public int TotalCachedItems => this.textures.Count;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<string> CacheKeys => new (this.textures.Keys.ToArray());
+    public IReadOnlyCollection<string> CacheKeys => this.textures.Keys.ToArray().AsReadOnly();
 
     /// <summary>
     /// Gets a texture using the given <paramref name="textureFilePath"/>.

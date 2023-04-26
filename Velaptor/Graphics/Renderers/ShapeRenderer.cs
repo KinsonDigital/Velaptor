@@ -1,4 +1,4 @@
-﻿// <copyright file="RectangleRenderer.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,19 +16,19 @@ using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
 
-/// <inheritdoc cref="IRectangleRenderer"/>
-internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
+/// <inheritdoc cref="IShapeRenderer"/>
+internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<RectBatchItem> buffer;
+    private readonly IGPUBuffer<ShapeBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectangleRenderer"/> class.
+    /// Initializes a new instance of the <see cref="ShapeRenderer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
@@ -36,11 +36,11 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// <param name="buffer">Buffers data to the GPU.</param>
     /// <param name="shader">A shader program in the GPU.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
-    public RectangleRenderer(
+    public ShapeRenderer(
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<RectBatchItem> buffer,
+        IGPUBuffer<ShapeBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)
@@ -66,14 +66,17 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         var rectRenderBatchReactable = reactableFactory.CreateRenderRectReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderRectsId));
-        this.renderUnsubscriber = rectRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<RectBatchItem>>>(
+        this.renderUnsubscriber = rectRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<ShapeBatchItem>>>(
             eventId: PushNotifications.RenderRectsId,
             name: renderReactorName,
             onReceiveData: RenderBatch));
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle, int layer = 0) => RenderBase(rectangle, layer);
+    public void Render(RectShape rect, int layer = 0) => RenderBase(rect.ToBatchItem(), layer);
+
+    /// <inheritdoc/>
+    public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
 
     /// <summary>
     /// Shuts down the application by disposing resources.
@@ -91,58 +94,20 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
         base.ShutDown();
     }
 
-    /// <inheritdoc cref="IRectangleRenderer.Render(RectShape,int)"/>
-    /// <param name="rectangle">The rectangle to render.</param>
-    /// <param name="layer">The layer to render the rectangle.</param>
+    /// <summary>
+    /// Renders the given <paramref name="batchItem"/> to the screen.
+    /// </summary>
+    /// <param name="batchItem">The batch item to render.</param>
+    /// <param name="layer">The layer to render the item.</param>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> method has not been called before rendering.
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
     /// </exception>
-    /// <remarks>
-    ///     <para>
-    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If two separate textures have the same <paramref name="layer"/> value, they will
-    ///         render in the order that the method was invoked.
-    ///     </para>
-    ///     <para>Example below:</para>
-    ///
-    ///     <b>Render Method Invoked Order:</b>
-    ///     <list type="number">
-    ///         <item>Texture 1 (Layer -10)</item>
-    ///         <item>Texture 2 (Layer -20)</item>
-    ///         <item>Texture 3 (Layer 0)</item>
-    ///         <item>Texture 4 (Layer 0)</item>
-    ///         <item>Texture 5 (Layer 4)</item>
-    ///         <item>Texture 6 (Layer 3)</item>
-    ///     </list>
-    ///
-    ///     <b>Texture Render Order:</b>
-    ///     <list type="bullet">
-    ///         <item>Texture 2</item>
-    ///         <item>Texture 1</item>
-    ///         <item>Texture 3</item>
-    ///         <item>Texture 4</item>
-    ///         <item>Texture 6</item>
-    ///         <item>Texture 5</item>
-    ///     </list>
-    /// </remarks>
-    private void RenderBase(RectShape rectangle, int layer = 0)
+    private void RenderBase(ShapeBatchItem batchItem, int layer)
     {
         if (this.hasBegun is false)
         {
             throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
-
-        var batchItem = new RectBatchItem(
-            rectangle.Position,
-            rectangle.Width,
-            rectangle.Height,
-            rectangle.Color,
-            rectangle.IsFilled,
-            rectangle.BorderThickness,
-            rectangle.CornerRadius,
-            rectangle.GradientType,
-            rectangle.GradientStart,
-            rectangle.GradientStop);
 
         this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
     }
@@ -150,7 +115,7 @@ internal sealed class RectangleRenderer : RendererBase, IRectangleRenderer
     /// <summary>
     /// Invoked every time a batch of rectangles is ready to be rendered.
     /// </summary>
-    private void RenderBatch(Memory<RenderItem<RectBatchItem>> itemsToRender)
+    private void RenderBatch(Memory<RenderItem<ShapeBatchItem>> itemsToRender)
     {
         if (itemsToRender.Length <= 0)
         {

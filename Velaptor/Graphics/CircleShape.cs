@@ -1,4 +1,4 @@
-// <copyright file="RectShape.cs" company="KinsonDigital">
+﻿// <copyright file="CircleShape.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,127 +9,112 @@ using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents a rectangular shape with various attributes.
+/// Represents a circle shape with various attributes.
 /// </summary>
-public record struct RectShape
+public record struct CircleShape
 {
-    private float width = 1f;
-    private float height = 1f;
+    private float diameter = 1f;
     private float borderThickness = 1f;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectShape"/> struct.
+    /// Initializes a new instance of the <see cref="CircleShape"/> struct.
     /// </summary>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "Standard text is correct.  Reported incorrectly.")]
-    public RectShape()
+    public CircleShape()
     {
     }
 
     /// <summary>
-    /// Gets or sets the position of the rectangle.
+    /// Gets or sets the position of the circle.
     /// </summary>
     /// <remarks>
-    ///     This position is the center of the rectangle.
+    ///     This position is relative to the center of the circle.
     /// </remarks>
     public Vector2 Position { get; set; } = Vector2.Zero;
 
     /// <summary>
-    /// Gets or sets the width of the rectangle.
+    /// Gets or sets the diameter of the circle.
     /// </summary>
     /// <remarks>
-    ///     The width is restricted to a minimum value of one.
+    ///     The diameter is restricted to a minimum value of one.
     /// </remarks>
-    public float Width
+    public float Diameter
     {
-        get => this.width;
+        get => this.diameter;
         set
         {
             value = value < 1f ? 1f : value;
-
-            this.width = value;
+            this.diameter = value;
         }
     }
 
     /// <summary>
-    /// Gets or sets the height of the rectangle.
+    /// Gets or sets the radius of the circle.
     /// </summary>
     /// <remarks>
-    ///     The height is restricted to a minimum value of one.
+    /// This is half of the <see cref="Diameter"/>.
+    /// <br/>
+    /// Changing the radius will automatically update the <see cref="Diameter"/>.
     /// </remarks>
-    public float Height
+    public float Radius
     {
-        get => this.height;
-        set
-        {
-            value = value < 1f ? 1f : value;
-
-            this.height = value;
-        }
+        get => Diameter / 2f;
+        set => Diameter = value * 2f;
     }
 
     /// <summary>
-    /// Gets the half width of the rectangle.
-    /// </summary>
-    public float HalfWidth => Width / 2f;
-
-    /// <summary>
-    /// Gets the half height of the rectangle.
-    /// </summary>
-    public float HalfHeight => Height / 2f;
-
-    /// <summary>
-    /// Gets or sets the location of the top of the rectangle on the Y axis.
+    /// Gets or sets the top location of the top of the circle on the Y axis.
     /// </summary>
     /// <remarks>
-    ///     Will automatically update the <see cref="Position"/> of the rectangle.
+    ///     Will automatically update the <see cref="Position"/> of the circle.
     /// </remarks>
     public float Top
     {
-        get => Position.Y - HalfHeight;
-        set => Position = new Vector2(Position.X, value + HalfHeight);
+        get => Position.Y - Radius;
+        set => Position = new Vector2(Position.X, value + Radius);
     }
 
     /// <summary>
-    /// Gets or sets the location of the right side of the rectangle on the X axis.
+    /// Gets or sets the location of the right side of the circle on the X axis.
     /// </summary>
     /// <remarks>
-    ///     Will automatically update the <see cref="Position"/> of the rectangle.
+    ///     Will automatically update the <see cref="Position"/> of the circle.
     /// </remarks>
     public float Right
     {
-        get => Position.X + HalfWidth;
-        set => Position = new Vector2(value - HalfWidth, Position.Y);
+        get => Position.X + Radius;
+        set => Position = new Vector2(value - Radius, Position.Y);
     }
 
     /// <summary>
-    /// Gets or sets the location of the bottom of the rectangle on the Y axis.
+    /// Gets or sets the bottom location of the bottom of the circle on the Y axis.
     /// </summary>
     /// <remarks>
-    ///     Will automatically update the <see cref="Position"/> of the rectangle.
+    ///     Will automatically update the <see cref="Position"/> of the circle.
     /// </remarks>
     public float Bottom
     {
-        get => Position.Y + HalfHeight;
-        set => Position = new Vector2(Position.X, value - HalfHeight);
+        get => Position.Y + Radius;
+        set => Position = new Vector2(Position.X, value - Radius);
     }
 
     /// <summary>
-    /// Gets or sets the location of the left side of the rectangle on the X axis.
+    /// Gets or sets the location of the left side of the circle on the X axis.
     /// </summary>
     /// <remarks>
-    ///     Will automatically update the <see cref="Position"/> of the rectangle.
+    ///     Will automatically update the <see cref="Position"/> of the circle.
     /// </remarks>
     public float Left
     {
-        get => Position.X - HalfWidth;
-        set => Position = new Vector2(value + HalfWidth, Position.Y);
+        get => Position.X - Radius;
+        set => Position = new Vector2(value + Radius, Position.Y);
     }
 
     /// <summary>
-    /// Gets or sets the color of the rectangle.
+    /// Gets or sets the color of the circle.
     /// </summary>
     /// <remarks>
     ///     Ignored if the <see cref="GradientType"/> is set to any value other than <see cref="ColorGradient.None"/>.
@@ -137,30 +122,26 @@ public record struct RectShape
     public Color Color { get; set; } = Color.White;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the rectangle is solid.
+    /// Gets or sets a value indicating whether or not the circle is solid.
     /// </summary>
     public bool IsSolid { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the thickness of the rectangle's border.
+    /// Gets or sets the thickness of the circle's border.
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     Ignored if the <see cref="IsSolid"/> property is set to <c>true</c>.
-    /// </para>
-    ///
-    /// <para>
-    ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
+    ///     Only visible if the <see cref="IsSolid"/> property is set to <c>false</c>.
+    ///     <br/>
+    ///     The border thickness is automatically restricted to a value no greater than the <see cref="Radius"/>.
     /// </para>
     /// </remarks>
     public float BorderThickness
     {
-        readonly get => this.borderThickness;
+        get => this.borderThickness;
         set
         {
-            var smallestDimension = this.width < this.height ? this.width : this.height;
-
-            value = value > smallestDimension ? smallestDimension : value;
+            value = value > Radius ? Radius : value;
             value = value < 1f ? 1f : value;
 
             this.borderThickness = value;
@@ -168,33 +149,25 @@ public record struct RectShape
     }
 
     /// <summary>
-    /// Gets or sets the radius of each corner of the rectangle.
-    /// </summary>
-    /// <remarks>
-    ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
-    /// </remarks>
-    public CornerRadius CornerRadius { get; set; } = new (1f, 1f, 1f, 1f);
-
-    /// <summary>
-    /// Gets or sets the type of color gradient that will be applied to the rectangle.
+    /// Gets or sets the type of color gradient that will be applied to the circle.
     /// </summary>
     /// <remarks>
     /// <para>
     ///     A value of <see cref="ColorGradient.None"/> will use the <see cref="Color"/>
-    ///     property and render the rectangle with a solid color.
+    ///     property and render the circle with a solid color.
     /// </para>
     ///
     /// <para>
     ///     A value of <see cref="ColorGradient.Horizontal"/> will ignore the <see cref="Color"/>
     ///     property and use the <see cref="GradientStart"/> <see cref="GradientStop"/> properties.
-    ///     This will render the rectangle with <see cref="GradientStart"/> color on the left side and gradually
+    ///     This will render the circle with <see cref="GradientStart"/> color on the left side and gradually
     ///     render it to the right side as the <see cref="GradientStop"/> color.
     /// </para>
     ///
     /// <para>
     ///     A value of <see cref="ColorGradient.Vertical"/> will ignore the <see cref="Color"/>
     ///     property and use the <see cref="GradientStart"/> and <see cref="GradientStop"/> properties.
-    ///     This will render the rectangle with <see cref="GradientStart"/> color on the top and gradually
+    ///     This will render the circle with <see cref="GradientStart"/> color on the top and gradually
     ///     render it to the bottom as the <see cref="GradientStop"/> color.
     /// </para>
     /// </remarks>
@@ -222,12 +195,10 @@ public record struct RectShape
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
         Position == Vector2.Zero &&
-        Width <= 1f &&
-        Height <= 1f &&
+        BorderThickness <= 1f &&
+        Diameter <= 1f &&
         Color.IsEmpty &&
         IsSolid is false &&
-        BorderThickness <= 1f &&
-        CornerRadius.IsEmpty() &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
         GradientStop.IsEmpty;
@@ -238,12 +209,10 @@ public record struct RectShape
     public void Empty()
     {
         Position = Vector2.Zero;
-        Width = 0;
-        Height = 0;
+        Diameter = 1f;
         Color = Color.Empty;
         IsSolid = false;
-        BorderThickness = 0u;
-        CornerRadius = new CornerRadius(0f, 0f, 0f, 0f);
+        BorderThickness = 1u;
         GradientType = ColorGradient.None;
         GradientStart = Color.Empty;
         GradientStop = Color.Empty;

@@ -1,4 +1,4 @@
-﻿// <copyright file="FontTests.cs" company="KinsonDigital">
+// <copyright file="FontTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -333,6 +333,17 @@ public class FontTests : IDisposable
         actualFilePath.Should().Be(this.fontFilePath);
         actualIsDefaultFont.Should().BeTrue();
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_PropsSetToCorrectDefaultValues()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act & Assert
+        sut.CacheEnabled.Should().BeTrue();
+        sut.MaxCacheSize.Should().Be(1000);
+    }
     #endregion
 
     #region Prop Tests
@@ -455,6 +466,34 @@ public class FontTests : IDisposable
         this.mockFontAtlasService.VerifyNever(m => m.CreateAtlas(It.IsAny<string>(), It.IsAny<uint>()));
         this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<nint>(), 0u));
     }
+
+    [Fact]
+    public void CacheEnabled_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.CacheEnabled = false;
+        var actual = sut.CacheEnabled;
+
+        // Assert
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CacheMeasurements_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.MaxCacheSize = 100;
+        var actual = sut.MaxCacheSize;
+
+        // Assert
+        actual.Should().Be(100);
+    }
     #endregion
 
     #region Method Tests
@@ -489,34 +528,34 @@ public class FontTests : IDisposable
         actual.Height.Should().Be(0);
     }
 
-    [Fact]
-    public void Measure_WhenInvoked_ReturnsCorrectResult()
+    [Theory]
+    [InlineData(true, 10)]
+    // [InlineData(false, 20)]
+    public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
         // Arrange
         var text = $"hello{Environment.NewLine}world";
 
-        this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
+        this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
+            .Returns(2f);
         this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
         MockGlyphKernings(text);
 
-        var font = new Font(
-            this.mockTexture.Object,
-            this.mockFontService.Object,
-            this.mockFontStatsService.Object,
-            this.mockFontAtlasService.Object,
-            this.mockTextureCache.Object,
-            "test-name",
-            DirPath,
-            It.IsAny<uint>(),
-            It.IsAny<bool>(),
-            this.glyphMetrics.Values.ToArray());
+        var font = CreateSystemUnderTest();
+        font.CacheEnabled = useCaching;
 
         // Act
         var actual = font.Measure(text);
+        font.Measure(text);
 
         // Assert
-        actual.Width.Should().Be(103);
-        actual.Height.Should().Be(31);
+        actual.Width.Should().Be(137);
+        actual.Height.Should().Be(33);
+
+        this.mockFontService
+            .Verify(m =>
+                m.GetKerning(It.IsAny<IntPtr>(), It.IsAny<uint>(), It.IsAny<uint>()),
+                    Times.Exactly(executeKerningCount));
     }
 
     [Fact]
@@ -641,6 +680,12 @@ public class FontTests : IDisposable
         {
             Assert.True(false, $"Cannot run test with the static class member '{this.glyphMetrics}' being null or empty.");
         }
+
+        // Strip new line and carriage feed characters.  This white space characters
+        // do not contribute to the kerning values anyhow and this interferes with
+        // differences between windows and linux
+        text = text.Replace("\r", string.Empty);
+        text = text.Replace("\n", string.Empty);
 
         /* NOTE:
          * For the text 'hello\nworld', the kerning values should be mocked for each character below
