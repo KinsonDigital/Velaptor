@@ -1576,11 +1576,11 @@ public class InternalExtensionMethodsTests
     {
         // Arrange
         var expected = new ShapeBatchItem(new Vector2(1, 2),
-            3f,
-            4f,
+            100f,
+            90f,
             NETColor.FromArgb(5, 6, 7, 8),
             true,
-            9f,
+            30f,
             new CornerRadius(10, 11, 12, 13),
             ColorGradient.Horizontal,
             NETColor.FromArgb(14, 15, 16, 17),
@@ -1589,11 +1589,11 @@ public class InternalExtensionMethodsTests
         var sut = new RectShape
         {
             Position = new Vector2(1, 2),
-            Width = 3,
-            Height = 4,
+            Width = 100,
+            Height = 90,
             Color = NETColor.FromArgb(5,6,7,8),
             IsSolid = true,
-            BorderThickness = 9,
+            BorderThickness = 30,
             CornerRadius = new CornerRadius(10, 11, 12, 13),
             GradientType = ColorGradient.Horizontal,
             GradientStart = NETColor.FromArgb(14, 15, 16, 17),

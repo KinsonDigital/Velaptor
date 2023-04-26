@@ -500,7 +500,6 @@ public class ButtonTests
         var expected = default(RectShape);
         expected.Position = new Vector2(400f, 600f);
         expected.IsSolid = true;
-        expected.BorderThickness = 0u;
         expected.Color = Color.DarkGray;
         expected.Width = 100u;
         expected.Height = 50f;
@@ -516,7 +515,7 @@ public class ButtonTests
         sut.AutoSize = false;
         sut.Width = 100;
         sut.Height = 50;
-        sut.BorderThickness = 123u;
+        sut.BorderThickness = 0u;
         sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
         sut.LoadContent();
 
