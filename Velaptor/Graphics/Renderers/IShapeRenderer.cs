@@ -12,9 +12,9 @@ using System;
 public interface IShapeRenderer
 {
     /// <summary>
-    /// Renders the given <paramref name="rectangle"/>.
+    /// Renders the given <paramref name="rect"/>.
     /// </summary>
-    /// <param name="rectangle">The rectangle to render.</param>
+    /// <param name="rect">The rectangle to render.</param>
     /// <param name="layer">The layer to render the rectangle.</param>
     /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
     /// <remarks>
@@ -45,7 +45,7 @@ public interface IShapeRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
-    void Render(RectShape rectangle, int layer = 0);
+    void Render(RectShape rect, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="circle"/>.

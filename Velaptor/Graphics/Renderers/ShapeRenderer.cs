@@ -73,50 +73,10 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle, int layer = 0)
-    {
-        if (this.hasBegun is false)
-        {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
-        }
-
-        var batchItem = new ShapeBatchItem(
-            rectangle.Position,
-            rectangle.Width,
-            rectangle.Height,
-            rectangle.Color,
-            rectangle.IsSolid,
-            rectangle.BorderThickness,
-            rectangle.CornerRadius,
-            rectangle.GradientType,
-            rectangle.GradientStart,
-            rectangle.GradientStop);
-
-        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
-    }
+    public void Render(RectShape rect, int layer = 0) => RenderBase(rect.ToBatchItem(), layer);
 
     /// <inheritdoc/>
-    public void Render(CircleShape circle, int layer = 0)
-    {
-        if (this.hasBegun is false)
-        {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
-        }
-
-        var batchItem = new ShapeBatchItem(
-            circle.Position,
-            circle.Diameter,
-            circle.Diameter,
-            circle.Color,
-            circle.IsSolid,
-            circle.BorderThickness,
-            new CornerRadius(circle.Diameter),
-            circle.GradientType,
-            circle.GradientStart,
-            circle.GradientStop);
-
-        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
-    }
+    public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
 
     /// <summary>
     /// Shuts down the application by disposing resources.
@@ -132,6 +92,24 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         this.renderBatchBegunUnsubscriber.Dispose();
 
         base.ShutDown();
+    }
+
+    /// <summary>
+    /// Renders the given <paramref name="batchItem"/> to the screen.
+    /// </summary>
+    /// <param name="batchItem">The batch item to render.</param>
+    /// <param name="layer">The layer to render the item.</param>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    private void RenderBase(ShapeBatchItem batchItem, int layer)
+    {
+        if (this.hasBegun is false)
+        {
+            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+        }
+
+        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
     }
 
     /// <summary>

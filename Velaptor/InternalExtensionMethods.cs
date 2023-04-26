@@ -1511,4 +1511,38 @@ internal static class InternalExtensionMethods
         // Copy the backup back to where it came from
         dataBackup.CopyTo(items.Span);
     }
+
+    /// <summary>
+    /// Converts the given <paramref name="rect"/> to a <see cref="ShapeBatchItem"/>.
+    /// </summary>
+    /// <param name="rect">The circle shape to convert.</param>
+    /// <returns>The batch item.</returns>
+    public static ShapeBatchItem ToBatchItem(this RectShape rect) =>
+        new (rect.Position,
+            rect.Width,
+            rect.Height,
+            rect.Color,
+            rect.IsSolid,
+            rect.BorderThickness,
+            rect.CornerRadius,
+            rect.GradientType,
+            rect.GradientStart,
+            rect.GradientStop);
+
+    /// <summary>
+    /// Converts the given <paramref name="circle"/> to a <see cref="ShapeBatchItem"/>.
+    /// </summary>
+    /// <param name="circle">The circle shape to convert.</param>
+    /// <returns>The batch item.</returns>
+    public static ShapeBatchItem ToBatchItem(this CircleShape circle) =>
+        new (circle.Position,
+            circle.Diameter,
+            circle.Diameter,
+            circle.Color,
+            circle.IsSolid,
+            circle.BorderThickness,
+            new CornerRadius(circle.Diameter / 2f),
+            circle.GradientType,
+            circle.GradientStart,
+            circle.GradientStop);
 }

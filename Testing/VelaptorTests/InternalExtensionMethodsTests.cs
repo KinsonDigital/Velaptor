@@ -1570,6 +1570,76 @@ public class InternalExtensionMethodsTests
         // Assert
         items.Span.ToArray().Should().BeEquivalentTo(expected);
     }
+
+    [Fact]
+    public void ToBatchItem_WithRectShapeOverload_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new ShapeBatchItem(new Vector2(1, 2),
+            3f,
+            4f,
+            NETColor.FromArgb(5, 6, 7, 8),
+            true,
+            9f,
+            new CornerRadius(10, 11, 12, 13),
+            ColorGradient.Horizontal,
+            NETColor.FromArgb(14, 15, 16, 17),
+            NETColor.FromArgb(18, 19, 20, 21));
+
+        var sut = new RectShape
+        {
+            Position = new Vector2(1, 2),
+            Width = 3,
+            Height = 4,
+            Color = NETColor.FromArgb(5,6,7,8),
+            IsSolid = true,
+            BorderThickness = 9,
+            CornerRadius = new CornerRadius(10, 11, 12, 13),
+            GradientType = ColorGradient.Horizontal,
+            GradientStart = NETColor.FromArgb(14, 15, 16, 17),
+            GradientStop = NETColor.FromArgb(18, 19, 20, 21),
+        };
+
+        // Act
+        var actual = sut.ToBatchItem();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ToBatchItem_WithCircleShapeOverload_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new ShapeBatchItem(new Vector2(1, 2),
+            100f,
+            100f,
+            NETColor.FromArgb(4, 5, 6, 7),
+            true,
+            50f,
+            new CornerRadius(50f),
+            ColorGradient.Horizontal,
+            NETColor.FromArgb(9, 10, 11, 12),
+            NETColor.FromArgb(13, 14, 15, 16));
+
+        var sut = new CircleShape
+        {
+            Position = new Vector2(1, 2),
+            Diameter = 100,
+            Color = NETColor.FromArgb(4, 5, 6, 7),
+            IsSolid = true,
+            BorderThickness = 50,
+            GradientType = ColorGradient.Horizontal,
+            GradientStart = NETColor.FromArgb(9, 10, 11, 12),
+            GradientStop = NETColor.FromArgb(13, 14, 15, 16),
+        };
+
+        // Act
+        var actual = sut.ToBatchItem();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
     #endregion
 
     /// <summary>
