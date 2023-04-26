@@ -4,13 +4,14 @@
 
 namespace Velaptor.Graphics;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-public struct RectShape
+public record struct RectShape
 {
     private float width = 1f;
     private float height = 1f;
@@ -18,6 +19,10 @@ public struct RectShape
     /// <summary>
     /// Initializes a new instance of the <see cref="RectShape"/> struct.
     /// </summary>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1642:Constructor summary documentation should begin with standard text",
+        Justification = "Standard text is correct.  Reported incorrectly.")]
     public RectShape()
     {
     }
