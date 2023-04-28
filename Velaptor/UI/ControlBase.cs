@@ -200,7 +200,7 @@ public abstract class ControlBase : IControl
             if (currMousePos != this.prevMousePos)
             {
                 var relativePos = new Point(Position.X - currMousePos.X, Position.Y - currMousePos.Y);
-                this.MouseMove?.Invoke(this, new MousePositionEventArgs(relativePos));
+                OnMouseMove(new MousePositionEventArgs(relativePos));
             }
 
             if (currMouseState.IsLeftButtonDown())
