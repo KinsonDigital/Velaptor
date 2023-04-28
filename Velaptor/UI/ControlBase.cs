@@ -1,4 +1,4 @@
-﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
+// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,9 +18,8 @@ public abstract class ControlBase : IControl
 {
     private readonly IAppInput<MouseState> mouse;
     private MouseState currentMouseState;
-    private MouseState previousMouseState;
-    private Point currentMousePos;
-    private Point previousMousePos;
+    private MouseState prevMouseState;
+    private Point prevMousePos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
@@ -142,18 +141,18 @@ public abstract class ControlBase : IControl
             return;
         }
 
-        this.currentMouseState = this.mouse.GetState();
-        this.currentMousePos = this.currentMouseState.GetPosition();
+        var currMouseState = this.mouse.GetState();
+        var currMousePos = currMouseState.GetPosition();
 
         var halfWidth = (int)Width / 2;
         var halfHeight = (int)Height / 2;
 
         var controlRect = new Rectangle(Position.X - halfWidth, Position.Y - halfHeight, (int)Width, (int)Height);
 
-        IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
+        IsMouseOver = controlRect.Contains(currMouseState.GetX(), currMouseState.GetY());
 
         // If the mouse button is in the down position
-        if (this.currentMouseState.IsLeftButtonDown() && IsMouseOver)
+        if (currMouseState.IsLeftButtonDown() && IsMouseOver)
         {
             TintColor = MouseDownColor;
         }
@@ -165,21 +164,21 @@ public abstract class ControlBase : IControl
         if (IsMouseOver)
         {
             // Invoked the mouse move event if the mouse has been moved
-            if (this.currentMousePos != this.previousMousePos)
+            if (currMousePos != this.prevMousePos)
             {
-                var relativePos = new Point(Position.X - this.currentMousePos.X, Position.Y - this.currentMousePos.Y);
+                var relativePos = new Point(Position.X - currMousePos.X, Position.Y - currMousePos.Y);
                 this.MouseMove?.Invoke(this, new MousePositionEventArgs(relativePos));
             }
 
-            if (this.currentMouseState.IsLeftButtonDown())
+            if (currMouseState.IsLeftButtonDown())
             {
                 OnMouseDown();
                 this.MouseDown?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        if (this.currentMouseState.IsLeftButtonUp() &&
-            this.previousMouseState.IsLeftButtonDown() &&
+        if (currMouseState.IsLeftButtonUp() &&
+            this.prevMouseState.IsLeftButtonDown() &&
             IsMouseOver)
         {
             OnMouseUp();
@@ -187,8 +186,8 @@ public abstract class ControlBase : IControl
             this.Click?.Invoke(this, EventArgs.Empty);
         }
 
-        this.previousMouseState = this.currentMouseState;
-        this.previousMousePos = this.currentMousePos;
+        this.prevMouseState = currMouseState;
+        this.prevMousePos = currMousePos;
     }
 
     /// <summary>
