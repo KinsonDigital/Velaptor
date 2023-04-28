@@ -143,6 +143,34 @@ public abstract class ControlBase : IControl
 
         ProcessMouse();
     }
+
+    /// <summary>
+    /// Renders the control to the screen.
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
+    public virtual void Render()
+    {
+    }
+
+    /// <summary>
+    /// Invoked when the mouse is in the down position over the control.
+    /// Used when a child control needs to be notified if the mouse is the down position.
+    /// </summary>
+    internal virtual void OnMouseDown()
+    {
+    }
+
+    /// <summary>
+    /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
+    /// Used when a child control needs to be notified if the mouse is in the up position.
+    /// </summary>
+    internal virtual void OnMouseUp()
+    {
+    }
+
+    /// <summary>
+    /// Process mouse input.
+    /// </summary>
     private void ProcessMouse()
     {
         var currMouseState = this.mouse.GetState();
@@ -193,29 +221,5 @@ public abstract class ControlBase : IControl
 
         this.prevMouseState = currMouseState;
         this.prevMousePos = currMousePos;
-    }
-
-    /// <summary>
-    /// Renders the control to the screen.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
-    public virtual void Render()
-    {
-    }
-
-    /// <summary>
-    /// Invoked when the mouse is in the down position over the control.
-    /// Used when a child control needs to be notified if the mouse is the down position.
-    /// </summary>
-    internal virtual void OnMouseDown()
-    {
-    }
-
-    /// <summary>
-    /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
-    /// Used when a child control needs to be notified if the mouse is in the up position.
-    /// </summary>
-    internal virtual void OnMouseUp()
-    {
     }
 }
