@@ -156,9 +156,7 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse is in the down position over the control.
     /// Used when a child control needs to be notified if the mouse is the down position.
     /// </summary>
-    internal virtual void OnMouseDown()
-    {
-    }
+    internal virtual void OnMouseDown() => this.MouseDown?.Invoke(this, EventArgs.Empty);
 
     /// <summary>
     /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
@@ -166,6 +164,8 @@ public abstract class ControlBase : IControl
     /// </summary>
     internal virtual void OnMouseUp()
     {
+        this.MouseUp?.Invoke(this, EventArgs.Empty);
+        this.Click?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -206,7 +206,6 @@ public abstract class ControlBase : IControl
             if (currMouseState.IsLeftButtonDown())
             {
                 OnMouseDown();
-                this.MouseDown?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -215,8 +214,6 @@ public abstract class ControlBase : IControl
             IsMouseOver)
         {
             OnMouseUp();
-            this.MouseUp?.Invoke(this, EventArgs.Empty);
-            this.Click?.Invoke(this, EventArgs.Empty);
         }
 
         this.prevMouseState = currMouseState;
