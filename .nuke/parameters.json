@@ -4,5 +4,6 @@
     "RepoOwner": "KinsonDigital",
     "RepoName": "Velaptor",
     "ProjectName": "Velaptor",
-    "PreProcessReadMe": true
+    "PreProcessReadMe": true,
+    "SkipNugetChecks": false
 }
