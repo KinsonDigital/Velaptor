@@ -141,7 +141,12 @@ public abstract class ControlBase : IControl
             return;
         }
 
+        ProcessMouse();
+    }
+    private void ProcessMouse()
+    {
         var currMouseState = this.mouse.GetState();
+
         var currMousePos = currMouseState.GetPosition();
 
         var halfWidth = (int)Width / 2;
@@ -202,7 +207,7 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse is in the down position over the control.
     /// Used when a child control needs to be notified if the mouse is the down position.
     /// </summary>
-    protected virtual void OnMouseDown()
+    internal virtual void OnMouseDown()
     {
     }
 
@@ -210,7 +215,7 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
     /// Used when a child control needs to be notified if the mouse is in the up position.
     /// </summary>
-    protected virtual void OnMouseUp()
+    internal virtual void OnMouseUp()
     {
     }
 }

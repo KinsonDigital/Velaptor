@@ -471,7 +471,7 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Invoked on mouse down and sets the mouse down state.
     /// </summary>
-    protected override void OnMouseDown()
+    internal override void OnMouseDown()
     {
         this.isMouseDown = true;
         base.OnMouseDown();
@@ -480,7 +480,7 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Invoked on mouse up and sets the mouse up state.
     /// </summary>
-    protected override void OnMouseUp()
+    internal override void OnMouseUp()
     {
         this.isMouseDown = false;
         base.OnMouseUp();
