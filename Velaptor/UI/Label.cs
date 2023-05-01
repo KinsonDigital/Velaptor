@@ -56,9 +56,10 @@ public class Label : ControlBase
     /// </exception>
     internal Label(
         IContentLoader contentLoader,
+        IAppInput<KeyboardState> keyboard,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
-            : base(mouse)
+            : base(keyboard, mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(rendererFactory);

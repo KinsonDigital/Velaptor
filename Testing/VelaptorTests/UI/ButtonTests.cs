@@ -36,6 +36,7 @@ public class ButtonTests
     private readonly Mock<ITexture> mockTexture;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IUIControlFactory> mockControlFactory;
+    private readonly Mock<IAppInput<KeyboardState>> mockKeyboard;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
     private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Label label;
@@ -81,6 +82,7 @@ public class ButtonTests
         this.mockContentLoader.Setup(m => m.LoadFont(DefaultRegularFont, 12))
             .Returns(this.mockFont.Object);
 
+        this.mockKeyboard = new Mock<IAppInput<KeyboardState>>();
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
         this.mockShapeRenderer = new Mock<IShapeRenderer>();
@@ -94,6 +96,7 @@ public class ButtonTests
 
         this.label = new Label(
             this.mockContentLoader.Object,
+            this.mockKeyboard.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);
 
@@ -112,6 +115,7 @@ public class ButtonTests
             _ = new Button(
                 null,
                 this.mockControlFactory.Object,
+                this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 this.mockRenderFactory.Object);
         };
@@ -131,6 +135,7 @@ public class ButtonTests
             _ = new Button(
                 this.mockContentLoader.Object,
                 null,
+                this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 this.mockRenderFactory.Object);
         };
@@ -150,6 +155,7 @@ public class ButtonTests
             _ = new Button(
                 this.mockContentLoader.Object,
                 this.mockControlFactory.Object,
+                this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 null);
         };
@@ -739,6 +745,7 @@ public class ButtonTests
     private Button CreateSystemUnderTest()
         => new (this.mockContentLoader.Object,
             this.mockControlFactory.Object,
+            this.mockKeyboard.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);
 }

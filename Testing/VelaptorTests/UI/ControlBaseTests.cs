@@ -1,4 +1,4 @@
-﻿// <copyright file="ControlBaseTests.cs" company="KinsonDigital">
+// <copyright file="ControlBaseTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,18 +13,24 @@ using Moq;
 using Velaptor.Input;
 using Velaptor.UI;
 using Xunit;
+using MouseButton = Velaptor.Input.MouseButton;
 
 /// <summary>
 /// Tests the <see cref="ControlBase"/> class.
 /// </summary>
 public class ControlBaseTests
 {
+    private readonly Mock<IAppInput<KeyboardState>> mockKeyboardInput;
     private readonly Mock<IAppInput<MouseState>> mockMouseInput;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBaseTests"/> class.
     /// </summary>
-    public ControlBaseTests() => this.mockMouseInput = new Mock<IAppInput<MouseState>>();
+    public ControlBaseTests()
+    {
+        this.mockKeyboardInput = new Mock<IAppInput<KeyboardState>>();
+        this.mockMouseInput = new Mock<IAppInput<MouseState>>();
+    }
 
     /// <summary>
     /// Gets the mouse test data.
@@ -315,7 +321,7 @@ public class ControlBaseTests
         byte blue)
     {
         // Arrange
-        var sut = new ControlBaseFake(this.mockMouseInput.Object)
+        var sut = new ControlBaseFake(this.mockKeyboardInput.Object, this.mockMouseInput.Object)
         {
             Position = new Point(50, 50),
             Width = 100,
@@ -522,5 +528,5 @@ public class ControlBaseTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private ControlBaseFake CreateSystemUnderTest()
-        => new (this.mockMouseInput.Object);
+        => new (this.mockKeyboardInput.Object, this.mockMouseInput.Object);
 }

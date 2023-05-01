@@ -172,9 +172,10 @@ public sealed class Button : ControlBase
     internal Button(
         IContentLoader contentLoader,
         IUIControlFactory controlFactory,
+        IAppInput<KeyboardState> keyboard,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
-        : base(mouse)
+        : base(keyboard, mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(controlFactory);

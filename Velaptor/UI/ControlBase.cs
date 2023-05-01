@@ -17,21 +17,31 @@ using Input;
 public abstract class ControlBase : IControl
 {
     private readonly IAppInput<MouseState> mouse;
-    private MouseState currentMouseState;
+    private readonly IAppInput<KeyboardState> keyboard;
     private MouseState prevMouseState;
+    private KeyboardState prevKeyboardState;
     private Point prevMousePos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
+    /// <param name="keyboard">The system keyboard.</param>
     /// <param name="mouse">The system mouse.</param>
-    internal ControlBase(IAppInput<MouseState> mouse) => this.mouse = mouse;
+    protected ControlBase(IAppInput<KeyboardState> keyboard, IAppInput<MouseState> mouse)
+    {
+        this.keyboard = keyboard;
+        this.mouse = mouse;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
-    protected ControlBase() => this.mouse = InputFactory.CreateMouse();
+    protected ControlBase()
+    {
+        this.keyboard = InputFactory.CreateKeyboard();
+        this.mouse = InputFactory.CreateMouse();
+    }
 
     /// <inheritdoc cref="IControl.Click"/>
     public event EventHandler<EventArgs>? Click;
@@ -44,6 +54,12 @@ public abstract class ControlBase : IControl
 
     /// <inheritdoc cref="IControl.MouseMove"/>
     public event EventHandler<MouseMoveEventArgs>? MouseMove;
+
+    /// <inheritdoc cref="IControl.KeyDown"/>
+    public event EventHandler<KeyEventArgs>? KeyDown;
+
+    /// <inheritdoc cref="IControl.KeyUp"/>
+    public event EventHandler<KeyEventArgs>? KeyUp;
 
     /// <inheritdoc cref="IControl.Name"/>
     public string Name { get; set; } = string.Empty;
@@ -142,6 +158,7 @@ public abstract class ControlBase : IControl
         }
 
         ProcessMouse();
+        ProcessKeyboard();
     }
 
     /// <summary>
@@ -172,7 +189,76 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse moves over the control.
     /// </summary>
     /// <param name="mousePosArgs">The position of the mouse over the control.</param>
-    internal virtual void OnMouseMove(MouseMoveEventArgs mousePosArgs) => this.MouseMove?.Invoke(this, mousePosArgs);
+    protected virtual void OnMouseMove(MouseMoveEventArgs mousePosArgs) => this.MouseMove?.Invoke(this, mousePosArgs);
+
+    /// <summary>
+    /// Invoked when a keyboard key is pressed into the down position from the up position.
+    /// </summary>
+    /// <param name="key">The key that is down.</param>
+    protected virtual void OnKeyDown(KeyCode key) => this.KeyDown?.Invoke(this, new KeyEventArgs(key));
+
+    /// <summary>
+    /// Invoked when a keyboard key is lifted from the down position to the up position.
+    /// </summary>
+    /// <param name="key">The key that is up.</param>
+    protected virtual void OnKeyUp(KeyCode key) => this.KeyUp?.Invoke(this, new KeyEventArgs(key));
+
+    /// <summary>
+    /// Process keyboard input.
+    /// </summary>
+    private void ProcessKeyboard()
+    {
+        var currKeyboardState = this.keyboard.GetState();
+
+        ProcessKeyDownEvents(currKeyboardState, this.prevKeyboardState);
+        ProcessKeyUpEvents(currKeyboardState, this.prevKeyboardState);
+
+        this.prevKeyboardState = currKeyboardState;
+    }
+
+    /// <summary>
+    /// Process any keyboard key down events.
+    /// </summary>
+    /// <param name="currState">The current state of the keyboard this frame.</param>
+    /// <param name="prevState">The previous state of the keyboard the previous frame.</param>
+    [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
+    private void ProcessKeyDownEvents(KeyboardState currState, KeyboardState prevState)
+    {
+        if (!currState.AnyKeysDown())
+        {
+            return;
+        }
+
+        foreach (var downKey in prevState.GetDownKeys())
+        {
+            if (this.prevKeyboardState.IsKeyUp(downKey))
+            {
+                OnKeyDown(downKey);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Process any keyboard key up events.
+    /// </summary>
+    /// <param name="currState">The current state of the keyboard this frame.</param>
+    /// <param name="prevState">The previous state of the keyboard the previous frame.</param>
+    [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
+    private void ProcessKeyUpEvents(KeyboardState currState, KeyboardState prevState)
+    {
+        if (!prevState.AnyKeysDown())
+        {
+            return;
+        }
+
+        foreach (var downKey in prevState.GetDownKeys())
+        {
+            if (currState.IsKeyUp(downKey))
+            {
+                OnKeyUp(downKey);
+            }
+        }
+    }
 
     /// <summary>
     /// Process mouse input.
@@ -211,11 +297,11 @@ public abstract class ControlBase : IControl
                 // Get the X and Y position relative to the top right corner of the control
                 // NOTE: Even though the origin of the control is still the center,
                 // the local mouse pos is not relative to the origin, it is relative to the top left corner
-                var x = Math.Abs((Position.X - currMousePos.X) - halfWidth);
-                var y = Math.Abs((Position.Y - currMousePos.Y) - halfHeight);
+                var localX = Math.Abs(Position.X - currMousePos.X - halfWidth);
+                var localY = Math.Abs(Position.Y - currMousePos.Y - halfHeight);
 
                 // Position of the mouse relative to the top left corner of the control
-                var localPos = new Point(x, y);
+                var localPos = new Point(localX, localY);
 
                 OnMouseMove(new MouseMoveEventArgs(globalPos, localPos));
             }

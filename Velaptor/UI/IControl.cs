@@ -1,4 +1,4 @@
-// <copyright file="IControl.cs" company="KinsonDigital">
+﻿// <copyright file="IControl.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace Velaptor.UI;
 using System;
 using System.Drawing;
 using Content;
+using Input;
 
 /// <summary>
 /// A user interface object that can be updated and rendered to the screen.
@@ -33,6 +34,16 @@ public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable
     /// Occurs when the mouse moves over the button.
     /// </summary>
     event EventHandler<MouseMoveEventArgs>? MouseMove;
+
+    /// <summary>
+    /// Occurs when a keyboard key is pressed into the down position.
+    /// </summary>
+    event EventHandler<KeyEventArgs>? KeyDown;
+
+    /// <summary>
+    /// Occurs when a keyboard key is released into the up position.
+    /// </summary>
+    event EventHandler<KeyEventArgs>? KeyUp;
 
     // ReSharper disable UnusedMemberInSuper.Global
 
