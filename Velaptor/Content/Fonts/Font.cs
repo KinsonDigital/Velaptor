@@ -267,11 +267,16 @@ public sealed class Font : IFont
                 heightOffset += currentCharMetric.HoriBearingY;
             }
 
+            // Get the width of the glyph
+            var boundsWidth = currentCharMetric.Glyph == ' '
+                ? currentCharMetric.HorizontalAdvance
+                : currentCharMetric.GlyphBounds.Width;
+
             // Create the destination rect
             RectangleF charBounds = default;
             charBounds.X = textPos.X;
             charBounds.Y = textPos.Y + heightOffset;
-            charBounds.Width = currentCharMetric.GlyphBounds.Width <= 0 ? 1 : currentCharMetric.GlyphBounds.Width;
+            charBounds.Width = boundsWidth;
             charBounds.Height = currentCharMetric.GlyphBounds.Height <= 0 ? 1 : currentCharMetric.GlyphBounds.Height;
 
             result.Add((currentCharMetric.Glyph, charBounds));
