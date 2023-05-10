@@ -189,7 +189,7 @@ public sealed class Font : IFont
         }
 
         text = text.TrimNewLineFromEnd();
-        var lines = text.Split(Environment.NewLine).TrimAllEnds();
+        var lines = text.Split(Environment.NewLine);
 
         var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
