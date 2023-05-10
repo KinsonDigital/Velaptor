@@ -12,7 +12,7 @@ using UI;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-public class UIControlFactory : IUIControlFactory
+internal class UIControlFactory : IUIControlFactory
 {
     /// <inheritdoc/>
     public Label CreateLabel(string labelText)

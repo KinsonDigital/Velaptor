@@ -10,7 +10,7 @@ using UI;
 /// <summary>
 /// Creates UI controls.
 /// </summary>
-public interface IUIControlFactory
+internal interface IUIControlFactory
 {
     /// <summary>
     /// Creates a new <see cref="Label"/> control to display text.
