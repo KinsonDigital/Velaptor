@@ -240,6 +240,10 @@ public sealed class Font : IFont
         => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
 
     /// <inheritdoc/>
+    /// <remarks>
+    ///     The bounds include the width, height, and position of the character relative to
+    ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
+    /// </remarks>
     public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos)
     {
         if (string.IsNullOrEmpty(text))
@@ -282,8 +286,6 @@ public sealed class Font : IFont
             result.Add((currentCharMetric.Glyph, charBounds));
 
             // Horizontally advance to the next glyph
-            // Get the difference between the old glyph width
-            // and the glyph width with the size applied
             textPos.X += currentCharMetric.HorizontalAdvance;
 
             leftGlyphIndex = currentCharMetric.CharIndex;

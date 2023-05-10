@@ -55,7 +55,7 @@ public struct GlyphMetrics : IEquatable<GlyphMetrics>
 
     /// <summary>
     /// Gets or sets the vertical distance from the current cursor position
-    /// (on the baseline) to the topmost border of the glyph image's bounding box.
+    /// (on the baseline) to the top most border of the glyph image's bounding box.
     /// </summary>
     public float HoriBearingY { get; set; }
 

@@ -193,12 +193,14 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse moves over the control.
     /// </summary>
     /// <param name="mousePosArgs">The position of the mouse over the control.</param>
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
     protected virtual void OnMouseMove(MouseMoveEventArgs mousePosArgs) => this.MouseMove?.Invoke(this, mousePosArgs);
 
     /// <summary>
     /// Invoked when a keyboard key is pressed into the down position from the up position.
     /// </summary>
     /// <param name="key">The key that is down.</param>
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
     protected virtual void OnKeyDown(KeyCode key) => this.KeyDown?.Invoke(this, new KeyEventArgs(key));
 
     /// <summary>
