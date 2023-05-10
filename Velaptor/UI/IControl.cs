@@ -1,4 +1,4 @@
-﻿// <copyright file="IControl.cs" company="KinsonDigital">
+// <copyright file="IControl.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -32,7 +32,7 @@ public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable
     /// <summary>
     /// Occurs when the mouse moves over the button.
     /// </summary>
-    event EventHandler<MousePositionEventArgs>? MouseMove;
+    event EventHandler<MouseMoveEventArgs>? MouseMove;
 
     // ReSharper disable UnusedMemberInSuper.Global
 

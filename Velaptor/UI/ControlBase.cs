@@ -43,7 +43,7 @@ public abstract class ControlBase : IControl
     public event EventHandler<EventArgs>? MouseUp;
 
     /// <inheritdoc cref="IControl.MouseMove"/>
-    public event EventHandler<MousePositionEventArgs>? MouseMove;
+    public event EventHandler<MouseMoveEventArgs>? MouseMove;
 
     /// <inheritdoc cref="IControl.Name"/>
     public string Name { get; set; } = string.Empty;
@@ -169,6 +169,12 @@ public abstract class ControlBase : IControl
     }
 
     /// <summary>
+    /// Invoked when the mouse moves over the control.
+    /// </summary>
+    /// <param name="mousePosArgs">The position of the mouse over the control.</param>
+    internal virtual void OnMouseMove(MouseMoveEventArgs mousePosArgs) => this.MouseMove?.Invoke(this, mousePosArgs);
+
+    /// <summary>
     /// Process mouse input.
     /// </summary>
     private void ProcessMouse()
@@ -196,11 +202,22 @@ public abstract class ControlBase : IControl
 
         if (IsMouseOver)
         {
-            // Invoked the mouse move event if the mouse has been moved
+            // Invoke the mouse move event if the mouse has been moved
             if (currMousePos != this.prevMousePos)
             {
-                var relativePos = new Point(Position.X - currMousePos.X, Position.Y - currMousePos.Y);
-                OnMouseMove(new MousePositionEventArgs(relativePos));
+                // Position of the mouse relative to the top left corner of the window
+                var globalPos = new Point(currMousePos.X, currMousePos.Y);
+
+                // Get the X and Y position relative to the top right corner of the control
+                // NOTE: Even though the origin of the control is still the center,
+                // the local mouse pos is not relative to the origin, it is relative to the top left corner
+                var x = Math.Abs((Position.X - currMousePos.X) - halfWidth);
+                var y = Math.Abs((Position.Y - currMousePos.Y) - halfHeight);
+
+                // Position of the mouse relative to the top left corner of the control
+                var localPos = new Point(x, y);
+
+                OnMouseMove(new MouseMoveEventArgs(globalPos, localPos));
             }
 
             if (currMouseState.IsLeftButtonDown())
