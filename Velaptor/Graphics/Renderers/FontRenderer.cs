@@ -264,7 +264,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             return;
         }
 
-        var lines = text.Split(Environment.NewLine).TrimAllEnds();
+        var lines = text.Split(Environment.NewLine);
 
         var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
         var textSize = font.Measure(text).ApplySize(normalizedSize);
