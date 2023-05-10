@@ -1,4 +1,4 @@
-﻿// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,29 +16,15 @@ using Graphics;
 /// </summary>
 public static class PublicExtensionMethods
 {
-    private static readonly char[] Letters;
-
-    /// <summary>
-    /// Initializes static members of the <see cref="PublicExtensionMethods"/> class.
-    /// </summary>
-    static PublicExtensionMethods()
+    private static readonly char[] Letters =
     {
-        var result = new List<char>();
-
-        // Capital letters A-Z
-        for (var i = 'A'; i <= 'Z'; i++)
-        {
-            result.Add(i);
-        }
-
-        // Lowercase letters a-z
-        for (var i = 'a'; i <= 'z'; i++)
-        {
-            result.Add(i);
-        }
-
-        Letters = result.ToArray();
-    }
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
+        'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+        'y', 'z',
+    };
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> value into degrees.
