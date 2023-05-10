@@ -1,4 +1,4 @@
-﻿// <copyright file="Label.cs" company="KinsonDigital">
+// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -40,12 +40,14 @@ public class Label : ControlBase
 
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
+        Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
     /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">

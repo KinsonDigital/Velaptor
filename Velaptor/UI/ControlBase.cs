@@ -17,7 +17,6 @@ using Input;
 public abstract class ControlBase : IControl
 {
     private readonly IAppInput<MouseState> mouse;
-    private readonly IAppInput<KeyboardState> keyboard;
     private MouseState prevMouseState;
     private KeyboardState prevKeyboardState;
     private Point prevMousePos;
@@ -29,7 +28,7 @@ public abstract class ControlBase : IControl
     /// <param name="mouse">The system mouse.</param>
     protected ControlBase(IAppInput<KeyboardState> keyboard, IAppInput<MouseState> mouse)
     {
-        this.keyboard = keyboard;
+        Keyboard = keyboard;
         this.mouse = mouse;
     }
 
@@ -39,7 +38,7 @@ public abstract class ControlBase : IControl
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     protected ControlBase()
     {
-        this.keyboard = InputFactory.CreateKeyboard();
+        Keyboard = InputFactory.CreateKeyboard();
         this.mouse = InputFactory.CreateMouse();
     }
 
@@ -143,6 +142,11 @@ public abstract class ControlBase : IControl
     /// </remarks>
     protected Color TintColor { get; private set; } = Color.White;
 
+    /// <summary>
+    /// The keyboard object used to process keyboard input.
+    /// </summary>
+    protected IAppInput<KeyboardState> Keyboard { get; set; }
+
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
     public virtual void LoadContent() => IsLoaded = true;
 
@@ -208,7 +212,7 @@ public abstract class ControlBase : IControl
     /// </summary>
     private void ProcessKeyboard()
     {
-        var currKeyboardState = this.keyboard.GetState();
+        var currKeyboardState = Keyboard.GetState();
 
         ProcessKeyDownEvents(currKeyboardState, this.prevKeyboardState);
         ProcessKeyUpEvents(currKeyboardState, this.prevKeyboardState);
@@ -224,17 +228,9 @@ public abstract class ControlBase : IControl
     [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
     private void ProcessKeyDownEvents(KeyboardState currState, KeyboardState prevState)
     {
-        if (!currState.AnyKeysDown())
+        foreach (var downKey in currState.GetDownKeys())
         {
-            return;
-        }
-
-        foreach (var downKey in prevState.GetDownKeys())
-        {
-            if (this.prevKeyboardState.IsKeyUp(downKey))
-            {
-                OnKeyDown(downKey);
-            }
+            OnKeyDown(downKey);
         }
     }
 
@@ -246,11 +242,6 @@ public abstract class ControlBase : IControl
     [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
     private void ProcessKeyUpEvents(KeyboardState currState, KeyboardState prevState)
     {
-        if (!prevState.AnyKeysDown())
-        {
-            return;
-        }
-
         foreach (var downKey in prevState.GetDownKeys())
         {
             if (currState.IsKeyUp(downKey))

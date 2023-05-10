@@ -161,6 +161,7 @@ public sealed class Button : ControlBase
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="controlFactory">Creates UI controls.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
     /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
