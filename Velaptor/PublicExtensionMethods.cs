@@ -1,4 +1,4 @@
-// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
