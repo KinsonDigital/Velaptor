@@ -1,4 +1,4 @@
-﻿// <copyright file="InvalidInputException.cs" company="KinsonDigital">
+// <copyright file="InvalidInputException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -49,6 +49,7 @@ public sealed class InvalidInputException : Exception
     /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
     /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
     /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
+    [ExcludeFromCodeCoverage(Justification = "No implementation to test")]
     private InvalidInputException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
