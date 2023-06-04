@@ -127,7 +127,7 @@ public class ContentPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentException>()
-            .WithMessage($@"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+            .WithMessage($@"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
     #endregion
 }
