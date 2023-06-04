@@ -48,8 +48,7 @@ public class TextureFactoryTests
             _ = new TextureFactory(
                 null,
                 this.mockGLService.Object,
-                this.mockReactableFactory.Object
-            );
+                this.mockReactableFactory.Object);
         };
 
         // Assert
@@ -67,8 +66,7 @@ public class TextureFactoryTests
             _ = new TextureFactory(
                 this.mockGL.Object,
                 null,
-                this.mockReactableFactory.Object
-            );
+                this.mockReactableFactory.Object);
         };
 
         // Assert
@@ -86,8 +84,7 @@ public class TextureFactoryTests
             _ = new TextureFactory(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null
-            );
+                null);
         };
 
         // Assert

@@ -79,8 +79,7 @@ public class SoundLoaderTests
                 null,
                 this.mockDirectory.Object,
                 this.mockFile.Object,
-                this.mockPath.Object
-            );
+                this.mockPath.Object);
         };
 
         // Assert
@@ -100,8 +99,7 @@ public class SoundLoaderTests
                 this.mockSoundPathResolver.Object,
                 null,
                 this.mockFile.Object,
-                this.mockPath.Object
-            );
+                this.mockPath.Object);
         };
 
         // Assert
@@ -121,8 +119,7 @@ public class SoundLoaderTests
                 this.mockSoundPathResolver.Object,
                 this.mockDirectory.Object,
                 null,
-                this.mockPath.Object
-            );
+                this.mockPath.Object);
         };
 
         // Assert
@@ -142,8 +139,7 @@ public class SoundLoaderTests
                 this.mockSoundPathResolver.Object,
                 this.mockDirectory.Object,
                 this.mockFile.Object,
-                null
-            );
+                null);
         };
 
         // Assert
