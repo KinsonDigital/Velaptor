@@ -6,7 +6,7 @@ namespace VelaptorTests.Content;
 
 using System;
 using Carbonate.UniDirectional;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
@@ -42,40 +42,58 @@ public class TextureFactoryTests
     [Fact]
     public void Ctor_WithNullGLInvoker_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureFactory(
                 null,
                 this.mockGLService.Object,
-                this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'gl')");
+                this.mockReactableFactory.Object
+            );
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'gl')");
     }
 
     [Fact]
     public void Ctor_WithNullOpenGLService_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureFactory(
                 this.mockGL.Object,
                 null,
-                this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'openGLService')");
+                this.mockReactableFactory.Object
+            );
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new TextureFactory(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+                null
+            );
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -88,11 +106,12 @@ public class TextureFactoryTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            sut.Create(name, "test-path", new ImageData(null, 1, 2));
-        }, "The string parameter must not be null or empty. (Parameter 'name')");
+        // Act
+        var act = () => sut.Create(name, "test-path", new ImageData(null, 1, 2));
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
     }
 
     [Theory]
@@ -103,11 +122,12 @@ public class TextureFactoryTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            sut.Create("test-name", filePath, new ImageData(null, 1, 2));
-        }, "The string parameter must not be null or empty. (Parameter 'filePath')");
+        // Act
+        var act = () => sut.Create("test-name", filePath, new ImageData(null, 1, 2));
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
     }
 
     [Fact]
