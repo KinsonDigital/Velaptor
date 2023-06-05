@@ -123,7 +123,7 @@ public class ContentPathResolverTests
         var resolver = new ContentPathResolverFake();
 
         // Act
-        var act = () => resolver.ResolveFilePath($@"{contentName}");
+        var act = () => resolver.ResolveFilePath(contentName);
 
         // Assert
         act.Should().Throw<ArgumentException>()
