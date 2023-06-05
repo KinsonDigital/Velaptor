@@ -5,6 +5,7 @@
 namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Xunit;
@@ -26,7 +27,7 @@ public class GraphicsContentSourceTests
         var actual = source.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Graphics", actual);
+        actual.Should().Be("Graphics");
     }
     #endregion
 }

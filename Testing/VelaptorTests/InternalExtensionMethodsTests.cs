@@ -1591,7 +1591,7 @@ public class InternalExtensionMethodsTests
             Position = new Vector2(1, 2),
             Width = 100,
             Height = 90,
-            Color = NETColor.FromArgb(5,6,7,8),
+            Color = NETColor.FromArgb(5, 6, 7, 8),
             IsSolid = true,
             BorderThickness = 30,
             CornerRadius = new CornerRadius(10, 11, 12, 13),
