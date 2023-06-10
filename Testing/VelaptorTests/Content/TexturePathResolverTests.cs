@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -39,11 +39,12 @@ public class TexturePathResolverTests
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TexturePathResolver(null);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        // Arrange & Act
+        var act = () => _ = new TexturePathResolver(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -51,13 +52,13 @@ public class TexturePathResolverTests
     {
         // Arrange
         var mockDirectory = new Mock<IDirectory>();
+        var resolver = new TexturePathResolver(mockDirectory.Object);
 
         // Act
-        var resolver = new TexturePathResolver(mockDirectory.Object);
         var actual = resolver.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Graphics", actual);
+        actual.Should().Be("Graphics");
     }
     #endregion
 
@@ -68,22 +69,22 @@ public class TexturePathResolverTests
         // Arrange
         var mockDirectory = new Mock<IDirectory>();
         mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(() =>
-            {
-                return new[]
+            .Returns(
+                new[]
                 {
                     $"{this.baseDir}/other-file-A.png",
-                    $"{this.baseDir}/other-file-B.txt",
-                };
-            });
+                    $"{this.baseDir}/other-file-B.txt"
+                }
+            );
 
         var resolver = new TexturePathResolver(mockDirectory.Object);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            resolver.ResolveFilePath(ContentName);
-        }, $"The texture image file '{this.contentFilePath}' does not exist.");
+        // Act
+        var act = () => _ = resolver.ResolveFilePath(ContentName);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The texture image file '{this.contentFilePath}' does not exist.");
     }
 
     [Theory]
@@ -95,14 +96,13 @@ public class TexturePathResolverTests
         // Arrange
         var mockDirectory = new Mock<IDirectory>();
         mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(() =>
-            {
-                return new[]
+            .Returns(
+                new[]
                 {
                     $"{this.atlasContentDir}/other-file.png",
                     this.contentFilePath,
-                };
-            });
+                }
+            );
 
         var resolver = new TexturePathResolver(mockDirectory.Object);
 
@@ -110,7 +110,7 @@ public class TexturePathResolverTests
         var actual = resolver.ResolveFilePath(contentName);
 
         // Assert
-        Assert.Equal(this.contentFilePath, actual);
+        actual.Should().Be(this.contentFilePath);
     }
     #endregion
 }
