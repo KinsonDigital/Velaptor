@@ -166,7 +166,7 @@ public class TextureLoaderTests
 
         // Assert
         actual.Should().NotBeNull();
-        actual.Should().Be(mockTexture.Object);
+        actual.Should().BeSameAs(mockTexture.Object);
     }
 
     [Theory]

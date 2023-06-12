@@ -69,13 +69,11 @@ public class TexturePathResolverTests
         // Arrange
         var mockDirectory = new Mock<IDirectory>();
         mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(
-                new[]
+            .Returns(new[]
                 {
                     $"{this.baseDir}/other-file-A.png",
-                    $"{this.baseDir}/other-file-B.txt"
-                }
-            );
+                    $"{this.baseDir}/other-file-B.txt",
+                });
 
         var resolver = new TexturePathResolver(mockDirectory.Object);
 
@@ -96,13 +94,11 @@ public class TexturePathResolverTests
         // Arrange
         var mockDirectory = new Mock<IDirectory>();
         mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(
-                new[]
+            .Returns(new[]
                 {
                     $"{this.atlasContentDir}/other-file.png",
                     this.contentFilePath,
-                }
-            );
+                });
 
         var resolver = new TexturePathResolver(mockDirectory.Object);
 
