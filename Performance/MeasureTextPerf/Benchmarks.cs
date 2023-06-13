@@ -34,7 +34,7 @@ public class Benchmarks
         var jsonData = File.ReadAllText(metricDataFilePath);
         var metricData = JsonConvert.DeserializeObject<GlyphMetrics[]>(jsonData);
 
-        if (metricData == null)
+        if (metricData is null)
         {
             throw new Exception("Failed to load glyph metrics data");
         }
