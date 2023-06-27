@@ -5,6 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Exceptions;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class SystemDisplayExceptionTests
         var exception = new SystemMonitorException();
 
         // Assert
-        Assert.Equal("There was an issue with one of the system monitors.", exception.Message);
+        exception.Message.Should().Be("There was an issue with one of the system monitors.");
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class SystemDisplayExceptionTests
         var exception = new SystemMonitorException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -44,8 +45,8 @@ public class SystemDisplayExceptionTests
         var deviceException = new SystemMonitorException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }

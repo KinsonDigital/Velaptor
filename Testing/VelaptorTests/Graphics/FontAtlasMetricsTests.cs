@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Graphics;
 
+using FluentAssertions;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -38,7 +39,7 @@ public class FontAtlasMetricsTests
         var actual = metricsA.Equals(metricsB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
     #endregion
 }
