@@ -6,6 +6,7 @@ namespace VelaptorTests.Graphics;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using FluentAssertions;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -30,7 +31,7 @@ public class AtlasSubTextureDataTests
         var actual = data.Bounds;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -43,7 +44,7 @@ public class AtlasSubTextureDataTests
         var actual = data.Name;
 
         // Assert
-        Assert.Equal("test-name", actual);
+        actual.Should().Be("test-name");
     }
     #endregion
 
@@ -59,7 +60,7 @@ public class AtlasSubTextureDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -76,7 +77,7 @@ public class AtlasSubTextureDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -93,7 +94,7 @@ public class AtlasSubTextureDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -110,7 +111,7 @@ public class AtlasSubTextureDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
     #endregion
 }
