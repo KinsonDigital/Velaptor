@@ -37,7 +37,7 @@ namespace Velaptor.Exceptions.Shaders
         /// <param name="shaderId">The ID of the shader that failed to compile.</param>
         /// <param name="errorInformation">The error information related to the shader compilation failure.</param>
         public ShaderCompileException(uint shaderId, string? errorInformation)
-            : this($"An error occurred while compiling shader with ID '{shaderId}'\n{errorInformation}.")
+            : this($"An error occurred while compiling shader with ID '{shaderId}'\n{errorInformation}")
         {
             ShaderId = shaderId;
             ErrorInformation = errorInformation;

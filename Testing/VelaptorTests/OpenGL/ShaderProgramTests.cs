@@ -4,8 +4,8 @@
 
 namespace VelaptorTests.OpenGL
 {
-    using System;
     using Moq;
+    using Velaptor.Exceptions.Shaders;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.Services;
@@ -171,14 +171,14 @@ namespace VelaptorTests.OpenGL
             var program = CreateProgram();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<ShaderCompileException>(() =>
             {
                 program.Init();
-            }, $"Error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
+            }, $"An error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
         }
 
         [Fact]
-        public void Init_WithProgramLinkingIssue_ThrowsException()
+        public void Init_WithProgramLinkingIssue_ThrowsShaderProgramLinkException()
         {
             // Arrange
             var statusCode = 0;
@@ -188,10 +188,10 @@ namespace VelaptorTests.OpenGL
             var program = CreateProgram();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<ShaderProgramLinkException>(() =>
             {
                 program.Init();
-            }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
+            }, $"An error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
         }
 
         [Fact]
@@ -228,6 +228,6 @@ namespace VelaptorTests.OpenGL
         /// Creates an instance of <see cref="ShaderProgram"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test with.</returns>
-        private ShaderProgram CreateProgram() => new (this.mockGLInvoker.Object, this.mockGLInvokerExtensions.Object, this.mockLoader.Object);
+        private ShaderProgram CreateProgram() => new(this.mockGLInvoker.Object, this.mockGLInvokerExtensions.Object, this.mockLoader.Object);
     }
 }
