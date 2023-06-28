@@ -161,7 +161,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Init_WithShaderCompileIssue_ThrowsException()
+        public void Init_WithShaderCompileIssue_ThrowsShaderCompileException()
         {
             // Arrange
             var statusCode = 0;
