@@ -8,6 +8,9 @@ namespace VelaptorTests.Exceptions.Shaders
     using Velaptor.Exceptions.Shaders;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="ShaderProgramLinkException"/>.
+    /// </summary>
     public sealed class ShaderProgramLinkExceptionTests
     {
         #region Constructor Tests
