@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL
 {
     using System;
     using System.Text;
+    using Velaptor.Exceptions.Shaders;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
@@ -135,8 +136,7 @@ namespace Velaptor.OpenGL
             {
                 // We can use `this.gl.GetProgramInfoLog(program)` to get information about the error.
                 var programInfoLog = this.gl.GetProgramInfoLog(shaderProgramId);
-
-                throw new Exception($"Error occurred while linking program with ID '{shaderProgramId}'\n{programInfoLog}");
+                throw new ShaderProgramLinkException(shaderProgramId, programInfoLog);
             }
         }
 
@@ -182,8 +182,7 @@ namespace Velaptor.OpenGL
             if (!this.glExtensions.ShaderCompileSuccess(shaderId))
             {
                 var errorInfo = this.gl.GetShaderInfoLog(shaderId);
-
-                throw new Exception($"Error occurred while compiling shader with ID '{shaderId}'\n{errorInfo}");
+                throw new ShaderCompileException(shaderId, errorInfo);
             }
         }
 
