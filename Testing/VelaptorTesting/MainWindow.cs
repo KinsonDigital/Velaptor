@@ -111,7 +111,7 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredTextRenderingScene);
         SceneManager.AddScene(keyboardScene);
         SceneManager.AddScene(mouseScene);
-        SceneManager.AddScene(textBoxScene, true);
+        SceneManager.AddScene(textBoxScene);
         SceneManager.AddScene(layeredRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
