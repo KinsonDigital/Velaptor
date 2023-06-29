@@ -14,6 +14,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Graphics;
+using Input;
 using OpenGL;
 using OpenGL.Batching;
 using OpenGL.GPUData;
@@ -391,6 +392,13 @@ internal static class InternalExtensionMethods
     public static bool IsVisibleKey(this KeyCode key) => IsLetterKey(key) || IsNumberKey(key) || IsSymbolKey(key);
 
     /// <summary>
+    /// Returns a value indicating whether or not the key is not a visible key.
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <returns><c>true</c> if it is not a visible key.</returns>
+    public static bool IsNotVisibleKey(this KeyCode key) => !IsVisibleKey(key);
+
+    /// <summary>
     /// Returns a value indicating whether or not the key is the left or right shift modifier key.
     /// </summary>
     /// <param name="key">The key to check.</param>
@@ -421,6 +429,205 @@ internal static class InternalExtensionMethods
         keyboardState.IsKeyDown(KeyCode.Right) ||
         keyboardState.IsKeyDown(KeyCode.Up) ||
         keyboardState.IsKeyDown(KeyCode.Down);
+
+    public static void RemoveLastChar(this StringBuilder? value)
+    {
+        if (value is null || value.Length <= 0)
+        {
+            return;
+        }
+
+        value.Replace(value[^1].ToString(), string.Empty, value.Length - 1, 1);
+    }
+
+    public static string Substring(this StringBuilder? value, uint start, uint length)
+    {
+        if (value is null || start >= value.Length)
+        {
+            return string.Empty;
+        }
+
+        length = start + length > value.Length ? 0 : length;
+
+        return value.ToString((int)start, (int)length);
+    }
+
+    public static void RemoveChar(this StringBuilder? value, uint index)
+    {
+        if (value is null || index >= value.Length)
+        {
+            return;
+        }
+
+        value.Remove((int)index, 1);
+    }
+
+    public static int LastCharIndex(this StringBuilder? value) => value is null || value.Length <= 0 ? -1 : value.Length - 1;
+
+    public static bool IsEmpty(this StringBuilder? value) => value is null || value.Length <= 0;
+
+    public static void BumpAllToLeft(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.X -= amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static void BumpAllToRight(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.X += amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static void BumpAllUp(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.Y -= amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static void BumpAllDown(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.Y += amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static int TextLeft(this List<(char character, NETRectF bounds)> charBounds)
+    {
+        if (charBounds.Count <= 0)
+        {
+            return 0;
+        }
+
+        return (int)charBounds[0].bounds.Left;
+    }
+
+    public static int TextRight(this List<(char character, NETRectF bounds)> charBounds)
+    {
+        if (charBounds.Count <= 0)
+        {
+            return 0;
+        }
+
+        return (int)charBounds[^1].bounds.Right;
+    }
+
+    public static int TextWidth(this List<(char character, NETRectF bounds)> charBounds) => charBounds.TextRight() - charBounds.TextLeft();
+
+    public static float CharLeft(this List<(char character, NETRectF bounds)> charBounds, int index)
+    {
+        if (index < 0 || index >= charBounds.Count)
+        {
+            return 0f;
+        }
+
+        return charBounds[index].bounds.Left;
+    }
+
+    public static float CharRight(this List<(char character, NETRectF bounds)> charBounds, int index)
+    {
+        if (index < 0 || index >= charBounds.Count)
+        {
+            return 0f;
+        }
+
+        return charBounds[index].bounds.Right;
+    }
+
+    public static float CenterPositionX(this List<(char character, NETRectF bounds)>? charBounds)
+    {
+        if (charBounds is null || charBounds.Count <= 0)
+        {
+            return 0f;
+        }
+
+        var left = charBounds.Min(cb => cb.bounds.Left);
+        var right = charBounds.Max(cb => cb.bounds.Right);
+        // var top = charBounds.Min(cb => cb.bounds.Top);
+        // var bottom = charBounds.Max(cb => cb.bounds.Bottom);
+        var width = Math.Abs(left - right);
+        // var height = Math.Abs(top - bottom);
+
+        return left + width.Half();
+    }
+
+    public static bool GapAtRightEnd(this List<(char character, NETRectF bounds)>? charBounds, float rightEndLimitX) =>
+        charBounds is not null && (charBounds.Count > 0 && charBounds.TextRight() < rightEndLimitX);
+
+    public static char ToChar(this KeyCode key, bool anyShiftKeysDown)
+    {
+        if (KeyboardKeyGroups.LetterKeys.Contains(key))
+        {
+            return anyShiftKeysDown
+                ? KeyboardKeyGroups.WithShiftLetterKeys[key]
+                : KeyboardKeyGroups.NoShiftLetterKeys[key];
+        }
+
+        if (KeyboardKeyGroups.StandardNumberKeys.Contains(key))
+        {
+            return anyShiftKeysDown
+                ? KeyboardKeyGroups.WithShiftStandardNumberCharacters[key]
+                : KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
+        }
+
+        if (KeyboardKeyGroups.NumpadNumberKeys.Contains(key) && anyShiftKeysDown is false)
+        {
+            return KeyboardKeyGroups.NoShiftNumpadNumberCharacters[key];
+        }
+
+        if (KeyboardKeyGroups.SymbolKeys.Contains(key))
+        {
+            return anyShiftKeysDown
+                ? KeyboardKeyGroups.WithShiftSymbolCharacters[key]
+                : KeyboardKeyGroups.NoShiftSymbolCharacters[key];
+        }
+
+        return KeyboardKeyGroups.InvalidCharacter;
+    }
+
+    // public static bool IsTextLargerThanView(this TextBoxStateData value)
+    // {
+    //     var textWidth = value.TextRight - value.TextLeft;
+    //     var textViewWidth = value.TextViewRight - value.TextViewLeft;
+    //
+    //     return textWidth > textViewWidth;
+    // }
+
+    public static bool IsMoveCursorKey(this KeyCode key) =>
+        key switch
+        {
+            KeyCode.Left => true,
+            KeyCode.Right => true,
+            KeyCode.PageUp => true,
+            KeyCode.PageDown => true,
+            KeyCode.Home => true,
+            KeyCode.End => true,
+            _ => false,
+        };
+
+    public static bool IsNotMoveCursorKey(this KeyCode key) => !IsMoveCursorKey(key);
+
+    public static bool IsDeletionKey(this KeyCode key) => key is KeyCode.Delete or KeyCode.Backspace;
+
+    public static bool IsNotDeletionKey(this KeyCode key) => !IsDeletionKey(key);
+
+    public static float Half(this float value) => value / 2;
+
+    public static int Half(this int value) => value / 2;
 
     /// <summary>
     /// Builds a name that represents a location of where an execution took place.
@@ -1394,6 +1601,8 @@ internal static class InternalExtensionMethods
     /// </remarks>
     public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
 
+    public static bool IsEmpty<T>(this IEnumerable<T>? items) => items is null || !items.Any();
+
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
     /// </summary>
@@ -1605,4 +1814,11 @@ internal static class InternalExtensionMethods
             circle.GradientType,
             circle.GradientStart,
             circle.GradientStop);
+
+    /// <summary>
+    /// Returns the inverse of the color.
+    /// </summary>
+    /// <param name="value">The color value to invert.</param>
+    /// <returns>The invert color of the original color.</returns>
+    public static NETColor Inverse(this NETColor value) => NETColor.FromArgb(255, 255 - value.R, 255 - value.G, 255 - value.B);
 }
