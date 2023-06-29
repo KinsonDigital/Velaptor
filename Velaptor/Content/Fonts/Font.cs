@@ -312,7 +312,7 @@ public sealed class Font : IFont
     /// <param name="textSize">The size of the text to add.</param>
     private void AddToCache(string text, SizeF textSize)
     {
-        if (CacheEnabled is false)
+        if (CacheEnabled is false || this.textSizeCache.ContainsKey(text))
         {
             return;
         }
