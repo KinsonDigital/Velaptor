@@ -48,5 +48,6 @@
         "Velaptor",
         "Vorbis",
         "xunit"
-    ]
+    ],
+    "dotnet.defaultSolution": "Velaptor.sln"
 }
