@@ -241,7 +241,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             atlasHeight);
     }
 
-     /// <summary>
+    /// <summary>
     /// Constructs a list of batch items from the given
     /// <paramref name="charMetrics"/> to be rendered.
     /// </summary>
