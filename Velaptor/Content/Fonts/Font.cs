@@ -126,6 +126,9 @@ public sealed class Font : IFont
             {
                 RebuildAtlasTexture();
             }
+
+            // Clear the entire size cache since the size has changed
+            this.textSizeCache.Clear();
         }
     }
 
