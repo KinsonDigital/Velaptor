@@ -529,10 +529,14 @@ public class FontTests : IDisposable
     }
 
     [Theory]
-    [InlineData(true, 10)]
-    // [InlineData(false, 20)]
+    [InlineData(true, 20)]
+    [InlineData(false, 20)]
     public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
+        /* NOTE:
+         * The kerning invoke count is 20 because the Measure() method is being called twice.
+         * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
+         */
         // Arrange
         var text = $"hello{Environment.NewLine}world";
 
