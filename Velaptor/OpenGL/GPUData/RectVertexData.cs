@@ -136,7 +136,7 @@ internal readonly struct RectVertexData
     public static uint GetStride() => Stride;
 
     /// <summary>
-    /// Creates a new instance of a <see cref="RectVertexData"/> struct with the given <paramref name="position"/>.
+    /// Creates a new instance of a <see cref="RectVertexData"/> struct with the given <paramref name="x"/> and <paramref name="y"/> components..
     /// </summary>
     /// <param name="x">The X component of the position.</param>
     /// <param name="y">The Y component of the position.</param>

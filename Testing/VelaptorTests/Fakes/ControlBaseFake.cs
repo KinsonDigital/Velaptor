@@ -16,6 +16,7 @@ public class ControlBaseFake : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBaseFake"/> class.
     /// </summary>
+    /// <param name="keyboardMock">Keyboard input mock.</param>
     /// <param name="mouseMock">Mouse input mock.</param>
     public ControlBaseFake(IAppInput<KeyboardState> keyboardMock, IAppInput<MouseState> mouseMock)
         : base(keyboardMock, mouseMock)
