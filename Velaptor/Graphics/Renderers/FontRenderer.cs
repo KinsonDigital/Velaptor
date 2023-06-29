@@ -1,4 +1,4 @@
-﻿// <copyright file="FontRenderer.cs" company="KinsonDigital">
+// <copyright file="FontRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -374,6 +374,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             return;
         }
 
+        // Normalize the line endings
         if (text.Contains("\r\n"))
         {
             text = text.Replace("\r\n", "\n");
@@ -385,6 +386,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         var textSize = font.Measure(text).ApplySize(normalizedSize);
 
         var textHalfWidth = textSize.Width / 2f;
+        var textHalfHeight = textSize.Height / 2f;
 
         var atlasWidth = font.Atlas.Width.ApplySize(normalizedSize);
         var atlasHeight = font.Atlas.Height.ApplySize(normalizedSize);
@@ -406,7 +408,6 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             {
                 var firstLineHeight = glyphLines.MaxHeight(i);
                 var textTop = originalY + firstLineHeight;
-                var textHalfHeight = textSize.Height / 2f;
 
                 characterY = textTop - textHalfHeight;
             }

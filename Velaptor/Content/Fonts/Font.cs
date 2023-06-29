@@ -192,8 +192,13 @@ public sealed class Font : IFont
             return measure;
         }
 
-        text = text.TrimNewLineFromEnd();
-        var lines = text.Split(Environment.NewLine);
+        // Normalize the line endings
+        if (text.Contains("\r\n"))
+        {
+            text = text.Replace("\r\n", "\n");
+        }
+
+        var lines = text.Split("\n");
 
         var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
