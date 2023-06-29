@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "github.vscode-github-actions",
+        "ms-dotnettools.vscodeintellicode-csharp",
+        "aliasadidev.nugetpackagemanagergui",
+        "redhat.vscode-yaml"
+    ]
+}
