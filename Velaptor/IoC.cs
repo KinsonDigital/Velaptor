@@ -212,5 +212,7 @@ internal static class IoC
         IoCContainer.Register<IRenderBatchReactable<FontGlyphBatchItem>, RenderBatchReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<ShapeBatchItem>, RenderBatchReactable<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
+
+        IoCContainer.Register<IPushReactable<TextBoxStateData>, PushReactable<TextBoxStateData>>(suppressDisposal: true);
     }
 }
