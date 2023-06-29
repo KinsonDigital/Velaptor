@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Caching;
 using Exceptions;
 using Graphics;
@@ -296,6 +297,13 @@ public sealed class Font : IFont
 
         return result.ToArray();
     }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    ///     The bounds include the width, height, and position of the character relative to
+    ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
+    /// </remarks>
+    public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos) => GetCharacterBounds(text.ToString(), textPos);
 
     /// <summary>
     /// Adds the given text and size to the cache.
