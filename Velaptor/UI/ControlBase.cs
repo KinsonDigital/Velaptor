@@ -143,15 +143,48 @@ public abstract class ControlBase : IControl
     protected Color TintColor { get; private set; } = Color.White;
 
     /// <summary>
-    /// The keyboard object used to process keyboard input.
+    /// Gets the keyboard object used to process keyboard input.
     /// </summary>
-    protected IAppInput<KeyboardState> Keyboard { get; set; }
+    protected IAppInput<KeyboardState> Keyboard { get; init; }
 
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
     public virtual void LoadContent() => IsLoaded = true;
 
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
-    public virtual void UnloadContent() => IsLoaded = false;
+    public virtual void UnloadContent()
+    {
+        foreach (var clickDelegate in this.Click?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.Click -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseDown?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseDown -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseUp?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseUp -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseMove?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseMove -= clickDelegate as EventHandler<MouseMoveEventArgs>;
+        }
+
+        foreach (var clickDelegate in this.KeyDown?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.KeyDown -= clickDelegate as EventHandler<KeyEventArgs>;
+        }
+
+        foreach (var clickDelegate in this.KeyUp?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.KeyUp -= clickDelegate as EventHandler<KeyEventArgs>;
+        }
+
+        IsLoaded = false;
+    }
 
     /// <inheritdoc cref="IControl"/>
     public virtual void Update(FrameTime frameTime)
@@ -216,7 +249,7 @@ public abstract class ControlBase : IControl
     {
         var currKeyboardState = Keyboard.GetState();
 
-        ProcessKeyDownEvents(currKeyboardState, this.prevKeyboardState);
+        ProcessKeyDownEvents(currKeyboardState);
         ProcessKeyUpEvents(currKeyboardState, this.prevKeyboardState);
 
         this.prevKeyboardState = currKeyboardState;
@@ -226,9 +259,8 @@ public abstract class ControlBase : IControl
     /// Process any keyboard key down events.
     /// </summary>
     /// <param name="currState">The current state of the keyboard this frame.</param>
-    /// <param name="prevState">The previous state of the keyboard the previous frame.</param>
     [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
-    private void ProcessKeyDownEvents(KeyboardState currState, KeyboardState prevState)
+    private void ProcessKeyDownEvents(KeyboardState currState)
     {
         foreach (var downKey in currState.GetDownKeys())
         {
