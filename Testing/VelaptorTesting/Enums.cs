@@ -50,3 +50,60 @@ public enum ShapeType
     /// </summary>
     Circle = 2,
 }
+
+/// <summary>
+/// Represents the different text box settings for the text box scene.
+/// </summary>
+public enum TextBoxSetting
+{
+    /// <summary>
+    /// The text box color.
+    /// </summary>
+    TextColor,
+
+    /// <summary>
+    /// The color of the text selection rectangle.
+    /// </summary>
+    SelectionColor,
+
+    /// <summary>
+    /// The color of the cursor.
+    /// </summary>
+    CursorColor,
+
+    /// <summary>
+    /// Moves the text box.
+    /// </summary>
+    MoveTextBox,
+
+    /// <summary>
+    /// The text box width.
+    /// </summary>
+    TextBoxWidth,
+
+    /// <summary>
+    /// The changing of the font.
+    /// </summary>
+    FontChange,
+}
+
+/// <summary>
+/// Represents the different components of a color.
+/// </summary>
+public enum TxtBoxColorComponent
+{
+    /// <summary>
+    /// The red component.
+    /// </summary>
+    Red,
+
+    /// <summary>
+    /// The green component.
+    /// </summary>
+    Green,
+
+    /// <summary>
+    /// The blue component.
+    /// </summary>
+    Blue,
+}
