@@ -1,4 +1,4 @@
-// <copyright file="Label.cs" company="KinsonDigital">
+﻿// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,6 +41,23 @@ public class Label : ControlBase
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Label"/> class.
+    /// </summary>
+    /// <param name="text">The text of the label.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Label(string text)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
+        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+        Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
+        Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+        Text = text;
     }
 
     /// <summary>
