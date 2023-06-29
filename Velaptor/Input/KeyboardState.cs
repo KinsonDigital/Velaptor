@@ -1,4 +1,4 @@
-﻿// <copyright file="KeyboardState.cs" company="KinsonDigital">
+// <copyright file="KeyboardState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -319,7 +319,6 @@ public struct KeyboardState : IEquatable<KeyboardState>
     {
         if (AnyShiftKeysDown())
         {
-            // NOTE!!  THIS MIGHT NOT WORK.  THE ToUpperInvariant() THAT IS
             if (LetterKeys.Contains(key))
             {
                 return key == KeyCode.Space ? ' ' : key.ToString().ToUpperInvariant()[0];

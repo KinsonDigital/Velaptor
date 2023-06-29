@@ -452,7 +452,7 @@ internal static class InternalExtensionMethods
 
             declaringType = method.DeclaringType;
 
-            if (declaringType == null)
+            if (declaringType is null)
             {
                 return method.Name;
             }
@@ -1376,7 +1376,7 @@ internal static class InternalExtensionMethods
             item.Thickness);
 
     /// <summary>
-    /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.
+    /// Converts the given <paramref name="value"/> from the type <see cref="NETPoint"/> to the type <see cref="Vector2"/>.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The <see cref="Vector2"/> result.</returns>
@@ -1386,10 +1386,10 @@ internal static class InternalExtensionMethods
     /// Converts the given <paramref name="value"/> from the type <see cref="Vector2"/> to the type <see cref="NETPoint"/>.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>The <see cref="Point"/> result.</returns>
+    /// <returns>The <see cref="NETPoint"/> result.</returns>
     /// <remarks>
     ///     Converting from floating point components of a <see cref="Vector2"/> to
-    ///     integer components of a <see cref="Point"/> could result in a loss of information.
+    ///     integer components of a <see cref="NETPoint"/> could result in a loss of information.
     ///     Regular casting rules apply.
     /// </remarks>
     public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);

@@ -24,7 +24,7 @@ public abstract class ControlBase : IControl
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
-    /// <param name="keyboard">The system keyboard.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
     protected ControlBase(IAppInput<KeyboardState> keyboard, IAppInput<MouseState> mouse)
     {

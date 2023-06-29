@@ -1,10 +1,11 @@
-// <copyright file="InvalidInputException.cs" company="KinsonDigital">
+﻿// <copyright file="InvalidInputException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Input.Exceptions;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Security;
 

@@ -492,7 +492,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when any keyboard input key transitions from the up position to the down position.
     /// </summary>
-    /// <param name="keyboard">The system keyboard input.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="key">The key that was pushed down.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
@@ -505,7 +505,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when any keyboard input key transitions from the down position to the up position.
     /// </summary>
-    /// <param name="keyboard">The system keyboardInput.</param>
+    /// <param name="keyboard">The system keyboard input.</param>
     /// <param name="key">The key that was released.</param>
     /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)

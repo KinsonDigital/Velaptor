@@ -27,7 +27,6 @@ public readonly record struct MouseMoveEventArgs
         LocalPos = localPos;
     }
 
-
     /// <summary>
     /// Gets the position of the mouse relative to the top left corner of the window.
     /// </summary>
