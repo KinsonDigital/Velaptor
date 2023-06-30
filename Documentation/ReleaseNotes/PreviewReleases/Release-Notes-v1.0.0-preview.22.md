@@ -18,7 +18,6 @@ As with all software, there is always a chance for issues and bugs, especially f
    - Added a new property named `GlobalPos` to the event args for mouse move events.
      > **Note** This represents the global position of the mouse relative to the top left corner of the window.  
      > The class used to be named `MousePositionEventArgs` but is not named `MouseMoveEventArgs`.
-   - 
    - Added 2 new events named `KeyDown` and `KeyUp` to the `ControlBase` class.
      > **Note** These are invoked when a key is pressed into the down position and released into the up position from the down position.
    - Added `protected` methods named `OnKeyDown()` and `OnKeyUp()` to the `ControlBase` class.
