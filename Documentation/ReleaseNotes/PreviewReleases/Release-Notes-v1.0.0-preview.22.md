@@ -13,7 +13,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. [#614](https://github.com/KinsonDigital/Velaptor/issues/614) - Added the following features:
+1. [#78](https://github.com/KinsonDigital/Velaptor/issues/78) - Added the following features:
    - Created a new text box control for entering single-line text.
    - Added a new property named `GlobalPos` to the event args for mouse move events.
      > **Note** This represents the global position of the mouse relative to the top left corner of the window.  
@@ -41,7 +41,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
-1. [#614](https://github.com/KinsonDigital/Velaptor/issues/614) - Fixed the following bugs:
+1. [#78](https://github.com/KinsonDigital/Velaptor/issues/78) - Fixed the following bugs:
     - Fixed an issue where the bounds width for text was not being calculated correctly with the `Font.GetCharacterBounds()` method.
       > **Note** This was occurring when the text being measured ended with whitespace.
     - Fixed an issue where measuring text with `Font.Measure()` was not measuring spaces at the end of the text.
@@ -54,7 +54,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
-1. [#614](https://github.com/KinsonDigital/Velaptor/issues/614) - This release comes with the following breaking changes:
+1. [#78](https://github.com/KinsonDigital/Velaptor/issues/78) - This release comes with the following breaking changes:
     - Renamed the `MousePositionEventArgs` struct to `MouseMoveEventArgs`.
     - Renamed the `MouseMoveEventArgs.MousePosition` property to `MouseMoveEventArgs.LocalPos`.
       > **Note** This position is relative to the top left corner of the control.
