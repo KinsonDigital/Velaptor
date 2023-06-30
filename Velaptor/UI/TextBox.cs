@@ -12,6 +12,7 @@ using System.Numerics;
 using System.Text;
 using Carbonate.UniDirectional;
 using Content.Fonts;
+using ExtensionMethods;
 using Factories;
 using Graphics;
 using Graphics.Renderers;

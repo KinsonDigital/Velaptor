@@ -35,62 +35,6 @@ internal static class InternalExtensionMethods
     private const char CrossPlatDirSeparatorChar = '/';
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a letter key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a letter key.</returns>
-    public static bool IsLetterKey(this KeyCode key) => KeyboardKeyGroups.LetterKeys.Contains(key);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is a number key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a number key.</returns>
-    public static bool IsNumberKey(this KeyCode key) => KeyboardKeyGroups.StandardNumberKeys.Contains(key) || KeyboardKeyGroups.NumpadNumberKeys.Contains(key);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is a symbol key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a symbol key.</returns>
-    public static bool IsSymbolKey(this KeyCode key) => KeyboardKeyGroups.SymbolKeys.Contains(key);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is a visible key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a visible key.</returns>
-    public static bool IsVisibleKey(this KeyCode key) => IsLetterKey(key) || IsNumberKey(key) || IsSymbolKey(key);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is not a visible key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is not a visible key.</returns>
-    public static bool IsNotVisibleKey(this KeyCode key) => !IsVisibleKey(key);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is the left or right shift modifier key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a shift key.</returns>
-    public static bool IsShiftKey(this KeyCode key) => key is KeyCode.LeftShift or KeyCode.RightShift;
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is any of the arrow keys.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is an arrow key.</returns>
-    public static bool IsArrowKey(this KeyCode key) => key is KeyCode.Left or KeyCode.Right or KeyCode.Up or KeyCode.Down;
-
-    /// <summary>
-    /// Returns a value indicating whether or not the key is the left or right control modifier key.
-    /// </summary>
-    /// <param name="key">The key to check.</param>
-    /// <returns><c>true</c> if it is a control key.</returns>
-    public static bool IsCtrlKey(this KeyCode key) => key is KeyCode.LeftControl or KeyCode.RightControl;
-
-    /// <summary>
     /// Returns a value indicating whether or not any of the arrow keys are in the down state.
     /// </summary>
     /// <param name="keyboardState">The state of the keyboard.</param>
@@ -236,56 +180,7 @@ internal static class InternalExtensionMethods
     public static bool GapAtRightEnd(this List<(char character, NETRectF bounds)>? charBounds, float rightEndLimitX) =>
         charBounds is not null && charBounds.Count > 0 && charBounds.TextRight() < rightEndLimitX;
 
-    public static char ToChar(this KeyCode key, bool anyShiftKeysDown)
-    {
-        if (KeyboardKeyGroups.LetterKeys.Contains(key))
-        {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftLetterKeys[key]
-                : KeyboardKeyGroups.NoShiftLetterKeys[key];
-        }
-
-        if (KeyboardKeyGroups.StandardNumberKeys.Contains(key))
-        {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftStandardNumberCharacters[key]
-                : KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
-        }
-
-        if (KeyboardKeyGroups.NumpadNumberKeys.Contains(key) && anyShiftKeysDown is false)
-        {
-            return KeyboardKeyGroups.NoShiftNumpadNumberCharacters[key];
-        }
-
-        if (KeyboardKeyGroups.SymbolKeys.Contains(key))
-        {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftSymbolCharacters[key]
-                : KeyboardKeyGroups.NoShiftSymbolCharacters[key];
-        }
-
-        return KeyboardKeyGroups.InvalidCharacter;
-    }
-
-    public static bool IsMoveCursorKey(this KeyCode key) =>
-        key switch
-        {
-            KeyCode.Left => true,
-            KeyCode.Right => true,
-            KeyCode.PageUp => true,
-            KeyCode.PageDown => true,
-            KeyCode.Home => true,
-            KeyCode.End => true,
-            _ => false,
-        };
-
-    public static bool IsNotMoveCursorKey(this KeyCode key) => !IsMoveCursorKey(key);
-
-    public static bool IsDeletionKey(this KeyCode key) => key is KeyCode.Delete or KeyCode.Backspace;
-
-    public static bool IsNotDeletionKey(this KeyCode key) => !IsDeletionKey(key);
-
-    public static float Half(this float value) => value / 2;
+  public static float Half(this float value) => value / 2;
 
     public static int Half(this int value) => value / 2;
 
