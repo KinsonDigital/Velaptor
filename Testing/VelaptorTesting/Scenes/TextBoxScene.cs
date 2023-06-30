@@ -305,7 +305,7 @@ public class TextBoxScene : SceneBase
                 break;
             case TextBoxSetting.MoveTextBox:
                 this.currentSetting.Text = "Text Box Movement";
-                this.instructions.Text = "Left mouse button to move left and right mouse button to move right.";
+                this.instructions.Text = "Left mouse button to move up and left and right mouse button to move down and right.";
                 this.instructions.Text += "\nHold shift to move vertically. Do not hold shift down to move horizontally.";
                 break;
             case TextBoxSetting.TextBoxWidth:
