@@ -289,8 +289,12 @@ public sealed class TextBox : ControlBase
                 return;
             }
 
-            var movingLeft = value.X < base.Position.X;
-            var movingRight = value.X > base.Position.X;
+            var hasChangedX = value.X != base.Position.X;
+            var movingLeft = hasChangedX && value.X < base.Position.X;
+            var movingRight = hasChangedX && value.X > base.Position.X;
+
+            var hasChangedY = value.Y != base.Position.Y;
+            var movingUp = hasChangedY && value.Y < base.Position.Y;
             var deltaX = Math.Abs(value.X - base.Position.X);
             var deltaY = Math.Abs(value.Y - base.Position.Y);
 
@@ -314,9 +318,13 @@ public sealed class TextBox : ControlBase
 
             UpdateBounds(KeyCode.Unknown);
 
-            if (deltaY > 0)
+            if (hasChangedY)
             {
                 this.charBounds.BumpAllUp(deltaY);
+
+                this.textPos.Y = movingUp
+                    ? this.textPos.Y - deltaY
+                    : this.textPos.Y + deltaY;
             }
 
             UpdateTextPos();
