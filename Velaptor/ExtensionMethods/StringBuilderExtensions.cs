@@ -15,9 +15,9 @@ internal static class StringBuilderExtensions
     /// Removes the last character from the string.
     /// </summary>
     /// <param name="value">The string builder to mutate.</param>
-    public static void RemoveLastChar(this StringBuilder? value)
+    public static void RemoveLastChar(this StringBuilder value)
     {
-        if (value is null || value.Length <= 0)
+        if (value.Length <= 0)
         {
             return;
         }
@@ -33,9 +33,9 @@ internal static class StringBuilderExtensions
     /// <param name="start">The starting character of the string to get.</param>
     /// <param name="length">The length of the substring to get.</param>
     /// <returns>The substring from the entire string.</returns>
-    public static string Substring(this StringBuilder? value, uint start, uint length)
+    public static string Substring(this StringBuilder value, uint start, uint length)
     {
-        if (value is null || start >= value.Length)
+        if (start >= value.Length)
         {
             return string.Empty;
         }
@@ -50,9 +50,9 @@ internal static class StringBuilderExtensions
     /// </summary>
     /// <param name="value">The string builder.</param>
     /// <param name="index">The index of the character to remove.</param>
-    public static void RemoveChar(this StringBuilder? value, uint index)
+    public static void RemoveChar(this StringBuilder value, uint index)
     {
-        if (value is null || index >= value.Length)
+        if (index >= value.Length)
         {
             return;
         }
@@ -66,12 +66,12 @@ internal static class StringBuilderExtensions
     /// <param name="value">The string builder.</param>
     /// <returns>The index of the last character.</returns>
     /// <remarks>Returns -1 if the string has no characters.</remarks>
-    public static int LastCharIndex(this StringBuilder? value) => value is null || value.Length <= 0 ? -1 : value.Length - 1;
+    public static int LastCharIndex(this StringBuilder value) => value.Length <= 0 ? -1 : value.Length - 1;
 
     /// <summary>
     /// Returns a value indicating whether or not the string is empty.
     /// </summary>
     /// <param name="value">The string builder.</param>
     /// <returns><c>true</c> if the string is empty.</returns>
-    public static bool IsEmpty(this StringBuilder? value) => value is null || value.Length <= 0;
+    public static bool IsEmpty(this StringBuilder value) => value.Length <= 0;
 }
