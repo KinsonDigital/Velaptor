@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
-using Helpers;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -39,11 +39,15 @@ public class SoundPathResolverTests
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundPathResolver(null);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -57,7 +61,7 @@ public class SoundPathResolverTests
         var actual = source.ContentDirectoryName;
 
         // Assert
-        Assert.Equal("Sounds", actual);
+        actual.Should().Be("Sounds");
     }
     #endregion
 
@@ -79,11 +83,12 @@ public class SoundPathResolverTests
 
         var resolver = new SoundPathResolver(mockDirectory.Object);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            resolver.ResolveFilePath(ContentName);
-        }, $"The sound file '{this.contentFilePath}' does not exist.");
+        // Act
+        var act = () => resolver.ResolveFilePath(ContentName);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The sound file '{this.contentFilePath}' does not exist.");
     }
 
     [Theory]
@@ -115,7 +120,7 @@ public class SoundPathResolverTests
         var actual = resolver.ResolveFilePath($"{ContentName}{resolvePathExtension}");
 
         // Assert
-        Assert.Equal($"{this.contentFilePath}{actualFileExtension}", actual);
+        actual.Should().Be($"{this.contentFilePath}{actualFileExtension}");
     }
 
     [Fact]
@@ -139,7 +144,7 @@ public class SoundPathResolverTests
         var actual = resolver.ResolveFilePath($"{ContentName}.mp3");
 
         // Assert
-        Assert.Equal($"{this.contentFilePath}.mp3", actual);
+        actual.Should().Be($"{this.contentFilePath}.mp3");
     }
     #endregion
 }

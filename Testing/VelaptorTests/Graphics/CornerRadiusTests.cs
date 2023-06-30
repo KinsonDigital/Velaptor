@@ -21,10 +21,10 @@ public class CornerRadiusTests
         var corners = new CornerRadius(11, 22, 33, 44);
 
         // Assert
-        Assert.Equal(11u, corners.TopLeft);
-        Assert.Equal(22u, corners.BottomLeft);
-        Assert.Equal(33u, corners.BottomRight);
-        Assert.Equal(44u, corners.TopRight);
+        corners.TopLeft.Should().Be(11u);
+        corners.BottomLeft.Should().Be(22u);
+        corners.BottomRight.Should().Be(33u);
+        corners.TopRight.Should().Be(44u);
     }
 
     [Fact]
@@ -34,10 +34,10 @@ public class CornerRadiusTests
         var corners = new CornerRadius(123f);
 
         // Assert
-        Assert.Equal(123, corners.TopLeft);
-        Assert.Equal(123, corners.BottomLeft);
-        Assert.Equal(123, corners.BottomRight);
-        Assert.Equal(123, corners.TopRight);
+        corners.TopLeft.Should().Be(123);
+        corners.BottomLeft.Should().Be(123);
+        corners.BottomRight.Should().Be(123);
+        corners.TopRight.Should().Be(123);
     }
     #endregion
 
@@ -118,7 +118,7 @@ public class CornerRadiusTests
         var actual = radius.IsEmpty();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
     #endregion
 }

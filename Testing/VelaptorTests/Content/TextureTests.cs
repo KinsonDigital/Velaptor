@@ -10,7 +10,6 @@ using System.Drawing;
 using Carbonate.Core.UniDirectional;
 using Carbonate.UniDirectional;
 using FluentAssertions;
-using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -169,49 +168,52 @@ public class TextureTests
     [Fact]
     public void InternalCtor_WithNullGLParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new Texture(
-                null,
-                this.mockGLService.Object,
-                this.mockReactableFactory.Object,
-                TextureName,
-                TexturePath,
-                this.imageData);
-        }, "The parameter must not be null. (Parameter 'gl')");
+        // Arrange & Act
+        var act = () => new Texture(
+            null,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object,
+            TextureName,
+            TexturePath,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'gl')");
     }
 
     [Fact]
     public void InternalCtor_WithNullOpenGLServiceParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new Texture(
-                this.mockGL.Object,
-                null,
-                this.mockReactableFactory.Object,
-                TextureName,
-                TexturePath,
-                this.imageData);
-        }, "The parameter must not be null. (Parameter 'openGLService')");
+        // Arrange & Act
+        var act = () => new Texture(
+            this.mockGL.Object,
+            null,
+            this.mockReactableFactory.Object,
+            TextureName,
+            TexturePath,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
     public void InternalCtor_WithNullReactableFactoryParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new Texture(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                null,
-                TextureName,
-                TexturePath,
-                this.imageData);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+        // Arrange & Act
+        var act = () => new Texture(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            null,
+            TextureName,
+            TexturePath,
+            this.imageData);
+
+        // Assrt
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
 
     [Theory]
@@ -219,17 +221,18 @@ public class TextureTests
     [InlineData(null)]
     public void InternalCtor_WithEmptyOrNullNameParam_ThrowsException(string name)
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new Texture(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockReactableFactory.Object,
-                name,
-                TexturePath,
-                this.imageData);
-        }, "The string parameter must not be null or empty. (Parameter 'name')");
+        // Arrange & Act
+        var act = () => new Texture(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object,
+            name,
+            TexturePath,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
     }
 
     [Theory]
@@ -238,26 +241,28 @@ public class TextureTests
     public void InternalCtor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
     {
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new Texture(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockReactableFactory.Object,
-                TextureName,
-                filePath,
-                this.imageData);
-        }, "The string parameter must not be null or empty. (Parameter 'filePath')");
+        var act = () => new Texture(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object,
+            TextureName,
+            filePath,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
     }
 
     [Fact]
     public void InternalCtor_WithEmptyImageData_ThrowsException()
     {
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
-        {
-            _ = CreateSystemUnderTest(true);
-        }, "The image data must not be empty. (Parameter 'imageData')");
+        var act = () => CreateSystemUnderTest(true);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The image data must not be empty. (Parameter 'imageData')");
     }
 
     [Fact]
@@ -345,7 +350,7 @@ public class TextureTests
         var actual = sut.Id;
 
         // Assert
-        Assert.Equal(TextureId, actual);
+        actual.Should().Be(TextureId);
     }
 
     [Fact]
@@ -358,7 +363,7 @@ public class TextureTests
         var actual = sut.Name;
 
         // Assert
-        Assert.Equal(TextureName, actual);
+        actual.Should().Be(TextureName);
     }
 
     [Fact]
@@ -371,7 +376,7 @@ public class TextureTests
         var actual = sut.FilePath;
 
         // Assert
-        Assert.Equal(TexturePath, actual);
+        actual.Should().Be(TexturePath);
     }
 
     [Fact]
@@ -384,7 +389,7 @@ public class TextureTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(2u, actual);
+        actual.Should().Be(2u);
     }
 
     [Fact]
@@ -397,7 +402,7 @@ public class TextureTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(3u, actual);
+        actual.Should().Be(3u);
     }
     #endregion
 

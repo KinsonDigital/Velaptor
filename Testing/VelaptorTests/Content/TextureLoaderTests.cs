@@ -52,46 +52,45 @@ public class TextureLoaderTests
     [Fact]
     public void Ctor_WithNullTextureCacheParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureLoader(
-                null,
-                this.mockTexturePathResolver.Object,
-                this.mockDirectory.Object,
-                this.mockFile.Object,
-                this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'textureCache')");
+        // Arrange & Act
+        var act = () => new TextureLoader(
+            null,
+            this.mockTexturePathResolver.Object,
+            this.mockDirectory.Object,
+            this.mockFile.Object,
+            this.mockPath.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
     }
 
     [Fact]
     public void Ctor_WithNullTexturePathResolverParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureLoader(
-                this.mockTextureCache.Object,
-                null,
-                this.mockDirectory.Object,
-                this.mockFile.Object,
-                this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'texturePathResolver')");
+        // Arrange & Act
+        var act = () => new TextureLoader(
+            this.mockTextureCache.Object,
+            null,
+            this.mockDirectory.Object,
+            this.mockFile.Object,
+            this.mockPath.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'texturePathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () =>
-        {
-            _ = new TextureLoader(
+        var act = () => new TextureLoader(
                 this.mockTextureCache.Object,
                 this.mockTexturePathResolver.Object,
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        };
 
         // Assert
         act.Should()
@@ -102,31 +101,35 @@ public class TextureLoaderTests
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureLoader(
-                this.mockTextureCache.Object,
-                this.mockTexturePathResolver.Object,
-                this.mockDirectory.Object,
-                null,
-                this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        // Arrange & Act
+        var act = () => new TextureLoader(
+            this.mockTextureCache.Object,
+            this.mockTexturePathResolver.Object,
+            this.mockDirectory.Object,
+            null,
+            this.mockPath.Object);
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new TextureLoader(
-                this.mockTextureCache.Object,
-                this.mockTexturePathResolver.Object,
-                this.mockDirectory.Object,
-                this.mockFile.Object,
-                null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        // Arrange & Act
+        var act = () => _ = new TextureLoader(
+            this.mockTextureCache.Object,
+            this.mockTexturePathResolver.Object,
+            this.mockDirectory.Object,
+            this.mockFile.Object,
+            null);
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
     #endregion
 
@@ -162,8 +165,8 @@ public class TextureLoaderTests
         var actual = sut.Load(TextureFilePath);
 
         // Assert
-        Assert.NotNull(actual);
-        Assert.Same(mockTexture.Object, actual);
+        actual.Should().NotBeNull();
+        actual.Should().BeSameAs(mockTexture.Object);
     }
 
     [Theory]
@@ -197,11 +200,12 @@ public class TextureLoaderTests
 
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            sut.Load(TextureFilePath);
-        }, $"The texture file '{TextureFilePath}' does not exist.");
+        // Act
+        var act = () => sut.Load(TextureFilePath);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage($"The texture file '{TextureFilePath}' does not exist.");
     }
 
     [Fact]
@@ -235,11 +239,12 @@ public class TextureLoaderTests
 
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
-        {
-            sut.Load(filePathWithInvalidExtension);
-        }, $"The file '{filePathWithInvalidExtension}' must be a texture file with the extension '{TextureExtension}'.");
+        // Act
+        var act = () => sut.Load(filePathWithInvalidExtension);
+
+        // Assert
+        act.Should().ThrowExactly<LoadTextureException>()
+            .WithMessage($"The file '{filePathWithInvalidExtension}' must be a texture file with the extension '{TextureExtension}'.");
     }
 
     [Fact]

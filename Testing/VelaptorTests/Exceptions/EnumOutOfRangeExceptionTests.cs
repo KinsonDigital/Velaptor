@@ -5,6 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
+using FluentAssertions;
 using Helpers;
 using Velaptor.Exceptions;
 using Xunit;
@@ -22,7 +23,7 @@ public class EnumOutOfRangeExceptionTests
         var exception = new EnumOutOfRangeException<TestEnum>();
 
         // Assert
-        Assert.Equal($"The value of the enum '{nameof(TestEnum)}' is invalid and out of range.", exception.Message);
+        exception.Message.Should().Be($"The value of the enum '{nameof(TestEnum)}' is invalid and out of range.");
     }
 
     [Fact]
@@ -32,7 +33,7 @@ public class EnumOutOfRangeExceptionTests
         var exception = new EnumOutOfRangeException<TestEnum>("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be($"test-message");
     }
 
     [Fact]
@@ -45,8 +46,8 @@ public class EnumOutOfRangeExceptionTests
         var deviceException = new EnumOutOfRangeException<TestEnum>("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }

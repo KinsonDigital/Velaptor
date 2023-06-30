@@ -52,8 +52,8 @@ public class SoundLoaderTests
     [Fact]
     public void Ctor_WithNullSoundCacheParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundLoader(
                 null,
@@ -61,14 +61,18 @@ public class SoundLoaderTests
                 this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'soundCache')");
+        };
+
+        // Act
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'soundCache')");
     }
 
     [Fact]
     public void Ctor_WithNullSoundPathResolverParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
@@ -76,14 +80,39 @@ public class SoundLoaderTests
                 this.mockDirectory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'soundPathResolver')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'soundPathResolver')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullDirectoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new SoundLoader(
+                this.mockSoundCache.Object,
+                this.mockSoundPathResolver.Object,
+                null,
+                this.mockFile.Object,
+                this.mockPath.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
@@ -91,14 +120,19 @@ public class SoundLoaderTests
                 this.mockDirectory.Object,
                 null,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new SoundLoader(
                 this.mockSoundCache.Object,
@@ -106,7 +140,12 @@ public class SoundLoaderTests
                 this.mockDirectory.Object,
                 this.mockFile.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
     #endregion
 
@@ -123,7 +162,8 @@ public class SoundLoaderTests
         var act = () => sut.Load(content);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
+        act.Should()
+            .Throw<ArgumentNullException>()
             .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
     }
 
@@ -142,11 +182,13 @@ public class SoundLoaderTests
 
         var loader = CreateSoundLoader();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<LoadSoundException>(() =>
-        {
-            loader.Load(invalidSoundFilePath);
-        }, expectedMsg);
+        // Act
+        var act = () => loader.Load(invalidSoundFilePath);
+
+        // Assert
+        act.Should()
+            .Throw<LoadSoundException>()
+            .WithMessage(expectedMsg);
     }
 
     [Fact]
@@ -159,11 +201,13 @@ public class SoundLoaderTests
 
         var loader = CreateSoundLoader();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            loader.Load(this.oggSoundFilePath);
-        }, expectedMsg);
+        // Act
+        var act = () => loader.Load(this.oggSoundFilePath);
+
+        // Assert
+        act.Should()
+            .Throw<FileNotFoundException>()
+            .WithMessage(expectedMsg);
     }
 
     [Fact]

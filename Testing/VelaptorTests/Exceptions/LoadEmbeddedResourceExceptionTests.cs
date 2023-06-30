@@ -5,6 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Exceptions;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class LoadEmbeddedResourceExceptionTests
         var exception = new LoadEmbeddedResourceException();
 
         // Assert
-        Assert.Equal("Issue loading the embedded resource.", exception.Message);
+        exception.Message.Should().Be("Issue loading the embedded resource.");
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class LoadEmbeddedResourceExceptionTests
         var exception = new LoadEmbeddedResourceException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -44,8 +45,8 @@ public class LoadEmbeddedResourceExceptionTests
         var deviceException = new LoadEmbeddedResourceException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }
