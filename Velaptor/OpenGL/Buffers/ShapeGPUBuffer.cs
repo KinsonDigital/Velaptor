@@ -12,6 +12,7 @@ using System.Numerics;
 using Batching;
 using Carbonate.UniDirectional;
 using Exceptions;
+using ExtensionMethods;
 using Factories;
 using GPUData;
 using Graphics;
