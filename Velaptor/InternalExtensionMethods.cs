@@ -45,41 +45,7 @@ internal static class InternalExtensionMethods
         keyboardState.IsKeyDown(KeyCode.Up) ||
         keyboardState.IsKeyDown(KeyCode.Down);
 
-    public static void RemoveLastChar(this StringBuilder? value)
-    {
-        if (value is null || value.Length <= 0)
-        {
-            return;
-        }
 
-        value.Replace(value[^1].ToString(), string.Empty, value.Length - 1, 1);
-    }
-
-    public static string Substring(this StringBuilder? value, uint start, uint length)
-    {
-        if (value is null || start >= value.Length)
-        {
-            return string.Empty;
-        }
-
-        length = start + length > value.Length ? 0 : length;
-
-        return value.ToString((int)start, (int)length);
-    }
-
-    public static void RemoveChar(this StringBuilder? value, uint index)
-    {
-        if (value is null || index >= value.Length)
-        {
-            return;
-        }
-
-        value.Remove((int)index, 1);
-    }
-
-    public static int LastCharIndex(this StringBuilder? value) => value is null || value.Length <= 0 ? -1 : value.Length - 1;
-
-    public static bool IsEmpty(this StringBuilder? value) => value is null || value.Length <= 0;
 
     public static void BumpAllToLeft(this List<(char character, NETRectF bounds)> charBounds, float amount)
     {
