@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Fakes;
-using Helpers;
-using Velaptor;
+using FluentAssertions;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
 using Xunit;
 
 /// <summary>
@@ -47,7 +47,7 @@ public class ContentPathResolverTests
         var actual = resolver.RootDirectoryPath;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public class ContentPathResolverTests
         var actual = resolver.ContentDirectoryName;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -81,7 +81,7 @@ public class ContentPathResolverTests
         var actual = resolver.ResolveFilePath(contentName);
 
         // Assert
-        Assert.Equal(ContentName, actual);
+        actual.Should().Be(ContentName);
     }
 
     [Theory]
@@ -97,7 +97,7 @@ public class ContentPathResolverTests
         var actual = resolver.ResolveDirPath();
 
         // Assert
-        Assert.Equal(@"C:/temp/my-content/test-content", actual);
+        actual.Should().Be(@"C:/temp/my-content/test-content");
     }
 
     [Fact]
@@ -106,11 +106,12 @@ public class ContentPathResolverTests
         // Arrange
         var resolver = new ContentPathResolverFake();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            resolver.ResolveFilePath(null);
-        }, "The string parameter must not be null or empty. (Parameter 'contentName')");
+        // Act
+        var act = () => resolver.ResolveFilePath(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentName')");
     }
 
     [Theory]
@@ -121,11 +122,12 @@ public class ContentPathResolverTests
         // Arrange
         var resolver = new ContentPathResolverFake();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
-        {
-            resolver.ResolveFilePath($@"{contentName}");
-        }, $@"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+        // Act
+        var act = () => resolver.ResolveFilePath(contentName);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage($@"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
     #endregion
 }

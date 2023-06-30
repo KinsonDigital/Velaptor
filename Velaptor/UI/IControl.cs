@@ -7,6 +7,7 @@ namespace Velaptor.UI;
 using System;
 using System.Drawing;
 using Content;
+using Input;
 
 /// <summary>
 /// A user interface object that can be updated and rendered to the screen.
@@ -32,7 +33,17 @@ public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable
     /// <summary>
     /// Occurs when the mouse moves over the button.
     /// </summary>
-    event EventHandler<MousePositionEventArgs>? MouseMove;
+    event EventHandler<MouseMoveEventArgs>? MouseMove;
+
+    /// <summary>
+    /// Occurs when a keyboard key is pressed into the down position.
+    /// </summary>
+    event EventHandler<KeyEventArgs>? KeyDown;
+
+    /// <summary>
+    /// Occurs when a keyboard key is released into the up position.
+    /// </summary>
+    event EventHandler<KeyEventArgs>? KeyUp;
 
     // ReSharper disable UnusedMemberInSuper.Global
 

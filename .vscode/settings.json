@@ -3,6 +3,7 @@
         "Analyers",
         "andymckay",
         "backticks",
+        "Bonda",
         "CASL",
         "cicd",
         "cobertura",
@@ -48,5 +49,6 @@
         "Velaptor",
         "Vorbis",
         "xunit"
-    ]
+    ],
+    "dotnet.defaultSolution": "Velaptor.sln"
 }

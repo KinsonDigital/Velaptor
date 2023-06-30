@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Velaptor;
+using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;

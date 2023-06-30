@@ -217,6 +217,20 @@ public record struct RectShape
     public Color GradientStop { get; set; } = Color.White;
 
     /// <summary>
+    /// Returns a value indicating whether or not the given <see cref="Vector2"/> is contained within the rectangle shape.
+    /// </summary>
+    /// <param name="vector">The possibly contained <see cref="Vector2"/>.</param>
+    /// <returns><c>true</c> if the <paramref name="vector"/> is contained.</returns>
+    /// <remarks>
+    ///     The <see cref="Left"/> or <see cref="Right"/> or <see cref="Top"/> or <see cref="Bottom"/> are inclusive.
+    /// </remarks>
+    public bool Contains(Vector2 vector) =>
+        vector.X >= Left &&
+        vector.X <= Right &&
+        vector.Y >= Top &&
+        vector.Y <= Bottom;
+
+    /// <summary>
     /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>

@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Caching;
 using Exceptions;
+using ExtensionMethods;
 using Graphics;
 using Guards;
 using Services;
@@ -126,6 +128,9 @@ public sealed class Font : IFont
             {
                 RebuildAtlasTexture();
             }
+
+            // Clear the entire size cache since the size has changed
+            this.textSizeCache.Clear();
         }
     }
 
@@ -188,8 +193,13 @@ public sealed class Font : IFont
             return measure;
         }
 
-        text = text.TrimNewLineFromEnd();
-        var lines = text.Split(Environment.NewLine).TrimAllEnds();
+        // Normalize the line endings
+        if (text.Contains("\r\n"))
+        {
+            text = text.Replace("\r\n", "\n");
+        }
+
+        var lines = text.Split("\n");
 
         var (largestWidth, totalHeight) = CalcTextDimensions(lines);
 
@@ -240,6 +250,10 @@ public sealed class Font : IFont
         => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
 
     /// <inheritdoc/>
+    /// <remarks>
+    ///     The bounds include the width, height, and position of the character relative to
+    ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
+    /// </remarks>
     public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos)
     {
         if (string.IsNullOrEmpty(text))
@@ -267,18 +281,21 @@ public sealed class Font : IFont
                 heightOffset += currentCharMetric.HoriBearingY;
             }
 
+            // Get the width of the glyph
+            var boundsWidth = currentCharMetric.Glyph == ' '
+                ? currentCharMetric.HorizontalAdvance
+                : currentCharMetric.GlyphBounds.Width;
+
             // Create the destination rect
             RectangleF charBounds = default;
             charBounds.X = textPos.X;
             charBounds.Y = textPos.Y + heightOffset;
-            charBounds.Width = currentCharMetric.GlyphBounds.Width <= 0 ? 1 : currentCharMetric.GlyphBounds.Width;
+            charBounds.Width = boundsWidth;
             charBounds.Height = currentCharMetric.GlyphBounds.Height <= 0 ? 1 : currentCharMetric.GlyphBounds.Height;
 
             result.Add((currentCharMetric.Glyph, charBounds));
 
             // Horizontally advance to the next glyph
-            // Get the difference between the old glyph width
-            // and the glyph width with the size applied
             textPos.X += currentCharMetric.HorizontalAdvance;
 
             leftGlyphIndex = currentCharMetric.CharIndex;
@@ -287,6 +304,13 @@ public sealed class Font : IFont
         return result.ToArray();
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    ///     The bounds include the width, height, and position of the character relative to
+    ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
+    /// </remarks>
+    public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos) => GetCharacterBounds(text.ToString(), textPos);
+
     /// <summary>
     /// Adds the given text and size to the cache.
     /// </summary>
@@ -294,7 +318,7 @@ public sealed class Font : IFont
     /// <param name="textSize">The size of the text to add.</param>
     private void AddToCache(string text, SizeF textSize)
     {
-        if (CacheEnabled is false)
+        if (CacheEnabled is false || this.textSizeCache.ContainsKey(text))
         {
             return;
         }

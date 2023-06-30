@@ -6,6 +6,7 @@ namespace Velaptor.Services;
 
 using System;
 using System.IO.Abstractions;
+using ExtensionMethods;
 using Guards;
 
 /// <inheritdoc/>

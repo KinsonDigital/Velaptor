@@ -7,6 +7,7 @@ namespace Velaptor.Content;
 using System;
 using System.IO;
 using System.Reflection;
+using ExtensionMethods;
 
 /// <summary>
 /// Manages the content source.
@@ -61,7 +62,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
 
         if (contentName.EndsWith(WinDirSeparatorChar) || contentName.EndsWith(CrossPlatDirSeparatorChar))
         {
-            throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
+            throw new ArgumentException($"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension.", nameof(contentName));
         }
 
         return contentName;

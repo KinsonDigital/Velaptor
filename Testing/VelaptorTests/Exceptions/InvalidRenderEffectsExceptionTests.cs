@@ -5,6 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Xunit;
@@ -22,7 +23,7 @@ public class InvalidRenderEffectsExceptionTests
         var exception = new InvalidRenderEffectsException();
 
         // Assert
-        Assert.Equal($"{nameof(RenderEffects)} value invalid.", exception.Message);
+        exception.Message.Should().Be($"{nameof(RenderEffects)} value invalid.");
     }
 
     [Fact]
@@ -32,7 +33,7 @@ public class InvalidRenderEffectsExceptionTests
         var exception = new InvalidRenderEffectsException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -45,8 +46,8 @@ public class InvalidRenderEffectsExceptionTests
         var deviceException = new InvalidRenderEffectsException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }

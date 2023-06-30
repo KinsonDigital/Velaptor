@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
+using System.Text;
 using Graphics;
 using VelFontStyle = FontStyle;
 
@@ -111,9 +112,14 @@ public interface IFont : IContent
     /// <param name="text">The text to get the bounds data.</param>
     /// <param name="textPos">The position of the text as a whole.</param>
     /// <returns>The bounds for each character.</returns>
-    /// <remarks>
-    ///     The bounds include the width, height, and position of the character relative to
-    ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
-    /// </remarks>
     IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos);
+
+    /// <summary>
+    /// Returns the bounds of each character in the given <paramref name="text"/> based on the
+    /// given <paramref name="textPos"/>.
+    /// </summary>
+    /// <param name="text">The text to get the bounds data.</param>
+    /// <param name="textPos">The position of the text as a whole.</param>
+    /// <returns>The bounds for each character.</returns>
+    IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos);
 }

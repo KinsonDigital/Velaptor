@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
+using FluentAssertions;
 using Helpers;
 using Velaptor.Graphics;
 using Xunit;
@@ -402,6 +403,31 @@ public class RectShapeTests
     #endregion
 
     #region Method Tests
+    [Theory]
+    [InlineData(50, 60, true)] // Not touching any edges and inside
+    [InlineData(40, 60, true)] // Touching left edge
+    [InlineData(60, 60, true)] // Touching right edge
+    [InlineData(50, 55, true)] // Touching top edge
+    [InlineData(50, 75, true)] // Touching bottom edge
+    [InlineData(10, 10, false)] // Vector outside of rectangle
+    public void Contains_WhenInvoked_ReturnsCorrectResult(float x, float y, bool expected)
+    {
+        // Arrange
+        var position = new Vector2(x, y);
+        var sut = new RectShape
+        {
+            Position = new Vector2(50, 60),
+            Width = 20,
+            Height = 30,
+        };
+
+        // Act
+        var actual = sut.Contains(position);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
     [Theory]
     [MemberData(nameof(IsEmptyTestData))]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(

@@ -62,6 +62,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
+        var textBoxScene = new TextBoxScene
+        {
+            Name = SplitByUpperCase(nameof(SoundScene)),
+        };
+
         var layeredRenderingScene = new LayeredTextureRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
@@ -106,6 +111,7 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredTextRenderingScene);
         SceneManager.AddScene(keyboardScene);
         SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(textBoxScene);
         SceneManager.AddScene(layeredRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
