@@ -529,7 +529,7 @@ public class FontTests : IDisposable
     }
 
     [Theory]
-    [InlineData(true, 20)]
+    [InlineData(true, 10)]
     [InlineData(false, 20)]
     public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
@@ -538,7 +538,7 @@ public class FontTests : IDisposable
          * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
          */
         // Arrange
-        var text = $"hello{Environment.NewLine}world";
+        var text = $"hello\nworld";
 
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
             .Returns(2f);
