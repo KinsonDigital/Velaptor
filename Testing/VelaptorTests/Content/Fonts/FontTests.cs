@@ -14,12 +14,12 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Newtonsoft.Json;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
+using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using Velaptor.Services;
 using Xunit;
@@ -530,11 +530,15 @@ public class FontTests : IDisposable
 
     [Theory]
     [InlineData(true, 10)]
-    // [InlineData(false, 20)]
+    [InlineData(false, 20)]
     public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
+        /* NOTE:
+         * The kerning invoke count is 20 because the Measure() method is being called twice.
+         * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
+         */
         // Arrange
-        var text = $"hello{Environment.NewLine}world";
+        var text = $"hello\nworld";
 
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
             .Returns(2f);

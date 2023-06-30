@@ -40,12 +40,31 @@ public class Label : ControlBase
 
         this.contentLoader = ContentLoaderFactory.CreateContentLoader();
         Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
+        Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Label"/> class.
+    /// </summary>
+    /// <param name="text">The text of the label.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Label(string text)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.fontRenderer = renderFactory.CreateFontRenderer();
+
+        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+        Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
+        Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+        Text = text;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
     /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
@@ -56,9 +75,10 @@ public class Label : ControlBase
     /// </exception>
     internal Label(
         IContentLoader contentLoader,
+        IAppInput<KeyboardState> keyboard,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
-            : base(mouse)
+            : base(keyboard, mouse)
     {
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(rendererFactory);

@@ -1,4 +1,4 @@
-﻿// <copyright file="PublicExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="GameHelpersTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,18 +15,18 @@ using Velaptor.Graphics;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="PublicExtensionMethods"/> class.
+/// Tests the <see cref="GameHelpers"/> class.
 /// </summary>
 [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Allowed for unit test classes.")]
-public class PublicExtensionMethodsTests
+public class GameHelpersTests
 {
     private readonly char[] letters;
     private readonly char[] nonLetters;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PublicExtensionMethodsTests"/> class.
+    /// Initializes a new instance of the <see cref="GameHelpersTests"/> class.
     /// </summary>
-    public PublicExtensionMethodsTests()
+    public GameHelpersTests()
     {
         var result = new List<char>();
 

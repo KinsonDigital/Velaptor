@@ -31,6 +31,7 @@ public class LabelTests
     private const string TextValue = "hello world";
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IFont> mockFont;
+    private readonly Mock<IAppInput<KeyboardState>> mockKeyboard;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
     private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Mock<IFontRenderer> mockFontRenderer;
@@ -47,6 +48,7 @@ public class LabelTests
         this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<uint>()))
             .Returns(this.mockFont.Object);
 
+        this.mockKeyboard = new Mock<IAppInput<KeyboardState>>();
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
         this.mockFontRenderer = new Mock<IFontRenderer>();
@@ -65,6 +67,7 @@ public class LabelTests
         {
             _ = new Label(
                 null,
+                this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 this.mockRenderFactory.Object);
         };
@@ -82,6 +85,7 @@ public class LabelTests
         {
             _ = new Label(
                 this.mockContentLoader.Object,
+                this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 null);
         };
@@ -552,6 +556,7 @@ public class LabelTests
     /// <returns>The instance to test.</returns>
     private Label CreateSystemUnderTest() =>
         new (this.mockContentLoader.Object,
+            this.mockKeyboard.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);
 }

@@ -10,6 +10,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Caching;
+using ExtensionMethods;
 using Graphics;
 using Guards;
 using Velaptor.Exceptions;

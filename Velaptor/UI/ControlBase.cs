@@ -1,4 +1,4 @@
-﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
+// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,22 +17,30 @@ using Input;
 public abstract class ControlBase : IControl
 {
     private readonly IAppInput<MouseState> mouse;
-    private MouseState currentMouseState;
-    private MouseState previousMouseState;
-    private Point currentMousePos;
-    private Point previousMousePos;
+    private MouseState prevMouseState;
+    private KeyboardState prevKeyboardState;
+    private Point prevMousePos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
-    internal ControlBase(IAppInput<MouseState> mouse) => this.mouse = mouse;
+    protected ControlBase(IAppInput<KeyboardState> keyboard, IAppInput<MouseState> mouse)
+    {
+        Keyboard = keyboard;
+        this.mouse = mouse;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
-    protected ControlBase() => this.mouse = InputFactory.CreateMouse();
+    protected ControlBase()
+    {
+        Keyboard = InputFactory.CreateKeyboard();
+        this.mouse = InputFactory.CreateMouse();
+    }
 
     /// <inheritdoc cref="IControl.Click"/>
     public event EventHandler<EventArgs>? Click;
@@ -44,7 +52,13 @@ public abstract class ControlBase : IControl
     public event EventHandler<EventArgs>? MouseUp;
 
     /// <inheritdoc cref="IControl.MouseMove"/>
-    public event EventHandler<MousePositionEventArgs>? MouseMove;
+    public event EventHandler<MouseMoveEventArgs>? MouseMove;
+
+    /// <inheritdoc cref="IControl.KeyDown"/>
+    public event EventHandler<KeyEventArgs>? KeyDown;
+
+    /// <inheritdoc cref="IControl.KeyUp"/>
+    public event EventHandler<KeyEventArgs>? KeyUp;
 
     /// <inheritdoc cref="IControl.Name"/>
     public string Name { get; set; } = string.Empty;
@@ -128,11 +142,49 @@ public abstract class ControlBase : IControl
     /// </remarks>
     protected Color TintColor { get; private set; } = Color.White;
 
+    /// <summary>
+    /// Gets the keyboard object used to process keyboard input.
+    /// </summary>
+    protected IAppInput<KeyboardState> Keyboard { get; init; }
+
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
     public virtual void LoadContent() => IsLoaded = true;
 
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
-    public virtual void UnloadContent() => IsLoaded = false;
+    public virtual void UnloadContent()
+    {
+        foreach (var clickDelegate in this.Click?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.Click -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseDown?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseDown -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseUp?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseUp -= clickDelegate as EventHandler<EventArgs>;
+        }
+
+        foreach (var clickDelegate in this.MouseMove?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.MouseMove -= clickDelegate as EventHandler<MouseMoveEventArgs>;
+        }
+
+        foreach (var clickDelegate in this.KeyDown?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.KeyDown -= clickDelegate as EventHandler<KeyEventArgs>;
+        }
+
+        foreach (var clickDelegate in this.KeyUp?.GetInvocationList() ?? Array.Empty<Delegate>())
+        {
+            this.KeyUp -= clickDelegate as EventHandler<KeyEventArgs>;
+        }
+
+        IsLoaded = false;
+    }
 
     /// <inheritdoc cref="IControl"/>
     public virtual void Update(FrameTime frameTime)
@@ -142,53 +194,8 @@ public abstract class ControlBase : IControl
             return;
         }
 
-        this.currentMouseState = this.mouse.GetState();
-        this.currentMousePos = this.currentMouseState.GetPosition();
-
-        var halfWidth = (int)Width / 2;
-        var halfHeight = (int)Height / 2;
-
-        var controlRect = new Rectangle(Position.X - halfWidth, Position.Y - halfHeight, (int)Width, (int)Height);
-
-        IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
-
-        // If the mouse button is in the down position
-        if (this.currentMouseState.IsLeftButtonDown() && IsMouseOver)
-        {
-            TintColor = MouseDownColor;
-        }
-        else
-        {
-            TintColor = IsMouseOver ? MouseHoverColor : Color.White;
-        }
-
-        if (IsMouseOver)
-        {
-            // Invoked the mouse move event if the mouse has been moved
-            if (this.currentMousePos != this.previousMousePos)
-            {
-                var relativePos = new Point(Position.X - this.currentMousePos.X, Position.Y - this.currentMousePos.Y);
-                this.MouseMove?.Invoke(this, new MousePositionEventArgs(relativePos));
-            }
-
-            if (this.currentMouseState.IsLeftButtonDown())
-            {
-                OnMouseDown();
-                this.MouseDown?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        if (this.currentMouseState.IsLeftButtonUp() &&
-            this.previousMouseState.IsLeftButtonDown() &&
-            IsMouseOver)
-        {
-            OnMouseUp();
-            this.MouseUp?.Invoke(this, EventArgs.Empty);
-            this.Click?.Invoke(this, EventArgs.Empty);
-        }
-
-        this.previousMouseState = this.currentMouseState;
-        this.previousMousePos = this.currentMousePos;
+        ProcessMouse();
+        ProcessKeyboard();
     }
 
     /// <summary>
@@ -203,9 +210,7 @@ public abstract class ControlBase : IControl
     /// Invoked when the mouse is in the down position over the control.
     /// Used when a child control needs to be notified if the mouse is the down position.
     /// </summary>
-    protected virtual void OnMouseDown()
-    {
-    }
+    protected virtual void OnMouseDown() => this.MouseDown?.Invoke(this, EventArgs.Empty);
 
     /// <summary>
     /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
@@ -213,5 +218,133 @@ public abstract class ControlBase : IControl
     /// </summary>
     protected virtual void OnMouseUp()
     {
+        this.MouseUp?.Invoke(this, EventArgs.Empty);
+        this.Click?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Invoked when the mouse moves over the control.
+    /// </summary>
+    /// <param name="mousePosArgs">The position of the mouse over the control.</param>
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
+    protected virtual void OnMouseMove(MouseMoveEventArgs mousePosArgs) => this.MouseMove?.Invoke(this, mousePosArgs);
+
+    /// <summary>
+    /// Invoked when a keyboard key is pressed into the down position from the up position.
+    /// </summary>
+    /// <param name="key">The key that is down.</param>
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
+    protected virtual void OnKeyDown(KeyCode key) => this.KeyDown?.Invoke(this, new KeyEventArgs(key));
+
+    /// <summary>
+    /// Invoked when a keyboard key is lifted from the down position to the up position.
+    /// </summary>
+    /// <param name="key">The key that is up.</param>
+    protected virtual void OnKeyUp(KeyCode key) => this.KeyUp?.Invoke(this, new KeyEventArgs(key));
+
+    /// <summary>
+    /// Process keyboard input.
+    /// </summary>
+    private void ProcessKeyboard()
+    {
+        var currKeyboardState = Keyboard.GetState();
+
+        ProcessKeyDownEvents(currKeyboardState);
+        ProcessKeyUpEvents(currKeyboardState, this.prevKeyboardState);
+
+        this.prevKeyboardState = currKeyboardState;
+    }
+
+    /// <summary>
+    /// Process any keyboard key down events.
+    /// </summary>
+    /// <param name="currState">The current state of the keyboard this frame.</param>
+    [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
+    private void ProcessKeyDownEvents(KeyboardState currState)
+    {
+        foreach (var downKey in currState.GetDownKeys())
+        {
+            OnKeyDown(downKey);
+        }
+    }
+
+    /// <summary>
+    /// Process any keyboard key up events.
+    /// </summary>
+    /// <param name="currState">The current state of the keyboard in this frame.</param>
+    /// <param name="prevState">The previous state of the keyboard in the previous frame.</param>
+    [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
+    private void ProcessKeyUpEvents(KeyboardState currState, KeyboardState prevState)
+    {
+        foreach (var downKey in prevState.GetDownKeys())
+        {
+            if (currState.IsKeyUp(downKey))
+            {
+                OnKeyUp(downKey);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Process mouse input.
+    /// </summary>
+    private void ProcessMouse()
+    {
+        var currMouseState = this.mouse.GetState();
+
+        var currMousePos = currMouseState.GetPosition();
+
+        var halfWidth = (int)Width / 2;
+        var halfHeight = (int)Height / 2;
+
+        var controlRect = new Rectangle(Position.X - halfWidth, Position.Y - halfHeight, (int)Width, (int)Height);
+
+        IsMouseOver = controlRect.Contains(currMouseState.GetX(), currMouseState.GetY());
+
+        // If the mouse button is in the down position
+        if (currMouseState.IsLeftButtonDown() && IsMouseOver)
+        {
+            TintColor = MouseDownColor;
+        }
+        else
+        {
+            TintColor = IsMouseOver ? MouseHoverColor : Color.White;
+        }
+
+        if (IsMouseOver)
+        {
+            // Invoke the mouse move event if the mouse has been moved
+            if (currMousePos != this.prevMousePos)
+            {
+                // Position of the mouse relative to the top left corner of the window
+                var globalPos = new Point(currMousePos.X, currMousePos.Y);
+
+                // Get the X and Y position relative to the top right corner of the control
+                // NOTE: Even though the origin of the control is still the center,
+                // the local mouse pos is not relative to the origin, it is relative to the top left corner
+                var localX = Math.Abs(Position.X - currMousePos.X - halfWidth);
+                var localY = Math.Abs(Position.Y - currMousePos.Y - halfHeight);
+
+                // Position of the mouse relative to the top left corner of the control
+                var localPos = new Point(localX, localY);
+
+                OnMouseMove(new MouseMoveEventArgs(globalPos, localPos));
+            }
+
+            if (currMouseState.IsLeftButtonDown())
+            {
+                OnMouseDown();
+            }
+        }
+
+        if (currMouseState.IsLeftButtonUp() &&
+            this.prevMouseState.IsLeftButtonDown() &&
+            IsMouseOver)
+        {
+            OnMouseUp();
+        }
+
+        this.prevMouseState = currMouseState;
+        this.prevMousePos = currMousePos;
     }
 }

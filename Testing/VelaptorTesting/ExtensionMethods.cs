@@ -7,6 +7,7 @@ namespace VelaptorTesting;
 using System;
 using System.Drawing;
 using Velaptor.Graphics;
+using Velaptor.UI;
 
 public static class ExtensionMethods
 {
@@ -230,6 +231,72 @@ public static class ExtensionMethods
         callback(clrStr);
     }
 
+    public static void IncreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.SelectionColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.SelectionColor.IncreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.SelectionColor.IncreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.SelectionColor.IncreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
+    public static void DecreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.SelectionColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.SelectionColor.DecreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.SelectionColor.DecreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.SelectionColor.DecreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
+    public static void IncreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.TextColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.TextColor.IncreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.TextColor.IncreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.TextColor.IncreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
+    public static void DecreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.TextColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.TextColor.DecreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.TextColor.DecreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.TextColor.DecreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
+    public static void IncreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.CursorColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.CursorColor.IncreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.CursorColor.IncreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.CursorColor.IncreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
+    public static void DecreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
+    {
+        textBox.CursorColor = clrComp switch
+        {
+            TxtBoxColorComponent.Red => textBox.CursorColor.DecreaseRedBy(amount),
+            TxtBoxColorComponent.Green => textBox.CursorColor.DecreaseGreenBy(amount),
+            TxtBoxColorComponent.Blue => textBox.CursorColor.DecreaseBlueBy(amount),
+            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+        };
+    }
+
     public static ColorGradient SwapGradient(this ColorGradient gradient)
     {
         return gradient switch
@@ -239,5 +306,76 @@ public static class ExtensionMethods
             ColorGradient.Vertical => ColorGradient.None,
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    public static T Next<T>(this T enumValue)
+        where T : Enum
+    {
+        T[] enumValues = (T[])Enum.GetValues(typeof(T));
+        var currentIndex = Array.IndexOf(enumValues, enumValue);
+        var nextIndex = (currentIndex + 1) % enumValues.Length;
+
+        return enumValues[nextIndex];
+    }
+
+    public static T Previous<T>(this T enumValue)
+        where T : Enum
+    {
+        T[] enumValues = (T[])Enum.GetValues(typeof(T));
+        var currentIndex = Array.IndexOf(enumValues, enumValue);
+        var nextIndex = (currentIndex - 1) % enumValues.Length;
+        nextIndex = nextIndex < 0
+            ? Array.IndexOf(enumValues, enumValues[^1])
+            : nextIndex;
+
+        return enumValues[nextIndex];
+    }
+
+    private static Color IncreaseRedBy(this Color clr, int amount)
+    {
+        var newValue = clr.R + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
+    }
+
+    private static Color DecreaseRedBy(this Color clr, int amount)
+    {
+        var newValue = clr.R - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
+    }
+
+    private static Color IncreaseGreenBy(this Color clr, int amount)
+    {
+        var newValue = clr.G + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
+    }
+
+    private static Color DecreaseGreenBy(this Color clr, int amount)
+    {
+        var newValue = clr.G - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
+    }
+
+    private static Color IncreaseBlueBy(this Color clr, int amount)
+    {
+        var newValue = clr.B + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
+    }
+
+    private static Color DecreaseBlueBy(this Color clr, int amount)
+    {
+        var newValue = clr.B - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
     }
 }

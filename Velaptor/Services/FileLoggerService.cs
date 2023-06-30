@@ -6,6 +6,7 @@ namespace Velaptor.Services;
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using ExtensionMethods;
 using Serilog;
 
 /// <inheritdoc/>

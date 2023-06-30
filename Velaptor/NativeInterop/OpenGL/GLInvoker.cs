@@ -13,7 +13,7 @@ using Carbonate.UniDirectional;
 using Exceptions;
 using Services;
 using Silk.NET.OpenGL;
-using Velaptor.Guards;
+using Guards;
 using Velaptor.OpenGL;
 
 /// <summary>
@@ -97,7 +97,7 @@ internal sealed class GLInvoker : IGLInvoker
     public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
     {
         EnsureThat.StringParamIsNotNullOrEmpty(message);
-        
+
         AddToGLCallStack(nameof(PushDebugGroup));
         this.gl.PushDebugGroup((DebugSource)source, id, length, message);
     }

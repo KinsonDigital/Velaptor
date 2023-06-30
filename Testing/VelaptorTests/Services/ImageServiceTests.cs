@@ -15,7 +15,7 @@ using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Velaptor;
+using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using Velaptor.Services;
 using Xunit;
