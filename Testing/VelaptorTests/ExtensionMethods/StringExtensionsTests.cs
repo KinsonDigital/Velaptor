@@ -74,7 +74,7 @@ public class StringExtensionsTests
     [Theory]
     [InlineData('x', true)]
     [InlineData('k', false)]
-    public void DoesNotStartWidth_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+    public void DoesNotStartWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
     {
         // Arrange
         const string stringToCheck = "kinson";

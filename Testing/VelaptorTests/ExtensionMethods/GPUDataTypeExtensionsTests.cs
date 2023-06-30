@@ -702,7 +702,7 @@ public class GPUDataTypeExtensionsTests
     /// Generates GPU data with sequential, numerical values throughout
     /// the struct, starting with the given <paramref name="startValue"/> for the purpose of testing.
     /// </summary>
-    /// <param name="startValue">The value to start the sequential assignment from.</param>
+    /// <param name="startValue">The value to start the sequential assignment.</param>
     /// <returns>The GPU data to test.</returns>
     private static RectGPUData GenerateGPUDataInSequence(int startValue)
     {
@@ -721,7 +721,7 @@ public class GPUDataTypeExtensionsTests
     /// Generates vertex data with numerical values sequentially throughout
     /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
     /// </summary>
-    /// <param name="startValue">The value to start the sequential assignment from.</param>
+    /// <param name="startValue">The value to start the sequential assignment.</param>
     /// <returns>The vertex data to test.</returns>
     private static RectVertexData GenerateVertexDataInSequence(int startValue)
     {

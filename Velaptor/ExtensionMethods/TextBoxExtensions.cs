@@ -168,7 +168,7 @@ internal static class TextBoxExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating if their is a gap between the right end of the text in the given <paramref name="charBounds"/>
+    /// Returns a value indicating whether or not there is a gap between the right end of the text in the given <paramref name="charBounds"/>
     /// and the given <paramref name="rightEndLimitX"/>.
     /// </summary>
     /// <param name="charBounds">The list of characters.</param>

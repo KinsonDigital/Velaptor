@@ -11,5 +11,4 @@ using Velaptor.UI;
 /// </summary>
 public class TextBoxExtensionsTests
 {
-    // TODO: Create tests
 }

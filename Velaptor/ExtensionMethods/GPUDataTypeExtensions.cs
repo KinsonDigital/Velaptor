@@ -494,7 +494,7 @@ internal static class GPUDataTypeExtensions
     /// for the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
-    /// <param name="color">The color to set the vertex to.</param>
+    /// <param name="color">The color to set the vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
     public static RectGPUData SetColor(this RectGPUData gpuData, Color color, VertexNumber vertexNumber)
