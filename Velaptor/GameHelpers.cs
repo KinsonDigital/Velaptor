@@ -1,4 +1,4 @@
-﻿// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="GameHelpers.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ using Graphics;
 /// <summary>
 /// Provides extension helper methods for common game related operations.
 /// </summary>
-public static class PublicExtensionMethods
+public static class GameHelpers
 {
     private static readonly char[] Letters =
     {
