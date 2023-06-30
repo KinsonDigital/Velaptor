@@ -7,6 +7,7 @@ namespace Velaptor.NativeInterop.FreeType;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ExtensionMethods;
 using FreeTypeSharp.Native;
 using Guards;
 

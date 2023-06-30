@@ -7,6 +7,7 @@ namespace Velaptor.Content;
 using System;
 using System.IO;
 using System.Reflection;
+using ExtensionMethods;
 
 /// <summary>
 /// Manages the content source.

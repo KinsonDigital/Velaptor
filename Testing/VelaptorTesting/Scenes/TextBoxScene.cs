@@ -1,4 +1,8 @@
-﻿namespace VelaptorTesting.Scenes;
+﻿// <copyright file="TextBoxScene.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
@@ -11,7 +15,6 @@ using Velaptor.UI;
 
 public class TextBoxScene : SceneBase
 {
-    private const int CtrlLeft = 10;
     private TextBox? textBox;
     private IAppInput<KeyboardState>? keyboard;
     private IAppInput<MouseState>? mouse;

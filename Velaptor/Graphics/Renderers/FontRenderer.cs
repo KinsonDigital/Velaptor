@@ -13,6 +13,7 @@ using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.UniDirectional;
 using Content.Fonts;
+using ExtensionMethods;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;

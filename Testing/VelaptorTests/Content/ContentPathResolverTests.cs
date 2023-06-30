@@ -10,8 +10,8 @@ using System.IO;
 using System.Reflection;
 using Fakes;
 using Helpers;
-using Velaptor;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
 using Xunit;
 
 /// <summary>

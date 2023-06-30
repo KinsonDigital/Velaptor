@@ -10,8 +10,8 @@ using System.IO.Abstractions;
 using System.Reflection;
 using FluentAssertions;
 using Moq;
-using Velaptor;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Xunit;
 
 /// <summary>

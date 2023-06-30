@@ -1,10 +1,10 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue
 #pragma warning disable CS8524
-#pragma warning disable SA1202
+
 namespace VelaptorTests;
 
 using System;
@@ -18,6 +18,7 @@ using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
+using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.OpenGL;
@@ -34,8 +35,6 @@ using NETSizeF = System.Drawing.SizeF;
 /// </summary>
 public class InternalExtensionMethodsTests
 {
-    private const char CrossPlatDirSeparatorChar = '/';
-
     #region Unit Test Data
     // ReSharper disable HeapView.BoxingAllocation
 
@@ -929,56 +928,6 @@ public class InternalExtensionMethodsTests
         };
 
     /// <summary>
-    /// Provides unit test data for the <see cref="InternalExtensionMethods.HasValidDriveSyntax"/>() method.
-    /// </summary>
-    /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> ContainsValidDriveTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { "windows", false };
-        yield return new object[] { ":", false };
-        yield return new object[] { "C", false };
-        yield return new object[] { ":C", false };
-        yield return new object[] { "1:", false };
-        yield return new object[] { "windowsC:system32", false };
-        yield return new object[] { @"C:\Windows\System32", true };
-        yield return new object[] { @"C:windows", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-    }
-
-    /// <summary>
-    /// Provides unit test data for the <see cref="InternalExtensionMethods.HasValidFullDirPathSyntax"/>() method.
-    /// </summary>
-    /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsFullyQualifiedDirPathTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { @"\Windows\System32", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
-        yield return new object[] { "C:Windows", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}fake-file.txt", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}", true };
-    }
-
-    /// <summary>
-    /// Provides unit test data for the <see cref="InternalExtensionMethods.HasValidUNCPathSyntax"/>() method.
-    /// </summary>
-    /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsUNCPathTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { @"\\", false };
-        yield return new object[] { @"directory", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
-    }
-
-    /// <summary>
     /// Gets the rectangle vertice data for the <see cref="CreateRectFromLine_WhenInvoked_ReturnsCorrectResult"/> unit test.
     /// </summary>
     /// <returns>The test data.</returns>
@@ -1009,264 +958,6 @@ public class InternalExtensionMethodsTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData('x', true)]
-    [InlineData('k', false)]
-    public void DoesNotStartWidth_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
-    {
-        // Arrange
-        const string stringToCheck = "kinson";
-
-        // Act
-        var actual = stringToCheck.DoesNotStartWith(character);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("digital", true)]
-    [InlineData("kinson", false)]
-    public void DoesNotStartWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
-    {
-        // Arrange
-        const string stringToCheck = "kinson digital";
-
-        // Act
-        var actual = stringToCheck.DoesNotStartWith(stringValue);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData('x', true)]
-    [InlineData('n', false)]
-    public void DoesNotEndWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
-    {
-        // Arrange
-        const string stringToCheck = "kinson";
-
-        // Act
-        var actual = stringToCheck.DoesNotEndWith(character);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("kinson", true)]
-    [InlineData("digital", false)]
-    public void DoesNotEndWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
-    {
-        // Arrange
-        const string stringToCheck = "kinson digital";
-
-        // Act
-        var actual = stringToCheck.DoesNotEndWith(stringValue);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("${{TEST_VAR}}", "}}", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{TEST_VAR }}", "}}", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{TEST_VAR    }}", "}}", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{TEST_VAR~}}", "}}", '~', "${{TEST_VAR}}")]
-    [InlineData("${{TEST_VAR~~}}", "}}", '~', "${{TEST_VAR}}")]
-    public void TrimLeftOf_WhenInvoked_ReturnsCorrectResult(
-        string content,
-        string value,
-        char trimChar,
-        string expected)
-    {
-        // Arrange & Act
-        var actual = content.TrimLeftOf(value, trimChar);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("${{TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{ TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{    TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
-    [InlineData("${{~TEST_VAR}}", "${{", '~', "${{TEST_VAR}}")]
-    [InlineData("${{~~TEST_VAR}}", "${{", '~', "${{TEST_VAR}}")]
-    public void TrimRightOf_WhenInvoked_ReturnsCorrectResult(
-        string content,
-        string value,
-        char trimChar,
-        string expected)
-    {
-        // Arrange & Act
-        var actual = content.TrimRightOf(value, trimChar);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("", false)]
-    [InlineData(@"C:\", true)]
-    [InlineData(@"C:/", true)]
-    [InlineData(@"C:", false)]
-    [InlineData(@"C\", false)]
-    [InlineData(@"C/", false)]
-    [InlineData(@"C:\test-file.txt", false)]
-    [InlineData(@"C:/test-file.txt", false)]
-    public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
-    {
-        // Act
-        var actual = value.OnlyContainsDrive();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [TheoryForWindows]
-    [InlineData(null, "")]
-    [InlineData("", "")]
-    [InlineData(".txt", "")]
-    [InlineData("test-dir", "test-dir")]
-    [InlineData(@"C:\", "C:/")]
-    [InlineData("C:/", "C:/")]
-    [InlineData(@"C:\temp", "temp")]
-    [InlineData("C:/temp", "temp")]
-    [InlineData(@"C:\temp\", "temp")]
-    [InlineData("C:/temp/", "temp")]
-    [InlineData(@"C:\test-file.txt", "C:/")]
-    [InlineData("C:/test-file.txt", "C:/")]
-    [InlineData(@"C:\temp\test-file.txt", "temp")]
-    [InlineData("C:/temp/test-file.txt", "temp")]
-    [InlineData("C:/temp/extra-dir/test-file.txt", "extra-dir")]
-    public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string value, string expected)
-    {
-        // Act
-        var actual = value.GetLastDirName();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [TheoryForLinux]
-    [InlineData(null, "")]
-    [InlineData("", "")]
-    [InlineData(".txt", "")]
-    [InlineData("test-dir", "test-dir")]
-    [InlineData("/home/user-dir", "user-dir")]
-    [InlineData("/home/user-dir/test-file.txt", "user-dir")]
-    [InlineData("/home/test-file.text", "home")]
-    [InlineData("/test-file.txt", "/")]
-    [InlineData(@"\home\user-dir", "user-dir")]
-    [InlineData(@"\home\user-dir\test-file.txt", "user-dir")]
-    [InlineData(@"\home\test-file.text", "home")]
-    [InlineData(@"\test-file.txt", "/")]
-    public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string value, string expected)
-    {
-        // Act
-        var actual = value.GetLastDirName();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [MemberData(nameof(ContainsValidDriveTestData))]
-    public void HasValidDriveSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
-    {
-        // Act
-        var actual = dirPath.HasValidDriveSyntax();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [MemberData(nameof(IsFullyQualifiedDirPathTestData))]
-    public void HasValidFullDirPathSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
-    {
-        // Act
-        var actual = dirPath.HasValidFullDirPathSyntax();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [MemberData(nameof(IsUNCPathTestData))]
-    public void HasValidUNCPathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-    {
-        // Act
-        var actual = path.HasValidUNCPathSyntax();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData("", "")]
-    [InlineData(null, "")]
-    [InlineData("test\n", "test")]
-    [InlineData("test\r", "test")]
-    [InlineData("test\n\r", "test")]
-    [InlineData("test\r\n", "test")]
-    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value, string expected)
-    {
-        // Arrange & Act
-        var actual = value.TrimNewLineFromEnd();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData(@"test\")]
-    [InlineData(@"test\\")]
-    [InlineData(@"test/")]
-    [InlineData(@"test//")]
-    [InlineData(@"test\/")]
-    [InlineData(@"test\\//")]
-    [InlineData(@"test/\")]
-    [InlineData(@"test//\\")]
-    public void TrimDirSeparatorFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
-    {
-        // Arrange
-        const string expected = "test";
-
-        // Act
-        var actual = value.TrimDirSeparatorFromEnd();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [InlineData(@"C:\dir-1\dir-2", "C:/dir-1/dir-2")]
-    [InlineData(@"C:\dir-1\dir-2\", "C:/dir-1/dir-2/")]
-    public void ToCrossPlatPath_WhenInvoked_ReturnsCorrectResult(string path, string expected)
-    {
-        // Act
-        var actual = path.ToCrossPlatPath();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void RemoveAll_WhenInvoked_ReturnsCorrectResult()
-    {
-        // Arrange
-        var testValue = "keep-remove-keep-keep-remove-keep";
-
-        // Act
-        var actual = testValue.RemoveAll("remove");
-
-        // Assert
-        actual.Should().Be("keep--keep-keep--keep");
-    }
-
     [Fact]
     public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
@@ -1435,33 +1126,6 @@ public class InternalExtensionMethodsTests
         actual.Should().Be(175.53146f);
     }
 
-    [Theory]
-    [MemberData(nameof(GetExpectedRectPointData))]
-    internal void CreateRectFromLine_WhenInvoked_ReturnsCorrectResult(
-        LineBatchItem lineItem,
-        Vector2 topLeftCorner,
-        Vector2 topRightCorner,
-        Vector2 bottomRightCorner,
-        Vector2 bottomLeftCorner)
-    {
-        // Arrange
-        var expected = new[]
-        {
-            topLeftCorner,
-            topRightCorner,
-            bottomRightCorner,
-            bottomLeftCorner,
-        };
-
-        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
-
-        // Act
-        var actual = line.CreateRectFromLine();
-
-        // Assert
-        actual.Should().BeEquivalentTo(expected);
-    }
-
     [Fact]
     public void SetP1_WhenInvokedForLineBatchItem_ReturnsCorrectResult()
     {
@@ -1547,35 +1211,6 @@ public class InternalExtensionMethodsTests
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
             .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
-    }
-
-    [Theory]
-    [InlineData(VertexNumber.One)]
-    [InlineData(VertexNumber.Two)]
-    [InlineData(VertexNumber.Three)]
-    [InlineData(VertexNumber.Four)]
-    internal void SetVertexPos_WhenInvokedWithLineGPUData_ReturnsCorrectResult(VertexNumber vertexNumber)
-    {
-        // Arrange
-        var expectedPos = new Vector2(10, 20);
-
-        var gpuData = new LineGPUData(
-            new LineVertexData(Vector2.Zero, NETColor.Empty),
-            new LineVertexData(Vector2.Zero, NETColor.Empty),
-            new LineVertexData(Vector2.Zero, NETColor.Empty),
-            new LineVertexData(Vector2.Zero, NETColor.Empty));
-
-        // Act
-        var actual = vertexNumber switch
-        {
-            VertexNumber.One => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.One).Vertex1,
-            VertexNumber.Two => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Two).Vertex2,
-            VertexNumber.Three => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Three).Vertex3,
-            VertexNumber.Four => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Four).Vertex4,
-        };
-
-        // Assert
-        actual.VertexPos.Should().BeEquivalentTo(expectedPos);
     }
 
     [Fact]
@@ -2169,32 +1804,6 @@ public class InternalExtensionMethodsTests
         actual.Y.Should().Be(22f);
     }
 
-    [Fact]
-    public void TrimAllEnds_WhenUsingDefaultParamValue_TrimsEndsOfAllStrings()
-    {
-        // Arrange
-        var values = new[] { "item ", "item " };
-
-        // Act
-        var actual = values.TrimAllEnds();
-
-        // Assert
-        actual.Should().AllBe("item");
-    }
-
-    [Fact]
-    public void TrimAllEnds_WhenTrimmingSpecificCharacter_TrimsEndsOfAllStrings()
-    {
-        // Arrange
-        var values = new[] { "item~", "item~" };
-
-        // Act
-        var actual = values.TrimAllEnds('~');
-
-        // Assert
-        actual.Should().AllBe("item");
-    }
-
     [Theory]
     [InlineData(@"C:\dir1\dir2", "C:/dir1/dir2")]
     [InlineData(@"C:\dir1\dir2\", "C:/dir1/dir2/")]
@@ -2628,6 +2237,62 @@ public class InternalExtensionMethodsTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(VertexNumber.One)]
+    [InlineData(VertexNumber.Two)]
+    [InlineData(VertexNumber.Three)]
+    [InlineData(VertexNumber.Four)]
+    internal void SetVertexPos_WhenInvokedWithLineGPUData_ReturnsCorrectResult(VertexNumber vertexNumber)
+    {
+        // Arrange
+        var expectedPos = new Vector2(10, 20);
+
+        var gpuData = new LineGPUData(
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty));
+
+        // Act
+        var actual = vertexNumber switch
+        {
+            VertexNumber.One => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.One).Vertex1,
+            VertexNumber.Two => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Two).Vertex2,
+            VertexNumber.Three => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Three).Vertex3,
+            VertexNumber.Four => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Four).Vertex4,
+        };
+
+        // Assert
+        actual.VertexPos.Should().BeEquivalentTo(expectedPos);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetExpectedRectPointData))]
+    internal void CreateRectFromLine_WhenInvoked_ReturnsCorrectResult(
+        LineBatchItem lineItem,
+        Vector2 topLeftCorner,
+        Vector2 topRightCorner,
+        Vector2 bottomRightCorner,
+        Vector2 bottomLeftCorner)
+    {
+        // Arrange
+        var expected = new[]
+        {
+            topLeftCorner,
+            topRightCorner,
+            bottomRightCorner,
+            bottomLeftCorner,
+        };
+
+        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
+
+        // Act
+        var actual = line.CreateRectFromLine();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 

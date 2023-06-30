@@ -6,6 +6,7 @@ namespace Velaptor;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using ExtensionMethods;
 
 /// <summary>
 /// Detects if the code ahs been executed from a unit test vs the rest of the application.
