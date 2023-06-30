@@ -42,9 +42,12 @@ internal static class InternalExtensionMethods
         keyboardState.IsKeyDown(KeyCode.Up) ||
         keyboardState.IsKeyDown(KeyCode.Down);
 
+    /// <summary>
+    /// Returns the given value divided by 2.
+    /// </summary>
+    /// <param name="value">The value do divide.</param>
+    /// <returns>Half of the original value.</returns>
     public static float Half(this float value) => value / 2;
-
-    public static int Half(this int value) => value / 2;
 
     /// <summary>
     /// Builds a name that represents a location of where an execution took place.
@@ -307,6 +310,12 @@ internal static class InternalExtensionMethods
     /// </remarks>
     public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
 
+    /// <summary>
+    /// Returns a value indicating whether the given list of items is empty.
+    /// </summary>
+    /// <param name="items">The list to check.</param>
+    /// <typeparam name="T">The type of items in the list.</typeparam>
+    /// <returns><c>true</c> if the items are empty.</returns>
     public static bool IsEmpty<T>(this IEnumerable<T>? items) => items is null || !items.Any();
 
     /// <summary>
