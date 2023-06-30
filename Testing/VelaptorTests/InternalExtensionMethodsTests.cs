@@ -2599,7 +2599,7 @@ public class InternalExtensionMethodsTests
 
     [Theory]
     [MemberData(nameof(IsCtrlKeyTestData))]
-    public void IsArrowKeIsCtrlKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    public void IsCtrlKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
     {
         // Arrange & Act
         var actual = key.IsCtrlKey();

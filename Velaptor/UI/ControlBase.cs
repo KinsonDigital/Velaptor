@@ -271,8 +271,8 @@ public abstract class ControlBase : IControl
     /// <summary>
     /// Process any keyboard key up events.
     /// </summary>
-    /// <param name="currState">The current state of the keyboard this frame.</param>
-    /// <param name="prevState">The previous state of the keyboard the previous frame.</param>
+    /// <param name="currState">The current state of the keyboard in this frame.</param>
+    /// <param name="prevState">The previous state of the keyboard in the previous frame.</param>
     [SuppressMessage("csharpsquid", "S3267", Justification = "Want to stick with a for-each loop. Not LINQ.")]
     private void ProcessKeyUpEvents(KeyboardState currState, KeyboardState prevState)
     {

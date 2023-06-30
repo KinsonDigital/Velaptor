@@ -557,10 +557,7 @@ internal static class InternalExtensionMethods
 
         var left = charBounds.Min(cb => cb.bounds.Left);
         var right = charBounds.Max(cb => cb.bounds.Right);
-        // var top = charBounds.Min(cb => cb.bounds.Top);
-        // var bottom = charBounds.Max(cb => cb.bounds.Bottom);
         var width = Math.Abs(left - right);
-        // var height = Math.Abs(top - bottom);
 
         return left + width.Half();
     }
@@ -598,14 +595,6 @@ internal static class InternalExtensionMethods
 
         return KeyboardKeyGroups.InvalidCharacter;
     }
-
-    // public static bool IsTextLargerThanView(this TextBoxStateData value)
-    // {
-    //     var textWidth = value.TextRight - value.TextLeft;
-    //     var textViewWidth = value.TextViewRight - value.TextViewLeft;
-    //
-    //     return textWidth > textViewWidth;
-    // }
 
     public static bool IsMoveCursorKey(this KeyCode key) =>
         key switch

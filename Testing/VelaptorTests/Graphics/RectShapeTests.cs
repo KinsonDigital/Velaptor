@@ -409,7 +409,7 @@ public class RectShapeTests
     [InlineData(60, 60, true)] // Touching right edge
     [InlineData(50, 55, true)] // Touching top edge
     [InlineData(50, 75, true)] // Touching bottom edge
-    [InlineData(10, 10, false)] // Outside
+    [InlineData(10, 10, false)] // Vector outside of rectangle
     public void Contains_WhenInvoked_ReturnsCorrectResult(float x, float y, bool expected)
     {
         // Arrange

@@ -336,7 +336,6 @@ public sealed class TextBox : ControlBase
     {
         var contentLoader = ContentLoaderFactory.CreateContentLoader();
 
-        // TODO: Need to add ability to change font to the text box.  This means being able to reload
         // the font when the font type or size changes.
         this.font = contentLoader.LoadFont("TimesNewRoman-Regular", 12);
 
@@ -408,7 +407,7 @@ public sealed class TextBox : ControlBase
             this.shapeRenderer.Render(this.textCursor.Cursor, layer: 0);
         }
 
-        // and we are unselecting text to the left, we cannot see any of the selection rect.
+        // When unselecting text to the left, we cannot see any of the selection rect.
         if (this.inSelectionMode)
         {
             var textLeft = this.postTextBoxState.TextLeft;
@@ -670,7 +669,7 @@ public sealed class TextBox : ControlBase
     }
 
     /// <summary>
-    /// Removes the a character from the text box.
+    /// Removes a character from the text box.
     /// </summary>
     /// <param name="removeKey">The type of remove key.</param>
     private void Remove(KeyCode removeKey)
