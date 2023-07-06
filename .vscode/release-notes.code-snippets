@@ -68,7 +68,7 @@
 		"scope": "markdown",
 		"prefix": "repo-url",
 		"body": [
-			"[${1|BranchValidator,CASL,CICD,GitHubData,GitHubReleaseChecker,GotNuget,KDActionUtils,TagVerifier,Velaptor,VersionMiner,VersionValidator|}](https://github.com/KinsonDigital/${1|BranchValidator,CASL,GitHubData,GitHubReleaseChecker,GotNuget,KDActionUtils,TagVerifier,Velaptor,VersionMiner,VersionValidator|})"
+			"[${1|BranchValidator,CASL,GitHubData,GitHubReleaseChecker,GotNuget,KDActionUtils,TagVerifier,Velaptor,VersionMiner,VersionValidator|}](https://github.com/KinsonDigital/${1|BranchValidator,CASL,GitHubData,GitHubReleaseChecker,GotNuget,KDActionUtils,TagVerifier,Velaptor,VersionMiner,VersionValidator|})"
 		],
 		"description": "Outside contributor link"
 	}	
