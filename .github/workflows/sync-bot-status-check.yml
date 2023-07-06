@@ -22,7 +22,7 @@ on:
   issues:
     types: [labeled, unlabeled, assigned, unassigned, milestoned, demilestoned]
   pull_request:
-    branches: [master, preview]
+    branches: [main, preview]
 
 
 jobs:
