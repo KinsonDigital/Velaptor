@@ -1,4 +1,5 @@
-name: ✅Build PR Status Check
+name: ✅Build Status Check
+run-name: ✅Build Status Check
 
 
 defaults:
@@ -9,31 +10,32 @@ defaults:
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - develop
-      - preview/v*.*.*-preview.*
-      - release/v*.*.*
-      - master
+    branches: [main, preview]
 
 
 jobs:
-  build_pr_status_check:
-    name: Build PR Status Check
+  determine_build_config:
+    name: Determine Build Configuration
     runs-on: ubuntu-latest
+    outputs:
+      build-config: ${{ steps.get-build-config.outputs.build-config }}
     steps:
-    - uses: actions/checkout@v3
+      - name: Get Build Config
+        id: get-build-config
+        run: |
+          # If the destination branch that the pull request is merging into is the main, do a release build
+          if ( "${{ github.base_ref }}" -eq "main") {
+            "build-config=Release" >> $env:GITHUB_OUTPUT;
+          } else { # Any other branch than main, do a debug build
+            "build-config=Debug" >> $env:GITHUB_OUTPUT;
+          }
 
-    - name: Restore DotNet Tools
-      run: dotnet tool restore
 
-    - name: Get Pull Request Number
-      id: get-pr-number
-      run: |
-        $pullRequestNumber = "${{ github.ref }}".Replace("refs/pull/", "").Replace("/merge", "");
-        Write-Host "Pull Request Number: $pullRequestNumber";
-        "pr-number=$pullRequestNumber" >> $env:GITHUB_OUTPUT;
-
-    - name: Run Build Status Check
-      run: dotnet cicd PRBuildStatusCheck --pull-request-number ${{ steps.get-pr-number.outputs.pr-number }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build_status_check:
+    name: Build Status Check
+    needs: [determine_build_config]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v6.2.1
+    with:
+      project-name: "${{ vars.PROJECT_NAME }}"
+      build-config: ${{ needs.determine_build_config.outputs.build-config }}
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
