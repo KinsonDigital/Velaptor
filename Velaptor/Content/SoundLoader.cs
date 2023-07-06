@@ -1,94 +1,140 @@
-﻿// <copyright file="SoundLoader.cs" company="KinsonDigital">
+// <copyright file="SoundLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
+using Caching;
+using Exceptions;
+using Guards;
+using Velaptor.Factories;
+
+/// <summary>
+/// Loads sound content.
+/// </summary>
+public sealed class SoundLoader : ILoader<ISound>
 {
-    using System;
-    using System.Collections.Concurrent;
-    using Velaptor.Factories;
+    private const string OggFileExtension = ".ogg";
+    private const string Mp3FileExtension = ".mp3";
+    private readonly IItemCache<string, ISound> soundCache;
+    private readonly IContentPathResolver soundPathResolver;
+    private readonly IDirectory directory;
+    private readonly IFile file;
+    private readonly IPath path;
 
     /// <summary>
-    /// Loads sound content.
+    /// Initializes a new instance of the <see cref="SoundLoader"/> class.
     /// </summary>
-    public class SoundLoader : ILoader<ISound>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public SoundLoader()
     {
-        private readonly ConcurrentDictionary<string, ISound> sounds = new ();
-        private readonly IPathResolver soundPathResolver;
-        private readonly ISoundFactory soundFactory;
-        private bool isDisposed;
+        this.soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
+        this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
+        this.file = IoC.Container.GetInstance<IFile>();
+        this.path = IoC.Container.GetInstance<IPath>();
+        this.directory = IoC.Container.GetInstance<IDirectory>();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SoundLoader"/> class.
-        /// </summary>
-        /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        public SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundLoader"/> class.
+    /// </summary>
+    /// <param name="soundCache">Caches textures for later use.</param>
+    /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+    /// <param name="directory">Performs operations with directories.</param>
+    /// <param name="file">Performs operations with files.</param>
+    /// <param name="path">Processes directory and file paths.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Invoked when any of the parameters are null.
+    /// </exception>
+    internal SoundLoader(
+        IItemCache<string, ISound> soundCache,
+        IContentPathResolver soundPathResolver,
+        IDirectory directory,
+        IFile file,
+        IPath path)
+    {
+        EnsureThat.ParamIsNotNull(soundCache);
+        EnsureThat.ParamIsNotNull(soundPathResolver);
+        EnsureThat.ParamIsNotNull(directory);
+        EnsureThat.ParamIsNotNull(file);
+        EnsureThat.ParamIsNotNull(path);
+
+        this.soundCache = soundCache;
+        this.soundPathResolver = soundPathResolver;
+        this.directory = directory;
+        this.file = file;
+        this.path = path;
+    }
+
+    /// <summary>
+    /// Loads a sound with the given name.
+    /// </summary>
+    /// <param name="contentPathOrName">The full file path or name of the sound to load.</param>
+    /// <returns>The loaded sound.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
+    public ISound Load(string contentPathOrName)
+    {
+        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
+
+        var isPathRooted = this.path.IsPathRooted(contentPathOrName);
+
+        if (!isPathRooted)
         {
-            this.soundPathResolver = soundPathResolver;
-            this.soundFactory = soundFactory;
-        }
+            var contentDirPath = this.soundPathResolver.ResolveDirPath();
 
-        /// <summary>
-        /// Loads a sound with the given name.
-        /// </summary>
-        /// <param name="name">The name of the sound content to load.</param>
-        /// <returns>The name of the sound content item to load.</returns>
-        /// <remarks>
-        ///     The content <see cref="name"/> can have or not have the extension of the content file to load.
-        ///     Using the file extension has no effect and the content item is matched using the name without the extension.
-        ///     The only sounds supported are .ogg and .mp3 files.
-        ///     Also, duplicate names are not aloud in the same content source and this is matched against the name without the extension.
-        ///
-        ///     Example: sound.ogg and sound.mp3 will result in an exception.
-        /// </remarks>
-        public ISound Load(string name)
-        {
-            var filePath = this.soundPathResolver.ResolveFilePath(name);
-
-            return this.sounds.GetOrAdd(filePath, (key) =>
+            if (this.directory.Exists(contentDirPath) is false)
             {
-                return this.soundFactory.CreateSound(filePath);
-            });
-        }
-
-        /// <inheritdoc/>
-        public void Unload(string name)
-        {
-            var filePath = this.soundPathResolver.ResolveFilePath(name);
-
-            if (this.sounds.TryRemove(filePath, out var sound))
-            {
-                sound.Dispose();
+                this.directory.CreateDirectory(contentDirPath);
             }
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
+        var filePath = isPathRooted
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
+
+        if (!this.file.Exists(filePath))
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            throw new FileNotFoundException("The sound file does not exist.", filePath);
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        var fileExtension = this.path.GetExtension(filePath);
+        var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
+        var isInvalidExtension = validExtensions.All(e => e != fileExtension);
+
+        if (!isInvalidExtension)
         {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                foreach (var sound in this.sounds.Values)
-                {
-                    sound.Dispose();
-                }
-            }
-
-            this.isDisposed = true;
+            return this.soundCache.GetItem(filePath);
         }
+
+        var exceptionMsg = $"The file '{filePath}' must be a sound file with";
+        exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
+
+        throw new LoadSoundException(exceptionMsg);
+    }
+
+    /// <inheritdoc/>
+    [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
+    public void Unload(string contentPathOrName)
+    {
+        var filePath = this.path.IsPathRooted(contentPathOrName)
+            ? contentPathOrName
+            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
+
+        this.soundCache.Unload(filePath);
     }
 }

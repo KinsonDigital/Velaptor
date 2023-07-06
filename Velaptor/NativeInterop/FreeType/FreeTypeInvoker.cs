@@ -1,240 +1,179 @@
-﻿// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
+// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1124 // Do not use regions
-#pragma warning disable SA1514 // Element documentation header should be preceded by blank line
-namespace Velaptor.NativeInterop.FreeType
+namespace Velaptor.NativeInterop.FreeType;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using ExtensionMethods;
+using FreeTypeSharp.Native;
+using Guards;
+
+/// <summary>
+/// Invokes calls to the <c>FreeType</c> library for loading and managing fonts.
+/// </summary>
+/// <remarks>
+///     For more information and documentation, refer to the https://www.freetype.org/ website.
+/// </remarks>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the FreeType library.")]
+internal sealed class FreeTypeInvoker : IFreeTypeInvoker
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using FreeTypeSharp.Native;
+    /// <inheritdoc/>
+    public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
-    /// <summary>
-    /// Invokes calls to the FreeType library for loading and managing fonts.
-    /// </summary>
-    /// <link
-    /// <remarks>
-    ///     For more information and documentation, refer to the https://www.freetype.org/ website.
-    /// </remarks>
-    [ExcludeFromCodeCoverage]
-    internal class FreeTypeInvoker : IFreeTypeInvoker
+    // ReSharper disable IdentifierTypo
+    // ReSharper disable InconsistentNaming
+
+    /// <inheritdoc/>
+    public FT_Vector FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, uint kern_mode)
     {
-        private IntPtr libraryPtr;
-        private bool isDisposed;
-        private IntPtr facePtr;
+        EnsureThat.PointerIsNotNull(face);
 
-        /// <summary>
-        /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
-        /// </summary>
-        ~FreeTypeInvoker()
+        var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out var akerning);
+
+        if (error == FT_Error.FT_Err_Ok)
         {
-            Dispose(false);
-        }
-
-        /// <inheritdoc/>
-        public event EventHandler<FreeTypeErrorEventArgs>? OnError;
-
-        #region Original Interop Calls
-        /// <inheritdoc/>
-        public FT_Vector FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode)
-#pragma warning restore SA1514 // Element documentation header should be preceded by blank line
-#pragma warning restore SA1124 // Do not use regions
-        {
-            var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out FT_Vector akerning);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return default;
-            }
-
             return akerning;
         }
 
-        /// <inheritdoc/>
-        public uint FT_Get_Char_Index(IntPtr face, uint charcode) => FT.FT_Get_Char_Index(face, charcode);
+        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+        return default;
+    }
 
-        /// <inheritdoc/>
-        public FT_Error FT_Load_Glyph(IntPtr face, uint glyph_index, int load_flags)
-            => FT.FT_Load_Glyph(face, glyph_index, load_flags);
+    /// <inheritdoc/>
+    public uint FT_Get_Char_Index(nint face, uint charcode)
+    {
+        EnsureThat.PointerIsNotNull(face);
 
-        /// <inheritdoc/>
-        public FT_Error FT_Load_Char(IntPtr face, uint char_code, int load_flags)
-            => FT.FT_Load_Char(face, char_code, load_flags);
+        return FT.FT_Get_Char_Index(face, charcode);
+    }
 
-        /// <inheritdoc/>
-        public FT_Error FT_Render_Glyph(IntPtr slot, FT_Render_Mode render_mode) => FT.FT_Render_Glyph(slot, render_mode);
+    /// <inheritdoc/>
+    public FT_Error FT_Load_Glyph(nint face, uint glyph_index, int load_flags)
+    {
+        EnsureThat.PointerIsNotNull(face);
 
-        /// <inheritdoc/>
-        public IntPtr FT_Init_FreeType()
+        return FT.FT_Load_Glyph(face, glyph_index, load_flags);
+    }
+
+    /// <inheritdoc/>
+    public FT_Error FT_Load_Char(nint face, uint char_code, int load_flags)
+    {
+        EnsureThat.PointerIsNotNull(face);
+
+        return FT.FT_Load_Char(face, char_code, load_flags);
+    }
+
+    /// <inheritdoc/>
+    public FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode render_mode)
+    {
+        EnsureThat.PointerIsNotNull(slot);
+
+        return FT.FT_Render_Glyph(slot, render_mode);
+    }
+
+    /// <inheritdoc/>
+    public nint FT_Init_FreeType()
+    {
+        var error = FT.FT_Init_FreeType(out var result);
+
+        if (error == FT_Error.FT_Err_Ok)
         {
-            var error = FT.FT_Init_FreeType(out IntPtr result);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return IntPtr.Zero;
-            }
-
-            this.libraryPtr = result;
-
             return result;
         }
 
-        /// <inheritdoc/>
-        public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
+        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public nint FT_New_Face(nint library, string filepathname, int face_index)
+    {
+        EnsureThat.PointerIsNotNull(library);
+
+        var error = FT.FT_New_Face(library, filepathname, face_index, out var aface);
+
+        if (error == FT_Error.FT_Err_Ok)
         {
-            if (this.libraryPtr != library)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return IntPtr.Zero;
-            }
-
-            var error = FT.FT_New_Face(library, filepathname, face_index, out IntPtr aface);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return IntPtr.Zero;
-            }
-
-            this.facePtr = aface;
-
             return aface;
         }
 
-        /// <inheritdoc/>
-        public void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution)
+        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public void FT_Set_Char_Size(nint face, nint char_width, nint char_height, uint horz_resolution, uint vert_resolution)
+    {
+        EnsureThat.PointerIsNotNull(face);
+        EnsureThat.PointerIsNotNull(char_width);
+        EnsureThat.PointerIsNotNull(char_height);
+
+        var error = FT.FT_Set_Char_Size(face, char_width, char_height, horz_resolution, vert_resolution);
+
+        if (error != FT_Error.FT_Err_Ok)
         {
-            var error = FT.FT_Set_Char_Size(face, char_width, char_height, horz_resolution, vert_resolution);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-            }
+            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
         }
+    }
 
-        /// <inheritdoc/>
-        public void FT_Done_Face(IntPtr face)
+    /// <inheritdoc/>
+    public void FT_Done_Face(nint face)
+    {
+        EnsureThat.PointerIsNotNull(face);
+
+        var error = FT.FT_Done_Face(face);
+
+        if (error != FT_Error.FT_Err_Ok)
         {
-            var error = FT.FT_Done_Face(face);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-            }
-
-            this.facePtr = IntPtr.Zero;
+            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
         }
+    }
 
-        /// <inheritdoc/>
-        public void FT_Done_Glyph(IntPtr glyph) => FT.FT_Done_Glyph(glyph);
+    /// <inheritdoc/>
+    public void FT_Done_Glyph(nint glyph)
+    {
+        EnsureThat.PointerIsNotNull(glyph);
 
-        /// <inheritdoc/>
-        public void FT_Done_FreeType(IntPtr library)
+        FT.FT_Done_Glyph(glyph);
+    }
+
+    /// <inheritdoc/>
+    public void FT_Done_FreeType(nint library)
+    {
+        EnsureThat.PointerIsNotNull(library);
+
+        var error = FT.FT_Done_FreeType(library);
+
+        if (error != FT_Error.FT_Err_Ok)
         {
-            if (this.libraryPtr != library)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return;
-            }
-
-            var error = FT.FT_Done_FreeType(library);
-
-            if (error != FT_Error.FT_Err_Ok)
-            {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return;
-            }
-
-            this.libraryPtr = IntPtr.Zero;
+            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
         }
-        #endregion
+    }
 
-#pragma warning disable SA1124 // Do not use regions
+    // ReSharper restore IdentifierTypo
+    // ReSharper restore InconsistentNaming
 
-        #region Helper Methods
+    /// <summary>
+    /// Creates an error message from the standard <c>FreeType</c> message.
+    /// </summary>
+    /// <param name="freeTypeMsg">The error message coming from the <c>FreeType</c> library.</param>
+    /// <returns>The C# friendly exception message.</returns>
+    /// <remarks>
+    ///     The <c>FreeType</c> error message.
+    /// </remarks>
+    private static string CreateErrorMessage(string freeTypeMsg)
+    {
+        freeTypeMsg = freeTypeMsg.RemoveAll("FT_Err");
 
-        /// <inheritdoc/>
-        public IntPtr GetFace() => this.facePtr;
+        var result = string.Empty;
 
-        /// <inheritdoc/>
-        public unsafe bool FT_Has_Kerning()
-        {
-            if (this.facePtr == IntPtr.Zero)
-            {
-                // TODO: This should invoke the error callback instead
-                throw new Exception("The font face has not been created yet.");
-            }
+        var sections = freeTypeMsg.Split('_');
 
-            var faceRec = (FT_FaceRec*)this.facePtr;
-
-            var result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
-
-            return result;
-        }
-
-        #endregion
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of manged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
-            // This implimentation below is causing issuess
-            /*
-            unsafe
-            {
-                var unsafePtr = (FT_FaceRec*)this.facePtr;
-
-                var glyphPtr = (IntPtr)unsafePtr->glyph;
-
-                this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
-            }
-             */
-
-            if (!this.isDisposed)
-            {
-                FT.FT_Done_Face(this.facePtr);
-                FT.FT_Done_FreeType(this.libraryPtr);
-
-                this.isDisposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Creates n error message from the standard Free Type message.
-        /// </summary>
-        /// <param name="freeTypeMsg">The free type message to change.</param>
-        /// <returns>The C# friendly exception message.</returns>
-        /// <remarks>
-        ///     The standard free type error messages come from the <see cref="FT_Error"/> enum.
-        /// </remarks>
-        private static string CreateErrorMessage(string freeTypeMsg)
-        {
-            freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);
-
-            var result = string.Empty;
-
-            var sections = freeTypeMsg.Split('_');
-
-            foreach (var section in sections)
-            {
-                result += section;
-            }
-
-            return result;
-        }
+        return sections.Aggregate(result, (current, section) => current + section);
     }
 }

@@ -1,89 +1,97 @@
-<h2 align="center">
-    <a href="#"><img align="center" src="./Documentation/Images/velaptor-logo.png" height="96"></a>
+
+<div align="center">
+    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/release/v1.0.0/Documentation/Images/velaptor-logo.png" height="96"></a>
     <br />
   
-</h2>
+</div>
 
-<h1 style="font-weight:bold" align="center">Velaptor</h1>
+
+<h1 style="border:0;font-weight:bold" align="center">Velaptor</h1>
+
 
 <div align="center">
 
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Preview%20Release?label=QA%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Preview%20Release?label=Preview%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
+[![Prod PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prod-release-pr-status-check.yml?color=2F8840&label=Prod%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prod-release-pr-status-check.yml)
+[![Prev PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/prev-release-pr-status-check.yml?color=2F8840&label=Preview%20CI%20Build&logo=GitHub)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prev-release-pr-status-check.yml)
 
-![](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor/master?label=Code%20Coverage&logo=CodeCov&style=plastic)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=plastic)](code_of_conduct.md)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
 
-![](https://img.shields.io/nuget/v/KinsonDigital.Velaptor?logo=nuget&style=plastic)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
 
+[![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?color=2F8840&label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/release%2Fv1.0.0)
+
+[![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
+[![Nuget Downloads](https://img.shields.io/nuget/dt/KinsonDigital.Velaptor?color=0094FF&label=nuget%20downloads&logo=nuget)](https://www.nuget.org/stats/packages/KinsonDigital.Velaptor?groupby=Version)
+
+[![Good First GitHub Issues](https://img.shields.io/github/issues/kinsondigital/Velaptor/good%20first%20issue?color=7057ff&label=Good%20First%20Issues)](https://github.com/KinsonDigital/Velaptor/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=chat%20on%20discord&logo=discord&logoColor=white)](https://discord.gg/qewu6fNgv7)
 </div>
 
-<h2 style="font-weight:bold" align="center" >!! NOTICE !!</h2>
+<h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
 
-This library is still under development and is not at v1.0.0 yet!!  All of the major features are there though so we encourage you to use it and report back any issues and improvements you may have.  That is what open source is all about.
+This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and provide feedback.  That is what open source is all about. 🥳
 
-<h2 style="font-weight:bold" align="center">📖 About Velaptor</h2>
+<br/>
 
-Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult.  This is why using a framework that takes care of all of the lower level, more complicated things to creating a game can help!!  Things such as playing sound, loading graphics, managing content, multi-platform, and dealing with input are just some of the things that a game framework can provide.  This way you can just concentrate on developing your game or multi-media application.
+<h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
 
-<h2 style="font-weight:bold" align="center">✨Features</h2>
+Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult which is why **Velaptor** was developed.  It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few.  This way you can just concentrate on developing your game or multi-media application.
 
-### Cross-Platform
-We strive for **Velaptor** to be a cross platform library by running under **.NET v5.0**.  There are plans for this library to continually be updated as we approach **.NET 6.0** and beyond.
+<h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
 
-### Easy to use
-One of the goals of this library is to make sure that the it is easy to use.  Everything from naming, documentation and the usability of the how API needs to be simple and easy.
+### **Cross-Platform**
+We strive for **Velaptor** to be a cross platform. We do this by using as many cross platform dependencies as possible. If a cross platform dependency cannot be found, then the appropriate platform specific implementations will be used.
 
-### Flexible Content Loading System
-**Velaptor** has the ability to load texture atlas image and JSON data for texture atlas type rendering as well as single image content and sound content.  The content loading system is flexible and has an API that has the ability to be extended to load custom content for your media applications and games.
+### **Easy To Use**
+One of the goals of this library is to make it easy to use.  We aim for naming, documentation and usability of the API to be first class.
 
-### Content Caching
-Loaded content such as images and sounds are cached for reuse and performance reasons.  If the same content is loaded from disk after it has already been loaded, the same image content will be used for rendering.  This is the same for sounds and texture atlas data.  Custom content loading will not come with caching and will have to be added.
+### **Flexible Content Loading System**
+**Velaptor** has the ability to load texture atlas data for its rendering as well as single image and sound content.  The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
 
-<h2 style="font-weight:bold" align="center">🔧Maintainers</h2>
+### **Content Caching**
+Loaded content such as images and sounds are cached for better performance.  If the same content is attempting to be loaded from its source after it has already been loaded, it will be used from memory instead of being reloaded. You can also load content by building your own content loader. 
 
-We currently have the following maintainers:
-- [Calvin Wilkinson](https://twitter.com/KDCoder) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization/Project Owner)
+<h2 style="font-weight:bold;" align="center">📽️ Feature Demo 📽️</h2>
 
-<h2 style="font-weight:bold" align="center">📄Documentation</h2>
+<div align="center">
 
-- Goto the [Table Of Contents](./Documentation/TableOfContents.md) for instructions on various things such as the branching, release process, environment setup and more.
+[![FeatureDemoVideo](https://img.youtube.com/vi/rcKi-eWeUuo/0.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+</div>
 
-<h2 style="font-weight:bold" align="center">🙏🏼Contributing</h2>
+<br/>
 
-**Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR.
+<h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
 
-**Simple Overview:**
-1. Fork the repository
-2. Create a feature branch following the feature branch section in the documentation [here](./Documentation/Branching.md)
-3. Add an empty commit to the new feature branch to start your work off.
-   * Use this git command: `git commit --allow-empty -m "start of [thing you're working on]"`
-4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you actually start working.
-5. Make your commits in small, incremental steps with clear descriptions.
-6. All unit tests must pass before a PR will be completed.
-7. Make sure that the code follows the the coding standards.
-   * Pay attention to the warnings in **Visual Studio**!!
-   * Refer to the *.editorconfig* files in the code base for rules
-8. Tag a maintainer when you're done and ask for a review!
+  Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
-If you have any questions, don't be afraid to ask.
+<br/>
 
-<h2 style="font-weight:bold" align="center">Practices</h2>
+<h2 style="font-weight:bold;" align="center">🙏🏼 Contributing 🙏🏼</h2>
 
-- The code base is highly tested using unit testing and a high level of code coverage is maintained.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes.
-- We use a combination of [StyleCop](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) and [Microsoft.CodeAnalysis.NetAnalyzers](https://github.com/dotnet/roslyn-analyzers) libraries for maintaining coding standards.
-   - We understand that there are some exceptions to the rule and not all coding standards fit every situation.  In these scenarios, contact a maintainer and lets discuss it!!  Warnings can always be suppressed if need be.
-- We use [semantic versioning 2.0](https://semver.org/) for versioning.
+Interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/master/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via one-time or recurring donation.
 
-<h2 style="font-weight:bold" align="center">Further Resources</h2>
 
-- The sample project named **VelaptorTesting** can be found in the [Testing Folder](https://github.com/KinsonDigital/Velaptor/tree/preview/master/Testing/VelaptorTesting)
-  - This is a sample project for the purpose to do manual testing of the library as well as to help understand how to use the library.
-- [CASL](https://github.com/KinsonDigital/CASL) is used for audio.
-- Powered by [Silk.NET](https://github.com/dotnet/Silk.NET).
+<h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
 
-<h2 style="font-weight:bold" align="center">Licensing And Governance</h2>
+  [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Calvin Wilkinson](https://twitter.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
 
-**Velaptor** is distributed under the very permissive MIT license and all dependencies are distributed under MIT-compatible licenses.
-This project has adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/) to clarify expected behavior in our community.
+  [![twitter-logo](https://raw.githubusercontent.com/KinsonDigital/.github/master/Images/twitter-logo-16x16.svg)Kristen Wilkinson](https://twitter.com/kswilky) (KinsonDigital GitHub Organization - Project Management, Documentation, Tester)
+
+<br/>
+
+<h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
+
+
+<div align="center">
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?style=flat)](https://github.com/KinsonDigital/.github/blob/master/docs/code_of_conduct.md)
+[![GitHub](https://img.shields.io/github/license/kinsondigital/Velaptor)](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/LICENSE.md)
+</div>
+
+
+This software is distributed under the very permissive MIT license and all dependencies are distributed under MIT-compatible licenses.
+This project has adopted the code of conduct defined by the **Contributor Covenant** to clarify expected behavior in our community.

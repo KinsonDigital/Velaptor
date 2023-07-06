@@ -2,61 +2,66 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content;
+
+using System;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
+using Guards;
+
+/// <summary>
+/// Resolves paths to atlas data content.
+/// </summary>
+internal sealed class AtlasJSONDataPathResolver : ContentPathResolver
 {
-    using System;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Linq;
+    private const char CrossPlatDirSeparatorChar = '/';
+    private const string FileExtension = ".json";
+    private readonly IDirectory directory;
 
     /// <summary>
-    /// Resolves paths to atlas data content.
+    /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolver"/> class.
     /// </summary>
-    public class AtlasJSONDataPathResolver : ContentPathResolver
+    /// <param name="directory">Performs operations with directories.</param>
+    public AtlasJSONDataPathResolver(IDirectory directory)
     {
-        private const string FileExtension = ".json";
-        private readonly IDirectory directory;
+        EnsureThat.ParamIsNotNull(directory);
+        this.directory = directory;
+        ContentDirectoryName = "Atlas";
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolver"/> class.
-        /// </summary>
-        /// <param name="directory">Manages directories.</param>
-        public AtlasJSONDataPathResolver(IDirectory directory)
+    /// <summary>
+    /// Returns the path to the texture atlas data content.
+    /// </summary>
+    /// <param name="contentName">The name of the content item with or without the file extension.</param>
+    /// <returns>The path to the content.</returns>
+    public override string ResolveFilePath(string contentName)
+    {
+        // Performs other checks on the content name
+        contentName = base.ResolveFilePath(contentName);
+
+        contentName = Path.HasExtension(contentName)
+            ? Path.GetFileNameWithoutExtension(contentName)
+            : contentName;
+
+        var contentDirPath = GetContentDirPath();
+
+        var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+            .NormalizePaths();
+
+        // Check if there are any files that match the name
+        var files = (from f in possibleFiles
+            where string.Compare(
+                f,
+                $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
+                StringComparison.OrdinalIgnoreCase) == 0
+            select f).ToArray();
+
+        if (files.Length <= 0)
         {
-            this.directory = directory;
-            ContentDirectoryName = "Atlas";
+            throw new FileNotFoundException($"The texture atlas data file '{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}' does not exist.");
         }
 
-        /// <summary>
-        /// Returns the path to the texture atlas data content.
-        /// </summary>
-        /// <param name="contentName">The name of the content item with or without the file extension.</param>
-        /// <returns>The path to the content.</returns>
-        public override string ResolveFilePath(string contentName)
-        {
-            // Performs other checks on the content name
-            contentName = base.ResolveFilePath(contentName);
-
-            contentName = Path.HasExtension(contentName)
-                ? Path.GetFileNameWithoutExtension(contentName)
-                : contentName;
-
-            var contentDirPath = GetContentDirPath();
-
-            // Check if there are any files that match the name
-            var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
-                         where string.Compare(
-                             f,
-                             $"{contentDirPath}{contentName}{FileExtension}",
-                             StringComparison.OrdinalIgnoreCase) == 0
-                         select f).ToArray();
-
-            if (files.Length <= 0)
-            {
-                throw new FileNotFoundException($"The texture atlas data file '{contentDirPath}{contentName}{FileExtension}' does not exist.");
-            }
-
-            return files[0];
-        }
+        return files[0];
     }
 }

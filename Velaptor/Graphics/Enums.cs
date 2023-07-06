@@ -2,34 +2,54 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Graphics;
+
+using System;
+
+/// <summary>
+/// Adds basic effects to a texture when rendered.
+/// </summary>
+[Flags]
+public enum RenderEffects
 {
-    using System;
+    /// <summary>
+    /// No effects are applied.
+    /// </summary>
+    None = 0,
 
     /// <summary>
-    /// Adds basic effects to a texture when rendered.
+    /// The texture is flipped horizontally.
     /// </summary>
-    [Flags]
-    public enum RenderEffects
-    {
-        /// <summary>
-        /// No effects are applied.
-        /// </summary>
-        None = 1,
+    FlipHorizontally = 1,
 
-        /// <summary>
-        /// The texture is flipped horizontally.
-        /// </summary>
-        FlipHorizontally = 2,
+    /// <summary>
+    /// The texture is flipped vertically.
+    /// </summary>
+    FlipVertically = 2,
 
-        /// <summary>
-        /// The texture is flipped vertically.
-        /// </summary>
-        FlipVertically = 4,
+    /// <summary>
+    /// The texture is flipped horizontally and vertically.
+    /// </summary>
+    FlipBothDirections = FlipHorizontally | FlipVertically,
+}
 
-        /// <summary>
-        /// The texture is flipped horizontally and vertically.
-        /// </summary>
-        FlipBothDirections = FlipHorizontally | FlipVertically,
-    }
+/// <summary>
+/// Represents the type of gradient a color can.
+/// </summary>
+public enum ColorGradient
+{
+    /// <summary>
+    /// No gradient is applied.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// A horizontal gradient is applied.
+    /// </summary>
+    Horizontal = 1,
+
+    /// <summary>
+    /// A vertical gradient is applied.
+    /// </summary>
+    Vertical = 2,
 }

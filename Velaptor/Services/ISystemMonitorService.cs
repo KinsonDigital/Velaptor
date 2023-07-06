@@ -2,30 +2,29 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
+namespace Velaptor.Services;
+
+using System.Collections.Generic;
+using Hardware;
+
+/// <summary>
+/// Gets information about all of the monitors in the system.
+/// </summary>
+internal interface ISystemMonitorService
 {
-    using System.Collections.ObjectModel;
-    using Velaptor.Hardware;
+    /// <summary>
+    /// Gets a list of all of the monitors in the system.
+    /// </summary>
+    IReadOnlyCollection<SystemMonitor> Monitors { get; }
 
     /// <summary>
-    /// Gets information about the monitors in the system.
+    /// Gets the primary monitor in the system.
     /// </summary>
-    public interface ISystemMonitorService
-    {
-        /// <summary>
-        /// Gets a list of the monitors in the system.
-        /// </summary>
-        ReadOnlyCollection<SystemMonitor> Monitors { get; }
+    /// <remarks>Will return null if no monitors are hooked up to the system.</remarks>
+    public SystemMonitor? MainMonitor { get; }
 
-        /// <summary>
-        /// Gets the main monitor in the system.
-        /// </summary>
-        /// <remarks>Will return null if no monitors are hooked up to the system.</remarks>
-        public SystemMonitor? MainMonitor { get; }
-
-        /// <summary>
-        /// Refreshes the monitor information.
-        /// </summary>
-        void Refresh();
-    }
+    /// <summary>
+    /// Refreshes the monitor information.
+    /// </summary>
+    void Refresh();
 }

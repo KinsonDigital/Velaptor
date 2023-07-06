@@ -2,26 +2,39 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.NativeInterop.FreeType
+namespace VelaptorTests.NativeInterop.FreeType;
+
+using System;
+using Helpers;
+using Velaptor.NativeInterop.FreeType;
+using Xunit;
+
+/// <summary>
+/// Tests the <see cref="FreeTypeErrorEventArgs"/> class.
+/// </summary>
+public class FreeTypeErrorEventArgsTests
 {
-    using Velaptor.NativeInterop.FreeType;
-    using Xunit;
-
-    /// <summary>
-    /// Tests the <see cref="FreeTypeErrorEventArgs"/> class.
-    /// </summary>
-    public class FreeTypeErrorEventArgsTests
+    #region Constructor Tests
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Ctor_WithNullErrorMessageParam_ThrowsException(string message)
     {
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_SetsErrorMessageProperty()
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            // Act
-            var eventArgs = new FreeTypeErrorEventArgs("test-message");
-
-            // Assert
-            Assert.Equal("test-message", eventArgs.ErrorMessage);
-        }
-        #endregion
+            _ = new FreeTypeErrorEventArgs(message);
+        }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsErrorMessageProperty()
+    {
+        // Act
+        var eventArgs = new FreeTypeErrorEventArgs("test-message");
+
+        // Assert
+        Assert.Equal("test-message", eventArgs.ErrorMessage);
+    }
+    #endregion
 }

@@ -2,57 +2,50 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
+namespace Velaptor.Services;
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Guards;
+using Hardware;
+using NativeInterop.GLFW;
+
+/// <summary>
+/// Gets information about all of the monitors in the system.
+/// </summary>
+internal sealed class SystemMonitorService : ISystemMonitorService
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using Velaptor.Hardware;
-    using Velaptor.OpenGL;
+    private readonly IMonitors? monitors;
 
     /// <summary>
-    /// Gets information about the monitors in the system.
+    /// Initializes a new instance of the <see cref="SystemMonitorService"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class SystemMonitorService : ISystemMonitorService
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public SystemMonitorService() => this.monitors = IoC.Container.GetInstance<GLFWMonitors>();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SystemMonitorService"/> class.
+    /// </summary>
+    /// <param name="monitors">Holds the list of monitors in the system.</param>
+    internal SystemMonitorService(IMonitors monitors)
     {
-        private readonly GLFWMonitors? monitors;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemMonitorService"/> class.
-        /// </summary>
-        public SystemMonitorService() => this.monitors = IoC.Container.GetInstance<GLFWMonitors>();
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<SystemMonitor> Monitors
-        {
-            get
-            {
-                if (this.monitors is null)
-                {
-                    return new ReadOnlyCollection<SystemMonitor>(Array.Empty<SystemMonitor>());
-                }
-
-                return new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
-            }
-        }
-
-        /// <inheritdoc/>
-        public SystemMonitor? MainMonitor
-        {
-            get
-            {
-                if (this.monitors is null)
-                {
-                    return null;
-                }
-
-                return this.monitors.SystemMonitors.Where(m => m.IsMain).FirstOrDefault();
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Refresh() => this.monitors?.Refresh();
+        EnsureThat.ParamIsNotNull(monitors);
+        this.monitors = monitors;
     }
+
+    /// <inheritdoc/>
+    public IReadOnlyCollection<SystemMonitor> Monitors =>
+        this.monitors is null ?
+            new ReadOnlyCollection<SystemMonitor>(Array.Empty<SystemMonitor>()) :
+            new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
+
+    /// <inheritdoc/>
+    public SystemMonitor? MainMonitor => this.monitors?.SystemMonitors.FirstOrDefault(m => m.IsMain);
+
+    /// <inheritdoc/>
+    public void Refresh() => this.monitors?.Refresh();
 }

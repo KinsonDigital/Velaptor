@@ -1,44 +1,56 @@
 [
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "0, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "0, 0, 75, 75",
     "FrameIndex": 0,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "76, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "76, 0, 75, 75",
     "FrameIndex": 1,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "152, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "152, 0, 75, 75",
     "FrameIndex": 2,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "228, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "228, 0, 75, 75",
     "FrameIndex": 3,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "304, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "304, 0, 75, 75",
     "FrameIndex": 4,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "380, 0, 75, 50",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "380, 0, 75, 75",
     "FrameIndex": 5,
-    "Name": "sub"
+    "Name": "circle"
   },
   {
-    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "0, 51, 27, 27",
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "456, 0, 75, 75",
+    "FrameIndex": 6,
+    "Name": "circle"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "532, 0, 75, 75",
+    "FrameIndex": 7,
+    "Name": "circle"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "0, 76, 75, 75",
     "FrameIndex": -1,
-    "Name": "bubble"
+    "Name": "octagon-flip"
   }
 ]

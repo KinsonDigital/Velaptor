@@ -1,0 +1,22 @@
+name: Triage Issue
+
+
+on:
+  issues:
+    types:
+      - opened
+
+
+jobs:
+  label_issues:
+    runs-on: windows-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Label issues
+        uses: andymckay/labeler@1.0.3
+        with:
+          add-labels: "⚕️NEEDS TRIAGE"
+          ignore-if-assigned: true
+          ignore-if-labeled: true
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

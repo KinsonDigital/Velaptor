@@ -2,92 +2,84 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Input
+namespace Velaptor.Input;
+
+using System;
+using Carbonate.UniDirectional;
+using Factories;
+using Guards;
+using ReactableData;
+using Velaptor.Exceptions;
+
+/// <summary>
+/// Gets or sets the state of the mouse.
+/// </summary>
+internal sealed class Mouse : IAppInput<MouseState>
 {
-    using System;
-    using System.Linq;
+    private readonly IDisposable unsubscriber;
+    private (MouseButton button, bool isDown) leftMouseButton = (MouseButton.LeftButton, false);
+    private (MouseButton button, bool isDown) middleMouseButton = (MouseButton.MiddleButton, false);
+    private (MouseButton button, bool isDown) rightMouseButton = (MouseButton.RightButton, false);
+    private int xPos;
+    private int yPos;
+    private int scrollWheelValue;
+    private MouseScrollDirection mouseScrollDirection = MouseScrollDirection.None;
 
     /// <summary>
-    /// Gets or sets the state of the mouse.
+    /// Initializes a new instance of the <see cref="Mouse"/> class.
     /// </summary>
-    public class Mouse : IMouseInput<MouseButton, MouseState>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    public Mouse(IReactableFactory reactableFactory)
     {
-        /// <summary>
-        /// Gets the current state of the mouse.
-        /// </summary>
-        /// <returns>The state of the mouse.</returns>
-        public MouseState GetState()
-        {
-            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var reactable = reactableFactory.CreateMouseReactable();
+
+        var mouseStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.MouseStateChangedId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<MouseStateData>(
+            eventId: PushNotifications.MouseStateChangedId,
+            name: mouseStateChangeName,
+            onReceiveData: data =>
             {
-                InitializeButtonStates();
-            }
+                this.xPos = data.X;
+                this.yPos = data.Y;
+                this.mouseScrollDirection = data.ScrollDirection;
+                this.scrollWheelValue = data.ScrollWheelValue;
 
-            var result = default(MouseState);
-            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.XPos);
-            result.SetScrollWheelValue(IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
+                switch (data.Button)
+                {
+                    case MouseButton.LeftButton:
+                        this.leftMouseButton.isDown = data.ButtonIsDown;
+                        break;
+                    case MouseButton.MiddleButton:
+                        this.middleMouseButton.isDown = data.ButtonIsDown;
+                        break;
+                    case MouseButton.RightButton:
+                        this.rightMouseButton.isDown = data.ButtonIsDown;
+                        break;
+                    default:
+                        throw new EnumOutOfRangeException<MouseButton>($"The enum '{nameof(MouseButton)}' is out of range.");
+                }
+            },
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+    }
 
-            // Set all of the states for the buttons
-            foreach (var state in IMouseInput<MouseButton, MouseState>.InputStates)
-            {
-                result.SetButtonState(state.Key, state.Value);
-            }
+    /// <summary>
+    /// Gets the current state of the mouse.
+    /// </summary>
+    /// <returns>The state of the mouse.</returns>
+    public MouseState GetState()
+    {
+        var result = default(MouseState);
+        result.SetPosition(this.xPos, this.yPos);
+        result.SetScrollWheelValue(this.scrollWheelValue);
+        result.SetScrollWheelDirection(this.mouseScrollDirection);
 
-            return result;
-        }
+        // Set all of the states for the buttons
+        result.SetButtonState(MouseButton.LeftButton, this.leftMouseButton.isDown);
+        result.SetButtonState(MouseButton.MiddleButton, this.middleMouseButton.isDown);
+        result.SetButtonState(MouseButton.RightButton, this.rightMouseButton.isDown);
 
-        /// <summary>
-        /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
-        /// </summary>
-        /// <param name="input">The mouse button to set.</param>
-        /// <param name="state">The state to set the button to.</param>
-        /// <remarks>
-        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
-        ///     this means the mouse button is being pressed down.
-        /// </remarks>
-        public void SetState(MouseButton input, bool state)
-            => IMouseInput<MouseButton, MouseState>.InputStates[input] = state;
-
-        /// <inheritdoc/>
-        public void SetXPos(int x) => IMouseInput<MouseButton, MouseState>.XPos = x;
-
-        /// <inheritdoc/>
-        public void SetYPos(int y) => IMouseInput<MouseButton, MouseState>.YPos = y;
-
-        /// <inheritdoc/>
-        public void SetScrollWheelValue(int value) => IMouseInput<MouseButton, MouseState>.ScrollWheelValue = value;
-
-        /// <inheritdoc/>
-        public void Reset()
-        {
-            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
-            {
-                InitializeButtonStates();
-            }
-
-            for (var i = 0; i < IMouseInput<MouseButton, MouseState>.InputStates.Count; i++)
-            {
-                var key = IMouseInput<MouseButton, MouseState>.InputStates.Keys.ToArray()[i];
-
-                IMouseInput<MouseButton, MouseState>.InputStates[key] = false;
-            }
-
-            IMouseInput<MouseButton, MouseState>.XPos = 0;
-            IMouseInput<MouseButton, MouseState>.YPos = 0;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
-        }
-
-        /// <summary>
-        /// Initializes all of the available keys and default states.
-        /// </summary>
-        private static void InitializeButtonStates()
-        {
-            var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
-
-            for (var i = 0; i < keyCodes.Length; i++)
-            {
-                IMouseInput<MouseButton, MouseState>.InputStates.Add(keyCodes[i], false);
-            }
-        }
+        return result;
     }
 }

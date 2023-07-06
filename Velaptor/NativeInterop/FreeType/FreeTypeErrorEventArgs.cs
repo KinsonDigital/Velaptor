@@ -2,24 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.FreeType
+namespace Velaptor.NativeInterop.FreeType;
+
+using System;
+using Guards;
+
+/// <summary>
+/// Occurs when there is an error message related to the <c>FreeType</c> font library.
+/// </summary>
+internal sealed class FreeTypeErrorEventArgs : EventArgs
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FreeTypeErrorEventArgs"/> class.
+    /// </summary>
+    /// <param name="errorMessage">The error message.</param>
+    public FreeTypeErrorEventArgs(string errorMessage)
+    {
+        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ErrorMessage = errorMessage;
+    }
 
     /// <summary>
-    /// Occurs when there is an error message related to the FreeType font library.
+    /// Gets the error message that occured.
     /// </summary>
-    internal class FreeTypeErrorEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FreeTypeErrorEventArgs"/> class.
-        /// </summary>
-        /// <param name="errorMessage">The error message.</param>
-        public FreeTypeErrorEventArgs(string errorMessage) => ErrorMessage = errorMessage;
-
-        /// <summary>
-        /// Gets the error message that occured.
-        /// </summary>
-        public string ErrorMessage { get; private set; } = "A FreeType error has occured";
-    }
+    public string ErrorMessage { get; }
 }

@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default:
+        # basic
+        target: 85%
+        threshold: 0%
+        base: auto 
+        flags: 
+          - unit
+        paths: 
+          - "Velaptor"
+      #  # advanced settings
+      #   branches: 
+      #     - master
+      #     - develop
+      #     - 
+        if_ci_failed: error #success, failure, error, ignore
+        informational: false
+        only_pulls: false

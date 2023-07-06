@@ -2,32 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL;
+
+using System;
+using Guards;
+
+/// <summary>
+/// Holds information about OpenGL errors that occur.
+/// </summary>
+internal sealed class GLErrorEventArgs : EventArgs
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GLErrorEventArgs"/> class.
+    /// </summary>
+    /// <param name="errorMessage">The error message.</param>
+    public GLErrorEventArgs(string errorMessage)
+    {
+        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ErrorMessage = errorMessage;
+    }
 
     /// <summary>
-    /// Holds information about OpenGL errors that occur.
+    /// Gets the OpenGL error message.
     /// </summary>
-    internal class GLErrorEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GLErrorEventArgs"/> class.
-        /// </summary>
-        /// <param name="errorMessage">The error message.</param>
-        public GLErrorEventArgs(string errorMessage)
-        {
-            if (string.IsNullOrEmpty(errorMessage))
-            {
-                throw new ArgumentNullException(nameof(errorMessage), "The parameter must not be null or empty.");
-            }
-
-            ErrorMessage = errorMessage;
-        }
-
-        /// <summary>
-        /// Gets the OpenGL error message.
-        /// </summary>
-        public string ErrorMessage { get; }
-    }
+    public string ErrorMessage { get; }
 }

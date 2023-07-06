@@ -1,29 +1,27 @@
-﻿// <copyright file="IContent.cs" company="KinsonDigital">
+// <copyright file="IContent.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content;
+
+using System.Diagnostics.CodeAnalysis;
+
+/// <summary>
+/// Represents loadable content data.
+/// </summary>
+public interface IContent
 {
-    using System;
+    /// <summary>
+    /// Gets the name of the content.
+    /// </summary>
+    [SuppressMessage(
+        "ReSharper",
+        "UnusedMemberInSuper.Global",
+        Justification = "Used by library users.")]
+    string Name { get; }
 
     /// <summary>
-    /// Represents loadable content data.
+    /// Gets the path to the content.
     /// </summary>
-    public interface IContent : IDisposable
-    {
-        /// <summary>
-        /// Gets the name of the content.
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
-        /// Gets the path to the content.
-        /// </summary>
-        string Path { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the content item has been unloaded.
-        /// </summary>
-        bool Unloaded { get; }
-    }
+    string FilePath { get; }
 }

@@ -2,76 +2,73 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Input
+namespace Velaptor.Input;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Carbonate.UniDirectional;
+using Factories;
+using Guards;
+using ReactableData;
+
+/// <summary>
+/// Provides functionality for the keyboard.
+/// </summary>
+internal sealed class Keyboard : IAppInput<KeyboardState>
 {
-    using System;
-    using System.Linq;
+    private readonly Dictionary<KeyCode, bool> keyStates = new ();
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Provides functionality for the keyboard.
+    /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
-    public class Keyboard : IKeyboardInput<KeyCode, KeyboardState>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    public Keyboard(IReactableFactory reactableFactory)
     {
-        /// <summary>
-        /// Gets the current state of the keyboard.
-        /// </summary>
-        /// <returns>The state of the keyboard.</returns>
-        public KeyboardState GetState()
+        EnsureThat.ParamIsNotNull(reactableFactory);
+
+        var reactable = reactableFactory.CreateKeyboardReactable();
+
+        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId));
+        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
+            eventId: PushNotifications.KeyboardStateChangedId,
+            name: keyboardStateChangeName,
+            onReceiveData: data =>
+            {
+                this.keyStates[data.Key] = data.IsDown;
+            },
+            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+
+        InitializeKeyStates();
+    }
+
+    /// <summary>
+    /// Gets the current state of the keyboard.
+    /// </summary>
+    /// <returns>The state of the keyboard.</returns>
+    public KeyboardState GetState()
+    {
+        var keyboardState = default(KeyboardState);
+
+        foreach (var state in this.keyStates)
         {
-            if (IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
-            {
-                InitializeKeyStates();
-            }
-
-            var keyboardState = default(KeyboardState);
-
-            foreach (var state in IKeyboardInput<KeyCode, KeyboardState>.InputStates)
-            {
-                keyboardState.SetKeyState(state.Key, state.Value);
-            }
-
-            return keyboardState;
+            keyboardState.SetKeyState(state.Key, state.Value);
         }
 
-        /// <summary>
-        /// Sets the state of the given <paramref name="input"/> to the given <paramref name="state"/>.
-        /// </summary>
-        /// <param name="input">The key to set.</param>
-        /// <param name="state">The state of the given key.</param>
-        /// <remarks>
-        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
-        ///     this means the keyboard key is being pressed down.
-        /// </remarks>
-        public void SetState(KeyCode input, bool state)
-            => IKeyboardInput<KeyCode, KeyboardState>.InputStates[input] = state;
+        return keyboardState;
+    }
 
-        /// <inheritdoc/>
-        public void Reset()
+    /// <summary>
+    /// Initializes all of the available keys and default states.
+    /// </summary>
+    private void InitializeKeyStates()
+    {
+        var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
+
+        foreach (var key in keys)
         {
-            if (IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
-            {
-                InitializeKeyStates();
-            }
-
-            var keys = IKeyboardInput<KeyCode, KeyboardState>.InputStates.Keys.ToArray();
-
-            for (var i = 0; i < keys.Length; i++)
-            {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates[keys[i]] = false;
-            }
-        }
-
-        /// <summary>
-        /// Initializes all of the available keys and default states.
-        /// </summary>
-        private static void InitializeKeyStates()
-        {
-            var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
-
-            for (var i = 0; i < keyCodes.Length; i++)
-            {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(keyCodes[i], false);
-            }
+            this.keyStates[key] = false;
         }
     }
 }

@@ -2,41 +2,39 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.OpenGL;
+
+using System;
+using Helpers;
+using Velaptor.OpenGL;
+using Xunit;
+
+/// <summary>
+/// Tests the <see cref="GLErrorEventArgs"/> class.
+/// </summary>
+public class GLErrorEventArgsTests
 {
-#pragma warning disable IDE0001 // Name can be simplified
-    using System;
-    using Velaptor.OpenGL;
-    using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
-
-    /// <summary>
-    /// Tests the <see cref="GLErrorEventArgs"/> class.
-    /// </summary>
-    public class GLErrorEventArgsTests
+    #region Constructor Tests
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Ctor_WithNullErrorMessage_ThrowsException(string value)
     {
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WithNullErrorMessage_ThrowsException()
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new GLErrorEventArgs(null);
-            }, "The parameter must not be null or empty. (Parameter 'errorMessage')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_SetsErrorMessageProperty()
-        {
-            // Act
-            var args = new GLErrorEventArgs("test-message");
-
-            // Assert
-            Assert.Equal("test-message", args.ErrorMessage);
-        }
-        #endregion
+            _ = new GLErrorEventArgs(value);
+        }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsErrorMessageProperty()
+    {
+        // Act
+        var args = new GLErrorEventArgs("test-message");
+
+        // Assert
+        Assert.Equal("test-message", args.ErrorMessage);
+    }
+    #endregion
 }

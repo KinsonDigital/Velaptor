@@ -348,3 +348,10 @@ MigrationBackup/
 
 # Ignore JetBrains Rider files
 .idea
+
+# Ignore secrets file used for CICD build system
+local-secrets.json
+
+# Coverlet coverage report files
+coverage.json
+coverage.xml

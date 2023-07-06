@@ -2,24 +2,24 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Fakes
-{
-    using Velaptor.UI;
+namespace VelaptorTests.Fakes;
 
+using Velaptor.Scene;
+using Velaptor.UI;
+
+/// <summary>
+/// Used for the purpose of testing the abstract <see cref="Window"/> class.
+/// </summary>
+public class WindowFake : Window
+{
     /// <summary>
-    /// Used for the purpose of testing the abstract <see cref="Window"/> class.
+    /// Initializes a new instance of the <see cref="WindowFake"/> class.
     /// </summary>
-    public class WindowFake : Window
+    /// <param name="window">Mocked window..</param>
+    /// <param name="sceneManager">Mocked scene manager.</param>
+    /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
+    internal WindowFake(IWindow window, ISceneManager sceneManager)
+        : base(window, sceneManager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WindowFake"/> class.
-        /// </summary>
-        /// <param name="window">Window implementation.</param>
-        /// <param name="contentLoader">Content loader implementation.</param>
-        /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-        public WindowFake(IWindow window)
-            : base(window)
-        {
-        }
     }
 }

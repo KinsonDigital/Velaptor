@@ -1,189 +1,503 @@
-﻿// <copyright file="Button.cs" company="KinsonDigital">
+// <copyright file="Button.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.UI
+namespace Velaptor.UI;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Linq;
+using Content;
+using Factories;
+using Graphics;
+using Graphics.Renderers;
+using Guards;
+using Input;
+
+/// <summary>
+/// A button that can be clicked to execute functionality.
+/// </summary>
+public sealed class Button : ControlBase
 {
-    using System;
-    using System.Drawing;
-    using System.Numerics;
-    using Velaptor.Content;
-    using Velaptor.Graphics;
+    private const int TextLayer = int.MaxValue - 1;
+    private const int BorderLayer = int.MaxValue - 2;
+    private const int BtnFaceLayer = int.MaxValue - 3;
+    private const float HoverBrightness = 0.2f;
+    private const float MouseDownBrightness = 0.2f;
+    private const uint DefaultButtonWidth = 100;
+    private const uint DefaultButtonHeight = 50;
+    private const uint HorizontalMargin = 10;
+    private readonly IShapeRenderer rectRenderer;
+    private IUIControlFactory controlFactory = null!;
+    private string cachedText = string.Empty;
+    private uint cachedAutoSizeOffWidth;
+    private uint cachedAutoSizeOffHeight;
+    private bool isMouseDown;
+    private bool autoSize = true;
 
     /// <summary>
-    /// A button that can be clicked and execute functionality.
+    /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
-    public class Button : IControl
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    public Button()
     {
-        private readonly bool isMouseDown;
-        private Rectangle rect;
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Button"/> class.
-        /// </summary>
-        /// <param name="mouseOverTexture">The texture to be displayed when the mouse is over the button.</param>
-        /// <param name="mouseNotOverTexture">The texture to be displayed when the mouse is not in the down position or over the button.</param>
-        /// <param name="mouseDownTexture">The texture to be displayed when the mouse is in the down position.</param>
-        public Button(Texture mouseOverTexture, Texture mouseNotOverTexture, Texture mouseDownTexture)
+        Init();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="label">The label to display on the face of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(Label? label)
+    {
+        EnsureThat.ParamIsNotNull(label);
+
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Label = label;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="position">The position of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(Point position)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Position = position;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="width">The width of the button.</param>
+    /// <param name="height">The height of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(uint width, uint height)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Width = width;
+        Height = height;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="width">The width of the button.</param>
+    /// <param name="height">The height of the button.</param>
+    /// <param name="label">The label to display on the face of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(uint width, uint height, Label? label)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Width = width;
+        Height = height;
+        Label = label;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="position">The position of the button.</param>
+    /// <param name="width">The width of the button.</param>
+    /// <param name="height">The height of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(Point position, uint width, uint height)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Position = position;
+        Width = width;
+        Height = height;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="position">The position of the button.</param>
+    /// <param name="width">The width of the button.</param>
+    /// <param name="height">The height of the button.</param>
+    /// <param name="label">The label to display on the face of the button.</param>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public Button(Point position, uint width, uint height, Label? label)
+    {
+        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
+        this.rectRenderer = renderFactory.CreateShapeRenderer();
+
+        Init();
+        Position = position;
+        Width = width;
+        Height = height;
+        Label = label;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class.
+    /// </summary>
+    /// <param name="contentLoader">Loads various kinds of content.</param>
+    /// <param name="controlFactory">Creates UI controls.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
+    /// <param name="mouse">The system mouse.</param>
+    /// <param name="rendererFactory">Creates different types of renderers.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if the any of the parameters below are null:
+    ///     <list type="bullet">
+    ///         <item><paramref name="contentLoader"/></item>
+    ///     </list>
+    /// </exception>
+    internal Button(
+        IContentLoader contentLoader,
+        IUIControlFactory controlFactory,
+        IAppInput<KeyboardState> keyboard,
+        IAppInput<MouseState> mouse,
+        IRendererFactory rendererFactory)
+        : base(keyboard, mouse)
+    {
+        EnsureThat.ParamIsNotNull(contentLoader);
+        EnsureThat.ParamIsNotNull(controlFactory);
+        EnsureThat.ParamIsNotNull(rendererFactory);
+
+        this.controlFactory = controlFactory;
+        this.rectRenderer = rendererFactory.CreateShapeRenderer();
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Label"/> of the <see cref="Button"/>.
+    /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+    public Label? Label { get; private set; }
+
+    /// <inheritdoc cref="IControl"/>
+    public override Point Position
+    {
+        get => base.Position;
+        set
         {
-            MouseOverTexture = mouseOverTexture;
-            MouseNotOverTexture = mouseNotOverTexture;
-            MouseDownTexture = mouseDownTexture;
-        }
+            base.Position = value;
 
-        /// <summary>
-        /// Occurs when the button has been clicked.
-        /// </summary>
-        public event EventHandler<EventArgs>? Click;
-
-        /// <summary>
-        /// Gets or sets the position of the <see cref="Button"/> on the screen.
-        /// </summary>
-        public Vector2 Position { get; set; }
-
-        /// <summary>
-        /// Gets the width of the <see cref="Button"/>.
-        /// </summary>
-        public int Width
-        {
-            get
+            if (Label is not null)
             {
-                if (MouseOverTexture == null || MouseNotOverTexture == null)
-                {
-                    return 0;
-                }
-
-                return MouseOverTexture.Width > MouseNotOverTexture.Width ?
-                    MouseOverTexture.Width :
-                    MouseNotOverTexture.Width;
+                Label.Position = Position;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets the height of the <see cref="Button"/>.
-        /// </summary>
-        public int Height
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the size of the <see cref="Button"/> will be
+    /// managed automatically based on the size of the <see cref="UI.Label"/>.
+    /// </summary>
+    /// <remarks>
+    ///     If <see cref="AutoSize"/> is <c>false</c>, the user can set the size to anything they
+    ///     desire.  If the size is less than the width or height of the text, then only the text characters
+    ///     that are still within the bounds of the <see cref="UI.Label"/> will be rendered.
+    /// </remarks>
+    public bool AutoSize
+    {
+        get => this.autoSize;
+        set
         {
-            get
+            // If auto size is currently turned on and is being turned off,
+            // set the width back to the cached width before auto size was turned on
+            if (this.autoSize && value is false)
             {
-                if (MouseOverTexture == null || MouseNotOverTexture == null)
-                {
-                    return 0;
-                }
+                base.Width = this.cachedAutoSizeOffWidth;
+                base.Height = this.cachedAutoSizeOffHeight;
+            }
 
-                return MouseOverTexture.Height > MouseNotOverTexture.Height ?
-                    MouseOverTexture.Height :
-                    MouseNotOverTexture.Height;
+            this.autoSize = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Width"/> of the <see cref="Button"/>.
+    /// </summary>
+    /// <remarks>
+    ///     If <see cref="AutoSize"/> is <c>true</c>, the <see cref="Width"/> value will be set but ignored
+    ///     and the <see cref="Width"/> will be automatic based on the <see cref="Width"/> of the <see cref="Text"/>.
+    /// </remarks>
+    public override uint Width
+    {
+        get => AutoSize ? Label?.Width + (HorizontalMargin * 2u) ?? HorizontalMargin * 2u : base.Width;
+        set
+        {
+            this.cachedAutoSizeOffWidth = value;
+            if (AutoSize)
+            {
+                return;
+            }
+
+            base.Width = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Height"/> of the <see cref="Button"/>.
+    /// </summary>
+    /// <remarks>
+    ///     If <see cref="AutoSize"/> is <c>true</c>, the <see cref="Height"/> value will be set but ignored
+    ///     and the <see cref="Height"/> will be automatic based on the <see cref="Height"/> of the <see cref="Text"/>.
+    /// </remarks>
+    public override uint Height
+    {
+        get => AutoSize ? Label?.Height + (HorizontalMargin * 2u) ?? HorizontalMargin * 2u : base.Height;
+        set
+        {
+            const uint marginTotal = HorizontalMargin * 2u;
+
+            base.Height = AutoSize ? Label?.Height + marginTotal ?? marginTotal : value;
+            this.cachedAutoSizeOffHeight = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the text of the button.
+    /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    public string Text
+    {
+        get => IsLoaded
+            ? Label?.Text ?? string.Empty
+            : this.cachedText;
+        set
+        {
+            if (Label is null || IsLoaded is false)
+            {
+                this.cachedText = value;
+                return;
+            }
+
+            Label.Text = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the border of the <see cref="Button"/> is visible.
+    /// </summary>
+    public bool BorderVisible { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the color of the <see cref="Button"/> border.
+    /// </summary>
+    public Color BorderColor { get; set; } = Color.SlateGray;
+
+    /// <summary>
+    /// Gets or sets the thickness of the <see cref="Button"/>'s border.
+    /// </summary>
+    /// <remarks>
+    ///     This value uses pixels as unit of measure.
+    /// </remarks>
+    public uint BorderThickness { get; set; } = 2u;
+
+    /// <summary>
+    /// Gets or sets the color of the face of the <see cref="Button"/>.
+    /// </summary>
+    public Color FaceColor { get; set; } = Color.DarkGray;
+
+    /// <summary>
+    /// Gets or sets the radius values for each corner of the <see cref="Button"/>
+    /// border and face.
+    /// </summary>
+    public CornerRadius CornerRadius { get; set; } = new (6f);
+
+    /// <summary>
+    /// Gets or sets the font size of the text on the face of the button.
+    /// </summary>
+    public uint FontSize
+    {
+        get => Label?.Font.Size ?? 0u;
+        set
+        {
+            if (Label != null)
+            {
+                Label.Font.Size = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the texture when the mouse is over the <see cref="Button"/>.
-        /// </summary>
-        public Texture MouseOverTexture { get; set; }
-
-        /// <summary>
-        /// Gets or sets the texture when the mouse is not over the <see cref="Button"/>.
-        /// </summary>
-        public Texture MouseNotOverTexture { get; set; }
-
-        /// <summary>
-        /// Gets or sets the texture when the left mouse button is
-        /// in the down position over the button.
-        /// </summary>
-        public Texture MouseDownTexture { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the mouse is hovering over the button.
-        /// </summary>
-        public bool IsMouseOver { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the text of the button.
-        /// </summary>
-        public RenderText? ButtonText { get; set; }
-
-        /// <summary>
-        /// Initializes the <see cref="Button"/>.
-        /// </summary>
-        public void Initialize()
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the button is enabled.
+    /// </summary>
+    public override bool Enabled
+    {
+        get => Label?.Enabled ?? base.Enabled;
+        set
         {
+            if (Label is not null)
+            {
+                Label.Enabled = value;
+            }
+
+            // Save the value to the base enabled property which will cache the value
+            // before the content is loaded.
+            base.Enabled = value;
+        }
+    }
+
+    /// <inheritdoc cref="ControlBase.UnloadContent"/>
+    /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
+    public override void LoadContent()
+    {
+        if (IsLoaded)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Loads the content for the <see cref="Button"/>.
-        /// </summary>
-        /// <param name="contentLoader">The loader used to load the content.</param>
-        public void LoadContent(IContentLoader contentLoader)
+        Label ??= this.controlFactory.CreateLabel(this.cachedText);
+
+        Label?.LoadContent();
+
+        /* Update the enabled status of the label to match the button.
+         * If the enabled value was set before the content was loaded,
+         * it will "cache" the value until the content is loaded
+        */
+        if (Label is not null)
         {
+            Label.Enabled = base.Enabled;
+            Label.Position = Position;
+
+            /* Set the text to the cached text value if was set previously
+             * This occurs when the text of the button was set before load content was invoked
+             */
+            Label.Text = string.IsNullOrEmpty(this.cachedText) ? string.Empty : this.cachedText;
         }
 
-        /// <summary>
-        /// Updates the <see cref="Button"/>.
-        /// </summary>
-        /// <param name="engineTime">The update iteration time.</param>
-        public void Update(FrameTime engineTime)
-        {
-            ProcessMouse();
+        base.LoadContent();
+    }
 
-            this.rect.X = (int)(Position.X - (Width / 2f));
-            this.rect.Y = (int)(Position.Y - (Height / 2f));
-            this.rect.Width = Width;
-            this.rect.Height = Height;
+    /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
+    public override void UnloadContent()
+    {
+        if (!IsLoaded)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Renders the <see cref="Button"/> to the screen.
-        /// </summary>
-        /// <param name="renderer">Renders the <see cref="Button"/>.</param>
-        public void Render(object renderer)
+        Label?.UnloadContent();
+
+        base.UnloadContent();
+    }
+
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render()
+    {
+        if (IsLoaded is false || Visible is false)
         {
-            // if (renderer is null)
-            //    throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
-
-            // if (_isMouseDown && MouseDownTexture != null)
-            // {
-            //    renderer.Render(MouseDownTexture, Position.X, Position.Y);
-            // }
-            // else
-            // {
-            //    if (IsMouseOver && MouseOverTexture != null)
-            //    {
-            //        renderer.Render(MouseOverTexture, Position.X, Position.Y);
-            //    }
-            //    else
-            //    {
-            //        if (MouseNotOverTexture != null)
-            //            renderer.Render(MouseNotOverTexture, Position.X, Position.Y, 0);
-            //    }
-
-            // }
-
-            // var textPosition = new Vector2()
-            // {
-            //    X = Position.X - (ButtonText is null ? 0 : ButtonText.Width / 2f),
-            //    Y = Position.Y - (ButtonText is null ? 0 :  ButtonText.Height / 2f)
-            // };
-
-            // if(ButtonText != null)
-            //    renderer.Render(ButtonText, textPosition, Color.FromArgb(255, 0, 0, 0));
+            return;
         }
 
-        /// <summary>
-        /// Processes any mouse input interaction with the <see cref="Button"/>.
-        /// </summary>
-        private void ProcessMouse()
+        var faceColor = FaceColor;
+
+        if (IsMouseOver)
         {
-            // this.mouse.UpdateCurrentState();
-
-            // IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
-
-            // this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(MouseButton.LeftButton);
-
-            // if (this.isMouseDown)
-            //    Click?.Invoke(this, new EventArgs());
-
-            // this.mouse.UpdatePreviousState();
+            faceColor = this.isMouseDown ? MouseDownColor : MouseHoverColor;
         }
+
+        faceColor = Enabled ? faceColor : FaceColor.DecreaseBrightness(0.25f);
+
+        var buttonFace = default(RectShape);
+        buttonFace.Position = Position.ToVector2();
+        buttonFace.IsSolid = true;
+        buttonFace.Color = faceColor;
+        buttonFace.Width = Width;
+        buttonFace.Height = Height;
+        buttonFace.CornerRadius = CornerRadius;
+
+        this.rectRenderer.Render(buttonFace, BtnFaceLayer);
+
+        if (BorderVisible)
+        {
+            var buttonBorder = default(RectShape);
+            buttonBorder.Position = Position.ToVector2();
+            buttonBorder.IsSolid = false;
+            buttonBorder.BorderThickness = BorderThickness;
+            buttonBorder.Color = Enabled ? BorderColor : BorderColor.DecreaseBrightness(0.25f);
+            buttonBorder.Width = Width;
+            buttonBorder.Height = Height;
+            buttonBorder.CornerRadius = CornerRadius;
+
+            this.rectRenderer.Render(buttonBorder, BorderLayer);
+        }
+
+        var textHeightNotTooLarge = Label?.Height <= Height;
+        var textIsTooWide = Label?.Width > Width;
+        var textToRender = Label?.Text ?? string.Empty;
+
+        if (textHeightNotTooLarge && string.IsNullOrEmpty(textToRender) is false)
+        {
+            // If the text is wider than the button, figure out which characters are physically past
+            // the left and right edges of the button and prevent them from being rendered.
+            // The reason we check for the left and right side is because the text is centered.
+            if (textIsTooWide && Label is not null)
+            {
+                var textCharBounds = Label.CharacterBounds.ToArray();
+
+                var charsToRender = (from c in textCharBounds
+                    where c.bounds.Left > Left &&
+                          c.bounds.Right < Right
+                    select c.character).ToArray();
+
+                textToRender = new string(charsToRender);
+            }
+
+            Label?.Render(textToRender, TextLayer);
+        }
+
+        base.Render();
+    }
+
+    /// <summary>
+    /// Invoked on mouse down and sets the mouse down state.
+    /// </summary>
+    protected override void OnMouseDown()
+    {
+        this.isMouseDown = true;
+        base.OnMouseDown();
+    }
+
+    /// <summary>
+    /// Invoked on mouse up and sets the mouse up state.
+    /// </summary>
+    protected override void OnMouseUp()
+    {
+        this.isMouseDown = false;
+        base.OnMouseUp();
+    }
+
+    /// <summary>
+    /// Initializes the <see cref="Button"/>.
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
+    private void Init()
+    {
+        this.controlFactory = new UIControlFactory();
+        Width = DefaultButtonWidth;
+        Height = DefaultButtonHeight;
+        MouseHoverColor = FaceColor.IncreaseBrightness(HoverBrightness);
+        MouseDownColor = FaceColor.DecreaseBrightness(MouseDownBrightness);
     }
 }

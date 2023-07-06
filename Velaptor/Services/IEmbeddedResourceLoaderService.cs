@@ -1,19 +1,19 @@
-﻿// <copyright file="IEmbeddedResourceLoaderService.cs" company="KinsonDigital">
+// <copyright file="IEmbeddedResourceLoaderService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
+namespace Velaptor.Services;
+
+/// <summary>
+/// Loads embedded file resources.
+/// </summary>
+/// <typeparam name="TResourceType">The type of data being returned from the contents of the embedded resource.</typeparam>
+internal interface IEmbeddedResourceLoaderService<out TResourceType>
 {
     /// <summary>
-    /// Loads embedded text file resources.
+    /// Loads an embedded resource that matches the given <paramref name="name"/>.
     /// </summary>
-    internal interface IEmbeddedResourceLoaderService
-    {
-        /// <summary>
-        /// Load a text resources that matches the given <paramref name="name"/>.
-        /// </summary>
-        /// <param name="name">The file name of the embedded resource.</param>
-        /// <returns>The text content from the embedded text resource.</returns>
-        string LoadResource(string name);
-    }
+    /// <param name="name">The file name of the embedded resource.</param>
+    /// <returns>The content from the embedded resource.</returns>
+    TResourceType LoadResource(string name);
 }

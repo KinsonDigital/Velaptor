@@ -2,47 +2,22 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor
+namespace Velaptor;
+
+using System;
+
+/// <summary>
+/// Holds timing information for a loop iteration.
+/// </summary>
+public readonly record struct FrameTime
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
+    /// <summary>
+    /// Gets the total time that the entire application has been running.
+    /// </summary>
+    public TimeSpan TotalTime { get; init; }
 
     /// <summary>
-    /// Holds timing information for a loop iteration.
+    /// Gets the total time that has passed for the current frame.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public struct FrameTime : IEquatable<FrameTime>
-    {
-        /// <summary>
-        /// Gets or sets the total time that has passed.
-        /// </summary>
-        public TimeSpan TotalTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total time that has passed for the current frame.
-        /// </summary>
-        public TimeSpan ElapsedTime { get; set; }
-
-        public static bool operator ==(FrameTime left, FrameTime right) => left.Equals(right);
-
-        public static bool operator !=(FrameTime left, FrameTime right) => !(left == right);
-
-        /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || obj is not FrameTime frameTime)
-            {
-                return false;
-            }
-
-            return Equals(frameTime);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(FrameTime other)
-            => other.TotalTime == TotalTime && other.ElapsedTime == ElapsedTime;
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => ElapsedTime.GetHashCode();
-    }
+    public TimeSpan ElapsedTime { get; init; }
 }

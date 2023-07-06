@@ -1,0 +1,39 @@
+name: ✅Build PR Status Check
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
+      - preview/v*.*.*-preview.*
+      - release/v*.*.*
+      - master
+
+
+jobs:
+  build_pr_status_check:
+    name: Build PR Status Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Restore DotNet Tools
+      run: dotnet tool restore
+
+    - name: Get Pull Request Number
+      id: get-pr-number
+      run: |
+        $pullRequestNumber = "${{ github.ref }}".Replace("refs/pull/", "").Replace("/merge", "");
+        Write-Host "Pull Request Number: $pullRequestNumber";
+        "pr-number=$pullRequestNumber" >> $env:GITHUB_OUTPUT;
+
+    - name: Run Build Status Check
+      run: dotnet cicd PRBuildStatusCheck --pull-request-number ${{ steps.get-pr-number.outputs.pr-number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,79 +2,95 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
+namespace Velaptor.Services;
+
+using System.IO;
+using System.IO.Abstractions;
+using Graphics;
+using Guards;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using NETColor = System.Drawing.Color;
+using NETPoint = System.Drawing.Point;
+
+/// <summary>
+/// Saves, loads and manages image files.
+/// </summary>
+internal sealed class ImageService : IImageService
 {
-    using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.PixelFormats;
-    using SixLabors.ImageSharp.Processing;
-    using Velaptor.Graphics;
-    using NETColor = System.Drawing.Color;
-    using NETPoint = System.Drawing.Point;
+    private readonly IFile file;
 
     /// <summary>
-    /// Saves, loads and manages image files.
+    /// Initializes a new instance of the <see cref="ImageService"/> class.
     /// </summary>
-    public class ImageService : IImageService
+    /// <param name="file">Performs operations with files.</param>
+    public ImageService(IFile file)
     {
-        /// <inheritdoc/>
-        public ImageData Load(string path)
+        EnsureThat.ParamIsNotNull(file);
+        this.file = file;
+    }
+
+    /// <inheritdoc/>
+    public ImageData Load(string filePath)
+    {
+        if (this.file.Exists(filePath) is false)
         {
-            var rgba32Image = Image.Load<Rgba32>(path);
-            rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
+            throw new FileNotFoundException("The image file was not found.", filePath);
+        }
 
-            var imageData = new ImageData(new NETColor[rgba32Image.Width, rgba32Image.Height], (uint)rgba32Image.Width, (uint)rgba32Image.Height);
+        var rgba32Image = Image.Load<Rgba32>(filePath);
+        rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
 
-            for (var y = 0; y < rgba32Image.Height; y++)
+        var imageData = new ImageData(
+            new NETColor[rgba32Image.Width, rgba32Image.Height],
+            (uint)rgba32Image.Width,
+            (uint)rgba32Image.Height,
+            filePath);
+
+        for (var y = 0; y < rgba32Image.Height; y++)
+        {
+            var row = y;
+            rgba32Image.ProcessPixelRows(accessor =>
             {
-                var pixelRowSpan = rgba32Image.GetPixelRowSpan(y);
-
+                var pixelRowSpan = accessor.GetRowSpan(row);
                 for (var x = 0; x < rgba32Image.Width; x++)
                 {
-                    imageData.Pixels[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
+                    imageData.Pixels[x, row] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
                 }
-            }
-
-            return imageData;
+            });
         }
 
-        /// <inheritdoc/>
-        public void Save(string path, ImageData imageData)
-        {
-            var rgba32Image = imageData.ToSixLaborImage();
-
-            rgba32Image.SaveAsPng(path);
-            rgba32Image.Dispose();
-        }
-
-        /// <inheritdoc/>
-        public ImageData FlipVertically(ImageData image)
-        {
-            var sixLaborImage = image.ToSixLaborImage();
-            sixLaborImage.Mutate(context => context.Flip(FlipMode.Vertical));
-
-            return sixLaborImage.ToImageData();
-        }
-
-        /// <inheritdoc/>
-        public ImageData FlipHorizontally(ImageData image)
-        {
-            var sixLaborImage = image.ToSixLaborImage();
-            sixLaborImage.Mutate(context => context.Flip(FlipMode.Horizontal));
-
-            return sixLaborImage.ToImageData();
-        }
-
-        /// <inheritdoc/>
-        public ImageData Draw(ImageData src, ImageData dest, NETPoint location)
-        {
-            var srcImage = src.ToSixLaborImage();
-            var destImage = dest.ToSixLaborImage();
-
-            destImage.Mutate(context => context.DrawImage(srcImage, new Point(location.X, location.Y), 1));
-
-            srcImage.Dispose();
-
-            return destImage.ToImageData();
-        }
+        return imageData;
     }
+
+    /// <inheritdoc/>
+    public void Save(string path, ImageData image)
+    {
+        var rgba32Image = image.ToSixLaborImage();
+
+        rgba32Image.SaveAsPng(path);
+        rgba32Image.Dispose();
+    }
+
+    /// <inheritdoc/>
+    public ImageData FlipVertically(ImageData image)
+    {
+        var sixLaborImage = image.ToSixLaborImage();
+        sixLaborImage.Mutate(context => context.Flip(FlipMode.Vertical));
+
+        return sixLaborImage.ToImageData();
+    }
+
+    /// <inheritdoc/>
+    public ImageData FlipHorizontally(ImageData image)
+    {
+        var sixLaborImage = image.ToSixLaborImage();
+        sixLaborImage.Mutate(context => context.Flip(FlipMode.Horizontal));
+
+        return sixLaborImage.ToImageData();
+    }
+
+    /// <inheritdoc/>
+    public ImageData Draw(ImageData src, ImageData dest, NETPoint location) => dest.DrawImage(src, location);
 }

@@ -1,58 +1,141 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Platforms>AnyCPU</Platforms>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>11.0</LangVersion>
+    <Platforms>x64</Platforms>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyTitle>ScorpionCoreTests</AssemblyTitle>
-    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <Product>Kinson Digital - Scorpion Core Unit Tests</Product>
-    <Copyright>Copyright © 2018</Copyright>
+    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0</FileVersion>
     <Company>Kinson Digital</Company>
     <AssemblyName>VelaptorTests</AssemblyName>
     <RootNamespace>VelaptorTests</RootNamespace>
     <Configurations>Debug;Release</Configurations>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="TestResults\**" />
     <EmbeddedResource Remove="TestResults\**" />
     <None Remove="TestResults\**" />
+    <None Update="SampleTestData\glyph-test-data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\HelloWorldTextTestData\batch-test-data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoked_AddsCorrectBatchItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\RectGPUDataTestData.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\ShapeGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\LineGPUDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoked_AddsCorrectBatchItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking3ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking4ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking5ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking6ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoking6ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Remove="Fakes\AudioManagerFake.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+    <PackageReference Include="coverlet.msbuild" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.14" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.43" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="System.IO.Abstractions" Version="19.2.4" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
