@@ -1,5 +1,5 @@
 name: 🚀Preview Release
-
+run-name: Preview Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
 
 defaults:
   run:
@@ -8,60 +8,54 @@ defaults:
 
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Check to run the workflow without creating a release'
+        required: false
+        default: false
+        type: boolean
 
 
 jobs:
-  preview_release:
-    name: Preview Release
+  determine_build_config:
+    name: Determine Build Configuration
     runs-on: ubuntu-latest
+    outputs:
+      build-config: "${{ steps.get-build-config.outputs.build-config }}"
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Restore DotNet Tools
-      run: dotnet tool restore
-
-    - name: Run Preview Release
-      run: dotnet cicd PreviewRelease
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NugetOrgApiKey: ${{ secrets.NUGET_ORG_API_KEY }}
-        TwitterConsumerApiKey: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
-        TwitterConsumerApiSecret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
-        TwitterAccessToken: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-        TwitterAccessTokenSecret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+      - name: Get Build Config
+        id: get-build-config
+        shell: pwsh
+        run: |
+          # If the branch that the workflow is running on is the required branch for the release, do a release build
+          if ( "${{ github.base_ref }}" -eq "preview") {
+            "build-config=Release" >> $env:GITHUB_OUTPUT;
+            Write-Host "Release build created.";
+          } else { # Any other branch than the release branch, do a debug build
+            "build-config=Debug" >> $env:GITHUB_OUTPUT;
+            Write-Host "Debug build created.";
+          }
 
 
-  public-code-coverage-results:
-    runs-on: ubuntu-latest
-    needs: preview_release
-    name: Publish Code Coverage Results
-    steps:
-    - uses: actions/checkout@v3
-
-    # TODO: Need to get this working and injecting the version to be used as the name of the code coverage report
-    #       Do this once preview.3 has been released for the VersionMiner action
-    #       Also add this to the prod-release.yml file as well
-
-    # - name: Mine Version
-    #   id: mine-version
-    #   uses: KinsonDigital/VersionMiner@v1.0.0-preview.2
-    #   with:
-    #     repo-owner: KinsonDigital
-    #     repo-name: Velaptor
-    #     repo-token: ${{ secrets.GITHUB_TOKEN }}
-    #     branch-name: "${{ github.ref }}"
-    #     trim-start-from-branch: "refs/heads/"
-    #     file-format: xml # Not case sensitive
-    #     file-path: "${{ github.workspace }}/Velaptor/Velaptor.csproj"
-    #     version-keys: Version
-
-    - name: Execute Unit Tests
-      run: dotnet test "${{ github.workspace }}/Testing/VelaptorTests/VelaptorTests.csproj" -c Debug --collect:"XPlat Code Coverage"
-
-    - uses: codecov/codecov-action@v3
-      name: Publish Code Coverage Results
-      with:
-        directory: "${{ github.workspace }}/Testing/VelaptorTests/TestResults/"
-        name: "Preview Release"
-        fail_ci_if_error: true
-        verbose: true
+  run_preview_release:
+    name: Run Preview Release
+    needs: determine_build_config
+    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v6.2.1
+    with:
+      project-name: "${{ vars.PROJECT_NAME}}"
+      run-branch: "${{ github.ref_name }}"
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      relative-release-notes-dir-path: "${{ vars.RELATIVE_RELEASE_NOTES_DIR_PATH }}"
+      release-notes-file-name-prefix: "${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
+      build-config: "${{ needs.determine_build_config.outputs.build-config }}"
+      cicd-scripts-version: "${{ vars.CICD_SCRIPTS_VERSION }}"
+      pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
+      send-release-tweet: ${{ vars.TWITTER_BROADCAST_ENABLED == 'true' }}
+      dry-run: ${{ inputs.dry-run }}
+    secrets:
+      cicd-rest-api: "${{ secrets.CICD_REST_API }}"
+      nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
+      twitter-consumer-api-key: "${{ secrets.TWITTER_CONSUMER_API_KEY }}"
+      twitter-consumer-api-secret: "${{ secrets.TWITTER_CONSUMER_API_SECRET }}"
+      twitter-access-token: "${{ secrets.TWITTER_ACCESS_TOKEN }}"
+      twitter-access-token-secret: "${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}"

@@ -10,10 +10,9 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - develop
-      - preview/v*.*.*-preview.*
-      - release/v*.*.*
-      - master
+      - main
+      - release
+      - preview-release
 
 
 jobs:

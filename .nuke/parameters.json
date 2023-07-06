@@ -1,9 +1,0 @@
-{
-    "$schema": "./build.schema.json",
-    "Solution": "Velaptor.sln",
-    "RepoOwner": "KinsonDigital",
-    "RepoName": "Velaptor",
-    "ProjectName": "Velaptor",
-    "PreProcessReadMe": true,
-    "SkipNugetChecks": false
-}
