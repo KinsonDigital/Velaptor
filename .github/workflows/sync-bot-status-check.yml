@@ -1,0 +1,104 @@
+name: ✅🤖Sync Bot & Status Check
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      run-type:
+        description: "The type of run to execute."
+        required: true
+        type: choice
+        options: ["Sync Bot", "Sync Status Check"]
+      issurOrPRNumber:
+        description: "Sync bot uses an issue # and the status check uses a pr #."
+        required: true
+        type: number
+        default: 0
+  issues:
+    types: [labeled, unlabeled, assigned, unassigned, milestoned, demilestoned]
+  pull_request:
+    branches: [master, preview]
+
+
+jobs:
+  sync_bot:
+    name: Sync Bot
+    if: |
+      (github.event_name == 'issues') ||
+        (github.event_name == 'workflow_dispatch' && inputs.run-type == 'Sync Bot' && startsWith(github.head_ref, 'feature/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Run Sync Bot
+        run: |
+          $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
+
+          $eventName = "${{ github.event_name }}";
+          $manuallyExecuted = $eventName -eq "workflow_dispatch";
+
+          $eventType = $eventName -eq "issues" ? "issue" : "pr";
+          $issurOrPRNumber = $manuallyExecuted ? "${{ inputs.issurOrPRNumber }}" : "${{ github.event.issue.number }}";
+
+          echo "Event Name: $eventName";
+          echo "Project Name: ${{ vars.PROJECT_NAME }}";
+          echo "Issue Or PR Number: $issurOrPRNumber";
+
+          if ($manuallyExecuted -and $issurOrPRNumber -eq "0") {
+            echo "The issue or PR number must be a value greater than 0.";
+            exit 1;
+          }
+
+          deno run `
+            --allow-net `
+            "$scriptUrl" `
+            "${{ vars.PROJECT_NAME }}" `
+            "$issurOrPRNumber" `
+            "$eventType" `
+            "${{ secrets.CICD_REST_API }}";
+
+
+  status_check:
+    name: Sync Status Check
+    if: (github.event_name == 'pull_request' && startsWith(github.head_ref, 'feature/')) || (github.event_name == 'workflow_dispatch' && inputs.run-type == 'Sync Status Check' && startsWith(github.head_ref, 'feature/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Run Sync Status Check
+        run: |
+          $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
+
+          $eventType = "pr";
+          $eventName = "${{ github.event_name }}";
+          $manuallyExecuted = $eventName -eq "workflow_dispatch";
+          $issurOrPRNumber = $manuallyExecuted ? "${{ inputs.issurOrPRNumber }}" : "${{ github.event.number }}";
+          
+          echo "Event Name: $eventName";
+          echo "Project Name: ${{ vars.PROJECT_NAME }}";
+          echo "PR Number: $issurOrPRNumber";
+          echo "Event Type: $eventType";
+
+          if ($manuallyExecuted -and $issurOrPRNumber -eq "0") {
+            echo "The issue or PR number must be a value greater than 0.";
+            exit 1;
+          }
+
+          deno run `
+            --allow-net `
+            "$scriptUrl" `
+            "${{ vars.PROJECT_NAME }}" `
+            "$issurOrPRNumber" `
+            "$eventType" `
+            "${{ secrets.CICD_REST_API }}";
