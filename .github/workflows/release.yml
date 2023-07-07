@@ -1,5 +1,5 @@
 name: 🚀Release
-run-name: ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
+run-name: ${{ vars.PROJECT_NAME }} ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
 
 
 defaults:
@@ -33,20 +33,19 @@ jobs:
     steps:
       - name: Get Build Config
         id: get-build-config
-        shell: pwsh
         run: |
           # If the branch that the workflow is running on is the required branch for the release, do a release build
           if ( "${{ github.base_ref }}" -eq "main") {
             "build-config=Release" >> $env:GITHUB_OUTPUT;
-            Write-Host "Release build created.";
+            echo "Release build created.";
           } else { # Any other branch than the release branch, do a debug build
             "build-config=Debug" >> $env:GITHUB_OUTPUT;
-            Write-Host "Debug build created.";
+            echo "Debug build created.";
           }
 
 
   run_release:
-    name: Run ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
+    name: Performing ${{ inputs.release_type }} Release of ${{ vars.PROJECT_NAME }} ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
     needs: determine_build_config
     uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v7.0.3
     with:
