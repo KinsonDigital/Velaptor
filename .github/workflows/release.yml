@@ -1,5 +1,6 @@
-name: 🚀Preview Release
-run-name: Preview Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
+name: 🚀Release
+run-name: ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
+
 
 defaults:
   run:
@@ -9,8 +10,15 @@ defaults:
 on:
   workflow_dispatch:
     inputs:
+      release_type:
+        description: The type of release.  Choose 'Preview' or 'Production'.
+        required: true
+        type: choice
+        options:
+          - Preview
+          - Production
       dry-run:
-        description: 'Check to run the workflow without creating a release'
+        description: Check to run the workflow without creating a release.
         required: false
         default: false
         type: boolean
@@ -28,7 +36,7 @@ jobs:
         shell: pwsh
         run: |
           # If the branch that the workflow is running on is the required branch for the release, do a release build
-          if ( "${{ github.base_ref }}" -eq "preview") {
+          if ( "${{ github.base_ref }}" -eq "main") {
             "build-config=Release" >> $env:GITHUB_OUTPUT;
             Write-Host "Release build created.";
           } else { # Any other branch than the release branch, do a debug build
@@ -37,12 +45,13 @@ jobs:
           }
 
 
-  run_preview_release:
-    name: Run Preview Release
+  run_release:
+    name: Run ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '- (Dry Run)' || '' }}
     needs: determine_build_config
-    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v6.2.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v7.0.3
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
+      release-type: "${{ inputs.release_type }}"
       run-branch: "${{ github.ref_name }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
       relative-release-notes-dir-path: "${{ vars.RELATIVE_RELEASE_NOTES_DIR_PATH }}"
