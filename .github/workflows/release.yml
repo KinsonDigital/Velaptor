@@ -47,7 +47,7 @@ jobs:
   run_release:
     name: Performing ${{ inputs.release_type }} Release of ${{ vars.PROJECT_NAME }} ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
     needs: determine_build_config
-    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v7.0.3
+    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v7.2.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release_type }}"
@@ -60,6 +60,7 @@ jobs:
       pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
       send-release-tweet: ${{ vars.TWITTER_BROADCAST_ENABLED == 'true' }}
       dry-run: ${{ inputs.dry-run }}
+      transpile-readme: true
     secrets:
       cicd-rest-api: "${{ secrets.CICD_REST_API }}"
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
