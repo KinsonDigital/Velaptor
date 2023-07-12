@@ -1,0 +1,51 @@
+name: ✅Sync Status Check
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  pull_request:
+    branches: [main, preview]
+
+
+jobs:
+  sync_status_check:
+    name: Sync Status Check
+    if: startsWith(github.head_ref, 'feature/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Run Sync Status Check
+        run: |
+          $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
+          $prNumber = "${{ github.event.number }}";
+
+          echo "Project Name: ${{ vars.PROJECT_NAME }}";
+          echo "PR Number: $prNumber";
+          echo "Event Type: pr";
+
+          if ($manuallyExecuted -and $prNumber -eq "0") {
+            echo "The issue or PR number must be a value greater than 0.";
+            exit 1;
+          }
+
+          <# Deno Args:
+            1. Project Name
+            2. PR Number
+            3. Event Type - set to pull request event type
+            4. GitHub token
+          #>
+          deno run `
+            --allow-net `
+            "$scriptUrl" `
+            "${{ vars.PROJECT_NAME }}" `
+            "$prNumber" `
+            "pr" `
+            "${{ secrets.CICD_REST_API }}";
