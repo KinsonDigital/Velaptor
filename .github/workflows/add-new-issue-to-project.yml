@@ -1,69 +1,18 @@
-name: Add Issue To Project
-
-
-defaults:
-  run:
-    shell: pwsh
+name: 🤖Add New Issue To Project
 
 
 on:
-  workflow_call:
-    inputs:
-      org-name:
-        description: The name of the organization that owns the project.
-        required: true
-        type: string
-      org-project-name:
-        description: The name of the organization project to add the issue to.
-        required: true
-        type: string
-      project-name:
-        required: true
-        description: "The name of the C# project to validate."
-        type: string
-    secrets:
-      cicd-pat:
-        description: The CICD personal access token.
-        required: true
-
-
-env:
-  GITHUB_TOKEN: ${{ secrets.cicd-pat }}
+  issues:
+    types: opened
 
 
 jobs:
-  add_issue_to_project:
-    name: Add Issue ${{ github.event.issue.number }} To Project
-    runs-on: ubuntu-latest
-    steps:
-      - name: Add To Project
-        run: |
-          # Get the raw json data using the GH CLI
-          $rawProjectsJsonData = gh project list --owner ${{ inputs.org-name }} --format=json;
-
-          Write-Host "::group::Raw Project JSON Data";
-          Write-Host $rawProjectsJsonData;
-          Write-Host "::endgroup::";
-
-          # Pipe the raw data into jq to format it into a more usable format
-          $formattedJsonData = $rawProjectsJsonData | jq "[.projects[] | { title: .title, number: .number }]"
-
-          Write-Host "::group::Formatted Project JSON Data";
-          Write-Host $formattedJsonData;
-          Write-Host "::endgroup::";
-
-          $orgProjects = $formattedJsonData | ConvertFrom-Json;
-
-          # Get the project that matches the org project name repo variable
-          $projects = $orgProjects.Where({ $_.title -eq "${{ inputs.org-project-name }}" });
-          
-          if ($projects.Count -eq 0) {
-              Write-Host "::error::The project '${{ inputs.org-project-name }}' was not found.  Check that the organization variable 'ORG_PROJECT_NAME' exists and is set correctly?";
-              exit 1;
-          }
-          
-          $projNumber = $projects[0].number;
-          $issueUrl = "https://github.com/${{ inputs.org-name }}/${{ inputs.project-name }}/issues/${{ github.event.issue.number }}";
-
-          # Add the newly created issue to the project
-          gh project item-add $projNumber --owner ${{ inputs.org-name }} --url $issueUrl;
+  add_new_issue_to_project:
+    name: Add New Issue
+    uses: KinsonDigital/Infrastructure/.github/workflows/add-issue-to-project.yml@v8.2.0
+    with:
+      org-name: "${{ vars.ORGANIZATION_NAME }}"
+      org-project-name: "${{ vars.ORG_PROJECT_NAME }}"
+      project-name: "${{ vars.PROJECT_NAME }}"
+    secrets:
+      cicd-pat: ${{ secrets.CICD_REST_API }}
