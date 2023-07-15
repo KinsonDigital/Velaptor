@@ -14,28 +14,10 @@ on:
 
 
 jobs:
-  determine_build_config:
-    name: Determine Build Configuration
-    runs-on: ubuntu-latest
-    outputs:
-      build-config: ${{ steps.get-build-config.outputs.build-config }}
-    steps:
-      - name: Get Build Config
-        id: get-build-config
-        run: |
-          # If the destination branch that the pull request is merging into is the main, do a release build
-          if ( "${{ github.base_ref }}" -eq "main") {
-            "build-config=Release" >> $env:GITHUB_OUTPUT;
-          } else { # Any other branch than main, do a debug build
-            "build-config=Debug" >> $env:GITHUB_OUTPUT;
-          }
-
-
   build_status_check:
-    name: Building ${{ vars.PROJECT_NAME }}
-    needs: [determine_build_config]
+    name: ${{ vars.PROJECT_NAME }} Build Status Check
     uses: KinsonDigital/Infrastructure/.github/workflows/reusable/build-csharp-project.yml@v9.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME }}"
-      build-config: ${{ needs.determine_build_config.outputs.build-config }}
+      build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
