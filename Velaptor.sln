@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		BACKERS.md = BACKERS.md
-		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		codecov.yml = codecov.yml
@@ -29,20 +28,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTests", "Testing\Ve
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{E248AD89-D6AB-4183-88F1-133875647706}"
 	ProjectSection(SolutionItems) = preProject
-		.github\ReleaseTweetTemplate.txt = .github\ReleaseTweetTemplate.txt
 		.github\stale.yml = .github\stale.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\add-new-issue-to-project.yml = .github\workflows\add-new-issue-to-project.yml
 		.github\workflows\build-pr-status-check.yml = .github\workflows\build-pr-status-check.yml
-		.github\workflows\feature-pr-status-check.yml = .github\workflows\feature-pr-status-check.yml
-		.github\workflows\hotfix-pr-status-check.yml = .github\workflows\hotfix-pr-status-check.yml
-		.github\workflows\prev-feature-pr-status-check.yml = .github\workflows\prev-feature-pr-status-check.yml
-		.github\workflows\prev-release-pr-status-check.yml = .github\workflows\prev-release-pr-status-check.yml
-		.github\workflows\prev-release.yml = .github\workflows\prev-release.yml
-		.github\workflows\prod-release-pr-status-check.yml = .github\workflows\prod-release-pr-status-check.yml
-		.github\workflows\prod-release.yml = .github\workflows\prod-release.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+		.github\workflows\sonar-scan-pr-status-check.yml = .github\workflows\sonar-scan-pr-status-check.yml
+		.github\workflows\sync-bot.yml = .github\workflows\sync-bot.yml
+		.github\workflows\sync-issue-to-pr.yml = .github\workflows\sync-issue-to-pr.yml
+		.github\workflows\sync-status-check.yml = .github\workflows\sync-status-check.yml
 		.github\workflows\triage-issue.yml = .github\workflows\triage-issue.yml
 		.github\workflows\unit-test-pr-status-check.yml = .github\workflows\unit-test-pr-status-check.yml
 	EndProjectSection
