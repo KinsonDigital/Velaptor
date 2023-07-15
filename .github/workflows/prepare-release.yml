@@ -1,0 +1,78 @@
+name: 🚁Prepare Release
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: The type of release.  Choose 'Preview' or 'Production'.
+        required: true
+        type: choice
+        options: [Preview, Production]
+      release-version:
+        required: true
+        description: The version of the release to prepare.
+        type: string
+
+jobs:
+  validate_inputs:
+    name: Validate Inputs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validating Inputs
+        run: |
+          $projectName = "${{ vars.PROJECT_NAME }}";
+          $releaseType = "${{ inputs.release-type }}".ToLower();
+          $releaseVersion = "${{ inputs.release-version }}";
+
+          if ($projectName -eq "") {
+            Write-Host "::error::The project name input cannot be empty.";
+            exit 1;
+          }
+
+
+          if ($releaseType -eq "") {
+            Write-Host "::error::The release type input cannot be empty.";
+            exit 1;
+          }
+
+
+          if ($releaseType -ne 'preview' -and $releaseType -ne 'roduction') {
+            Write-Host "::error::The release type input must be either 'Preview' or 'Production'.";
+            exit 1;
+          }
+
+
+          if ($releaseVersion -eq "") {
+            Write-Host "::error::The release version input cannot be empty.";
+            exit 1;
+          }
+
+
+          $prodVersionRegex = "v[0-9]+\.[0-9]+\.[0-9]+";
+          $prevVersionRegex = "v[0-9]+\.[0-9]+\.[0-9]+-preview\.[0-9]+";
+          
+          # Verify that the version has valid syntax
+          if (($version -match $prodVersionRegex) -or ($version -match $prevVersionRegex)) {
+            Write-Host "::notice::The version is valid.";
+          } else {
+            $versionSyntax = $releaseType == "production" ? "v#.#.#" : "v#.#.#-preview.#";
+            Write-Host "::error::The version is not valid.\nThe version format is: '$versionSyntax";
+            exit 1;
+          }
+
+
+  prepare_release:
+    name: Prepare ${{ inputs.release-type }} Release Of ${{ vars.PROJECT_NAME }}
+    uses: KinsonDigital/Infrastructure/.github/workflows/reusable/prepare-release.yml@v9.0.0
+    with:
+      project-name: ${{ vars.PROJECT_NAME }}
+      release-type: ${{ inputs.release-type }}
+      release-version: ${{ inputs.release-version }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_REST_API }}
