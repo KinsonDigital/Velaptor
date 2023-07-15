@@ -47,7 +47,7 @@ jobs:
   run_release:
     name: Performing ${{ inputs.release_type }} Release of ${{ vars.PROJECT_NAME }} ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
     needs: determine_build_config
-    uses: KinsonDigital/Infrastructure/.github/workflows/release.yml@v7.2.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/reusable/dotnet-lib-release.yml@v9.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release_type }}"
@@ -62,7 +62,7 @@ jobs:
       dry-run: ${{ inputs.dry-run }}
       transpile-readme: true
     secrets:
-      cicd-rest-api: "${{ secrets.CICD_REST_API }}"
+      cicd-pat: "${{ secrets.CICD_REST_API }}"
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
       twitter-consumer-api-key: "${{ secrets.TWITTER_CONSUMER_API_KEY }}"
       twitter-consumer-api-secret: "${{ secrets.TWITTER_CONSUMER_API_SECRET }}"
