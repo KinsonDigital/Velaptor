@@ -1,5 +1,5 @@
 name: 🚀Release
-run-name: ${{ vars.PROJECT_NAME }} ${{ inputs.release_type }} Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
+run-name: ${{ vars.PROJECT_NAME }} ${{ inputs.release-type }} Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
 
 
 defaults:
@@ -10,7 +10,7 @@ defaults:
 on:
   workflow_dispatch:
     inputs:
-      release_type:
+      release-type:
         description: The type of release.  Choose 'Preview' or 'Production'.
         required: true
         type: choice
@@ -25,37 +25,17 @@ on:
 
 
 jobs:
-  determine_build_config:
-    name: Determine Build Configuration
-    runs-on: ubuntu-latest
-    outputs:
-      build-config: "${{ steps.get-build-config.outputs.build-config }}"
-    steps:
-      - name: Get Build Config
-        id: get-build-config
-        run: |
-          # If the branch that the workflow is running on is the required branch for the release, do a release build
-          if ( "${{ github.base_ref }}" -eq "main") {
-            "build-config=Release" >> $env:GITHUB_OUTPUT;
-            echo "Release build created.";
-          } else { # Any other branch than the release branch, do a debug build
-            "build-config=Debug" >> $env:GITHUB_OUTPUT;
-            echo "Debug build created.";
-          }
-
-
   run_release:
-    name: Performing ${{ inputs.release_type }} Release of ${{ vars.PROJECT_NAME }} ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
-    needs: determine_build_config
+    name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
     uses: KinsonDigital/Infrastructure/.github/workflows/reusable/dotnet-lib-release.yml@v9.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
-      release-type: "${{ inputs.release_type }}"
+      release-type: "${{ inputs.release-type }}"
       run-branch: "${{ github.ref_name }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
       relative-release-notes-dir-path: "${{ vars.RELATIVE_RELEASE_NOTES_DIR_PATH }}"
       release-notes-file-name-prefix: "${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
-      build-config: "${{ needs.determine_build_config.outputs.build-config }}"
+      build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
       cicd-scripts-version: "${{ vars.CICD_SCRIPTS_VERSION }}"
       pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
       send-release-tweet: ${{ vars.TWITTER_BROADCAST_ENABLED == 'true' }}
