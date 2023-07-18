@@ -1,6 +1,6 @@
 
 <div align="center">
-    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/release/v1.0.0/Documentation/Images/velaptor-logo.png" height="96"></a>
+    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Documentation/Images/velaptor-logo.png" height="96"></a>
     <br />
   
 </div>
@@ -59,7 +59,7 @@ Loaded content such as images and sounds are cached for better performance.  If 
 
 <div align="center">
 
-[![FeatureDemoVideo](https://img.youtube.com/vi/rcKi-eWeUuo/0.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+[![FeatureDemoVideo](https://github.com/KinsonDigital/Velaptor/blob/preview/Documentation/Images/velaptor-logo.png)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
 </div>
 
 <br/>
@@ -89,7 +89,7 @@ Interested in contributing? If so, click [here](https://github.com/KinsonDigital
 <div align="center">
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?style=flat)](https://github.com/KinsonDigital/.github/blob/master/docs/code_of_conduct.md)
-[![GitHub](https://img.shields.io/github/license/kinsondigital/Velaptor)](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/LICENSE.md)
+[![GitHub](https://img.shields.io/github/license/kinsondigital/Velaptor)](https://github.com/KinsonDigital/Velaptor/blob/preview/LICENSE.md)
 </div>
 
 
