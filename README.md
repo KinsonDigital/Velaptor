@@ -59,7 +59,7 @@ Loaded content such as images and sounds are cached for better performance.  If 
 
 <div align="center">
 
-[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/feature/647-fix-demo-link/Documentation/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Documentation/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
 </div>
 
 <br/>
