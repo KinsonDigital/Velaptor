@@ -34,14 +34,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\add-new-issue-to-project.yml = .github\workflows\add-new-issue-to-project.yml
-		.github\workflows\build-pr-status-check.yml = .github\workflows\build-pr-status-check.yml
+		.github\workflows\build-status-check.yml = .github\workflows\build-status-check.yml
+		.github\workflows\prepare-release.yml = .github\workflows\prepare-release.yml
 		.github\workflows\release.yml = .github\workflows\release.yml
 		.github\workflows\sonar-scan-pr-status-check.yml = .github\workflows\sonar-scan-pr-status-check.yml
 		.github\workflows\sync-bot.yml = .github\workflows\sync-bot.yml
 		.github\workflows\sync-issue-to-pr.yml = .github\workflows\sync-issue-to-pr.yml
 		.github\workflows\sync-status-check.yml = .github\workflows\sync-status-check.yml
 		.github\workflows\triage-issue.yml = .github\workflows\triage-issue.yml
-		.github\workflows\unit-test-pr-status-check.yml = .github\workflows\unit-test-pr-status-check.yml
+		.github\workflows\unit-test-status-check.yml = .github\workflows\unit-test-status-check.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeasureTextPerf", "Performance\MeasureTextPerf\MeasureTextPerf.csproj", "{8690A40A-D3B2-488B-92B6-5771C21010E0}"
