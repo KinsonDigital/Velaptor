@@ -1,5 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>KinsonDigital/.github//config/renovate-config.json"],
-  "baseBranches": ["release/v1.0.0"]
+  "baseBranches": ["preview"]
 }
