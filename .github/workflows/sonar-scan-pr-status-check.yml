@@ -7,16 +7,12 @@ defaults:
 
 
 on:
-  workflow_dispatch:
   pull_request:
-    branches:
-      - main
-      - release
-      - preview-release
+    branches: [main, prod-release, prev-release]
 
 
 jobs:
-  sonar_analyze_code:
+  sonar_status_check:
     name: Analyze Code
     runs-on: ubuntu-latest
     steps:
@@ -61,9 +57,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"KinsonDigital_Velaptor" /o:"kinsondigital" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          $orgNameLower = "${{ vars.ORGANIZATION_NAME }}".ToLower();
 
-          dotnet clean "${{ github.workspace }}/Velaptor/Velaptor.csproj";
-          dotnet build "${{ github.workspace }}/Velaptor/Velaptor.csproj" -c Debug;
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.ORGANIZATION_NAME }}_${{ vars.PROJECT_NAME }}" /o:"$orgNameLower" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+
+          dotnet clean "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj";
+          dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
 
           ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

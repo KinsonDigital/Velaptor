@@ -16,7 +16,7 @@ on:
 jobs:
   build_status_check:
     name: ${{ vars.PROJECT_NAME }} Build Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/reusable/build-csharp-project.yml@v9.0.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v10.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME }}"
       build-config: Debug

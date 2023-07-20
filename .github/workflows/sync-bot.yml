@@ -13,7 +13,7 @@ on:
 
 jobs:
   sync_bot:
-    name: Sync Bot
+    name: Sync Bot Status Check
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
@@ -30,19 +30,20 @@ jobs:
 
           $issueNumber = "${{ github.event.issue.number }}";
 
-          echo "Project Name: ${{ vars.PROJECT_NAME }}";
-          echo "Issue: $issueNumber";
+          Write-Host "::notice:Project Name: ${{ vars.PROJECT_NAME }}";
+          Write-Host "::notice:Issue: $issueNumber";
 
           if ($manuallyExecuted -and $issueNumber -eq "0") {
-            echo "The issue or PR number must be a value greater than 0.";
+            Write-Host "::notice:The issue or PR number must be a value greater than 0.";
             exit 1;
           }
 
           <# Deno Args:
-            1. Project Name
-            2. Issue Number
-            3. Event Type - set to issue event type
-            4. GitHub token
+            1. Organization name
+            2. Project name
+            3. Issue number
+            4. Event Type - set to issue event type
+            5. PAT
           #>
           deno run `
             --allow-net `
@@ -50,4 +51,4 @@ jobs:
             "${{ vars.PROJECT_NAME }}" `
             "$issueNumber" `
             "issue" `
-            "${{ secrets.CICD_REST_API }}";
+            "${{ secrets.CICD_TOKEN }}";

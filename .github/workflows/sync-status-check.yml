@@ -27,25 +27,27 @@ jobs:
           $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
           $prNumber = "${{ github.event.number }}";
 
-          echo "Project Name: ${{ vars.PROJECT_NAME }}";
-          echo "PR Number: $prNumber";
-          echo "Event Type: pr";
+          Write-Host "::notice:Project Name: ${{ vars.PROJECT_NAME }}";
+          Write-Host "::notice:PR Number: $prNumber";
+          Write-Host "::notice:Event Type: pr";
 
           if ($manuallyExecuted -and $prNumber -eq "0") {
-            echo "The issue or PR number must be a value greater than 0.";
+            Write-Host "::notice:The issue or PR number must be a value greater than 0.";
             exit 1;
           }
 
           <# Deno Args:
-            1. Project Name
-            2. PR Number
-            3. Event Type - set to pull request event type
-            4. GitHub token
+            1. Organization name
+            2. Project name
+            3. Pull request number
+            4. Event Type - set to pull request event type
+            5. PAT
           #>
           deno run `
             --allow-net `
             "$scriptUrl" `
+            "${{ vars.ORGANIZATION_NAME }}" `
             "${{ vars.PROJECT_NAME }}" `
             "$prNumber" `
             "pr" `
-            "${{ secrets.CICD_REST_API }}";
+            "${{ secrets.CICD_TOKEN }}";
