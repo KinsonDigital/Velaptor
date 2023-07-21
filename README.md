@@ -1,6 +1,6 @@
 
 <div align="center">
-    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Documentation/Images/velaptor-logo.png" height="96"></a>
+    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png" height="96"></a>
     <br />
   
 </div>
@@ -59,7 +59,7 @@ Loaded content such as images and sounds are cached for better performance.  If 
 
 <div align="center">
 
-[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Documentation/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
 </div>
 
 <br/>
