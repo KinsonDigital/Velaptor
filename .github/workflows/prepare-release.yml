@@ -1,4 +1,5 @@
 name: 🚁Prepare Release
+run-name: 🚁Prepare ${{ inputs.release-type }} Release (${{ inputs.release-version }})
 
 
 defaults:
@@ -72,10 +73,11 @@ jobs:
 
   prepare_release:
     name: Prepare ${{ inputs.release-type }} Release Of ${{ vars.PROJECT_NAME }}
+    needs: print_validate_workflow
     uses: KinsonDigital/Infrastructure/.github/workflows/prepare-release.yml@v10.0.0
     with:
-      project-name: ${{ vars.PROJECT_NAME }}
-      release-type: ${{ inputs.release-type }}
-      release-version: ${{ inputs.release-version }}
+      project-name: "${{ vars.PROJECT_NAME }}"
+      release-type: "${{ inputs.release-type }}"
+      release-version: "${{ inputs.release-version }}"
     secrets:
       cicd-pat: ${{ secrets.CICD_TOKEN }}
