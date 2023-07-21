@@ -1,15 +1,14 @@
-name: Triage Issue
+name: 🤖Triage Issue
 
 
 on:
   issues:
-    types:
-      - opened
+    types: [opened]
 
 
 jobs:
   label_issues:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:

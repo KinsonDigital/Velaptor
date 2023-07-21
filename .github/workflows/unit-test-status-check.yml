@@ -1,0 +1,23 @@
+name: ✅Unit Testing Status Check
+run-name: ✅Unit Testing Status Check (${{ github.base_ref }} branch)
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, preview]
+
+
+jobs:
+  run_tests:
+    name: ${{ vars.PROJECT_NAME }} Test Status Check
+    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v10.0.1
+    with:
+      project-name: "${{ vars.PROJECT_NAME }}Tests"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"

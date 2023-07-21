@@ -51,17 +51,17 @@
         "xunit"
     ],
     "dotnet.defaultSolution": "Velaptor.sln",
-    "[typescript]": {
+    "[csharp]": {
 		"editor.insertSpaces": false,
-		"editor.tabSize": 4,
+		"editor.indentSize": 4,
     },
-	"[yaml]": {
-		"editor.insertSpaces": true,
-		"editor.tabSize": 2,
-	},
 	"[jsonc]": {
 		"editor.insertSpaces": false,
 		"editor.tabSize": 4,
+	},
+	"[yaml]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
 	},
 	"editor.detectIndentation": false,
 	"[github-actions-workflow]": {
