@@ -1,8 +1,6 @@
-
 <div align="center">
-    <a href="#"><img align="center" src="https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png" height="96"></a>
-    <br />
-  
+
+  ![logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png)
 </div>
 
 
