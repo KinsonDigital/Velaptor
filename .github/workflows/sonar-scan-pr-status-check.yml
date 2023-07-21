@@ -13,7 +13,7 @@ on:
 
 jobs:
   sonar_status_check:
-    name: Analyze Code
+    name: Sonar Status Check
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 11
