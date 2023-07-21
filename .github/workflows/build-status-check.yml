@@ -1,5 +1,5 @@
 name: ✅Build Status Check
-run-name: ✅Build Status Check ${{ github.base_ref == 'main' && '(Release Build)' || '(Debug Build)' }}
+run-name: ✅Build Status Check (${{ github.base_ref }} branch)
 
 
 defaults:
@@ -8,7 +8,6 @@ defaults:
 
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: [main, preview]
 
