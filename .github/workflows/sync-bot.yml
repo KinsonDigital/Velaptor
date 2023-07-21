@@ -30,11 +30,11 @@ jobs:
 
           $issueNumber = "${{ github.event.issue.number }}";
 
-          Write-Host "::notice:Project Name: ${{ vars.PROJECT_NAME }}";
-          Write-Host "::notice:Issue: $issueNumber";
+          Write-Host "::notice::Project Name: ${{ vars.PROJECT_NAME }}";
+          Write-Host "::notice::Issue: $issueNumber";
 
           if ($manuallyExecuted -and $issueNumber -eq "0") {
-            Write-Host "::notice:The issue or PR number must be a value greater than 0.";
+            Write-Host "::notice::The issue or PR number must be a value greater than 0.";
             exit 1;
           }
 
