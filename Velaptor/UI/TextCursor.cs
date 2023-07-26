@@ -306,13 +306,13 @@ internal class TextCursor : ITextCursor
         var prevTextViewWidth = Math.Abs(this.preMutateState.TextView.Left - this.preMutateState.TextView.Right);
         var currTextViewWidth = Math.Abs(this.postMutateState.TextView.Left - this.postMutateState.TextView.Right);
 
-        var textPrevIsLargerThanView = prevTextWidth >= prevTextViewWidth;
-        var textCurrIsLargerThanView = currTextWidth >= currTextViewWidth;
+        var prevTextIsLargerThanView = prevTextWidth >= prevTextViewWidth;
+        var currTextIsLargerThanView = currTextWidth >= currTextViewWidth;
         var firstCharVisible = this.postMutateState.TextLeft >= this.postMutateState.TextView.Left;
 
         var lastCharVisible = this.postMutateState.TextRight <= this.postMutateState.TextView.Right;
 
-        if (textCurrIsLargerThanView)
+        if (currTextIsLargerThanView)
         {
             if (firstCharVisible && selectionLeftToRight)
             {
@@ -348,7 +348,7 @@ internal class TextCursor : ITextCursor
             {
                 this.cursor.Left = this.postMutateState.TextRight;
             }
-            else if (textPrevIsLargerThanView && !textCurrIsLargerThanView)
+            else if (prevTextIsLargerThanView && !currTextIsLargerThanView)
             {
                 displacement = Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft);
 
