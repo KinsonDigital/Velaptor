@@ -1,4 +1,4 @@
-﻿// <copyright file="TextSelection.cs" company="KinsonDigital">
+// <copyright file="TextSelection.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -179,14 +179,13 @@ internal class TextSelection : ITextSelection
         endIndex = Math.Clamp(endIndex, 0, max);
 
         var indexDelta = Math.Abs(startIndex - endIndex);
-        var homeOrPageUpKey = this.postMutateState.Key is KeyCode.Home or KeyCode.PageUp;
         var selectionIsAtRightEnd = this.postMutateState.SelectionAtRightEnd;
 
         var selectionLen = selectionIsAtRightEnd
             ? indexDelta + 1
             : indexDelta;
 
-        var rectRight = selectionIsAtRightEnd || homeOrPageUpKey
+        var rectRight = selectionIsAtRightEnd
             ? this.postMutateState.SelStartCharBounds.Right
             : Math.Max(this.postMutateState.SelStartCharBounds.Left, this.postMutateState.SelStopCharBounds.Left);
 
