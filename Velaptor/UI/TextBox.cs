@@ -6,6 +6,7 @@ namespace Velaptor.UI;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -199,6 +200,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the color of the selected text.
     /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
     public Color SelectedTextColor { get; set; } = Color.White;
 
     /// <summary>
@@ -669,7 +671,8 @@ public sealed class TextBox : ControlBase
         this.text.Insert(insertIndex, character);
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(charKey); // NEW
+        UpdateBounds(charKey);
+        this.currentCharIndex = CalcNextCharIndex(charKey);
         CalcYPositions(prevHeight, this.textSize.Height);
 
         this.currentCharIndex = charIndexAtEnd
@@ -729,7 +732,8 @@ public sealed class TextBox : ControlBase
 
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -746,10 +750,15 @@ public sealed class TextBox : ControlBase
 
         var prevHeight = this.textSize.Height;
 
-        this.text.RemoveChar((uint)this.currentCharIndex);
+        var currCharIndex = this.text.Length > 0 && this.currentCharIndex < 0
+            ? 0u
+            : (uint)this.currentCharIndex;
+
+        this.text.RemoveChar(currCharIndex);
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -775,7 +784,8 @@ public sealed class TextBox : ControlBase
 
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -795,10 +805,12 @@ public sealed class TextBox : ControlBase
         RectangleF selStartCharBounds = default;
         RectangleF selStopCharBounds = default;
 
+        var currCharIndex = this.currentCharIndex < 0 ? 0 : this.currentCharIndex;
+
         if (boundsExist)
         {
             selStartCharBounds = this.inSelectionMode ? this.charBounds[this.selectionStartIndex].bounds : default;
-            selStopCharBounds = this.inSelectionMode ? this.charBounds[this.currentCharIndex].bounds : default;
+            selStopCharBounds = this.inSelectionMode ? this.charBounds[currCharIndex].bounds : default;
         }
 
         var requestedStateKey = mutateType switch
@@ -824,16 +836,16 @@ public sealed class TextBox : ControlBase
             TextRight = this.charBounds.IsEmpty() ? (int)this.textAreaBounds.Left : textRight,
             TextView = this.textAreaBounds,
             Key = key == KeyCode.Unknown ? requestedStateKey : key,
-            CharIndex = this.currentCharIndex,
-            CurrentCharLeft = boundsExist ? (int)this.charBounds[this.currentCharIndex].bounds.Left : 0,
-            CurrentCharRight = boundsExist ? (int)this.charBounds[this.currentCharIndex].bounds.Right : 0,
+            CharIndex = currCharIndex,
+            CurrentCharLeft = boundsExist ? (int)this.charBounds[currCharIndex].bounds.Left : 0,
+            CurrentCharRight = boundsExist ? (int)this.charBounds[currCharIndex].bounds.Right : 0,
             InSelectionMode = this.inSelectionMode,
             SelStartCharBounds = selStartCharBounds,
             SelStopCharBounds = selStopCharBounds,
             FirstVisibleCharBounds = firstVisibleCharBounds,
             LastVisibleCharBounds = lastVisibleCharBounds,
             SelectionStartIndex = this.selectionStartIndex,
-            SelectionStopIndex = this.currentCharIndex,
+            SelectionStopIndex = currCharIndex,
             SelectionHeight = (int)(Height - MarginTop),
             SelectionAtRightEnd = this.selectionAtRightEnd,
             Position = Position.ToVector2(),
@@ -941,7 +953,7 @@ public sealed class TextBox : ControlBase
     private void UpdateBounds(KeyCode key)
     {
         /* NOTE:
-         * This is always after the text mutation
+         * This method is always executed after the text mutation
          */
 
         RebuildBounds();
@@ -954,8 +966,6 @@ public sealed class TextBox : ControlBase
 
         var textLargerThanView = this.charBounds.TextWidth() > this.textAreaBounds.Width;
         var charIndexAtEnd = this.preTextBoxState.CharIndex >= this.preTextBoxState.TextLength - 1;
-
-        var cursorAtRightEndOfText = this.textCursor.Cursor.Right > this.charBounds.TextRight();
 
         var gapAtRightEnd = this.charBounds.GapAtRightEnd(this.textAreaBounds.Right);
 
@@ -1005,33 +1015,6 @@ public sealed class TextBox : ControlBase
         {
             SnapBoundsToLeft();
         }
-
-        // Update the char index
-        switch (key)
-        {
-            case KeyCode.Delete:
-                if (this.inSelectionMode)
-                {
-                    var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
-                    this.currentCharIndex = minCharIndex >= this.text.LastCharIndex()
-                        ? this.text.LastCharIndex()
-                        : minCharIndex;
-                }
-                else
-                {
-                    this.currentCharIndex = charIndexAtEnd
-                        ? this.currentCharIndex - 1
-                        : this.currentCharIndex;
-                }
-
-                break;
-            case KeyCode.Backspace:
-                this.currentCharIndex = cursorAtRightEndOfText
-                    ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
-                    : this.currentCharIndex - 1;
-
-                break;
-        }
     }
 
     /// <summary>
@@ -1068,26 +1051,57 @@ public sealed class TextBox : ControlBase
     /// <returns>The new character bounds index.</returns>
     private int CalcNextCharIndex(KeyCode key)
     {
-        var lastCharIndex = this.text.LastCharIndex();
+        var charIndexAtEnd = this.preTextBoxState.CharIndex >= this.preTextBoxState.TextLength - 1;
         var cursorAtRightEndOfText = this.text.IsEmpty() || this.textCursor.Cursor.Right > this.charBounds.TextRight();
-        var isAtLastCharIndex = this.currentCharIndex >= lastCharIndex;
 
-        var newIndex = key switch
+        int SetToMinSelectionIndex()
         {
-            KeyCode.Left => isAtLastCharIndex && cursorAtRightEndOfText
-                ? this.currentCharIndex
-                : this.currentCharIndex - 1,
-            KeyCode.Right => isAtLastCharIndex
-                ? lastCharIndex
-                : this.currentCharIndex + 1,
-            KeyCode.Home => 0,
-            KeyCode.PageUp => 0,
-            KeyCode.End => lastCharIndex,
-            KeyCode.PageDown => lastCharIndex,
-            _ => this.currentCharIndex,
-        };
+            var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
 
-        return newIndex < 0 ? 0 : newIndex;
+            return minCharIndex >= this.text.LastCharIndex()
+                ? this.text.LastCharIndex()
+                : minCharIndex;
+        }
+
+        switch (key)
+        {
+            case KeyCode.Delete:
+                if (this.inSelectionMode)
+                {
+                    return SetToMinSelectionIndex();
+                }
+
+                return charIndexAtEnd
+                    ? this.currentCharIndex - 1
+                    : this.currentCharIndex;
+            case KeyCode.Backspace:
+                if (this.inSelectionMode)
+                {
+                    return SetToMinSelectionIndex();
+                }
+
+                return cursorAtRightEndOfText
+                    ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
+                    : this.currentCharIndex - 1;
+            default:
+                var lastCharIndex = this.text.LastCharIndex();
+                var isAtLastCharIndex = this.currentCharIndex >= lastCharIndex;
+
+                return key switch
+                {
+                    KeyCode.Left => isAtLastCharIndex && cursorAtRightEndOfText
+                        ? this.currentCharIndex
+                        : this.currentCharIndex - 1,
+                    KeyCode.Right => isAtLastCharIndex
+                        ? lastCharIndex
+                        : this.currentCharIndex + 1,
+                    KeyCode.Home => 0,
+                    KeyCode.PageUp => 0,
+                    KeyCode.End => lastCharIndex,
+                    KeyCode.PageDown => lastCharIndex,
+                    _ => this.currentCharIndex,
+                };
+        }
     }
 
     /// <summary>

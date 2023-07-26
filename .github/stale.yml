@@ -18,7 +18,7 @@ exemptLabels:
   - 🚀Hot Fix Release
   - 🚀QA Production Release
   - ⚕️NEEDS TRIAGE
-  - 🔬research  
+  - 🔬research
 
 # Set to true to ignore issues in a project (defaults to false)
 exemptProjects: false

@@ -172,21 +172,20 @@ internal class TextSelection : ITextSelection
     private (int selLen, float rectLeft) HandleMovingToTheLeft()
     {
         // Limit range of the end value
-        var max = this.postMutateState.Text.IsEmpty() ? 0 : this.postMutateState.Text.LastCharIndex();
+        var maxIndex = this.postMutateState.Text.IsEmpty() ? 0 : this.postMutateState.Text.LastCharIndex();
 
         var startIndex = Math.Min(this.postMutateState.SelectionStartIndex, this.postMutateState.SelectionStopIndex);
         var endIndex = Math.Max(this.postMutateState.SelectionStartIndex, this.postMutateState.SelectionStopIndex);
-        endIndex = Math.Clamp(endIndex, 0, max);
+        endIndex = Math.Clamp(endIndex, 0, maxIndex);
 
         var indexDelta = Math.Abs(startIndex - endIndex);
-        var homeOrPageUpKey = this.postMutateState.Key is KeyCode.Home or KeyCode.PageUp;
         var selectionIsAtRightEnd = this.postMutateState.SelectionAtRightEnd;
 
         var selectionLen = selectionIsAtRightEnd
             ? indexDelta + 1
             : indexDelta;
 
-        var rectRight = selectionIsAtRightEnd || homeOrPageUpKey
+        var rectRight = selectionIsAtRightEnd
             ? this.postMutateState.SelStartCharBounds.Right
             : Math.Max(this.postMutateState.SelStartCharBounds.Left, this.postMutateState.SelStopCharBounds.Left);
 

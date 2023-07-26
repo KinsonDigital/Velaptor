@@ -1,4 +1,4 @@
-﻿// <copyright file="TextCursor.cs" company="KinsonDigital">
+// <copyright file="TextCursor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -296,8 +296,8 @@ internal class TextCursor : ITextCursor
     /// </summary>
     private void HandleRemovingSelectedCharsEvent()
     {
-        var selectionLeftToRight = this.lastMovementKey is KeyCode.Right or KeyCode.PageDown or KeyCode.End;
-        var selectionRightToLeft = this.lastMovementKey is KeyCode.Left or KeyCode.PageUp or KeyCode.Home;
+        var selectionLeftToRight = this.preMutateState.SelectionStartIndex < this.preMutateState.SelectionStopIndex;
+        var selectionRightToLeft = this.preMutateState.SelectionStartIndex > this.preMutateState.SelectionStopIndex;
 
         var prevTextWidth = Math.Abs(this.preMutateState.TextLeft - this.preMutateState.TextRight);
         var currTextWidth = Math.Abs(this.postMutateState.TextLeft - this.postMutateState.TextRight);
@@ -306,13 +306,13 @@ internal class TextCursor : ITextCursor
         var prevTextViewWidth = Math.Abs(this.preMutateState.TextView.Left - this.preMutateState.TextView.Right);
         var currTextViewWidth = Math.Abs(this.postMutateState.TextView.Left - this.postMutateState.TextView.Right);
 
-        var textPrevIsLargerThanView = prevTextWidth >= prevTextViewWidth;
-        var textCurrIsLargerThanView = currTextWidth >= currTextViewWidth;
+        var prevTextIsLargerThanView = prevTextWidth >= prevTextViewWidth;
+        var currTextIsLargerThanView = currTextWidth >= currTextViewWidth;
         var firstCharVisible = this.postMutateState.TextLeft >= this.postMutateState.TextView.Left;
 
         var lastCharVisible = this.postMutateState.TextRight <= this.postMutateState.TextView.Right;
 
-        if (textCurrIsLargerThanView)
+        if (currTextIsLargerThanView)
         {
             if (firstCharVisible && selectionLeftToRight)
             {
@@ -348,7 +348,7 @@ internal class TextCursor : ITextCursor
             {
                 this.cursor.Left = this.postMutateState.TextRight;
             }
-            else if (textPrevIsLargerThanView && !textCurrIsLargerThanView)
+            else if (prevTextIsLargerThanView && !currTextIsLargerThanView)
             {
                 displacement = Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft);
 
