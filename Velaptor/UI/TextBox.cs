@@ -795,10 +795,12 @@ public sealed class TextBox : ControlBase
         RectangleF selStartCharBounds = default;
         RectangleF selStopCharBounds = default;
 
+        var currCharIndex = this.currentCharIndex < 0 ? 0 : this.currentCharIndex;
+
         if (boundsExist)
         {
             selStartCharBounds = this.inSelectionMode ? this.charBounds[this.selectionStartIndex].bounds : default;
-            selStopCharBounds = this.inSelectionMode ? this.charBounds[this.currentCharIndex].bounds : default;
+            selStopCharBounds = this.inSelectionMode ? this.charBounds[currCharIndex].bounds : default;
         }
 
         var requestedStateKey = mutateType switch
@@ -824,16 +826,16 @@ public sealed class TextBox : ControlBase
             TextRight = this.charBounds.IsEmpty() ? (int)this.textAreaBounds.Left : textRight,
             TextView = this.textAreaBounds,
             Key = key == KeyCode.Unknown ? requestedStateKey : key,
-            CharIndex = this.currentCharIndex,
-            CurrentCharLeft = boundsExist ? (int)this.charBounds[this.currentCharIndex].bounds.Left : 0,
-            CurrentCharRight = boundsExist ? (int)this.charBounds[this.currentCharIndex].bounds.Right : 0,
+            CharIndex = currCharIndex,
+            CurrentCharLeft = boundsExist ? (int)this.charBounds[currCharIndex].bounds.Left : 0,
+            CurrentCharRight = boundsExist ? (int)this.charBounds[currCharIndex].bounds.Right : 0,
             InSelectionMode = this.inSelectionMode,
             SelStartCharBounds = selStartCharBounds,
             SelStopCharBounds = selStopCharBounds,
             FirstVisibleCharBounds = firstVisibleCharBounds,
             LastVisibleCharBounds = lastVisibleCharBounds,
             SelectionStartIndex = this.selectionStartIndex,
-            SelectionStopIndex = this.currentCharIndex,
+            SelectionStopIndex = currCharIndex,
             SelectionHeight = (int)(Height - MarginTop),
             SelectionAtRightEnd = this.selectionAtRightEnd,
             Position = Position.ToVector2(),
