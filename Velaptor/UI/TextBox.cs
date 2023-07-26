@@ -1014,16 +1014,21 @@ public sealed class TextBox : ControlBase
             SnapBoundsToLeft();
         }
 
+        void SetToMinSelectionIndex()
+        {
+            var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
+            this.currentCharIndex = minCharIndex >= this.text.LastCharIndex()
+                ? this.text.LastCharIndex()
+                : minCharIndex;
+        }
+
         // Update the char index
         switch (key)
         {
             case KeyCode.Delete:
                 if (this.inSelectionMode)
                 {
-                    var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
-                    this.currentCharIndex = minCharIndex >= this.text.LastCharIndex()
-                        ? this.text.LastCharIndex()
-                        : minCharIndex;
+                    SetToMinSelectionIndex();
                 }
                 else
                 {
@@ -1034,9 +1039,16 @@ public sealed class TextBox : ControlBase
 
                 break;
             case KeyCode.Backspace:
-                this.currentCharIndex = cursorAtRightEndOfText
-                    ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
-                    : this.currentCharIndex - 1;
+                if (this.inSelectionMode)
+                {
+                    SetToMinSelectionIndex();
+                }
+                else
+                {
+                    this.currentCharIndex = cursorAtRightEndOfText
+                        ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
+                        : this.currentCharIndex - 1;
+                }
 
                 break;
         }
