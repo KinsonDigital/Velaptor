@@ -20,16 +20,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 		codecov.yml = codecov.yml
 		renovate.json = renovate.json
+		.github\stale.yml = .github\stale.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTesting", "Testing\VelaptorTesting\VelaptorTesting.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTests", "Testing\VelaptorTests\VelaptorTests.csproj", "{C6AFDF55-196C-41D6-9174-0A03A934586F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{E248AD89-D6AB-4183-88F1-133875647706}"
-	ProjectSection(SolutionItems) = preProject
-		.github\stale.yml = .github\stale.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
 	ProjectSection(SolutionItems) = preProject
@@ -96,9 +92,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{63793161-2B97-4875-8633-DD6B51DACD77} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{C6AFDF55-196C-41D6-9174-0A03A934586F} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
-		{E248AD89-D6AB-4183-88F1-133875647706} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
-		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {E248AD89-D6AB-4183-88F1-133875647706}
 		{8690A40A-D3B2-488B-92B6-5771C21010E0} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
+		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}
