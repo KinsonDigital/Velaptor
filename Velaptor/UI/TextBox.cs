@@ -671,7 +671,7 @@ public sealed class TextBox : ControlBase
         this.text.Insert(insertIndex, character);
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(charKey); // NEW
+        UpdateBounds(charKey);
         this.currentCharIndex = CalcNextCharIndex(charKey);
         CalcYPositions(prevHeight, this.textSize.Height);
 
@@ -732,7 +732,7 @@ public sealed class TextBox : ControlBase
 
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
         this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
@@ -757,7 +757,7 @@ public sealed class TextBox : ControlBase
         this.text.RemoveChar(currCharIndex);
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
         this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
@@ -784,7 +784,7 @@ public sealed class TextBox : ControlBase
 
         this.textSize = this.font.Measure(this.text.ToString());
 
-        UpdateBounds(this.preTextBoxState.Key); // NEW
+        UpdateBounds(this.preTextBoxState.Key);
         this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
@@ -953,7 +953,7 @@ public sealed class TextBox : ControlBase
     private void UpdateBounds(KeyCode key)
     {
         /* NOTE:
-         * This is always after the text mutation
+         * This method is always executed after the text mutation
          */
 
         RebuildBounds();
