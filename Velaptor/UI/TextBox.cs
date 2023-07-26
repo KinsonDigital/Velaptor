@@ -6,6 +6,7 @@ namespace Velaptor.UI;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -199,6 +200,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the color of the selected text.
     /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
     public Color SelectedTextColor { get; set; } = Color.White;
 
     /// <summary>
