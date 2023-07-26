@@ -1,4 +1,4 @@
-﻿// <copyright file="TextCursor.cs" company="KinsonDigital">
+// <copyright file="TextCursor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -296,8 +296,8 @@ internal class TextCursor : ITextCursor
     /// </summary>
     private void HandleRemovingSelectedCharsEvent()
     {
-        var selectionLeftToRight = this.lastMovementKey is KeyCode.Right or KeyCode.PageDown or KeyCode.End;
-        var selectionRightToLeft = this.lastMovementKey is KeyCode.Left or KeyCode.PageUp or KeyCode.Home;
+        var selectionLeftToRight = this.preMutateState.SelectionStartIndex < this.preMutateState.SelectionStopIndex;
+        var selectionRightToLeft = this.preMutateState.SelectionStartIndex > this.preMutateState.SelectionStopIndex;
 
         var prevTextWidth = Math.Abs(this.preMutateState.TextLeft - this.preMutateState.TextRight);
         var currTextWidth = Math.Abs(this.postMutateState.TextLeft - this.postMutateState.TextRight);
