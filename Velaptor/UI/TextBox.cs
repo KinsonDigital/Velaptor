@@ -672,6 +672,7 @@ public sealed class TextBox : ControlBase
         this.textSize = this.font.Measure(this.text.ToString());
 
         UpdateBounds(charKey); // NEW
+        this.currentCharIndex = CalcNextCharIndex(charKey);
         CalcYPositions(prevHeight, this.textSize.Height);
 
         this.currentCharIndex = charIndexAtEnd
@@ -732,6 +733,7 @@ public sealed class TextBox : ControlBase
         this.textSize = this.font.Measure(this.text.ToString());
 
         UpdateBounds(this.preTextBoxState.Key); // NEW
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -756,6 +758,7 @@ public sealed class TextBox : ControlBase
         this.textSize = this.font.Measure(this.text.ToString());
 
         UpdateBounds(this.preTextBoxState.Key); // NEW
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -782,6 +785,7 @@ public sealed class TextBox : ControlBase
         this.textSize = this.font.Measure(this.text.ToString());
 
         UpdateBounds(this.preTextBoxState.Key); // NEW
+        this.currentCharIndex = CalcNextCharIndex(this.preTextBoxState.Key);
         CalcYPositions(prevHeight, this.textSize.Height);
     }
 
@@ -963,8 +967,6 @@ public sealed class TextBox : ControlBase
         var textLargerThanView = this.charBounds.TextWidth() > this.textAreaBounds.Width;
         var charIndexAtEnd = this.preTextBoxState.CharIndex >= this.preTextBoxState.TextLength - 1;
 
-        var cursorAtRightEndOfText = this.textCursor.Cursor.Right > this.charBounds.TextRight();
-
         var gapAtRightEnd = this.charBounds.GapAtRightEnd(this.textAreaBounds.Right);
 
         if (textLargerThanView && isMovementKey)
@@ -1013,45 +1015,6 @@ public sealed class TextBox : ControlBase
         {
             SnapBoundsToLeft();
         }
-
-        void SetToMinSelectionIndex()
-        {
-            var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
-            this.currentCharIndex = minCharIndex >= this.text.LastCharIndex()
-                ? this.text.LastCharIndex()
-                : minCharIndex;
-        }
-
-        // Update the char index
-        switch (key)
-        {
-            case KeyCode.Delete:
-                if (this.inSelectionMode)
-                {
-                    SetToMinSelectionIndex();
-                }
-                else
-                {
-                    this.currentCharIndex = charIndexAtEnd
-                        ? this.currentCharIndex - 1
-                        : this.currentCharIndex;
-                }
-
-                break;
-            case KeyCode.Backspace:
-                if (this.inSelectionMode)
-                {
-                    SetToMinSelectionIndex();
-                }
-                else
-                {
-                    this.currentCharIndex = cursorAtRightEndOfText
-                        ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
-                        : this.currentCharIndex - 1;
-                }
-
-                break;
-        }
     }
 
     /// <summary>
@@ -1088,26 +1051,57 @@ public sealed class TextBox : ControlBase
     /// <returns>The new character bounds index.</returns>
     private int CalcNextCharIndex(KeyCode key)
     {
-        var lastCharIndex = this.text.LastCharIndex();
+        var charIndexAtEnd = this.preTextBoxState.CharIndex >= this.preTextBoxState.TextLength - 1;
         var cursorAtRightEndOfText = this.text.IsEmpty() || this.textCursor.Cursor.Right > this.charBounds.TextRight();
-        var isAtLastCharIndex = this.currentCharIndex >= lastCharIndex;
 
-        var newIndex = key switch
+        int SetToMinSelectionIndex()
         {
-            KeyCode.Left => isAtLastCharIndex && cursorAtRightEndOfText
-                ? this.currentCharIndex
-                : this.currentCharIndex - 1,
-            KeyCode.Right => isAtLastCharIndex
-                ? lastCharIndex
-                : this.currentCharIndex + 1,
-            KeyCode.Home => 0,
-            KeyCode.PageUp => 0,
-            KeyCode.End => lastCharIndex,
-            KeyCode.PageDown => lastCharIndex,
-            _ => this.currentCharIndex,
-        };
+            var minCharIndex = Math.Min(this.selectionStartIndex, this.currentCharIndex);
 
-        return newIndex < 0 ? 0 : newIndex;
+            return minCharIndex >= this.text.LastCharIndex()
+                ? this.text.LastCharIndex()
+                : minCharIndex;
+        }
+
+        switch (key)
+        {
+            case KeyCode.Delete:
+                if (this.inSelectionMode)
+                {
+                    return SetToMinSelectionIndex();
+                }
+
+                return charIndexAtEnd
+                    ? this.currentCharIndex - 1
+                    : this.currentCharIndex;
+            case KeyCode.Backspace:
+                if (this.inSelectionMode)
+                {
+                    return SetToMinSelectionIndex();
+                }
+
+                return cursorAtRightEndOfText
+                    ? Math.Clamp(this.text.LastCharIndex(), 0, int.MaxValue)
+                    : this.currentCharIndex - 1;
+            default:
+                var lastCharIndex = this.text.LastCharIndex();
+                var isAtLastCharIndex = this.currentCharIndex >= lastCharIndex;
+
+                return key switch
+                {
+                    KeyCode.Left => isAtLastCharIndex && cursorAtRightEndOfText
+                        ? this.currentCharIndex
+                        : this.currentCharIndex - 1,
+                    KeyCode.Right => isAtLastCharIndex
+                        ? lastCharIndex
+                        : this.currentCharIndex + 1,
+                    KeyCode.Home => 0,
+                    KeyCode.PageUp => 0,
+                    KeyCode.End => lastCharIndex,
+                    KeyCode.PageDown => lastCharIndex,
+                    _ => this.currentCharIndex,
+                };
+        }
     }
 
     /// <summary>
