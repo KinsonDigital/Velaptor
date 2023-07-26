@@ -748,7 +748,11 @@ public sealed class TextBox : ControlBase
 
         var prevHeight = this.textSize.Height;
 
-        this.text.RemoveChar((uint)this.currentCharIndex);
+        var currCharIndex = this.text.Length > 0 && this.currentCharIndex < 0
+            ? 0u
+            : (uint)this.currentCharIndex;
+
+        this.text.RemoveChar(currCharIndex);
         this.textSize = this.font.Measure(this.text.ToString());
 
         UpdateBounds(this.preTextBoxState.Key); // NEW
