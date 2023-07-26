@@ -1,4 +1,4 @@
-// <copyright file="TextSelection.cs" company="KinsonDigital">
+﻿// <copyright file="TextSelection.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -172,11 +172,11 @@ internal class TextSelection : ITextSelection
     private (int selLen, float rectLeft) HandleMovingToTheLeft()
     {
         // Limit range of the end value
-        var max = this.postMutateState.Text.IsEmpty() ? 0 : this.postMutateState.Text.LastCharIndex();
+        var maxIndex = this.postMutateState.Text.IsEmpty() ? 0 : this.postMutateState.Text.LastCharIndex();
 
         var startIndex = Math.Min(this.postMutateState.SelectionStartIndex, this.postMutateState.SelectionStopIndex);
         var endIndex = Math.Max(this.postMutateState.SelectionStartIndex, this.postMutateState.SelectionStopIndex);
-        endIndex = Math.Clamp(endIndex, 0, max);
+        endIndex = Math.Clamp(endIndex, 0, maxIndex);
 
         var indexDelta = Math.Abs(startIndex - endIndex);
         var selectionIsAtRightEnd = this.postMutateState.SelectionAtRightEnd;
