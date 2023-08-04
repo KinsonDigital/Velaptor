@@ -16,22 +16,36 @@ on:
         type: choice
         options: [Preview, Production]
       dry-run:
-        description: Check to run the workflow without creating a release.
+        description: Dry Run - Check to run the workflow without creating a release.
         required: false
         default: false
         type: boolean
 
 
 jobs:
+  determine_release_notes_path:
+    name: Determine Release Notes Dir Path
+    runs-on: ubuntu-latest
+    outputs:
+      release-notes-dir-path: ${{ steps.get-dir-path.outputs.release-notes-dir-path }}
+    steps:
+      - name: Get Dir Path
+        id: get-dir-path
+        run: |
+          $dirPath = "${{ inputs.release-type }}" -eq "Production" ? "${{ vars.PROD_RELATIVE_RELEASE_NOTES_DIR_PATH }}" : "${{ vars.PREV_RELATIVE_RELEASE_NOTES_DIR_PATH }}";
+          "release-notes-dir-path=$dirPath" >> $env:GITHUB_OUTPUT;
+
+
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
+    needs: determine_release_notes_path
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v10.0.2
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
       run-branch: "${{ github.ref_name }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      relative-release-notes-dir-path: "${{ vars.RELATIVE_RELEASE_NOTES_DIR_PATH }}"
+      relative-release-notes-dir-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}"
       release-notes-file-name-prefix: "${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
       pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
