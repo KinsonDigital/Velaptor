@@ -16,7 +16,7 @@ on:
         type: choice
         options: [Preview, Production]
       dry-run:
-        description: Check to run the workflow without creating a release.
+        description: Dry Run - Check to run the workflow without creating a release.
         required: false
         default: false
         type: boolean
