@@ -18,13 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set Up Deno
-        if: startsWith(github.ref_name, 'feature/')
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 
       - name: Run Sync Bot (Issue Change)
-        if: startsWith(github.ref_name, 'feature/')
         run: |
           $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
 
