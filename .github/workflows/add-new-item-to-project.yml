@@ -1,16 +1,19 @@
 name: 🤖Add New Issue To Project
 
 
+defaults:
+  run:
+    shell: pwsh
+
+
 on:
-  issues:
-    types: opened
   pull_request:
     types: opened
-    branches: [main, preview]
+    branches: [main, preview, renovate/*]
 
 
 jobs:
-  item_number:
+  get_item_number:
     name: Get Item Number
     runs-on: ubuntu-latest
     outputs:
@@ -19,23 +22,17 @@ jobs:
       - name: Get Item Number
         id: get-item-number
         run: |
-          $eventName = "${{ github.event_name }}";
-          $itemNumber = $eventName -eq "issues" ? "${{ github.event.issue.number }}" : "${{ github.event.pull_request.number }}";
-          $itemType = $eventName -eq "issues" ? "issue" : "pull request";
-
-          Write-Host "::notice::Invoked by $itemType '$itemNumber'";
-
-          "item-number=$itemNumber" >> $env:GITHUB_OUTPUT;
+          "item-number=${{ github.event.pull_request.number }}" >> $env:GITHUB_OUTPUT;
 
 
   add_new_issue_to_project:
     name: Add New Issue
-    needs: item_number
+    needs: get_item_number
     uses: KinsonDigital/Infrastructure/.github/workflows/add-item-to-project.yml@v12.0.0
     with:
       org-name: "${{ vars.ORGANIZATION_NAME }}"
       org-project-name: "${{ vars.ORG_PROJECT_NAME }}"
       repo-name: "${{ vars.PROJECT_NAME }}"
-      item-number: "${{ needs.item_number.outputs.item-number }}"
+      item-number: ${{ needs.get_item_number.outputs.item-number }}
     secrets:
       cicd-pat: ${{ secrets.CICD_TOKEN }}

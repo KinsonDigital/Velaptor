@@ -45,7 +45,7 @@ jobs:
           }
           
           
-          if ($releaseType -ne 'preview' -and $releaseType -ne 'roduction') {
+          if ($releaseType -ne 'preview' -and $releaseType -ne 'production') {
             Write-Host "::error::The release type input must be either 'Preview' or 'Production'.";
             exit 1;
           }
