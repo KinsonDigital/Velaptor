@@ -251,7 +251,7 @@ public abstract class Window : IWindow
     /// <inheritdoc cref="IDisposable.Dispose"/>
     /// </summary>
     /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    private void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing)
     {
         if (this.isDisposed)
         {
