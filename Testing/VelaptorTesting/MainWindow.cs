@@ -7,6 +7,7 @@ namespace VelaptorTesting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using Scenes;
 using Velaptor;
 using Velaptor.Factories;
@@ -205,7 +206,7 @@ public class MainWindow : Window
     {
         var sections = new List<string>();
 
-        var currentSection = string.Empty;
+        var currentSection = new StringBuilder();
 
         for (var i = 0; i < value.Length; i++)
         {
@@ -213,18 +214,18 @@ public class MainWindow : Window
 
             if (UpperCaseChars.Contains(character) && i != 0)
             {
-                sections.Add(currentSection);
+                sections.Add(currentSection.ToString());
 
-                currentSection = string.Empty;
-                currentSection += character;
+                currentSection.Clear();
+                currentSection.Append(character);
             }
             else
             {
-                currentSection += character;
+                currentSection.Append(character);
             }
         }
 
-        sections.Add(currentSection);
+        sections.Add(currentSection.ToString());
 
         var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
 
