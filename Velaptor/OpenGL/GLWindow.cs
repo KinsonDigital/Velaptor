@@ -291,9 +291,19 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
+    /// <summary>
+    /// Runs the OpenGL window.
+    /// </summary>
     private void RunGLWindow()
     {
-        this.glWindow.Run();
+        try
+        {
+            this.glWindow.Run();
+        }
+        catch (Exception e)
+        {
+            Debugger.Break();
+        }
 
         /*NOTE:
          * Only dispose of the window here and not in the Dispose() method!!
