@@ -296,14 +296,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void RunGLWindow()
     {
-        try
-        {
-            this.glWindow.Run();
-        }
-        catch (Exception e)
-        {
-            Debugger.Break();
-        }
+        this.glWindow.Run();
 
         /*NOTE:
          * Only dispose of the window here and not in the Dispose() method!!

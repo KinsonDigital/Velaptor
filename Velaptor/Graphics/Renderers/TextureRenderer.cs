@@ -62,10 +62,10 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        const string renderStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
+        const string batchStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
+            name: batchStateName,
             onReceive: () => this.hasBegun = true));
 
         var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
