@@ -1048,11 +1048,11 @@ public class GLWindowTests
         {
             sutUpdateInvoked = true;
 
-            AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Days, "The days value must be 0.");
-            AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Hours, "The hours value must be 0.");
-            AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Minutes, "The minutes value must be 0.");
-            AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Seconds, "The seconds value must be 0.");
-            AssertExtensions.EqualWithMessage(16, time.ElapsedTime.Milliseconds, "The milliseconds value must be 16.");
+            time.ElapsedTime.Days.Should().Be(0);
+            time.ElapsedTime.Hours.Should().Be(0);
+            time.ElapsedTime.Minutes.Should().Be(0);
+            time.ElapsedTime.Seconds.Should().Be(0);
+            time.ElapsedTime.Milliseconds.Should().Be(16);
         };
 
         // Act

@@ -5,11 +5,9 @@
 namespace VelaptorTests.Helpers;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using FluentAssertions.Execution;
 using Xunit;
-using Xunit.Sdk;
 
 /// <summary>
 /// Provides helper methods for the <see cref="Xunit"/>'s <see cref="Assert"/> class.
@@ -38,12 +36,12 @@ public class AssertExtensions : Assert
     /// </summary>
     /// <typeparam name="T">The type of exception to check for.</typeparam>
     /// <param name="testCode">The test code that should not throw the exception.</param>
-    public static void DoesNotThrow<T>(Action testCode)
+    public static void DoesNotThrow<T>(Action? testCode)
         where T : Exception
     {
         if (testCode is null)
         {
-            Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
+            Assert.Fail($"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
         }
 
         try
@@ -52,188 +50,8 @@ public class AssertExtensions : Assert
         }
         catch (T)
         {
-            Assert.True(false, $"{TableFlip}Expected the exception {typeof(T).Name} to not be thrown.");
+            Assert.Fail($"{TableFlip}Expected the exception {typeof(T).Name} to not be thrown.");
         }
-    }
-
-    /// <summary>
-    /// Asserts that the given <paramref name="testCode"/> does not throw a null reference exception.
-    /// </summary>
-    /// <param name="testCode">The test that should not throw an exception.</param>
-    public static void DoesNotThrowNullReference(Action testCode)
-    {
-        if (testCode is null)
-        {
-            Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
-        }
-
-        try
-        {
-            testCode();
-        }
-        catch (Exception ex)
-        {
-            if (ex.GetType() == typeof(NullReferenceException))
-            {
-                Assert.True(false, $"{TableFlip}Expected not to raise a {nameof(NullReferenceException)} exception.");
-            }
-            else
-            {
-                Assert.True(true);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Asserts that all of the individual <paramref name="expectedItems"/> and <paramref name="actualItems"/>
-    /// are equal on a per item basis.
-    /// </summary>
-    /// <typeparam name="T">The type of item in the lists.</typeparam>
-    /// <param name="expectedItems">The list of expected items.</param>
-    /// <param name="actualItems">The list of actual items to compare to the expected items.</param>
-    /// <remarks>
-    ///     Will fail assertion when one item is null and the other is not.
-    ///     Will fail assertion when the total number of <paramref name="expectedItems"/> does not match the total number of <paramref name="actualItems"/>.
-    /// </remarks>
-    public static void ItemsEqual<T>(IEnumerable<T> expectedItems, IEnumerable<T> actualItems)
-        where T : IEquatable<T>
-    {
-        if (expectedItems is null && actualItems is not null)
-        {
-            Assert.True(
-                false,
-                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
-        }
-
-        if (expectedItems is not null && actualItems is null)
-        {
-            Assert.True(
-                false,
-                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
-        }
-
-        var expected = expectedItems as T[] ?? expectedItems.ToArray();
-        var actual = actualItems as T[] ?? actualItems.ToArray();
-        if (expected.Length != actual.Length)
-        {
-            throw new AssertActualExpectedException(
-                expected.Length,
-                actual.Length,
-                $"{TableFlip}The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
-        }
-
-        var expectedArrayItems = expected.ToArray();
-        var actualArrayItems = actual.ToArray();
-
-        for (var i = 0; i < expectedArrayItems.Length; i++)
-        {
-            if (expectedArrayItems[i] is null && actualArrayItems[i] is not null)
-            {
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i],
-                    actualArrayItems[i],
-                    $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
-            }
-
-            if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
-            {
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i],
-                    actualArrayItems[i],
-                    $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
-            }
-
-            if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
-            {
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i] + $"{Environment.NewLine}------------------------------------------------------------------------------------------------------------------------",
-                    actualArrayItems[i],
-                    $"{TableFlip}The expected and actual items at index '{i}' are not equal.");
-            }
-        }
-
-        Assert.True(true);
-    }
-
-    /// <summary>
-    /// Asserts that all of the individual <paramref name="expectedItems"/> and <paramref name="actualItems"/>
-    /// are equal on an item to item basis that are at the same index between the arrays.
-    /// </summary>
-    /// <typeparam name="T">The type of item in the lists.</typeparam>
-    /// <param name="expectedItems">The list of expected items.</param>
-    /// <param name="actualItems">The list of actual items to compare to the expected items.</param>
-    /// <param name="arrayRegions">
-    ///     The list of regions within the array that describe the start, stop, and label of the region.
-    /// </param>
-    /// <remarks>
-    ///     Will fail assertion when one item is null and the other is not.
-    ///     Will fail assertion when the total number of <paramref name="expectedItems"/> does not match the total number of <paramref name="actualItems"/>.
-    /// </remarks>
-    public static void ItemsEqual<T>(
-        IEnumerable<T> expectedItems,
-        IEnumerable<T> actualItems,
-        IEnumerable<(int start, int stop, string name)> arrayRegions)
-        where T : IEquatable<T>
-    {
-        if (expectedItems is null && actualItems is not null)
-        {
-            Assert.True(
-                false,
-                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
-        }
-
-        if (expectedItems is not null && actualItems is null)
-        {
-            Assert.True(
-                false,
-                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
-        }
-
-        var expected = expectedItems as T[] ?? expectedItems.ToArray();
-        var actual = actualItems as T[] ?? actualItems.ToArray();
-        if (expected.Length != actual.Length)
-        {
-            throw new AssertActualExpectedException(
-                expected.Length,
-                actual.Length,
-                $"{TableFlip}The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
-        }
-
-        var expectedArrayItems = expected.ToArray();
-        var actualArrayItems = actual.ToArray();
-
-        for (var i = 0; i < expectedArrayItems.Length; i++)
-        {
-            if (expectedArrayItems[i] is null && actualArrayItems[i] is not null)
-            {
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i],
-                    actualArrayItems[i],
-                    $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
-            }
-
-            if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
-            {
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i],
-                    actualArrayItems[i],
-                    $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
-            }
-
-            if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
-            {
-                var sectionName = (from s in arrayRegions
-                    where i >= s.start && i <= s.stop
-                    select s.name).FirstOrDefault();
-
-                throw new AssertActualExpectedException(
-                    expectedArrayItems[i],
-                    actualArrayItems[i],
-                    $"{TableFlip}The expected and actual items at index '{i}' are not equal in the '{sectionName}' of the array.");
-            }
-        }
-
-        Assert.True(true);
     }
 
     /// <summary>
@@ -244,99 +62,51 @@ public class AssertExtensions : Assert
     /// <param name="actualItems">The actual items.</param>
     /// <param name="indexStart">The inclusive starting index of the range of items to check.</param>
     /// <param name="indexStop">The inclusive ending index of the range of items to check.</param>
-    /// <exception cref="AssertActualExpectedException">
+    /// <exception cref="AssertionFailedException">
     ///     Thrown to fail the unit test if any of the items in the ranges between the arrays are not equal.
     /// </exception>
-    public static void SectionEquals(float[] expectedItems, float[] actualItems, int indexStart, int indexStop)
+    public static void SectionEquals(float[]? expectedItems, float[]? actualItems, int indexStart, int indexStop)
     {
         if (expectedItems is null)
         {
-            Assert.True(false,
-                $"The '{nameof(SectionEquals)}()' method param '{nameof(expectedItems)}' must not be null.");
+            Assert.Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(expectedItems)}' must not be null.");
         }
 
         if (actualItems is null)
         {
-            Assert.True(false,
-                $"The '{nameof(SectionEquals)}()' method param '{nameof(actualItems)}' must not be null.");
+            Assert.Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(actualItems)}' must not be null.");
         }
 
         if (expectedItems.Length - 1 < indexStart)
         {
-            Assert.True(false,
-                $"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            Assert.Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
         }
 
         if (expectedItems.Length - 1 < indexStop)
         {
-            Assert.True(false,
-                $"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            Assert.Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
         }
 
         if (actualItems.Length - 1 < indexStart)
         {
-            Assert.True(false,
-                $"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            Assert.Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
         }
 
         if (actualItems.Length - 1 < indexStop)
         {
-            Assert.True(false,
-                $"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            Assert.Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
         }
 
         for (var i = indexStart; i < indexStop; i++)
         {
             var failMessage = $"The items in both arrays are not equal at index '{i}'";
 
-            if (Math.Abs(expectedItems[i] - actualItems[i]) != 0f)
+            if (Math.Abs(expectedItems[i] - actualItems[i]) == 0f)
             {
-                throw new AssertActualExpectedException(expectedItems[i], actualItems[i], failMessage);
+                continue;
             }
-        }
-    }
 
-    /// <summary>
-    /// Verifies that an expression is true.
-    /// </summary>
-    /// <param name="condition">The condition to be inspected.</param>
-    /// <param name="message">The message to be shown when the condition is <c>false</c>.</param>
-    /// <param name="expected">The expected message to display if the condition is <c>false</c>.</param>
-    /// <param name="actual">The actual message to display if the condition is <c>false</c>.</param>
-    public static void True(bool condition, string message, string expected = "", string actual = "")
-    {
-        XunitException assertException;
-
-        if (!string.IsNullOrEmpty(expected) && string.IsNullOrEmpty(actual))
-        {
-            assertException = new XunitException(
-                $"Message: {message}{Environment.NewLine}" +
-                $"Expected: {expected}");
-        }
-        else if (string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
-        {
-            assertException = new XunitException(
-                $"Message: {message}{Environment.NewLine}" +
-                $"Actual: {actual}{Environment.NewLine}");
-        }
-        else if (!string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
-        {
-            assertException = new XunitException(
-                $"Message: {message}{Environment.NewLine}" +
-                $"Expected: {expected}{Environment.NewLine}" +
-                $"Actual:   {actual}");
-        }
-        else
-        {
-            assertException = new AssertActualExpectedException(
-                true,
-                condition,
-                message);
-        }
-
-        if (condition is false)
-        {
-            throw assertException;
+            throw new AssertionFailedException($"{failMessage}\nExpected: {expectedItems[i]}\nActual: ${actualItems[i]}");
         }
     }
 
@@ -396,25 +166,6 @@ public class AssertExtensions : Assert
     }
 
     /// <summary>
-    /// Verifies that the two integers are equivalent.
-    /// </summary>
-    /// <param name="expected">The expected <see langword="int"/> value.</param>
-    /// <param name="actual">The actual <see langword="int"/> value.</param>
-    /// <param name="message">The message to be shown about the failed assertion.</param>
-    public static void EqualWithMessage(int expected, int actual, string message)
-    {
-        var assertException = new AssertActualExpectedException(expected, actual, $"{TableFlip}{message}");
-        try
-        {
-            Equal(expected, actual);
-        }
-        catch (Exception)
-        {
-            throw assertException;
-        }
-    }
-
-    /// <summary>
     /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
     /// </summary>
     /// <typeparam name="T">The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/>.</typeparam>
@@ -432,8 +183,9 @@ public class AssertExtensions : Assert
         {
             var expectedStr = expected is null ? "NULL" : expected.ToString();
             var actualStr = actual is null ? "NULL" : actual.ToString();
+            var exceptionMsg = $"{TableFlip}{message}\nExpected: ${expectedStr}\nActual: ${actualStr}";
 
-            throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
+            throw new AssertionFailedException(exceptionMsg);
         }
     }
 }

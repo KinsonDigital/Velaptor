@@ -230,8 +230,6 @@ public class ShapeGPUBufferTests
             -0.949999988f, 0.959999979f, 1f, 2f, 3f, 4f, 6f, 7f, 8f, 5f, 1f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f,
         };
 
-        var arrayRegions = CreateArrayRegions(16, 4);
-
         var rect = new ShapeBatchItem(
             new Vector2(1, 2),
             3,
@@ -266,7 +264,7 @@ public class ShapeGPUBufferTests
         this.mockGL.Verify(m =>
             m.BufferSubData(GLBufferTarget.ArrayBuffer, expectedOffset, expectedTotalBytes, It.IsAny<float[]>()), Times.Once);
 
-        AssertExtensions.ItemsEqual(expectedRawData, actualRawData, arrayRegions);
+        actualRawData.Should().BeEquivalentTo(expectedRawData);
     }
 
     [Fact]
@@ -671,36 +669,6 @@ public class ShapeGPUBufferTests
         this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
-
-    /// <summary>
-    /// Creates a list of items that describe the different regions of an array of data.
-    /// </summary>
-    /// <param name="dataStride">The stride of a single section of data.</param>
-    /// <param name="totalSections">The total number of sections.</param>
-    /// <returns>The data that describes all of the sections of the data.</returns>
-    private static IEnumerable<(int ThreadStart, int stop, string name)> CreateArrayRegions(int dataStride, int totalSections)
-    {
-        var result = new List<(int ThreadStart, int stop, string name)>();
-
-        for (var i = 0; i < totalSections; i++)
-        {
-            var offset = i * dataStride;
-            result.AddRange(new[]
-            {
-                (offset + 0, offset + 1, $"Vertex {i} Position"),
-                (offset + 2, offset + 5, $"Vertex {i} Rectangle"),
-                (offset + 6, offset + 9, $"Vertex {i} Color"),
-                (offset + 10, offset + 10, $"Vertex {i} Is Solid"),
-                (offset + 11, offset + 11, $"Vertex {i} Border Thickness"),
-                (offset + 12, offset + 12, $"Vertex {i} Top Left Radius"),
-                (offset + 13, offset + 13, $"Vertex {i} Bottom Left Radius"),
-                (offset + 14, offset + 14, $"Vertex {i} Bottom Right Radius"),
-                (offset + 15, offset + 15, $"Vertex {i} Top Right Radius"),
-            });
-        }
-
-        return result.ToArray();
-    }
 
     /// <summary>
     /// Creates the expected indices test data.

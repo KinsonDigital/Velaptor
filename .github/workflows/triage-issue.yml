@@ -13,7 +13,7 @@ jobs:
       issues: write
     steps:
       - name: Label issues
-        uses: andymckay/labeler@1.0.3
+        uses: andymckay/labeler@1.0.4
         with:
           add-labels: "⚕️NEEDS TRIAGE"
           ignore-if-assigned: true
