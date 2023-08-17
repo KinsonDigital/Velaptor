@@ -291,7 +291,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
+        AssertExtensions.ThrowsWithMessage<ShaderCompileException>(() =>
         {
             this.glInitReactor.OnReceive();
         }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.{Environment.NewLine}Vertex Shader Compile Error");
@@ -309,7 +309,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
+        AssertExtensions.ThrowsWithMessage<ShaderCompileException>(() =>
         {
             this.glInitReactor.OnReceive();
         }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.{Environment.NewLine}Fragment Shader Compile Error");
@@ -327,7 +327,7 @@ public class ShaderProgramTests
         CreateSystemUnderTest();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
+        AssertExtensions.ThrowsWithMessage<ShaderLinkException>(() =>
         {
             this.glInitReactor.OnReceive();
         }, $"Error linking shader with ID '{ShaderProgramId}'{Environment.NewLine}Program Linking Error");
