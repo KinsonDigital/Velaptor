@@ -102,6 +102,11 @@ public interface IRenderer
     }
 
     /// <summary>
+    /// Gets a value indicating whether or not the batch process has begun.
+    /// </summary>
+    static bool HasBegun { get; private set;  }
+
+    /// <summary>
     /// Initializes the renderer.  This kicks off the static ctor which in turn pushes init notifications
     /// across the application.
     /// </summary>
@@ -120,6 +125,7 @@ public interface IRenderer
             throw new RendererException($"The '{nameof(IRenderer)}' is not initialized.");
         }
 
+        HasBegun = true;
         PushReactable.Push(PushNotifications.BatchHasBegunId);
     }
 
@@ -152,6 +158,7 @@ public interface IRenderer
             throw new RendererException($"The '{nameof(IRenderer)}' is not initialized.");
         }
 
+        HasBegun = false;
         PushReactable.Push(PushNotifications.BatchHasEndedId);
     }
 
