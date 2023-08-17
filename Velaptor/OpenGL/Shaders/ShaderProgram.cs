@@ -31,6 +31,8 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
+    /// <exception cref="ShaderCompileException">Thrown when the shader has issues compiling.</exception>
+    /// <exception cref="ShaderLinkException">Thrown when the shader has issues linking.</exception>
     internal ShaderProgram(
         IGLInvoker gl,
         IOpenGLService openGLService,
@@ -149,7 +151,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <summary>
     /// Initializes the shader program by compiling the vertex and fragment shaders.
     /// </summary>
-    /// <exception cref="Exception">
+    /// <exception cref="ShaderCompileException">
     ///     Thrown if the shader compilation throws an error.
     /// </exception>
     private void Init()
@@ -173,7 +175,8 @@ internal abstract class ShaderProgram : IShaderProgram
         var infoLog = GL.GetShaderInfoLog(vertShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
+            var exceptionMsg = $"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}";
+            throw new ShaderCompileException(exceptionMsg);
         }
 
         OpenGLService.EndGroup();
@@ -192,7 +195,8 @@ internal abstract class ShaderProgram : IShaderProgram
         infoLog = GL.GetShaderInfoLog(fragShaderId);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
+            var exceptionMsg = $"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}";
+            throw new ShaderCompileException(exceptionMsg);
         }
 
         OpenGLService.EndGroup();
@@ -210,7 +214,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="shaderName">The name to give the shader program.</param>
     /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
     /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
-    /// <exception cref="Exception">
+    /// <exception cref="ShaderLinkException">
     ///     Thrown if the linking process during shader compilation throws an error.
     /// </exception>
     private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
@@ -230,7 +234,8 @@ internal abstract class ShaderProgram : IShaderProgram
         var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
         if (status == 0)
         {
-            throw new Exception($"Error linking shader with ID '{ShaderId}'{Environment.NewLine}{GL.GetProgramInfoLog(ShaderId)}");
+            var exceptionMsg = $"Error linking shader with ID '{ShaderId}'{Environment.NewLine}{GL.GetProgramInfoLog(ShaderId)}";
+            throw new ShaderLinkException(exceptionMsg);
         }
 
         OpenGLService.EndGroup();
