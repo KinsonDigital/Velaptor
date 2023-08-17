@@ -33,7 +33,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// </exception>
     /// <exception cref="ShaderCompileException">Thrown when the shader has issues compiling.</exception>
     /// <exception cref="ShaderLinkException">Thrown when the shader has issues linking.</exception>
-    internal ShaderProgram(
+    private protected ShaderProgram(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService shaderLoaderService,
