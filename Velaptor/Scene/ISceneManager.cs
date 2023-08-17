@@ -1,4 +1,4 @@
-﻿// <copyright file="ISceneManager.cs" company="KinsonDigital">
+// <copyright file="ISceneManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,6 +24,12 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global", Justification = "Intended to be readonly.")]
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     IReadOnlyCollection<Guid> InActiveScenes { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether or not the scene manager has been loaded.
+    /// </summary>
+    /// <remarks>This does not mean that the content in the individual scenes have been loaded.</remarks>
+    bool IsLoaded { get; }
 
     /// <summary>
     /// Adds the given scene.

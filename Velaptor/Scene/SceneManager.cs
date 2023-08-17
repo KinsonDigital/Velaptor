@@ -17,7 +17,6 @@ internal sealed class SceneManager : ISceneManager
 {
     private readonly List<(IScene? scene, bool isActive)> scenes = new ();
     private bool isDisposed;
-    private bool isLoaded;
 
     /// <inheritdoc/>
     public IScene? CurrentScene => this.scenes.FirstOrDefault(s => s.isActive).scene;
@@ -26,6 +25,9 @@ internal sealed class SceneManager : ISceneManager
     public IReadOnlyCollection<Guid> InActiveScenes =>
         this.scenes.Where(s => s.scene is not null && s.isActive is false)
             .Select(s => s.scene?.Id ?? Guid.Empty).ToArray().AsReadOnly();
+
+    /// <inheritdoc/>
+    public bool IsLoaded { get; private set; }
 
     /// <inheritdoc/>
     public void AddScene(IScene scene) => AddScene(scene, false);
@@ -164,20 +166,20 @@ internal sealed class SceneManager : ISceneManager
             throw new ObjectDisposedException(nameof(SceneManager), "Cannot load a scene manager that has been disposed.");
         }
 
-        if (this.isLoaded)
+        if (IsLoaded)
         {
             return;
         }
 
         CurrentScene?.LoadContent();
 
-        this.isLoaded = true;
+        IsLoaded = true;
     }
 
     /// <inheritdoc/>
     public void UnloadContent()
     {
-        if (!this.isLoaded || this.isDisposed)
+        if (IsLoaded is false || this.isDisposed)
         {
             return;
         }
