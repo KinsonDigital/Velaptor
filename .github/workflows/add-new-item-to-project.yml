@@ -1,6 +1,11 @@
 name: 🤖Add New Issue To Project
 
 
+defaults:
+  run:
+    shell: pwsh
+
+
 on:
   pull_request:
     types: opened
