@@ -232,22 +232,6 @@ public abstract class Window : IWindow
     }
 
     /// <summary>
-    /// Initializes the window.
-    /// </summary>
-    private void Init()
-    {
-        this.nativeWindow.Initialize = OnLoad;
-        this.nativeWindow.Update = OnUpdate;
-        this.nativeWindow.Draw = OnDraw;
-        this.nativeWindow.WinResize = OnResize;
-        this.nativeWindow.Uninitialize = OnUnload;
-
-        // Set the update frequency to default value of 60
-        // just in case the IWindow implementation is not
-        this.nativeWindow.UpdateFrequency = 60;
-    }
-
-    /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
     /// </summary>
     /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
@@ -264,5 +248,21 @@ public abstract class Window : IWindow
         }
 
         this.isDisposed = true;
+    }
+
+    /// <summary>
+    /// Initializes the window.
+    /// </summary>
+    private void Init()
+    {
+        this.nativeWindow.Initialize = OnLoad;
+        this.nativeWindow.Update = OnUpdate;
+        this.nativeWindow.Draw = OnDraw;
+        this.nativeWindow.WinResize = OnResize;
+        this.nativeWindow.Uninitialize = OnUnload;
+
+        // Set the update frequency to default value of 60
+        // just in case the IWindow implementation is not
+        this.nativeWindow.UpdateFrequency = 60;
     }
 }
