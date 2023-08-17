@@ -7,6 +7,7 @@ namespace VelaptorTests.Helpers;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using FluentAssertions;
 using Moq;
 using Moq.Language.Flow;
 
@@ -30,10 +31,7 @@ public static class MoqExtensions
         where T : class =>
         setup.Callback(() =>
         {
-            AssertExtensions.EqualWithMessage(
-                expectedOrder,
-                callOrder++,
-                $"Method '{methodName}' called out of order.");
+            callOrder++.Should().Be(expectedOrder, $"the method '{methodName}' was called out of order.");
         });
 
     /// <summary>
@@ -52,10 +50,7 @@ public static class MoqExtensions
         where T : class =>
         setup.Callback(() =>
         {
-            AssertExtensions.EqualWithMessage(
-                expectedOrder,
-                callOrder++,
-                $"Method '{methodName}' with ID '{id}' called out of order.");
+            callOrder++.Should().Be(expectedOrder, $"Method '{methodName}' with ID '{id}' called out of order.");
         });
 
     /// <summary>
