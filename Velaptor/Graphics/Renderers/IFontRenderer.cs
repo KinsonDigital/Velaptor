@@ -7,6 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Batching;
 using Content.Fonts;
 
 /// <summary>
@@ -23,7 +24,7 @@ public interface IFontRenderer
     /// <param name="x">The X coordinate location to render the text.</param>
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
@@ -66,7 +67,7 @@ public interface IFontRenderer
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="position"/> is based on the center of the text.
@@ -112,7 +113,7 @@ public interface IFontRenderer
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
@@ -161,7 +162,7 @@ public interface IFontRenderer
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="position"/> is based on the center of the text.
@@ -211,7 +212,7 @@ public interface IFontRenderer
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="color">The color of the text.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
@@ -259,7 +260,7 @@ public interface IFontRenderer
     /// <param name="position">The position to render the text.</param>
     /// <param name="color">The color of the text.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="position"/> is based on the center of the text.
@@ -304,7 +305,7 @@ public interface IFontRenderer
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color of the text.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="position"/> is based on the center of the text.
@@ -398,7 +399,7 @@ public interface IFontRenderer
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
@@ -449,7 +450,7 @@ public interface IFontRenderer
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="layer">The layer to render the text.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.

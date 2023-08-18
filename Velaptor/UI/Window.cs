@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
+using Batching;
 using Content;
 using Factories;
 using Guards;
@@ -19,6 +20,7 @@ using Scene;
 public abstract class Window : IWindow
 {
     private readonly IWindow nativeWindow;
+    private readonly IBatcher batcher;
     private bool isDisposed;
 
     /// <summary>
@@ -29,6 +31,8 @@ public abstract class Window : IWindow
     {
         this.nativeWindow = WindowFactory.CreateWindow();
         SceneManager = IoC.Container.GetInstance<ISceneManager>();
+        this.batcher = IoC.Container.GetInstance<IBatcher>();
+
         Init();
     }
 
@@ -37,13 +41,16 @@ public abstract class Window : IWindow
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
     /// <param name="sceneManager">Manages scenes.</param>
-    private protected Window(IWindow window, ISceneManager sceneManager)
+    /// <param name="batcher">Controls the batching start and end process.</param>
+    private protected Window(IWindow window, ISceneManager sceneManager, IBatcher batcher)
     {
         EnsureThat.ParamIsNotNull(window);
         EnsureThat.ParamIsNotNull(sceneManager);
+        EnsureThat.ParamIsNotNull(batcher);
 
         this.nativeWindow = window;
         SceneManager = sceneManager;
+        this.batcher = batcher;
         Init();
     }
 
@@ -156,6 +163,22 @@ public abstract class Window : IWindow
     public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
+    public bool AutoSceneLoading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUnloading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUpdating { get; set; } = true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// If this is set to <c>false</c>, using <see cref="IBatcher.Begin"/> and <see cref="IBatcher.End"/>
+    /// will be required to render the scene.
+    /// </remarks>
+    public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
     public bool Initialized => this.nativeWindow.Initialized;
 
     /// <summary>
@@ -193,6 +216,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
+        if (AutoSceneLoading is false)
+        {
+            return;
+        }
+
+        SceneManager.LoadContent();
     }
 
     /// <summary>
@@ -202,6 +231,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
+        if (AutoSceneUpdating is false)
+        {
+            return;
+        }
+
+        SceneManager.Update(frameTime);
     }
 
     /// <summary>
@@ -211,6 +246,17 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
+        if (AutoSceneRendering is false)
+        {
+            return;
+        }
+
+        this.batcher.Clear();
+        this.batcher.Begin();
+
+        SceneManager.Render();
+
+        this.batcher.End();
     }
 
     /// <summary>
@@ -219,6 +265,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
+        if (AutoSceneUnloading is false)
+        {
+            return;
+        }
+
+        SceneManager.UnloadContent();
     }
 
     /// <summary>
@@ -229,6 +281,29 @@ public abstract class Window : IWindow
     [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
     protected virtual void OnResize(SizeU size)
     {
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// </summary>
+    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
+    [SuppressMessage(
+        "ReSharper",
+        "VirtualMemberNeverOverridden.Global",
+        Justification = "Left for library users to override if needed.")]
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.nativeWindow.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 
     /// <summary>
@@ -245,24 +320,5 @@ public abstract class Window : IWindow
         // Set the update frequency to default value of 60
         // just in case the IWindow implementation is not
         this.nativeWindow.UpdateFrequency = 60;
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    private void Dispose(bool disposing)
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            this.nativeWindow.Dispose();
-        }
-
-        this.isDisposed = true;
     }
 }

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 using Xunit;
 
 /// <summary>
@@ -149,7 +149,7 @@ public class OpenGLExtensionMethodsTests
             new Vector2(27, 28),
             Color.FromArgb(29, 30, 31, 32));
 
-        var quadData = new TextureGPUData(
+        var quadData = new TextureGpuData(
             vertex1,
             vertex2,
             vertex3,
@@ -245,7 +245,7 @@ public class OpenGLExtensionMethodsTests
             57f, 58f, 59f, 60f, 62f, 63f, 64f, 61f, // Quad 2 Vertex 4
         };
 
-        var quads = new List<TextureGPUData> { CreateNewQuad(1), CreateNewQuad(33) };
+        var quads = new List<TextureGpuData> { CreateNewQuad(1), CreateNewQuad(33) };
 
         // Act
         var actual = OpenGLExtensionMethods.ToArray(quads);
@@ -277,9 +277,9 @@ public class OpenGLExtensionMethodsTests
     /// </summary>
     /// <param name="start">The starting value to base the values from.</param>
     /// <returns>The texture quad data to test.</returns>
-    private static TextureGPUData CreateNewQuad(int start)
+    private static TextureGpuData CreateNewQuad(int start)
     {
-        var result = new TextureGPUData(
+        var result = new TextureGpuData(
             new TextureVertexData(
                 new Vector2(start, start + 1),
                 new Vector2(start + 2, start + 3),

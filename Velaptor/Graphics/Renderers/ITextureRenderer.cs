@@ -7,6 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Batching;
 using Content;
 
 /// <summary>
@@ -21,7 +22,7 @@ public interface ITextureRenderer
     /// <param name="x">The X location of the texture.</param>
     /// <param name="y">The Y location of the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
@@ -63,7 +64,7 @@ public interface ITextureRenderer
     /// <param name="y">The Y location of the texture.</param>
     /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
@@ -105,7 +106,7 @@ public interface ITextureRenderer
     /// <param name="y">The Y location of the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
@@ -147,7 +148,7 @@ public interface ITextureRenderer
     /// <param name="y">The Y location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
@@ -190,7 +191,7 @@ public interface ITextureRenderer
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
@@ -230,7 +231,7 @@ public interface ITextureRenderer
     /// <param name="texture">The texture to render.</param>
     /// <param name="pos">The location of the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="pos"/> position are based on the center of the texture.
@@ -271,7 +272,7 @@ public interface ITextureRenderer
     /// <param name="pos">The location of the texture.</param>
     /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="pos"/> position are based on the center of the texture.
@@ -312,7 +313,7 @@ public interface ITextureRenderer
     /// <param name="pos">The location of the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="pos"/> position are based on the center of the texture.
@@ -353,7 +354,7 @@ public interface ITextureRenderer
     /// <param name="pos">The location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="pos"/> position are based on the center of the texture.
@@ -395,7 +396,7 @@ public interface ITextureRenderer
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The <paramref name="pos"/> position are based on the center of the texture.
@@ -440,7 +441,7 @@ public interface ITextureRenderer
     /// <param name="color">The color to apply to the rendering.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         The position in the <paramref name="destRect"/> is based on the center of the texture.

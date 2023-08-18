@@ -182,7 +182,7 @@ public sealed class Texture : ITexture
 
         Name = name;
 
-        UploadDataToGPU(name, imageData);
+        UploadDataToGpu(name, imageData);
 
         this.openGLService.UnbindTexture2D();
     }
@@ -192,7 +192,7 @@ public sealed class Texture : ITexture
     /// </summary>
     /// <param name="name">The name of the texture.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void UploadDataToGPU(string name, ImageData imageData)
+    private void UploadDataToGpu(string name, ImageData imageData)
     {
         /*NOTE:
          * The incoming image data is in the ARGB byte layout.

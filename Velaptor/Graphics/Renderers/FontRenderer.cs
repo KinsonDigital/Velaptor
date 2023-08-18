@@ -29,7 +29,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<FontGlyphBatchItem> buffer;
+    private readonly IGpuBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
@@ -48,7 +48,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<FontGlyphBatchItem> buffer,
+        IGpuBuffer<FontGlyphBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)
@@ -133,7 +133,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
         if (this.hasBegun is false)
         {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
         var normalizedSize = renderSize - 1f;
@@ -342,7 +342,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
     /// <remarks>This takes new line characters into account to render multiple lines of text.</remarks>
     /// <exception cref="ArgumentNullException">Thrown if the font object is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> method has not been called before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> method has not been called before rendering.
     /// </exception>
     private void RenderBase(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0)
     {
@@ -360,7 +360,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
         if (this.hasBegun is false)
         {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
         var normalizedSize = renderSize - 1f;

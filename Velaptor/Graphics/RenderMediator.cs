@@ -18,15 +18,15 @@ internal sealed class RenderMediator : IRenderMediator
     private readonly IPushReactable pushReactable;
     private readonly IBatchPullReactable<TextureBatchItem> texturePullReactable;
     private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
-    private readonly IBatchPullReactable<ShapeBatchItem> rectPullReactable;
+    private readonly IBatchPullReactable<ShapeBatchItem> shapePullReactable;
     private readonly IBatchPullReactable<LineBatchItem> linePullReactable;
     private readonly IRenderBatchReactable<TextureBatchItem> textureRenderBatchReactable;
     private readonly IRenderBatchReactable<FontGlyphBatchItem> fontRenderBatchReactable;
-    private readonly IRenderBatchReactable<ShapeBatchItem> rectRenderBatchReactable;
+    private readonly IRenderBatchReactable<ShapeBatchItem> shapeRenderBatchReactable;
     private readonly IRenderBatchReactable<LineBatchItem> lineRenderBatchReactable;
     private readonly IComparer<RenderItem<TextureBatchItem>> textureItemComparer;
     private readonly IComparer<RenderItem<FontGlyphBatchItem>> fontItemComparer;
-    private readonly IComparer<RenderItem<ShapeBatchItem>> rectItemComparer;
+    private readonly IComparer<RenderItem<ShapeBatchItem>> shapeItemComparer;
     private readonly IComparer<RenderItem<LineBatchItem>> lineItemComparer;
     private readonly IDisposable endBatchUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
@@ -40,19 +40,19 @@ internal sealed class RenderMediator : IRenderMediator
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="textureItemComparer">Compares two texture batch items for the purpose of sorting.</param>
     /// <param name="fontItemComparer">Compares two font batch items for the purpose of sorting.</param>
-    /// <param name="rectItemComparer">Compares two rect batch items for the purpose of sorting.</param>
+    /// <param name="shapeItemComparer">Compares two shape batch items for the purpose of sorting.</param>
     /// <param name="lineItemComparer">Compares two line batch items for the purpose of sorting.</param>
     public RenderMediator(
         IReactableFactory reactableFactory,
         IComparer<RenderItem<TextureBatchItem>> textureItemComparer,
         IComparer<RenderItem<FontGlyphBatchItem>> fontItemComparer,
-        IComparer<RenderItem<ShapeBatchItem>> rectItemComparer,
+        IComparer<RenderItem<ShapeBatchItem>> shapeItemComparer,
         IComparer<RenderItem<LineBatchItem>> lineItemComparer)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
         EnsureThat.ParamIsNotNull(textureItemComparer);
         EnsureThat.ParamIsNotNull(fontItemComparer);
-        EnsureThat.ParamIsNotNull(rectItemComparer);
+        EnsureThat.ParamIsNotNull(shapeItemComparer);
         EnsureThat.ParamIsNotNull(lineItemComparer);
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -71,17 +71,17 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
         this.fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
-        this.rectPullReactable = reactableFactory.CreateRectPullBatchReactable();
+        this.shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
         this.linePullReactable = reactableFactory.CreateLinePullBatchReactable();
 
         this.textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
         this.fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
-        this.rectRenderBatchReactable = reactableFactory.CreateRenderRectReactable();
+        this.shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
         this.lineRenderBatchReactable = reactableFactory.CreateRenderLineReactable();
 
         this.textureItemComparer = textureItemComparer;
         this.fontItemComparer = fontItemComparer;
-        this.rectItemComparer = rectItemComparer;
+        this.shapeItemComparer = shapeItemComparer;
         this.lineItemComparer = lineItemComparer;
 
         // Sets all of the layers to a default value of the max value of int
@@ -98,12 +98,12 @@ internal sealed class RenderMediator : IRenderMediator
     {
         var textureItems = this.texturePullReactable.Pull(PullResponses.GetTextureItemsId);
         var fontItems = this.fontPullReactable.Pull(PullResponses.GetFontItemsId);
-        var rectItems = this.rectPullReactable.Pull(PullResponses.GetRectItemsId);
+        var shapeItems = this.shapePullReactable.Pull(PullResponses.GetShapeItemsId);
         var lineItems = this.linePullReactable.Pull(PullResponses.GetLineItemsId);
 
         textureItems.Span.Sort(this.textureItemComparer);
         fontItems.Span.Sort(this.fontItemComparer);
-        rectItems.Span.Sort(this.rectItemComparer);
+        shapeItems.Span.Sort(this.shapeItemComparer);
         lineItems.Span.Sort(this.lineItemComparer);
 
         var layerIndex = 0;
@@ -132,15 +132,15 @@ internal sealed class RenderMediator : IRenderMediator
             layerIndex++;
         }
 
-        for (var i = 0; i < rectItems.Length; i++)
+        for (var i = 0; i < shapeItems.Length; i++)
         {
-            var rectLayer = rectItems.Span[i].Layer;
-            if (this.allLayers.Span.Contains(rectLayer))
+            var shapeLayer = shapeItems.Span[i].Layer;
+            if (this.allLayers.Span.Contains(shapeLayer))
             {
                 continue;
             }
 
-            this.allLayers.Span[layerIndex] = rectLayer;
+            this.allLayers.Span[layerIndex] = shapeLayer;
             layerIndex++;
         }
 
@@ -170,7 +170,7 @@ internal sealed class RenderMediator : IRenderMediator
 
             var totalTexturesOnCurrentLayer = textureItems.TotalOnLayer(currentLayer);
             var totalFontOnCurrentLayer = fontItems.TotalOnLayer(currentLayer);
-            var totalRectsOnCurrentLayer = rectItems.TotalOnLayer(currentLayer);
+            var totalShapesOnCurrentLayer = shapeItems.TotalOnLayer(currentLayer);
             var totalLinesOnCurrentLayer = lineItems.TotalOnLayer(currentLayer);
 
             if (totalTexturesOnCurrentLayer > 0)
@@ -191,13 +191,13 @@ internal sealed class RenderMediator : IRenderMediator
                     PushNotifications.RenderFontsId);
             }
 
-            if (totalRectsOnCurrentLayer > 0)
+            if (totalShapesOnCurrentLayer > 0)
             {
-                var rectLayerStart = rectItems.FirstLayerIndex(currentLayer);
+                var shapeLayerStart = shapeItems.FirstLayerIndex(currentLayer);
 
-                this.rectRenderBatchReactable.Push(
-                    rectItems.Slice(rectLayerStart, totalRectsOnCurrentLayer),
-                    PushNotifications.RenderRectsId);
+                this.shapeRenderBatchReactable.Push(
+                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer),
+                    PushNotifications.RenderShapesId);
             }
 
             if (totalLinesOnCurrentLayer > 0)

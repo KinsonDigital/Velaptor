@@ -48,7 +48,7 @@ public class FontRendererTests
     private const char InvalidCharacter = '□';
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<FontGlyphBatchItem>> mockGpuBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IBatchingManager> mockBatchingManager;
@@ -83,7 +83,7 @@ public class FontRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.SetupGet(p => p.ShaderId).Returns(FontShaderId);
 
-        this.mockGPUBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
+        this.mockGpuBuffer = new Mock<IGpuBuffer<FontGlyphBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 
@@ -173,7 +173,7 @@ public class FontRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 null,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 this.mockBatchingManager.Object);
         };
@@ -215,7 +215,7 @@ public class FontRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 null,
                 this.mockBatchingManager.Object);
         };
@@ -236,7 +236,7 @@ public class FontRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 null);
         };
@@ -283,7 +283,7 @@ public class FontRendererTests
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Character Data - TextureID"))));
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGPUBuffer.VerifyNever(m =>
+        this.mockGpuBuffer.VerifyNever(m =>
             m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Font Elements"))));
@@ -872,7 +872,7 @@ public class FontRendererTests
                 GLDrawElementsType.UnsignedInt,
                 nint.Zero));
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(AtlasTextureId));
-        this.mockGPUBuffer
+        this.mockGpuBuffer
             .VerifyExactly(m =>
                 m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()), renderText.Length);
     }
@@ -932,7 +932,7 @@ public class FontRendererTests
         => new (this.mockGL.Object,
             this.mockReactableFactory.Object,
             this.mockGLService.Object,
-            this.mockGPUBuffer.Object,
+            this.mockGpuBuffer.Object,
             this.mockShader.Object,
             this.mockBatchingManager.Object);
 

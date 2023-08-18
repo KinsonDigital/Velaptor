@@ -22,20 +22,20 @@ internal sealed class BatchingManager : IBatchingManager
     private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable texturePullUnsubscriber;
     private readonly IDisposable fontPullUnsubscriber;
-    private readonly IDisposable rectPullUnsubscriber;
+    private readonly IDisposable shapePullUnsubscriber;
     private readonly IDisposable linePullUnsubscriber;
     private readonly IDisposable emptyBatchUnsubscriber;
     private readonly IPushReactable<BatchSizeData> batchSizeReactable;
     private readonly BatchType[] batchTypes = Enum.GetValues<BatchType>();
     private Memory<RenderItem<TextureBatchItem>> textureItems;
     private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
-    private Memory<RenderItem<ShapeBatchItem>> rectItems;
+    private Memory<RenderItem<ShapeBatchItem>> shapeItems;
     private Memory<RenderItem<LineBatchItem>> lineItems;
     private bool isShutDown;
     private bool firstTimeSettingBatchSize = true;
     private uint textureBatchSize;
     private uint fontBatchSize;
-    private uint rectBatchSize;
+    private uint shapeBatchSize;
     private uint lineBatchSize;
 
     /// <summary>
@@ -106,18 +106,18 @@ internal sealed class BatchingManager : IBatchingManager
                     : this.fontItems[..lastFullItemIndex];
             }));
 
-        var rectPullReactable = reactableFactory.CreateRectPullBatchReactable();
-        var rectPullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetRectItemsId));
-        this.rectPullUnsubscriber = rectPullReactable.Subscribe(new RespondReactor<Memory<RenderItem<ShapeBatchItem>>>(
-            respondId: PullResponses.GetRectItemsId,
-            name: rectPullReactorName,
+        var shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
+        var shapePullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetShapeItemsId));
+        this.shapePullUnsubscriber = shapePullReactable.Subscribe(new RespondReactor<Memory<RenderItem<ShapeBatchItem>>>(
+            respondId: PullResponses.GetShapeItemsId,
+            name: shapePullReactorName,
             onRespond: () =>
             {
-                var lastFullItemIndex = this.rectItems.IndexOf(i => i.IsEmpty());
+                var lastFullItemIndex = this.shapeItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
-                    ? this.rectItems
-                    : this.rectItems[..lastFullItemIndex];
+                    ? this.shapeItems
+                    : this.shapeItems[..lastFullItemIndex];
             }));
 
         var linePullReactable = reactableFactory.CreateLinePullBatchReactable();
@@ -148,10 +148,10 @@ internal sealed class BatchingManager : IBatchingManager
     public Span<RenderItem<FontGlyphBatchItem>> FontItems => this.fontItems.Span;
 
     /// <summary>
-    /// Gets the rectangle items.
+    /// Gets the shape items.
     /// </summary>
     /// <remarks>USED FOR UNIT TESTING.</remarks>
-    public Span<RenderItem<ShapeBatchItem>> RectItems => this.rectItems.Span;
+    public Span<RenderItem<ShapeBatchItem>> ShapeItems => this.shapeItems.Span;
 
     /// <summary>
     /// Gets the line items.
@@ -208,14 +208,14 @@ internal sealed class BatchingManager : IBatchingManager
     }
 
     /// <inheritdoc/>
-    public void AddRectItem(ShapeBatchItem item, int layer, DateTime renderStamp)
+    public void AddShapeItem(ShapeBatchItem item, int layer, DateTime renderStamp)
     {
-        var emptyItemIndex = this.rectItems.
+        var emptyItemIndex = this.shapeItems.
             FirstItemIndex(i => i.Item.IsEmpty());
 
         if (emptyItemIndex == -1)
         {
-            emptyItemIndex = this.rectItems.Length;
+            emptyItemIndex = this.shapeItems.Length;
 
             var newBatchSize = CalcNewBatchSize(BatchType.Rect);
             this.batchSizeReactable.Push(
@@ -223,7 +223,7 @@ internal sealed class BatchingManager : IBatchingManager
                 PushNotifications.BatchSizeChangedId);
         }
 
-        this.rectItems.Span[emptyItemIndex] = new RenderItem<ShapeBatchItem>
+        this.shapeItems.Span[emptyItemIndex] = new RenderItem<ShapeBatchItem>
         {
             Layer = layer,
             Item = item,
@@ -263,7 +263,7 @@ internal sealed class BatchingManager : IBatchingManager
     {
         this.textureBatchSize = size;
         this.fontBatchSize = size;
-        this.rectBatchSize = size;
+        this.shapeBatchSize = size;
         this.lineBatchSize = size;
 
         this.textureItems = new RenderItem<TextureBatchItem>[size];
@@ -278,10 +278,10 @@ internal sealed class BatchingManager : IBatchingManager
             this.fontItems.Span[i] = default;
         }
 
-        this.rectItems = new RenderItem<ShapeBatchItem>[size];
+        this.shapeItems = new RenderItem<ShapeBatchItem>[size];
         for (var i = 0; i < size; i++)
         {
-            this.rectItems.Span[i] = default;
+            this.shapeItems.Span[i] = default;
         }
 
         this.lineItems = new RenderItem<LineBatchItem>[size];
@@ -307,7 +307,7 @@ internal sealed class BatchingManager : IBatchingManager
         {
             BatchType.Texture => (uint)(this.textureBatchSize + (this.textureBatchSize * BatchIncreasePercentage)),
             BatchType.Font => (uint)(this.fontBatchSize + (this.fontBatchSize * BatchIncreasePercentage)),
-            BatchType.Rect => (uint)(this.rectBatchSize + (this.rectBatchSize * BatchIncreasePercentage)),
+            BatchType.Rect => (uint)(this.shapeBatchSize + (this.shapeBatchSize * BatchIncreasePercentage)),
             BatchType.Line => (uint)(this.lineBatchSize + (this.lineBatchSize * BatchIncreasePercentage)),
         };
 #pragma warning restore CS8524
@@ -332,7 +332,7 @@ internal sealed class BatchingManager : IBatchingManager
         {
             BatchType.Texture => newBatchSize - this.textureBatchSize,
             BatchType.Font => newBatchSize - this.fontBatchSize,
-            BatchType.Rect => newBatchSize - this.rectBatchSize,
+            BatchType.Rect => newBatchSize - this.shapeBatchSize,
             BatchType.Line => newBatchSize - this.lineBatchSize,
         };
 #pragma warning restore CS8524
@@ -349,8 +349,8 @@ internal sealed class BatchingManager : IBatchingManager
                 this.fontItems.IncreaseBy(increaseAmount);
                 break;
             case BatchType.Rect:
-                this.rectBatchSize = newBatchSize;
-                this.rectItems.IncreaseBy(increaseAmount);
+                this.shapeBatchSize = newBatchSize;
+                this.shapeItems.IncreaseBy(increaseAmount);
                 break;
             case BatchType.Line:
                 this.lineBatchSize = newBatchSize;
@@ -386,14 +386,14 @@ internal sealed class BatchingManager : IBatchingManager
             this.fontItems.Span[i] = default;
         }
 
-        for (var i = 0; i < this.rectItems.Length; i++)
+        for (var i = 0; i < this.shapeItems.Length; i++)
         {
-            if (this.rectItems.Span[i].Item.IsEmpty())
+            if (this.shapeItems.Span[i].Item.IsEmpty())
             {
                 break;
             }
 
-            this.rectItems.Span[i] = default;
+            this.shapeItems.Span[i] = default;
         }
 
         for (var i = 0; i < this.lineItems.Length; i++)
@@ -421,7 +421,7 @@ internal sealed class BatchingManager : IBatchingManager
         this.emptyBatchUnsubscriber.Dispose();
         this.texturePullUnsubscriber.Dispose();
         this.fontPullUnsubscriber.Dispose();
-        this.rectPullUnsubscriber.Dispose();
+        this.shapePullUnsubscriber.Dispose();
         this.linePullUnsubscriber.Dispose();
 
         this.isShutDown = true;

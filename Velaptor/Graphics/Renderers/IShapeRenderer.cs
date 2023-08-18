@@ -5,6 +5,7 @@
 namespace Velaptor.Graphics.Renderers;
 
 using System;
+using Batching;
 
 /// <summary>
 /// Renders rectangles to the screen.
@@ -16,7 +17,7 @@ public interface IShapeRenderer
     /// </summary>
     /// <param name="rect">The rectangle to render.</param>
     /// <param name="layer">The layer to render the rectangle.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -52,7 +53,7 @@ public interface IShapeRenderer
     /// </summary>
     /// <param name="circle">The circle to render.</param>
     /// <param name="layer">The layer to render the circle.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.

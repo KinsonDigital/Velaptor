@@ -7,10 +7,11 @@ namespace VelaptorTesting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using Scenes;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Factories;
-using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 
@@ -28,6 +29,7 @@ public class MainWindow : Window
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly Button nextButton;
     private readonly Button previousButton;
+    private readonly IBatcher batcher;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -35,12 +37,15 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
+        var rendererFactory = new RendererFactory();
+        this.batcher = rendererFactory.CreateBatcher();
+
         this.keyboard = InputFactory.CreateKeyboard();
 
         this.nextButton = new Button { Text = "-->" };
         this.previousButton = new Button { Text = "<--" };
 
-        IRenderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
+        this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -140,15 +145,12 @@ public class MainWindow : Window
         this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
         this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
 
-        SceneManager.LoadContent();
         base.OnLoad();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
     protected override void OnUpdate(FrameTime frameTime)
     {
-        SceneManager.Update(frameTime);
-
         Title = $"Scene: {SceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
 
         var currentKeyState = this.keyboard.GetState();
@@ -174,17 +176,18 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnDraw"/>
     protected override void OnDraw(FrameTime frameTime)
     {
-        IRenderer.Clear();
-        IRenderer.Begin();
+        base.OnDraw(frameTime);
 
-        SceneManager.Render();
+        // Render the buttons after the 'base.OnDraw()'.  With the rendering being set to auto,
+        // additional drawings have to be done after the base.OnDraw() call with the use of
+        // the 'Begin()' and 'End()` methods.
+        this.batcher.Begin();
 
         // Render the scene manager UI on top of all other textures
         this.nextButton.Render();
         this.previousButton.Render();
 
-        IRenderer.End();
-        base.OnDraw(frameTime);
+        this.batcher.End();
     }
 
     /// <inheritdoc cref="Window.OnUnload"/>
@@ -205,7 +208,7 @@ public class MainWindow : Window
     {
         var sections = new List<string>();
 
-        var currentSection = string.Empty;
+        var currentSection = new StringBuilder();
 
         for (var i = 0; i < value.Length; i++)
         {
@@ -213,18 +216,18 @@ public class MainWindow : Window
 
             if (UpperCaseChars.Contains(character) && i != 0)
             {
-                sections.Add(currentSection);
+                sections.Add(currentSection.ToString());
 
-                currentSection = string.Empty;
-                currentSection += character;
+                currentSection.Clear();
+                currentSection.Append(character);
             }
             else
             {
-                currentSection += character;
+                currentSection.Append(character);
             }
         }
 
-        sections.Add(currentSection);
+        sections.Add(currentSection.ToString());
 
         var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
 

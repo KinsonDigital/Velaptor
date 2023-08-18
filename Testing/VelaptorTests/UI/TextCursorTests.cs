@@ -22,7 +22,6 @@ using Xunit;
 /// </summary>
 public class TextCursorTests
 {
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
     private readonly Mock<IPushReactable<TextBoxStateData>> textBoxStateReactable;
     private IReceiveReactor<TextBoxStateData>? reactor;
 
@@ -119,53 +118,10 @@ public class TextCursorTests
     [InlineData("t", "", 15, 20, 0, 10, 100)]
     [InlineData("t", "t", 15, 20, 0, 10, 115)]
     [InlineData("", "test-value", 40, 50, 6, 10, 115)]
-    public void Update_WhenAddingCharacterWhenCursorIsAtRightEndOfText_SetsCursorToLeftSideOfChar(
-        string preText,
-        string postText,
-        int cursorRight,
-        int preTextRight,
-        int postCharIndex,
-        int postTextLength,
-        int expectedCursorLeft)
-    {
-        // Arrange
-        var preMutateState = new TextBoxStateData
-        {
-            TextMutateType = MutateType.PreMutate,
-            Text = new StringBuilder(preText),
-            TextRight = preTextRight,
-        };
-
-        var postMutateState = new TextBoxStateData
-        {
-            TextMutateType = MutateType.PostMutate,
-            Event = TextBoxEvent.AddingCharacter,
-            Text = new StringBuilder(postText),
-            CharIndex = postCharIndex,
-            TextLeft = 100,
-            TextView = new RectShape { Left = 100 },
-            TextLength = postTextLength,
-            CurrentCharLeft = 115,
-            CurrentCharRight = 125,
-        };
-
-        var sut = CreateSystemUnderTest();
-        sut.Cursor = new RectShape { Right = cursorRight, };
-
-        // Act
-        this.reactor.OnReceive(preMutateState);
-        this.reactor.OnReceive(postMutateState);
-        sut.Update();
-
-        // Assert
-        sut.Cursor.Left.Should().Be(expectedCursorLeft);
-    }
-
-    [Theory]
     [InlineData("", "", 0, 0, 0, 0, 100)]
     [InlineData("t", "", 20, 15, 0, 0, 100)]
     [InlineData("t", "z", 20, 15, 0, 0, 125)]
-    public void Update_WhenAddingCharacterWhenCursorIsAtRightEndOfText_SetsCursorToRightSideOfChar(
+    public void Update_WhenAddingCharacterWhenCursorIsAtRightEndOfText_SetsCursorToLeftSideOfChar(
         string preText,
         string postText,
         int cursorRight,

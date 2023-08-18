@@ -17,15 +17,17 @@ internal sealed class SceneManager : ISceneManager
 {
     private readonly List<(IScene? scene, bool isActive)> scenes = new ();
     private bool isDisposed;
-    private bool isLoaded;
 
     /// <inheritdoc/>
-    public IScene? CurrentScene => this.scenes.FirstOrDefault(s => s.isActive).scene;
+    public IScene? CurrentScene => this.scenes.Find(s => s.isActive).scene;
 
     /// <inheritdoc/>
     public IReadOnlyCollection<Guid> InActiveScenes =>
         this.scenes.Where(s => s.scene is not null && s.isActive is false)
             .Select(s => s.scene?.Id ?? Guid.Empty).ToArray().AsReadOnly();
+
+    /// <inheritdoc/>
+    public bool IsLoaded { get; private set; }
 
     /// <inheritdoc/>
     public void AddScene(IScene scene) => AddScene(scene, false);
@@ -70,7 +72,7 @@ internal sealed class SceneManager : ISceneManager
             return;
         }
 
-        var sceneToRemove = this.scenes.FirstOrDefault(s => s.scene?.Id == sceneId);
+        var sceneToRemove = this.scenes.Find(s => s.scene?.Id == sceneId);
 
         if (sceneToRemove.scene is null)
         {
@@ -164,20 +166,20 @@ internal sealed class SceneManager : ISceneManager
             throw new ObjectDisposedException(nameof(SceneManager), "Cannot load a scene manager that has been disposed.");
         }
 
-        if (this.isLoaded)
+        if (IsLoaded)
         {
             return;
         }
 
         CurrentScene?.LoadContent();
 
-        this.isLoaded = true;
+        IsLoaded = true;
     }
 
     /// <inheritdoc/>
     public void UnloadContent()
     {
-        if (!this.isLoaded || this.isDisposed)
+        if (IsLoaded is false || this.isDisposed)
         {
             return;
         }
@@ -196,7 +198,7 @@ internal sealed class SceneManager : ISceneManager
     /// </summary>
     /// <param name="id">The ID of the scene to check for.</param>
     /// <returns>True if the scene exists.</returns>
-    public bool SceneExists(Guid id) => this.scenes.Any(s => s.scene?.Id == id);
+    public bool SceneExists(Guid id) => this.scenes.Exists(s => s.scene?.Id == id);
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()

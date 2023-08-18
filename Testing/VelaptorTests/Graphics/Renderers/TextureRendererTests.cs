@@ -42,7 +42,7 @@ public class TextureRendererTests
     private const uint TextureId = 456u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IGPUBuffer<TextureBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<TextureBatchItem>> mockGpuBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -60,7 +60,7 @@ public class TextureRendererTests
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockShader = new Mock<IShaderProgram>();
-        this.mockGPUBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
+        this.mockGpuBuffer = new Mock<IGpuBuffer<TextureBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
@@ -140,7 +140,7 @@ public class TextureRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 null,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 this.mockBatchingManager.Object);
         };
@@ -182,7 +182,7 @@ public class TextureRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 null,
                 this.mockBatchingManager.Object);
         };
@@ -203,7 +203,7 @@ public class TextureRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 null);
         };
@@ -302,7 +302,7 @@ public class TextureRendererTests
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Texture Data - TextureID"))));
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGPUBuffer.VerifyNever(m =>
+        this.mockGpuBuffer.VerifyNever(m =>
             m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
@@ -778,8 +778,8 @@ public class TextureRendererTests
         this.mockGL.VerifyOnce(m
             => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
-        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
-        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
+        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
+        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
     }
     #endregion
 
@@ -863,7 +863,7 @@ public class TextureRendererTests
         => new (this.mockGL.Object,
             this.mockReactableFactory.Object,
             this.mockGLService.Object,
-            this.mockGPUBuffer.Object,
+            this.mockGpuBuffer.Object,
             this.mockShader.Object,
             this.mockBatchingManager.Object);
 }

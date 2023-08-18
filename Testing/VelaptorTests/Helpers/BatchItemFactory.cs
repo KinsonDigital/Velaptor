@@ -163,7 +163,7 @@ internal static class BatchItemFactory
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static ShapeBatchItem CreateRectItemWithOrderedValues(
+    public static ShapeBatchItem CreateShapeItemWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
@@ -193,7 +193,7 @@ internal static class BatchItemFactory
         "StyleCop.CSharp.DocumentationRules",
         "SA1611:Element parameters should be documented",
         Justification = "Not required for unit testing.")]
-    public static ShapeBatchItem[] CreateRectItemsWithOrderedValues(
+    public static ShapeBatchItem[] CreateShapeItemsWithOrderedValues(
         Vector2 position = default,
         float width = 0f,
         float height = 0f,
@@ -210,7 +210,7 @@ internal static class BatchItemFactory
 
         for (var i = 0; i < totalItems; i++)
         {
-            result.Add(CreateRectItemWithOrderedValues(
+            result.Add(CreateShapeItemWithOrderedValues(
                 position,
                 width,
                 height,

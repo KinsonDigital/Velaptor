@@ -61,44 +61,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="OpenGL\shader.frag" />
-    <None Remove="OpenGL\shader.vert" />
-    <None Remove="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <None Remove="OpenGL\Shaders\font.frag" />
     <EmbeddedResource Include="OpenGL\ShaderCode\font.frag" />
-    <None Remove="OpenGL\Shaders\font.vert" />
     <EmbeddedResource Include="OpenGL\ShaderCode\font.vert" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
-    <None Remove="OpenGL\ShaderCode\rect.vert" />
-    <None Remove="OpenGL\ShaderCode\rect.frag" />
-    <None Remove="OpenGL\ShaderCode\rectangle.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
-    <None Remove="OpenGL\ShaderCode\rectangle.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
-    <None Remove="OpenGL\ShaderCode\line-shader.frag" />
     <EmbeddedResource Include="OpenGL\ShaderCode\line.frag" />
-    <None Remove="OpenGL\ShaderCode\line-shader.vert" />
     <EmbeddedResource Include="OpenGL\ShaderCode\line.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\shape.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\shape.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
   </ItemGroup>
 
   <ItemGroup>

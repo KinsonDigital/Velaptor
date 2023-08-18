@@ -266,7 +266,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void InternalCtor_WhenInvoked_UploadsTextureDataToGPU()
+    public void InternalCtor_WhenInvoked_UploadsTextureDataToGpu()
     {
         // Arrange
         var expectedPixelData = new List<byte>();

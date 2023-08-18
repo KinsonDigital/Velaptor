@@ -27,7 +27,7 @@ internal interface IShaderFactory
     /// Creates a shader for rendering rectangles.
     /// </summary>
     /// <returns>The shader program.</returns>
-    IShaderProgram CreateRectShader();
+    IShaderProgram CreateShapeShader();
 
     /// <summary>
     /// Creates a shader for rendering lines.

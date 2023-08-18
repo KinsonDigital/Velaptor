@@ -60,13 +60,13 @@
     <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\RectGPUDataTestData.json">
+    <None Update="SampleTestData\ShapeGpuDataTestData.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\ShapeGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
+    <None Update="SampleTestData\ShapeGpuBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\LineGPUDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
+    <None Update="SampleTestData\LineGpuDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoked_AddsCorrectBatchItems.json">
@@ -128,6 +128,11 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageReference Include="Moq" Version="[4.18.4, 4.19]" />
+    <PackageReference Include="NSubstitute" Version="5.0.0" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Serilog" Version="3.0.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

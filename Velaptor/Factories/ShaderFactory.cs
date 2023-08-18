@@ -17,7 +17,7 @@ internal sealed class ShaderFactory : IShaderFactory
 {
     private readonly IShaderProgram textureShader;
     private readonly IShaderProgram fontShader;
-    private readonly IShaderProgram rectShader;
+    private readonly IShaderProgram shapeShader;
     private readonly IShaderProgram lineShader;
 
     /// <summary>
@@ -42,7 +42,7 @@ internal sealed class ShaderFactory : IShaderFactory
             shaderLoaderService,
             reactableFactory);
 
-        this.rectShader = new RectangleShader(
+        this.shapeShader = new ShapeShader(
             glInvoker,
             glInvokerExtensions,
             shaderLoaderService,
@@ -62,7 +62,7 @@ internal sealed class ShaderFactory : IShaderFactory
     public IShaderProgram CreateFontShader() => this.fontShader;
 
     /// <inheritdoc/>
-    public IShaderProgram CreateRectShader() => this.rectShader;
+    public IShaderProgram CreateShapeShader() => this.shapeShader;
 
     /// <inheritdoc/>
     public IShaderProgram CreateLineShader() => this.lineShader;

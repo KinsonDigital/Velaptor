@@ -24,7 +24,7 @@ internal static class PullResponses
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for request notifications for returning rect batch items.
     /// </summary>
-    public static Guid GetRectItemsId { get; } = new ("bb5b2b6e-05f0-4404-acf2-7d19fca83fa1");
+    public static Guid GetShapeItemsId { get; } = new ("bb5b2b6e-05f0-4404-acf2-7d19fca83fa1");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for request notifications for returning line batch items.

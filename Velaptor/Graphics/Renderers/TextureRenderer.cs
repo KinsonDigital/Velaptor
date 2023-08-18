@@ -26,7 +26,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<TextureBatchItem> buffer;
+    private readonly IGpuBuffer<TextureBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderBatchBegunUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
@@ -45,7 +45,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<TextureBatchItem> buffer,
+        IGpuBuffer<TextureBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)
@@ -62,10 +62,10 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        const string renderStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
+        const string batchStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
         this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
             eventId: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
+            name: batchStateName,
             onReceive: () => this.hasBegun = true));
 
         var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
@@ -80,7 +80,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, int x, int y, int layer = 0) =>
         Render(texture, x, y, Color.White, RenderEffects.None, layer);
@@ -88,7 +88,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, int x, int y, float angle, int layer = 0)
     {
@@ -109,7 +109,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0) =>
         Render(texture, x, y, Color.White, effects, layer);
@@ -117,7 +117,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, int x, int y, Color color, int layer = 0) =>
         Render(texture, x, y, color, RenderEffects.None, layer);
@@ -125,7 +125,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
@@ -146,7 +146,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, int layer = 0) =>
         Render(texture, (int)pos.X, (int)pos.Y, Color.White, RenderEffects.None, layer);
@@ -154,7 +154,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, float angle, int layer = 0)
     {
@@ -175,7 +175,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, RenderEffects effects, int layer = 0) =>
         Render(texture, (int)pos.X, (int)pos.Y, Color.White, effects, layer);
@@ -183,7 +183,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, Color color, int layer = 0) =>
         Render(texture, (int)pos.X, (int)pos.Y, color, RenderEffects.None, layer);
@@ -191,7 +191,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, Color color, RenderEffects effects, int layer = 0)
     {
@@ -212,7 +212,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
@@ -254,7 +254,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     /// <inheritdoc cref="ITextureRenderer.Render(Velaptor.Content.ITexture,Rectangle,Rectangle,float,float,Color,RenderEffects,int)"/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> method has not been called before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> method has not been called before rendering.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
@@ -275,7 +275,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 
         if (this.hasBegun is false)
         {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
         (Rectangle srcRect, Rectangle destRect) = rects;

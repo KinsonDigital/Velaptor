@@ -203,6 +203,18 @@ internal sealed class GLWindow : VelaptorIWindow
     public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
+    public bool AutoSceneLoading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUnloading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUpdating { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
     public int UpdateFrequency
     {
         get => CachedIntProps[nameof(UpdateFrequency)].GetValue();
@@ -291,6 +303,9 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
+    /// <summary>
+    /// Runs the OpenGL window.
+    /// </summary>
     private void RunGLWindow()
     {
         this.glWindow.Run();

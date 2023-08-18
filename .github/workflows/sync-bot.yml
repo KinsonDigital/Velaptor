@@ -13,7 +13,7 @@ on:
 
 jobs:
   sync_bot:
-    name: Sync Bot Status Check
+    name: Sync Bot
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +32,7 @@ jobs:
           Write-Host "::notice::Issue: $issueNumber";
 
           if ($manuallyExecuted -and $issueNumber -eq "0") {
-            Write-Host "::notice::The issue or PR number must be a value greater than 0.";
+            Write-Host "::error::The issue or PR number must be a value greater than 0.";
             exit 1;
           }
 
@@ -40,12 +40,13 @@ jobs:
             1. Organization name
             2. Project name
             3. Issue number
-            4. Event Type - set to issue event type
+            4. Event type - set to issue event type
             5. PAT
           #>
           deno run `
             --allow-net `
             "$scriptUrl" `
+            "${{ vars.ORGANIZATION_NAME }}" `
             "${{ vars.PROJECT_NAME }}" `
             "$issueNumber" `
             "issue" `

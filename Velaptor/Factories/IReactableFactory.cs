@@ -84,10 +84,10 @@ internal interface IReactableFactory
     IBatchPullReactable<FontGlyphBatchItem> CreateFontPullBatchReactable();
 
     /// <summary>
-    /// Creates a reactable for pulling rectangle batch data.
+    /// Creates a reactable for pulling shape batch data.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IBatchPullReactable<ShapeBatchItem> CreateRectPullBatchReactable();
+    IBatchPullReactable<ShapeBatchItem> CreateShapePullBatchReactable();
 
     /// <summary>
     /// Creates a reactable for pulling line batch data.
@@ -108,10 +108,10 @@ internal interface IReactableFactory
     IRenderBatchReactable<FontGlyphBatchItem> CreateRenderFontReactable();
 
     /// <summary>
-    /// Creates a reactable for pushing rect batch data to the rect renderer.
+    /// Creates a reactable for pushing shape batch data to the shape renderer.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IRenderBatchReactable<ShapeBatchItem> CreateRenderRectReactable();
+    IRenderBatchReactable<ShapeBatchItem> CreateRenderShapeReactable();
 
     /// <summary>
     /// Creates a reactable for pushing line batch data to the line renderer.

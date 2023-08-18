@@ -5,6 +5,7 @@
 namespace Velaptor.Scene;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Content;
 using Velaptor;
@@ -28,21 +29,25 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     /// <summary>
     /// Gets a value indicating whether or not the scene has been loaded.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     bool IsLoaded { get; }
 
     /// <summary>
     /// Gets the size of the window.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     SizeU WindowSize { get; }
 
     /// <summary>
     /// Gets the center of the window.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     Point WindowCenter { get; }
 
     /// <summary>
     /// Gets the content loader.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     IContentLoader ContentLoader { get; }
 
     /// <summary>
@@ -54,12 +59,14 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     /// Adds a control to the scene to be updated and rendered.
     /// </summary>
     /// <param name="control">The control to add to the scene.</param>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     void AddControl(IControl control);
 
     /// <summary>
     /// Removes the given <paramref name="control"/> from the scene.
     /// </summary>
     /// <param name="control">The control to remove.</param>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     void RemoveControl(IControl control);
 
     /// <summary>
