@@ -1,4 +1,4 @@
-﻿// <copyright file="TextCursorTests.cs" company="KinsonDigital">
+// <copyright file="TextCursorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,7 +22,6 @@ using Xunit;
 /// </summary>
 public class TextCursorTests
 {
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
     private readonly Mock<IPushReactable<TextBoxStateData>> textBoxStateReactable;
     private IReceiveReactor<TextBoxStateData>? reactor;
 

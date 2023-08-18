@@ -41,7 +41,7 @@ public class AssertExtensions : Assert
     {
         if (testCode is null)
         {
-            Assert.Fail($"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
+            Fail($"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
         }
 
         try
@@ -50,7 +50,7 @@ public class AssertExtensions : Assert
         }
         catch (T)
         {
-            Assert.Fail($"{TableFlip}Expected the exception {typeof(T).Name} to not be thrown.");
+            Fail($"{TableFlip}Expected the exception {typeof(T).Name} to not be thrown.");
         }
     }
 
@@ -69,32 +69,32 @@ public class AssertExtensions : Assert
     {
         if (expectedItems is null)
         {
-            Assert.Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(expectedItems)}' must not be null.");
+            Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(expectedItems)}' must not be null.");
         }
 
         if (actualItems is null)
         {
-            Assert.Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(actualItems)}' must not be null.");
+            Fail($"The '{nameof(SectionEquals)}()' method param '{nameof(actualItems)}' must not be null.");
         }
 
         if (expectedItems.Length - 1 < indexStart)
         {
-            Assert.Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
         }
 
         if (expectedItems.Length - 1 < indexStop)
         {
-            Assert.Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
         }
 
         if (actualItems.Length - 1 < indexStart)
         {
-            Assert.Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            Fail($"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
         }
 
         if (actualItems.Length - 1 < indexStop)
         {
-            Assert.Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            Fail($"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
         }
 
         for (var i = indexStart; i < indexStop; i++)
@@ -139,7 +139,7 @@ public class AssertExtensions : Assert
         userMessage += $"{TableFlip}No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.";
         userMessage += "  Are there any items?";
 
-        Assert.True(actionInvoked, userMessage);
+        True(actionInvoked, userMessage);
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public class AssertExtensions : Assert
         userMessage += $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.";
         userMessage += "  Are there any items?";
 
-        Assert.True(actionInvoked, userMessage);
+        True(actionInvoked, userMessage);
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public class AssertExtensions : Assert
     {
         try
         {
-            Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
+            True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
         }
         catch (Exception)
         {

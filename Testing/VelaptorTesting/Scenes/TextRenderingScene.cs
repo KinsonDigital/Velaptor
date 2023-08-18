@@ -6,6 +6,7 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using Velaptor.Scene;
@@ -180,13 +181,15 @@ public class TextRenderingScene : SceneBase
 
         this.btnSetStyle.MouseUp += (_, _) =>
         {
+            const string argName = $"{nameof(TextRenderingScene)}.{nameof(this.textFont)}.{nameof(this.textFont.Style)}";
+
             this.textFont.Style = this.textFont.Style switch
             {
                 FontStyle.Regular => FontStyle.Bold,
                 FontStyle.Bold => FontStyle.Italic,
                 FontStyle.Italic => FontStyle.Bold | FontStyle.Italic,
                 FontStyle.Bold | FontStyle.Italic => FontStyle.Regular,
-                _ => throw new ArgumentOutOfRangeException(nameof(this.textFont.Style), "FontStyle value invalid."),
+                _ => throw new InvalidEnumArgumentException(argName, (int)this.textFont.Style, typeof(FontStyle)),
             };
 
             this.btnSetStyle.Text = $"Style: {this.textFont.Style}";
@@ -356,7 +359,8 @@ public class TextRenderingScene : SceneBase
         }
 
         var totalHeight = (from b in buttons
-            select (int)b.Height).ToArray().Sum();
+            select (int)b.Height).Sum();
+
         totalHeight += (buttons.Length - 1) * VertButtonSpacing;
         var totalHalfHeight = totalHeight / 2;
 

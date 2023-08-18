@@ -167,6 +167,9 @@ public abstract class SceneBase : IScene
         IsDisposed = true;
     }
 
+    /// <summary>
+    /// Unloads all of the controls.
+    /// </summary>
     private void UnloadAllControls()
     {
         foreach (var control in this.controls)

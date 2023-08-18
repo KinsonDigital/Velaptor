@@ -287,6 +287,10 @@ public abstract class Window : IWindow
     /// <inheritdoc cref="IDisposable.Dispose"/>
     /// </summary>
     /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
+    [SuppressMessage(
+        "ReSharper",
+        "VirtualMemberNeverOverridden.Global",
+        Justification = "Left for library users to override if needed.")]
     protected virtual void Dispose(bool disposing)
     {
         if (this.isDisposed)
