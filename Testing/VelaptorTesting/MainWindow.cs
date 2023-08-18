@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using Scenes;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Factories;
-using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
 
@@ -29,6 +29,7 @@ public class MainWindow : Window
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly Button nextButton;
     private readonly Button previousButton;
+    private readonly IBatcher batcher;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -36,12 +37,15 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
+        var rendererFactory = new RendererFactory();
+        this.batcher = rendererFactory.CreateBatcher();
+
         this.keyboard = InputFactory.CreateKeyboard();
 
         this.nextButton = new Button { Text = "-->" };
         this.previousButton = new Button { Text = "<--" };
 
-        IRenderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
+        this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -172,17 +176,18 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnDraw"/>
     protected override void OnDraw(FrameTime frameTime)
     {
-        IRenderer.Clear();
-        IRenderer.Begin();
+        base.OnDraw(frameTime);
 
-        SceneManager.Render();
+        // Render the buttons after the 'base.OnDraw()'.  With the rendering being set to auto,
+        // Anymore drawing has to be done after the base.OnDraw() call with the use of
+        // the 'Begin()' and 'End()` methods.
+        this.batcher.Begin();
 
         // Render the scene manager UI on top of all other textures
         this.nextButton.Render();
         this.previousButton.Render();
 
-        IRenderer.End();
-        base.OnDraw(frameTime);
+        this.batcher.End();
     }
 
     /// <inheritdoc cref="Window.OnUnload"/>
