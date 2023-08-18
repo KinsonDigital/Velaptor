@@ -67,6 +67,8 @@ internal static class IoC
 
         SetupBuffers();
 
+        SetupRendering();
+
         SetupCaching();
 
         SetupFactories();
@@ -90,6 +92,88 @@ internal static class IoC
         IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
 
         isInitialized = true;
+    }
+
+    /// <summary>
+    /// Sets up the various renderers.
+    /// </summary>
+    private static void SetupRendering()
+    {
+        IoCContainer.Register<IFontRenderer>(
+            () =>
+        {
+            var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
+            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
+            var openGLService = IoCContainer.GetInstance<IOpenGLService>();
+            var buffer = IoCContainer.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
+            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateFontShader();
+            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
+
+            return new FontRenderer(
+                glInvoker,
+                reactableFactory,
+                openGLService,
+                buffer,
+                shader,
+                batchManager);
+        }, Lifestyle.Singleton);
+
+        IoCContainer.Register<ITextureRenderer>(
+            () =>
+        {
+            var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
+            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
+            var openGLService = IoCContainer.GetInstance<IOpenGLService>();
+            var buffer = IoCContainer.GetInstance<IGPUBuffer<TextureBatchItem>>();
+            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateTextureShader();
+            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
+
+            return new TextureRenderer(
+                glInvoker,
+                reactableFactory,
+                openGLService,
+                buffer,
+                shader,
+                batchManager);
+        }, Lifestyle.Singleton);
+
+        IoCContainer.Register<ILineRenderer>(
+            () =>
+        {
+            var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
+            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
+            var openGLService = IoCContainer.GetInstance<IOpenGLService>();
+            var buffer = IoCContainer.GetInstance<IGPUBuffer<LineBatchItem>>();
+            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateLineShader();
+            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
+
+            return new LineRenderer(
+                glInvoker,
+                reactableFactory,
+                openGLService,
+                buffer,
+                shader,
+                batchManager);
+        }, Lifestyle.Singleton);
+
+        IoCContainer.Register<IShapeRenderer>(
+            () =>
+        {
+            var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
+            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
+            var openGLService = IoCContainer.GetInstance<IOpenGLService>();
+            var buffer = IoCContainer.GetInstance<IGPUBuffer<ShapeBatchItem>>();
+            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateRectShader();
+            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
+
+            return new ShapeRenderer(
+                glInvoker,
+                reactableFactory,
+                openGLService,
+                buffer,
+                shader,
+                batchManager);
+        }, Lifestyle.Singleton);
     }
 
     /// <summary>
