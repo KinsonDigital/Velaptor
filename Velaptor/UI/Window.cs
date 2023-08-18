@@ -163,6 +163,22 @@ public abstract class Window : IWindow
     public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
+    public bool AutoSceneLoading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUnloading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUpdating { get; set; } = true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// If this is set to <c>false</c>, using <see cref="IBatcher.Begin"/> and <see cref="IBatcher.End"/>
+    /// will be required to render the scene.
+    /// </remarks>
+    public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
     public bool Initialized => this.nativeWindow.Initialized;
 
     /// <summary>
@@ -200,6 +216,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
+        if (AutoSceneLoading is false)
+        {
+            return;
+        }
+
+        SceneManager.LoadContent();
     }
 
     /// <summary>
@@ -209,6 +231,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
+        if (AutoSceneUpdating is false)
+        {
+            return;
+        }
+
+        SceneManager.Update(frameTime);
     }
 
     /// <summary>
@@ -218,6 +246,14 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
+        if (AutoSceneRendering is false)
+        {
+            return;
+        }
+
+
+        SceneManager.Render();
+
     }
 
     /// <summary>
@@ -226,6 +262,12 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
+        if (AutoSceneUnloading is false)
+        {
+            return;
+        }
+
+        SceneManager.UnloadContent();
     }
 
     /// <summary>

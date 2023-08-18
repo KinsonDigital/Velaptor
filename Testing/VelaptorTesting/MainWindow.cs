@@ -141,15 +141,12 @@ public class MainWindow : Window
         this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
         this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
 
-        SceneManager.LoadContent();
         base.OnLoad();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
     protected override void OnUpdate(FrameTime frameTime)
     {
-        SceneManager.Update(frameTime);
-
         Title = $"Scene: {SceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
 
         var currentKeyState = this.keyboard.GetState();

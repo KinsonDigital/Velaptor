@@ -203,6 +203,18 @@ internal sealed class GLWindow : VelaptorIWindow
     public ISceneManager SceneManager { get; }
 
     /// <inheritdoc/>
+    public bool AutoSceneLoading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUnloading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUpdating { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
     public int UpdateFrequency
     {
         get => CachedIntProps[nameof(UpdateFrequency)].GetValue();

@@ -1,4 +1,4 @@
-// <copyright file="IWindow.cs" company="KinsonDigital">
+﻿// <copyright file="IWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -118,6 +118,26 @@ public interface IWindow : IDisposable
     /// Gets the scene manager.
     /// </summary>
     ISceneManager SceneManager { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the scenes should be automatically loaded.
+    /// </summary>
+    bool AutoSceneLoading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the scenes should be automatically unloaded.
+    /// </summary>
+    public bool AutoSceneUnloading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the scenes should be automatically updated.
+    /// </summary>
+    public bool AutoSceneUpdating { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the scenes should be automatically rendered.
+    /// </summary>
+    public bool AutoSceneRendering { get; set; }
 
     /// <summary>
     /// Shows the window.
