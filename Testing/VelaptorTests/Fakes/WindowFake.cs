@@ -16,7 +16,7 @@ public class WindowFake : Window
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFake"/> class.
     /// </summary>
-    /// <param name="window">Mocked window..</param>
+    /// <param name="window">Mocked window.</param>
     /// <param name="sceneManager">Mocked scene manager.</param>
     /// <param name="batcher">Mocked batcher.</param>
     /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>

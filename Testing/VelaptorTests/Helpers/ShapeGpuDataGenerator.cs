@@ -1,4 +1,4 @@
-// <copyright file="RectGpuDataGenerator.cs" company="KinsonDigital">
+// <copyright file="ShapeGpuDataGenerator.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ using Velaptor.OpenGL.GpuData;
 /// Helps generate <see cref="ShapeVertexData"/> easily for the purpose of testing.
 /// </summary>
 [SuppressMessage("csharpsquid", "S101", Justification = "Class naming is fine.")]
-internal static class RectGpuDataGenerator
+internal static class ShapeGpuDataGenerator
 {
     /// <summary>
     /// Generates a <see cref="ShapeGpuData"/> instance with the component values beginning at <paramref name="start"/> value

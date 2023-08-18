@@ -92,7 +92,7 @@ internal static class PushNotifications
     public static Guid RenderShapesId { get; } = new ("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
 
     /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications for when the lines need to be rendered.
+    /// Gets the unique <see cref="Guid"/> for push notifications when the lines need to be rendered.
     /// </summary>
     public static Guid RenderLinesId { get; } = new ("3fb13cdb-db24-4d28-b117-b9604722277f");
 }

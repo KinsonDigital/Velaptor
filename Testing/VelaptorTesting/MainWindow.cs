@@ -179,7 +179,7 @@ public class MainWindow : Window
         base.OnDraw(frameTime);
 
         // Render the buttons after the 'base.OnDraw()'.  With the rendering being set to auto,
-        // Anymore drawing has to be done after the base.OnDraw() call with the use of
+        // additional drawings have to be done after the base.OnDraw() call with the use of
         // the 'Begin()' and 'End()` methods.
         this.batcher.Begin();
 

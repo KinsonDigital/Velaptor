@@ -20,10 +20,10 @@ public class ShapeGpuDataTests
     public void Ctor_WhenInvoked_SetsProperties()
     {
         // Arrange
-        var vertex1 = RectGpuDataGenerator.GenerateVertexData(1, out var next);
-        var vertex2 = RectGpuDataGenerator.GenerateVertexData(next, out next);
-        var vertex3 = RectGpuDataGenerator.GenerateVertexData(next, out next);
-        var vertex4 = RectGpuDataGenerator.GenerateVertexData(next, out next);
+        var vertex1 = ShapeGpuDataGenerator.GenerateVertexData(1, out var next);
+        var vertex2 = ShapeGpuDataGenerator.GenerateVertexData(next, out next);
+        var vertex3 = ShapeGpuDataGenerator.GenerateVertexData(next, out next);
+        var vertex4 = ShapeGpuDataGenerator.GenerateVertexData(next, out next);
 
         // Act
         var data = new ShapeGpuData(vertex1, vertex2, vertex3, vertex4);
@@ -46,7 +46,7 @@ public class ShapeGpuDataTests
             .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName)
             .Select(i => i.value).ToArray();
 
-        var data = RectGpuDataGenerator.GenerateGpuData(1);
+        var data = ShapeGpuDataGenerator.GenerateGpuData(1);
 
         // Act
         var actual = data.ToArray();

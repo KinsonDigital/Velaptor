@@ -1,4 +1,4 @@
-// <copyright file="RectVertexDataTests.cs" company="KinsonDigital">
+// <copyright file="ShapeVertexDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,7 +14,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="ShapeVertexData"/> struct.
 /// </summary>
-public class RectVertexDataTests
+public class ShapeVertexDataTests
 {
     #region Constructor Tests
     [Fact]
