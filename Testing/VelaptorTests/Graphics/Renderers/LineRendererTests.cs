@@ -400,7 +400,7 @@ public class LineRendererTests
         // Arrange
         const uint batchIndex = 0;
 
-        var rect = new Line(
+        var line = new Line(
             new Vector2(1, 2),
             new Vector2(3, 4),
             Color.FromArgb(5, 6, 7, 8),
@@ -418,7 +418,7 @@ public class LineRendererTests
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
-        sut.Render(rect);
+        sut.Render(line);
 
         // Act
         this.renderReactor.OnReceive(renderItems);

@@ -1,4 +1,4 @@
-﻿// <copyright file="RectangleShaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="ShapeShaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,7 +22,10 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.ReactableData;
 using Xunit;
 
-public class RectangleShaderTests
+/// <summary>
+/// Tests the <see cref="ShapeShader"/> class.
+/// </summary>
+public class ShapeShaderTests
 {
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
@@ -32,9 +35,9 @@ public class RectangleShaderTests
     private IReceiveReactor<BatchSizeData>? batchSizeReactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectangleShaderTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeShaderTests"/> class.
     /// </summary>
-    public RectangleShaderTests()
+    public ShapeShaderTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
@@ -82,7 +85,7 @@ public class RectangleShaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new RectangleShader(
+            _ = new ShapeShader(
                 new Mock<IGLInvoker>().Object,
                 new Mock<IOpenGLService>().Object,
                 new Mock<IShaderLoaderService>().Object,
@@ -99,7 +102,7 @@ public class RectangleShaderTests
     public void Ctor_WhenInvoked_SetsNameProp()
     {
         // Arrange
-        var customAttributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+        var customAttributes = Attribute.GetCustomAttributes(typeof(ShapeShader));
         var containsAttribute = customAttributes.Any(i => i is ShaderNameAttribute);
 
         // Act
@@ -109,7 +112,7 @@ public class RectangleShaderTests
         containsAttribute
             .Should()
             .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
-        sut.Name.Should().Be("Rectangle");
+        sut.Name.Should().Be("Shape");
     }
     #endregion
 
@@ -146,10 +149,10 @@ public class RectangleShaderTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="RectangleShader"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="ShapeShader"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private RectangleShader CreateSystemUnderTest()
+    private ShapeShader CreateSystemUnderTest()
         => new (this.mockGL.Object,
             this.mockGLService.Object,
             this.mockShaderLoader.Object,

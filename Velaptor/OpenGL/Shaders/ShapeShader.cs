@@ -1,4 +1,4 @@
-// <copyright file="RectangleShader.cs" company="KinsonDigital">
+// <copyright file="ShapeShader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,15 +13,15 @@ using ReactableData;
 using Services;
 
 /// <summary>
-/// A rectangle shader used to render 2D rectangles.
+/// A shader used to render 2D shapes.
 /// </summary>
-[ShaderName("Rectangle")]
-internal sealed class RectangleShader : ShaderProgram
+[ShaderName("Shape")]
+internal sealed class ShapeShader : ShaderProgram
 {
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectangleShader"/> class.
+    /// Initializes a new instance of the <see cref="ShapeShader"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -30,7 +30,7 @@ internal sealed class RectangleShader : ShaderProgram
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public RectangleShader(
+    public ShapeShader(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IShaderLoaderService shaderLoaderService,

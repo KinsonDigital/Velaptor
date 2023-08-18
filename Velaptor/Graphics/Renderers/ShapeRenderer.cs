@@ -63,11 +63,11 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
 
-        var rectRenderBatchReactable = reactableFactory.CreateRenderRectReactable();
+        var shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderRectsId));
-        this.renderUnsubscriber = rectRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<ShapeBatchItem>>>(
-            eventId: PushNotifications.RenderRectsId,
+        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId));
+        this.renderUnsubscriber = shapeRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<ShapeBatchItem>>>(
+            eventId: PushNotifications.RenderShapesId,
             name: renderReactorName,
             onReceiveData: RenderBatch));
     }
@@ -109,23 +109,23 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
-        this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);
+        this.batchManager.AddShapeItem(batchItem, layer, DateTime.Now);
     }
 
     /// <summary>
-    /// Invoked every time a batch of rectangles is ready to be rendered.
+    /// Invoked every time a batch of shapes are ready to be rendered.
     /// </summary>
     private void RenderBatch(Memory<RenderItem<ShapeBatchItem>> itemsToRender)
     {
         if (itemsToRender.Length <= 0)
         {
-            this.openGLService.BeginGroup("Render Rectangle Process - Nothing To Render");
+            this.openGLService.BeginGroup("Render Shape Process - Nothing To Render");
             this.openGLService.EndGroup();
 
             return;
         }
 
-        this.openGLService.BeginGroup($"Render Rectangle Process With {this.shader.Name} Shader");
+        this.openGLService.BeginGroup($"Render Shape Process With {this.shader.Name} Shader");
 
         this.shader.Use();
 
@@ -140,14 +140,14 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
             gpuDataIndex++;
             totalItemsToRender++;
 
-            this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
+            this.openGLService.BeginGroup($"Update Shape Data - BatchItem({i})");
             this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
             this.openGLService.EndGroup();
         }
 
         var totalElements = 6u * totalItemsToRender;
 
-        this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+        this.openGLService.BeginGroup($"Render {totalElements} Shape Elements");
         GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
         this.openGLService.EndGroup();
 

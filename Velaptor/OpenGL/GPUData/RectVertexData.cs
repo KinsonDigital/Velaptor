@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 
+// TODO: Rename this class
+
 /// <summary>
 /// Represents a single vertex of the <see cref="RectGPUData"/> sent to the GPU.
 /// </summary>

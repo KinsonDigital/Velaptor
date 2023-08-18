@@ -113,10 +113,10 @@ public class PushNotificationsTests
     }
 
     [Fact]
-    public void RenderRectsId_WhenGettingValue_ReturnsCorrectResult()
+    public void RenderShapesId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.RenderRectsId.Should().Be("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
+        PushNotifications.RenderShapesId.Should().Be("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
     }
 
     [Fact]

@@ -89,7 +89,7 @@ internal static class PushNotifications
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the rectangles need to be rendered.
     /// </summary>
-    public static Guid RenderRectsId { get; } = new ("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
+    public static Guid RenderShapesId { get; } = new ("27c20138-52d3-4b5d-936d-3b62e3b7db4d");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the lines need to be rendered.

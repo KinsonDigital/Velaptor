@@ -350,7 +350,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void ToBatchItem_WithRectShapeOverload_ReturnsCorrectResult()
+    public void ToBatchItem_WithShapeOverload_ReturnsCorrectResult()
     {
         // Arrange
         var expected = new ShapeBatchItem(new Vector2(1, 2),

@@ -34,14 +34,14 @@ public class BatchingManagerTests
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IDisposable> mockTexturePullUnsubscriber;
     private readonly Mock<IDisposable> mockFontPullUnsubscriber;
-    private readonly Mock<IDisposable> mockRectPullUnsubscriber;
+    private readonly Mock<IDisposable> mockShapePullUnsubscriber;
     private readonly Mock<IDisposable> mockLinePullUnsubscriber;
     private IReceiveReactor<BatchSizeData>? batchSizeReactor;
     private IReceiveReactor? shutDownReactor;
     private IReceiveReactor? emptyBatchReactor;
     private IRespondReactor<Memory<RenderItem<TextureBatchItem>>>? textureBatchPullReactor;
     private IRespondReactor<Memory<RenderItem<FontGlyphBatchItem>>>? fontBatchPullReactor;
-    private IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>? rectBatchPullReactor;
+    private IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>? shapeBatchPullReactor;
     private IRespondReactor<Memory<RenderItem<LineBatchItem>>>? lineBatchPullReactor;
 
     /// <summary>
@@ -61,8 +61,8 @@ public class BatchingManagerTests
         this.mockFontPullUnsubscriber = new Mock<IDisposable>();
         this.mockFontPullUnsubscriber.Name = nameof(this.mockFontPullUnsubscriber);
 
-        this.mockRectPullUnsubscriber = new Mock<IDisposable>();
-        this.mockRectPullUnsubscriber.Name = nameof(this.mockRectPullUnsubscriber);
+        this.mockShapePullUnsubscriber = new Mock<IDisposable>();
+        this.mockShapePullUnsubscriber.Name = nameof(this.mockShapePullUnsubscriber);
 
         this.mockLinePullUnsubscriber = new Mock<IDisposable>();
         this.mockLinePullUnsubscriber.Name = nameof(this.mockLinePullUnsubscriber);
@@ -169,26 +169,26 @@ public class BatchingManagerTests
                 return null;
             });
 
-        var mockRectBatchPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
-        mockRectBatchPullReactable
+        var mockShapeBatchPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
+        mockShapeBatchPullReactable
             .Setup(m => m.Subscribe(It.IsAny<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>()))
             .Callback<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
-                if (reactor.Id == PullResponses.GetRectItemsId)
+                if (reactor.Id == PullResponses.GetShapeItemsId)
                 {
-                    this.rectBatchPullReactor = reactor;
+                    this.shapeBatchPullReactor = reactor;
                 }
             })
             .Returns<IRespondReactor<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetRectItemsId)}");
+                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetShapeItemsId)}");
 
-                if (reactor.Id == PullResponses.GetRectItemsId)
+                if (reactor.Id == PullResponses.GetShapeItemsId)
                 {
-                    return this.mockRectPullUnsubscriber.Object;
+                    return this.mockShapePullUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
@@ -231,8 +231,8 @@ public class BatchingManagerTests
             .Returns(mockTextureBatchPullReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateFontPullBatchReactable())
             .Returns(mockFontBatchPullReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRectPullBatchReactable())
-            .Returns(mockRectBatchPullReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateShapePullBatchReactable())
+            .Returns(mockShapeBatchPullReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateLinePullBatchReactable())
             .Returns(mockLineBatchPullReactable.Object);
     }
@@ -270,7 +270,7 @@ public class BatchingManagerTests
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockTexturePullUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockFontPullUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockRectPullUnsubscriber.VerifyOnce(m => m.Dispose());
+        this.mockShapePullUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockLinePullUnsubscriber.VerifyOnce(m => m.Dispose());
     }
 
@@ -287,7 +287,7 @@ public class BatchingManagerTests
 
         var textureItems = BatchItemFactory.CreateTextureItemsWithOrderedValues(totalItems: halfBatchSize);
         var fontItems = BatchItemFactory.CreateFontItemsWithOrderedValues(totalItems: halfBatchSize);
-        var rectItems = BatchItemFactory.CreateRectItemsWithOrderedValues(totalItems: halfBatchSize);
+        var shapeItems = BatchItemFactory.CreateShapeItemsWithOrderedValues(totalItems: halfBatchSize);
         var lineItems = BatchItemFactory.CreateLineItemsWithOrderedValues(totalItems: halfBatchSize);
 
         for (var i = 0; i < textureItems.Length; i++)
@@ -300,9 +300,9 @@ public class BatchingManagerTests
             sut.AddFontItem(fontItems[i], i, DateTime.Now);
         }
 
-        for (var i = 0; i < rectItems.Length; i++)
+        for (var i = 0; i < shapeItems.Length; i++)
         {
-            sut.AddRectItem(rectItems[i], i, DateTime.Now);
+            sut.AddShapeItem(shapeItems[i], i, DateTime.Now);
         }
 
         for (var i = 0; i < lineItems.Length; i++)
@@ -320,7 +320,7 @@ public class BatchingManagerTests
         sut.FontItems.ToArray().Should().AllSatisfy(expected =>
             expected.Should().BeEquivalentTo(default(RenderItem<FontGlyphBatchItem>)));
 
-        sut.RectItems.ToArray().Should().AllSatisfy(expected =>
+        sut.ShapeItems.ToArray().Should().AllSatisfy(expected =>
             expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
 
         sut.LineItems.ToArray().Should().AllSatisfy(expected =>
@@ -346,8 +346,8 @@ public class BatchingManagerTests
         sut.FontItems.ToArray().Should()
             .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<FontGlyphBatchItem>)));
 
-        sut.RectItems.ToArray().Should().HaveCount(2);
-        sut.RectItems.ToArray().Should()
+        sut.ShapeItems.ToArray().Should().HaveCount(2);
+        sut.ShapeItems.ToArray().Should()
             .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
 
         sut.LineItems.ToArray().Should().HaveCount(2);
@@ -376,7 +376,7 @@ public class BatchingManagerTests
 
         // Assert
         actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).ToArray().Should().NotContain(itemC);
+        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
         actual.ToArray()[0].Layer.Should().Be(1);
         actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
 
@@ -403,7 +403,7 @@ public class BatchingManagerTests
 
         // Assert
         actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).ToArray().Should().NotContain(itemC);
+        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
         actual.ToArray()[0].Layer.Should().Be(1);
         actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
 
@@ -412,25 +412,25 @@ public class BatchingManagerTests
     }
 
     [Fact]
-    public void RectBatchPullReactable_WhenRequestingResponseFromPartiallyEmptyBatch_ReturnsCorrectResult()
+    public void ShapeBatchPullReactable_WhenRequestingResponseFromPartiallyEmptyBatch_ReturnsCorrectResult()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3 });
-        var itemA = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(11, 22));
-        var itemB = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(33, 44));
-        var itemC = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(55, 66));
+        var itemA = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(11, 22));
+        var itemB = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(33, 44));
+        var itemC = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(55, 66));
 
-        sut.AddRectItem(itemA, 1, DateTime.Now);
-        sut.AddRectItem(itemB, 2, DateTime.Now);
+        sut.AddShapeItem(itemA, 1, DateTime.Now);
+        sut.AddShapeItem(itemB, 2, DateTime.Now);
 
         // Act
-        var actual = this.rectBatchPullReactor.OnRespond();
+        var actual = this.shapeBatchPullReactor.OnRespond();
 
         // Assert
         actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).ToArray().Should().NotContain(itemC);
+        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
         actual.ToArray()[0].Layer.Should().Be(1);
         actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
 
@@ -457,7 +457,7 @@ public class BatchingManagerTests
 
         // Assert
         actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).ToArray().Should().NotContain(itemC);
+        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
         actual.ToArray()[0].Layer.Should().Be(1);
         actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
 
@@ -475,9 +475,9 @@ public class BatchingManagerTests
         var itemB = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(50, 60, 70, 80));
         var itemC = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(90, 100, 110, 120));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
-        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
+        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30, DateTimeKind.Utc);
 
         var expectedA = new RenderItem<TextureBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
         var expectedB = new RenderItem<TextureBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
@@ -555,8 +555,8 @@ public class BatchingManagerTests
         var itemA = BatchItemFactory.CreateTextureItemWithOrderedValues(textureId: 123);
         var itemB = BatchItemFactory.CreateTextureItemWithOrderedValues(textureId: 456);
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
 
         // Act
         sut.AddTextureItem(itemA, 1, renderStampA);
@@ -575,9 +575,9 @@ public class BatchingManagerTests
         var itemB = BatchItemFactory.CreateFontItemWithOrderedValues(new RectangleF(50, 60, 70, 80));
         var itemC = BatchItemFactory.CreateFontItemWithOrderedValues(new RectangleF(90, 100, 110, 120));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
-        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
+        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30, DateTimeKind.Utc);
 
         var expectedA = new RenderItem<FontGlyphBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
         var expectedB = new RenderItem<FontGlyphBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
@@ -622,8 +622,8 @@ public class BatchingManagerTests
         var itemA = BatchItemFactory.CreateFontItemWithOrderedValues(textureId: 123);
         var itemB = BatchItemFactory.CreateFontItemWithOrderedValues(textureId: 456);
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
 
         // Act
         sut.AddFontItem(itemA, 1, renderStampA);
@@ -635,16 +635,16 @@ public class BatchingManagerTests
     }
 
     [Fact]
-    public void AddRectItem_WithFullBatch_ResizesRectBatch()
+    public void AddShapeItem_WithFullBatch_ResizesShapeBatch()
     {
         // Arrange
-        var itemA = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(10, 20));
-        var itemB = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(30, 40));
-        var itemC = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(50, 60));
+        var itemA = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(10, 20));
+        var itemB = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(30, 40));
+        var itemC = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(50, 60));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
-        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
+        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30, DateTimeKind.Utc);
 
         var expectedA = new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
         var expectedB = new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
@@ -661,44 +661,44 @@ public class BatchingManagerTests
         // Initialize batch size
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 2, TypeOfBatch = BatchType.Rect });
 
-        sut.AddRectItem(itemA, 1, renderStampA);
-        sut.AddRectItem(itemB, 2, renderStampB);
+        sut.AddShapeItem(itemA, 1, renderStampA);
+        sut.AddShapeItem(itemB, 2, renderStampB);
 
         // Act
-        sut.AddRectItem(itemC, 3, renderStampC);
+        sut.AddShapeItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.RectItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
+        sut.ShapeItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
 
-        sut.RectItems.ToArray().Should().Contain(expectedA);
-        sut.RectItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().Should().Contain(expectedA);
+        sut.ShapeItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
 
-        sut.RectItems.ToArray().Should().Contain(expectedB);
-        sut.RectItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().Should().Contain(expectedB);
+        sut.ShapeItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
 
-        sut.RectItems.ToArray().Should().Contain(expectedC);
-        sut.RectItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().Should().Contain(expectedC);
+        sut.ShapeItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
     }
 
     [Fact]
-    public void AddRectItem_WhenInvoked_SetsNewLineBatchItem()
+    public void AddShapeItem_WhenInvoked_SetsNewLineBatchItem()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 2 });
-        var itemA = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(10, 20));
-        var itemB = BatchItemFactory.CreateRectItemWithOrderedValues(new Vector2(30, 40));
+        var itemA = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(10, 20));
+        var itemB = BatchItemFactory.CreateShapeItemWithOrderedValues(new Vector2(30, 40));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
 
         // Act
-        sut.AddRectItem(itemA, 1, renderStampA);
-        sut.AddRectItem(itemB, 2, renderStampB);
+        sut.AddShapeItem(itemA, 1, renderStampA);
+        sut.AddShapeItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.RectItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.RectItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.ShapeItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.ShapeItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
 
     [Fact]
@@ -709,9 +709,9 @@ public class BatchingManagerTests
         var itemB = BatchItemFactory.CreateLineItemWithOrderedValues(new Vector2(30, 40));
         var itemC = BatchItemFactory.CreateLineItemWithOrderedValues(new Vector2(50, 60));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
-        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
+        var renderStampC = new DateTime(1, 2, 3, 0, 0, 0, 30, DateTimeKind.Utc);
 
         var expectedA = new RenderItem<LineBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA };
         var expectedB = new RenderItem<LineBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
@@ -756,8 +756,8 @@ public class BatchingManagerTests
         var itemA = BatchItemFactory.CreateLineItemWithOrderedValues(new Vector2(10, 20));
         var itemB = BatchItemFactory.CreateLineItemWithOrderedValues(new Vector2(30, 40));
 
-        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10);
-        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20);
+        var renderStampA = new DateTime(1, 2, 3, 0, 0, 0, 10, DateTimeKind.Utc);
+        var renderStampB = new DateTime(1, 2, 3, 0, 0, 0, 20, DateTimeKind.Utc);
 
         // Act
         sut.AddLineItem(itemA, 1, renderStampA);

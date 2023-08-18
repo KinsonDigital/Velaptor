@@ -308,10 +308,10 @@ public class GameHelpersTests
     public void ApplySize_WithSizeF_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new SizeF(10, 20);
+        var size = new SizeF(10, 20);
 
         // Act
-        var actual = rect.ApplySize(2f);
+        var actual = size.ApplySize(2f);
 
         // Assert
         actual.Width.Should().Be(30f);

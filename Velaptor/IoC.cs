@@ -164,7 +164,7 @@ internal static class IoC
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var openGLService = IoCContainer.GetInstance<IOpenGLService>();
             var buffer = IoCContainer.GetInstance<IGPUBuffer<ShapeBatchItem>>();
-            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateRectShader();
+            var shader = IoCContainer.GetInstance<IShaderFactory>().CreateShapeShader();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
             return new ShapeRenderer(

@@ -286,9 +286,9 @@ internal abstract class ShaderProgram : IShaderProgram
         {
             attributes = Attribute.GetCustomAttributes(typeof(FontShader));
         }
-        else if (currentType == typeof(RectangleShader))
+        else if (currentType == typeof(ShapeShader))
         {
-            attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+            attributes = Attribute.GetCustomAttributes(typeof(ShapeShader));
         }
         else if (currentType == typeof(LineShader))
         {

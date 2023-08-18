@@ -38,7 +38,7 @@ using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
 /// </summary>
 public class ShapeRendererTests
 {
-    private const uint RectShaderId = 3333u;
+    private const uint ShapeShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
@@ -64,7 +64,7 @@ public class ShapeRendererTests
         this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
         this.mockShader = new Mock<IShaderProgram>();
-        this.mockShader.SetupGet(p => p.ShaderId).Returns(RectShaderId);
+        this.mockShader.SetupGet(p => p.ShaderId).Returns(ShapeShaderId);
 
         this.mockGPUBuffer = new Mock<IGPUBuffer<ShapeBatchItem>>();
 
@@ -110,19 +110,19 @@ public class ShapeRendererTests
                 return null;
             });
 
-        var mockRectRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
-        mockRectRenderBatchReactable
+        var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
+        mockShapeRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
             .Callback<RectRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.RenderRectsId)}");
+                reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.RenderShapesId)}");
 
                 this.renderReactor = reactor;
             })
             .Returns<RectRenderItem>(reactor =>
             {
-                if (reactor.Id == PushNotifications.RenderRectsId)
+                if (reactor.Id == PushNotifications.RenderShapesId)
                 {
                     return this.mockRenderUnsubscriber.Object;
                 }
@@ -134,8 +134,8 @@ public class ShapeRendererTests
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
             .Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderRectReactable())
-            .Returns(mockRectRenderBatchReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateRenderShapeReactable())
+            .Returns(mockShapeRenderBatchReactable.Object);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -230,10 +230,10 @@ public class ShapeRendererTests
 
     #region Method Tests
     [Fact]
-    public void Render_WhenRenderingRect_AddsRectToBatch()
+    public void Render_WhenRenderingShape_AddsShapeToBatch()
     {
         // Arrange
-        var rect = new RectShape
+        var rectShape = new RectShape
         {
             Position = new Vector2(11, 22),
             Width = 33u,
@@ -263,10 +263,10 @@ public class ShapeRendererTests
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(rect, 123);
+        sut.Render(rectShape, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123, It.IsAny<DateTime>()));
+        this.mockBatchingManager.VerifyOnce(m => m.AddShapeItem(expected, 123, It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class ShapeRendererTests
         this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
@@ -321,11 +321,11 @@ public class ShapeRendererTests
     {
         // Arrange
         const string expected = "The 'Begin()' method must be invoked first before any 'Render()' methods.";
-        var rect = default(RectShape);
+        var rectShape = default(RectShape);
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Render(rect);
+        var act = () => sut.Render(rectShape);
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -367,7 +367,7 @@ public class ShapeRendererTests
         sut.Render(circle, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddRectItem(expected, 123, It.IsAny<DateTime>()));
+        this.mockBatchingManager.VerifyOnce(m => m.AddShapeItem(expected, 123, It.IsAny<DateTime>()));
     }
 
     [Fact]
@@ -409,7 +409,7 @@ public class ShapeRendererTests
         this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
@@ -452,7 +452,7 @@ public class ShapeRendererTests
     public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
-        const string shaderName = "TestRectShader";
+        const string shaderName = "TestShapeShader";
         this.mockShader.SetupGet(p => p.Name).Returns(shaderName);
         _ = CreateSystemUnderTest();
 
@@ -460,9 +460,9 @@ public class ShapeRendererTests
         this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"));
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Shape Process - Nothing To Render"));
         this.mockGLService.VerifyOnce(m => m.EndGroup());
-        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
+        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Shape Process With {shaderName} Shader"));
         this.mockShader.VerifyNever(m => m.Use());
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));

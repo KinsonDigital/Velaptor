@@ -39,7 +39,7 @@ public class ShapeGPUBufferTests
     private const uint EBO = 789u;
     private const uint ViewPortWidth = 100u;
     private const uint ViewPortHeight = 200u;
-    private const string BufferName = "Rectangle";
+    private const string BufferName = "Shape";
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -174,15 +174,15 @@ public class ShapeGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(ShapeBatchItem);
+        var shape = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.UploadVertexData(rect, 123);
+        sut.UploadVertexData(shape, 123);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Update Rectangle - BatchItem(123)"), Times.Once);
+        this.mockGLService.Verify(m => m.BeginGroup("Update Shape - BatchItem(123)"), Times.Once);
         this.mockGLService.Verify(m => m.EndGroup(),
             Times.Exactly(4),
             failMessage);
@@ -199,12 +199,12 @@ public class ShapeGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(ShapeBatchItem);
+        var shape = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.UploadVertexData(rect, 0);
+        sut.UploadVertexData(shape, 0);
 
         // Assert
         this.mockGLService.Verify(m => m.BindVBO(VBO),
@@ -230,7 +230,7 @@ public class ShapeGPUBufferTests
             -0.949999988f, 0.959999979f, 1f, 2f, 3f, 4f, 6f, 7f, 8f, 5f, 1f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f,
         };
 
-        var rect = new ShapeBatchItem(
+        var shape = new ShapeBatchItem(
             new Vector2(1, 2),
             3,
             4,
@@ -258,7 +258,7 @@ public class ShapeGPUBufferTests
         this.viewPortSizeReactor.OnReceive(viewPortSizeData);
 
         // Act
-        sut.UploadVertexData(rect, 0);
+        sut.UploadVertexData(shape, 0);
 
         // Assert
         this.mockGL.Verify(m =>
@@ -271,14 +271,14 @@ public class ShapeGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = BatchItemFactory.CreateRectItemWithOrderedValues(gradientType: (ColorGradient)1234);
+        var shape = BatchItemFactory.CreateShapeItemWithOrderedValues(gradientType: (ColorGradient)1234);
 
         var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
         {
-            sut.UploadVertexData(rect, 0);
+            sut.UploadVertexData(shape, 0);
         }, "The gradient type is invalid. (Parameter 'GradientType')");
     }
 
@@ -323,7 +323,7 @@ public class ShapeGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new ShapeBatchItem(
+        var shape = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,
@@ -339,7 +339,7 @@ public class ShapeGPUBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.UploadVertexData(rect, 0);
+        sut.UploadVertexData(shape, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color
@@ -389,7 +389,7 @@ public class ShapeGPUBufferTests
             });
 
 #pragma warning disable SA1117
-        var rect = new ShapeBatchItem(
+        var shape = new ShapeBatchItem(
             position: new Vector2(1, 2),
             width: 3,
             height: 4,
@@ -405,7 +405,7 @@ public class ShapeGPUBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.UploadVertexData(rect, 0);
+        sut.UploadVertexData(shape, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
@@ -454,12 +454,12 @@ public class ShapeGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = BatchItemFactory.CreateRectItemWithOrderedValues();
+        var shape = BatchItemFactory.CreateShapeItemWithOrderedValues();
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.UploadVertexData(rect, 0);
+        sut.UploadVertexData(shape, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
@@ -478,7 +478,7 @@ public class ShapeGPUBufferTests
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
             sut.PrepareForUpload();
-        }, "The rectangle buffer has not been initialized.");
+        }, "The shape buffer has not been initialized.");
     }
 
     [Fact]

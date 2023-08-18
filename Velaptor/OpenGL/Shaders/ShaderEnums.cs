@@ -20,9 +20,9 @@ internal enum ShaderType
     Font = 2,
 
     /// <summary>
-    /// A rectangle shape shader.
+    /// A shape shader.
     /// </summary>
-    Rectangle = 3,
+    Shape = 3,
 
     /// <summary>
     /// A line shader.

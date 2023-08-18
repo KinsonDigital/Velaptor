@@ -20,13 +20,13 @@ using NativeInterop.OpenGL;
 using ReactableData;
 
 /// <summary>
-/// Updates data in the rectangle GPU buffer.
+/// Updates data in the shape GPU buffer.
 /// </summary>
-[GPUBufferName("Rectangle")]
+[GPUBufferName("Shape")]
 [SuppressMessage("csharpsquid", "S101", Justification = "GPU is an acceptable acronym.")]
 internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
 {
-    private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
+    private const string BufferNotInitMsg = "The shape buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
@@ -67,9 +67,9 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     }
 
     /// <inheritdoc/>
-    protected internal override void UploadVertexData(ShapeBatchItem rectShape, uint batchIndex)
+    protected internal override void UploadVertexData(ShapeBatchItem shape, uint batchIndex)
     {
-        OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
+        OpenGLService.BeginGroup($"Update Shape - BatchItem({batchIndex})");
 
         /*
          * Always have the smallest value between the width and height (divided by 2)
@@ -78,15 +78,15 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
          * the width and height, it would produce unintended rendering artifacts.
          */
 
-        rectShape = ProcessBorderThicknessLimit(rectShape);
-        rectShape = ProcessCornerRadiusLimits(rectShape);
+        shape = ProcessBorderThicknessLimit(shape);
+        shape = ProcessCornerRadiusLimits(shape);
 
         var data = RectGPUData.Empty();
 
-        var left = rectShape.Position.X - rectShape.HalfWidth;
-        var bottom = rectShape.Position.Y + rectShape.HalfHeight;
-        var right = rectShape.Position.X + rectShape.HalfWidth;
-        var top = rectShape.Position.Y - rectShape.HalfHeight;
+        var left = shape.Position.X - shape.HalfWidth;
+        var bottom = shape.Position.Y + shape.HalfHeight;
+        var right = shape.Position.X + shape.HalfWidth;
+        var top = shape.Position.Y - shape.HalfHeight;
 
         var topLeft = new Vector2(left, top).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
         var bottomLeft = new Vector2(left, bottom).ToNDC(ViewPortSize.Width, ViewPortSize.Height);
@@ -98,17 +98,17 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         data = data.SetVertexPos(topRight, VertexNumber.Three);
         data = data.SetVertexPos(bottomRight, VertexNumber.Four);
 
-        data = data.SetRectangle(new Vector4(rectShape.Position.X, rectShape.Position.Y, rectShape.Width, rectShape.Height));
+        data = data.SetRectangle(new Vector4(shape.Position.X, shape.Position.Y, shape.Width, shape.Height));
 
-        data = ApplyColor(data, rectShape);
+        data = ApplyColor(data, shape);
 
-        data = data.SetAsSolid(rectShape.IsSolid);
+        data = data.SetAsSolid(shape.IsSolid);
 
-        data = data.SetBorderThickness(rectShape.BorderThickness);
-        data = data.SetTopLeftCornerRadius(rectShape.CornerRadius.TopLeft);
-        data = data.SetBottomLeftCornerRadius(rectShape.CornerRadius.BottomLeft);
-        data = data.SetBottomRightCornerRadius(rectShape.CornerRadius.BottomRight);
-        data = data.SetTopRightCornerRadius(rectShape.CornerRadius.TopRight);
+        data = data.SetBorderThickness(shape.BorderThickness);
+        data = data.SetTopLeftCornerRadius(shape.CornerRadius.TopLeft);
+        data = data.SetBottomLeftCornerRadius(shape.CornerRadius.BottomLeft);
+        data = data.SetBottomRightCornerRadius(shape.CornerRadius.BottomRight);
+        data = data.SetTopRightCornerRadius(shape.CornerRadius.TopRight);
 
         var totalBytes = RectGPUData.GetTotalBytes();
         var rawData = data.ToArray();
@@ -219,7 +219,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
 
     /// <summary>
     /// Generates default <see cref="RectVertexData"/> for all four vertices that make
-    /// up a rectangle rendering area.
+    /// up a rectangular rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>
     private static RectVertexData[] GenerateVertexData() => new[]
@@ -231,36 +231,36 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         };
 
     /// <summary>
-    /// Applies the color of the given <paramref name="rect"/> shape to the rectangle
+    /// Applies the color of the given <paramref name="shape"/> shape to the shape
     /// data being sent to the GPU.
     /// </summary>
     /// <param name="data">The data to apply the color to.</param>
-    /// <param name="rect">The rect that holds the color to apply to the data.</param>
+    /// <param name="shape">The shape that holds the color to apply to the data.</param>
     /// <returns>The original GPU <paramref name="data"/> with the color applied.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="rect"/>
+    ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="shape"/>
     ///     is an invalid value.
     /// </exception>
-    private static RectGPUData ApplyColor(RectGPUData data, ShapeBatchItem rect)
+    private static RectGPUData ApplyColor(RectGPUData data, ShapeBatchItem shape)
     {
-        switch (rect.GradientType)
+        switch (shape.GradientType)
         {
             case ColorGradient.None:
-                return data.SetColor(rect.Color);
+                return data.SetColor(shape.Color);
             case ColorGradient.Horizontal:
-                data = data.SetColor(rect.GradientStart, VertexNumber.One); // BOTTOM LEFT
-                data = data.SetColor(rect.GradientStart, VertexNumber.Two); // BOTTOM RIGHT
-                data = data.SetColor(rect.GradientStop, VertexNumber.Three); // TOP RIGHT
-                data = data.SetColor(rect.GradientStop, VertexNumber.Four); // BOTTOM RIGHT
+                data = data.SetColor(shape.GradientStart, VertexNumber.One); // BOTTOM LEFT
+                data = data.SetColor(shape.GradientStart, VertexNumber.Two); // BOTTOM RIGHT
+                data = data.SetColor(shape.GradientStop, VertexNumber.Three); // TOP RIGHT
+                data = data.SetColor(shape.GradientStop, VertexNumber.Four); // BOTTOM RIGHT
                 break;
             case ColorGradient.Vertical:
-                data = data.SetColor(rect.GradientStart, VertexNumber.One); // BOTTOM LEFT
-                data = data.SetColor(rect.GradientStop, VertexNumber.Two); // BOTTOM RIGHT
-                data = data.SetColor(rect.GradientStart, VertexNumber.Three); // TOP RIGHT
-                data = data.SetColor(rect.GradientStop, VertexNumber.Four); // BOTTOM RIGHT
+                data = data.SetColor(shape.GradientStart, VertexNumber.One); // BOTTOM LEFT
+                data = data.SetColor(shape.GradientStop, VertexNumber.Two); // BOTTOM RIGHT
+                data = data.SetColor(shape.GradientStart, VertexNumber.Three); // TOP RIGHT
+                data = data.SetColor(shape.GradientStop, VertexNumber.Four); // BOTTOM RIGHT
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(rect.GradientType), "The gradient type is invalid.");
+                throw new ArgumentOutOfRangeException(nameof(shape.GradientType), "The gradient type is invalid.");
         }
 
         return data;
@@ -270,44 +270,44 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     /// Process the border thickness by checking that the value is within limits.
     /// If it is not within limits, it will force the value to be within limits.
     /// </summary>
-    /// <param name="rect">The rectangle containing the border thickness to set within a limit.</param>
+    /// <param name="shape">The shape containing the border thickness to set within a limit.</param>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static ShapeBatchItem ProcessBorderThicknessLimit(ShapeBatchItem rect)
+    private static ShapeBatchItem ProcessBorderThicknessLimit(ShapeBatchItem shape)
     {
-        var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
+        var largestValueAllowed = (shape.Width <= shape.Height ? shape.Width : shape.Height) / 2f;
 
-        var newBorderThickness = rect.BorderThickness > largestValueAllowed
+        var newBorderThickness = shape.BorderThickness > largestValueAllowed
             ? largestValueAllowed
-            : rect.BorderThickness;
+            : shape.BorderThickness;
         newBorderThickness = newBorderThickness < 1f ? 1f : newBorderThickness;
 
-        rect = new ShapeBatchItem(
-            rect.Position,
-            rect.Width,
-            rect.Height,
-            rect.Color,
-            rect.IsSolid,
+        shape = new ShapeBatchItem(
+            shape.Position,
+            shape.Width,
+            shape.Height,
+            shape.Color,
+            shape.IsSolid,
             newBorderThickness,
-            rect.CornerRadius,
-            rect.GradientType,
-            rect.GradientStart,
-            rect.GradientStop);
+            shape.CornerRadius,
+            shape.GradientType,
+            shape.GradientStart,
+            shape.GradientStop);
 
-        return rect;
+        return shape;
     }
 
     /// <summary>
     /// Processes the corner radius by checking each corner radius value and making sure they
     /// are within limits.  If it is not within limits, it will force the values to be within limits.
     /// </summary>
-    /// <param name="rect">The rectangle containing the radius values to process.</param>
-    /// <returns>The rect with the corner radius values set within limits.</returns>
+    /// <param name="shape">The shape containing the radius values to process.</param>
+    /// <returns>The shape with the corner radius values set within limits.</returns>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static ShapeBatchItem ProcessCornerRadiusLimits(ShapeBatchItem rect)
+    private static ShapeBatchItem ProcessCornerRadiusLimits(ShapeBatchItem shape)
     {
         /*
          * Always have the smallest value between the width and height (divided by 2)
@@ -315,22 +315,22 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
          * If the value was allowed to be larger than the smallest value between
          * the width and height, it would produce unintended rendering artifacts.
          */
-        var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
+        var largestValueAllowed = (shape.Width <= shape.Height ? shape.Width : shape.Height) / 2f;
 
-        var clampedCornerRadius = rect.CornerRadius.Clamp(0, largestValueAllowed);
+        var clampedCornerRadius = shape.CornerRadius.Clamp(0, largestValueAllowed);
 
-        rect = new ShapeBatchItem(
-            rect.Position,
-            rect.Width,
-            rect.Height,
-            rect.Color,
-            rect.IsSolid,
-            rect.BorderThickness,
+        shape = new ShapeBatchItem(
+            shape.Position,
+            shape.Width,
+            shape.Height,
+            shape.Color,
+            shape.IsSolid,
+            shape.BorderThickness,
             clampedCornerRadius,
-            rect.GradientType,
-            rect.GradientStart,
-            rect.GradientStop);
+            shape.GradientType,
+            shape.GradientStart,
+            shape.GradientStop);
 
-        return rect;
+        return shape;
     }
 }
