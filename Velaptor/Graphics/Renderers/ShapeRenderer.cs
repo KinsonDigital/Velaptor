@@ -100,13 +100,13 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
     /// <param name="batchItem">The batch item to render.</param>
     /// <param name="layer">The layer to render the item.</param>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if the <see cref="IRenderer.Begin"/> has not been invoked before rendering.
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
     /// </exception>
     private void RenderBase(ShapeBatchItem batchItem, int layer)
     {
         if (this.hasBegun is false)
         {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
         this.batchManager.AddRectItem(batchItem, layer, DateTime.Now);

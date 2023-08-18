@@ -7,6 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Numerics;
+using Batching;
 
 /// <summary>
 /// Renders lines to the screen.
@@ -18,7 +19,7 @@ public interface ILineRenderer
     /// </summary>
     /// <param name="line">The line to render.</param>
     /// <param name="layer">The layer to render the line.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -55,7 +56,7 @@ public interface ILineRenderer
     /// <param name="start">The start of the line.</param>
     /// <param name="end">The end of the line.</param>
     /// <param name="layer">The layer to render the line.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -94,7 +95,7 @@ public interface ILineRenderer
     /// <param name="end">The end of the line.</param>
     /// <param name="color">The color of the line.</param>
     /// <param name="layer">The layer to render the line.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -133,7 +134,7 @@ public interface ILineRenderer
     /// <param name="end">The end of the line.</param>
     /// <param name="thickness">The thickness of the line.</param>
     /// <param name="layer">The layer to render the line.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -173,7 +174,7 @@ public interface ILineRenderer
     /// <param name="color">The color of the line.</param>
     /// <param name="thickness">The thickness of the line.</param>
     /// <param name="layer">The layer to render the line.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="IRenderer.Begin"/> method has not been called.</exception>
+    /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.

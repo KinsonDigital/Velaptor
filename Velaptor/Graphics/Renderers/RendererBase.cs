@@ -10,8 +10,10 @@ using Factories;
 using Guards;
 using NativeInterop.OpenGL;
 
-/// <inheritdoc cref="IRenderer"/>
-internal abstract class RendererBase : IRenderer
+/// <summary>
+/// Provides base functionality for a renderer.
+/// </summary>
+internal abstract class RendererBase
 {
     private readonly IDisposable shutDownUnsubscriber;
 

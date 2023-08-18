@@ -1,4 +1,4 @@
-﻿// <copyright file="IWindow.cs" company="KinsonDigital">
+// <copyright file="IWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,8 +7,8 @@ namespace Velaptor.UI;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Batching;
 using Content;
-using Graphics.Renderers;
 using Scene;
 
 /// <summary>
@@ -75,7 +75,7 @@ public interface IWindow : IDisposable
     /// <remarks>
     /// <para>
     ///     If this is set to true, this means you do not have to
-    ///     use or invoke the <see cref="IRenderer.Clear"/>() method.
+    ///     use or invoke the <see cref="IBatcher.Clear"/>() method.
     /// </para>
     /// <para>
     ///     Set to the value of <c>false</c> if you want more control over when
@@ -83,7 +83,7 @@ public interface IWindow : IDisposable
     /// </para>
     /// <para>
     ///     WARNING!! - To prevent performance issues, do not have the clear
-    ///     the buffers with the <see cref="IRenderer.Clear"/>() method
+    ///     the buffers with the <see cref="IBatcher.Clear"/>() method
     ///     and set this property to true.  That would be a waste of resources.
     /// </para>
     /// </remarks>

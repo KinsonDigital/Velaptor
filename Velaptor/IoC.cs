@@ -85,6 +85,7 @@ internal static class IoC
         IoCContainer.Register<IComparer<RenderItem<ShapeBatchItem>>, RenderItemComparer<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<LineBatchItem>>, RenderItemComparer<LineBatchItem>>(Lifestyle.Singleton);
 
+        IoCContainer.Register<IBatcher, Batcher>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);

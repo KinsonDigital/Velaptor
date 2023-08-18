@@ -13,6 +13,7 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Scene;
 using Velaptor.UI;
@@ -26,6 +27,7 @@ public class WindowTests
     private readonly Mock<IWindow> mockWindow;
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<ISceneManager> mockSceneManager;
+    private readonly Mock<IBatcher> mockBatcher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -34,6 +36,7 @@ public class WindowTests
     {
         this.mockContentLoader = new Mock<IContentLoader>();
         this.mockSceneManager = new Mock<ISceneManager>();
+        this.mockBatcher = new Mock<IBatcher>();
 
         this.mockWindow = new Mock<IWindow>();
         this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
@@ -51,7 +54,7 @@ public class WindowTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new WindowFake(null, this.mockSceneManager.Object);
+            _ = new WindowFake(null, this.mockSceneManager.Object, this.mockBatcher.Object);
         };
 
         // Assert
@@ -66,7 +69,7 @@ public class WindowTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new WindowFake(this.mockWindow.Object, null);
+            _ = new WindowFake(this.mockWindow.Object, null, this.mockBatcher.Object);
         };
 
         // Assert
@@ -415,5 +418,5 @@ public class WindowTests
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object, this.mockSceneManager.Object);
+    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object, this.mockSceneManager.Object, this.mockBatcher.Object);
 }

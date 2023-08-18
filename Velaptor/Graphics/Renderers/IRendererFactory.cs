@@ -4,6 +4,8 @@
 
 namespace Velaptor.Graphics.Renderers;
 
+using Batching;
+
 /// <summary>
 /// Creates renderer instances.
 /// </summary>
@@ -36,4 +38,10 @@ public interface IRendererFactory
     /// <returns>The line renderer.</returns>
     /// <remarks><c>NOTE:</c> the renderer is a singleton.</remarks>
     ILineRenderer CreateLineRenderer();
+
+    /// <summary>
+    /// Creates an instance of <see cref="IBatcher"/> to start and stop batching.
+    /// </summary>
+    /// <returns>The batcher instance.</returns>
+    IBatcher CreateBatcher();
 }

@@ -122,7 +122,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     {
         if (this.hasBegun is false)
         {
-            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
         var batchItem = new LineBatchItem(

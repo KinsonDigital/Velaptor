@@ -5,6 +5,7 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
+using Batching;
 using Graphics.Renderers;
 
 /// <inheritdoc/>
@@ -22,4 +23,7 @@ public sealed class RendererFactory : IRendererFactory
 
     /// <inheritdoc/>
     public ILineRenderer CreateLineRenderer() => IoC.Container.GetInstance<ILineRenderer>();
+
+    /// <inheritdoc/>
+    public IBatcher CreateBatcher() => IoC.Container.GetInstance<IBatcher>();
 }

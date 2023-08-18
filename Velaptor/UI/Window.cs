@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
+using Batching;
 using Content;
 using Factories;
 using Guards;
@@ -19,6 +20,7 @@ using Scene;
 public abstract class Window : IWindow
 {
     private readonly IWindow nativeWindow;
+    private readonly IBatcher batcher;
     private bool isDisposed;
 
     /// <summary>
@@ -29,6 +31,8 @@ public abstract class Window : IWindow
     {
         this.nativeWindow = WindowFactory.CreateWindow();
         SceneManager = IoC.Container.GetInstance<ISceneManager>();
+        this.batcher = IoC.Container.GetInstance<IBatcher>();
+
         Init();
     }
 
@@ -37,13 +41,16 @@ public abstract class Window : IWindow
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
     /// <param name="sceneManager">Manages scenes.</param>
-    private protected Window(IWindow window, ISceneManager sceneManager)
+    /// <param name="batcher">Controls the batching start and end process.</param>
+    private protected Window(IWindow window, ISceneManager sceneManager, IBatcher batcher)
     {
         EnsureThat.ParamIsNotNull(window);
         EnsureThat.ParamIsNotNull(sceneManager);
+        EnsureThat.ParamIsNotNull(batcher);
 
         this.nativeWindow = window;
         SceneManager = sceneManager;
+        this.batcher = batcher;
         Init();
     }
 
