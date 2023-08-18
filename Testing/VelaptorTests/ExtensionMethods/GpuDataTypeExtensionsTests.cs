@@ -13,7 +13,7 @@ using FluentAssertions;
 using Moq;
 using Velaptor.ExtensionMethods;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 using Xunit;
 
 /// <summary>
@@ -22,10 +22,10 @@ using Xunit;
 public class GpuDataTypeExtensionsTests
 {
     [Fact]
-    public void SetVertexPos_WithRectGPUDataAndInvalidVertexValue_ThrowsException()
+    public void SetVertexPos_WithRectGpuDataAndInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)1234);
@@ -40,11 +40,11 @@ public class GpuDataTypeExtensionsTests
     [InlineData((int)VertexNumber.Two)]
     [InlineData((int)VertexNumber.Three)]
     [InlineData((int)VertexNumber.Four)]
-    public void SetVertexPos_WhenInvokedWithRectGPUData_ReturnsCorrectResult(int vertexNumberNumericalValue)
+    public void SetVertexPos_WhenInvokedWithRectGpuData_ReturnsCorrectResult(int vertexNumberNumericalValue)
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -96,7 +96,7 @@ public class GpuDataTypeExtensionsTests
     public void SetRectangle_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act & Assert
         var act = () => gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)1234);
@@ -113,7 +113,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -147,7 +147,7 @@ public class GpuDataTypeExtensionsTests
     public void SetRectangle_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expected = new Vector4(111, 222, 333, 444);
 
         // Act
@@ -164,7 +164,7 @@ public class GpuDataTypeExtensionsTests
     public void SetAsSolid_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)1234);
@@ -183,7 +183,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -217,7 +217,7 @@ public class GpuDataTypeExtensionsTests
     public void SetAsSolid_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var actual = gpuData.SetAsSolid(true);
@@ -233,7 +233,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBorderThickness_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)1234);
@@ -252,7 +252,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -286,7 +286,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBorderThickness_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         const float expected = 123f;
 
         // Act
@@ -303,7 +303,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
@@ -322,7 +322,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -356,7 +356,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopLeftCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         const float expected = 123f;
 
         // Act
@@ -373,7 +373,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
@@ -392,7 +392,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -426,7 +426,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomLeftCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         const float expected = 123f;
 
         // Act
@@ -443,7 +443,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
@@ -462,7 +462,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -496,7 +496,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomRightCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         const float expected = 123f;
 
         // Act
@@ -513,7 +513,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
@@ -532,7 +532,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -566,7 +566,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopRightCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         const float expected = 123f;
 
         // Act
@@ -583,7 +583,7 @@ public class GpuDataTypeExtensionsTests
     public void SetColor_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
         var act = () => gpuData.SetColor(It.IsAny<Color>(), (VertexNumber)1234);
@@ -602,7 +602,7 @@ public class GpuDataTypeExtensionsTests
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expectedVertex = vertexNumber switch
         {
             VertexNumber.One => gpuData.Vertex1,
@@ -636,7 +636,7 @@ public class GpuDataTypeExtensionsTests
     public void SetColor_WhenUpdatingAll_ReturnsCorrectResult()
     {
         // Arrange
-        var gpuData = GenerateGPUDataInSequence(0);
+        var gpuData = GenerateGpuDataInSequence(0);
         var expected = Color.FromArgb(220, 230, 240, 250);
 
         // Act
@@ -650,7 +650,7 @@ public class GpuDataTypeExtensionsTests
     }
 
     [Fact]
-    public void SetColor_WhenSettingLineGPUData_SetsColorToAllVertexData()
+    public void SetColor_WhenSettingLineGpuData_SetsColorToAllVertexData()
     {
         // Arrange
         var data = new LineGpuData(
@@ -674,7 +674,7 @@ public class GpuDataTypeExtensionsTests
     [InlineData(VertexNumber.Two)]
     [InlineData(VertexNumber.Three)]
     [InlineData(VertexNumber.Four)]
-    internal void SetVertexPos_WhenInvokedWithLineGPUData_ReturnsCorrectResult(VertexNumber vertexNumber)
+    internal void SetVertexPos_WhenInvokedWithLineGpuData_ReturnsCorrectResult(VertexNumber vertexNumber)
     {
         // Arrange
         var expectedPos = new Vector2(10, 20);
@@ -704,7 +704,7 @@ public class GpuDataTypeExtensionsTests
     /// </summary>
     /// <param name="startValue">The value to start the sequential assignment.</param>
     /// <returns>The GPU data to test.</returns>
-    private static ShapeGpuData GenerateGPUDataInSequence(int startValue)
+    private static ShapeGpuData GenerateGpuDataInSequence(int startValue)
     {
         var vertex1 = GenerateVertexDataInSequence(startValue);
         startValue += 11;

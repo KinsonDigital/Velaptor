@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL.GPUData;
+namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Linq;
 using FluentAssertions;
 using Helpers;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 using Xunit;
 
 /// <summary>
@@ -46,7 +46,7 @@ public class ShapeGpuDataTests
             .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName)
             .Select(i => i.value).ToArray();
 
-        var data = RectGpuDataGenerator.GenerateGPUData(1);
+        var data = RectGpuDataGenerator.GenerateGpuData(1);
 
         // Act
         var actual = data.ToArray();

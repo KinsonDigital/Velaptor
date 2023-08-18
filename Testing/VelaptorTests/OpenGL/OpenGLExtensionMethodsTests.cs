@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 using Xunit;
 
 /// <summary>

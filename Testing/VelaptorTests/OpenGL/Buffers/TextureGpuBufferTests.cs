@@ -139,7 +139,7 @@ public class TextureGpuBufferTests
     /// Provides sample data to test if the correct data is being sent to the GPU.
     /// </summary>
     /// <returns>The data to test against.</returns>
-    public static IEnumerable<object[]> GetGPUUploadTestData()
+    public static IEnumerable<object[]> GetGpuUploadTestData()
     {
         yield return new object[]
         {
@@ -269,7 +269,7 @@ public class TextureGpuBufferTests
     }
 
     [Theory]
-    [MemberData(nameof(GetGPUUploadTestData))]
+    [MemberData(nameof(GetGpuUploadTestData))]
     public void UploadVertexData_WhenInvoked_UploadsData(RenderEffects effects, float[] expected)
     {
         // Arrange
@@ -459,7 +459,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
-    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGPU()
+    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGpu()
     {
         // Arrange
         var sut = CreateSystemUnderTest();

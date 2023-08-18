@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using GPUData;
+using GpuData;
 
 /// <summary>
 /// Provides various helper methods for OpenGL related operations.

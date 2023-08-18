@@ -42,7 +42,7 @@ public class ShapeRendererTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGpuBuffer<ShapeBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<ShapeBatchItem>> mockGpuBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockRenderUnsubscriber;
@@ -66,7 +66,7 @@ public class ShapeRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.SetupGet(p => p.ShaderId).Returns(ShapeShaderId);
 
-        this.mockGPUBuffer = new Mock<IGpuBuffer<ShapeBatchItem>>();
+        this.mockGpuBuffer = new Mock<IGpuBuffer<ShapeBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
@@ -153,7 +153,7 @@ public class ShapeRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 null,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 this.mockBatchingManager.Object);
         };
@@ -195,7 +195,7 @@ public class ShapeRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 null,
                 this.mockBatchingManager.Object);
         };
@@ -216,7 +216,7 @@ public class ShapeRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 null);
         };
@@ -313,7 +313,7 @@ public class ShapeRendererTests
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
 
     [Fact]
@@ -412,7 +412,7 @@ public class ShapeRendererTests
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class ShapeRendererTests
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGPUBuffer.VerifyNever(m =>
+        this.mockGpuBuffer.VerifyNever(m =>
             m.UploadData(It.IsAny<ShapeBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
@@ -488,7 +488,7 @@ public class ShapeRendererTests
         => new (this.mockGL.Object,
             this.mockReactableFactory.Object,
             this.mockGLService.Object,
-            this.mockGPUBuffer.Object,
+            this.mockGpuBuffer.Object,
             this.mockShader.Object,
             this.mockBatchingManager.Object);
 }

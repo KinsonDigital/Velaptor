@@ -365,7 +365,7 @@ public class GpuBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        VerifyBatchDataIsUploadedToGPU();
+        VerifyBatchDataIsUploadedToGpu();
         this.mockGLService.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
         this.mockGLService.Verify(m => m.BeginGroup(setupDataGroupName), Times.Once);
         this.mockGLService.Verify(m => m.BeginGroup(uploadVertexDataGroupName), Times.Once);
@@ -379,7 +379,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
-    public void UploadData_WhenInvoked_PreparesGPUForDataUpload()
+    public void UploadData_WhenInvoked_PreparesGpuForDataUpload()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -393,7 +393,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
-    public void UploadData_WhenInvoked_UpdatesGPUData()
+    public void UploadData_WhenInvoked_UpdatesGpuData()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -543,7 +543,7 @@ public class GpuBufferBaseTests
     /// <summary>
     /// Verifies that the correct GPU data has been sent to the GPU.
     /// </summary>
-    private void VerifyBatchDataIsUploadedToGPU()
+    private void VerifyBatchDataIsUploadedToGpu()
     {
         this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.AtLeastOnce);
 

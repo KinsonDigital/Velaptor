@@ -1,4 +1,4 @@
-// <copyright file="ShapeGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="ShapeGpuBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,7 +14,7 @@ using Carbonate.UniDirectional;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
-using GPUData;
+using GpuData;
 using Graphics;
 using NativeInterop.OpenGL;
 using ReactableData;
@@ -24,13 +24,13 @@ using ReactableData;
 /// </summary>
 [GpuBufferName("Shape")]
 [SuppressMessage("csharpsquid", "S101", Justification = "GPU is an acceptable acronym.")]
-internal sealed class ShapeGPUBuffer : GpuBufferBase<ShapeBatchItem>
+internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The shape buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShapeGPUBuffer"/> class.
+    /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -38,7 +38,7 @@ internal sealed class ShapeGPUBuffer : GpuBufferBase<ShapeBatchItem>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public ShapeGPUBuffer(
+    public ShapeGpuBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)

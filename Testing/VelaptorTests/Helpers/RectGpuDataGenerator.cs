@@ -7,7 +7,7 @@ namespace VelaptorTests.Helpers;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 
 /// <summary>
 /// Helps generate <see cref="ShapeVertexData"/> easily for the purpose of testing.
@@ -21,7 +21,7 @@ internal static class RectGpuDataGenerator
     /// </summary>
     /// <param name="start">The start value of the component values.</param>
     /// <returns>The instance used for testing.</returns>
-    public static ShapeGpuData GenerateGPUData(float start)
+    public static ShapeGpuData GenerateGpuData(float start)
     {
         var vertex1 = GenerateVertexData(start, out var next);
         var vertex2 = GenerateVertexData(next, out next);

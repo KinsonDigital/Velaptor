@@ -43,7 +43,7 @@ public class LineRendererTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGpuBuffer<LineBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<LineBatchItem>> mockGpuBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
@@ -67,7 +67,7 @@ public class LineRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.Setup(m => m.ShaderId).Returns(LineShaderId);
 
-        this.mockGPUBuffer = new Mock<IGpuBuffer<LineBatchItem>>();
+        this.mockGpuBuffer = new Mock<IGpuBuffer<LineBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 
@@ -154,7 +154,7 @@ public class LineRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 null,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 this.mockBatchingManager.Object);
         };
@@ -196,7 +196,7 @@ public class LineRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 null,
                 this.mockBatchingManager.Object);
         };
@@ -217,7 +217,7 @@ public class LineRendererTests
                 this.mockGL.Object,
                 this.mockReactableFactory.Object,
                 this.mockGLService.Object,
-                this.mockGPUBuffer.Object,
+                this.mockGpuBuffer.Object,
                 this.mockShader.Object,
                 null);
         };
@@ -383,7 +383,7 @@ public class LineRendererTests
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))));
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGPUBuffer.VerifyNever(m =>
+        this.mockGpuBuffer.VerifyNever(m =>
             m.UploadData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
@@ -427,7 +427,7 @@ public class LineRendererTests
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Line Elements"));
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGPUBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
     }
     #endregion
 
@@ -457,7 +457,7 @@ public class LineRendererTests
         => new (this.mockGL.Object,
             this.mockReactableFactory.Object,
             this.mockGLService.Object,
-            this.mockGPUBuffer.Object,
+            this.mockGpuBuffer.Object,
             this.mockShader.Object,
             this.mockBatchingManager.Object);
 }

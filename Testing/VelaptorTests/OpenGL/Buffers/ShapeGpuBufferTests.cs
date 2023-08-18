@@ -30,7 +30,7 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="ShapeGPUBuffer"/> class.
+/// Tests the <see cref="ShapeGpuBuffer"/> class.
 /// </summary>
 public class ShapeGpuBufferTests
 {
@@ -217,7 +217,7 @@ public class ShapeGpuBufferTests
     }
 
     [Fact]
-    public void UploadVertexData_WithSolidColor_UpdatesGPUData()
+    public void UploadVertexData_WithSolidColor_UpdatesGpuData()
     {
         // Arrange
         const nint expectedOffset = 0;
@@ -283,7 +283,7 @@ public class ShapeGpuBufferTests
     }
 
     [Fact]
-    public void UploadVertexData_WithSolidColor_UpdatesGPUDataWithCorrectColor()
+    public void UploadVertexData_WithSolidColor_UpdatesGpuDataWithCorrectColor()
     {
         // Arrange
         // We only care about the section of raw data where the color is located.
@@ -349,7 +349,7 @@ public class ShapeGpuBufferTests
     }
 
     [Fact]
-    public void UploadVertexData_WithHorizontalColorGradient_UpdatesGPUDataWithCorrectColor()
+    public void UploadVertexData_WithHorizontalColorGradient_UpdatesGpuDataWithCorrectColor()
     {
         // Arrange
         // We only care about the section of raw data where the color is located.
@@ -415,7 +415,7 @@ public class ShapeGpuBufferTests
     }
 
     [Fact]
-    public void UploadVertexData_WithVerticalColorGradient_UpdatesGPUDataWithCorrectColor()
+    public void UploadVertexData_WithVerticalColorGradient_UpdatesGpuDataWithCorrectColor()
     {
         // Arrange
         // We only care about the section of raw data where the color is located.
@@ -487,7 +487,7 @@ public class ShapeGpuBufferTests
         // Arrange
         var executionLocations = new List<string>
         {
-            $"1 time in the '{nameof(ShapeGPUBuffer.PrepareForUpload)}()' method.",
+            $"1 time in the '{nameof(ShapeGpuBuffer.PrepareForUpload)}()' method.",
             $"1 time in the '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
@@ -638,7 +638,7 @@ public class ShapeGpuBufferTests
     }
 
     [Fact]
-    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGPU()
+    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGpu()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -697,13 +697,13 @@ public class ShapeGpuBufferTests
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="ShapeGPUBuffer"/> class for the purpose of testing.
+    /// Creates a new instance of <see cref="ShapeGpuBuffer"/> class for the purpose of testing.
     /// </summary>
     /// <param name="initialize">If true, will mock the initialization of the mocked sut.</param>
     /// <returns>The instance to test.</returns>
-    private ShapeGPUBuffer CreateSystemUnderTest(bool initialize = true)
+    private ShapeGpuBuffer CreateSystemUnderTest(bool initialize = true)
     {
-        var result = new ShapeGPUBuffer(
+        var result = new ShapeGpuBuffer(
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockReactableFactory.Object);

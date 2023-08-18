@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.GPUData;
+namespace Velaptor.OpenGL.GpuData;
 
 using System.Collections.Generic;
 

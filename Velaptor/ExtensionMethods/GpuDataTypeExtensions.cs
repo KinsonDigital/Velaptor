@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using OpenGL;
-using OpenGL.GPUData;
+using OpenGL.GpuData;
 
 /// <summary>
 /// Provides extensions methods for GPU data related types.

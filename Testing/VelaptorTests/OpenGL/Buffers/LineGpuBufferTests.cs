@@ -229,7 +229,7 @@ public class LineGpuBufferTests
     }
 
     [Fact]
-    public void UploadVertexData_WhenInvoked_UploadsGPUBufferData()
+    public void UploadVertexData_WhenInvoked_UploadsGpuBufferData()
     {
         // Arrange
         var expectedData = new[]
@@ -426,7 +426,7 @@ public class LineGpuBufferTests
     }
 
     [Fact]
-    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGPU()
+    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGpu()
     {
         // Arrange
         var sut = CreateSystemUnderTest();

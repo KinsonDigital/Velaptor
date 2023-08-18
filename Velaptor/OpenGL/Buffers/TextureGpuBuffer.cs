@@ -12,7 +12,7 @@ using Batching;
 using Carbonate.UniDirectional;
 using Exceptions;
 using Factories;
-using GPUData;
+using GpuData;
 using Graphics;
 using NativeInterop.OpenGL;
 using ReactableData;

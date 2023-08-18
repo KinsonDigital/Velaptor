@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL.GPUData;
+namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Numerics;
 using FluentAssertions;
-using Velaptor.OpenGL.GPUData;
+using Velaptor.OpenGL.GpuData;
 using Xunit;
 
 /// <summary>

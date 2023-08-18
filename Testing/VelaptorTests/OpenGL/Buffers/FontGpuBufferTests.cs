@@ -397,7 +397,7 @@ public class FontGpuBufferTests
     }
 
     [Fact]
-    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGPU()
+    public void BatchSizeReactable_WhenReceivingNotificationWhenAlreadyInitialized_UpdatesBatchSizeAndResizesBatchDataOnGpu()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
