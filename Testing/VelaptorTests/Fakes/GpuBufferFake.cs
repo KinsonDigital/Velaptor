@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUBufferFake.cs" company="KinsonDigital">
+﻿// <copyright file="GpuBufferFake.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,17 +12,17 @@ using Velaptor.OpenGL.Buffers;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
-/// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
+/// Used to test the abstract class <see cref="GpuBufferBase{TData}"/>.
 /// </summary>
-internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
+internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
+    /// Initializes a new instance of the <see cref="GpuBufferFake"/> class for the purpose of testing.
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
     /// <param name="reactableFactory">Mocked <see cref="IReactableFactory"/> for creating reactables.</param>
-    public GPUBufferFake(IGLInvoker gl,
+    public GpuBufferFake(IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
             : base(gl, openGLService, reactableFactory)

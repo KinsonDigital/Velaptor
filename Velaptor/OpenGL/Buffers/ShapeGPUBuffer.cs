@@ -22,9 +22,9 @@ using ReactableData;
 /// <summary>
 /// Updates data in the shape GPU buffer.
 /// </summary>
-[GPUBufferName("Shape")]
+[GpuBufferName("Shape")]
 [SuppressMessage("csharpsquid", "S101", Justification = "GPU is an acceptable acronym.")]
-internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
+internal sealed class ShapeGPUBuffer : GpuBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The shape buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
@@ -81,7 +81,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         shape = ProcessBorderThicknessLimit(shape);
         shape = ProcessCornerRadiusLimits(shape);
 
-        var data = RectGPUData.Empty();
+        var data = ShapeGpuData.Empty();
 
         var left = shape.Position.X - shape.HalfWidth;
         var bottom = shape.Position.Y + shape.HalfHeight;
@@ -110,7 +110,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         data = data.SetBottomRightCornerRadius(shape.CornerRadius.BottomRight);
         data = data.SetTopRightCornerRadius(shape.CornerRadius.TopRight);
 
-        var totalBytes = RectGPUData.GetTotalBytes();
+        var totalBytes = ShapeGpuData.GetTotalBytes();
         var rawData = data.ToArray();
         var offset = totalBytes * batchIndex;
 
@@ -142,7 +142,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
         for (var i = 0u; i < BatchSize; i++)
         {
             var vertexData = GenerateVertexData();
-            result.AddRange(new RectGPUData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]).ToArray());
+            result.AddRange(new ShapeGpuData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]).ToArray());
         }
 
         return result.ToArray();
@@ -151,7 +151,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     /// <inheritdoc/>
     protected internal override void SetupVAO()
     {
-        var stride = RectVertexData.GetStride();
+        var stride = ShapeVertexData.GetStride();
 
         var attrComponentSizes = new[]
         {
@@ -218,16 +218,16 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     }
 
     /// <summary>
-    /// Generates default <see cref="RectVertexData"/> for all four vertices that make
+    /// Generates default <see cref="ShapeVertexData"/> for all four vertices that make
     /// up a rectangular rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>
-    private static RectVertexData[] GenerateVertexData() => new[]
+    private static ShapeVertexData[] GenerateVertexData() => new[]
         {
-            RectVertexData.New(-1.0f, 1.0f),
-            RectVertexData.New(-1.0f, -1.0f),
-            RectVertexData.New(1.0f, 1.0f),
-            RectVertexData.New(1.0f, 1.0f),
+            ShapeVertexData.New(-1.0f, 1.0f),
+            ShapeVertexData.New(-1.0f, -1.0f),
+            ShapeVertexData.New(1.0f, 1.0f),
+            ShapeVertexData.New(1.0f, 1.0f),
         };
 
     /// <summary>
@@ -241,7 +241,7 @@ internal sealed class ShapeGPUBuffer : GPUBufferBase<ShapeBatchItem>
     ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="shape"/>
     ///     is an invalid value.
     /// </exception>
-    private static RectGPUData ApplyColor(RectGPUData data, ShapeBatchItem shape)
+    private static ShapeGpuData ApplyColor(ShapeGpuData data, ShapeBatchItem shape)
     {
         switch (shape.GradientType)
         {

@@ -26,7 +26,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<TextureBatchItem> buffer;
+    private readonly IGpuBuffer<TextureBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderBatchBegunUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
@@ -45,7 +45,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<TextureBatchItem> buffer,
+        IGpuBuffer<TextureBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)

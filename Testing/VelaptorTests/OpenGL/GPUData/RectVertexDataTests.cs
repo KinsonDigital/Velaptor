@@ -12,7 +12,7 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="RectVertexData"/> struct.
+/// Tests the <see cref="ShapeVertexData"/> struct.
 /// </summary>
 public class RectVertexDataTests
 {
@@ -21,7 +21,7 @@ public class RectVertexDataTests
     public void Ctor_WhenInvoked_SetsProperties()
     {
         // Arrange & Act
-        var data = new RectVertexData(
+        var data = new ShapeVertexData(
             new Vector2(1, 2),
             new Vector4(3, 4, 5, 6),
             Color.FromArgb(7, 8, 9, 10),
@@ -35,7 +35,7 @@ public class RectVertexDataTests
         // Assert
         data.IsSolid.Should().BeTrue();
         data.VertexPos.Should().Be(new Vector2(1, 2));
-        data.Rectangle.Should().Be(new Vector4(3, 4, 5, 6));
+        data.BoundingBox.Should().Be(new Vector4(3, 4, 5, 6));
         data.Color.Should().Be(Color.FromArgb(7, 8, 9, 10));
         data.BorderThickness.Should().Be(11);
         data.TopLeftCornerRadius.Should().Be(12);
@@ -50,12 +50,12 @@ public class RectVertexDataTests
     public void Empty_WhenInvoked_ReturnsEmptyInstance()
     {
         // Arrange & Act
-        var actual = RectVertexData.Empty();
+        var actual = ShapeVertexData.Empty();
 
         // Assert
         actual.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(Vector2.Zero);
-        actual.Rectangle.Should().Be(Vector4.Zero);
+        actual.BoundingBox.Should().Be(Vector4.Zero);
         actual.Color.Should().Be(Color.Empty);
         actual.BorderThickness.Should().Be(0f);
         actual.TopLeftCornerRadius.Should().Be(0f);
@@ -68,7 +68,7 @@ public class RectVertexDataTests
     public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange & Act
-        var actual = RectVertexData.GetStride();
+        var actual = ShapeVertexData.GetStride();
 
         // Assert
         actual.Should().Be(64u);
@@ -78,7 +78,7 @@ public class RectVertexDataTests
     public void ToArray_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var data = new RectVertexData(
+        var data = new ShapeVertexData(
             new Vector2(1f, 2f),
             new Vector4(3f, 4f, 5f, 6f),
             Color.FromArgb(7, 8, 9, 10),

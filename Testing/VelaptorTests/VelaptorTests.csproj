@@ -60,13 +60,13 @@
     <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\RectGPUDataTestData.json">
+    <None Update="SampleTestData\ShapeGpuDataTestData.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\ShapeGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
+    <None Update="SampleTestData\ShapeGpuBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\LineGPUDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
+    <None Update="SampleTestData\LineGpuDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleTestData\BatchItemTestData\Render_WhenInvoked_AddsCorrectBatchItems.json">

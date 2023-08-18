@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUData.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGpuData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,16 +10,16 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>
 /// Holds data for a single quad in the GPU vertex buffer.
 /// </summary>
-internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
+internal readonly struct TextureGpuData : IEquatable<TextureGpuData>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureGPUData"/> struct.
+    /// Initializes a new instance of the <see cref="TextureGpuData"/> struct.
     /// </summary>
     /// <param name="vertex1">The top left corner vertex of the quad.</param>
     /// <param name="vertex2">The top right corner vertex of the quad.</param>
     /// <param name="vertex3">The bottom right corner vertex of the quad.</param>
     /// <param name="vertex4">The bottom left corner vertex of the quad.</param>
-    public TextureGPUData(in TextureVertexData vertex1, TextureVertexData vertex2, TextureVertexData vertex3, TextureVertexData vertex4)
+    public TextureGpuData(in TextureVertexData vertex1, TextureVertexData vertex2, TextureVertexData vertex3, TextureVertexData vertex4)
     {
         Vertex1 = vertex1;
         Vertex2 = vertex2;
@@ -54,7 +54,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
     /// <returns><c>true</c> if the two operands are equal.</returns>
-    public static bool operator ==(TextureGPUData left, TextureGPUData right) => left.Equals(right);
+    public static bool operator ==(TextureGpuData left, TextureGpuData right) => left.Equals(right);
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
@@ -63,7 +63,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
     /// <returns><c>true</c> if the two operands are equal.</returns>
-    public static bool operator !=(TextureGPUData left, TextureGPUData right) => !(left == right);
+    public static bool operator !=(TextureGpuData left, TextureGpuData right) => !(left == right);
 
     /// <summary>
     /// Returns the total number of bytes for this struct.
@@ -74,7 +74,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (obj is not TextureGPUData data)
+        if (obj is not TextureGpuData data)
         {
             return false;
         }
@@ -83,7 +83,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     }
 
     /// <inheritdoc/>
-    public bool Equals(TextureGPUData other)
+    public bool Equals(TextureGpuData other)
         => Vertex1 == other.Vertex1 &&
            Vertex2 == other.Vertex2 &&
            Vertex3 == other.Vertex3 &&

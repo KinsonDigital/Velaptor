@@ -1,4 +1,4 @@
-// <copyright file="LineGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="LineGpuBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,14 +19,14 @@ using ReactableData;
 /// <summary>
 /// Updates data in the line GPU buffer.
 /// </summary>
-[GPUBufferName("Line")]
-internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
+[GpuBufferName("Line")]
+internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
 {
     private const string BufferNotInitMsg = "The line buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LineGPUBuffer"/> class.
+    /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -34,7 +34,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public LineGPUBuffer(
+    public LineGpuBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
@@ -72,7 +72,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
 
         OpenGLService.BeginGroup($"Update Line - BatchItem({batchIndex})");
 
-        var data = default(LineGPUData);
+        var data = default(LineGpuData);
 
         var lineRectPoints = lineData.CreateRectFromLine().ToArray();
 
@@ -88,7 +88,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
 
         data = data.SetColor(lineData.Color);
 
-        var totalBytes = LineGPUData.GetTotalBytes();
+        var totalBytes = LineGpuData.GetTotalBytes();
         var rawData = data.ToArray();
         var offset = totalBytes * batchIndex;
 
@@ -119,7 +119,7 @@ internal sealed class LineGPUBuffer : GPUBufferBase<LineBatchItem>
 
         for (var i = 0; i < BatchSize; i++)
         {
-            result.AddRange(new LineGPUData(default, default, default, default).ToArray());
+            result.AddRange(new LineGpuData(default, default, default, default).ToArray());
         }
 
         return result.ToArray();

@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferNameAttributeTests.cs" company="KinsonDigital">
+// <copyright file="GpuBufferNameAttributeTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,9 +10,9 @@ using Velaptor.OpenGL;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="GPUBufferNameAttribute"/> class.
+/// Tests the <see cref="GpuBufferNameAttribute"/> class.
 /// </summary>
-public class GPUBufferNameAttributeTests
+public class GpuBufferNameAttributeTests
 {
     #region Constructor Tests
     [Theory]
@@ -23,7 +23,7 @@ public class GPUBufferNameAttributeTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new GPUBufferNameAttribute(value);
+            _ = new GpuBufferNameAttribute(value);
         }, "The string parameter must not be null or empty. (Parameter 'name')");
     }
 
@@ -31,7 +31,7 @@ public class GPUBufferNameAttributeTests
     public void Ctor_WhenInvoked_SetsProperty()
     {
         // Arrange & Act
-        var attribute = new GPUBufferNameAttribute("test-name");
+        var attribute = new GpuBufferNameAttribute("test-name");
 
         // Assert
         Assert.Equal("test-name", attribute.Name);

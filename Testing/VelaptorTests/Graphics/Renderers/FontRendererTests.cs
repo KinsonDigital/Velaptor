@@ -48,7 +48,7 @@ public class FontRendererTests
     private const char InvalidCharacter = '□';
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<FontGlyphBatchItem>> mockGPUBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IBatchingManager> mockBatchingManager;
@@ -83,7 +83,7 @@ public class FontRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.SetupGet(p => p.ShaderId).Returns(FontShaderId);
 
-        this.mockGPUBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
+        this.mockGPUBuffer = new Mock<IGpuBuffer<FontGlyphBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 

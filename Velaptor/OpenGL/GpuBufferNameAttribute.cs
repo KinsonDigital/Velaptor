@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferNameAttribute.cs" company="KinsonDigital">
+// <copyright file="GpuBufferNameAttribute.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,13 +11,13 @@ using Guards;
 /// Represents the name of a buffer.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-internal sealed class GPUBufferNameAttribute : Attribute
+internal sealed class GpuBufferNameAttribute : Attribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GPUBufferNameAttribute"/> class.
+    /// Initializes a new instance of the <see cref="GpuBufferNameAttribute"/> class.
     /// </summary>
     /// <param name="name">The name to give a buffer.</param>
-    public GPUBufferNameAttribute(string name)
+    public GpuBufferNameAttribute(string name)
     {
         EnsureThat.StringParamIsNotNullOrEmpty(name);
         Name = name;

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUBufferTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGpuBufferTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -28,9 +28,9 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="TextureGPUBuffer"/> class.
+/// Tests the <see cref="TextureGpuBuffer"/> class.
 /// </summary>
-public class TextureGPUBufferTests
+public class TextureGpuBufferTests
 {
     private const uint VertexArrayId = 111;
     private const uint VertexBufferId = 222;
@@ -48,9 +48,9 @@ public class TextureGPUBufferTests
     private bool indexBufferCreated;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureGPUBufferTests"/> class.
+    /// Initializes a new instance of the <see cref="TextureGpuBufferTests"/> class.
     /// </summary>
-    public TextureGPUBufferTests()
+    public TextureGpuBufferTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
@@ -194,7 +194,7 @@ public class TextureGPUBufferTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new TextureGPUBuffer(
+            _ = new TextureGpuBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
@@ -428,7 +428,7 @@ public class TextureGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("TextureGPUBufferTests.Ctor - BatchSizeChangedId");
+            reactor.Name.Should().Be("TextureGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -492,10 +492,10 @@ public class TextureGPUBufferTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="TextureGPUBuffer"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="TextureGpuBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureGPUBuffer CreateSystemUnderTest() => new (
+    private TextureGpuBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockReactableFactory.Object);

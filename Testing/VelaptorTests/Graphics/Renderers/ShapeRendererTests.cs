@@ -42,7 +42,7 @@ public class ShapeRendererTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGPUBuffer<ShapeBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<ShapeBatchItem>> mockGPUBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockRenderUnsubscriber;
@@ -66,7 +66,7 @@ public class ShapeRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.SetupGet(p => p.ShaderId).Returns(ShapeShaderId);
 
-        this.mockGPUBuffer = new Mock<IGPUBuffer<ShapeBatchItem>>();
+        this.mockGPUBuffer = new Mock<IGpuBuffer<ShapeBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);

@@ -1,4 +1,4 @@
-// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="TextureGpuBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,14 +22,14 @@ using NETRect = System.Drawing.Rectangle;
 /// <summary>
 /// Updates texture data in the GPU buffer.
 /// </summary>
-[GPUBufferName("Texture")]
-internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
+[GpuBufferName("Texture")]
+internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
 {
     private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureGPUBuffer"/> class.
+    /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -37,7 +37,7 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public TextureGPUBuffer(
+    public TextureGpuBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
@@ -150,13 +150,13 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         textureBottomRight = textureBottomRight.ToNDCTextureCoords(textureWidth, textureHeight);
 
         // Convert the texture quad vertex positions to NDC values
-        var quadDataItem = new TextureGPUData(
+        var quadDataItem = new TextureGpuData(
             new TextureVertexData(vertex1, textureTopLeft, textureQuad.TintColor),
             new TextureVertexData(vertex2, textureBottomLeft, textureQuad.TintColor),
             new TextureVertexData(vertex3, textureTopRight, textureQuad.TintColor),
             new TextureVertexData(vertex4, textureBottomRight, textureQuad.TintColor));
 
-        var totalBytes = TextureGPUData.GetTotalBytes();
+        var totalBytes = TextureGpuData.GetTotalBytes();
         var data = quadDataItem.ToArray();
         var offset = totalBytes * batchIndex;
 
@@ -188,11 +188,11 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        var result = new List<TextureGPUData>();
+        var result = new List<TextureGpuData>();
 
         for (var i = 0u; i < BatchSize; i++)
         {
-            result.AddRange(new TextureGPUData[] { new (default, default, default, default) });
+            result.AddRange(new TextureGpuData[] { new (default, default, default, default) });
         }
 
         return OpenGLExtensionMethods.ToArray(result);

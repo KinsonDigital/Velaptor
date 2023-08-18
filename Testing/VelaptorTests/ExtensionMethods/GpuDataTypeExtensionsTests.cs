@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUDataTypeExtensionsTests.cs" company="KinsonDigital">
+﻿// <copyright file="GpuDataTypeExtensionsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,9 +17,9 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the extension methods for the <see cref="RectGPUData"/> and <see cref="LineGPUData"/> types.
+/// Tests the extension methods for the <see cref="ShapeGpuData"/> and <see cref="LineGpuData"/> types.
 /// </summary>
-public class GPUDataTypeExtensionsTests
+public class GpuDataTypeExtensionsTests
 {
     [Fact]
     public void SetVertexPos_WithRectGPUDataAndInvalidVertexValue_ThrowsException()
@@ -65,7 +65,7 @@ public class GPUDataTypeExtensionsTests
         // Assert
         expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(new Vector2(1111f, 2222f));
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -78,7 +78,7 @@ public class GPUDataTypeExtensionsTests
     public void SetVertexPos_WithInvalidVertexNumber_ThrowsException()
     {
         // Arrange
-        var gpuData = new LineGPUData(
+        var gpuData = new LineGpuData(
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty),
@@ -134,7 +134,7 @@ public class GPUDataTypeExtensionsTests
         // Assert
         expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
+        actual.BoundingBox.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -154,10 +154,10 @@ public class GPUDataTypeExtensionsTests
         var actual = gpuData.SetRectangle(new Vector4(111, 222, 333, 444));
 
         // Assert
-        actual.Vertex1.Rectangle.Should().Be(expected);
-        actual.Vertex2.Rectangle.Should().Be(expected);
-        actual.Vertex3.Rectangle.Should().Be(expected);
-        actual.Vertex4.Rectangle.Should().Be(expected);
+        actual.Vertex1.BoundingBox.Should().Be(expected);
+        actual.Vertex2.BoundingBox.Should().Be(expected);
+        actual.Vertex3.BoundingBox.Should().Be(expected);
+        actual.Vertex4.BoundingBox.Should().Be(expected);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class GPUDataTypeExtensionsTests
         // Assert
         actual.IsSolid.Should().BeTrue();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -273,7 +273,7 @@ public class GPUDataTypeExtensionsTests
         // Assert
         actual.BorderThickness.Should().Be(123f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.IsSolid.Should().Be(expectedVertex.IsSolid);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -344,7 +344,7 @@ public class GPUDataTypeExtensionsTests
         expectedVertex.IsSolid.Should().BeFalse();
         actual.TopLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
@@ -414,7 +414,7 @@ public class GPUDataTypeExtensionsTests
         expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomLeftCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -484,7 +484,7 @@ public class GPUDataTypeExtensionsTests
         expectedVertex.IsSolid.Should().BeFalse();
         actual.BottomRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -554,7 +554,7 @@ public class GPUDataTypeExtensionsTests
         expectedVertex.IsSolid.Should().BeFalse();
         actual.TopRightCornerRadius.Should().Be(1234f);
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(expectedVertex.Color);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -623,7 +623,7 @@ public class GPUDataTypeExtensionsTests
         // Assert
         expectedVertex.IsSolid.Should().BeFalse();
         actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.Rectangle.Should().Be(expectedVertex.Rectangle);
+        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
         actual.Color.Should().Be(Color.Blue);
         actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
         actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
@@ -653,7 +653,7 @@ public class GPUDataTypeExtensionsTests
     public void SetColor_WhenSettingLineGPUData_SetsColorToAllVertexData()
     {
         // Arrange
-        var data = new LineGPUData(
+        var data = new LineGpuData(
             new LineVertexData(Vector2.Zero, Color.White),
             new LineVertexData(Vector2.Zero, Color.White),
             new LineVertexData(Vector2.Zero, Color.White),
@@ -679,7 +679,7 @@ public class GPUDataTypeExtensionsTests
         // Arrange
         var expectedPos = new Vector2(10, 20);
 
-        var gpuData = new LineGPUData(
+        var gpuData = new LineGpuData(
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty),
@@ -704,7 +704,7 @@ public class GPUDataTypeExtensionsTests
     /// </summary>
     /// <param name="startValue">The value to start the sequential assignment.</param>
     /// <returns>The GPU data to test.</returns>
-    private static RectGPUData GenerateGPUDataInSequence(int startValue)
+    private static ShapeGpuData GenerateGPUDataInSequence(int startValue)
     {
         var vertex1 = GenerateVertexDataInSequence(startValue);
         startValue += 11;
@@ -714,7 +714,7 @@ public class GPUDataTypeExtensionsTests
         startValue += 11;
         var vertex4 = GenerateVertexDataInSequence(startValue);
 
-        return new RectGPUData(vertex1, vertex2, vertex3, vertex4);
+        return new ShapeGpuData(vertex1, vertex2, vertex3, vertex4);
     }
 
     /// <summary>
@@ -723,9 +723,9 @@ public class GPUDataTypeExtensionsTests
     /// </summary>
     /// <param name="startValue">The value to start the sequential assignment.</param>
     /// <returns>The vertex data to test.</returns>
-    private static RectVertexData GenerateVertexDataInSequence(int startValue)
+    private static ShapeVertexData GenerateVertexDataInSequence(int startValue)
     {
-        return new RectVertexData(
+        return new ShapeVertexData(
             new Vector2(startValue + 1f, startValue + 2f),
             new Vector4(startValue + 3, startValue + 4, startValue + 5, startValue + 6),
             Color.FromArgb(startValue + 7, startValue + 8, startValue + 9, startValue + 10),

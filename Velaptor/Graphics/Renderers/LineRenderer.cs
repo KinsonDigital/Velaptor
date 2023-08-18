@@ -23,7 +23,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<LineBatchItem> buffer;
+    private readonly IGpuBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
@@ -42,7 +42,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<LineBatchItem> buffer,
+        IGpuBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)

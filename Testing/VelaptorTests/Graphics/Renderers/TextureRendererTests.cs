@@ -42,7 +42,7 @@ public class TextureRendererTests
     private const uint TextureId = 456u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IGPUBuffer<TextureBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<TextureBatchItem>> mockGPUBuffer;
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -60,7 +60,7 @@ public class TextureRendererTests
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockShader = new Mock<IShaderProgram>();
-        this.mockGPUBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
+        this.mockGPUBuffer = new Mock<IGpuBuffer<TextureBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);

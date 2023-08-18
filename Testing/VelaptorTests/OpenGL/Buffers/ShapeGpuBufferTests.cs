@@ -1,4 +1,4 @@
-// <copyright file="ShapeGPUBufferTests.cs" company="KinsonDigital">
+// <copyright file="ShapeGpuBufferTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -32,7 +32,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="ShapeGPUBuffer"/> class.
 /// </summary>
-public class ShapeGPUBufferTests
+public class ShapeGpuBufferTests
 {
     private const uint VAO = 123u;
     private const uint VBO = 456u;
@@ -51,9 +51,9 @@ public class ShapeGPUBufferTests
     private bool vboGenerated;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShapeGPUBufferTests"/> class.
+    /// Initializes a new instance of the <see cref="ShapeGpuBufferTests"/> class.
     /// </summary>
-    public ShapeGPUBufferTests()
+    public ShapeGpuBufferTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
@@ -149,7 +149,7 @@ public class ShapeGPUBufferTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new TextureGPUBuffer(
+            _ = new TextureGpuBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
@@ -169,8 +169,8 @@ public class ShapeGPUBufferTests
         // Arrange
         var executionLocations = new List<string>
         {
-            $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
-            $"3 times in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
+            $"1 time in the '{nameof(GpuBufferBase<RectShape>.UploadVertexData)}()' method.",
+            $"3 times in the private '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
@@ -194,8 +194,8 @@ public class ShapeGPUBufferTests
         // Arrange
         var executionLocations = new List<string>
         {
-            $"1 time in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
-            $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
+            $"1 time in the private '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
+            $"1 time in the '{nameof(GpuBufferBase<RectShape>.UploadVertexData)}()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
@@ -488,7 +488,7 @@ public class ShapeGPUBufferTests
         var executionLocations = new List<string>
         {
             $"1 time in the '{nameof(ShapeGPUBuffer.PrepareForUpload)}()' method.",
-            $"1 time in the '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
+            $"1 time in the '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
@@ -507,7 +507,7 @@ public class ShapeGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<float[]>(string.Empty,
-                $"{nameof(ShapeGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
+                $"{nameof(ShapeGpuBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
 
         // Act
@@ -607,7 +607,7 @@ public class ShapeGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("ShapeGPUBufferTests.Ctor - BatchSizeChangedId");
+            reactor.Name.Should().Be("ShapeGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 

@@ -43,7 +43,7 @@ public class LineRendererTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGPUBuffer<LineBatchItem>> mockGPUBuffer;
+    private readonly Mock<IGpuBuffer<LineBatchItem>> mockGPUBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
@@ -67,7 +67,7 @@ public class LineRendererTests
         this.mockShader = new Mock<IShaderProgram>();
         this.mockShader.Setup(m => m.ShaderId).Returns(LineShaderId);
 
-        this.mockGPUBuffer = new Mock<IGPUBuffer<LineBatchItem>>();
+        this.mockGPUBuffer = new Mock<IGpuBuffer<LineBatchItem>>();
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 

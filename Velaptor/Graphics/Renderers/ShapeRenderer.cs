@@ -21,7 +21,7 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<ShapeBatchItem> buffer;
+    private readonly IGpuBuffer<ShapeBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
@@ -40,7 +40,7 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<ShapeBatchItem> buffer,
+        IGpuBuffer<ShapeBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)

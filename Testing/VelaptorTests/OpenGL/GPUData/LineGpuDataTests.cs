@@ -1,4 +1,4 @@
-﻿// <copyright file="LineGPUDataTests.cs" company="KinsonDigital">
+﻿// <copyright file="LineGpuDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,9 +12,9 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="LineGPUData"/> struct.
+/// Tests the <see cref="LineGpuData"/> struct.
 /// </summary>
-public class LineGPUDataTests
+public class LineGpuDataTests
 {
     #region Constructor Tests
     [Fact]
@@ -27,7 +27,7 @@ public class LineGPUDataTests
         var expectedV4 = CreateVertexData(4);
 
         // Act
-        var sut = new LineGPUData(expectedV1, expectedV2, expectedV3, expectedV4);
+        var sut = new LineGpuData(expectedV1, expectedV2, expectedV3, expectedV4);
 
         // Assert
         sut.Vertex1.Should().Be(expectedV1);
@@ -40,7 +40,7 @@ public class LineGPUDataTests
     public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange & Act
-        var actual = LineGPUData.GetTotalBytes();
+        var actual = LineGpuData.GetTotalBytes();
 
         // Assert
         actual.Should().Be(96);
@@ -50,13 +50,13 @@ public class LineGPUDataTests
     public void ToArray_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        const string testDataFileName = $"{nameof(LineGPUDataTests)}.{nameof(ToArray_WhenInvoked_ReturnsCorrectResult)}.json";
+        const string testDataFileName = $"{nameof(LineGpuDataTests)}.{nameof(ToArray_WhenInvoked_ReturnsCorrectResult)}.json";
         var expected = TestDataLoader
             .LoadTestData<float[]>(string.Empty, testDataFileName);
 
         var allVertexData = CreateAllOrderedVertexData(0);
 
-        var sut = new LineGPUData(allVertexData[0], allVertexData[1], allVertexData[2], allVertexData[3]);
+        var sut = new LineGpuData(allVertexData[0], allVertexData[1], allVertexData[2], allVertexData[3]);
 
         // Act
         var actual = sut.ToArray();

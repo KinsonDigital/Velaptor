@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUBufferBaseTests.cs" company="KinsonDigital">
+﻿// <copyright file="GpuBufferBaseTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,9 +24,9 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Initializes a new instance of <see cref="GPUBufferBaseTests"/>.
+/// Initializes a new instance of <see cref="GpuBufferBaseTests"/>.
 /// </summary>
-public class GPUBufferBaseTests
+public class GpuBufferBaseTests
 {
     private const string BufferName = "UNKNOWN BUFFER";
     private const uint VertexArrayId = 1256;
@@ -45,9 +45,9 @@ public class GPUBufferBaseTests
     private IReceiveReactor<ViewPortSizeData>? viewPortSizeReactor;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
+    /// Initializes a new instance of the <see cref="GpuBufferBaseTests"/> class.
     /// </summary>
-    public GPUBufferBaseTests()
+    public GpuBufferBaseTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGL.Setup(m => m.GenBuffer()).Returns(() =>
@@ -144,7 +144,7 @@ public class GPUBufferBaseTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new GPUBufferFake(
+            _ = new GpuBufferFake(
                 null,
                 this.mockGLService.Object,
                 this.mockReactableFactory.Object);
@@ -157,7 +157,7 @@ public class GPUBufferBaseTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new GPUBufferFake(
+            _ = new GpuBufferFake(
                 this.mockGL.Object,
                 null,
                 this.mockReactableFactory.Object);
@@ -170,7 +170,7 @@ public class GPUBufferBaseTests
         // Arrange & Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new GPUBufferFake(
+            _ = new GpuBufferFake(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
@@ -267,7 +267,7 @@ public class GPUBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
+        Assert.True(sut.GenerateDataInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
     }
 
     [Fact]
@@ -280,7 +280,7 @@ public class GPUBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
+        Assert.True(sut.GenerateIndicesInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class GPUBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
+        Assert.True(sut.SetupVAOInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
     }
 
     [Fact]
@@ -389,7 +389,7 @@ public class GPUBufferBaseTests
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(sut.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
+        Assert.True(sut.PrepareForUseInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
     }
 
     [Fact]
@@ -403,7 +403,7 @@ public class GPUBufferBaseTests
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(sut.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
+        Assert.True(sut.UpdateVertexDataInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
     }
 
     [Fact]
@@ -451,7 +451,7 @@ public class GPUBufferBaseTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GPUBufferFake.Ctor - GLInitializedId");
+            reactor.Name.Should().Be("GpuBufferFake.Ctor - GLInitializedId");
         }
     }
 
@@ -478,7 +478,7 @@ public class GPUBufferBaseTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GPUBufferFake.Ctor - SystemShuttingDownId");
+            reactor.Name.Should().Be("GpuBufferFake.Ctor - SystemShuttingDownId");
         }
     }
 
@@ -499,7 +499,7 @@ public class GPUBufferBaseTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GPUBufferFake.Ctor - ViewPortSizeChangedId");
+            reactor.Name.Should().Be("GpuBufferFake.Ctor - ViewPortSizeChangedId");
         }
     }
 
@@ -531,11 +531,11 @@ public class GPUBufferBaseTests
     #endregion
 
     /// <summary>
-    /// Creates an instance of the type <see cref="GPUBufferFake"/> for the purpose of
-    /// testing the abstract class <see cref="GPUBufferBase{TData}"/>.
+    /// Creates an instance of the type <see cref="GpuBufferFake"/> for the purpose of
+    /// testing the abstract class <see cref="GpuBufferBase{TData}"/>.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private GPUBufferFake CreateSystemUnderTest() => new (
+    private GpuBufferFake CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockReactableFactory.Object);

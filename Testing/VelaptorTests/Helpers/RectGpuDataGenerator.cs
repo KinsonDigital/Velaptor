@@ -1,4 +1,4 @@
-// <copyright file="RectGPUDataGenerator.cs" company="KinsonDigital">
+// <copyright file="RectGpuDataGenerator.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,35 +10,35 @@ using System.Numerics;
 using Velaptor.OpenGL.GPUData;
 
 /// <summary>
-/// Helps generate <see cref="RectVertexData"/> easily for the purpose of testing.
+/// Helps generate <see cref="ShapeVertexData"/> easily for the purpose of testing.
 /// </summary>
 [SuppressMessage("csharpsquid", "S101", Justification = "Class naming is fine.")]
-internal static class RectGPUDataGenerator
+internal static class RectGpuDataGenerator
 {
     /// <summary>
-    /// Generates a <see cref="RectGPUData"/> instance with the component values beginning at <paramref name="start"/> value
+    /// Generates a <see cref="ShapeGpuData"/> instance with the component values beginning at <paramref name="start"/> value
     /// with each component getting larger by 1.
     /// </summary>
     /// <param name="start">The start value of the component values.</param>
     /// <returns>The instance used for testing.</returns>
-    public static RectGPUData GenerateGPUData(float start)
+    public static ShapeGpuData GenerateGPUData(float start)
     {
         var vertex1 = GenerateVertexData(start, out var next);
         var vertex2 = GenerateVertexData(next, out next);
         var vertex3 = GenerateVertexData(next, out next);
         var vertex4 = GenerateVertexData(next, out next);
 
-        return new RectGPUData(vertex1, vertex2, vertex3, vertex4);
+        return new ShapeGpuData(vertex1, vertex2, vertex3, vertex4);
     }
 
     /// <summary>
-    /// Generates a <see cref="RectVertexData"/> instance with the component values beginning at the given <paramref name="start"/> value
+    /// Generates a <see cref="ShapeVertexData"/> instance with the component values beginning at the given <paramref name="start"/> value
     /// with each component getting larger by 1.
     /// </summary>
     /// <param name="start">The start value of the component values.</param>
     /// <param name="next">The next value available after all values have been used relative to the given <paramref name="start"/> value.</param>
     /// <returns>The instance used for testing.</returns>
-    public static RectVertexData GenerateVertexData(float start, out float next)
+    public static ShapeVertexData GenerateVertexData(float start, out float next)
     {
         var pos = GenerateVector2(start, out next);
         var rect = GenerateVector4(next, out next);
@@ -59,7 +59,7 @@ internal static class RectGPUDataGenerator
         var topRightRadius = next;
 
         next += 1;
-        return new RectVertexData(
+        return new ShapeVertexData(
             pos,
             rect,
             color,

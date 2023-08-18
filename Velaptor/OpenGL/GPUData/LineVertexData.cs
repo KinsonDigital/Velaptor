@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents a single vertex of the <see cref="LineGPUData"/> sent to the GPU.
+/// Represents a single vertex of the <see cref="LineGpuData"/> sent to the GPU.
 /// </summary>
 internal readonly struct LineVertexData
 {

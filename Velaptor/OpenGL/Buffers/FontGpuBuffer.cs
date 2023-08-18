@@ -1,4 +1,4 @@
-// <copyright file="FontGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="FontGpuBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,14 +20,14 @@ using ReactableData;
 /// <summary>
 /// Updates font data in the GPU buffer.
 /// </summary>
-[GPUBufferName("Font")]
-internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
+[GpuBufferName("Font")]
+internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
+    /// Initializes a new instance of the <see cref="FontGpuBuffer"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -35,7 +35,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    public FontGPUBuffer(
+    public FontGpuBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
@@ -71,11 +71,11 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        var result = new List<TextureGPUData>();
+        var result = new List<TextureGpuData>();
 
         for (var i = 0u; i < BatchSize; i++)
         {
-            result.AddRange(new TextureGPUData[] { new (default, default, default, default) });
+            result.AddRange(new TextureGpuData[] { new (default, default, default, default) });
         }
 
         return OpenGLExtensionMethods.ToArray(result);
@@ -205,13 +205,13 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         textureBottomRight = textureBottomRight.ToNDCTextureCoords(textureWidth, textureHeight);
 
         // Convert the texture quad vertex positions to NDC values
-        var quadDataItem = new TextureGPUData(
+        var quadDataItem = new TextureGpuData(
             new TextureVertexData(vertex1, textureTopLeft, textureQuad.TintColor),
             new TextureVertexData(vertex2, textureBottomLeft, textureQuad.TintColor),
             new TextureVertexData(vertex3, textureTopRight, textureQuad.TintColor),
             new TextureVertexData(vertex4, textureBottomRight, textureQuad.TintColor));
 
-        var totalBytes = TextureGPUData.GetTotalBytes();
+        var totalBytes = TextureGpuData.GetTotalBytes();
         var data = quadDataItem.ToArray();
         var offset = totalBytes * batchIndex;
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureGPUDataTesting.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGpuDataTesting.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,17 +10,17 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="TextureGPUData"/> struct.
+/// Tests the <see cref="TextureGpuData"/> struct.
 /// </summary>
-public class TextureGPUDataTesting
+public class TextureGpuDataTesting
 {
     #region Overloaded Operator Tests
     [Fact]
     public void EqualsOperator_WithBothOperandsEqual_ReturnsTrue()
     {
         // Arrange
-        var sutA = default(TextureGPUData);
-        var sutB = default(TextureGPUData);
+        var sutA = default(TextureGpuData);
+        var sutB = default(TextureGpuData);
 
         // Act
         var actual = sutA == sutB;
@@ -33,8 +33,8 @@ public class TextureGPUDataTesting
     public void EqualsOperator_WithBothOperandsNotEqual_ReturnsFalse()
     {
         // Arrange
-        var sutA = default(TextureGPUData);
-        var sutB = new TextureGPUData(
+        var sutA = default(TextureGpuData);
+        var sutB = new TextureGpuData(
             new TextureVertexData(
                 new Vector2(11, 22),
                 default,
@@ -56,7 +56,7 @@ public class TextureGPUDataTesting
     public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
     {
         // Act
-        var actual = TextureGPUData.GetTotalBytes();
+        var actual = TextureGpuData.GetTotalBytes();
 
         // Assert
         actual.Should().Be(128u);
@@ -66,8 +66,8 @@ public class TextureGPUDataTesting
     public void Equals_WithEqualParam_ReturnsTrue()
     {
         // Arrange
-        var sut = default(TextureGPUData);
-        var dataB = default(TextureGPUData);
+        var sut = default(TextureGpuData);
+        var dataB = default(TextureGpuData);
 
         // Act
         var actual = sut.Equals(dataB);
@@ -80,7 +80,7 @@ public class TextureGPUDataTesting
     public void Equals_WhenInvokedWithParamOfDifferentType_ReturnsFalse()
     {
         // Arrange
-        var sut = default(TextureGPUData);
+        var sut = default(TextureGpuData);
         var dataB = new object();
 
         // Act
@@ -94,8 +94,8 @@ public class TextureGPUDataTesting
     public void Equals_WhenInvokedWithEqualParamOfSameType_ReturnsTrue()
     {
         // Arrange
-        var sutA = default(TextureGPUData);
-        object sutB = default(TextureGPUData);
+        var sutA = default(TextureGpuData);
+        object sutB = default(TextureGpuData);
 
         // Act
         var actual = sutA.Equals(sutB);

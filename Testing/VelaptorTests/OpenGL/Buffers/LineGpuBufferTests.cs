@@ -1,11 +1,14 @@
-﻿// <copyright file="FontGPUBufferTests.cs" company="KinsonDigital">
+﻿// <copyright file="LineGpuBufferTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Numerics;
 using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.UniDirectional;
@@ -25,12 +28,17 @@ using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Xunit;
 
-public class FontGPUBufferTests
+/// <summary>
+/// Tests the <see cref="LineGpuBuffer"/> class.
+/// </summary>
+public class LineGpuBufferTests
 {
-    private const uint VertexArrayId = 111;
-    private const uint VertexBufferId = 222;
-    private const uint IndexBufferId = 333;
-    private const string BufferName = "Font";
+    private const uint VAO = 123u;
+    private const uint VBO = 456u;
+    private const uint EBO = 789u;
+    private const uint ViewPortWidth = 100u;
+    private const uint ViewPortHeight = 200u;
+    private const string BufferName = "Line";
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -39,32 +47,27 @@ public class FontGPUBufferTests
     private IReceiveReactor<BatchSizeData>? batchSizeReactor;
     private IReceiveReactor<ViewPortSizeData>? viewPortSizeReactor;
     private IReceiveReactor? shutDownReactor;
-    private bool vertexBufferCreated;
-    private bool indexBufferCreated;
+    private bool vboGenerated;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontGPUBufferTests"/> class.
+    /// Initializes a new instance of the <see cref="LineGpuBufferTests"/> class.
     /// </summary>
-    public FontGPUBufferTests()
+    public LineGpuBufferTests()
     {
         this.mockGL = new Mock<IGLInvoker>();
-        this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
-        this.mockGL.Setup(m => m.GenBuffer()).Returns(() =>
-        {
-            if (!this.vertexBufferCreated)
-            {
-                this.vertexBufferCreated = true;
-                return VertexBufferId;
-            }
+        this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
 
-            if (this.indexBufferCreated)
+        this.mockGL.Setup(m => m.GenBuffer())
+            .Returns(() =>
             {
-                return 0;
-            }
+                if (this.vboGenerated)
+                {
+                    return EBO;
+                }
 
-            this.indexBufferCreated = true;
-            return IndexBufferId;
-        });
+                this.vboGenerated = true;
+                return VBO;
+            });
 
         this.mockGLService = new Mock<IOpenGLService>();
 
@@ -145,7 +148,7 @@ public class FontGPUBufferTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new FontGPUBuffer(
+            _ = new LineGpuBuffer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
@@ -163,192 +166,218 @@ public class FontGPUBufferTests
     public void UploadVertexData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest(false);
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            sut.UploadVertexData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>());
-        }, "The font buffer has not been initialized.");
+            sut.UploadVertexData(It.IsAny<LineBatchItem>(), It.IsAny<uint>());
+        }, "The line buffer has not been initialized.");
     }
 
     [Fact]
-    public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
+    public void UploadVertexData_WhenInvoked_BeginsAndEndsGLDebugGroup()
     {
         // Arrange
-        var batchItem = new FontGlyphBatchItem(
-            RectangleF.Empty,
-            RectangleF.Empty,
-            'g',
-            2.5F,
-            90,
-            Color.Empty,
-            RenderEffects.None,
-            0);
+        var executionLocations = new List<string>
+        {
+            $"1 time in the '{nameof(GpuBufferBase<Line>.UploadVertexData)}()' method.",
+            $"3 times in the private $'{nameof(GpuBufferBase<Line>)}.Init()' method.",
+        };
+        var failMessage = string.Join(Environment.NewLine, executionLocations);
+
+        var line = default(LineBatchItem);
 
         var sut = CreateSystemUnderTest();
-
-        this.glInitReactor.OnReceive();
 
         // Act
-        sut.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(line, 123);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Update Font Quad - BatchItem(0)"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(5));
+        this.mockGLService.Verify(m => m.BeginGroup("Update Line - BatchItem(123)"), Times.Once);
+        this.mockGLService.Verify(m => m.EndGroup(),
+            Times.Exactly(4),
+            failMessage);
     }
 
     [Fact]
-    public void UploadVertexData_WhenInvoked_UploadsData()
+    public void UploadVertexData_WhenInvoked_BindsAndUnbindsVBO()
     {
         // Arrange
-        var expected = new[]
+        var executionLocations = new List<string>
         {
-            -0.784718275f, 0.883709013f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.862500012f,
-            0.779999971f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.726381958f, 0.805927277f,
-            0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.804163694f, 0.702218235f, 0.571428597f, 0.25f, 147f,
-            112f, 219f, 255f,
+            $"1 time in the private '{nameof(GpuBufferBase<Line>)}.Init()' method.",
+            $"1 time in the '{nameof(GpuBufferBase<Line>.UploadVertexData)}()' method.",
         };
-        var batchItem = new FontGlyphBatchItem(
-            new RectangleF(11, 22, 33, 44),
-            new RectangleF(55, 66, 77, 88),
-            'g',
-            1.5f,
-            45f,
-            Color.MediumPurple,
-            RenderEffects.None,
-            1);
+        var failMessage = string.Join($"{Environment.NewLine}", executionLocations);
 
-        var viewPortSizeData = new ViewPortSizeData { Width = 800, Height = 600 };
+        var line = default(LineBatchItem);
 
         var sut = CreateSystemUnderTest();
 
-        this.glInitReactor.OnReceive();
+        // Act
+        sut.UploadVertexData(line, 0);
+
+        // Assert
+        this.mockGLService.Verify(m => m.BindVBO(VBO),
+            Times.AtLeastOnce,
+            failMessage);
+
+        this.mockGLService.Verify(m => m.UnbindVBO(),
+            Times.AtLeastOnce,
+            failMessage);
+    }
+
+    [Fact]
+    public void UploadVertexData_WhenInvoked_UploadsGPUBufferData()
+    {
+        // Arrange
+        var expectedData = new[]
+        {
+            // Vertex 1
+            // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
+            -0.923431456f,  1.00828433f,     5f,     6f,     7f,     4f,
+
+            // Vertex 2
+            // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
+            -1.03656852f,   0.951715708f,     5f,     6f,     7f,     4f,
+
+            // Vertex 3
+            // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
+            -0.883431435f,  0.98828429f,     5f,     6f,     7f,     4f,
+
+            // Vertex 4
+            // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
+            -0.996568561f,  0.931715727f,     5f,     6f,     7f,     4f,
+        };
+
+        var p1 = new Vector2(1, 2);
+        var p2 = new Vector2(3, 4);
+        var color = Color.FromArgb(4, 5, 6, 7);
+        const int thickness = 8;
+
+        var batchItem = new LineBatchItem(p1, p2, color, thickness);
+
+        var viewPortSizeData = new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight };
+
+        var sut = CreateSystemUnderTest();
         this.viewPortSizeReactor.OnReceive(viewPortSizeData);
 
         // Act
-        sut.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(batchItem, 10);
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.AtLeastOnce);
-        this.mockGL.Verify(m
-            => m.BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, expected));
-        this.mockGLService.Verify(m => m.UnbindVBO(), Times.AtLeastOnce);
+        this.mockGL.VerifyOnce(m =>
+            m.BufferSubData(GLBufferTarget.ArrayBuffer, 0x3c0, 96, expectedData));
     }
 
     [Fact]
     public void PrepareForUpload_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest(false);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.PrepareForUpload();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.PrepareForUpload();
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>()
+            .WithMessage("The line buffer has not been initialized.");
     }
 
     [Fact]
-    public void PrepareForUpload_WhenInvoked_BindsVertexArrayObject()
+    public void PrepareForUpload_WhenInitialized_BindsVAO()
     {
         // Arrange
+        var executionLocations = new List<string>
+        {
+            $"1 time in the '{nameof(LineGpuBuffer.PrepareForUpload)}()' method.",
+            $"1 time in the '{nameof(GpuBufferBase<Line>)}.Init()' method.",
+        };
+        var failMessage = string.Join(Environment.NewLine, executionLocations);
+
         var sut = CreateSystemUnderTest();
-        this.glInitReactor.OnReceive();
 
         // Act
         sut.PrepareForUpload();
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.AtLeastOnce);
-    }
-
-    [Fact]
-    public void GenerateData_WhenNotInitialized_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.GenerateData();
-        }, "The font buffer has not been initialized.");
+        this.mockGLService.VerifyExactly(m => m.BindVAO(VAO), 3, failMessage);
     }
 
     [Fact]
     public void GenerateData_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
-
-        this.glInitReactor.OnReceive();
+        var sut = CreateSystemUnderTest(false);
 
         // Act
         var actual = sut.GenerateData();
 
         // Assert
-        Assert.Equal(3_200, actual.Length);
+        sut.BatchSize.Should().Be(100u);
+        actual.Should().HaveCount(2400);
+        actual.Should().AllSatisfy(expected => expected.Should().Be(0));
     }
 
     [Fact]
-    public void SetupVAO_WhenNotInitialized_ThrowsException()
+    public void SetupVAO_WhenInvoked_SetsUpTheOpenGLVertexArrayObject()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
+        var paramData = new (uint index, int size, bool normalized, uint stride, uint offset, string label)[]
         {
-            sut.SetupVAO();
-        }, "The font buffer has not been initialized.");
-    }
+            (0u, 2, false, 24u, 0u, "VertexPosition"),
+            (1u, 4, false, 24u, 8u, "Color"),
+        };
+        var enableVertexAttribArrayParamData = new (uint index, string label)[]
+        {
+            (0u, "VertexPosition"),
+            (1u, "Color"),
+        };
 
-    [Fact]
-    public void SetupVAO_WhenInvoked_SetsUpVertexArrayObject()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest(false);
 
         // Act
-        this.glInitReactor.OnReceive();
+        sut.SetupVAO();
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Setup Font Buffer Vertex Attributes"), Times.Once);
+        Assert.All(paramData, data =>
+        {
+            this.mockGL.Verify(m =>
+                    m.VertexAttribPointer(data.index,
+                        data.size,
+                        GLVertexAttribPointerType.Float,
+                        data.normalized,
+                        data.stride,
+                        data.offset), Times.Once,
+                $"The '{data.label}' vertex attribute pointer layout is incorrect.");
+        });
 
-        // Assert Vertex Position Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, 32, 0), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(0));
-
-        // Assert Texture Coordinate Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, 32, 8), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(1));
-
-        // Assert Tint Color Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, 32, 16), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(2));
-
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(4));
+        Assert.All(enableVertexAttribArrayParamData, data =>
+        {
+            var (index, label) = data;
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(index),
+                $"Issue enabling vertex attribute pointer '{label}'.");
+        });
     }
 
     [Fact]
-    public void GenerateIndices_WhenNotInitialized_ThrowsException()
+    public void GenerateIndices_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
+        var expected = CreateExpectedIndicesData(100u);
+        var sut = CreateSystemUnderTest(false);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.GenerateIndices();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var actual = sut.GenerateIndices();
+
+        // Assert
+        sut.BatchSize.Should().Be(100u);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
-    #region Rectable Tests
+    #region Reactable Tests
     [Fact]
     public void BatchSizeReactable_WhenSubscribing_UsesCorrectReactorName()
     {
@@ -366,7 +395,7 @@ public class FontGPUBufferTests
         void Act(IReactor reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("FontGPUBufferTests.Ctor - BatchSizeChangedId");
+            reactor.Name.Should().Be("LineGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -390,7 +419,7 @@ public class FontGPUBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Font });
+        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line  });
 
         // Assert
         sut.BatchSize.Should().Be(123);
@@ -404,7 +433,7 @@ public class FontGPUBufferTests
         this.glInitReactor.OnReceive();
 
         // Act
-        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Font });
+        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line });
 
         // Assert
         sut.BatchSize.Should().Be(123);
@@ -430,11 +459,48 @@ public class FontGPUBufferTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="FontGPUBuffer"/> for the purpose of testing.
+    /// Creates the expected indices test data.
     /// </summary>
+    /// <returns>The data to use for unit testing.</returns>
+    private static IEnumerable<uint> CreateExpectedIndicesData(uint batchSize)
+    {
+        var result = new List<uint>();
+
+        for (var i = 0u; i < batchSize; i++)
+        {
+            var maxIndex = result.Count <= 0 ? 0 : result.Max() + 1;
+
+            result.AddRange(new[]
+            {
+                maxIndex,
+                maxIndex + 1u,
+                maxIndex + 2u,
+                maxIndex + 2u,
+                maxIndex + 1u,
+                maxIndex + 3u,
+            });
+        }
+
+        return result.ToArray();
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="LineGpuBuffer"/> class for the purpose of testing.
+    /// </summary>
+    /// <param name="initialize">If true, will mock the initialization of the mocked sut.</param>
     /// <returns>The instance to test.</returns>
-    private FontGPUBuffer CreateSystemUnderTest() => new (
-        this.mockGL.Object,
-        this.mockGLService.Object,
-        this.mockReactableFactory.Object);
+    private LineGpuBuffer CreateSystemUnderTest(bool initialize = true)
+    {
+        var result = new LineGpuBuffer(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object);
+
+        if (initialize)
+        {
+            this.glInitReactor.OnReceive();
+        }
+
+        return result;
+    }
 }

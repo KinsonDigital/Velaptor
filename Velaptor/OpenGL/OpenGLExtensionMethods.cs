@@ -152,7 +152,7 @@ internal static class OpenGLExtensionMethods
     /// </summary>
     /// <param name="data">The quad to convert.</param>
     /// <returns>An array of float values.</returns>
-    public static float[] ToArray(this TextureGPUData data)
+    public static float[] ToArray(this TextureGpuData data)
     {
         var result = new List<float>();
 
@@ -169,7 +169,7 @@ internal static class OpenGLExtensionMethods
     /// </summary>
     /// <param name="data">The quads to convert.</param>
     /// <returns>An array of float values.</returns>
-    public static float[] ToArray(this IEnumerable<TextureGPUData> data)
+    public static float[] ToArray(this IEnumerable<TextureGpuData> data)
     {
         var result = new List<float>();
 

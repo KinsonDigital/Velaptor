@@ -106,7 +106,7 @@ internal static class IoC
             var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var openGLService = IoCContainer.GetInstance<IOpenGLService>();
-            var buffer = IoCContainer.GetInstance<IGPUBuffer<FontGlyphBatchItem>>();
+            var buffer = IoCContainer.GetInstance<IGpuBuffer<FontGlyphBatchItem>>();
             var shader = IoCContainer.GetInstance<IShaderFactory>().CreateFontShader();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -125,7 +125,7 @@ internal static class IoC
             var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var openGLService = IoCContainer.GetInstance<IOpenGLService>();
-            var buffer = IoCContainer.GetInstance<IGPUBuffer<TextureBatchItem>>();
+            var buffer = IoCContainer.GetInstance<IGpuBuffer<TextureBatchItem>>();
             var shader = IoCContainer.GetInstance<IShaderFactory>().CreateTextureShader();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -144,7 +144,7 @@ internal static class IoC
             var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var openGLService = IoCContainer.GetInstance<IOpenGLService>();
-            var buffer = IoCContainer.GetInstance<IGPUBuffer<LineBatchItem>>();
+            var buffer = IoCContainer.GetInstance<IGpuBuffer<LineBatchItem>>();
             var shader = IoCContainer.GetInstance<IShaderFactory>().CreateLineShader();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -163,7 +163,7 @@ internal static class IoC
             var glInvoker = IoCContainer.GetInstance<IGLInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var openGLService = IoCContainer.GetInstance<IOpenGLService>();
-            var buffer = IoCContainer.GetInstance<IGPUBuffer<ShapeBatchItem>>();
+            var buffer = IoCContainer.GetInstance<IGpuBuffer<ShapeBatchItem>>();
             var shader = IoCContainer.GetInstance<IShaderFactory>().CreateShapeShader();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -202,10 +202,10 @@ internal static class IoC
     /// </summary>
     private static void SetupBuffers()
     {
-        IoCContainer.Register<IGPUBuffer<TextureBatchItem>, TextureGPUBuffer>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBuffer<FontGlyphBatchItem>, FontGPUBuffer>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBuffer<ShapeBatchItem>, ShapeGPUBuffer>(Lifestyle.Singleton);
-        IoCContainer.Register<IGPUBuffer<LineBatchItem>, LineGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuBuffer<TextureBatchItem>, TextureGpuBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuBuffer<FontGlyphBatchItem>, FontGpuBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuBuffer<ShapeBatchItem>, ShapeGPUBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuBuffer<LineBatchItem>, LineGpuBuffer>(Lifestyle.Singleton);
     }
 
     /// <summary>

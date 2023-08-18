@@ -1,4 +1,4 @@
-﻿// <copyright file="LineGPUData.cs" company="KinsonDigital">
+﻿// <copyright file="LineGpuData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,24 +9,24 @@ using System.Collections.Generic;
 /// <summary>
 /// Holds all the necessary data for a line to send to the GPU for rendering.
 /// </summary>
-internal readonly struct LineGPUData
+internal readonly struct LineGpuData
 {
     private const uint TotalVertexItems = 4u;
     private static readonly uint Stride;
 
     /// <summary>
-    /// Initializes static members of the <see cref="LineGPUData"/> struct.
+    /// Initializes static members of the <see cref="LineGpuData"/> struct.
     /// </summary>
-    static LineGPUData() => Stride = LineVertexData.GetStride() * TotalVertexItems;
+    static LineGpuData() => Stride = LineVertexData.GetStride() * TotalVertexItems;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LineGPUData"/> struct.
+    /// Initializes a new instance of the <see cref="LineGpuData"/> struct.
     /// </summary>
     /// <param name="vertex1">The first vertex of the line.</param>
     /// <param name="vertex2">The second vertex of the line.</param>
     /// <param name="vertex3">The third vertex of the line.</param>
     /// <param name="vertex4">The fourth vertex of the line.</param>
-    public LineGPUData(LineVertexData vertex1, LineVertexData vertex2, LineVertexData vertex3, LineVertexData vertex4)
+    public LineGpuData(LineVertexData vertex1, LineVertexData vertex2, LineVertexData vertex3, LineVertexData vertex4)
     {
         Vertex1 = vertex1;
         Vertex2 = vertex2;
@@ -77,7 +77,7 @@ internal readonly struct LineGPUData
     public LineVertexData Vertex4 { get; }
 
     /// <summary>
-    /// The total number of bytes that the <see cref="LineGPUData"/> data contains.
+    /// The total number of bytes that the <see cref="LineGpuData"/> data contains.
     /// </summary>
     /// <returns>The total number of bytes.</returns>
     public static uint GetTotalBytes() => Stride;

@@ -29,7 +29,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 {
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
-    private readonly IGPUBuffer<FontGlyphBatchItem> buffer;
+    private readonly IGpuBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable renderBatchBegunUnsubscriber;
@@ -48,7 +48,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         IGLInvoker gl,
         IReactableFactory reactableFactory,
         IOpenGLService openGLService,
-        IGPUBuffer<FontGlyphBatchItem> buffer,
+        IGpuBuffer<FontGlyphBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
             : base(gl, reactableFactory)

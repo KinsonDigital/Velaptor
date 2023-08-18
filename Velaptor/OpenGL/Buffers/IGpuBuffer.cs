@@ -1,4 +1,4 @@
-// <copyright file="IGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="IGpuBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ namespace Velaptor.OpenGL.Buffers;
 /// Manages buffer data in the GPU.
 /// </summary>
 /// <typeparam name="TData">The type of data in the buffer.</typeparam>
-internal interface IGPUBuffer<in TData>
+internal interface IGpuBuffer<in TData>
     where TData : struct
 {
     /// <summary>

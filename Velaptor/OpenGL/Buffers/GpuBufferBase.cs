@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
+﻿// <copyright file="GpuBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ using NETSizeF = System.Drawing.SizeF;
 /// Base functionality for managing buffer data in the GPU.
 /// </summary>
 /// <typeparam name="TData">The type of data in the GPU buffer.</typeparam>
-internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
+internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     where TData : struct
 {
     private readonly IDisposable shutDownUnsubscriber;
@@ -28,7 +28,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     private uint[] indices = Array.Empty<uint>();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
+    /// Initializes a new instance of the <see cref="GpuBufferBase{TData}"/> class.
     /// </summary>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
@@ -36,7 +36,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal GPUBufferBase(
+    internal GpuBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
@@ -77,10 +77,10 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
+    /// Finalizes an instance of the <see cref="GpuBufferBase{TData}"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
-    ~GPUBufferBase()
+    ~GpuBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
         {
@@ -270,21 +270,21 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         Attribute[]? attributes = null;
         var currentType = GetType();
 
-        if (currentType == typeof(TextureGPUBuffer))
+        if (currentType == typeof(TextureGpuBuffer))
         {
-            attributes = Attribute.GetCustomAttributes(typeof(TextureGPUBuffer));
+            attributes = Attribute.GetCustomAttributes(typeof(TextureGpuBuffer));
         }
-        else if (currentType == typeof(FontGPUBuffer))
+        else if (currentType == typeof(FontGpuBuffer))
         {
-            attributes = Attribute.GetCustomAttributes(typeof(FontGPUBuffer));
+            attributes = Attribute.GetCustomAttributes(typeof(FontGpuBuffer));
         }
         else if (currentType == typeof(ShapeGPUBuffer))
         {
             attributes = Attribute.GetCustomAttributes(typeof(ShapeGPUBuffer));
         }
-        else if (currentType == typeof(LineGPUBuffer))
+        else if (currentType == typeof(LineGpuBuffer))
         {
-            attributes = Attribute.GetCustomAttributes(typeof(LineGPUBuffer));
+            attributes = Attribute.GetCustomAttributes(typeof(LineGpuBuffer));
         }
         else
         {
@@ -298,7 +298,7 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
 
         foreach (var attribute in attributes)
         {
-            if (attribute is GPUBufferNameAttribute nameAttribute)
+            if (attribute is GpuBufferNameAttribute nameAttribute)
             {
                 Name = nameAttribute.Name;
             }

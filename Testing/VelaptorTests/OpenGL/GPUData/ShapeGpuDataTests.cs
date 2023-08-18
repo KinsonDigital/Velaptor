@@ -1,4 +1,4 @@
-// <copyright file="RectGPUDataTests.cs" company="KinsonDigital">
+// <copyright file="ShapeGpuDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,22 +11,22 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="RectGPUData"/> struct.
+/// Tests the <see cref="ShapeGpuData"/> struct.
 /// </summary>
-public class RectGPUDataTests
+public class ShapeGpuDataTests
 {
     #region Constructor Tests
     [Fact]
     public void Ctor_WhenInvoked_SetsProperties()
     {
         // Arrange
-        var vertex1 = RectGPUDataGenerator.GenerateVertexData(1, out var next);
-        var vertex2 = RectGPUDataGenerator.GenerateVertexData(next, out next);
-        var vertex3 = RectGPUDataGenerator.GenerateVertexData(next, out next);
-        var vertex4 = RectGPUDataGenerator.GenerateVertexData(next, out next);
+        var vertex1 = RectGpuDataGenerator.GenerateVertexData(1, out var next);
+        var vertex2 = RectGpuDataGenerator.GenerateVertexData(next, out next);
+        var vertex3 = RectGpuDataGenerator.GenerateVertexData(next, out next);
+        var vertex4 = RectGpuDataGenerator.GenerateVertexData(next, out next);
 
         // Act
-        var data = new RectGPUData(vertex1, vertex2, vertex3, vertex4);
+        var data = new ShapeGpuData(vertex1, vertex2, vertex3, vertex4);
 
         // Assert
         data.Vertex1.Should().Be(vertex1);
@@ -41,12 +41,12 @@ public class RectGPUDataTests
     public void ToArray_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        const string testDataFileName = $"{nameof(RectGPUData)}TestData.json";
+        const string testDataFileName = $"{nameof(ShapeGpuData)}TestData.json";
         var expected = TestDataLoader
             .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName)
             .Select(i => i.value).ToArray();
 
-        var data = RectGPUDataGenerator.GenerateGPUData(1);
+        var data = RectGpuDataGenerator.GenerateGPUData(1);
 
         // Act
         var actual = data.ToArray();
