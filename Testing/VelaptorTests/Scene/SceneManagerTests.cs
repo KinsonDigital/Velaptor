@@ -1,4 +1,4 @@
-﻿// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
+// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace VelaptorTests.Scene;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -691,6 +692,7 @@ public class SceneManagerTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvokedS_DisposesOfScenes()
     {
         // Arrange
