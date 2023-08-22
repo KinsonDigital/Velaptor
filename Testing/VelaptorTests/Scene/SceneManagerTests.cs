@@ -65,6 +65,33 @@ public class SceneManagerTests
         // Assert
         actual.Should().BeEquivalentTo(expected);
     }
+
+    [Fact]
+    public void IsLoaded_BeforeContentIsLoaded_ReturnsFalse()
+    {
+        // Arrange
+        var sut = new SceneManager();
+
+        // Act
+        var actual = sut.IsLoaded;
+
+        // Assert
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsLoaded_AfterContentIsLoaded_ReturnsTrue()
+    {
+        // Arrange
+        var sut = new SceneManager();
+        sut.LoadContent();
+
+        // Act
+        var actual = sut.IsLoaded;
+
+        // Assert
+        actual.Should().BeTrue();
+    }
     #endregion
 
     #region Method Tests
