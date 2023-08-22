@@ -1,4 +1,4 @@
-// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
+﻿// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -88,6 +88,27 @@ public class SceneManagerTests
 
         // Assert
         actual.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TotalScenes_WithExistingScenes_ReturnsCorrectNumberOfScenes()
+    {
+        // Arrange
+        var mockSceneA = Substitute.For<IScene>();
+        mockSceneA.Id.Returns(new Guid("C6BE5B20-B672-40B1-96F0-C231147E008D"));
+
+        var mockSceneB = Substitute.For<IScene>();
+        mockSceneB.Id.Returns(new Guid("7CE3F8E2-42A0-4EC4-BECB-7B7CFA88D707"));
+
+        var sut = new SceneManager();
+        sut.AddScene(mockSceneA);
+        sut.AddScene(mockSceneB);
+
+        // Act
+        var actual = sut.TotalScenes;
+
+        // Assert
+        actual.Should().Be(2);
     }
     #endregion
 

@@ -32,6 +32,11 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     bool IsLoaded { get; }
 
     /// <summary>
+    /// Gets the total number of scenes.
+    /// </summary>
+    int TotalScenes { get; }
+
+    /// <summary>
     /// Adds the given scene.
     /// </summary>
     /// <param name="scene">The scene to add.</param>
