@@ -15,6 +15,11 @@ on:
         required: true
         type: choice
         options: [Preview, Production]
+      trigger-api-docs-release:
+        description: Check to trigger a release of the API Documentation website.
+        required: false
+        default: true
+        type: boolean
       dry-run:
         description: Dry Run - Check to run the workflow without creating a release.
         required: false
@@ -59,3 +64,47 @@ jobs:
       twitter-consumer-api-secret: "${{ secrets.TWITTER_CONSUMER_API_SECRET }}"
       twitter-access-token: "${{ secrets.TWITTER_ACCESS_TOKEN }}"
       twitter-access-token-secret: "${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}"
+
+
+  validate_version:
+    name: Validate Version
+    uses: KinsonDigital/Infrastructure/.github/workflows/validate-csharp-version.yml@v12.0.0
+    with:
+      project-name: "${{ vars.PROJECT_NAME }}"
+      release-type: "${{ inputs.release-type }}"
+    secrets:
+      cicd-pat: "${{ secrets.CICD_TOKEN }}"
+
+
+  run_api_doc_release:
+    name: Run API Doc Release
+    needs: [run_release, validate_version]
+    if: ${{ inputs.trigger-api-docs-release == true }}
+    runs-on: ubuntu-latest
+    steps:
+      - name:  Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set Up Deno (${{ vars.DENO_VERSION }})
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ vars.DENO_VERSION }}
+
+      - name: Execute API Release Workflow
+        run: |
+          $scriptUrl = "${{ github.workspace }}/.github/cicd/scripts/trigger-api-docs-release.ts";
+
+          deno run `
+            --allow-net `
+            $scriptUrl `
+            "${{ vars.DOC_SITE_REPO_NAME }}" `
+            "${{ vars.DOC_SITE_RELEASE_BRANCH }}" `
+            "${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}" `
+            "[api-version,${{ needs.validate_version.outputs.version }}]" `
+            "${{ secrets.CICD_TOKEN }}";
+            
+          $releasesUrl = "https://github.com/${{ vars.ORGANIZATION_NAME }}/${{ vars.DOC_SITE_REPO_NAME }}/actions/workflows/${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}";
+
+          $notice = "An API documentation release has been triggered for the '${{ vars.DOC_SITE_REPO_NAME }}' repository."
+          $notice = $notice + "`n`t${{ vars.DOC_SITE_REPO_NAME }} Releases: $releasesUrl";
+          Write-Host "::notice::$notice";
