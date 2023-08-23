@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content.Fonts;
@@ -39,6 +40,7 @@ public class TextRenderingScene : SceneBase
     private Button? btnSetStyle;
     private Button? btnIncreaseFontSize;
     private Button? btnDecreaseFontSize;
+    private BackgroundManager? backgroundManager;
     private bool cwButtonDown;
     private bool ccwButtonDown;
     private bool increaseRenderSizeBtnDown;
@@ -55,6 +57,9 @@ public class TextRenderingScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var renderFactory = new RendererFactory();
 
@@ -244,6 +249,7 @@ public class TextRenderingScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         ContentLoader.UnloadFont(this.textFont);
 
         this.btnRotateCW = null;
@@ -308,6 +314,7 @@ public class TextRenderingScene : SceneBase
         var xPos = WindowCenter.X;
         var yPos = WindowCenter.Y;
 
+        this.backgroundManager?.Render();
         this.fontRenderer.Render(
             this.textFont,
             this.isMultiLine ? this.multiLineText : SingleLineText,

@@ -87,6 +87,19 @@ public class WindowTests
         // Assert
         sut.SceneManager.Should().BeSameAs(this.mockSceneManager.Object);
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_AutoPropsAreDefaultTrue()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.AutoSceneLoading.Should().BeTrue();
+        sut.AutoSceneRendering.Should().BeTrue();
+        sut.AutoSceneUnloading.Should().BeTrue();
+        sut.AutoSceneUpdating.Should().BeTrue();
+    }
     #endregion
 
     #region Prop Tests
@@ -266,6 +279,62 @@ public class WindowTests
     }
 
     [Fact]
+    public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneLoading;
+
+        // Act
+        sut.AutoSceneLoading = !sut.AutoSceneLoading;
+
+        // Assert
+        sut.AutoSceneLoading.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneUnloading;
+
+        // Act
+        sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
+
+        // Assert
+        sut.AutoSceneUnloading.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneUpdating;
+
+        // Act
+        sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
+
+        // Assert
+        sut.AutoSceneUpdating.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneRendering;
+
+        // Act
+        sut.AutoSceneRendering = !sut.AutoSceneRendering;
+
+        // Assert
+        sut.AutoSceneRendering.Should().Be(!defaultValue);
+    }
+
+    [Fact]
     public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -395,6 +464,59 @@ public class WindowTests
 
         // Assert
         this.mockWindow.Verify(m => m.ShowAsync(null, null), Times.Once);
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsEnabled_RenderScenesAndManipulatesBatch()
+    {
+        // Arrange
+        this.mockSceneManager.SetupGet(p => p.TotalScenes).Returns(1);
+
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = true;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyOnce(m => m.Clear());
+        this.mockBatcher.VerifyOnce(m => m.Begin());
+        this.mockSceneManager.VerifyOnce(m => m.Render());
+        this.mockBatcher.VerifyOnce(m => m.End());
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsDisabled_DoesNotRenderScenes()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = false;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyNever(m => m.Clear());
+        this.mockBatcher.VerifyNever(m => m.Begin());
+        this.mockSceneManager.VerifyNever(m => m.Render());
+        this.mockBatcher.VerifyNever(m => m.End());
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsNotDisabledWithNoScenes_ShouldNotRenderScenesOrManipulateBatches()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = true;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyNever(m => m.Clear());
+        this.mockBatcher.VerifyNever(m => m.Begin());
+        this.mockSceneManager.VerifyNever(m => m.Render());
+        this.mockBatcher.VerifyNever(m => m.End());
     }
 
     [Fact]

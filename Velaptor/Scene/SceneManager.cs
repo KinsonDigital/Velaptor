@@ -30,6 +30,9 @@ internal sealed class SceneManager : ISceneManager
     public bool IsLoaded { get; private set; }
 
     /// <inheritdoc/>
+    public int TotalScenes => this.scenes.Count;
+
+    /// <inheritdoc/>
     public void AddScene(IScene scene) => AddScene(scene, false);
 
     /// <inheritdoc/>

@@ -1,10 +1,11 @@
-﻿// <copyright file="LayeredTextureRenderingScene.cs" company="KinsonDigital">
+// <copyright file="LayeredTextureRenderingScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.Scene;
@@ -15,6 +16,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.UI;
 
 /// <summary>
 /// Tests out layered rendering with textures.
@@ -23,13 +25,10 @@ public class LayeredTextureRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";
     private const float Speed = 200f;
-    private const int BackgroundLayer = -50;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
-    private readonly IAppInput<KeyboardState>? keyboard;
-    private ITexture? background;
+    private readonly IAppInput<KeyboardState> keyboard;
     private ITextureRenderer? textureRenderer;
-    private IFontRenderer? fontRenderer;
     private IFont? font;
     private IAtlasData? atlas;
     private AtlasSubTextureData whiteBoxData;
@@ -40,14 +39,9 @@ public class LayeredTextureRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private AtlasSubTextureData orangeBoxData;
     private AtlasSubTextureData blueBoxData;
-    private Vector2 boxStateTextPos;
-    private Vector2 backgroundPos;
-    private SizeF instructionTextSize;
+    private BackgroundManager? backgroundManager;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private int instructionsX;
-    private int instructionsY;
-    private string instructions = string.Empty;
-    private string boxStateText = string.Empty;
+    private Label? lblBoxState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -62,13 +56,12 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         var renderFactory = new RendererFactory();
 
         this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-
-        this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         this.font = ContentLoader.LoadFont(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
@@ -79,11 +72,12 @@ public class LayeredTextureRenderingScene : SceneBase
             "Use the 'L' key to change the layer that the white box is rendered on.",
         };
 
-        this.instructions = string.Join(Environment.NewLine, textLines);
-
-        this.instructionTextSize = this.font.Measure(this.instructions);
-        this.instructionsX = (int)(this.instructionTextSize.Width / 2) + 25;
-        this.instructionsY = (int)(this.instructionTextSize.Height / 2) + 25;
+        var lblInstructions = new Label
+        {
+            Color = Color.White,
+            Text = string.Join(Environment.NewLine, textLines),
+            Position = new Point(WindowCenter.X, 50),
+        };
 
         this.atlas = ContentLoader.LoadAtlas("layered-rendering-atlas");
 
@@ -102,6 +96,11 @@ public class LayeredTextureRenderingScene : SceneBase
         // Set the default orange box position
         this.whiteBoxPos.X = this.orangeBoxPos.X - (this.orangeBoxData.Bounds.Width / 4f);
         this.whiteBoxPos.Y = this.orangeBoxPos.Y + (this.orangeBoxData.Bounds.Height / 4f);
+
+        this.lblBoxState = new Label { Color = Color.White };
+
+        AddControl(this.lblBoxState);
+        AddControl(lblInstructions);
 
         base.LoadContent();
     }
@@ -145,6 +144,8 @@ public class LayeredTextureRenderingScene : SceneBase
             RenderEffects.None,
             (int)OrangeLayer); // Neutral layer
 
+        this.backgroundManager.Render();
+
         // WHITE
         this.textureRenderer.Render(
             this.atlas.Texture,
@@ -155,15 +156,6 @@ public class LayeredTextureRenderingScene : SceneBase
             Color.White,
             RenderEffects.None,
             (int)this.whiteLayer);
-
-        // Render the checkerboard background
-        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
-
-        // Render the instructions
-        this.fontRenderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.White);
-
-        // Render the box state text
-        this.fontRenderer.Render(this.font, this.boxStateText, (int)this.boxStateTextPos.X, (int)this.boxStateTextPos.Y);
 
         base.Render();
     }
@@ -176,7 +168,7 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
-        ContentLoader.UnloadTexture(this.background);
+        this.backgroundManager.Unload();
         ContentLoader.UnloadAtlas(this.atlas);
         ContentLoader.UnloadFont(this.font);
 
@@ -208,18 +200,10 @@ public class LayeredTextureRenderingScene : SceneBase
             $"Orange Box Layer: {OrangeLayer}",
             $"Blue Box Layer: {BlueLayer}",
         };
-        this.boxStateText = string.Join(Environment.NewLine, textLines);
+        this.lblBoxState.Text = string.Join(Environment.NewLine, textLines);
 
-        var boxStateTextSize = this.font.Measure(this.boxStateText);
-
-        this.boxStateTextPos = new Vector2
-        {
-            X = (int)(boxStateTextSize.Width / 2) + 25,
-            Y = this.instructionsY +
-                (int)this.instructionTextSize.Height +
-                (int)(boxStateTextSize.Height / 2) +
-                100,
-        };
+        this.lblBoxState.Left = 25;
+        this.lblBoxState.Top = WindowCenter.Y - (int)(this.lblBoxState.Height / 2f);
     }
 
     /// <summary>
@@ -237,7 +221,10 @@ public class LayeredTextureRenderingScene : SceneBase
                 RenderLayer.One => RenderLayer.Three,
                 RenderLayer.Three => RenderLayer.Five,
                 RenderLayer.Five => RenderLayer.One,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.whiteLayer)}",
+                    (int)this.whiteLayer,
+                    typeof(RenderLayer)),
             };
         }
     }

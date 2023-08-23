@@ -31,6 +31,7 @@ public class LineRenderingScene : SceneBase
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
+    private BackgroundManager? backgroundManager;
     private string instructions = string.Empty;
     private Vector2 instructionsPos;
     private bool mouseEnteredAtLeastOnce;
@@ -38,6 +39,9 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         var renderFactory = new RendererFactory();
         this.lineRenderer = renderFactory.CreateLineRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
@@ -91,6 +95,7 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
+        this.backgroundManager?.Render();
         this.lineRenderer.Render(this.line);
         this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
 
@@ -105,6 +110,7 @@ public class LineRenderingScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         ContentLoader.UnloadFont(this.font);
 
         base.UnloadContent();

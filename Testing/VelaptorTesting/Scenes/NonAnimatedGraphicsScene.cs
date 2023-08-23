@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
@@ -24,12 +25,12 @@ public class NonAnimatedGraphicsScene : SceneBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
     private IAtlasData? mainAtlas;
-    private AtlasSubTextureData octagonData;
     private ITextureRenderer? textureRenderer;
     private IFontRenderer? fontRenderer;
     private IFont? font;
-    private KeyboardState currentKeyState;
+    private AtlasSubTextureData octagonData;
     private KeyboardState prevKeyState;
+    private BackgroundManager? backgroundManager;
     private RenderEffects renderEffects = RenderEffects.None;
     private string instructions = string.Empty;
     private SizeF textSize;
@@ -46,6 +47,9 @@ public class NonAnimatedGraphicsScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var renderFactory = new RendererFactory();
 
@@ -79,6 +83,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         ContentLoader.UnloadAtlas(this.mainAtlas);
         ContentLoader.UnloadFont(this.font);
         this.renderEffects = RenderEffects.None;
@@ -91,9 +96,9 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
-        this.currentKeyState = this.keyboard.GetState();
+        var currentKeyState = this.keyboard.GetState();
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.Right) && this.prevKeyState.IsKeyDown(KeyCode.Right))
+        if (currentKeyState.IsKeyUp(KeyCode.Right) && this.prevKeyState.IsKeyDown(KeyCode.Right))
         {
             this.renderEffects = this.renderEffects switch
             {
@@ -103,7 +108,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.Left) && this.prevKeyState.IsKeyDown(KeyCode.Left))
+        if (currentKeyState.IsKeyUp(KeyCode.Left) && this.prevKeyState.IsKeyDown(KeyCode.Left))
         {
             this.renderEffects = this.renderEffects switch
             {
@@ -113,7 +118,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.Down) && this.prevKeyState.IsKeyDown(KeyCode.Down))
+        if (currentKeyState.IsKeyUp(KeyCode.Down) && this.prevKeyState.IsKeyDown(KeyCode.Down))
         {
             this.renderEffects = this.renderEffects switch
             {
@@ -123,7 +128,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        if (this.currentKeyState.IsKeyUp(KeyCode.Up) && this.prevKeyState.IsKeyDown(KeyCode.Up))
+        if (currentKeyState.IsKeyUp(KeyCode.Up) && this.prevKeyState.IsKeyDown(KeyCode.Up))
         {
             this.renderEffects = this.renderEffects switch
             {
@@ -133,7 +138,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        this.prevKeyState = this.currentKeyState;
+        this.prevKeyState = currentKeyState;
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
@@ -145,6 +150,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         var instructionsX = (int)(this.textSize.Width / 2) + 25;
         var instructionsY = (int)(this.textSize.Height / 2) + 25;
 
+        this.backgroundManager?.Render();
         this.fontRenderer.Render(this.font, this.instructions, instructionsX, instructionsY);
 
         this.textureRenderer.Render(
