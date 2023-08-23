@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
@@ -167,20 +168,31 @@ public class ShapeScene : SceneBase
             case ShapeType.Circle:
                 this.shapeRenderer.Render(this.circle, 1);
                 break;
+            default:
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         var instructionText = this.shapeType switch
         {
             ShapeType.Rectangle => this.rectInstructions,
             ShapeType.Circle => this.circleInstructions,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         var instructionPos = this.shapeType switch
         {
             ShapeType.Rectangle => this.rectInstructionsPos,
             ShapeType.Circle => this.circleInstructionsPos,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         this.fontRenderer.Render(this.font, instructionText, instructionPos, Color.White, 2);
@@ -206,7 +218,10 @@ public class ShapeScene : SceneBase
             {
                 ShapeType.Rectangle => "Rectangle",
                 ShapeType.Circle => "Circle",
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType)),
             },
             Name = nameof(this.btnShapeType),
         };
@@ -475,7 +490,10 @@ public class ShapeScene : SceneBase
                 isSolid = this.circle.IsSolid;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         this.btnIsSolid.Text = isSolid ? "Is Solid: true" : "Is Solid: false";
@@ -512,7 +530,10 @@ public class ShapeScene : SceneBase
                 this.circle.BorderThickness = this.circle.BorderThickness += 1;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
     }
 
@@ -527,7 +548,10 @@ public class ShapeScene : SceneBase
                 this.circle.BorderThickness = this.circle.BorderThickness -= 1;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
     }
 
@@ -537,28 +561,40 @@ public class ShapeScene : SceneBase
         {
             ShapeType.Rectangle => ShapeType.Circle,
             ShapeType.Circle => ShapeType.Rectangle,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         this.btnShapeType.Text = this.shapeType switch
         {
             ShapeType.Rectangle => "Rectangle",
             ShapeType.Circle => "Circle",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         this.btnGradientType.Text = this.shapeType switch
         {
             ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
             ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         this.btnSolidFillClr.Enabled = this.shapeType switch
         {
             ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
             ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         ShowButtonsForShape();
@@ -582,14 +618,20 @@ public class ShapeScene : SceneBase
         {
             ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
             ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         this.btnSolidFillClr.Enabled = this.shapeType switch
         {
             ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
             ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(
+                $"this.{nameof(this.shapeType)}",
+                (int)this.shapeType,
+                typeof(ShapeType)),
         };
 
         LayoutButtonsBottom();
@@ -608,7 +650,10 @@ public class ShapeScene : SceneBase
                     color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         LayoutButtonsBottom();
@@ -627,7 +672,10 @@ public class ShapeScene : SceneBase
                     color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         LayoutButtonsBottom();
@@ -658,7 +706,7 @@ public class ShapeScene : SceneBase
         var buttons = Controls.Where(c => excludeList.Contains(c.Name) && c.Visible).ToImmutableArray();
 
         var totalHeight = (from b in buttons
-            select (int)b.Height).ToArray().Sum();
+            select (int)b.Height).Sum();
         totalHeight += (buttons.Length - 1) * VertButtonSpacing;
         var totalHalfHeight = totalHeight / 2;
 
@@ -692,7 +740,7 @@ public class ShapeScene : SceneBase
         var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
 
         var totalHeight = (from b in buttons
-            select (int)b.Height).ToArray().Sum();
+            select (int)b.Height).Sum();
         totalHeight += (buttons.Length - 1) * VertButtonSpacing;
         var totalHalfHeight = totalHeight / 2;
 
@@ -723,7 +771,7 @@ public class ShapeScene : SceneBase
         var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
 
         var totalWidth = (from b in buttons
-            select (int)b.Width).ToArray().Sum();
+            select (int)b.Width).Sum();
         totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
         var totalHalfWidth = totalWidth / 2;
         var buttonRowStart = WindowCenter.X - totalHalfWidth;
@@ -817,7 +865,10 @@ public class ShapeScene : SceneBase
                 this.circle.Position = shapePos;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         ContainShape();
@@ -874,7 +925,10 @@ public class ShapeScene : SceneBase
                 this.circle.Position = shapePos;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
     }
 
@@ -938,7 +992,10 @@ public class ShapeScene : SceneBase
                 this.circle.Diameter += diameterChange;
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.shapeType)}",
+                    (int)this.shapeType,
+                    typeof(ShapeType));
         }
 
         this.rectangle.Width = this.rectangle.Width > WindowSize.Width ? WindowSize.Width : this.rectangle.Width;

@@ -20,35 +20,27 @@ public class SoundScene : SceneBase
     private const int HoriBtnSpacing = 10;
     private const int VertLabelSpacing = 15;
     private const int LeftMargin = 10;
-    private Label? lblDescription;
     private Label? lblState;
     private Label? lblCurrentTime;
-    private Label? lblSoundLength;
     private Label? lblRepeat;
-    private Button? btnPlaySound;
-    private Button? btnPauseSound;
-    private Button? btnStopSound;
-    private Button? btnFastForward10Sec;
-    private Button? btnRewind10Sec;
     private Button? btnRepeat;
     private ISound? sound;
 
+    /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
-        CreateLabels();
-        LoadButtons();
-
         this.sound = ContentLoader.LoadSound("test-song");
+
+        CreateLabels();
+        CreateButtons();
 
         base.LoadContent();
 
         LayoutButtonsBottom();
-        PerformLabelLayout();
-
-        var soundLength = GetFormattedSoundTime(this.sound.Length.Minutes, this.sound.Length.Seconds);
-        this.lblSoundLength.Text = $"Sound Length: {soundLength}";
+        LayoutLabelsLeft();
     }
 
+    /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         var currentSoundTime = GetFormattedSoundTime(this.sound.Position.Minutes, this.sound.Position.Seconds);
@@ -58,10 +50,11 @@ public class SoundScene : SceneBase
         this.btnRepeat.Text = this.sound.IsLooping ? "Disable Repeat" : "Enable Repeat";
         this.lblCurrentTime.Text = $"Current Time: {currentSoundTime}";
 
-        PerformLabelLayout();
+        LayoutLabelsLeft();
         base.Update(frameTime);
     }
 
+    /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
         if (!IsLoaded || IsDisposed)
@@ -78,6 +71,12 @@ public class SoundScene : SceneBase
         base.UnloadContent();
     }
 
+    /// <summary>
+    /// Gets the time of the sound as a formatted string.
+    /// </summary>
+    /// <param name="minutes">The minutes of the time.</param>
+    /// <param name="seconds">The seconds of the time.</param>
+    /// <returns>The formatted time.</returns>
     private static string GetFormattedSoundTime(float minutes, float seconds)
     {
         var minuteStr = ((int)minutes).ToString(CultureInfo.InvariantCulture);
@@ -94,9 +93,12 @@ public class SoundScene : SceneBase
         return $"{minuteStr}:{secondStr}";
     }
 
+    /// <summary>
+    /// Creates all of the labels.
+    /// </summary>
     private void CreateLabels()
     {
-        this.lblDescription = new Label
+        var lblDescription = new Label
         {
             Text = "Use the buttons below to manipulate the sound.",
             Color = Color.White,
@@ -115,10 +117,12 @@ public class SoundScene : SceneBase
             Color = Color.White,
         };
 
+        var soundLength = GetFormattedSoundTime(this.sound.Length.Minutes, this.sound.Length.Seconds);
+
         // Total Sound Length
-        this.lblSoundLength = new Label
+        var lblSoundLength = new Label
         {
-            Text = "Sound Length: ",
+            Text = $"Sound Length: {soundLength}",
             Color = Color.White,
         };
 
@@ -129,61 +133,64 @@ public class SoundScene : SceneBase
             Color = Color.White,
         };
 
-        AddControl(this.lblDescription);
+        AddControl(lblDescription);
         AddControl(this.lblState);
         AddControl(this.lblCurrentTime);
-        AddControl(this.lblSoundLength);
+        AddControl(lblSoundLength);
         AddControl(this.lblRepeat);
     }
 
-    private void LoadButtons()
+    /// <summary>
+    /// Loads all of the buttons.
+    /// </summary>
+    private void CreateButtons()
     {
         // Play Sound
-        this.btnPlaySound = new Button
+        var btnPlaySound = new Button
         {
             Text = "Play",
         };
-        this.btnPlaySound.Click += (_, _) =>
+        btnPlaySound.Click += (_, _) =>
         {
             this.sound.Play();
         };
 
         // Stop Sound
-        this.btnStopSound = new Button
+        var btnStopSound = new Button
         {
             Text = "Stop",
         };
-        this.btnStopSound.Click += (_, _) =>
+        btnStopSound.Click += (_, _) =>
         {
             this.sound.Stop();
         };
 
         // Pause Sound
-        this.btnPauseSound = new Button
+        var btnPauseSound = new Button
         {
             Text = "Pause",
         };
-        this.btnPauseSound.Click += (_, _) =>
+        btnPauseSound.Click += (_, _) =>
         {
             this.sound.Pause();
         };
 
         // Fast Forward 10 Seconds
-        this.btnFastForward10Sec = new Button
+        var btnFastForward10Sec = new Button
         {
             Text = "Fast Forward 10 Sec",
         };
-        this.btnFastForward10Sec.Click += (_, _) =>
+        btnFastForward10Sec.Click += (_, _) =>
         {
             this.sound.FastForward(10f);
         };
 
         // Rewind 10 Seconds
-        this.btnRewind10Sec = new Button
+        var btnRewind10Sec = new Button
         {
             Text = "Rewind 10 Sec",
         };
-        this.btnRewind10Sec.Click += (_, _) =>
+        btnRewind10Sec.Click += (_, _) =>
         {
             this.sound.Rewind(10f);
         };
@@ -198,20 +205,23 @@ public class SoundScene : SceneBase
             this.sound.IsLooping = !this.sound.IsLooping;
         };
 
-        AddControl(this.btnPlaySound);
-        AddControl(this.btnStopSound);
-        AddControl(this.btnPauseSound);
-        AddControl(this.btnFastForward10Sec);
-        AddControl(this.btnRewind10Sec);
+        AddControl(btnPlaySound);
+        AddControl(btnStopSound);
+        AddControl(btnPauseSound);
+        AddControl(btnFastForward10Sec);
+        AddControl(btnRewind10Sec);
         AddControl(this.btnRepeat);
     }
 
+    /// <summary>
+    /// Lays out the buttons at the bottom of the window.
+    /// </summary>
     private void LayoutButtonsBottom()
     {
         var buttons = Controls.Where(c => c is Button).ToImmutableArray();
 
         var totalWidth = (from l in buttons
-            select (int)l.Width).ToArray().Sum();
+            select (int)l.Width).Sum();
         totalWidth += (buttons.Length - 1) * HoriBtnSpacing;
 
         var totalHalfWidth = totalWidth / 2;
@@ -226,11 +236,14 @@ public class SoundScene : SceneBase
         }
     }
 
-    private void PerformLabelLayout()
+    /// <summary>
+    /// Lays out the labels on the left side of the window.
+    /// </summary>
+    private void LayoutLabelsLeft()
     {
         var labels = Controls.Where(c => c is Label).ToImmutableArray();
         var totalHeight = (from b in labels
-            select (int)b.Height).ToArray().Sum();
+            select (int)b.Height).Sum();
 
         totalHeight += (labels.Length - 1) * VertLabelSpacing;
 

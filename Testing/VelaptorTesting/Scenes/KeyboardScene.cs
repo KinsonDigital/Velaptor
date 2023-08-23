@@ -19,9 +19,7 @@ public class KeyboardScene : SceneBase
 {
     private const int TopMargin = 50;
     private readonly IAppInput<KeyboardState> keyboard;
-    private Label? lblInstructions;
     private Label? downKeys;
-    private KeyboardState currentKeyboardState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -36,15 +34,15 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.lblInstructions = new Label
+        var instructions = new Label
         {
             Name = "Instructions",
             Color = Color.White,
             Text = "Hit a key on the keyboard to see if it is correct.",
         };
 
-        this.lblInstructions.Left = WindowCenter.X - (int)(this.lblInstructions.Width / 2);
-        this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
+        instructions.Left = WindowCenter.X - (int)(instructions.Width / 2);
+        instructions.Top = (int)(instructions.Height / 2) + TopMargin;
 
         this.downKeys = new Label
         {
@@ -52,7 +50,7 @@ public class KeyboardScene : SceneBase
             Color = Color.White,
         };
 
-        AddControl(this.lblInstructions);
+        AddControl(instructions);
         AddControl(this.downKeys);
 
         base.LoadContent();
@@ -72,13 +70,13 @@ public class KeyboardScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>.
     public override void Update(FrameTime frameTime)
     {
-        this.currentKeyboardState = this.keyboard.GetState();
+        var currentKeyState = this.keyboard.GetState();
 
-        if (this.currentKeyboardState.GetDownKeys().Length > 0)
+        if (currentKeyState.GetDownKeys().Length > 0)
         {
             var downKeyText = new StringBuilder();
 
-            foreach (var key in this.currentKeyboardState.GetDownKeys())
+            foreach (var key in currentKeyState.GetDownKeys())
             {
                 downKeyText.Append(key);
                 downKeyText.Append(", ");

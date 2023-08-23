@@ -22,7 +22,6 @@ public class AnimatedGraphicsScene : SceneBase
     private IAtlasData? mainAtlas;
     private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
-    private Label? lblInstructions;
     private int elapsedTime;
     private int currentFrame;
 
@@ -41,14 +40,14 @@ public class AnimatedGraphicsScene : SceneBase
         this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("circle");
 
-        this.lblInstructions = new Label();
-        this.lblInstructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
-        this.lblInstructions.Color = Color.White;
+        var instructions = new Label();
+        instructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
+        instructions.Color = Color.White;
 
-        AddControl(this.lblInstructions);
+        AddControl(instructions);
 
-        this.lblInstructions.Left = WindowCenter.X - (int)(this.lblInstructions.Width / 2);
-        this.lblInstructions.Top = TopMargin;
+        instructions.Left = WindowCenter.X - (int)(instructions.Width / 2);
+        instructions.Top = TopMargin;
 
         base.LoadContent();
     }

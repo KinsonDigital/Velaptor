@@ -1,4 +1,4 @@
-﻿// <copyright file="MouseScene.cs" company="KinsonDigital">
+// <copyright file="MouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -62,6 +62,7 @@ public class MouseScene : SceneBase
         base.Update(frameTime);
     }
 
+    /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
         if (!IsLoaded || IsDisposed)
