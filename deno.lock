@@ -1,0 +1,27 @@
+{
+  "version": "2",
+  "remote": {
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/clients/GithubResponse.ts": "6a5ede27ce6b35dc679b4df7436d82a409acd8a09766e3a50d96f29420d0c05b",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/clients/WorkflowClient.ts": "dcc0a94a2191c12cb0e33b09d8e91e156692560044ee96b43d284bea8d1c626e",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Enums.ts": "df445643e675f63ef0ff6562c2da3cd618b2a8aba0068b9ca473220f8cd17fe0",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/GitHubClient.ts": "ca93be71bc88c0626e23508202bec2178191d94a92430a2c9af2bc308ae7fc0a",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Guard.ts": "bd7615864af78bc4a32e9db6501ef5e08bac70f01642fc67e2125fdc4c6d3ea6",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/ILinkHeader.ts": "41133dae4c07d3cb168212a34287bf50dbff676ddcfe238ad728c286b0586f4b",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/IPageInfo.ts": "a8805cf769076f597f4de37890c02d77fcfd58dedfd0a36464cfb3d5b8afd166",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/LinkHeaderParser.ts": "de6c1aec0041f0d091c7e4bc4963b96fa19c1831f054fda4a5376ab01a90197b",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/IssueModel.ts": "b10b64d949f883bafa463cd0d33debb4f0acee2e1e72d83f0bd96468ad5be2be",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/LabelModel.ts": "b94203083496bc8009341298331970ae057a2012c1f2c448e17bd7fed870fbbe",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/MilestoneModel.ts": "2c5ad910471d617a5b9301db6caa31444d101c6a248d86df1adc0384f3f22c53",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/ProjectModel.ts": "27893f1cc63d4994234e82e8d6e63f6f55191f912f2d1d4108971c05f4895ce1",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/PullRequestHeadOrBaseModel.ts": "c2e38e8a799c4bd8c4bd3288635e9671ba51e19539bbc138590534de0dad16a2",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/PullRequestInfo.ts": "0fc783c701bc62bd0c79de325ea16bcbe446efa022eb29f92309f9f9ac639c58",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/PullRequestModel.ts": "ba435ac661ab8a2cc49b5b0f90f7ff0a2d1b49ea69c440e0b5dafbfc255c1557",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/RepoModel.ts": "97c0ae69d84851c170ed7a514f0e69c4fe4919c901c58cd5fc81dd4183f51a9d",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/UserModel.ts": "634dfac13ce03ef55004a5247e87b6d6c7fd30785f7731d49f4d4f03c689187b",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/WorkflowRunModel.ts": "9465c759c074dddf0b5fea1af107a79fbbbca83200e88012c0ca9f4408efe50b",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Models/WorkflowRunsModel.ts": "6d7f849f1a5c053126fc2abfad60fc21ea22e85181e2733d3d973178aba0c1ee",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Types.ts": "dcde3629b900ca279cf999d61e3ab4e58e1aec8a63d8e0cf1201c9cee0c0be2a",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/Utils.ts": "035a2db7884092817c4cabc721bd9c72417b697dede39910edaa783b093f22a8",
+    "https://raw.githubusercontent.com/kinsondigital/Infrastructure/v12.1.0/cicd/core/WebAPIClient.ts": "274cf7d19e2d10eb3a36fb5f06dd6cbc8357352ab636781fd3399077b27264ed"
+  }
+}

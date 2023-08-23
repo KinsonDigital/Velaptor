@@ -42,7 +42,7 @@
 		"prefix": "repo-checkout",
 		"body": [
 			"- name: ${1: Checkout Repo}",
-			"\tuses: actions/checkout@${2: v3}"
+			"\tuses: actions/checkout@${2:v3}"
 		],
 		"description": "Checks out the repository"
 	},
