@@ -246,7 +246,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        if (AutoSceneRendering is false)
+        if (AutoSceneRendering is false || SceneManager.TotalScenes <= 0)
         {
             return;
         }

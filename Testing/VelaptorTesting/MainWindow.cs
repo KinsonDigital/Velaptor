@@ -69,7 +69,7 @@ public class MainWindow : Window
 
         var textBoxScene = new TextBoxScene
         {
-            Name = SplitByUpperCase(nameof(SoundScene)),
+            Name = SplitByUpperCase(nameof(TextBoxScene)),
         };
 
         var layeredRenderingScene = new LayeredTextureRenderingScene

@@ -4,9 +4,10 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -18,6 +19,7 @@ public class TextBoxScene : SceneBase
     private TextBox? textBox;
     private IAppInput<KeyboardState>? keyboard;
     private IAppInput<MouseState>? mouse;
+    private BackgroundManager? backgroundManager;
     private KeyboardState prevKeyState;
     private MouseState prevMouseState;
     private Label? currentSetting;
@@ -30,6 +32,9 @@ public class TextBoxScene : SceneBase
 
     public override void LoadContent()
     {
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         this.textBox = new TextBox
         {
             Left = (int)(WindowSize.Width / 4f),
@@ -83,6 +88,18 @@ public class TextBoxScene : SceneBase
         base.Update(frameTime);
     }
 
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
+    }
+
+    public override void UnloadContent()
+    {
+        this.backgroundManager?.Unload();
+        base.UnloadContent();
+    }
+
     private void ChangeSetting()
     {
         var curKeyState = this.keyboard.GetState();
@@ -120,7 +137,10 @@ public class TextBoxScene : SceneBase
                 HandleTextBoxFontChange(curMouseState);
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.currTxtBoxSetting)}",
+                    (int)this.currTxtBoxSetting,
+                    typeof(TextBoxSetting));
         }
     }
 
@@ -131,17 +151,14 @@ public class TextBoxScene : SceneBase
         if (isLeftMouseButtonPressed)
         {
             this.txtClrComponent = this.txtClrComponent.Next();
-            // UpdateSettingAndInstructions();
         }
         else if (curMouseState.GetScrollDirection() == MouseScrollDirection.ScrollUp)
         {
             this.textBox.IncreaseTextClrComp(this.txtClrComponent, 10);
-            // UpdateSettingAndInstructions();
         }
         else if (curMouseState.GetScrollDirection() == MouseScrollDirection.ScrollDown)
         {
             this.textBox.DecreaseTextClrComp(this.txtClrComponent, 10);
-            // UpdateSettingAndInstructions();
         }
 
         UpdateSettingAndInstructions();
@@ -259,7 +276,10 @@ public class TextBoxScene : SceneBase
                         TxtBoxColorComponent.Red => "(Red)",
                         TxtBoxColorComponent.Green => "(Green)",
                         TxtBoxColorComponent.Blue => "(Blue)",
-                        _ => throw new ArgumentOutOfRangeException(),
+                        _ => throw new InvalidEnumArgumentException(
+                            $"this.{nameof(this.txtClrComponent)}",
+                            (int)this.txtClrComponent,
+                            typeof(TxtBoxColorComponent))
                     };
 
                     this.currentSetting.Text =
@@ -276,7 +296,10 @@ public class TextBoxScene : SceneBase
                         TxtBoxColorComponent.Red => "(Red)",
                         TxtBoxColorComponent.Green => "(Green)",
                         TxtBoxColorComponent.Blue => "(Blue)",
-                        _ => throw new ArgumentOutOfRangeException(),
+                        _ => throw new InvalidEnumArgumentException(
+                            $"this.{nameof(this.txtClrComponent)}",
+                            (int)this.txtClrComponent,
+                            typeof(TxtBoxColorComponent))
                     };
 
                     this.currentSetting.Text =
@@ -293,7 +316,10 @@ public class TextBoxScene : SceneBase
                         TxtBoxColorComponent.Red => "(Red)",
                         TxtBoxColorComponent.Green => "(Green)",
                         TxtBoxColorComponent.Blue => "(Blue)",
-                        _ => throw new ArgumentOutOfRangeException(),
+                        _ => throw new InvalidEnumArgumentException(
+                            $"this.{nameof(this.txtClrComponent)}",
+                            (int)this.txtClrComponent,
+                            typeof(TxtBoxColorComponent))
                     };
 
                     this.currentSetting.Text =
@@ -317,7 +343,10 @@ public class TextBoxScene : SceneBase
                 this.instructions.Text = "Left mouse button to increase font size and right mouse button to decrease font size.";
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidEnumArgumentException(
+                    $"this.{nameof(this.currTxtBoxSetting)}",
+                    (int)this.currTxtBoxSetting,
+                    typeof(TextBoxSetting));
         }
 
         var lines = this.instructions.Text.Split('\n');

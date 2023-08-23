@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Fakes;
 
+using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Scene;
 using Velaptor.UI;
@@ -24,4 +25,8 @@ public class WindowFake : Window
         : base(window, sceneManager, batcher)
     {
     }
+
+#pragma warning disable CS0108, CS0114
+    public void OnDraw(FrameTime frameTime) => base.OnDraw(frameTime);
+#pragma warning restore CS0108, CS0114
 }

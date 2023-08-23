@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
+using System.Numerics;
 using System.Text;
 using Velaptor.Scene;
 using Velaptor;
@@ -19,9 +20,8 @@ public class KeyboardScene : SceneBase
 {
     private const int TopMargin = 50;
     private readonly IAppInput<KeyboardState> keyboard;
-    private Label? lblInstructions;
     private Label? downKeys;
-    private KeyboardState currentKeyboardState;
+    private BackgroundManager? backgroundManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -36,15 +36,18 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.lblInstructions = new Label
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
+        var instructions = new Label
         {
             Name = "Instructions",
             Color = Color.White,
             Text = "Hit a key on the keyboard to see if it is correct.",
         };
 
-        this.lblInstructions.Left = WindowCenter.X - (int)(this.lblInstructions.Width / 2);
-        this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
+        instructions.Left = WindowCenter.X - (int)(instructions.Width / 2);
+        instructions.Top = (int)(instructions.Height / 2) + TopMargin;
 
         this.downKeys = new Label
         {
@@ -52,7 +55,7 @@ public class KeyboardScene : SceneBase
             Color = Color.White,
         };
 
-        AddControl(this.lblInstructions);
+        AddControl(instructions);
         AddControl(this.downKeys);
 
         base.LoadContent();
@@ -66,19 +69,20 @@ public class KeyboardScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         base.UnloadContent();
     }
 
     /// <inheritdoc cref="IUpdatable.Update"/>.
     public override void Update(FrameTime frameTime)
     {
-        this.currentKeyboardState = this.keyboard.GetState();
+        var currentKeyState = this.keyboard.GetState();
 
-        if (this.currentKeyboardState.GetDownKeys().Length > 0)
+        if (currentKeyState.GetDownKeys().Length > 0)
         {
             var downKeyText = new StringBuilder();
 
-            foreach (var key in this.currentKeyboardState.GetDownKeys())
+            foreach (var key in currentKeyState.GetDownKeys())
             {
                 downKeyText.Append(key);
                 downKeyText.Append(", ");
@@ -97,6 +101,13 @@ public class KeyboardScene : SceneBase
         this.downKeys.Position = new Point(posX, posY);
 
         base.Update(frameTime);
+    }
+
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

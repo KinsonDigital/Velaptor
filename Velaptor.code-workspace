@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".github/cicd"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "./Testing"
+		}
+	],
+    "settings": {
+        "dotnet.defaultSolution": "Velaptor.sln"
+    }
+}
