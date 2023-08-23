@@ -1,12 +1,13 @@
-// <copyright file="TextBoxScene.cs" company="KinsonDigital">
+﻿// <copyright file="TextBoxScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTesting.Scenes;
 
-using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -18,6 +19,7 @@ public class TextBoxScene : SceneBase
     private TextBox? textBox;
     private IAppInput<KeyboardState>? keyboard;
     private IAppInput<MouseState>? mouse;
+    private BackgroundManager? backgroundManager;
     private KeyboardState prevKeyState;
     private MouseState prevMouseState;
     private Label? currentSetting;
@@ -30,6 +32,9 @@ public class TextBoxScene : SceneBase
 
     public override void LoadContent()
     {
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         this.textBox = new TextBox
         {
             Left = (int)(WindowSize.Width / 4f),
@@ -81,6 +86,18 @@ public class TextBoxScene : SceneBase
         this.prevMouseState = currMouseState;
 
         base.Update(frameTime);
+    }
+
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
+    }
+
+    public override void UnloadContent()
+    {
+        this.backgroundManager?.Unload();
+        base.UnloadContent();
     }
 
     private void ChangeSetting()

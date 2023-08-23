@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
@@ -24,11 +25,15 @@ public class SoundScene : SceneBase
     private Label? lblCurrentTime;
     private Label? lblRepeat;
     private Button? btnRepeat;
+    private BackgroundManager? backgroundManager;
     private ISound? sound;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         this.sound = ContentLoader.LoadSound("test-song");
 
         CreateLabels();
@@ -54,6 +59,12 @@ public class SoundScene : SceneBase
         base.Update(frameTime);
     }
 
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
+    }
+
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
@@ -68,6 +79,7 @@ public class SoundScene : SceneBase
             ContentLoader.UnloadSound(this.sound);
         }
 
+        this.backgroundManager?.Unload();
         base.UnloadContent();
     }
 

@@ -69,6 +69,7 @@ public class ShapeScene : SceneBase
     private string circleInstructions = string.Empty;
     private Vector2 rectInstructionsPos;
     private Vector2 circleInstructionsPos;
+    private BackgroundManager? backgroundManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -78,6 +79,9 @@ public class ShapeScene : SceneBase
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         var renderFactory = new RendererFactory();
 
         this.fontRenderer = renderFactory.CreateFontRenderer();
@@ -146,6 +150,13 @@ public class ShapeScene : SceneBase
         LayoutButtonsBottom();
     }
 
+    /// <inheritdoc cref="IScene.UnloadContent"/>
+    public override void UnloadContent()
+    {
+        this.backgroundManager?.Unload();
+        base.UnloadContent();
+    }
+
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
@@ -195,6 +206,7 @@ public class ShapeScene : SceneBase
                 typeof(ShapeType)),
         };
 
+        this.backgroundManager?.Render();
         this.fontRenderer.Render(this.font, instructionText, instructionPos, Color.White, 2);
 
         base.Render();

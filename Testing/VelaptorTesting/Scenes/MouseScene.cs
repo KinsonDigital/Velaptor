@@ -1,4 +1,4 @@
-// <copyright file="MouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="MouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
+using System.Numerics;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Factories;
@@ -20,6 +21,7 @@ public class MouseScene : SceneBase
     private IAppInput<MouseState>? mouse;
     private Label? mouseInfoLabel;
     private MouseScrollDirection scrollDirection;
+    private BackgroundManager? backgroundManager;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -28,6 +30,9 @@ public class MouseScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.mouse = InputFactory.CreateMouse();
         this.mouseInfoLabel = new Label { Color = Color.White };
@@ -62,6 +67,13 @@ public class MouseScene : SceneBase
         base.Update(frameTime);
     }
 
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
+    }
+
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
@@ -74,6 +86,7 @@ public class MouseScene : SceneBase
         this.mouseInfoLabel = null;
         this.mouse = default;
 
+        this.backgroundManager?.Unload();
         base.UnloadContent();
     }
 }

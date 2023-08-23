@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.Scene;
@@ -15,6 +16,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.UI;
 
 /// <summary>
 /// Tests out layered rendering with textures.
@@ -23,11 +25,9 @@ public class LayeredTextureRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";
     private const float Speed = 200f;
-    private const int BackgroundLayer = -50;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
-    private readonly IAppInput<KeyboardState>? keyboard;
-    private ITexture? background;
+    private readonly IAppInput<KeyboardState> keyboard;
     private ITextureRenderer? textureRenderer;
     private IFont? font;
     private IAtlasData? atlas;
@@ -39,6 +39,7 @@ public class LayeredTextureRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private AtlasSubTextureData orangeBoxData;
     private AtlasSubTextureData blueBoxData;
+    private BackgroundManager? backgroundManager;
     private RenderLayer whiteLayer = RenderLayer.One;
     private Label? lblBoxState;
 
@@ -54,6 +55,9 @@ public class LayeredTextureRenderingScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var renderFactory = new RendererFactory();
 
@@ -140,6 +144,8 @@ public class LayeredTextureRenderingScene : SceneBase
             RenderEffects.None,
             (int)OrangeLayer); // Neutral layer
 
+        this.backgroundManager.Render();
+
         // WHITE
         this.textureRenderer.Render(
             this.atlas.Texture,
@@ -162,7 +168,7 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
-        ContentLoader.UnloadTexture(this.background);
+        this.backgroundManager.Unload();
         ContentLoader.UnloadAtlas(this.atlas);
         ContentLoader.UnloadFont(this.font);
 

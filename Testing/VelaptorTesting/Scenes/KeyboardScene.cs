@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
+using System.Numerics;
 using System.Text;
 using Velaptor.Scene;
 using Velaptor;
@@ -20,6 +21,7 @@ public class KeyboardScene : SceneBase
     private const int TopMargin = 50;
     private readonly IAppInput<KeyboardState> keyboard;
     private Label? downKeys;
+    private BackgroundManager? backgroundManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -33,6 +35,9 @@ public class KeyboardScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var instructions = new Label
         {
@@ -64,6 +69,7 @@ public class KeyboardScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         base.UnloadContent();
     }
 
@@ -95,6 +101,13 @@ public class KeyboardScene : SceneBase
         this.downKeys.Position = new Point(posX, posY);
 
         base.Update(frameTime);
+    }
+
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render()
+    {
+        this.backgroundManager?.Render();
+        base.Render();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

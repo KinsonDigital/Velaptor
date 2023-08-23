@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
+using System.Numerics;
 using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
@@ -22,6 +23,7 @@ public class AnimatedGraphicsScene : SceneBase
     private IAtlasData? mainAtlas;
     private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
+    private BackgroundManager? backgroundManager;
     private int elapsedTime;
     private int currentFrame;
 
@@ -32,6 +34,9 @@ public class AnimatedGraphicsScene : SceneBase
         {
             return;
         }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var renderFactory = new RendererFactory();
 
@@ -60,6 +65,7 @@ public class AnimatedGraphicsScene : SceneBase
             return;
         }
 
+        this.backgroundManager?.Unload();
         ContentLoader.UnloadAtlas(this.mainAtlas);
 
         base.UnloadContent();
@@ -88,6 +94,7 @@ public class AnimatedGraphicsScene : SceneBase
         var posX = WindowCenter.X - (this.frames[this.currentFrame].Bounds.Width / 2);
         var posY = WindowCenter.Y - (this.frames[this.currentFrame].Bounds.Height / 2);
 
+        this.backgroundManager?.Render();
         this.textureRenderer.Render(
             this.mainAtlas.Texture,
             this.frames[this.currentFrame].Bounds,
