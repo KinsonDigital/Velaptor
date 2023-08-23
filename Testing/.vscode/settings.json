@@ -1,0 +1,7 @@
+{
+    "deno.enable": false,
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    }
+}

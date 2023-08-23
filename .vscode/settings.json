@@ -1,4 +1,5 @@
 {
+	"deno.enable": false,
     "cSpell.words": [
         "Analyers",
         "andymckay",
@@ -50,6 +51,16 @@
         "Vorbis",
         "xunit"
     ],
+	"files.exclude": {
+		"**/.github/cicd/": true,
+		"**/*.vs": true,
+		"**/*.idea": true,
+		"**/*.run": true,
+		"**/bin": true,
+		"**/Testing": true,
+		"**/*.sln.DotSettings*": true,
+		"**/*.code-workspace*": false,
+	},
     "dotnet.defaultSolution": "Velaptor.sln",
     "[csharp]": {
 		"editor.insertSpaces": false,
