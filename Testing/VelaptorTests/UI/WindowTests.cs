@@ -1,4 +1,4 @@
-// <copyright file="WindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -464,6 +464,59 @@ public class WindowTests
 
         // Assert
         this.mockWindow.Verify(m => m.ShowAsync(null, null), Times.Once);
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsEnabled_RenderScenesAndManipulatesBatch()
+    {
+        // Arrange
+        this.mockSceneManager.SetupGet(p => p.TotalScenes).Returns(1);
+
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = true;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyOnce(m => m.Clear());
+        this.mockBatcher.VerifyOnce(m => m.Begin());
+        this.mockSceneManager.VerifyOnce(m => m.Render());
+        this.mockBatcher.VerifyOnce(m => m.End());
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsDisabled_DoesNotRenderScenes()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = false;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyNever(m => m.Clear());
+        this.mockBatcher.VerifyNever(m => m.Begin());
+        this.mockSceneManager.VerifyNever(m => m.Render());
+        this.mockBatcher.VerifyNever(m => m.End());
+    }
+
+    [Fact]
+    public void OnDraw_WhenAutoRenderingIsNotDisabledWithNoScenes_ShouldNotRenderScenesOrManipulateBatches()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneRendering = true;
+
+        // Act
+        sut.OnDraw(default);
+
+        // Assert
+        this.mockBatcher.VerifyNever(m => m.Clear());
+        this.mockBatcher.VerifyNever(m => m.Begin());
+        this.mockSceneManager.VerifyNever(m => m.Render());
+        this.mockBatcher.VerifyNever(m => m.End());
     }
 
     [Fact]
