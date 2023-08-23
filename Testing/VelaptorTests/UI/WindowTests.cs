@@ -1,4 +1,4 @@
-﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
+// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -86,6 +86,19 @@ public class WindowTests
 
         // Assert
         sut.SceneManager.Should().BeSameAs(this.mockSceneManager.Object);
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_AutoPropsAreDefaultTrue()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.AutoSceneLoading.Should().BeTrue();
+        sut.AutoSceneRendering.Should().BeTrue();
+        sut.AutoSceneUnloading.Should().BeTrue();
+        sut.AutoSceneUpdating.Should().BeTrue();
     }
     #endregion
 
@@ -263,6 +276,62 @@ public class WindowTests
         // Assert
         this.mockWindow.VerifySet(p => p.AutoClearBuffer = true, Times.Once());
         this.mockWindow.VerifyGet(p => p.AutoClearBuffer, Times.Once());
+    }
+
+    [Fact]
+    public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneLoading;
+
+        // Act
+        sut.AutoSceneLoading = !sut.AutoSceneLoading;
+
+        // Assert
+        sut.AutoSceneLoading.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneUnloading;
+
+        // Act
+        sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
+
+        // Assert
+        sut.AutoSceneUnloading.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneUpdating;
+
+        // Act
+        sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
+
+        // Assert
+        sut.AutoSceneUpdating.Should().Be(!defaultValue);
+    }
+
+    [Fact]
+    public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var defaultValue = sut.AutoSceneRendering;
+
+        // Act
+        sut.AutoSceneRendering = !sut.AutoSceneRendering;
+
+        // Assert
+        sut.AutoSceneRendering.Should().Be(!defaultValue);
     }
 
     [Fact]
