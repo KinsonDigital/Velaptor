@@ -59,7 +59,7 @@
 		"**/bin": true,
 		"**/Testing": true,
 		"**/*.sln.DotSettings*": true,
-		"**/*.code-workspace*": false,
+		"**/*.code-workspace*": true,
 	},
     "dotnet.defaultSolution": "Velaptor.sln",
     "[csharp]": {
