@@ -100,9 +100,19 @@ public abstract class ControlBase : IControl
     public virtual uint Width { get; set; }
 
     /// <summary>
+    /// Gets the half width of the <see cref="ControlBase"/>.
+    /// </summary>
+    public virtual uint HalfWidth => Width / 2;
+
+    /// <summary>
     /// Gets or sets the height of the <see cref="ControlBase"/>.
     /// </summary>
     public virtual uint Height { get; set; }
+
+    /// <summary>
+    /// Gets the half height of the <see cref="ControlBase"/>.
+    /// </summary>
+    public virtual uint HalfHeight => Height / 2;
 
     /// <inheritdoc cref="IControl.Visible"/>
     public virtual bool Visible { get; set; } = true;
