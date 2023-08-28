@@ -220,9 +220,9 @@ public class LabelTests
         sut.AutoSize = autoSize;
         sut.Text = testText;
         sut.LoadContent();
+        sut.Width = width;
 
         // Act
-        sut.Width = width;
         var actual = sut.Width;
 
         // Assert
@@ -245,9 +245,9 @@ public class LabelTests
         sut.AutoSize = autoSize;
         sut.Text = testText;
         sut.LoadContent();
+        sut.Height = height;
 
         // Act
-        sut.Height = height;
         var actual = sut.Height;
 
         // Assert
