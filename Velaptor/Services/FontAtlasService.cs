@@ -75,11 +75,6 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         this.facePtr = this.fontService.CreateFontFace(fontFilePath);
 
-        if (this.monitorService.MainMonitor is null)
-        {
-            throw new SystemMonitorException("The main system monitor must not be null.");
-        }
-
         this.fontService.SetFontSize(
             this.facePtr,
             sizeInPoints);

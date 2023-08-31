@@ -687,24 +687,19 @@ internal sealed class GLWindow : VelaptorIWindow
                     this.glWindow.Title = value;
                 }));
 
-        var defaultPosition = Vector2.Zero;
-
         var mainMonitor = this.systemMonitorService.MainMonitor;
 
         float ToMonitorScale(float value)
         {
-            return value * (mainMonitor?.HorizontalDPI ?? 0) /
+            return value * mainMonitor.HorizontalDPI /
                    (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
         }
 
         var halfWidth = ToMonitorScale(Width / 2f);
         var halfHeight = ToMonitorScale(Height / 2f);
 
-        if (mainMonitor is not null)
-        {
-            // Set the default position to be in the center of the monitor
-            defaultPosition = new Vector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
-        }
+        // Set the default position to be in the center of the monitor
+        var defaultPosition = new Vector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
 
         CachedPosition = new CachedValue<Vector2>(
             defaultValue: defaultPosition,

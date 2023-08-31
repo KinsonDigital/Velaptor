@@ -43,7 +43,7 @@ internal sealed class SystemMonitorService : ISystemMonitorService
             new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
 
     /// <inheritdoc/>
-    public SystemMonitor? MainMonitor =>
+    public SystemMonitor MainMonitor =>
         Array.Find(this.monitors?.SystemMonitors ?? Array.Empty<SystemMonitor>(), m => m.IsMain);
 
     /// <inheritdoc/>

@@ -182,12 +182,6 @@ internal sealed class FontService : IFontService
 
         var sizeInPointsPtr = (nint)(sizeInPoints << 6);
 
-        // If the main monitor is null, throw an exception.  This is required to set the character size.
-        if (this.sysMonitorService.MainMonitor is null)
-        {
-            throw new SystemMonitorException("Cannot set the font size if there is no monitor to use for DPI settings.");
-        }
-
         this.freeTypeInvoker.FT_Set_Char_Size(
             facePtr,
             sizeInPointsPtr,

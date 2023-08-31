@@ -207,21 +207,6 @@ public class FontAtlasServiceTests
     }
 
     [Fact]
-    public void CreateFontAtlas_WhenSettingCharacterSizeWithNullMainMonitor_ThrowsException()
-    {
-        // Arrange
-        this.mockMonitorService.SetupGet(p => p.MainMonitor).Returns(() => null);
-
-        var service = CreateService();
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
-        {
-            service.CreateAtlas(FontFilePath, It.IsAny<uint>());
-        }, "The main system monitor must not be null.");
-    }
-
-    [Fact]
     public void CreateFontAtlas_WhenInvoked_SetsCharacterSize()
     {
         // Arrange

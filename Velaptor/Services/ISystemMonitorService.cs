@@ -21,7 +21,7 @@ internal interface ISystemMonitorService
     /// Gets the primary monitor in the system.
     /// </summary>
     /// <remarks>Will return null if no monitors are hooked up to the system.</remarks>
-    public SystemMonitor? MainMonitor { get; }
+    public SystemMonitor MainMonitor { get; }
 
     /// <summary>
     /// Refreshes the monitor information.
