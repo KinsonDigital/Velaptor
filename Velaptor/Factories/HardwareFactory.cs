@@ -31,7 +31,7 @@ public static class HardwareFactory
     /// <summary>
     /// Gets all of the displays in the system.
     /// </summary>
-    /// <returns>The list of monitors.</returns>
+    /// <returns>The list of displays.</returns>
     public static ImmutableArray<SystemDisplay> GetDisplays()
     {
         var displayService = IoC.Container.GetInstance<ISystemDisplayService>();

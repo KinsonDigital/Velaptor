@@ -8,12 +8,12 @@ using System;
 using Hardware;
 
 /// <summary>
-/// Represents multiple monitors in a system.
+/// Represents multiple displays in a system.
 /// </summary>
 internal interface IDisplays : IDisposable
 {
     /// <summary>
-    /// Gets a list of all the monitors currently in the system.
+    /// Gets a list of all the displays currently in the system.
     /// </summary>
     SystemDisplay[] SystemDisplays { get; }
 

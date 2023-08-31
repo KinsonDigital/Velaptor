@@ -72,7 +72,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
-    /// <param name="systemDisplayService">Provides information about the system's monitors.</param>
+    /// <param name="systemDisplayService">Provides information about the system's displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>

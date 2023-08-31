@@ -40,7 +40,7 @@ internal sealed class FontAtlasService : IFontAtlasService
     /// </summary>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="imageService">Provides image related services.</param>
-    /// <param name="systemDisplayService">Provides information about the system monitors.</param>
+    /// <param name="systemDisplayService">Provides information about the system displays.</param>
     /// <param name="file">Performs operations with files.</param>
     public FontAtlasService(
         IFontService fontService,

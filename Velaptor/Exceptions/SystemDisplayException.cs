@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using System.Security;
 
 /// <summary>
-/// Occurs when there is an issue with one of the system monitors.
+/// Occurs when there is an issue with one of the system displays.
 /// </summary>
 [Serializable]
 public sealed class SystemDisplayException : Exception

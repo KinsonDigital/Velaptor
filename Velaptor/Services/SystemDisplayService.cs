@@ -13,7 +13,7 @@ using Hardware;
 using NativeInterop.GLFW;
 
 /// <summary>
-/// Gets information about all of the monitors in the system.
+/// Gets information about all of the displays in the system.
 /// </summary>
 internal sealed class SystemDisplayService : ISystemDisplayService
 {
@@ -29,7 +29,7 @@ internal sealed class SystemDisplayService : ISystemDisplayService
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemDisplayService"/> class.
     /// </summary>
-    /// <param name="displays">Holds the list of monitors in the system.</param>
+    /// <param name="displays">Holds the list of displays in the system.</param>
     internal SystemDisplayService(IDisplays displays)
     {
         EnsureThat.ParamIsNotNull(displays);
