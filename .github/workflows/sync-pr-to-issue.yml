@@ -36,7 +36,7 @@ jobs:
           Write-Host "::notice::Organization Name: ${{ vars.ORGANIZATION_NAME }}";
           Write-Host "::notice::Project Name: ${{ vars.PROJECT_NAME }}";
           Write-Host "::notice::Requested By: ${{ github.event.sender.login }}";
-          Write-Host "::notice::PR Number: $issueOrPrNumber";
+          Write-Host "::notice::PR Number: $issueOrPrNumber";>
 
           <# Deno Args:
             1. Organization name
