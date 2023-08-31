@@ -13,7 +13,7 @@ using Guards;
 /// <summary>
 /// Holds information about a single monitor in the system.
 /// </summary>
-public class SystemMonitor : IEquatable<SystemMonitor>
+public readonly record struct SystemMonitor
 {
     private readonly IPlatform platform;
 
@@ -101,58 +101,6 @@ public class SystemMonitor : IEquatable<SystemMonitor>
     /// Gets the approximate dpi of the monitor on the vertical axis.
     /// </summary>
     public float VerticalDPI => GetPlatformDefaultDpi() * VerticalScale;
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if both operands are equal.</returns>
-    public static bool operator ==(SystemMonitor? left, SystemMonitor right) => left is not null && left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if both operands are not equal.</returns>
-    public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
-
-    /// <inheritdoc/>
-    public bool Equals(SystemMonitor? other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        return IsMain == other.IsMain &&
-               RedBitDepth == other.RedBitDepth &&
-               GreenBitDepth == other.GreenBitDepth &&
-               BlueBitDepth == other.BlueBitDepth &&
-               Width == other.Width &&
-               Height == other.Height &&
-               RefreshRate == other.RefreshRate &&
-               Math.Abs(HorizontalScale - other.HorizontalScale) == 0f &&
-               Math.Abs(VerticalScale - other.VerticalScale) == 0f;
-    }
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not SystemMonitor monitor)
-        {
-            return false;
-        }
-
-        return Equals(monitor);
-    }
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-        => HashCode.Combine(IsMain, RedBitDepth, GreenBitDepth, BlueBitDepth, Width) +
-           HashCode.Combine(Height, RefreshRate, HorizontalScale, VerticalScale);
 
     /// <summary>
     /// Gets the default DPI value of the current platform.
