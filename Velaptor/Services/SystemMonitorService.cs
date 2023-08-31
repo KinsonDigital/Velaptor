@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Guards;
 using Hardware;
 using NativeInterop.GLFW;
@@ -44,7 +43,8 @@ internal sealed class SystemMonitorService : ISystemMonitorService
             new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
 
     /// <inheritdoc/>
-    public SystemMonitor? MainMonitor => this.monitors?.SystemMonitors.FirstOrDefault(m => m.IsMain);
+    public SystemMonitor? MainMonitor =>
+        Array.Find(this.monitors?.SystemMonitors ?? Array.Empty<SystemMonitor>(), m => m.IsMain);
 
     /// <inheritdoc/>
     public void Refresh() => this.monitors?.Refresh();
