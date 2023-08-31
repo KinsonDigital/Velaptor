@@ -1,4 +1,4 @@
-// <copyright file="HardwareFactory.cs" company="KinsonDigital">
+﻿// <copyright file="HardwareFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -37,5 +37,16 @@ public static class HardwareFactory
         var monitorService = IoC.Container.GetInstance<ISystemMonitorService>();
 
         return monitorService.Monitors.ToImmutableArray();
+    }
+
+    /// <summary>
+    /// Gets the primary monitor in the system.
+    /// </summary>
+    /// <returns>The system's primary monitor.</returns>
+    public static SystemMonitor GetMainMonitor()
+    {
+        var monitorService = IoC.Container.GetInstance<ISystemMonitorService>();
+
+        return monitorService.MainMonitor;
     }
 }
