@@ -40,7 +40,7 @@ public class MainWindow : Window
         var rendererFactory = new RendererFactory();
         this.batcher = rendererFactory.CreateBatcher();
 
-        this.keyboard = HardwareFactory.CreateKeyboard();
+        this.keyboard = HardwareFactory.GetKeyboard();
 
         this.nextButton = new Button { Text = "-->" };
         this.previousButton = new Button { Text = "<--" };

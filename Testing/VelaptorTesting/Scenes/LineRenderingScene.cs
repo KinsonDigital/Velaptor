@@ -46,7 +46,7 @@ public class LineRenderingScene : SceneBase
         this.lineRenderer = renderFactory.CreateLineRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
-        this.keyboard = HardwareFactory.CreateKeyboard();
+        this.keyboard = HardwareFactory.GetKeyboard();
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
         this.mouse = HardwareFactory.CreateMouse();
 

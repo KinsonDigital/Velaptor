@@ -38,7 +38,7 @@ public abstract class ControlBase : IControl
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     protected ControlBase()
     {
-        Keyboard = HardwareFactory.CreateKeyboard();
+        Keyboard = HardwareFactory.GetKeyboard();
         this.mouse = HardwareFactory.CreateMouse();
     }
 

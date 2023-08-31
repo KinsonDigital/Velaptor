@@ -42,7 +42,7 @@ public class TextBoxScene : SceneBase
             TextColor = Color.IndianRed,
         };
 
-        this.keyboard = HardwareFactory.CreateKeyboard();
+        this.keyboard = HardwareFactory.GetKeyboard();
         this.mouse = HardwareFactory.CreateMouse();
 
         this.currentSetting = new Label

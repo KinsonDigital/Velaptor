@@ -1,4 +1,4 @@
-﻿// <copyright file="HardwareFactory.cs" company="KinsonDigital">
+// <copyright file="HardwareFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,10 +14,10 @@ using Input;
 public static class HardwareFactory
 {
     /// <summary>
-    /// Creates a keyboard object.
+    /// Gets a keyboard object.
     /// </summary>
     /// <returns>The keyboard singleton object.</returns>
-    public static IAppInput<KeyboardState> CreateKeyboard() => IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+    public static IAppInput<KeyboardState> GetKeyboard() => IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
     /// <summary>
     /// Creates a mouse object.
