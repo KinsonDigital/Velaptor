@@ -1,11 +1,14 @@
-﻿// <copyright file="HardwareFactory.cs" company="KinsonDigital">
+// <copyright file="HardwareFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Factories;
 
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using Hardware;
 using Input;
+using Services;
 
 /// <summary>
 /// Generates input type objects for processing input such as the keyboard and mouse.
@@ -24,4 +27,15 @@ public static class HardwareFactory
     /// </summary>
     /// <returns>The keyboard singleton object.</returns>
     public static IAppInput<MouseState> GetMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
+
+    /// <summary>
+    /// Gets all of the monitors in the system.
+    /// </summary>
+    /// <returns>The list of monitors.</returns>
+    public static ImmutableArray<SystemMonitor> GetMonitors()
+    {
+        var monitorService = IoC.Container.GetInstance<ISystemMonitorService>();
+
+        return monitorService.Monitors.ToImmutableArray();
+    }
 }
