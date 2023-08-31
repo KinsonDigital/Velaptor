@@ -477,7 +477,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Render(double time)
     {
-        if (this.firstRenderInvoked is false)
+        if (!this.firstRenderInvoked)
         {
             Update?.Invoke(new FrameTime
             {
