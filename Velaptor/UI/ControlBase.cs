@@ -39,7 +39,7 @@ public abstract class ControlBase : IControl
     protected ControlBase()
     {
         Keyboard = HardwareFactory.GetKeyboard();
-        this.mouse = HardwareFactory.CreateMouse();
+        this.mouse = HardwareFactory.GetMouse();
     }
 
     /// <inheritdoc cref="IControl.Click"/>

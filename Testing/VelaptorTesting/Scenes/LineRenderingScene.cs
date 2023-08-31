@@ -48,7 +48,7 @@ public class LineRenderingScene : SceneBase
 
         this.keyboard = HardwareFactory.GetKeyboard();
         this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
-        this.mouse = HardwareFactory.CreateMouse();
+        this.mouse = HardwareFactory.GetMouse();
 
         this.line = default;
         this.line.Color = Color.SteelBlue;

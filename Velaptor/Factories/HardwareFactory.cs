@@ -1,4 +1,4 @@
-// <copyright file="HardwareFactory.cs" company="KinsonDigital">
+﻿// <copyright file="HardwareFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,8 +20,8 @@ public static class HardwareFactory
     public static IAppInput<KeyboardState> GetKeyboard() => IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
     /// <summary>
-    /// Creates a mouse object.
+    /// Gets a mouse object.
     /// </summary>
     /// <returns>The keyboard singleton object.</returns>
-    public static IAppInput<MouseState> CreateMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
+    public static IAppInput<MouseState> GetMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
 }

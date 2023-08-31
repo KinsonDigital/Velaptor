@@ -43,7 +43,7 @@ public class TextBoxScene : SceneBase
         };
 
         this.keyboard = HardwareFactory.GetKeyboard();
-        this.mouse = HardwareFactory.CreateMouse();
+        this.mouse = HardwareFactory.GetMouse();
 
         this.currentSetting = new Label
         {
