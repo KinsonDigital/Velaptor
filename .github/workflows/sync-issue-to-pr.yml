@@ -16,17 +16,40 @@ on:
 jobs:
   sync_issue_to_pr:
     name: Start Sync Process
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '[run-sync]')) ||
-      github.event_name == 'pull_request' && startsWith(github.head_ref, 'feature/')
     runs-on: ubuntu-latest
     steps:
+      - name: Should Skip
+        id: should-skip
+        run: |
+          $isTriggeredByCommand = "${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '[run-sync]') }}";
+          $isTriggeredByPR = "${{ github.event_name == 'pull_request'}}";
+
+          $branch = "${{ github.event.pull_request.head.ref }}";
+          $branchRegEx = "${{ vars.FEATURE_BRANCH_REGEX }}";
+
+          $isValidBranch = $branch -match $branchRegEx;
+          $stepOutput = "skip=false";
+          
+
+          if ($isTriggeredByCommand) {
+            Write-Host "::notice::The '[run-sync]' command has been invoked.";
+          } else if ($isTriggeredByPR -and $isValidBranch) {
+            Write-Host "::notice::The PR has been opened from a valid branch.";
+          } else {
+            Write-Host "::warning::Issue/PR Sync Process Skipped.  Possibly sync command was not exactly '[run-sync]' or incorrect PR head branch.";
+            $stepOutput = "skip=true";
+          }
+
+          "$stepOutput" >> $env:GITHUB_OUTPUT;
+
       - name: Set Up Deno
+        if: ${{ steps.should-skip.outputs.skip == 'false' }}
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 
       - name: Sync
+        if: ${{ steps.should-skip.outputs.skip == 'false' }}
         run: |
           $eventName = "${{ github.event_name }}";
           $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH }}/sync-issue-to-pr.ts";
