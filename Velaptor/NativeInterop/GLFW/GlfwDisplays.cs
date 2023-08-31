@@ -1,4 +1,4 @@
-// <copyright file="GLFWMonitors.cs" company="KinsonDigital">
+// <copyright file="GlfwDisplays.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,22 +11,22 @@ using Guards;
 using Hardware;
 
 /// <summary>
-/// Gets all of the monitors in the system.
+/// Gets all of the displays in the system.
 /// </summary>
-internal sealed class GLFWMonitors : IMonitors
+internal sealed class GlfwDisplays : IDisplays
 {
     private readonly bool glfwInitialized;
-    private readonly IGLFWInvoker glfwInvoker;
+    private readonly IGlfwInvoker glfwInvoker;
     private readonly IPlatform platform;
-    private readonly List<SystemMonitor> monitors = new ();
+    private readonly List<SystemDisplay> displays = new ();
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
+    /// Initializes a new instance of the <see cref="GlfwDisplays"/> class.
     /// </summary>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
     /// <param name="platform">Provides information about the current platform.</param>
-    public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
+    public GlfwDisplays(IGlfwInvoker glfwInvoker, IPlatform platform)
     {
         EnsureThat.ParamIsNotNull(glfwInvoker);
         EnsureThat.ParamIsNotNull(platform);
@@ -42,11 +42,11 @@ internal sealed class GLFWMonitors : IMonitors
 
         Refresh();
 
-        this.glfwInvoker.OnMonitorChanged += GLFWInvoker_OnMonitorChanged;
+        this.glfwInvoker.OnDisplayChanged += GlfwInvoker_OnDisplayChanged;
     }
 
     /// <inheritdoc/>
-    public SystemMonitor[] SystemMonitors => this.monitors.ToArray();
+    public SystemDisplay[] SystemDisplays => this.displays.ToArray();
 
     /// <inheritdoc/>
     public void Refresh()
@@ -66,9 +66,9 @@ internal sealed class GLFWMonitors : IMonitors
 
             var monitorScale = GetMonitorScale(monitorHandle);
 
-            var newMonitor = new SystemMonitor(this.platform)
+            var newDisplay = new SystemDisplay(this.platform)
             {
-                IsMain = this.monitors.Count <= 0,
+                IsMain = this.displays.Count <= 0,
                 RedBitDepth = monitorVideoMode.RedBits,
                 BlueBitDepth = monitorVideoMode.BlueBits,
                 GreenBitDepth = monitorVideoMode.GreenBits,
@@ -79,7 +79,7 @@ internal sealed class GLFWMonitors : IMonitors
                 VerticalScale = monitorScale.Y,
             };
 
-            this.monitors.Add(newMonitor);
+            this.displays.Add(newDisplay);
         }
     }
 
@@ -99,15 +99,15 @@ internal sealed class GLFWMonitors : IMonitors
 
         if (disposing)
         {
-            this.glfwInvoker.OnMonitorChanged -= GLFWInvoker_OnMonitorChanged;
+            this.glfwInvoker.OnDisplayChanged -= GlfwInvoker_OnDisplayChanged;
         }
 
         this.isDisposed = true;
     }
 
     /// <summary>
-    /// Occurs when a monitor is connected or disconnected.
+    /// Occurs when a display is connected or disconnected.
     /// </summary>
-    private void GLFWInvoker_OnMonitorChanged(object? sender, GLFWMonitorChangedEventArgs e)
+    private void GlfwInvoker_OnDisplayChanged(object? sender, GlfwDisplayChangedEventArgs e)
         => Refresh();
 }

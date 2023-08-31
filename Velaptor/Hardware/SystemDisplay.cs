@@ -1,4 +1,4 @@
-﻿// <copyright file="SystemMonitor.cs" company="KinsonDigital">
+﻿// <copyright file="SystemDisplay.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,33 +11,33 @@ using System.Runtime.InteropServices;
 using Guards;
 
 /// <summary>
-/// Holds information about a single monitor in the system.
+/// Holds information about a single display in the system.
 /// </summary>
-public readonly record struct SystemMonitor
+public readonly record struct SystemDisplay
 {
     private readonly IPlatform platform;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+    /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    public SystemMonitor() => this.platform = IoC.Container.GetInstance<IPlatform>();
+    public SystemDisplay() => this.platform = IoC.Container.GetInstance<IPlatform>();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+    /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
     /// </summary>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <exception cref="ArgumentNullException">
     ///     Occurs if the <paramref name="platform"/> parameter is null.
     /// </exception>
-    internal SystemMonitor(IPlatform platform)
+    internal SystemDisplay(IPlatform platform)
     {
         EnsureThat.ParamIsNotNull(platform);
         this.platform = platform;
     }
 
     /// <summary>
-    /// Gets a value indicating whether or not the monitor is the primary monitor in the system.
+    /// Gets a value indicating whether or not the display is the primary display in the system.
     /// </summary>
     public bool IsMain { get; init; }
 
@@ -72,33 +72,33 @@ public readonly record struct SystemMonitor
     public int RefreshRate { get; init; }
 
     /// <summary>
-    /// Gets the scale of the monitor on the horizontal axis.
+    /// Gets the scale of the display on the horizontal axis.
     /// </summary>
     /// <remarks>
-    ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
+    ///     If the display was set to a scale of 150%, this value of 1.5 should be used.
     /// </remarks>
     public float HorizontalScale { get; init; }
 
     /// <summary>
-    /// Gets the scale of the monitor on the vertical axis.
+    /// Gets the scale of the display on the vertical axis.
     /// </summary>
     /// <remarks>
-    ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
+    ///     If the display was set to a scale of 150%, this value of 1.5 should be used.
     /// </remarks>
     public float VerticalScale { get; init; }
 
     /// <summary>
-    /// Gets the center location of the monitor.
+    /// Gets the center location of the display.
     /// </summary>
     public Vector2 Center => new (Width / 2f, Height / 2f);
 
     /// <summary>
-    /// Gets the approximate dpi of the monitor on the horizontal axis.
+    /// Gets the approximate dpi of the display on the horizontal axis.
     /// </summary>
     public float HorizontalDPI => GetPlatformDefaultDpi() * HorizontalScale;
 
     /// <summary>
-    /// Gets the approximate dpi of the monitor on the vertical axis.
+    /// Gets the approximate dpi of the display on the vertical axis.
     /// </summary>
     public float VerticalDPI => GetPlatformDefaultDpi() * VerticalScale;
 

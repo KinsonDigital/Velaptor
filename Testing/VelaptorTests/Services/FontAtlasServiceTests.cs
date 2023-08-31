@@ -14,7 +14,6 @@ using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Content.Fonts.Services;
-using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.Hardware;
 using Velaptor.Services;
@@ -28,7 +27,7 @@ public class FontAtlasServiceTests
     private const string FontFilePath = @"C:\temp\test-font.ttf";
     private readonly Mock<IFontService> mockFontService;
     private readonly Mock<IImageService> mockImageService;
-    private readonly Mock<ISystemMonitorService> mockMonitorService;
+    private readonly Mock<ISystemDisplayService> mockDisplayService;
     private readonly Mock<IPlatform> mockPlatform;
     private readonly char[]? glyphChars =
     {
@@ -103,9 +102,9 @@ public class FontAtlasServiceTests
 
         this.mockImageService = new Mock<IImageService>();
 
-        this.mockMonitorService = new Mock<ISystemMonitorService>();
-        this.mockMonitorService.SetupGet(p => p.MainMonitor)
-            .Returns(() => new SystemMonitor(this.mockPlatform.Object)
+        this.mockDisplayService = new Mock<ISystemDisplayService>();
+        this.mockDisplayService.SetupGet(p => p.MainDisplay)
+            .Returns(() => new SystemDisplay(this.mockPlatform.Object)
             {
                 HorizontalScale = 1,
                 VerticalScale = 1,
@@ -128,7 +127,7 @@ public class FontAtlasServiceTests
             _ = new FontAtlasService(
                 null,
                 this.mockImageService.Object,
-                this.mockMonitorService.Object,
+                this.mockDisplayService.Object,
                 this.mockFile.Object);
         }, "The parameter must not be null. (Parameter 'fontService')");
     }
@@ -142,13 +141,13 @@ public class FontAtlasServiceTests
             _ = new FontAtlasService(
                 this.mockFontService.Object,
                 null,
-                this.mockMonitorService.Object,
+                this.mockDisplayService.Object,
                 this.mockFile.Object);
         }, "The parameter must not be null. (Parameter 'imageService')");
     }
 
     [Fact]
-    public void Ctor_WithNullSystemMonitorServiceParam_ThrowsException()
+    public void Ctor_WithNullSystemDisplayServiceParam_ThrowsException()
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -158,7 +157,7 @@ public class FontAtlasServiceTests
                 this.mockImageService.Object,
                 null,
                 this.mockFile.Object);
-        }, "The parameter must not be null. (Parameter 'systemMonitorService')");
+        }, "The parameter must not be null. (Parameter 'systemDisplayService')");
     }
 
     [Fact]
@@ -170,7 +169,7 @@ public class FontAtlasServiceTests
             _ = new FontAtlasService(
                 this.mockFontService.Object,
                 this.mockImageService.Object,
-                this.mockMonitorService.Object,
+                this.mockDisplayService.Object,
                 null);
         }, "The parameter must not be null. (Parameter 'file')");
     }
@@ -255,7 +254,7 @@ public class FontAtlasServiceTests
         var result = new FontAtlasService(
             this.mockFontService.Object,
             this.mockImageService.Object,
-            this.mockMonitorService.Object,
+            this.mockDisplayService.Object,
             this.mockFile.Object);
 
         return result;

@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWVideoMode.cs" company="KinsonDigital">
+﻿// <copyright file="GlfwVideoMode.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 /// The GLFW video mode.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal struct GLFWVideoMode
+internal struct GlfwVideoMode
 {
     /// <summary>
     /// The width, in screen coordinates, of the GLFWVideoMode.

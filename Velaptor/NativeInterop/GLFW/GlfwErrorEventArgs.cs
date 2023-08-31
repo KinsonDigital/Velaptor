@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWErrorEventArgs.cs" company="KinsonDigital">
+﻿// <copyright file="GlfwErrorEventArgs.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,14 +11,14 @@ using Guards;
 /// <summary>
 /// Holds GLFW related error information.
 /// </summary>
-internal sealed class GLFWErrorEventArgs : EventArgs
+internal sealed class GlfwErrorEventArgs : EventArgs
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLFWErrorEventArgs"/> class.
+    /// Initializes a new instance of the <see cref="GlfwErrorEventArgs"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="errorMessage">The error message.</param>
-    public GLFWErrorEventArgs(GLFWErrorCode errorCode, string errorMessage)
+    public GlfwErrorEventArgs(GlfwErrorCode errorCode, string errorMessage)
     {
         EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
         ErrorCode = errorCode;
@@ -30,7 +30,7 @@ internal sealed class GLFWErrorEventArgs : EventArgs
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]
-    public GLFWErrorCode ErrorCode { get; }
+    public GlfwErrorCode ErrorCode { get; }
 
     /// <summary>
     /// Gets the error message.

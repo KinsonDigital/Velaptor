@@ -1,4 +1,4 @@
-﻿// <copyright file="ISystemMonitorService.cs" company="KinsonDigital">
+﻿// <copyright file="ISystemDisplayService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,21 +10,21 @@ using Hardware;
 /// <summary>
 /// Gets information about all of the monitors in the system.
 /// </summary>
-internal interface ISystemMonitorService
+internal interface ISystemDisplayService
 {
     /// <summary>
     /// Gets a list of all of the monitors in the system.
     /// </summary>
-    IReadOnlyCollection<SystemMonitor> Monitors { get; }
+    IReadOnlyCollection<SystemDisplay> Displays { get; }
 
     /// <summary>
-    /// Gets the primary monitor in the system.
+    /// Gets the primary display in the system.
     /// </summary>
     /// <remarks>Will return null if no monitors are hooked up to the system.</remarks>
-    public SystemMonitor MainMonitor { get; }
+    public SystemDisplay MainDisplay { get; }
 
     /// <summary>
-    /// Refreshes the monitor information.
+    /// Refreshes the display information.
     /// </summary>
     void Refresh();
 }

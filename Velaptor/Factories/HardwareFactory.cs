@@ -29,24 +29,24 @@ public static class HardwareFactory
     public static IAppInput<MouseState> GetMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
 
     /// <summary>
-    /// Gets all of the monitors in the system.
+    /// Gets all of the displays in the system.
     /// </summary>
     /// <returns>The list of monitors.</returns>
-    public static ImmutableArray<SystemMonitor> GetMonitors()
+    public static ImmutableArray<SystemDisplay> GetDisplays()
     {
-        var monitorService = IoC.Container.GetInstance<ISystemMonitorService>();
+        var displayService = IoC.Container.GetInstance<ISystemDisplayService>();
 
-        return monitorService.Monitors.ToImmutableArray();
+        return displayService.Displays.ToImmutableArray();
     }
 
     /// <summary>
-    /// Gets the primary monitor in the system.
+    /// Gets the primary display in the system.
     /// </summary>
-    /// <returns>The system's primary monitor.</returns>
-    public static SystemMonitor GetMainMonitor()
+    /// <returns>The system's primary display.</returns>
+    public static SystemDisplay GetMainDisplay()
     {
-        var monitorService = IoC.Container.GetInstance<ISystemMonitorService>();
+        var displayService = IoC.Container.GetInstance<ISystemDisplayService>();
 
-        return monitorService.MainMonitor;
+        return displayService.MainDisplay;
     }
 }

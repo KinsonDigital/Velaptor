@@ -11,7 +11,6 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Content.Fonts.Services;
-using Exceptions;
 using Graphics;
 using Guards;
 using NETColor = System.Drawing.Color;
@@ -25,7 +24,7 @@ internal sealed class FontAtlasService : IFontAtlasService
 {
     private readonly IFontService fontService;
     private readonly IImageService imageService;
-    private readonly ISystemMonitorService monitorService;
+    private readonly ISystemDisplayService displayService;
     private readonly IFile file;
     private readonly char[] glyphChars =
     {
@@ -41,22 +40,22 @@ internal sealed class FontAtlasService : IFontAtlasService
     /// </summary>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="imageService">Provides image related services.</param>
-    /// <param name="systemMonitorService">Provides information about the system monitors.</param>
+    /// <param name="systemDisplayService">Provides information about the system monitors.</param>
     /// <param name="file">Performs operations with files.</param>
     public FontAtlasService(
         IFontService fontService,
         IImageService imageService,
-        ISystemMonitorService systemMonitorService,
+        ISystemDisplayService systemDisplayService,
         IFile file)
     {
         EnsureThat.ParamIsNotNull(fontService);
         EnsureThat.ParamIsNotNull(imageService);
-        EnsureThat.ParamIsNotNull(systemMonitorService);
+        EnsureThat.ParamIsNotNull(systemDisplayService);
         EnsureThat.ParamIsNotNull(file);
 
         this.fontService = fontService;
         this.imageService = imageService;
-        this.monitorService = systemMonitorService;
+        this.displayService = systemDisplayService;
         this.file = file;
     }
 

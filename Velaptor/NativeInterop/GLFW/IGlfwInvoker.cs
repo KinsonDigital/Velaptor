@@ -1,4 +1,4 @@
-﻿// <copyright file="IGLFWInvoker.cs" company="KinsonDigital">
+// <copyright file="IGlfwInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,12 +11,12 @@ using Silk.NET.GLFW;
 /// <summary>
 /// Invokes GLFW calls.
 /// </summary>
-internal interface IGLFWInvoker : IDisposable
+internal interface IGlfwInvoker : IDisposable
 {
     /// <summary>
     /// Occurs when a GLFW related error occurs.
     /// </summary>
-    event EventHandler<GLFWErrorEventArgs>? OnError;
+    event EventHandler<GlfwErrorEventArgs>? OnError;
 
     /// <summary>
     /// Occurs when something with the monitors has changed.
@@ -24,7 +24,7 @@ internal interface IGLFWInvoker : IDisposable
     ///     Example: A monitor has been connected or disconnected.
     /// </para>
     /// </summary>
-    event EventHandler<GLFWMonitorChangedEventArgs>? OnMonitorChanged;
+    event EventHandler<GlfwDisplayChangedEventArgs>? OnDisplayChanged;
 
     /// <summary>
     /// <para>
@@ -129,5 +129,5 @@ internal interface IGLFWInvoker : IDisposable
     ///     Possible errors include <see cref="ErrorCode.NotInitialized"/> and <see cref="ErrorCode.PlatformError"/>.
     /// </para>
     /// </remarks>
-    GLFWVideoMode GetVideoMode(nint monitor);
+    GlfwVideoMode GetVideoMode(nint monitor);
 }

@@ -10,7 +10,7 @@ using Velaptor.Exceptions;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SystemMonitorException"/> class.
+/// Tests the <see cref="SystemDisplayException"/> class.
 /// </summary>
 public class SystemDisplayExceptionTests
 {
@@ -19,17 +19,17 @@ public class SystemDisplayExceptionTests
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new SystemMonitorException();
+        var exception = new SystemDisplayException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue with one of the system monitors.");
+        exception.Message.Should().Be("There was an issue with one of the system displays.");
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new SystemMonitorException("test-message");
+        var exception = new SystemDisplayException("test-message");
 
         // Assert
         exception.Message.Should().Be("test-message");
@@ -42,7 +42,7 @@ public class SystemDisplayExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new SystemMonitorException("test-exception", innerException);
+        var deviceException = new SystemDisplayException("test-exception", innerException);
 
         // Assert
         deviceException.InnerException.Message.Should().Be("inner-exception");

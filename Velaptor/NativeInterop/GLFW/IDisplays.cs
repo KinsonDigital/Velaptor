@@ -1,4 +1,4 @@
-// <copyright file="IMonitors.cs" company="KinsonDigital">
+// <copyright file="IDisplays.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,15 +10,15 @@ using Hardware;
 /// <summary>
 /// Represents multiple monitors in a system.
 /// </summary>
-internal interface IMonitors : IDisposable
+internal interface IDisplays : IDisposable
 {
     /// <summary>
     /// Gets a list of all the monitors currently in the system.
     /// </summary>
-    SystemMonitor[] SystemMonitors { get; }
+    SystemDisplay[] SystemDisplays { get; }
 
     /// <summary>
-    /// Refreshes the monitor information.
+    /// Refreshes the display information.
     /// </summary>
     void Refresh();
 }

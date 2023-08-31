@@ -1,4 +1,4 @@
-﻿// <copyright file="SystemMonitorTests.cs" company="KinsonDigital">
+﻿// <copyright file="SystemDisplayTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,9 +15,9 @@ using Velaptor.Hardware;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SystemMonitor"/> struct.
+/// Tests the <see cref="SystemDisplay"/> struct.
 /// </summary>
-public class SystemMonitorTests
+public class SystemDisplayTests
 {
     /// <summary>
     /// Gets horizontal DPI data for testing.
@@ -50,7 +50,7 @@ public class SystemMonitorTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new SystemMonitor(null);
+            _ = new SystemDisplay(null);
         }, "The parameter must not be null. (Parameter 'platform')");
     }
     #endregion
@@ -64,7 +64,7 @@ public class SystemMonitorTests
         var mockPlatform = new Mock<IPlatform>();
         mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(platform);
 
-        var monitor = new SystemMonitor(mockPlatform.Object)
+        var sut = new SystemDisplay(mockPlatform.Object)
         {
             IsMain = true,
             RedBitDepth = 1,
@@ -78,7 +78,7 @@ public class SystemMonitorTests
         };
 
         // Act
-        var actual = monitor.HorizontalDPI;
+        var actual = sut.HorizontalDPI;
 
         // Assert
         Assert.Equal(expectedDPI, actual);
@@ -92,7 +92,7 @@ public class SystemMonitorTests
         var mockPlatform = new Mock<IPlatform>();
         mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(platform);
 
-        var monitor = new SystemMonitor(mockPlatform.Object)
+        var sut = new SystemDisplay(mockPlatform.Object)
         {
             IsMain = true,
             RedBitDepth = 1,
@@ -106,7 +106,7 @@ public class SystemMonitorTests
         };
 
         // Act
-        var actual = monitor.VerticalDPI;
+        var actual = sut.VerticalDPI;
 
         // Assert
         Assert.Equal(expectedDPI, actual);
@@ -116,14 +116,14 @@ public class SystemMonitorTests
     public void Center_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var monitor = new SystemMonitor(new Mock<IPlatform>().Object)
+        var sut = new SystemDisplay(new Mock<IPlatform>().Object)
         {
             Width = 100,
             Height = 200,
         };
 
         // Act
-        var actual = monitor.Center;
+        var actual = sut.Center;
 
         // Assert
         Assert.Equal(new Vector2(50, 100), actual);
