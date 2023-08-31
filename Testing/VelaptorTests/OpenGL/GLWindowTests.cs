@@ -1156,6 +1156,7 @@ public class GLWindowTests
         // Assert
         uninitializeInvoked.Should().BeTrue();
         this.mockSceneManager.VerifyOnce(m => m.UnloadContent());
+        this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.SystemShuttingDownId));
     }
 
     [Fact]

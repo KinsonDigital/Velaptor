@@ -421,6 +421,8 @@ internal sealed class GLWindow : VelaptorIWindow
         SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
+        this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
+
         this.afterUnloadAction?.Invoke();
     }
 
