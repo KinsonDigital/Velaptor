@@ -38,8 +38,8 @@ public abstract class ControlBase : IControl
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     protected ControlBase()
     {
-        Keyboard = InputFactory.CreateKeyboard();
-        this.mouse = InputFactory.CreateMouse();
+        Keyboard = HardwareFactory.CreateKeyboard();
+        this.mouse = HardwareFactory.CreateMouse();
     }
 
     /// <inheritdoc cref="IControl.Click"/>

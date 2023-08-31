@@ -38,7 +38,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
     /// </summary>
-    public NonAnimatedGraphicsScene() => this.keyboard = InputFactory.CreateKeyboard();
+    public NonAnimatedGraphicsScene() => this.keyboard = HardwareFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()

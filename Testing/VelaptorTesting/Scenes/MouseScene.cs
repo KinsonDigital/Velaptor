@@ -34,7 +34,7 @@ public class MouseScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.mouse = InputFactory.CreateMouse();
+        this.mouse = HardwareFactory.CreateMouse();
         this.mouseInfoLabel = new Label { Color = Color.White };
 
         this.mouseInfoLabel.LoadContent();

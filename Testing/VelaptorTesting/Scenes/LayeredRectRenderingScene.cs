@@ -51,7 +51,7 @@ public class LayeredRectRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
     /// </summary>
-    public LayeredRectRenderingScene() => this.keyboard = InputFactory.CreateKeyboard();
+    public LayeredRectRenderingScene() => this.keyboard = HardwareFactory.CreateKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
