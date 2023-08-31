@@ -1,0 +1,39 @@
+name: 🔄️Sync PR To Issue
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  pull_request_target:
+    types: opened
+  issue_comment: # This event is triggered when creating issue and pr comments
+    types: created
+
+
+jobs:
+  initial_sync:
+    name: Start Initial Sync
+    if: ${{ github.event_name == 'pull_request_target' }}
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.0.0
+    with:
+      issue-or-pr-number: ${{ github.event.pull_request.number }}
+      sync-type: initial
+      requested-by: ${{ github.event.sender.login }}
+      branch: ${{ github.event.pull_request.head.ref }} # Input not required for initial sync
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
+
+
+  manual_sync:
+    name: Start Manual Sync
+    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '[run-sync]') }}
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.0.0
+    with:
+      issue-or-pr-number: ${{ github.event.issue.number }}
+      sync-type: manual
+      requested-by: "validate:${{ github.event.sender.login }}"
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}

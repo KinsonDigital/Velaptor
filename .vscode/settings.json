@@ -60,6 +60,7 @@
 		"**/Testing": true,
 		"**/*.sln.DotSettings*": true,
 		"**/*.code-workspace*": true,
+		"*.lock": true,
 	},
     "dotnet.defaultSolution": "Velaptor.sln",
     "[csharp]": {
