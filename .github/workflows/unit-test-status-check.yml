@@ -16,7 +16,7 @@ on:
 jobs:
   run_tests:
     name: ${{ vars.PROJECT_NAME }} Test Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v12.1.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v13.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME }}Tests"
       build-config: Debug
