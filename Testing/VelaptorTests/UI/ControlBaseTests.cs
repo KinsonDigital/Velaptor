@@ -161,9 +161,9 @@ public class ControlBaseTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
+        sut.Width = 11;
 
         // Act
-        sut.Width = 11;
         var actual = sut.Width;
 
         // Assert
@@ -171,17 +171,45 @@ public class ControlBaseTests
     }
 
     [Fact]
+    public void HalfWidth_WhenSettingWidth_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Width = 11;
+
+        // Act
+        var actual = sut.HalfWidth;
+
+        // Assert
+        actual.Should().Be(5u);
+    }
+
+    [Fact]
     public void Height_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
+        sut.Height = 11;
 
         // Act
-        sut.Height = 11;
         var actual = sut.Height;
 
         // Assert
         actual.Should().Be(11u);
+    }
+
+    [Fact]
+    public void HalfHeight_WhenSettingHeight_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Height = 11;
+
+        // Act
+        var actual = sut.HalfHeight;
+
+        // Assert
+        actual.Should().Be(5u);
     }
 
     [Fact]
