@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWErrorEventArgsTests.cs" company="KinsonDigital">
+﻿// <copyright file="GlfwErrorEventArgsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ using Helpers;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
 
-public class GLFWErrorEventArgsTests
+public class GlfwErrorEventArgsTests
 {
     #region Constructor Tests
     [Theory]
@@ -20,7 +20,7 @@ public class GLFWErrorEventArgsTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            _ = new GLFWErrorEventArgs(GLFWErrorCode.NoError, message);
+            _ = new GlfwErrorEventArgs(GlfwErrorCode.NoError, message);
         }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
     }
 
@@ -28,10 +28,10 @@ public class GLFWErrorEventArgsTests
     public void Ctor_WhenInvoked_SetsPropertyValues()
     {
         // Arrange & Act
-        var eventArgs = new GLFWErrorEventArgs(GLFWErrorCode.ApiUnavailable, "test-message");
+        var eventArgs = new GlfwErrorEventArgs(GlfwErrorCode.ApiUnavailable, "test-message");
 
         // Assert
-        Assert.Equal(GLFWErrorCode.ApiUnavailable, eventArgs.ErrorCode);
+        Assert.Equal(GlfwErrorCode.ApiUnavailable, eventArgs.ErrorCode);
         Assert.Equal("test-message", eventArgs.ErrorMessage);
     }
     #endregion

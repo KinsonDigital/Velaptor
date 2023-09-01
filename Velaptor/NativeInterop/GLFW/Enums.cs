@@ -7,7 +7,7 @@ namespace Velaptor.NativeInterop.GLFW;
 /// <summary>
 /// Error codes, used in the GLFW error callback.
 /// </summary>
-internal enum GLFWErrorCode
+internal enum GlfwErrorCode
 {
     /// <summary>
     /// Everything is running as intended. Yay!

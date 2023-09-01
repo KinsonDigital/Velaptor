@@ -190,11 +190,11 @@ internal static class IoC
 
         IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
-        IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
+        IoCContainer.Register<IGlfwInvoker, GlfwInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
 
-        IoCContainer.Register<GLFWMonitors>(Lifestyle.Singleton);
-        IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
+        IoCContainer.Register<GlfwDisplays>(Lifestyle.Singleton);
+        IoCContainer.Register<IDisplays, GlfwDisplays>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -249,7 +249,7 @@ internal static class IoC
         IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderLoaderService, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
-        IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
+        IoCContainer.Register<ISystemDisplayService, SystemDisplayService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);

@@ -42,8 +42,8 @@ public class TextBoxScene : SceneBase
             TextColor = Color.IndianRed,
         };
 
-        this.keyboard = InputFactory.CreateKeyboard();
-        this.mouse = InputFactory.CreateMouse();
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.mouse = HardwareFactory.GetMouse();
 
         this.currentSetting = new Label
         {

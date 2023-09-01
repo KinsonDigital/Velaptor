@@ -74,7 +74,7 @@ public class ShapeScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
     /// </summary>
-    public ShapeScene() => this.keyboard = InputFactory.CreateKeyboard();
+    public ShapeScene() => this.keyboard = HardwareFactory.GetKeyboard();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()

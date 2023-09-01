@@ -44,8 +44,8 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IWindowFactory windowFactory;
     private readonly INativeInputFactory nativeInputFactory;
     private readonly IGLInvoker gl;
-    private readonly IGLFWInvoker glfw;
-    private readonly ISystemMonitorService systemMonitorService;
+    private readonly IGlfwInvoker glfw;
+    private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
     private readonly IPushReactable pushReactable;
@@ -72,7 +72,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
-    /// <param name="systemMonitorService">Provides information about the system's monitors.</param>
+    /// <param name="systemDisplayService">Provides information about the system's displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="contentLoader">Loads various kinds of content.</param>
@@ -85,8 +85,8 @@ internal sealed class GLWindow : VelaptorIWindow
         IWindowFactory windowFactory,
         INativeInputFactory nativeInputFactory,
         IGLInvoker glInvoker,
-        IGLFWInvoker glfwInvoker,
-        ISystemMonitorService systemMonitorService,
+        IGlfwInvoker glfwInvoker,
+        ISystemDisplayService systemDisplayService,
         IPlatform platform,
         ITaskService taskService,
         IContentLoader contentLoader,
@@ -98,7 +98,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(nativeInputFactory);
         EnsureThat.ParamIsNotNull(glInvoker);
         EnsureThat.ParamIsNotNull(glfwInvoker);
-        EnsureThat.ParamIsNotNull(systemMonitorService);
+        EnsureThat.ParamIsNotNull(systemDisplayService);
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
         EnsureThat.ParamIsNotNull(contentLoader);
@@ -110,7 +110,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.nativeInputFactory = nativeInputFactory;
         this.gl = glInvoker;
         this.glfw = glfwInvoker;
-        this.systemMonitorService = systemMonitorService;
+        this.systemDisplayService = systemDisplayService;
         this.platform = platform;
         this.taskService = taskService;
         ContentLoader = contentLoader;
@@ -477,7 +477,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Render(double time)
     {
-        if (this.firstRenderInvoked is false)
+        if (!this.firstRenderInvoked)
         {
             Update?.Invoke(new FrameTime
             {
@@ -687,24 +687,19 @@ internal sealed class GLWindow : VelaptorIWindow
                     this.glWindow.Title = value;
                 }));
 
-        var defaultPosition = Vector2.Zero;
+        var mainDisplay = this.systemDisplayService.MainDisplay;
 
-        var mainMonitor = this.systemMonitorService.MainMonitor;
-
-        float ToMonitorScale(float value)
+        float ToDisplayScale(float value)
         {
-            return value * (mainMonitor?.HorizontalDPI ?? 0) /
+            return value * mainDisplay.HorizontalDPI /
                    (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
         }
 
-        var halfWidth = ToMonitorScale(Width / 2f);
-        var halfHeight = ToMonitorScale(Height / 2f);
+        var halfWidth = ToDisplayScale(Width / 2f);
+        var halfHeight = ToDisplayScale(Height / 2f);
 
-        if (mainMonitor is not null)
-        {
-            // Set the default position to be in the center of the monitor
-            defaultPosition = new Vector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
-        }
+        // Set the default position to be in the center of the display
+        var defaultPosition = new Vector2(mainDisplay.Center.X - halfWidth, mainDisplay.Center.Y - halfHeight);
 
         CachedPosition = new CachedValue<Vector2>(
             defaultValue: defaultPosition,

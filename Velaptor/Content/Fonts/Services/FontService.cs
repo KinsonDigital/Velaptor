@@ -14,7 +14,6 @@ using FreeTypeSharp.Native;
 using Graphics;
 using Guards;
 using NativeInterop.FreeType;
-using Velaptor.Exceptions;
 using Velaptor.Services;
 
 /// <summary>
@@ -24,7 +23,7 @@ using Velaptor.Services;
 internal sealed class FontService : IFontService
 {
     private readonly IFreeTypeInvoker freeTypeInvoker;
-    private readonly ISystemMonitorService sysMonitorService;
+    private readonly ISystemDisplayService sysDisplayService;
     private readonly IPlatform platform;
     private readonly nint libraryPtr;
     private bool isDisposed;
@@ -33,19 +32,19 @@ internal sealed class FontService : IFontService
     /// Initializes a new instance of the <see cref="FontService"/> class.
     /// </summary>
     /// <param name="freeTypeInvoker">Makes calls to the native <c>FreeType</c> library.</param>
-    /// <param name="sysMonitorService">Provides information about the system monitor.</param>
+    /// <param name="sysDisplayService">Provides information about the system display.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     public FontService(
         IFreeTypeInvoker freeTypeInvoker,
-        ISystemMonitorService sysMonitorService,
+        ISystemDisplayService sysDisplayService,
         IPlatform platform)
     {
         EnsureThat.ParamIsNotNull(freeTypeInvoker);
-        EnsureThat.ParamIsNotNull(sysMonitorService);
+        EnsureThat.ParamIsNotNull(sysDisplayService);
         EnsureThat.ParamIsNotNull(platform);
 
         this.freeTypeInvoker = freeTypeInvoker;
-        this.sysMonitorService = sysMonitorService;
+        this.sysDisplayService = sysDisplayService;
         this.platform = platform;
 
         this.libraryPtr = this.freeTypeInvoker.FT_Init_FreeType();
@@ -182,18 +181,12 @@ internal sealed class FontService : IFontService
 
         var sizeInPointsPtr = (nint)(sizeInPoints << 6);
 
-        // If the main monitor is null, throw an exception.  This is required to set the character size.
-        if (this.sysMonitorService.MainMonitor is null)
-        {
-            throw new SystemMonitorException("Cannot set the font size if there is no monitor to use for DPI settings.");
-        }
-
         this.freeTypeInvoker.FT_Set_Char_Size(
             facePtr,
             sizeInPointsPtr,
             sizeInPointsPtr,
-            (uint)this.sysMonitorService.MainMonitor.HorizontalDPI,
-            (uint)this.sysMonitorService.MainMonitor.VerticalDPI);
+            (uint)this.sysDisplayService.MainDisplay.HorizontalDPI,
+            (uint)this.sysDisplayService.MainDisplay.VerticalDPI);
     }
 
     /// <inheritdoc/>

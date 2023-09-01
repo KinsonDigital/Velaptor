@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWMonitorChangedEventArgs.cs" company="KinsonDigital">
+﻿// <copyright file="GlfwDisplayChangedEventArgs.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,18 +8,18 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// Holds GLFW monitor changed event information.
+/// Holds GLFW display changed event information.
 /// </summary>
-internal sealed class GLFWMonitorChangedEventArgs : EventArgs
+internal sealed class GlfwDisplayChangedEventArgs : EventArgs
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLFWMonitorChangedEventArgs"/> class.
+    /// Initializes a new instance of the <see cref="GlfwDisplayChangedEventArgs"/> class.
     /// </summary>
-    /// <param name="isConnected">True if a monitor has been connected.</param>
-    public GLFWMonitorChangedEventArgs(bool isConnected) => IsConnected = isConnected;
+    /// <param name="isConnected">True if a display has been connected.</param>
+    public GlfwDisplayChangedEventArgs(bool isConnected) => IsConnected = isConnected;
 
     /// <summary>
-    /// Gets a value indicating whether or not a monitor has been connected.
+    /// Gets a value indicating whether or not a display has been connected.
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]

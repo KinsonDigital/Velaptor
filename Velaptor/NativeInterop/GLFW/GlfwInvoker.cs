@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWInvoker.cs" company="KinsonDigital">
+// <copyright file="GlfwInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,15 +14,15 @@ using Silk.NET.GLFW;
 /// Invokes GLFW calls.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the GLFW library.")]
-internal sealed class GLFWInvoker : IGLFWInvoker
+internal sealed class GlfwInvoker : IGlfwInvoker
 {
     private readonly Glfw glfw;
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLFWInvoker"/> class.
+    /// Initializes a new instance of the <see cref="GlfwInvoker"/> class.
     /// </summary>
-    public GLFWInvoker()
+    public GlfwInvoker()
     {
         this.glfw = Glfw.GetApi();
 
@@ -35,15 +35,15 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="GLFWInvoker"/> class.
+    /// Finalizes an instance of the <see cref="GlfwInvoker"/> class.
     /// </summary>
-    ~GLFWInvoker() => Dispose();
+    ~GlfwInvoker() => Dispose();
 
     /// <inheritdoc/>
-    public event EventHandler<GLFWErrorEventArgs>? OnError;
+    public event EventHandler<GlfwErrorEventArgs>? OnError;
 
     /// <inheritdoc/>
-    public event EventHandler<GLFWMonitorChangedEventArgs>? OnMonitorChanged;
+    public event EventHandler<GlfwDisplayChangedEventArgs>? OnDisplayChanged;
 
     /// <inheritdoc/>
     public bool Init() => this.glfw.Init();
@@ -78,9 +78,9 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     }
 
     /// <inheritdoc/>
-    public GLFWVideoMode GetVideoMode(nint monitor)
+    public GlfwVideoMode GetVideoMode(nint monitor)
     {
-        GLFWVideoMode result = default;
+        GlfwVideoMode result = default;
 
         unsafe
         {
@@ -115,14 +115,14 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     /// <param name="errorCode">The error code.</param>
     /// <param name="description">The error description.</param>
     private void ErrorCallback(ErrorCode errorCode, string description)
-        => this.OnError?.Invoke(this, new GLFWErrorEventArgs((GLFWErrorCode)errorCode, description));
+        => this.OnError?.Invoke(this, new GlfwErrorEventArgs((GlfwErrorCode)errorCode, description));
 
     /// <summary>
     /// Invoked when GLFW detects that something has changed with the monitors,
-    /// and then invokes the <see cref="OnMonitorChanged"/> event.
+    /// and then invokes the <see cref="OnDisplayChanged"/> event.
     /// </summary>
     /// <param name="monitor">The monitor that has changed.</param>
     /// <param name="connectedState">The connected state of the monitor.</param>
     private unsafe void MonitorCallback(Monitor* monitor, ConnectedState connectedState)
-        => this.OnMonitorChanged?.Invoke(this, new GLFWMonitorChangedEventArgs(connectedState == ConnectedState.Connected));
+        => this.OnDisplayChanged?.Invoke(this, new GlfwDisplayChangedEventArgs(connectedState == ConnectedState.Connected));
 }

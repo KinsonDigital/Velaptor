@@ -48,7 +48,7 @@ public class LayeredLineRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
     /// </summary>
-    public LayeredLineRenderingScene() => this.keyboard = InputFactory.CreateKeyboard();
+    public LayeredLineRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
