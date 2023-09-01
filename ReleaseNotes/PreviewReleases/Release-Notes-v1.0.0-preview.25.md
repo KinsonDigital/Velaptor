@@ -12,11 +12,11 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 align="center" style="font-weight: bold;">New Features ✨</h2>
 
 1. [#710](https://github.com/KinsonDigital/Velaptor/issues/710) - Added the ability to get information about the system displays.
-2. [#99](https://github.com/KinsonDigital/Velaptor/issues/99) - Added new half-width and height properties to UI controls.
+2. [#99](https://github.com/KinsonDigital/Velaptor/issues/99) - Added new half-width and height properties to UI controls. **Thanks you [AndreBonda](https://github.com/AndreBonda)!!🙏🏻**
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
-1. [#708](https://github.com/KinsonDigital/Velaptor/issues/708) - Fixed an issue with proper shut down.
+1. [#708](https://github.com/KinsonDigital/Velaptor/issues/708) - Fixed an issue with proper shutdown.  **Thanks you [AndreBonda](https://github.com/AndreBonda)!!🙏🏻**
 
 <h2 align="center" style="font-weight: bold;">Breaking Changes 🧨</h2>
 
