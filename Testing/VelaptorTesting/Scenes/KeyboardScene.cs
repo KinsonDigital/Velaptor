@@ -7,10 +7,10 @@ namespace VelaptorTesting.Scenes;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
+using Velaptor.Scene;
 using Velaptor.UI;
 
 /// <summary>

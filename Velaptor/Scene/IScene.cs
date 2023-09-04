@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Content;
-using Velaptor;
 using UI;
 
 /// <summary>
