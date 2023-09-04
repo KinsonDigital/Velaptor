@@ -182,7 +182,7 @@ public class ShaderProgramTests
         var actual = sut.Name;
 
         // Assert
-        Assert.Equal("UNKNOWN", actual);
+        actual.Should().Be("UNKNOWN");
     }
     #endregion
 
