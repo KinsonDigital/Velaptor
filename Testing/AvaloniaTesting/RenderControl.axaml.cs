@@ -2,10 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Avalonia.Controls;
-
 namespace AvaloniaTesting;
 
+using Avalonia.Controls;
 using System;
 using System.Linq;
 using System.Numerics;

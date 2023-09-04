@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Avalonia.Controls;
-
 namespace AvaloniaTesting.Views;
+
+using Avalonia.Controls;
 
 /// <summary>
 /// The main window used for testing the Avalonia OpenGL control.

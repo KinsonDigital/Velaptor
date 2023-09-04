@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace AvaloniaTesting;
+
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using AvaloniaTesting.ViewModels;
-
-namespace AvaloniaTesting;
+using ViewModels;
 
 /// <summary>
 /// Locates views.
