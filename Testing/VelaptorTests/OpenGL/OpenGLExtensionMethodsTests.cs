@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using FluentAssertions;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
@@ -27,8 +28,8 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToNDC(100, 200);
 
         // Assert
-        Assert.Equal(0.5f, actual.X);
-        Assert.Equal(-0.5f, actual.Y);
+        actual.X.Should().Be(0.5f);
+        actual.Y.Should().Be(-0.5f);
     }
 
     [Fact]
@@ -41,7 +42,7 @@ public class OpenGLExtensionMethodsTests
         var actual = value.ToNDCTextureCoordX(100);
 
         // Assert
-        Assert.Equal(0.75f, actual);
+        actual.Should().Be(0.75f);
     }
 
     [Fact]
@@ -54,7 +55,7 @@ public class OpenGLExtensionMethodsTests
         var actual = value.ToNDCTextureCoordY(100);
 
         // Assert
-        Assert.Equal(0.25f, actual);
+        actual.Should().Be(0.25f);
     }
 
     [Fact]
@@ -67,8 +68,8 @@ public class OpenGLExtensionMethodsTests
         var actual = coord.ToNDCTextureCoords(100, 100);
 
         // Assert
-        Assert.Equal(0.75f, actual.X);
-        Assert.Equal(0.25f, actual.Y);
+        actual.X.Should().Be(0.75f);
+        actual.Y.Should().Be(0.25f);
     }
 
     [Fact]
@@ -82,7 +83,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToArray();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -96,8 +97,7 @@ public class OpenGLExtensionMethodsTests
         var actual = color.ToArray();
 
         // Assert
-        Assert.Equal(4, actual.Length);
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -114,8 +114,7 @@ public class OpenGLExtensionMethodsTests
         var actual = data.ToArray();
 
         // Assert
-        Assert.Equal(8, actual.Length);
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -159,8 +158,7 @@ public class OpenGLExtensionMethodsTests
         var actual = quadData.ToArray();
 
         // Assert
-        Assert.Equal(32, actual.Length);
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -174,7 +172,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToArray();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -188,7 +186,7 @@ public class OpenGLExtensionMethodsTests
         var actual = clr.ToArray();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -205,7 +203,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vertexData.ToArray();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -226,7 +224,7 @@ public class OpenGLExtensionMethodsTests
         var actual = quad.ToArray();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -251,24 +249,21 @@ public class OpenGLExtensionMethodsTests
         var actual = OpenGLExtensionMethods.ToArray(quads);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void ToArray_WithVector4Param_ReturnsCorrectResult()
     {
         // Arrange
+        var expected = new[] { 11f, 22f, 33f, 44f };
         var vector = new Vector4(11, 22, 33, 44);
 
         // Act
         var actual = vector.ToArray();
 
         // Assert
-        Assert.Equal(4f, actual.Length);
-        Assert.Equal(11f, actual[0]);
-        Assert.Equal(22f, actual[1]);
-        Assert.Equal(33f, actual[2]);
-        Assert.Equal(44f, actual[3]);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
