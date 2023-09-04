@@ -14,15 +14,15 @@ on:
 jobs:
   sync_status_check:
     name: Sync Status Check
-    if: startsWith(github.head_ref, 'feature/')
     runs-on: ubuntu-latest
     steps:
       - name: Set Up Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ vars.DENO_VERSION }}
-
+        
       - name: Run Sync Status Check
+        if: startsWith(github.head_ref, 'feature/')
         run: |
           $scriptUrl = "${{ vars.SCRIPT_BASE_URL }}/${{ vars.CICD_SCRIPTS_VERSION }}/${{ vars.SCRIPT_RELATIVE_DIR_PATH}}/sync-bot-status-check.ts";
           $prNumber = "${{ github.event.number }}";
@@ -51,3 +51,7 @@ jobs:
             "$prNumber" `
             "pr" `
             "${{ secrets.CICD_TOKEN }}";
+
+      - name: Pass Workflow If Renovate
+        if: startsWith(github.head_ref, 'renovate/')
+        run: Write-Host "::notice::Renovate PR detected. Skipping sync status check.";
