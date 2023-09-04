@@ -27,7 +27,7 @@ jobs:
         with:
           dotnet-version: '7.x.x'
 
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
+      - uses: actions/checkout@v4.0.0
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
