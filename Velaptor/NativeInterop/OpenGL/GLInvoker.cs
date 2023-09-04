@@ -11,9 +11,9 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Carbonate.UniDirectional;
 using Exceptions;
+using Guards;
 using Services;
 using Silk.NET.OpenGL;
-using Guards;
 using Velaptor.OpenGL;
 
 /// <summary>

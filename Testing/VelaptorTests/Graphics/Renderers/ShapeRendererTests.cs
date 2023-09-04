@@ -24,10 +24,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-
-using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<
-    System.Memory<
-        Velaptor.OpenGL.Batching.RenderItem<
+using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
             Velaptor.OpenGL.Batching.ShapeBatchItem
         >
     >

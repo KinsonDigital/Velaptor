@@ -15,7 +15,6 @@ using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.ReactableData;
 using Xunit;
-
 using ReceiveMouseDataReactor = Carbonate.Core.UniDirectional.IReceiveReactor<
     Velaptor.ReactableData.MouseStateData
 >;

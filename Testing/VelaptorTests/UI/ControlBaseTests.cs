@@ -13,7 +13,6 @@ using Moq;
 using Velaptor.Input;
 using Velaptor.UI;
 using Xunit;
-using MouseButton = Velaptor.Input.MouseButton;
 
 /// <summary>
 /// Tests the <see cref="ControlBase"/> class.

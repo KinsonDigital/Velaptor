@@ -10,9 +10,9 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Scene;
 using Velaptor.UI;
 
 public class SoundScene : SceneBase
