@@ -20,7 +20,11 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ vars.DENO_VERSION }}
-        
+
+      - name: Pass Workflow If Renovate
+        if: startsWith(github.head_ref, 'renovate/')
+        run: Write-Host "::notice::Renovate PR detected. Skipping sync status check.";
+
       - name: Run Sync Status Check
         if: startsWith(github.head_ref, 'feature/')
         run: |
@@ -51,7 +55,3 @@ jobs:
             "$prNumber" `
             "pr" `
             "${{ secrets.CICD_TOKEN }}";
-
-      - name: Pass Workflow If Renovate
-        if: startsWith(github.head_ref, 'renovate/')
-        run: Write-Host "::notice::Renovate PR detected. Skipping sync status check.";
