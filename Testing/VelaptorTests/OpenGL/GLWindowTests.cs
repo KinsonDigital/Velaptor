@@ -32,6 +32,7 @@ using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
 using Xunit;
+using IWindow = Velaptor.UI.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -720,7 +721,7 @@ public class GLWindowTests
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(Silk.NET.Windowing.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        var expected = $"The value of the enum '{nameof(SilkWindowBorder)}' used in the class '{nameof(GLWindow)}' and";
         expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
 
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
@@ -729,7 +730,7 @@ public class GLWindowTests
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Silk.NET.Windowing.WindowBorder>>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<SilkWindowBorder>>(() =>
         {
             _ = sut.TypeOfBorder;
         }, expected);
@@ -739,7 +740,7 @@ public class GLWindowTests
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(Velaptor.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        var expected = $"The value of the enum '{nameof(VelaptorWindowBorder)}' used in the class '{nameof(GLWindow)}' and";
         expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
 
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
@@ -748,7 +749,7 @@ public class GLWindowTests
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Velaptor.WindowBorder>>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<VelaptorWindowBorder>>(() =>
         {
             sut.TypeOfBorder = (VelaptorWindowBorder)1234;
         }, expected);
@@ -980,7 +981,7 @@ public class GLWindowTests
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.GLInitializedId));
         this.mockPushReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.GLInitializedId));
 
-        Assert.True(initializeInvoked, $"The action '{nameof(Velaptor.UI.IWindow)}.{nameof(Velaptor.UI.IWindow.Initialize)}' must be invoked");
+        Assert.True(initializeInvoked, $"The action '{nameof(IWindow)}.{nameof(IWindow.Initialize)}' must be invoked");
 
         this.mockAppService.VerifyOnce(m => m.Init());
     }

@@ -43,7 +43,7 @@ public class BatcherTests
         this.mockPushReactable = Substitute.For<IPushReactable>();
         this.mockPushReactable.Subscribe(Arg.Any<ReceiveReactor>())
             .Returns(this.mockUnsubscriber)
-            .AndDoes((callInfo) =>
+            .AndDoes(callInfo =>
             {
                 var reactorParam = callInfo.Arg<ReceiveReactor>();
 

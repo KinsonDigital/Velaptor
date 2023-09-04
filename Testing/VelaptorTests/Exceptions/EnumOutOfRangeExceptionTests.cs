@@ -33,7 +33,7 @@ public class EnumOutOfRangeExceptionTests
         var exception = new EnumOutOfRangeException<TestEnum>("test-message");
 
         // Assert
-        exception.Message.Should().Be($"test-message");
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
