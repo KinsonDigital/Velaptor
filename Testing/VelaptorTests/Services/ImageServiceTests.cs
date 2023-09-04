@@ -322,7 +322,7 @@ public class ImageServiceTests : IDisposable
     {
         if (File.Exists(filePath) is false)
         {
-            Assert.True(false, $"The resulting image '{filePath}' from unit test '{nameof(Save_WhenInvoked_CorrectlySavesImage)}()' does not exist.");
+            Assert.Fail($"The resulting image '{filePath}' from unit test '{nameof(Save_WhenInvoked_CorrectlySavesImage)}()' does not exist.");
         }
 
         var image = Image.Load<Rgba32>(filePath);

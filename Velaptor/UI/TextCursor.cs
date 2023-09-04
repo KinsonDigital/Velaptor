@@ -24,7 +24,6 @@ internal class TextCursor : ITextCursor
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
     private RectShape cursor;
-    private KeyCode lastMovementKey;
     private bool visible = true;
 
     /// <summary>
@@ -45,12 +44,6 @@ internal class TextCursor : ITextCursor
                         break;
                     case MutateType.PostMutate:
                         this.postMutateState = data;
-
-                        if (this.postMutateState.Key.IsMoveCursorKey())
-                        {
-                            this.lastMovementKey = this.postMutateState.Key;
-                        }
-
                         break;
                     default:
                         const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
@@ -211,10 +204,10 @@ internal class TextCursor : ITextCursor
 
         var charIndexIsAtStart = this.postMutateState.CharIndex <= 0;
         var charIndexIsAtEnd = this.postMutateState.CharIndex >= this.postMutateState.TextLength - 1;
-        var charIndexIsInMiddle = charIndexIsAtStart is false && charIndexIsAtEnd is false;
+        var charIndexIsInMiddle = !charIndexIsAtStart && !charIndexIsAtEnd;
 
         var charIndexIsStartOrMiddle = charIndexIsAtStart || charIndexIsInMiddle;
-        var cursorIsNotAtRightEndOfText = this.postMutateState.Text.IsEmpty() is false && this.cursor.Right <= this.postMutateState.TextRight;
+        var cursorIsNotAtRightEndOfText = !this.postMutateState.Text.IsEmpty() && this.cursor.Right <= this.postMutateState.TextRight;
 
         if ((charIndexWasAtEnd && cursorWasNotAtRightEndOfText && charIndexIsAtEnd) ||
                  (charIndexIsStartOrMiddle && cursorIsNotAtRightEndOfText))
@@ -238,7 +231,7 @@ internal class TextCursor : ITextCursor
         var charIndexWasNotAtStart = this.preMutateState.CharIndex > 0;
         var charIndexWasAtEnd = this.preMutateState.CharIndex >= this.preMutateState.TextLength - 1;
         var charIndexWasInMiddle = charIndexWasNotAtStart && !charIndexWasAtEnd;
-        var cursorWasNotAtRightEndOfText = this.preMutateState.Text.IsEmpty() is false && Cursor.Right <= this.preMutateState.TextRight;
+        var cursorWasNotAtRightEndOfText = !this.preMutateState.Text.IsEmpty() && Cursor.Right <= this.preMutateState.TextRight;
 
         var charIndexIsAtStart = this.postMutateState.CharIndex <= 0;
         var charIndexIsAtEnd = this.postMutateState.CharIndex >= this.postMutateState.TextLength - 1;
@@ -327,9 +320,6 @@ internal class TextCursor : ITextCursor
                 }
                 else if (selectionRightToLeft)
                 {
-                    displacement = lastCharVisible
-                        ? Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft)
-                        : displacement;
                     this.cursor.Left += displacement;
                 }
             }
@@ -344,18 +334,15 @@ internal class TextCursor : ITextCursor
             {
                 this.cursor.Left -= displacement;
             }
-            else if (selectionLeftToRight is false && selectionRightToLeft is false)
+            else if (!selectionRightToLeft)
             {
                 this.cursor.Left = this.postMutateState.TextRight;
             }
-            else if (prevTextIsLargerThanView && !currTextIsLargerThanView)
+            else if (prevTextIsLargerThanView)
             {
                 displacement = Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft);
 
-                if (selectionRightToLeft)
-                {
-                    this.cursor.Left += displacement;
-                }
+                this.cursor.Left += displacement;
             }
         }
     }
@@ -405,7 +392,7 @@ internal class TextCursor : ITextCursor
                 SnapCursorToRight();
             }
 
-            if (firstCharVisible is false && lastCharVisible is false)
+            if (!firstCharVisible && !lastCharVisible)
             {
                 var cursorPastRight = this.cursor.Position.X > this.postMutateState.TextView.Right;
                 var cursorPastLeft = this.cursor.Position.X < this.postMutateState.TextView.Left;

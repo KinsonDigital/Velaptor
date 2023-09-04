@@ -13,7 +13,7 @@ using Views;
 /// <summary>
 /// The main application.
 /// </summary>
-public partial class App : Application
+public class App : Application
 {
     /// <summary>
     /// Initializes the application.

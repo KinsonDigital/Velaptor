@@ -24,7 +24,7 @@ internal static class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .With(new Win32PlatformOptions()
+            .With(new Win32PlatformOptions
             {
                 RenderingMode = new[] { Win32RenderingMode.Wgl },
             })

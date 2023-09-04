@@ -50,12 +50,12 @@ public static class TestDataLoader
 
         if (string.IsNullOrEmpty(fileName))
         {
-            Assert.True(false, $"{loadTestDataPrefix}The parameter '{nameof(fileName)}' must not be null or empty.");
+            Assert.Fail($"{loadTestDataPrefix}The parameter '{nameof(fileName)}' must not be null or empty.");
         }
 
         if (Path.HasExtension(fileName) is false)
         {
-            Assert.True(false, $"{loadTestDataPrefix}The file name '{fileName}' must be a file name with an extension.");
+            Assert.Fail($"{loadTestDataPrefix}The file name '{fileName}' must be a file name with an extension.");
         }
 
         relativeDirPath = relativeDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
@@ -74,14 +74,14 @@ public static class TestDataLoader
 
         if (Directory.Exists(fullDirPath) is false)
         {
-            Assert.True(false, $"{loadTestDataPrefix}The directory path '{fullDirPath}' does not exist.");
+            Assert.Fail($"{loadTestDataPrefix}The directory path '{fullDirPath}' does not exist.");
         }
 
         var fullTestDataFilePath = $"{fullDirPath}{CrossPlatDirSeparatorChar}{fileName}";
 
         if (File.Exists(fullTestDataFilePath) is false)
         {
-            Assert.True(false, $"{loadTestDataPrefix}The test data file path '{fullTestDataFilePath}' does not exist.");
+            Assert.Fail($"{loadTestDataPrefix}The test data file path '{fullTestDataFilePath}' does not exist.");
         }
 
         var testJSONData = File.ReadAllText(fullTestDataFilePath);
@@ -90,7 +90,7 @@ public static class TestDataLoader
         {
             Error = (_, args) =>
             {
-                Assert.True(false, args.ErrorContext.Error.Message);
+                Assert.Fail(args.ErrorContext.Error.Message);
             },
         };
 
