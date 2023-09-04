@@ -5,6 +5,7 @@
 namespace VelaptorTests.NativeInterop.GLFW;
 
 using System;
+using FluentAssertions;
 using Helpers;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
@@ -31,8 +32,8 @@ public class GlfwErrorEventArgsTests
         var eventArgs = new GlfwErrorEventArgs(GlfwErrorCode.ApiUnavailable, "test-message");
 
         // Assert
-        Assert.Equal(GlfwErrorCode.ApiUnavailable, eventArgs.ErrorCode);
-        Assert.Equal("test-message", eventArgs.ErrorMessage);
+        eventArgs.ErrorCode.Should().Be(GlfwErrorCode.ApiUnavailable);
+        eventArgs.ErrorMessage.Should().Be("test-message");
     }
     #endregion
 }
