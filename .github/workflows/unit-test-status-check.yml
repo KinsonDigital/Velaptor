@@ -14,6 +14,24 @@ on:
 
 
 jobs:
+  build_velaptor_testing:
+    name: Build ${{ vars.PROJECT_NAME }} Testing App
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.0.0
+    with:
+      project-name: "${{ vars.PROJECT_NAME }}Testing"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+
+
+  build_avalonia_testing:
+    name: Build Avalonia Testing App
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.0.0
+    with:
+      project-name: "AvaloniaTesting"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+
+
   run_tests:
     name: ${{ vars.PROJECT_NAME }} Test Status Check
     uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v13.0.0
@@ -21,3 +39,12 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME }}Tests"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+
+
+  test_status_check:
+    name: ${{ vars.PROJECT_NAME }} Test Status Check
+    needs: [build_velaptor_testing, build_avalonia_testing, run_tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Status Check Pass Message
+        run: Write-Host "::notice::✅Test Status Check Passed✅";
