@@ -151,7 +151,7 @@ public class ImageServiceTests : IDisposable
         // Arrange
         var service = CreateSystemUnderTest();
 
-        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
         // Act
         var flippedImage = service.FlipVertically(comparisonSample);
@@ -197,7 +197,7 @@ public class ImageServiceTests : IDisposable
     {
         // Arrange
         var service = CreateSystemUnderTest();
-        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
         // Act
         var flippedImage = service.FlipHorizontally(comparisonSample);

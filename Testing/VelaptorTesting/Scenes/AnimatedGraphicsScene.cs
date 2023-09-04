@@ -6,12 +6,12 @@ namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Scene;
 using Velaptor.UI;
 
 /// <summary>

@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -16,6 +15,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.Scene;
 
 /// <summary>
 /// Tests that graphics properly render to the screen.

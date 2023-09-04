@@ -5,6 +5,7 @@
 namespace VelaptorTests.Scene;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Carbonate.Core.UniDirectional;
 using Carbonate.UniDirectional;
@@ -323,6 +324,7 @@ public class SceneBaseTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfScene()
     {
         // Arrange

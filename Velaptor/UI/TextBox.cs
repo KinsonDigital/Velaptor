@@ -19,7 +19,6 @@ using Graphics;
 using Graphics.Renderers;
 using Input;
 using ReactableData;
-using Color = System.Drawing.Color;
 
 /// <summary>
 /// Provides the ability to enter text into a box.

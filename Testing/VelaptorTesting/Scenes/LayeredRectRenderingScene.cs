@@ -7,7 +7,6 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -15,6 +14,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.Scene;
 
 /// <summary>
 /// Tests out layered rendering with rectangles.

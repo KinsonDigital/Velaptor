@@ -10,11 +10,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Scene;
 using Velaptor.UI;
 
 /// <summary>

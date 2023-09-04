@@ -538,7 +538,7 @@ public class FontTests : IDisposable
          * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
          */
         // Arrange
-        var text = $"hello\nworld";
+        var text = "hello\nworld";
 
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
             .Returns(2f);

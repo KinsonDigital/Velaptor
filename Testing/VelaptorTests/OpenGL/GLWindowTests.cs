@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate.NonDirectional;
@@ -32,6 +33,7 @@ using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
 using Xunit;
+using IWindow = Velaptor.UI.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -924,6 +926,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfWindow()
     {
         // Arrange
@@ -980,7 +983,7 @@ public class GLWindowTests
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.GLInitializedId));
         this.mockPushReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.GLInitializedId));
 
-        Assert.True(initializeInvoked, $"The action '{nameof(Velaptor.UI.IWindow)}.{nameof(Velaptor.UI.IWindow.Initialize)}' must be invoked");
+        Assert.True(initializeInvoked, $"The action '{nameof(IWindow)}.{nameof(IWindow.Initialize)}' must be invoked");
 
         this.mockAppService.VerifyOnce(m => m.Init());
     }

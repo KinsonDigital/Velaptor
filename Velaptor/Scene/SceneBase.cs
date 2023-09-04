@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Carbonate.UniDirectional;
-using Velaptor;
 using Content;
 using Factories;
 using Guards;

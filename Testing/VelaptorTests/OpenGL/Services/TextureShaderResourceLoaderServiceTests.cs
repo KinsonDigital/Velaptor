@@ -20,7 +20,7 @@ public class TextureShaderResourceLoaderServiceTests
     private const string ProcessedVertShaderSample = "uniform mat4 uTransform[10];";
     private const string TextureShaderName = "test-source";
     private const string NoProcessingFragShaderSample = "int totalClrs = 4;";
-    private readonly string unprocessedFragShaderSample = $"uniform mat4 uTransform[10];";
+    private readonly string unprocessedFragShaderSample = "uniform mat4 uTransform[10];";
     private readonly Mock<IEmbeddedResourceLoaderService<string>> mockResourceLoaderService;
     private readonly Mock<IPath> mockPath;
 
