@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate.NonDirectional;
@@ -925,6 +926,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfWindow()
     {
         // Arrange
