@@ -721,7 +721,7 @@ public class GLWindowTests
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(SilkWindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        var expected = $"The value of the enum '{nameof(Silk.NET.Windowing.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
         expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
 
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
@@ -730,7 +730,7 @@ public class GLWindowTests
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<SilkWindowBorder>>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Silk.NET.Windowing.WindowBorder>>(() =>
         {
             _ = sut.TypeOfBorder;
         }, expected);
@@ -740,7 +740,7 @@ public class GLWindowTests
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(VelaptorWindowBorder)}' used in the class '{nameof(GLWindow)}' and";
+        var expected = $"The value of the enum '{nameof(Velaptor.WindowBorder)}' used in the class '{nameof(GLWindow)}' and";
         expected += " method 'SetupOtherPropCaches' is invalid and out of range.";
 
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
@@ -749,7 +749,7 @@ public class GLWindowTests
         sut.Show();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<VelaptorWindowBorder>>(() =>
+        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Velaptor.WindowBorder>>(() =>
         {
             sut.TypeOfBorder = (VelaptorWindowBorder)1234;
         }, expected);
