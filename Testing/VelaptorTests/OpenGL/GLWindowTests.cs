@@ -115,10 +115,8 @@ public class GLWindowTests
     [Fact]
     public void Ctor_WithNullAppServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 null,
@@ -132,16 +130,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'appService')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'appService')");
     }
 
     [Fact]
     public void Ctor_WithNullWindowFactoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -155,16 +154,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'windowFactory')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'windowFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullNativeInputFactoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -178,16 +178,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'nativeInputFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -201,16 +202,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'glInvoker')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
     }
 
     [Fact]
     public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -224,16 +226,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'glfwInvoker')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
     public void Ctor_WithNullSystemDisplayServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -247,16 +250,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'systemDisplayService')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'systemDisplayService')");
     }
 
     [Fact]
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -270,16 +274,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'platform')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'platform')");
     }
 
     [Fact]
     public void Ctor_WithNullTaskServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -293,16 +298,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'taskService')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'taskService')");
     }
 
     [Fact]
     public void Ctor_WithNullContentLoaderParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -316,16 +322,17 @@ public class GLWindowTests
                 null,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'contentLoader')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
     }
 
     [Fact]
     public void Ctor_WithNullSceneManagerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -339,16 +346,17 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 null,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'sceneManager')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'sceneManager')");
     }
 
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLWindow(
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
@@ -362,7 +370,10 @@ public class GLWindowTests
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -377,7 +388,7 @@ public class GLWindowTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(100u, actual);
+        actual.Should().Be(100);
     }
 
     [Fact]
@@ -395,7 +406,7 @@ public class GLWindowTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(111u, actual);
+        actual.Should().Be(111u);
     }
 
     [Fact]
@@ -408,7 +419,7 @@ public class GLWindowTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(200u, actual);
+        actual.Should().Be(200u);
     }
 
     [Fact]
@@ -426,7 +437,7 @@ public class GLWindowTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(111u, actual);
+        actual.Should().Be(111u);
     }
 
     [Fact]
@@ -439,7 +450,7 @@ public class GLWindowTests
         var actual = sut.Title;
 
         // Assert
-        Assert.Equal("Velaptor Application", actual);
+        actual.Should().Be("Velaptor Application");
     }
 
     [Fact]
@@ -457,7 +468,7 @@ public class GLWindowTests
         var actual = sut.Title;
 
         // Assert
-        Assert.Equal("test-title", actual);
+        actual.Should().Be("test-title");
     }
 
     [Fact]
@@ -481,7 +492,7 @@ public class GLWindowTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(new SysVector2(950, 400), actual);
+        actual.Should().Be(new SysVector2(950, 400));
     }
 
     [Fact]
@@ -505,7 +516,7 @@ public class GLWindowTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(new SysVector2(950, 400), actual);
+        actual.Should().Be(new SysVector2(950, 400));
     }
 
     [Fact]
@@ -523,7 +534,7 @@ public class GLWindowTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(new SysVector2(123, 456), actual);
+        actual.Should().Be(new SysVector2(123, 456));
     }
 
     [Fact]
@@ -536,7 +547,7 @@ public class GLWindowTests
         var actual = sut.UpdateFrequency;
 
         // Assert
-        Assert.Equal(60, actual);
+        actual.Should().Be(60);
     }
 
     [Fact]
@@ -554,7 +565,7 @@ public class GLWindowTests
         var actual = sut.UpdateFrequency;
 
         // Assert
-        Assert.Equal(30, actual);
+        actual.Should().Be(30);
     }
 
     [Fact]
@@ -569,7 +580,7 @@ public class GLWindowTests
         var actual = sut.ContentLoader;
 
         // Assert
-        Assert.Same(mockOtherContentLoader.Object, actual);
+        actual.Should().BeSameAs(mockOtherContentLoader.Object);
     }
 
     [Fact]
@@ -582,7 +593,7 @@ public class GLWindowTests
         var actual = sut.MouseCursorVisible;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -600,7 +611,7 @@ public class GLWindowTests
         var actual = sut.MouseCursorVisible;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -615,11 +626,12 @@ public class GLWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<WindowState>>(() =>
-        {
-            _ = sut.WindowState;
-        }, expected);
+        // Act
+        var act = () => _ = sut.WindowState;
+
+        // Assert
+        act.Should().Throw<EnumOutOfRangeException<WindowState>>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -633,11 +645,12 @@ public class GLWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<StateOfWindow>>(() =>
-        {
-            sut.WindowState = (StateOfWindow)1234;
-        }, expected);
+        // Act
+        var act = () => sut.WindowState = (StateOfWindow)1234;
+
+        // Assert
+        act.Should().Throw<EnumOutOfRangeException<StateOfWindow>>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -650,7 +663,7 @@ public class GLWindowTests
         var actual = sut.WindowState;
 
         // Assert
-        Assert.Equal(StateOfWindow.Normal, actual);
+        actual.Should().Be(StateOfWindow.Normal);
     }
 
     [Theory]
@@ -673,7 +686,7 @@ public class GLWindowTests
         var actual = sut.WindowState;
 
         // Assert
-        Assert.Equal(sutState, actual);
+        actual.Should().Be(sutState);
     }
 
     [Fact]
@@ -687,7 +700,7 @@ public class GLWindowTests
         sut.Initialize = initAction;
 
         // Assert
-        Assert.Equal(initAction, sut.Initialize);
+        sut.Initialize.Should().BeSameAs(initAction);
     }
 
     [Fact]
@@ -701,7 +714,7 @@ public class GLWindowTests
         sut.Uninitialize = unInitAction;
 
         // Assert
-        Assert.Equal(unInitAction, sut.Uninitialize);
+        sut.Uninitialize.Should().BeSameAs(unInitAction);
     }
 
     [Fact]
@@ -715,7 +728,7 @@ public class GLWindowTests
         sut.Show();
 
         // Assert
-        Assert.True(sut.Initialized);
+        sut.Initialized.Should().BeTrue();
     }
 
     [Fact]
@@ -730,11 +743,12 @@ public class GLWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Silk.NET.Windowing.WindowBorder>>(() =>
-        {
-            _ = sut.TypeOfBorder;
-        }, expected);
+        // Act
+        var act = () => _ = sut.TypeOfBorder;
+
+        // Assert
+        act.Should().Throw<EnumOutOfRangeException<Silk.NET.Windowing.WindowBorder>>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -749,11 +763,12 @@ public class GLWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<Velaptor.WindowBorder>>(() =>
-        {
-            sut.TypeOfBorder = (VelaptorWindowBorder)1234;
-        }, expected);
+        // Act
+        var act = () => sut.TypeOfBorder = (VelaptorWindowBorder)1234;
+
+        // Assert
+        act.Should().Throw<EnumOutOfRangeException<Velaptor.WindowBorder>>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -766,7 +781,7 @@ public class GLWindowTests
         var actual = sut.TypeOfBorder;
 
         // Assert
-        Assert.Equal(VelaptorWindowBorder.Resizable, actual);
+        actual.Should().Be(VelaptorWindowBorder.Resizable);
     }
 
     [Theory]
@@ -789,7 +804,7 @@ public class GLWindowTests
         var actual = sut.TypeOfBorder;
 
         // Assert
-        Assert.Equal(sutBorder, actual);
+        actual.Should().Be(sutBorder);
     }
     #endregion
 
@@ -803,11 +818,12 @@ public class GLWindowTests
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NoKeyboardException>(() =>
-        {
-            sut.Show();
-        }, "Input Exception: No connected keyboards available.");
+        // Act
+        var act = () => sut.Show();
+
+        // Assert
+        act.Should().Throw<NoKeyboardException>()
+            .WithMessage("Input Exception: No connected keyboards available.");
     }
 
     [Fact]
@@ -819,11 +835,12 @@ public class GLWindowTests
         MockWindowLoadEvent();
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NoMouseException>(() =>
-        {
-            sut.Show();
-        }, "Input Exception: No connected mice available.");
+        // Act
+        var act = () => sut.Show();
+
+        // Assert
+        act.Should().Throw<NoMouseException>()
+            .WithMessage("Input Exception: No connected mice available.");
     }
 
     [Fact]
@@ -852,10 +869,9 @@ public class GLWindowTests
         sut.Show();
 
         // Act
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            this.mockGL.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
-        }, "gl-error");
+        var act = () => this.mockGL.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
+
+        act.Should().Throw<Exception>().WithMessage("gl-error");
 
         // Assert
         this.mockGL.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
@@ -897,10 +913,10 @@ public class GLWindowTests
         await sut.ShowAsync(() => { });
 
         // Assert
-        Assert.True(taskServiceSetActionInvoked,
-            $"The {nameof(ITaskService)}.{nameof(ITaskService.SetAction)}() method must be executed before the 'afterStart` parameter");
-        Assert.True(taskServiceStartInvoked,
-            $"The {nameof(ITaskService)}.{nameof(ITaskService.Start)}() method must be executed before the 'afterStart` parameter");
+        taskServiceSetActionInvoked.Should().BeTrue(
+            $"the {nameof(ITaskService)}.{nameof(ITaskService.SetAction)}() method must be executed before the 'afterStart` parameter");
+        taskServiceStartInvoked.Should().BeTrue(
+            $"the {nameof(ITaskService)}.{nameof(ITaskService.Start)}() method must be executed before the 'afterStart` parameter");
     }
 
     [Fact]
@@ -922,7 +938,7 @@ public class GLWindowTests
         sut.Close();
 
         // Assert
-        Assert.True(afterUnloadExecuted, "The 'afterUnload` parameter must be executed after the sut unloads.");
+        afterUnloadExecuted.Should().BeTrue("the 'afterUnload` parameter must be executed after the sut unloads.");
     }
 
     [Fact]
@@ -983,7 +999,7 @@ public class GLWindowTests
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.GLInitializedId));
         this.mockPushReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.GLInitializedId));
 
-        Assert.True(initializeInvoked, $"The action '{nameof(IWindow)}.{nameof(IWindow.Initialize)}' must be invoked");
+        initializeInvoked.Should().BeTrue($"the action '{nameof(IWindow)}.{nameof(IWindow.Initialize)}' must be invoked");
 
         this.mockAppService.VerifyOnce(m => m.Init());
     }
@@ -1005,8 +1021,8 @@ public class GLWindowTests
         this.mockWinSizeReactable
             .VerifyOnce(m =>
                 m.Push(new WindowSizeData { Width = 11u, Height = 22u }, PushNotifications.WindowSizeChangedId));
-        Assert.Equal(11u, actualSize.Width);
-        Assert.Equal(22u, actualSize.Height);
+        actualSize.Width.Should().Be(11u);
+        actualSize.Height.Should().Be(22u);
     }
 
     [Fact]
@@ -1023,7 +1039,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Update += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
-        Assert.False(sutUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
+        sutUpdateInvoked.Should().BeFalse($"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
         this.mockMouseReactable.VerifyNever(m
             => m.Push(It.IsAny<MouseStateData>(), PushNotifications.MouseStateChangedId));
     }
@@ -1062,7 +1078,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Update += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
-        Assert.True(sutUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
+        sutUpdateInvoked.Should().BeTrue($"{nameof(GLWindow.Update)} was not invoked.");
         this.mockMouseReactable.VerifyOnce(m =>
             m.Push(It.Ref<MouseStateData>.IsAny, PushNotifications.MouseStateChangedId));
 
@@ -1108,7 +1124,7 @@ public class GLWindowTests
         sut.Draw = time =>
         {
             drawInvoked = true;
-            Assert.Equal(time.ElapsedTime, new TimeSpan(0, 0, 0, 0, 16));
+            time.ElapsedTime.Should().Be(new TimeSpan(0, 0, 0, 0, 16));
         };
         sut.AutoClearBuffer = false;
         sut.Show();
@@ -1117,7 +1133,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Render += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
-        Assert.True(drawInvoked, $"The '{nameof(GLWindow.Draw)}()' method should of been invoked.");
+        drawInvoked.Should().BeTrue($"the '{nameof(GLWindow.Draw)}()' method should of been invoked.");
         this.mockGLContext.VerifyOnce(m => m.SwapBuffers());
     }
 
@@ -1140,7 +1156,7 @@ public class GLWindowTests
 
         // Assert
         this.mockGL.VerifyNever(m => m.Clear(It.IsAny<GLClearBufferMask>()));
-        Assert.False(drawInvoked, $"The '{nameof(GLWindow.Draw)}()' method should not of been invoked.");
+        drawInvoked.Should().BeFalse($"the '{nameof(GLWindow.Draw)}()' method should not of been invoked.");
         this.mockGLContext.VerifyNever(m => m.SwapBuffers());
     }
 

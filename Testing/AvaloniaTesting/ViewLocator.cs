@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace AvaloniaTesting;
+
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using AvaloniaTesting.ViewModels;
-
-namespace AvaloniaTesting;
+using ViewModels;
 
 /// <summary>
 /// Locates views.
@@ -21,7 +21,7 @@ public class ViewLocator : IDataTemplate
 
         if (type != null)
         {
-            return (Control)Activator.CreateInstance(type)!;
+            return (Control)Activator.CreateInstance(type) !;
         }
 
         return new TextBlock { Text = "Not Found: " + name };
