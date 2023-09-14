@@ -268,14 +268,13 @@ internal static class IoC
                 IoCContainer.GetInstance<IDirectory>(),
                 IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 
-        IoCContainer.Register<ITaskService, TaskService>();
-        IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
+        IoCContainer.Register<ITaskService, TaskService>(Lifestyle.Singleton);
     }
 
     /// <summary>
     /// Sets up the container registration related to content.
     /// </summary>
-    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
+    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
 
     /// <summary>
     /// Sets up the container registration related to reactables.
