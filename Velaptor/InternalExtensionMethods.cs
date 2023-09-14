@@ -72,16 +72,11 @@ internal static class InternalExtensionMethods
         {
             var method = new StackFrame(skipFrames, false).GetMethod();
 
-            if (method is null)
-            {
-                throw new Exception("There was an issue getting the method for stack frame 2.");
-            }
-
-            declaringType = method.DeclaringType;
+            declaringType = method?.DeclaringType;
 
             if (declaringType is null)
             {
-                return method.Name;
+                return method?.Name ?? "Caller member name unknown";
             }
 
             skipFrames++;
