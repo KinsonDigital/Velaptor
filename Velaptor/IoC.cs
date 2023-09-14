@@ -65,6 +65,8 @@ internal static class IoC
     /// </summary>
     private static void SetupContainer()
     {
+        IoCContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+
         SetupNativeInterop();
 
         SetupBuffers();
@@ -301,6 +303,6 @@ internal static class IoC
         IoCContainer.Register<IRenderBatchReactable<ShapeBatchItem>, RenderBatchReactable<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
 
-        IoCContainer.Register<IPushReactable<TextBoxStateData>, PushReactable<TextBoxStateData>>(suppressDisposal: true);
+        IoCContainer.Register<IPushReactable<TextBoxStateData>, PushReactable<TextBoxStateData>>(Lifestyle.Transient, true);
     }
 }

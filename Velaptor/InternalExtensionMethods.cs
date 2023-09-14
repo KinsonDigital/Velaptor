@@ -157,6 +157,7 @@ internal static class InternalExtensionMethods
     /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
     /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
     /// <param name="container">The container that the registration applies to.</param>
+    /// <param name="lifeStyle">The lifestyle that specifies how the returned instance will be cached.</param>
     /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
     /// <remarks>
     ///     This method uses the container's LifestyleSelectionBehavior to select the exact
@@ -166,11 +167,11 @@ internal static class InternalExtensionMethods
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
+    public static void Register<TService, TImplementation>(this Container container, Lifestyle lifeStyle, bool suppressDisposal = false)
         where TService : class
         where TImplementation : class, TService
     {
-        container.Register<TService, TImplementation>();
+        container.Register<TService, TImplementation>(lifeStyle);
 
         if (suppressDisposal)
         {
