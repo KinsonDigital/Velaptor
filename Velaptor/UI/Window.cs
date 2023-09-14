@@ -304,6 +304,14 @@ public abstract class Window : IWindow
         }
 
         this.isDisposed = true;
+
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+
+        // Only when not running unit tests, dispose of all Carbonate types
+        IoC.DisposeOfRegisteredTypes();
     }
 
     /// <summary>

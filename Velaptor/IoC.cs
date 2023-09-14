@@ -4,12 +4,10 @@
 
 namespace Velaptor;
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using System.Reflection;
 using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -32,6 +30,8 @@ using Scene;
 using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
+using SimpleInjector.Diagnostics;
+using SimpleInjector.Lifestyles;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -57,6 +57,26 @@ internal static class IoC
             }
 
             return IoCContainer;
+        }
+    }
+
+    /// <summary>
+    /// Disposes of all registered types that are capable of being disposed.
+    /// </summary>
+    /// <remarks>
+    ///     All transient and singleton types are not disposed of by SimpleInjector.
+    ///     This is common practice for DI containers.  Because of this, it is left to
+    ///     the developer to dispose of these types.  This method will dispose of all
+    ///     registered types that are capable of being disposed.
+    /// </remarks>
+    public static void DisposeOfRegisteredTypes()
+    {
+        // Get all of the registered types that are capable of being disposed
+        var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
+
+        foreach (var regType in disposableRegistrations)
+        {
+            IoCContainer.DisposeOfType(regType);
         }
     }
 
