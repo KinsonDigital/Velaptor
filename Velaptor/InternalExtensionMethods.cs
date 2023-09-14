@@ -6,10 +6,12 @@ namespace Velaptor;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Graphics;
 using Input;
@@ -207,6 +209,38 @@ internal static class InternalExtensionMethods
         {
             SuppressDisposableTransientWarning<TService>(container);
         }
+    }
+
+    /// <summary>
+    /// Gets a list of all the registered types that implement the <see cref="IDisposable"/> interface,
+    /// which hence are then disposable.
+    /// </summary>
+    /// <param name="container">The container that holds the registrations.</param>
+    /// <returns>The list of disposable registration types.</returns>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    public static ImmutableArray<Type> GetDisposableRegistrations(this Container container)
+    {
+        TypeFilter disposableFilter = (type, _) => type.GetInterface(nameof(IDisposable)) != null;
+
+        return container.GetCurrentRegistrations()
+            .Where(r => r.ServiceType.FindInterfaces(disposableFilter, null).Length > 0)
+            .Select(r => r.ServiceType)
+            .ToImmutableArray();
+    }
+
+    /// <summary>
+    /// Disposes of the given <paramref name="type"/> in the <see cref="SimpleInjector"/>/<see cref="Container"/>.
+    /// </summary>
+    /// <param name="container">The container tha contains the type.</param>
+    /// <param name="type">The type of registration to dispose.</param>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    public static void DisposeOfType(this Container container, Type type)
+    {
+        var objToDispose = container.GetInstance(type);
+        var disposeInterface = type.GetInterface(nameof(IDisposable));
+        var disposeMethod = disposeInterface?.GetMethod(nameof(IDisposable.Dispose));
+
+        disposeMethod?.Invoke(objToDispose, null);
     }
 
     /// <summary>
