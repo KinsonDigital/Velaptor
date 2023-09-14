@@ -58,14 +58,14 @@ internal sealed class RenderMediator : IRenderMediator
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId));
-        this.endBatchUnsubscriber = this.pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasEndedId,
+        this.endBatchUnsubscriber = this.pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.BatchHasEndedId,
             name: batchEndName,
             onReceive: CoordinateRenders));
 
         var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = this.pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
+        this.shutDownUnsubscriber = this.pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
 

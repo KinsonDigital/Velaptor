@@ -10,7 +10,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -40,7 +40,7 @@ public class SoundCacheTests
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeReactable;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCacheTests"/> class.
@@ -61,9 +61,9 @@ public class SoundCacheTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Name = nameof(mockPushReactable);
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;

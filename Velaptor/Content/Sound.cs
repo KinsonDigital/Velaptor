@@ -6,7 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using CASL;
 using Factories;
 using Guards;
@@ -176,10 +176,10 @@ public sealed class Sound : ISound
     {
         var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
         this.disposeUnsubscriber =
-            disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
-                eventId: PushNotifications.SoundDisposedId,
+            disposeReactable.Subscribe(new ReceiveSubscription<DisposeSoundData>(
+                id: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
-                onReceiveData: Dispose,
+                onReceive: Dispose,
                 onUnsubscribe: () => Dispose(new DisposeSoundData { SoundId = Id })));
 
         this.sound = new CASLSound(filePath);

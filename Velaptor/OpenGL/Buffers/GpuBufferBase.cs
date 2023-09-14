@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL.Buffers;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -52,23 +52,23 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         var portSizeReactable = reactableFactory.CreateViewPortReactable();
 
         var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
-        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.GLInitializedId,
+        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.GLInitializedId,
             name: glInitName,
             onReceive: Init,
             onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
 
         var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
 
         var viewPortName = this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId));
-        this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
-            eventId: PushNotifications.ViewPortSizeChangedId,
+        this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveSubscription<ViewPortSizeData>(
+            id: PushNotifications.ViewPortSizeChangedId,
             name: viewPortName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 ViewPortSize = new SizeU(data.Width, data.Height);
             }));

@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -60,18 +60,18 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
 
         var lineRenderBatchReactable = reactableFactory.CreateRenderLineReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
-        this.renderUnsubscriber = lineRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<LineBatchItem>>>(
-            eventId: PushNotifications.RenderLinesId,
+        this.renderUnsubscriber = lineRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<LineBatchItem>>>(
+            id: PushNotifications.RenderLinesId,
             name: renderReactorName,
-            onReceiveData: RenderBatch));
+            onReceive: RenderBatch));
     }
 
     /// <inheritdoc/>

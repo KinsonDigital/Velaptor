@@ -5,7 +5,7 @@
 namespace Velaptor.Input;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using Guards;
 using ReactableData;
@@ -36,10 +36,10 @@ internal sealed class Mouse : IAppInput<MouseState>
         var reactable = reactableFactory.CreateMouseReactable();
 
         var mouseStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.MouseStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<MouseStateData>(
-            eventId: PushNotifications.MouseStateChangedId,
+        this.unsubscriber = reactable.Subscribe(new ReceiveSubscription<MouseStateData>(
+            id: PushNotifications.MouseStateChangedId,
             name: mouseStateChangeName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 this.xPos = data.X;
                 this.yPos = data.Y;

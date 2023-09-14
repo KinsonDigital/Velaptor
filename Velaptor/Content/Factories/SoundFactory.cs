@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Guards;
 using ReactableData;
 using Velaptor.Factories;
@@ -37,17 +37,17 @@ internal sealed class SoundFactory : ISoundFactory
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
         var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
-        this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveReactor<DisposeSoundData>(
-                eventId: PushNotifications.SoundDisposedId,
+        this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveSubscription<DisposeSoundData>(
+                id: PushNotifications.SoundDisposedId,
                 name: soundDisposeName,
-                onReceiveData: data =>
+                onReceive: data =>
                 {
                     this.sounds.Remove(data.SoundId);
                 }));
 
         var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }

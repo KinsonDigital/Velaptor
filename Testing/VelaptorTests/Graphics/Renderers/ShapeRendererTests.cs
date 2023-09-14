@@ -24,7 +24,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using RectRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using RectRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
             Velaptor.OpenGL.Batching.ShapeBatchItem
         >
     >
@@ -44,9 +44,9 @@ public class ShapeRendererTests
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockRenderUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor? batchHasBegunReactor;
+    private IReceiveSubscription? batchHasBegunReactor;
     private RectRenderItem? renderReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeRendererTests"/> class.
@@ -73,8 +73,8 @@ public class ShapeRendererTests
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -89,7 +89,7 @@ public class ShapeRendererTests
                     this.shutDownReactor = reactor;
                 }
             })
-            .Returns<IReceiveReactor>(reactor =>
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 

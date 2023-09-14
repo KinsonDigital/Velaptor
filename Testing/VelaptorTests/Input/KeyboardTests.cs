@@ -6,8 +6,8 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using Carbonate.Core.UniDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Core.OneWay;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -59,7 +59,7 @@ public class KeyboardTests
 
         // Assert
         this.mockKeyboardReactable.VerifyOnce(m =>
-            m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()));
+            m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()));
     }
     #endregion
 
@@ -68,7 +68,7 @@ public class KeyboardTests
     public void GetState_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        IReceiveReactor<KeyboardKeyStateData>? reactor = null;
+        IReceiveSubscription<KeyboardKeyStateData>? reactor = null;
 
         var expected = new KeyValuePair<KeyCode, bool>(KeyCode.K, true);
 
@@ -78,8 +78,8 @@ public class KeyboardTests
             IsDown = true,
         };
 
-        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()))
-            .Callback<IReceiveReactor<KeyboardKeyStateData>>(reactorObj =>
+        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()))
+            .Callback<IReceiveSubscription<KeyboardKeyStateData>>(reactorObj =>
             {
                 reactor = reactorObj;
              });
@@ -101,12 +101,12 @@ public class KeyboardTests
     {
         // Arrange
         var mockUnsubscriber = new Mock<IDisposable>();
-        IReceiveReactor<KeyboardKeyStateData>? reactor = null;
+        IReceiveSubscription<KeyboardKeyStateData>? reactor = null;
         mockUnsubscriber.Name = nameof(mockUnsubscriber);
 
-        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<KeyboardKeyStateData>>()))
+        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()))
             .Returns(mockUnsubscriber.Object)
-            .Callback<IReceiveReactor<KeyboardKeyStateData>>(reactorObj =>
+            .Callback<IReceiveSubscription<KeyboardKeyStateData>>(reactorObj =>
             {
                 reactor = reactorObj;
             });

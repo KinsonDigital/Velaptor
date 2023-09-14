@@ -7,7 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -58,18 +58,18 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
 
         var shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId));
-        this.renderUnsubscriber = shapeRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<ShapeBatchItem>>>(
-            eventId: PushNotifications.RenderShapesId,
+        this.renderUnsubscriber = shapeRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<ShapeBatchItem>>>(
+            id: PushNotifications.RenderShapesId,
             name: renderReactorName,
-            onReceiveData: RenderBatch));
+            onReceive: RenderBatch));
     }
 
     /// <inheritdoc/>

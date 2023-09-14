@@ -85,11 +85,11 @@ public class RendererBaseTests
     public void PushReactable_WhenReceivingShutDownNotification_ShutsDownRenderer()
     {
         // Arrange
-        IReceiveReactor? shutDownReactor = null;
+        IReceiveSubscription? shutDownReactor = null;
 
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(_ => this.mockShutDownUnsubscriber.Object)
-            .Callback<IReceiveReactor>(reactor =>
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(_ => this.mockShutDownUnsubscriber.Object)
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 shutDownReactor = reactor;

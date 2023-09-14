@@ -8,7 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
 using Input;
@@ -32,10 +32,10 @@ internal class TextCursor : ITextCursor
     /// <param name="textBoxStateReactable">Receives notifications of text box state data.</param>
     public TextCursor(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        this.unsubscriber = textBoxStateReactable.Subscribe(new ReceiveReactor<TextBoxStateData>(
-            eventId: this.textBoxDataEventId,
+        this.unsubscriber = textBoxStateReactable.Subscribe(new ReceiveSubscription<TextBoxStateData>(
+            id: this.textBoxDataEventId,
             name: "TextBoxStateDataUpdate",
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 switch (data.TextMutateType)
                 {

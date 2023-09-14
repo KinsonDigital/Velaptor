@@ -25,7 +25,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using TextureRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
             Velaptor.OpenGL.Batching.TextureBatchItem
         >
     >
@@ -45,9 +45,9 @@ public class TextureRendererTests
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReceiveReactor? batchHasBegunReactor;
+    private IReceiveSubscription? batchHasBegunReactor;
     private TextureRenderItem? renderReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureRendererTests"/> class.
@@ -67,8 +67,8 @@ public class TextureRendererTests
         var mockRenderUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 if (reactor.Id == PushNotifications.RenderTexturesId)
                 {
@@ -88,7 +88,7 @@ public class TextureRendererTests
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
                 return null;
             })
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 

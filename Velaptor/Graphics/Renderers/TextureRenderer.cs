@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content;
 using Factories;
 using Guards;
@@ -63,18 +63,18 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         const string batchStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.BatchHasBegunId,
             name: batchStateName,
             onReceive: () => this.hasBegun = true));
 
         var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId));
-        this.renderUnsubscriber = textureRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<TextureBatchItem>>>(
-            eventId: PushNotifications.RenderTexturesId,
+        this.renderUnsubscriber = textureRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<TextureBatchItem>>>(
+            id: PushNotifications.RenderTexturesId,
             name: renderReactorName,
-            onReceiveData: RenderBatch));
+            onReceive: RenderBatch));
     }
 
     /// <inheritdoc/>

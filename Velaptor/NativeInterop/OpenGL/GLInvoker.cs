@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Exceptions;
 using Guards;
 using Services;
@@ -46,10 +46,10 @@ internal sealed class GLInvoker : IGLInvoker
     public GLInvoker(IPushReactable<GL> reactable, ILoggingService loggingService)
     {
         var glContextName = this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<GL>(
-            eventId: PushNotifications.GLContextCreatedId,
+        this.unsubscriber = reactable.Subscribe(new ReceiveSubscription<GL>(
+            id: PushNotifications.GLContextCreatedId,
             name: glContextName,
-            onReceiveData: glObj =>
+            onReceive: glObj =>
             {
                 this.gl = glObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
             },

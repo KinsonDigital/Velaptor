@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
@@ -43,10 +43,10 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveSubscription<BatchSizeData>(
+            id: PushNotifications.BatchSizeChangedId,
             name: batchSizeName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 if (data.TypeOfBatch != BatchType.Line)
                 {

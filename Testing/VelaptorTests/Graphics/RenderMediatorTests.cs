@@ -41,8 +41,8 @@ public class RenderMediatorTests
     private readonly Mock<IBatchPullReactable<ShapeBatchItem>> mockShapePullReactable;
     private readonly Mock<IBatchPullReactable<LineBatchItem>> mockLinePullReactable;
 
-    private IReceiveReactor? endBatchReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? endBatchReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediatorTests"/> class.
@@ -53,8 +53,8 @@ public class RenderMediatorTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockPushReactable = new Mock<IPushReactable>();
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactor =>
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -70,7 +70,7 @@ public class RenderMediatorTests
                     this.shutDownReactor = reactor;
                 }
             })
-            .Returns<IReceiveReactor>(reactor =>
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 

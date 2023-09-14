@@ -12,7 +12,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Guards;
@@ -60,8 +60,8 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
+        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.SystemShuttingDownId,
             name: shutDownName,
             onReceive: ShutDown));
     }

@@ -8,7 +8,7 @@ using System;
 using System.Drawing;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NSubstitute;
@@ -29,7 +29,7 @@ public class BatcherTests
     private readonly IPushReactable mockPushReactable;
     private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
     private readonly IDisposable mockUnsubscriber;
-    private IReceiveReactor? reactor;
+    private IReceiveSubscription? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatcherTests"/> class.
@@ -41,11 +41,11 @@ public class BatcherTests
         this.mockUnsubscriber = Substitute.For<IDisposable>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
-        this.mockPushReactable.Subscribe(Arg.Any<ReceiveReactor>())
+        this.mockPushReactable.Subscribe(Arg.Any<ReceiveSubscription>())
             .Returns(this.mockUnsubscriber)
             .AndDoes(callInfo =>
             {
-                var reactorParam = callInfo.Arg<ReceiveReactor>();
+                var reactorParam = callInfo.Arg<ReceiveSubscription>();
 
                 if (reactorParam is null)
                 {

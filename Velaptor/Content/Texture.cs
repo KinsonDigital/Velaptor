@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Graphics;
 using Guards;
 using NativeInterop.OpenGL;
@@ -161,10 +161,10 @@ public sealed class Texture : ITexture
     {
         var textureDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId));
 
-        this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveReactor<DisposeTextureData>(
-                eventId: PushNotifications.TextureDisposedId,
+        this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveSubscription<DisposeTextureData>(
+                id: PushNotifications.TextureDisposedId,
                 name: textureDisposeName,
-                onReceiveData: Unload,
+                onReceive: Unload,
                 onUnsubscribe: () => Unload(new DisposeTextureData { TextureId = Id })));
 
         if (imageData.IsEmpty())

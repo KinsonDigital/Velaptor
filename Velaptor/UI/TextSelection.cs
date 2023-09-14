@@ -8,7 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
 using Input;
@@ -31,10 +31,10 @@ internal class TextSelection : ITextSelection
     /// </exception>
     public TextSelection(IPushReactable<TextBoxStateData> textBoxDataReactable)
     {
-        this.textBoxDataUnsubscriber = textBoxDataReactable.Subscribe(new ReceiveReactor<TextBoxStateData>(
-            eventId: this.textBoxDataEventId,
+        this.textBoxDataUnsubscriber = textBoxDataReactable.Subscribe(new ReceiveSubscription<TextBoxStateData>(
+            id: this.textBoxDataEventId,
             name: "TextBoxStateDataUpdate",
-            onReceiveData: textBoxData =>
+            onReceive: textBoxData =>
             {
                 switch (textBoxData.TextMutateType)
                 {

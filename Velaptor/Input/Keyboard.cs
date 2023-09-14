@@ -7,7 +7,7 @@ namespace Velaptor.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using Guards;
 using ReactableData;
@@ -31,10 +31,10 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
         var reactable = reactableFactory.CreateKeyboardReactable();
 
         var keyboardStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
-            eventId: PushNotifications.KeyboardStateChangedId,
+        this.unsubscriber = reactable.Subscribe(new ReceiveSubscription<KeyboardKeyStateData>(
+            id: PushNotifications.KeyboardStateChangedId,
             name: keyboardStateChangeName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 this.keyStates[data.Key] = data.IsDown;
             },

@@ -7,7 +7,7 @@ namespace Velaptor.Batching;
 using System;
 using System.Drawing;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Graphics.Renderers.Exceptions;
 using NativeInterop.OpenGL;
 using OpenGL;
@@ -43,8 +43,8 @@ internal sealed class Batcher : IBatcher
         this.pushReactable = pushReactable;
 
         const string glInitName = $"{nameof(Batcher)}.Ctor - {nameof(PushNotifications.GLInitializedId)}";
-        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.GLInitializedId,
+        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.GLInitializedId,
             name: glInitName,
             onReceive: () =>
             {

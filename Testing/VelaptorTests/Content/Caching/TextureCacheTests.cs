@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -49,7 +49,7 @@ public class TextureCacheTests
     private readonly ImageData fontImageData;
     private readonly Mock<IPushReactable<DisposeTextureData>> mockDisposeReactable;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -106,9 +106,9 @@ public class TextureCacheTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;

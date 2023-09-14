@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
@@ -47,10 +47,10 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
+        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveSubscription<BatchSizeData>(
+            id: PushNotifications.BatchSizeChangedId,
             name: batchSizeName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 if (data.TypeOfBatch != BatchType.Rect)
                 {

@@ -36,8 +36,8 @@ public class ShaderProgramTests
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReceiveReactor? glInitReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? glInitReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -73,8 +73,8 @@ public class ShaderProgramTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -91,7 +91,7 @@ public class ShaderProgramTests
                 Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
                 return null;
             })
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 

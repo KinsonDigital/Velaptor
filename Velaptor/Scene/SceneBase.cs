@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content;
 using Factories;
 using Guards;
@@ -186,10 +186,10 @@ public abstract class SceneBase : IScene
         var reactorName = this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId));
         var winSizeReactable = reactableFactory.CreateWindowSizeReactable();
 
-        this.unsubscriber = winSizeReactable.Subscribe(new ReceiveReactor<WindowSizeData>(
-            eventId: PushNotifications.WindowSizeChangedId,
+        this.unsubscriber = winSizeReactable.Subscribe(new ReceiveSubscription<WindowSizeData>(
+            id: PushNotifications.WindowSizeChangedId,
             name: reactorName,
-            onReceiveData: data =>
+            onReceive: data =>
             {
                 WindowSize = new SizeU(data.Width, data.Height);
             }));

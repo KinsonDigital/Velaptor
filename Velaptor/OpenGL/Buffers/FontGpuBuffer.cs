@@ -10,7 +10,8 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
+using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using GpuData;
@@ -43,11 +44,10 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch != BatchType.Font)
                 {
@@ -60,7 +60,9 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
                 {
                     ResizeBatch();
                 }
-            }));
+            });
+
+        this.unsubscriber = batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>

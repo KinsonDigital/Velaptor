@@ -11,7 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
@@ -66,18 +66,18 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
+        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
+            id: PushNotifications.BatchHasBegunId,
             name: renderStateName,
             onReceive: () => this.hasBegun = true));
 
         var fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
 
         var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
-        this.renderUnsubscriber = fontRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>(
-            eventId: PushNotifications.RenderFontsId,
+        this.renderUnsubscriber = fontRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<FontGlyphBatchItem>>>(
+            id: PushNotifications.RenderFontsId,
             name: renderReactorName,
-            onReceiveData: RenderBatch));
+            onReceive: RenderBatch));
     }
 
         /// <inheritdoc/>

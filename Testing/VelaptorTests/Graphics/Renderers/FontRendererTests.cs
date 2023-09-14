@@ -27,7 +27,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using FontRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
             Velaptor.OpenGL.Batching.FontGlyphBatchItem
         >
     >
@@ -59,9 +59,9 @@ public class FontRendererTests
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '~', '_', '+',
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
     };
-    private IReceiveReactor? batchHasBegunReactor;
+    private IReceiveSubscription? batchHasBegunReactor;
     private FontRenderItem? renderReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
 
@@ -89,8 +89,8 @@ public class FontRendererTests
         var mockRenderUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -112,7 +112,7 @@ public class FontRendererTests
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
                 return null;
             })
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
