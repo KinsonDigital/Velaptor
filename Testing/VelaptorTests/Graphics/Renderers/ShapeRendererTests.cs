@@ -41,12 +41,9 @@ public class ShapeRendererTests
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IGpuBuffer<ShapeBatchItem>> mockGpuBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
-    private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
-    private readonly Mock<IDisposable> mockRenderUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveSubscription? batchHasBegunReactor;
     private RectRenderItem? renderReactor;
-    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeRendererTests"/> class.
@@ -68,8 +65,6 @@ public class ShapeRendererTests
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
 
-        this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
-        this.mockRenderUnsubscriber = new Mock<IDisposable>();
         var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
@@ -83,28 +78,6 @@ public class ShapeRendererTests
                     reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
                     this.batchHasBegunReactor = reactor;
                 }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    return this.mockBatchBegunUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
             });
 
         var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
@@ -116,16 +89,6 @@ public class ShapeRendererTests
                 reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.RenderShapesId)}");
 
                 this.renderReactor = reactor;
-            })
-            .Returns<RectRenderItem>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.RenderShapesId)
-                {
-                    return this.mockRenderUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -430,21 +393,6 @@ public class ShapeRendererTests
     #endregion
 
     #region Reactable Tests
-    [Fact]
-    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockRenderUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
     [Fact]
     public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {

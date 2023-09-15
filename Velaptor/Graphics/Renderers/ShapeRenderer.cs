@@ -6,8 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.OneWay;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -23,8 +22,6 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<ShapeBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -55,21 +52,23 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId));
-        this.renderUnsubscriber = shapeRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<ShapeBatchItem>>>(
-            id: PushNotifications.RenderShapesId,
-            name: renderReactorName,
-            onReceive: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderShapeReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderShapesId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId)))
+            .BuildOneWayReceive<Memory<RenderItem<ShapeBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
     /// <inheritdoc/>
@@ -77,22 +76,6 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
 
     /// <inheritdoc/>
     public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
-    }
 
     /// <summary>
     /// Renders the given <paramref name="batchItem"/> to the screen.
