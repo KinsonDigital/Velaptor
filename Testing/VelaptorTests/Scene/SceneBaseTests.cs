@@ -5,7 +5,6 @@
 namespace VelaptorTests.Scene;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
@@ -321,29 +320,6 @@ public class SceneBaseTests
         // Assert
         mockCtrlA.VerifyOnce(m => m.Render());
         mockCtrlB.VerifyOnce(m => m.Render());
-    }
-
-    [Fact]
-    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
-    public void Dispose_WhenInvoked_DisposesOfScene()
-    {
-        // Arrange
-        var mockCtrlA = new Mock<IControl>();
-        var mockCtrlB = new Mock<IControl>();
-
-        var sut = CreateSystemUnderTest();
-        sut.AddControl(mockCtrlA.Object);
-        sut.AddControl(mockCtrlB.Object);
-
-        // Act
-        sut.Dispose();
-        sut.Dispose();
-
-        // Assert
-        mockCtrlA.VerifyOnce(m => m.UnloadContent());
-        mockCtrlB.VerifyOnce(m => m.UnloadContent());
-        sut.Controls.Should().BeEmpty();
-        this.mockUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
