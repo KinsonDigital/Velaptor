@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Graphics;
 using Guards;
@@ -23,7 +24,6 @@ public sealed class Texture : ITexture
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
-    private IDisposable? disposeUnsubscriber;
     private bool isDisposed;
 
     /// <summary>
@@ -146,7 +146,6 @@ public sealed class Texture : ITexture
         }
 
         this.gl.DeleteTexture(Id);
-        this.disposeUnsubscriber?.Dispose();
 
         this.isDisposed = true;
     }
@@ -159,13 +158,12 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
     {
-        var textureDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId));
+        var disposeSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.TextureDisposedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId)))
+            .BuildOneWayReceive<DisposeTextureData>(Unload);
 
-        this.disposeUnsubscriber = disposeReactable.Subscribe(new ReceiveSubscription<DisposeTextureData>(
-                id: PushNotifications.TextureDisposedId,
-                name: textureDisposeName,
-                onReceive: Unload,
-                onUnsubscribe: () => Unload(new DisposeTextureData { TextureId = Id })));
+        disposeReactable.Subscribe(disposeSubscription);
 
         if (imageData.IsEmpty())
         {

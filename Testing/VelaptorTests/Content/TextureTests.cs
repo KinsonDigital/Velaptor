@@ -436,21 +436,6 @@ public class TextureTests
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-    }
-
-    [Fact]
-    public void ReactableNotifications_WhenSendingOnCompleted_DisposesOfTexture()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.disposeReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
 

@@ -286,7 +286,10 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        this.disposeReactable.Unsubscribe(PushNotifications.TextureDisposedId);
+        foreach ((_, ITexture? texture) in this.textures)
+        {
+            this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+        }
 
         this.textures.Clear();
         this.isDisposed = true;

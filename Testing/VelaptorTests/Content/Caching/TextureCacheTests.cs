@@ -587,7 +587,10 @@ public class TextureCacheTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.TextureDisposedId));
+        this.mockDisposeReactable
+            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 11u }, PushNotifications.TextureDisposedId));
+        this.mockDisposeReactable
+            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 22u }, PushNotifications.TextureDisposedId));
         sut.TotalCachedItems.Should().Be(0);
     }
     #endregion
