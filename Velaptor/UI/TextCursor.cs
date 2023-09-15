@@ -8,6 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
@@ -19,8 +20,6 @@ using ReactableData;
 /// </summary>
 internal class TextCursor : ITextCursor
 {
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
-    private readonly IDisposable unsubscriber;
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
     private RectShape cursor;
@@ -32,25 +31,12 @@ internal class TextCursor : ITextCursor
     /// <param name="textBoxStateReactable">Receives notifications of text box state data.</param>
     public TextCursor(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        this.unsubscriber = textBoxStateReactable.Subscribe(new ReceiveSubscription<TextBoxStateData>(
-            id: this.textBoxDataEventId,
-            name: "TextBoxStateDataUpdate",
-            onReceive: data =>
-            {
-                switch (data.TextMutateType)
-                {
-                    case MutateType.PreMutate:
-                        this.preMutateState = data;
-                        break;
-                    case MutateType.PostMutate:
-                        this.postMutateState = data;
-                        break;
-                    default:
-                        const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
-                        throw new InvalidEnumArgumentException(argName, (int)this.postMutateState.TextMutateType, typeof(MutateType));
-                }
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+        var textBoxStateSubscription= ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.TextBoxStateId)
+            .WithName("TextBoxStateDataUpdate")
+            .BuildOneWayReceive<TextBoxStateData>(UpdateState);
+
+        textBoxStateReactable.Subscribe(textBoxStateSubscription);
 
         Cursor = new RectShape
         {
@@ -150,6 +136,29 @@ internal class TextCursor : ITextCursor
     {
         X = this.postMutateState.LastVisibleCharBounds.Right,
     };
+
+    /// <summary>
+    /// Updates the state of the cursor.
+    /// </summary>
+    /// <param name="data">The state of a text box.</param>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the <see cref="TextBoxStateData.TextMutateType"/> is not a valid value.
+    /// </exception>
+    private void UpdateState(TextBoxStateData data)
+    {
+        switch (data.TextMutateType)
+        {
+            case MutateType.PreMutate:
+                this.preMutateState = data;
+                break;
+            case MutateType.PostMutate:
+                this.postMutateState = data;
+                break;
+            default:
+                const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
+                throw new InvalidEnumArgumentException(argName, (int)data.TextMutateType, typeof(MutateType));
+        }
+    }
 
     /// <summary>
     /// Handles the cursor position related to the <see cref="TextBoxEvent.MovingCursor"/> event.
