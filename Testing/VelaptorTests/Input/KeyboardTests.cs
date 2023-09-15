@@ -95,31 +95,6 @@ public class KeyboardTests
     }
     #endregion
 
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WhenReactorCompletes_DisposeOfSubscription()
-    {
-        // Arrange
-        var mockUnsubscriber = new Mock<IDisposable>();
-        IReceiveSubscription<KeyboardKeyStateData>? reactor = null;
-        mockUnsubscriber.Name = nameof(mockUnsubscriber);
-
-        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()))
-            .Returns(mockUnsubscriber.Object)
-            .Callback<IReceiveSubscription<KeyboardKeyStateData>>(reactorObj =>
-            {
-                reactor = reactorObj;
-            });
-        _ = CreateSystemUnderTest();
-
-        // Act
-        reactor.OnUnsubscribe();
-
-        // Assert
-        mockUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-    #endregion
-
     /// <summary>
     /// Creates a new instance of <see cref="Keyboard"/> for the purpose of testing.
     /// </summary>

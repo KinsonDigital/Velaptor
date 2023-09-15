@@ -4,8 +4,7 @@
 
 namespace Velaptor.Input;
 
-using System;
-using Carbonate.OneWay;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using ReactableData;
@@ -16,7 +15,6 @@ using Velaptor.Exceptions;
 /// </summary>
 internal sealed class Mouse : IAppInput<MouseState>
 {
-    private readonly IDisposable unsubscriber;
     private (MouseButton button, bool isDown) leftMouseButton = (MouseButton.LeftButton, false);
     private (MouseButton button, bool isDown) middleMouseButton = (MouseButton.MiddleButton, false);
     private (MouseButton button, bool isDown) rightMouseButton = (MouseButton.RightButton, false);
@@ -33,35 +31,14 @@ internal sealed class Mouse : IAppInput<MouseState>
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var reactable = reactableFactory.CreateMouseReactable();
+        var mouseDataReactable = reactableFactory.CreateMouseReactable();
 
-        var mouseStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.MouseStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveSubscription<MouseStateData>(
-            id: PushNotifications.MouseStateChangedId,
-            name: mouseStateChangeName,
-            onReceive: data =>
-            {
-                this.xPos = data.X;
-                this.yPos = data.Y;
-                this.mouseScrollDirection = data.ScrollDirection;
-                this.scrollWheelValue = data.ScrollWheelValue;
+        var mouseChangeSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.MouseStateChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.MouseStateChangedId)))
+            .BuildOneWayReceive<MouseStateData>(MouseStateChanged);
 
-                switch (data.Button)
-                {
-                    case MouseButton.LeftButton:
-                        this.leftMouseButton.isDown = data.ButtonIsDown;
-                        break;
-                    case MouseButton.MiddleButton:
-                        this.middleMouseButton.isDown = data.ButtonIsDown;
-                        break;
-                    case MouseButton.RightButton:
-                        this.rightMouseButton.isDown = data.ButtonIsDown;
-                        break;
-                    default:
-                        throw new EnumOutOfRangeException<MouseButton>($"The enum '{nameof(MouseButton)}' is out of range.");
-                }
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+        mouseDataReactable.Subscribe(mouseChangeSubscription);
     }
 
     /// <summary>
@@ -81,5 +58,35 @@ internal sealed class Mouse : IAppInput<MouseState>
         result.SetButtonState(MouseButton.RightButton, this.rightMouseButton.isDown);
 
         return result;
+    }
+
+    /// <summary>
+    /// Updates the state of the mouse.
+    /// </summary>
+    /// <param name="data">The mouse change data.</param>
+    /// <exception cref="EnumOutOfRangeException{MouseButton}">
+    ///     Thrown if the mouse button enum is out of range.
+    /// </exception>
+    private void MouseStateChanged(MouseStateData data)
+    {
+        this.xPos = data.X;
+        this.yPos = data.Y;
+        this.mouseScrollDirection = data.ScrollDirection;
+        this.scrollWheelValue = data.ScrollWheelValue;
+
+        switch (data.Button)
+        {
+            case MouseButton.LeftButton:
+                this.leftMouseButton.isDown = data.ButtonIsDown;
+                break;
+            case MouseButton.MiddleButton:
+                this.middleMouseButton.isDown = data.ButtonIsDown;
+                break;
+            case MouseButton.RightButton:
+                this.rightMouseButton.isDown = data.ButtonIsDown;
+                break;
+            default:
+                throw new EnumOutOfRangeException<MouseButton>($"The enum '{nameof(MouseButton)}' is out of range.");
+        }
     }
 }

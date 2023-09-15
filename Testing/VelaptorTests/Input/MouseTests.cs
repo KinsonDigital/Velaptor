@@ -5,7 +5,6 @@
 namespace VelaptorTests.Input;
 
 using System;
-using Carbonate.Core;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
@@ -170,31 +169,6 @@ public class MouseTests
         // Assert
         act.Should().Throw<EnumOutOfRangeException<MouseButton>>()
             .WithMessage(expected);
-    }
-    #endregion
-
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WhenReactorCompletes_DisposesOfSubscriptions()
-    {
-        // Arrange
-        ISubscription? posReactor = null;
-        var unsubscriber = new Mock<IDisposable>();
-
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
-            .Returns(unsubscriber.Object)
-            .Callback<ReceiveMouseDataReactor>(reactorObj =>
-            {
-                posReactor = reactorObj;
-            });
-
-        _ = CreateSystemUnderTest();
-
-        // Act
-        posReactor.OnUnsubscribe();
-
-        // Assert
-        unsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
