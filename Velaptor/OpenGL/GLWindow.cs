@@ -330,7 +330,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         this.glWindow = this.windowFactory.CreateSilkWindow();
 
-        this.glWindow.UpdatesPerSecond = 120;
+        this.glWindow.UpdatesPerSecond = 60;
         this.glWindow.Load += GLWindow_Load;
         this.glWindow.Closing += GLWindow_Closing;
         this.glWindow.Resize += GLWindow_Resize;
