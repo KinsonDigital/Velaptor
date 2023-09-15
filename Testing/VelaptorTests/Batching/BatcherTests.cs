@@ -86,20 +86,6 @@ public class BatcherTests
 
         this.mockBatchSizeReactable.Received(1).Unsubscribe(PushNotifications.BatchSizeChangedId);
     }
-
-    [Fact]
-    public void GLInitSubscription_WhenUnsubscribing_InvokesUnsubscriber()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.reactor.OnUnsubscribe();
-        this.reactor.OnUnsubscribe();
-
-        // Assert
-        this.mockUnsubscriber.Received(1).Dispose();
-    }
     #endregion
 
     #region Constructor Tests
@@ -130,7 +116,7 @@ public class BatcherTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'pushReactable')");
+            .WithMessage("Value cannot be null. (Parameter 'glInitReactable')");
     }
 
     [Fact]
