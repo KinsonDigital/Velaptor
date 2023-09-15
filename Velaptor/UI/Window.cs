@@ -262,7 +262,6 @@ public abstract class Window : IWindow
     /// <summary>
     /// Invoked when the window is unloaded.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
         if (AutoSceneUnloading is false)

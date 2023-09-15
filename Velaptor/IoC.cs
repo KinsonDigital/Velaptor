@@ -30,7 +30,6 @@ using Scene;
 using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
-using SimpleInjector.Diagnostics;
 using SimpleInjector.Lifestyles;
 
 /// <summary>
