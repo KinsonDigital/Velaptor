@@ -66,7 +66,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -84,7 +84,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     /// <inheritdoc/>
     protected internal override uint[] GenerateIndices()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -112,7 +112,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     /// <inheritdoc/>
     protected internal override void PrepareForUpload()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -123,7 +123,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     /// <inheritdoc/>
     protected internal override void SetupVAO()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -152,7 +152,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     /// <inheritdoc/>
     protected internal override void UploadVertexData(FontGlyphBatchItem textureQuad, uint batchIndex)
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }

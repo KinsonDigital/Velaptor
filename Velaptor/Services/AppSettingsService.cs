@@ -48,7 +48,7 @@ internal sealed class AppSettingsService : IAppSettingsService
     /// </summary>
     private void LoadSettings()
     {
-        if (this.file.Exists(this.appSettingsFilePath) is false)
+        if (!this.file.Exists(this.appSettingsFilePath))
         {
             CreateSettings();
 

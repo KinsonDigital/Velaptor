@@ -258,7 +258,7 @@ internal sealed class TextureRenderer : ITextureRenderer
             throw new ArgumentNullException(nameof(texture), $"Cannot render a null '{nameof(ITexture)}'.");
         }
 
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }

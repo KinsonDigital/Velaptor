@@ -438,7 +438,7 @@ public static class GameHelpers
     /// </returns>
     public static bool DoesNotContain(this string stringToSearchIn, string value)
     {
-        if (string.IsNullOrEmpty(stringToSearchIn) is false && string.IsNullOrEmpty(value))
+        if (!string.IsNullOrEmpty(stringToSearchIn) && string.IsNullOrEmpty(value))
         {
             return true;
         }

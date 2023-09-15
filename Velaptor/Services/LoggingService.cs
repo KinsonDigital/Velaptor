@@ -41,7 +41,7 @@ internal sealed class LoggingService : ILoggingService
     /// <inheritdoc/>
     public void Info(string msg)
     {
-        if (this.appSettingsService.Settings.LoggingEnabled is false)
+        if (!this.appSettingsService.Settings.LoggingEnabled)
         {
             return;
         }
@@ -60,7 +60,7 @@ internal sealed class LoggingService : ILoggingService
     /// <inheritdoc/>
     public void Warning(string msg)
     {
-        if (this.appSettingsService.Settings.LoggingEnabled is false)
+        if (!this.appSettingsService.Settings.LoggingEnabled)
         {
             return;
         }
@@ -79,7 +79,7 @@ internal sealed class LoggingService : ILoggingService
     /// <inheritdoc/>
     public void Error(string msg)
     {
-        if (this.appSettingsService.Settings.LoggingEnabled is false)
+        if (!this.appSettingsService.Settings.LoggingEnabled)
         {
             return;
         }

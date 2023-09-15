@@ -196,7 +196,7 @@ internal static class StringExtensions
             return false;
         }
 
-        if (path.Contains(':') is false)
+        if (!path.Contains(':'))
         {
             return false;
         }
@@ -231,14 +231,14 @@ internal static class StringExtensions
             return false;
         }
 
-        if (dirPath.HasValidDriveSyntax() is false)
+        if (!dirPath.HasValidDriveSyntax())
         {
             return false;
         }
 
         dirPath = dirPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-        if (dirPath.Any(c => c == Path.AltDirectorySeparatorChar) is false)
+        if (!dirPath.Any(c => c == Path.AltDirectorySeparatorChar))
         {
             return false;
         }
@@ -279,7 +279,7 @@ internal static class StringExtensions
             return false;
         }
 
-        return path.Contains(':') is false;
+        return !path.Contains(':');
     }
 
     /// <summary>

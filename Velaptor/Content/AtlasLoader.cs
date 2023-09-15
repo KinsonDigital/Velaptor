@@ -126,7 +126,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
             ? this.path.GetDirectoryName(contentPathOrName) ?? string.Empty
             : this.atlasDataPathResolver.ResolveDirPath();
 
-        if (!isPathRooted && this.directory.Exists(contentDirPath) is false)
+        if (!isPathRooted && !this.directory.Exists(contentDirPath))
         {
             this.directory.CreateDirectory(contentDirPath);
         }
@@ -149,7 +149,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
         var atlasDataFilePath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{name}{AtlasDataExtension}";
 
-        if (this.file.Exists(atlasDataFilePath) is false)
+        if (!this.file.Exists(atlasDataFilePath))
         {
             var exceptionMsg = $"The atlas data directory '{contentDirPath}' does not contain the";
             exceptionMsg += $" required '{atlasDataFilePath}' atlas data file.";
@@ -159,7 +159,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
 
         var atlasImageFilePath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{name}{TextureExtension}";
 
-        if (this.file.Exists(atlasImageFilePath) is false)
+        if (!this.file.Exists(atlasImageFilePath))
         {
             var exceptionMsg = $"The atlas data directory '{contentDirPath}' does not contain the";
             exceptionMsg += $" required '{atlasImageFilePath}' atlas image file.";

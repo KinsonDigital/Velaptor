@@ -216,7 +216,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
-        if (AutoSceneLoading is false)
+        if (!AutoSceneLoading)
         {
             return;
         }
@@ -231,7 +231,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
-        if (AutoSceneUpdating is false)
+        if (!AutoSceneUpdating)
         {
             return;
         }
@@ -246,7 +246,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        if (AutoSceneRendering is false || SceneManager.TotalScenes <= 0)
+        if (!AutoSceneRendering || SceneManager.TotalScenes <= 0)
         {
             return;
         }
@@ -264,7 +264,7 @@ public abstract class Window : IWindow
     /// </summary>
     protected virtual void OnUnload()
     {
-        if (AutoSceneUnloading is false)
+        if (!AutoSceneUnloading)
         {
             return;
         }

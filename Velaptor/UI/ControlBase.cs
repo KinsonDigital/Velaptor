@@ -199,7 +199,7 @@ public abstract class ControlBase : IControl
     /// <inheritdoc cref="IControl"/>
     public virtual void Update(FrameTime frameTime)
     {
-        if (IsLoaded is false || Enabled is false)
+        if (!IsLoaded || !Enabled)
         {
             return;
         }

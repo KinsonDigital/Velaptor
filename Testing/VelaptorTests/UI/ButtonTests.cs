@@ -728,7 +728,7 @@ public class ButtonTests
                     var charIndex = i;
                     var alreadyAdded = result.Any(g => g.Glyph == text[charIndex]);
 
-                    if (alreadyAdded is false)
+                    if (!alreadyAdded)
                     {
                         result.Add(new GlyphMetrics { Glyph = text[charIndex], GlyphWidth = charIndex, GlyphHeight = charIndex * 10 });
                     }

@@ -320,7 +320,7 @@ public class ImageServiceTests : IDisposable
     [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static NETColor[,] LoadSaveResultImage(string filePath)
     {
-        if (File.Exists(filePath) is false)
+        if (!File.Exists(filePath))
         {
             Assert.Fail($"The resulting image '{filePath}' from unit test '{nameof(Save_WhenInvoked_CorrectlySavesImage)}()' does not exist.");
         }

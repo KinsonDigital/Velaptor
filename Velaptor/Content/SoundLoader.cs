@@ -97,7 +97,7 @@ public sealed class SoundLoader : ILoader<ISound>
         {
             var contentDirPath = this.soundPathResolver.ResolveDirPath();
 
-            if (this.directory.Exists(contentDirPath) is false)
+            if (this.directory.Exists(contentDirPath))
             {
                 this.directory.CreateDirectory(contentDirPath);
             }

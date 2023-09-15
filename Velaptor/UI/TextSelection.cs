@@ -79,7 +79,7 @@ internal class TextSelection : ITextSelection
             (selectionLen, rectRight) = HandleMovingToTheLeft();
         }
 
-        if (this.postMutateState.InSelectionMode is false)
+        if (!this.postMutateState.InSelectionMode)
         {
             return;
         }

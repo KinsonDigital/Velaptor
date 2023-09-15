@@ -76,7 +76,7 @@ internal static class EnsureThat
             return;
         }
 
-        var exMsg = string.IsNullOrEmpty(paramName) is false
+        var exMsg = !string.IsNullOrEmpty(paramName)
             ? $"The pointer parameter '{paramName}' cannot be a value of zero."
             : "The pointer cannot be a value of zero.";
 
@@ -98,7 +98,7 @@ internal static class EnsureThat
             return;
         }
 
-        var exMsg = string.IsNullOrEmpty(paramName) is false
+        var exMsg = !string.IsNullOrEmpty(paramName)
             ? $"The pointer parameter '{paramName}' cannot be a value of zero."
             : "The pointer cannot be a value of zero.";
 

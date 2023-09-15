@@ -223,7 +223,7 @@ public sealed class Button : ControlBase
         {
             // If auto size is currently turned on and is being turned off,
             // set the width back to the cached width before auto size was turned on
-            if (this.autoSize && value is false)
+            if (this.autoSize && !value)
             {
                 base.Width = this.cachedAutoSizeOffWidth;
                 base.Height = this.cachedAutoSizeOffHeight;
@@ -285,7 +285,7 @@ public sealed class Button : ControlBase
             : this.cachedText;
         set
         {
-            if (Label is null || IsLoaded is false)
+            if (Label is null || !IsLoaded)
             {
                 this.cachedText = value;
                 return;
@@ -405,7 +405,7 @@ public sealed class Button : ControlBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        if (IsLoaded is false || Visible is false)
+        if (!IsLoaded || !Visible)
         {
             return;
         }
@@ -447,7 +447,7 @@ public sealed class Button : ControlBase
         var textIsTooWide = Label?.Width > Width;
         var textToRender = Label?.Text ?? string.Empty;
 
-        if (textHeightNotTooLarge && string.IsNullOrEmpty(textToRender) is false)
+        if (textHeightNotTooLarge && !string.IsNullOrEmpty(textToRender))
         {
             // If the text is wider than the button, figure out which characters are physically past
             // the left and right edges of the button and prevent them from being rendered.

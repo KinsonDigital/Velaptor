@@ -112,7 +112,7 @@ internal sealed class Batcher : IBatcher
     /// <inheritdoc/>
     public void Begin()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }
@@ -124,7 +124,7 @@ internal sealed class Batcher : IBatcher
     /// <inheritdoc/>
     public void Clear()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }
@@ -135,7 +135,7 @@ internal sealed class Batcher : IBatcher
     /// <inheritdoc/>
     public void End()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }

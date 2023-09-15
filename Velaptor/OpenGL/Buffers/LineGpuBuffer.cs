@@ -65,7 +65,7 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     /// <inheritdoc/>
     protected internal override void UploadVertexData(LineBatchItem lineData, uint batchIndex)
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -104,7 +104,7 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     /// <inheritdoc/>
     protected internal override void PrepareForUpload()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }

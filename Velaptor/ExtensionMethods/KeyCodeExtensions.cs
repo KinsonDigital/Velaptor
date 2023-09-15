@@ -92,7 +92,7 @@ internal static class KeyCodeExtensions
                 : KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
         }
 
-        if (KeyboardKeyGroups.NumpadNumberKeys.Contains(key) && anyShiftKeysDown is false)
+        if (KeyboardKeyGroups.NumpadNumberKeys.Contains(key) && !anyShiftKeysDown)
         {
             return KeyboardKeyGroups.NoShiftNumpadNumberCharacters[key];
         }

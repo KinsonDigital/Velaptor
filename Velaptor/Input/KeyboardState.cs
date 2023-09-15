@@ -374,7 +374,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     {
         InitKeys();
 
-        return !this.keyStates.Any(i => other.GetKeyStates().Contains(i) is false);
+        return !this.keyStates.Any(i => !other.GetKeyStates().Contains(i));
     }
 
     /// <summary>

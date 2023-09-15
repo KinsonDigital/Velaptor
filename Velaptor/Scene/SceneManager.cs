@@ -22,7 +22,7 @@ internal sealed class SceneManager : ISceneManager
 
     /// <inheritdoc/>
     public IReadOnlyCollection<Guid> InActiveScenes =>
-        this.scenes.Where(s => s.scene is not null && s.isActive is false)
+        this.scenes.Where(s => s.scene is not null && !s.isActive)
             .Select(s => s.scene?.Id ?? Guid.Empty).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
@@ -181,7 +181,7 @@ internal sealed class SceneManager : ISceneManager
     /// <inheritdoc/>
     public void UnloadContent()
     {
-        if (IsLoaded is false || this.isDisposed)
+        if (!IsLoaded || this.isDisposed)
         {
             return;
         }

@@ -76,7 +76,7 @@ public class LineRenderingScene : SceneBase
         this.currentKeyState = this.keyboard.GetState();
         this.currentMouseState = this.mouse.GetState();
 
-        if (this.mouseEnteredAtLeastOnce is false)
+        if (!this.mouseEnteredAtLeastOnce)
         {
             var mousePos = this.currentMouseState.GetPosition();
 
