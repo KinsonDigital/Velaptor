@@ -1,4 +1,4 @@
-// <copyright file="GLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
 using Guards;
@@ -30,9 +31,8 @@ internal sealed class GLInvoker : IGLInvoker
 
     // ReSharper restore InconsistentNaming
     private static readonly Queue<string> OpenGLCallStack = new ();
-    private static DebugProc? debugCallback;
-    private readonly IDisposable unsubscriber;
     private readonly ILoggingService loggingService;
+    private DebugProc? debugCallback;
     private bool isDisposed;
 
     // ReSharper disable once MemberInitializerValueIgnored
@@ -78,12 +78,12 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void SetupErrorCallback()
     {
-        if (debugCallback != null)
+        if (this.debugCallback != null)
         {
             return;
         }
 
-        debugCallback = DebugCallback;
+        this.debugCallback = DebugCallback;
 
         /*NOTE:
              * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
@@ -91,9 +91,9 @@ internal sealed class GLInvoker : IGLInvoker
              * without the native system knowing about it which causes this exception. The GC.KeepAlive()
              * method tells the garbage collector to not collect the delegate to prevent this from happening.
              */
-        GC.KeepAlive(debugCallback);
+        GC.KeepAlive(this.debugCallback);
 
-        this.gl.DebugMessageCallback(debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
+        this.gl.DebugMessageCallback(this.debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
     }
 
     /// <inheritdoc/>
@@ -503,7 +503,7 @@ internal sealed class GLInvoker : IGLInvoker
             return;
         }
 
-        debugCallback = null;
+        this.debugCallback = null;
         this.isDisposed = true;
         GC.SuppressFinalize(this);
     }
