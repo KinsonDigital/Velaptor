@@ -9,7 +9,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
+using Carbonate.OneWay;
 using Exceptions;
 using Guards;
 using Services;
@@ -30,9 +31,8 @@ internal sealed class GLInvoker : IGLInvoker
 
     // ReSharper restore InconsistentNaming
     private static readonly Queue<string> OpenGLCallStack = new ();
-    private static DebugProc? debugCallback;
-    private readonly IDisposable unsubscriber;
     private readonly ILoggingService loggingService;
+    private DebugProc? debugCallback;
     private bool isDisposed;
 
     // ReSharper disable once MemberInitializerValueIgnored
@@ -41,19 +41,22 @@ internal sealed class GLInvoker : IGLInvoker
     /// <summary>
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="glReactable">Sends and receives push notifications.</param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
-    public GLInvoker(IPushReactable<GL> reactable, ILoggingService loggingService)
+    public GLInvoker(IPushReactable<GL> glReactable, ILoggingService loggingService)
     {
-        var glContextName = this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<GL>(
-            eventId: PushNotifications.GLContextCreatedId,
-            name: glContextName,
-            onReceiveData: glObj =>
+        var glContextSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.GLContextCreatedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId)))
+            .BuildOneWayReceive<GL>(glObj =>
             {
-                this.gl = glObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+                this.gl = glObj ??
+                          throw new PushNotificationException(
+                              $"{nameof(GLInvoker)}.Constructor()",
+                              PushNotifications.GLContextCreatedId);
+            });
+
+        glReactable.Subscribe(glContextSubscription);
 
         this.loggingService = loggingService;
     }
@@ -75,12 +78,12 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void SetupErrorCallback()
     {
-        if (debugCallback != null)
+        if (this.debugCallback != null)
         {
             return;
         }
 
-        debugCallback = DebugCallback;
+        this.debugCallback = DebugCallback;
 
         /*NOTE:
              * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
@@ -88,9 +91,9 @@ internal sealed class GLInvoker : IGLInvoker
              * without the native system knowing about it which causes this exception. The GC.KeepAlive()
              * method tells the garbage collector to not collect the delegate to prevent this from happening.
              */
-        GC.KeepAlive(debugCallback);
+        GC.KeepAlive(this.debugCallback);
 
-        this.gl.DebugMessageCallback(debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
+        this.gl.DebugMessageCallback(this.debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
     }
 
     /// <inheritdoc/>
@@ -500,7 +503,7 @@ internal sealed class GLInvoker : IGLInvoker
             return;
         }
 
-        debugCallback = null;
+        this.debugCallback = null;
         this.isDisposed = true;
         GC.SuppressFinalize(this);
     }

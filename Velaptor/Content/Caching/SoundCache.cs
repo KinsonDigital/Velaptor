@@ -7,12 +7,10 @@ namespace Velaptor.Content.Caching;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Guards;
@@ -31,8 +29,6 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private readonly IFile file;
     private readonly IPath path;
     private readonly IPushReactable<DisposeSoundData> disposeReactable;
-    private readonly IDisposable shutDownUnsubscriber;
-    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCache"/> class.
@@ -57,27 +53,6 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         this.path = path;
 
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
-
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
-    }
-
-    /// <summary>
-    /// Finalizes an instance of the <see cref="SoundCache"/> class.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
-    ~SoundCache()
-    {
-        if (UnitTestDetector.IsRunningFromUnitTest)
-        {
-            return;
-        }
-
-        ShutDown();
     }
 
     /// <inheritdoc/>
@@ -153,22 +128,5 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         }
 
         this.disposeReactable.Push(new DisposeSoundData { SoundId = sound.Id }, PushNotifications.SoundDisposedId);
-    }
-
-    /// <summary>
-    /// Disposes of all sounds.
-    /// </summary>
-    private void ShutDown()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.shutDownUnsubscriber.Dispose();
-        this.disposeReactable.Unsubscribe(PushNotifications.SoundDisposedId);
-
-        this.sounds.Clear();
-        this.isDisposed = true;
     }
 }

@@ -262,7 +262,6 @@ public abstract class Window : IWindow
     /// <summary>
     /// Invoked when the window is unloaded.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
         if (AutoSceneUnloading is false)
@@ -304,6 +303,14 @@ public abstract class Window : IWindow
         }
 
         this.isDisposed = true;
+
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+
+        // Only when not running unit tests, dispose of all Carbonate types
+        IoC.DisposeOfRegisteredTypes();
     }
 
     /// <summary>

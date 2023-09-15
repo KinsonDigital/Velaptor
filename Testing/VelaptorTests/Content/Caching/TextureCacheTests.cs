@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -44,12 +44,11 @@ public class TextureCacheTests
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
     private readonly Mock<IPushReactable<DisposeTextureData>> mockDisposeReactable;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -103,12 +102,9 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
@@ -591,8 +587,10 @@ public class TextureCacheTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.TextureDisposedId));
+        this.mockDisposeReactable
+            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 11u }, PushNotifications.TextureDisposedId));
+        this.mockDisposeReactable
+            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 22u }, PushNotifications.TextureDisposedId));
         sut.TotalCachedItems.Should().Be(0);
     }
     #endregion

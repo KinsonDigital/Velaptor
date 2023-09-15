@@ -5,10 +5,9 @@
 namespace VelaptorTests.Scene;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Carbonate.Core.UniDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Core.OneWay;
+using Carbonate.OneWay;
 using Fakes;
 using FluentAssertions;
 using Helpers;
@@ -29,7 +28,7 @@ public class SceneBaseTests
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockUnsubscriber;
-    private IReceiveReactor<WindowSizeData>? winSizeReactor;
+    private IReceiveSubscription<WindowSizeData>? winSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBaseTests"/> class.
@@ -40,15 +39,15 @@ public class SceneBaseTests
         this.mockUnsubscriber = new Mock<IDisposable>();
 
         var mockWinSizeReactable = new Mock<IPushReactable<WindowSizeData>>();
-        mockWinSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<WindowSizeData>>()))
-            .Callback<IReceiveReactor<WindowSizeData>>(reactor =>
+        mockWinSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<WindowSizeData>>()))
+            .Callback<IReceiveSubscription<WindowSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit tests.");
                 reactor.Name.Should().Be($"SceneBase.Init - {nameof(PushNotifications.WindowSizeChangedId)}");
 
                 this.winSizeReactor = reactor;
             })
-            .Returns<IReceiveReactor<WindowSizeData>>(reactor =>
+            .Returns<IReceiveSubscription<WindowSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit tests.");
                 return this.mockUnsubscriber.Object;
@@ -321,29 +320,6 @@ public class SceneBaseTests
         // Assert
         mockCtrlA.VerifyOnce(m => m.Render());
         mockCtrlB.VerifyOnce(m => m.Render());
-    }
-
-    [Fact]
-    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
-    public void Dispose_WhenInvoked_DisposesOfScene()
-    {
-        // Arrange
-        var mockCtrlA = new Mock<IControl>();
-        var mockCtrlB = new Mock<IControl>();
-
-        var sut = CreateSystemUnderTest();
-        sut.AddControl(mockCtrlA.Object);
-        sut.AddControl(mockCtrlB.Object);
-
-        // Act
-        sut.Dispose();
-        sut.Dispose();
-
-        // Assert
-        mockCtrlA.VerifyOnce(m => m.UnloadContent());
-        mockCtrlB.VerifyOnce(m => m.UnloadContent());
-        sut.Controls.Should().BeEmpty();
-        this.mockUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

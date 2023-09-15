@@ -7,8 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Carbonate.Core.UniDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Core.OneWay;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Moq;
 using Velaptor.Content;
@@ -32,7 +32,7 @@ public class TextureTests
     private readonly Mock<IDisposable> mockDisposeUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly ImageData imageData;
-    private IReceiveReactor<DisposeTextureData>? disposeReactor;
+    private IReceiveSubscription<DisposeTextureData>? disposeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureTests"/> class.
@@ -81,9 +81,9 @@ public class TextureTests
         this.mockDisposeUnsubscriber = new Mock<IDisposable>();
 
         var mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
-        mockDisposeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<DisposeTextureData>>()))
+        mockDisposeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeTextureData>>()))
             .Returns(this.mockDisposeUnsubscriber.Object)
-            .Callback<IReceiveReactor<DisposeTextureData>>(reactor =>
+            .Callback<IReceiveSubscription<DisposeTextureData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.disposeReactor = reactor;
@@ -436,21 +436,6 @@ public class TextureTests
 
         // Assert
         this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-    }
-
-    [Fact]
-    public void ReactableNotifications_WhenSendingOnCompleted_DisposesOfTexture()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.disposeReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
 
