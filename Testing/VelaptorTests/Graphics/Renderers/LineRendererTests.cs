@@ -12,6 +12,7 @@ using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Content;
@@ -35,7 +36,6 @@ using LineRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<
 /// </summary>
 public class LineRendererTests
 {
-    private const string Category = nameof(Category);
     private const uint LineShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
@@ -43,9 +43,6 @@ public class LineRendererTests
     private readonly Mock<IGpuBuffer<LineBatchItem>> mockGpuBuffer;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private IReceiveSubscription? shutDownReactor;
     private LineRenderItem? renderReactor;
     private IReceiveSubscription? batchHasBegunReactor;
 
@@ -68,9 +65,7 @@ public class LineRendererTests
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 
-        this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
         var mockRenderUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
@@ -82,22 +77,17 @@ public class LineRendererTests
                 {
                     this.batchHasBegunReactor = reactor;
                 }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
             })
             .Returns<IReceiveSubscription>(reactor =>
             {
                 if (reactor.Id == PushNotifications.BatchHasBegunId)
                 {
-                    return this.mockBatchBegunUnsubscriber.Object;
+                    return Substitute.For<IDisposable>();
                 }
 
                 if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    return this.mockShutDownUnsubscriber.Object;
+                    return Substitute.For<IDisposable>();
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
@@ -425,24 +415,6 @@ public class LineRendererTests
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
-    }
-    #endregion
-
-    #region Reactable Tests
-    [Fact]
-    [Trait(Category, "Reactable Tests")]
-    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

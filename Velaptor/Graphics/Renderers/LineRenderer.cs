@@ -8,8 +8,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.OneWay;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -25,8 +24,6 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -57,21 +54,23 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var lineRenderBatchReactable = reactableFactory.CreateRenderLineReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
-        this.renderUnsubscriber = lineRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<LineBatchItem>>>(
-            id: PushNotifications.RenderLinesId,
-            name: renderReactorName,
-            onReceive: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderLineReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderLinesId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId)))
+            .BuildOneWayReceive<Memory<RenderItem<LineBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
     /// <inheritdoc/>
@@ -93,22 +92,6 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     /// <inheritdoc/>
     public void RenderLine(Vector2 start, Vector2 end, Color color, uint thickness, int layer = 0) =>
         RenderBase(start, end, color, thickness, layer);
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
-    }
 
     /// <summary>
     /// The main root method for rendering lines.
