@@ -8,8 +8,8 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
-using Carbonate.Core.UniDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Core.OneWay;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Moq;
 using Velaptor.Graphics;
@@ -23,7 +23,7 @@ using Xunit;
 public class TextCursorTests
 {
     private readonly Mock<IPushReactable<TextBoxStateData>> textBoxStateReactable;
-    private IReceiveReactor<TextBoxStateData>? reactor;
+    private IReceiveSubscription<TextBoxStateData>? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextCursorTests"/> class.
@@ -33,8 +33,8 @@ public class TextCursorTests
         var textBoxStateUnsubscriber = new Mock<IDisposable>();
         this.textBoxStateReactable = new Mock<IPushReactable<TextBoxStateData>>();
         this.textBoxStateReactable.Setup(m =>
-            m.Subscribe(It.IsAny<IReceiveReactor<TextBoxStateData>>()))
-            .Callback<IReceiveReactor<TextBoxStateData>>(reactorObj =>
+            m.Subscribe(It.IsAny<IReceiveSubscription<TextBoxStateData>>()))
+            .Callback<IReceiveSubscription<TextBoxStateData>>(reactorObj =>
             {
                 this.reactor = reactorObj;
             })

@@ -5,7 +5,7 @@
 namespace Velaptor.Graphics;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using OpenGL.Batching;
 
 /// <summary>

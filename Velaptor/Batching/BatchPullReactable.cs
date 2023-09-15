@@ -5,7 +5,7 @@
 namespace Velaptor.Batching;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using OpenGL.Batching;
 
 /// <inheritdoc cref="IBatchPullReactable{TBatchItem}"/>

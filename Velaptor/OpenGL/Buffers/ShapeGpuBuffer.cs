@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
@@ -27,7 +27,6 @@ using ReactableData;
 internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The shape buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
@@ -46,11 +45,10 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch != BatchType.Rect)
                 {
@@ -63,7 +61,9 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
                 {
                     ResizeBatch();
                 }
-            }));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
@@ -202,19 +202,6 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
         }
 
         return result.ToArray();
-    }
-
-    /// <inheritdoc/>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.unsubscriber.Dispose();
-
-        base.ShutDown();
     }
 
     /// <summary>

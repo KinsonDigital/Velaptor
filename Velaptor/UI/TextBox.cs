@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
@@ -31,7 +31,6 @@ public sealed class TextBox : ControlBase
     private const int MarginRight = 2;
     private const int BorderThickness = 2;
     private const bool RenderAllText = false;
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly ITextSelection textSelection;
@@ -858,11 +857,11 @@ public sealed class TextBox : ControlBase
         {
             case MutateType.PreMutate:
                 this.preTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, this.textBoxDataEventId);
+                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
                 break;
             case MutateType.PostMutate:
                 this.postTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, this.textBoxDataEventId);
+                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(mutateType), mutateType, null);

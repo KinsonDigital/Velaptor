@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Exceptions;
 using Factories;
 using GpuData;
@@ -24,7 +24,6 @@ using ReactableData;
 internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGpuBuffer"/> class.
@@ -43,11 +42,10 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch != BatchType.Font)
                 {
@@ -60,7 +58,9 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
                 {
                     ResizeBatch();
                 }
-            }));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
@@ -222,18 +222,5 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
         OpenGLService.UnbindVBO();
 
         OpenGLService.EndGroup();
-    }
-
-    /// <inheritdoc/>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.unsubscriber.Dispose();
-
-        base.ShutDown();
     }
 }

@@ -10,8 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
@@ -25,14 +24,13 @@ using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <inheritdoc cref="IFontRenderer"/>
-internal sealed class FontRenderer : RendererBase, IFontRenderer
+internal sealed class FontRenderer : IFontRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -51,33 +49,36 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         IGpuBuffer<FontGlyphBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
-        this.renderUnsubscriber = fontRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<FontGlyphBatchItem>>>(
-            eventId: PushNotifications.RenderFontsId,
-            name: renderReactorName,
-            onReceiveData: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderFontReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderFontsId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId)))
+            .BuildOneWayReceive<Memory<RenderItem<FontGlyphBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
         /// <inheritdoc/>
@@ -181,22 +182,6 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         {
             this.batchManager.AddFontItem(item, layer, renderStamp);
         }
-    }
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
     }
 
     /// <summary>
@@ -491,7 +476,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-            GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
             this.openGLService.EndGroup();
 
             totalItemsToRender = 0;
