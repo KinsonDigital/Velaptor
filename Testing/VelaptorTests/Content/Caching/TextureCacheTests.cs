@@ -44,7 +44,6 @@ public class TextureCacheTests
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
     private readonly Mock<IPath> mockPath;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
     private readonly Mock<IPushReactable<DisposeTextureData>> mockDisposeReactable;
@@ -103,11 +102,8 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
             .Returns(FontName);
 
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
             .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -591,7 +587,6 @@ public class TextureCacheTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.TextureDisposedId));
         sut.TotalCachedItems.Should().Be(0);
     }

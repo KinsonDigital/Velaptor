@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate.NonDirectional;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
 using Factories;
@@ -38,7 +38,6 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     private readonly IFontAtlasService fontAtlasService;
     private readonly IFontMetaDataParser fontMetaDataParser;
     private readonly IPath path;
-    private readonly IDisposable shutDownUnsubscriber;
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly string[] defaultFontNames =
     {
@@ -78,13 +77,14 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.path = path;
 
         this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var shutDownReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
+        var shutDownSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.SystemShuttingDownId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
+            .BuildNonReceive(ShutDown);
+
+        shutDownReactable.Subscribe(shutDownSubscription);
     }
 
     /// <summary>
@@ -286,7 +286,6 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        this.shutDownUnsubscriber.Dispose();
         this.disposeReactable.Unsubscribe(PushNotifications.TextureDisposedId);
 
         this.textures.Clear();
