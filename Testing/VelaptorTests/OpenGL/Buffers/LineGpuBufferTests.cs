@@ -42,11 +42,9 @@ public class LineGpuBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
-    private IReceiveSubscription? shutDownReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -71,10 +69,6 @@ public class LineGpuBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
-        var mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
@@ -85,26 +79,6 @@ public class LineGpuBufferTests
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
-                else
-                {
-                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
             });
 
         var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
@@ -113,12 +87,6 @@ public class LineGpuBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.viewPortSizeReactor = reactor;
-            })
-            .Returns<IReceiveSubscription<ViewPortSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                return mockViewPortSizeUnsubscriber.Object;
             });
 
         var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
@@ -127,12 +95,6 @@ public class LineGpuBufferTests
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.batchSizeReactor = reactor;
-            })
-            .Returns<IReceiveSubscription<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                return this.mockBatchSizeUnsubscriber.Object;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -441,20 +403,6 @@ public class LineGpuBufferTests
         this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Vertex Data"), Times.AtLeastOnce);
         this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeast(2));
         this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Indices Data"), Times.AtLeastOnce);
-    }
-
-    [Fact]
-    public void ShutDownReactable_WhenReceivingNotification_ShutsDownShader()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

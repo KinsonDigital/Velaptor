@@ -35,9 +35,6 @@ public class GpuBufferBaseTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IDisposable> mockViewPortSizeUnsubscriber;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
     private IReceiveSubscription? glInitReactor;
@@ -71,29 +68,8 @@ public class GpuBufferBaseTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.GLInitializedId)
-                {
-                    return this.mockGLInitUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return this.mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
-            })
             .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -110,18 +86,6 @@ public class GpuBufferBaseTests
 
         var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
-            .Returns<IReceiveSubscription<ViewPortSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.ViewPortSizeChangedId)
-                {
-                    return this.mockViewPortSizeUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
-            })
             .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -419,8 +383,6 @@ public class GpuBufferBaseTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockViewPortSizeUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
         this.mockGL.Verify(m => m.DeleteBuffer(VertexBufferId), Times.Once());
         this.mockGL.Verify(m => m.DeleteBuffer(IndexBufferId), Times.Once());
@@ -501,19 +463,6 @@ public class GpuBufferBaseTests
             reactor.Should().NotBeNull("it is required for this unit test.");
             reactor.Name.Should().Be("GpuBufferFake.Ctor - ViewPortSizeChangedId");
         }
-    }
-
-    [Fact]
-    public void InitReactable_OnComplete_UnsubscribesFromReactable()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.glInitReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
     }
 
     [Fact]
