@@ -154,20 +154,6 @@ public class FontShaderTests
 
     #region Indirect Tests
     [Fact]
-    public void BatchSizeReactable_WithUnsubscribeNotification_UnsubscribesFromReactable()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.batchSizeReactor.OnUnsubscribe();
-        this.batchSizeReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
-    [Fact]
     public void BatchSizeReactable_WhenReceivingReactableNotification_SetsBatchSize()
     {
         // Arrange

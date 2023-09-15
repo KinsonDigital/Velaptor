@@ -376,19 +376,6 @@ public class ShaderProgramTests
         this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once);
     }
-
-    [Fact]
-    public void PushReactable_WhenOnCompleteIsInvoked_UnsubscribesFromReactable()
-    {
-        // Arrange
-        CreateSystemUnderTest();
-
-        // Act
-        this.glInitReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
     #endregion
 
     /// <summary>

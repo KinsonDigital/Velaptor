@@ -6,7 +6,7 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.NonDirectional;
+using Carbonate.Fluent;
 using Exceptions;
 using Factories;
 using Guards;
@@ -48,20 +48,23 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var signalReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
-        this.glInitReactorUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.GLInitializedId,
-            name: glInitName,
-            onReceive: Init,
-            onUnsubscribe: () => this.glInitReactorUnsubscriber?.Dispose()));
+        // Subscribe to the GL initialized signal
+        var glInitSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.GLInitializedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
+            .BuildNonReceive(Init);
 
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownReactorUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
+        this.glInitReactorUnsubscriber = signalReactable.Subscribe(glInitSubscription);
+
+        // Subscript to the shutdown signal
+        var shutDownSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.SystemShuttingDownId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
+            .BuildNonReceive(ShutDown);
+
+        this.shutDownReactorUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
 
         ProcessCustomAttributes();
     }

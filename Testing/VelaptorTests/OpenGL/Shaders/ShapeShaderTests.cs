@@ -11,7 +11,6 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Factories;
@@ -131,20 +130,6 @@ public class ShapeShaderTests
 
         // Assert
         actual.Should().Be(123u);
-    }
-
-    [Fact]
-    public void BatchSizeReactable_WithUnsubscribeNotification_UnsubscribesFromReactable()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.batchSizeReactor.OnUnsubscribe();
-        this.batchSizeReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
