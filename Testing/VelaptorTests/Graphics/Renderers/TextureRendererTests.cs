@@ -43,11 +43,8 @@ public class TextureRendererTests
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private IReceiveSubscription? batchHasBegunReactor;
     private TextureRenderItem? renderReactor;
-    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureRendererTests"/> class.
@@ -62,32 +59,8 @@ public class TextureRendererTests
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
 
-        this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        var mockRenderUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.RenderTexturesId)
-                {
-                    return mockRenderUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    return this.mockBatchBegunUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return this.mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            })
             .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -96,21 +69,11 @@ public class TextureRendererTests
                 {
                     this.batchHasBegunReactor = reactor;
                 }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
             });
 
         var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
         mockTextureRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Returns<TextureRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return mockRenderUnsubscriber.Object;
-            })
             .Callback<TextureRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -777,23 +740,6 @@ public class TextureRendererTests
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
-    }
-    #endregion
-
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

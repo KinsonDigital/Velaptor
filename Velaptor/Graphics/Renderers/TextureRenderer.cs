@@ -8,8 +8,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.OneWay;
+using Carbonate.Fluent;
 using Content;
 using Factories;
 using Guards;
@@ -28,8 +27,6 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<TextureBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
-    private readonly IDisposable renderUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -60,21 +57,23 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        const string batchStateName = $"{nameof(TextureRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.BatchHasBegunId,
-            name: batchStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId));
-        this.renderUnsubscriber = textureRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<TextureBatchItem>>>(
-            id: PushNotifications.RenderTexturesId,
-            name: renderReactorName,
-            onReceive: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderTextureReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderTexturesId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId)))
+            .BuildOneWayReceive<Memory<RenderItem<TextureBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
     /// <inheritdoc/>
@@ -233,22 +232,6 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         }
 
         RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
-    }
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
     }
 
     /// <inheritdoc cref="ITextureRenderer.Render(Velaptor.Content.ITexture,Rectangle,Rectangle,float,float,Color,RenderEffects,int)"/>
