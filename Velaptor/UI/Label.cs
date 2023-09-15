@@ -1,4 +1,4 @@
-﻿// <copyright file="Label.cs" company="KinsonDigital">
+// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -156,11 +156,9 @@ public class Label : ControlBase
     {
         get
         {
-            var result = base.Height;
-
             if (!AutoSize)
             {
-                return result;
+                return base.Height;
             }
 
             var textSize = Font.Measure(this.labelText);
