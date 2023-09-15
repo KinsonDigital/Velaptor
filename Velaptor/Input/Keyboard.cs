@@ -7,7 +7,7 @@ namespace Velaptor.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using ReactableData;
@@ -18,7 +18,6 @@ using ReactableData;
 internal sealed class Keyboard : IAppInput<KeyboardState>
 {
     private readonly Dictionary<KeyCode, bool> keyStates = new ();
-    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
@@ -28,17 +27,14 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var reactable = reactableFactory.CreateKeyboardReactable();
+        var keyboardDataReactable = reactableFactory.CreateKeyboardReactable();
 
-        var keyboardStateChangeName = this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<KeyboardKeyStateData>(
-            eventId: PushNotifications.KeyboardStateChangedId,
-            name: keyboardStateChangeName,
-            onReceiveData: data =>
-            {
-                this.keyStates[data.Key] = data.IsDown;
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+        var keyboardChangedSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.KeyboardStateChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId)))
+            .BuildOneWayReceive<KeyboardKeyStateData>(data => this.keyStates[data.Key] = data.IsDown);
+
+        keyboardDataReactable.Subscribe(keyboardChangedSubscription);
 
         InitializeKeyStates();
     }

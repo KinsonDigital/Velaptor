@@ -27,7 +27,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using FontRenderItem = Carbonate.Core.UniDirectional.IReceiveReactor<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
             Velaptor.OpenGL.Batching.FontGlyphBatchItem
         >
     >
@@ -50,7 +50,6 @@ public class FontRendererTests
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchBegunUnsubscriber;
 
     private readonly char[] glyphChars =
     {
@@ -59,9 +58,8 @@ public class FontRendererTests
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '~', '_', '+',
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
     };
-    private IReceiveReactor? batchHasBegunReactor;
+    private IReceiveSubscription? batchHasBegunReactor;
     private FontRenderItem? renderReactor;
-    private IReceiveReactor? shutDownReactor;
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
 
@@ -84,35 +82,9 @@ public class FontRendererTests
 
         this.mockBatchingManager = new Mock<IBatchingManager>();
 
-        this.mockBatchBegunUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
-        var mockRenderUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    return this.mockBatchBegunUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.RenderFontsId)
-                {
-                    return mockRenderUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            })
-            .Callback<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -121,21 +93,11 @@ public class FontRendererTests
                     reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
                     this.batchHasBegunReactor = reactor;
                 }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
             });
 
         var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
         mockFontRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
-            .Returns<FontRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return mockRenderUnsubscriber.Object;
-            })
             .Callback<FontRenderItem>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -872,22 +834,6 @@ public class FontRendererTests
         this.mockGpuBuffer
             .VerifyExactly(m =>
                 m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()), renderText.Length);
-    }
-    #endregion
-
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WithShutDownNotification_ShutsDownRenderer()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchBegunUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

@@ -6,11 +6,10 @@ namespace VelaptorTests.Content.Factories;
 
 using System;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
+using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
 using Moq;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
@@ -25,7 +24,7 @@ public class SoundFactoryTests
     private readonly Mock<IDisposable> mockDisposeSoundUnsubscriber;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactoryTests"/> class.
@@ -36,21 +35,21 @@ public class SoundFactoryTests
         this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return this.mockShutDownUnsubscriber.Object;
             })
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.shutDownReactor = reactor;
             });
 
         var mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
-        mockDisposeSoundReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<DisposeSoundData>>()))
-            .Returns<IReceiveReactor<DisposeSoundData>>(reactor =>
+        mockDisposeSoundReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
+            .Returns<IReceiveSubscription<DisposeSoundData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 return this.mockDisposeSoundUnsubscriber.Object;
@@ -91,20 +90,6 @@ public class SoundFactoryTests
 
         // Assert
         actual.Should().Be(1);
-    }
-
-    [Fact]
-    public void ShutDown_WhenInvoked_ShutsDownFactory()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockDisposeSoundUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

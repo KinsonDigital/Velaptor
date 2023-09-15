@@ -5,7 +5,7 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -18,8 +18,6 @@ using Services;
 [ShaderName("Shape")]
 internal sealed class ShapeShader : ShaderProgram
 {
-    private readonly IDisposable unsubscriber;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeShader"/> class.
     /// </summary>
@@ -41,17 +39,18 @@ internal sealed class ShapeShader : ShaderProgram
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        // Subscribe to batch size changes
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch == BatchType.Rect)
                 {
                     BatchSize = data.BatchSize;
                 }
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 }

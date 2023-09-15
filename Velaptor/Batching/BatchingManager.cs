@@ -6,8 +6,8 @@ namespace Velaptor.Batching;
 
 using System;
 using System.Linq;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
+using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Guards;
@@ -20,10 +20,10 @@ internal sealed class BatchingManager : IBatchingManager
     private const float BatchIncreasePercentage = 0.5f;
     private readonly IDisposable batchSizeUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
-    private readonly IDisposable texturePullUnsubscriber;
-    private readonly IDisposable fontPullUnsubscriber;
-    private readonly IDisposable shapePullUnsubscriber;
-    private readonly IDisposable linePullUnsubscriber;
+    private readonly IDisposable requestTexturesUnsubscriber;
+    private readonly IDisposable requestFontsUnsubscriber;
+    private readonly IDisposable requestShapesUnsubscriber;
+    private readonly IDisposable requestLinesUnsubscriber;
     private readonly IDisposable emptyBatchUnsubscriber;
     private readonly IPushReactable<BatchSizeData> batchSizeReactable;
     private readonly BatchType[] batchTypes = Enum.GetValues<BatchType>();
@@ -46,13 +46,13 @@ internal sealed class BatchingManager : IBatchingManager
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
+        // Subscribe to batch size changes
         this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
-
-        var batchSizeReactorName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.batchSizeUnsubscriber = this.batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeReactorName,
-            onReceiveData: data =>
+        var batchSizeSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .WhenUnsubscribing(() => this.batchSizeUnsubscriber?.Dispose())
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (this.firstTimeSettingBatchSize)
                 {
@@ -61,78 +61,91 @@ internal sealed class BatchingManager : IBatchingManager
                 }
 
                 SetNewBatchSize(data.BatchSize, data.TypeOfBatch);
-            },
-            onUnsubscribe: () => this.batchSizeUnsubscriber?.Dispose()));
+            });
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        this.batchSizeUnsubscriber = this.batchSizeReactable.Subscribe(batchSizeSubscription);
 
-        var shutDownReactorName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
-            shutDownReactorName,
-            ShutDown));
+        var signalReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var emptyBatchReactorName = this.GetExecutionMemberName(nameof(PushNotifications.EmptyBatchId));
-        this.emptyBatchUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.EmptyBatchId,
-            emptyBatchReactorName,
-            EmptyBatch));
+        // Subscribe to shutdown messages
+        var shutDownSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.SystemShuttingDownId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
+            .BuildNonReceive(ShutDown);
 
+        this.shutDownUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
+
+        // Subscribe to empty batch messages
+        var emptyBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.EmptyBatchId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.EmptyBatchId)))
+            .BuildNonReceive(EmptyBatch);
+
+        this.emptyBatchUnsubscriber = signalReactable.Subscribe(emptyBatchSubscription);
+
+        // Subscribe to texture batch requests
         var texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
-        var texturePullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetTextureItemsId));
-        this.texturePullUnsubscriber = texturePullReactable.Subscribe(new RespondReactor<Memory<RenderItem<TextureBatchItem>>>(
-            respondId: PullResponses.GetTextureItemsId,
-            name: texturePullReactorName,
-            onRespond: () =>
+        var textureRequestSubscription = ISubscriptionBuilder.Create()
+            .WithId(PullResponses.GetTextureItemsId)
+            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetTextureItemsId)))
+            .BuildOneWayRespond(() =>
             {
                 var lastFullItemIndex = this.textureItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.textureItems
                     : this.textureItems[..lastFullItemIndex];
-            }));
+            });
 
+        this.requestTexturesUnsubscriber = texturePullReactable.Subscribe(textureRequestSubscription);
+
+        // Subscribe to font batch requests
         var fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
-        var fontPullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetFontItemsId));
-        this.fontPullUnsubscriber = fontPullReactable.Subscribe(new RespondReactor<Memory<RenderItem<FontGlyphBatchItem>>>(
-            respondId: PullResponses.GetFontItemsId,
-            name: fontPullReactorName,
-            onRespond: () =>
+        var fontRequestSubscription = ISubscriptionBuilder.Create()
+            .WithId(PullResponses.GetFontItemsId)
+            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetFontItemsId)))
+            .BuildOneWayRespond(() =>
             {
                 var lastFullItemIndex = this.fontItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.fontItems
                     : this.fontItems[..lastFullItemIndex];
-            }));
+            });
 
+        this.requestFontsUnsubscriber = fontPullReactable.Subscribe(fontRequestSubscription);
+
+        // Subscribe to shape batch requests
         var shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
-        var shapePullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetShapeItemsId));
-        this.shapePullUnsubscriber = shapePullReactable.Subscribe(new RespondReactor<Memory<RenderItem<ShapeBatchItem>>>(
-            respondId: PullResponses.GetShapeItemsId,
-            name: shapePullReactorName,
-            onRespond: () =>
+        var shapeRequestSubscription = ISubscriptionBuilder.Create()
+            .WithId(PullResponses.GetShapeItemsId)
+            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetShapeItemsId)))
+            .BuildOneWayRespond(() =>
             {
                 var lastFullItemIndex = this.shapeItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.shapeItems
                     : this.shapeItems[..lastFullItemIndex];
-            }));
+            });
 
+        this.requestShapesUnsubscriber = shapePullReactable.Subscribe(shapeRequestSubscription);
+
+        // Subscribe to line batch requests
         var linePullReactable = reactableFactory.CreateLinePullBatchReactable();
-        var linePullReactorName = this.GetExecutionMemberName(nameof(PullResponses.GetLineItemsId));
-        this.linePullUnsubscriber = linePullReactable.Subscribe(new RespondReactor<Memory<RenderItem<LineBatchItem>>>(
-            respondId: PullResponses.GetLineItemsId,
-            name: linePullReactorName,
-            onRespond: () =>
+        var lineRequestSubscription = ISubscriptionBuilder.Create()
+            .WithId(PullResponses.GetLineItemsId)
+            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetLineItemsId)))
+            .BuildOneWayRespond(() =>
             {
                 var lastFullItemIndex = this.lineItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.lineItems
                     : this.lineItems[..lastFullItemIndex];
-            }));
+            });
+
+        this.requestLinesUnsubscriber = linePullReactable.Subscribe(lineRequestSubscription);
     }
 
     /// <summary>
@@ -419,10 +432,10 @@ internal sealed class BatchingManager : IBatchingManager
 
         this.shutDownUnsubscriber.Dispose();
         this.emptyBatchUnsubscriber.Dispose();
-        this.texturePullUnsubscriber.Dispose();
-        this.fontPullUnsubscriber.Dispose();
-        this.shapePullUnsubscriber.Dispose();
-        this.linePullUnsubscriber.Dispose();
+        this.requestTexturesUnsubscriber.Dispose();
+        this.requestFontsUnsubscriber.Dispose();
+        this.requestShapesUnsubscriber.Dispose();
+        this.requestLinesUnsubscriber.Dispose();
 
         this.isShutDown = true;
     }

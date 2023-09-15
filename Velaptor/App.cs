@@ -5,7 +5,7 @@
 namespace Velaptor;
 
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Graphics;
 using ReactableData;
 using Silk.NET.OpenGL;

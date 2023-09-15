@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Exceptions;
 using Factories;
 using GpuData;
@@ -26,7 +26,6 @@ using NETRect = System.Drawing.Rectangle;
 internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
 {
     private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
@@ -45,11 +44,10 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch != BatchType.Texture)
                 {
@@ -62,7 +60,9 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
                 {
                     ResizeBatch();
                 }
-            }));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
@@ -253,18 +253,5 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
         }
 
         return result.ToArray();
-    }
-
-    /// <inheritdoc/>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.unsubscriber.Dispose();
-
-        base.ShutDown();
     }
 }

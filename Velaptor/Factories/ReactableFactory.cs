@@ -7,7 +7,7 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Graphics;
 using OpenGL.Batching;
 using ReactableData;

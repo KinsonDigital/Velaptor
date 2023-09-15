@@ -6,8 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -17,14 +16,13 @@ using OpenGL.Buffers;
 using OpenGL.Shaders;
 
 /// <inheritdoc cref="IShapeRenderer"/>
-internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
+internal sealed class ShapeRenderer : IShapeRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<ShapeBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -43,33 +41,36 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         IGpuBuffer<ShapeBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId));
-        this.renderUnsubscriber = shapeRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<ShapeBatchItem>>>(
-            eventId: PushNotifications.RenderShapesId,
-            name: renderReactorName,
-            onReceiveData: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderShapeReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderShapesId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId)))
+            .BuildOneWayReceive<Memory<RenderItem<ShapeBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
     /// <inheritdoc/>
@@ -77,22 +78,6 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
 
     /// <inheritdoc/>
     public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
-    }
 
     /// <summary>
     /// Renders the given <paramref name="batchItem"/> to the screen.
@@ -148,7 +133,7 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         var totalElements = 6u * totalItemsToRender;
 
         this.openGLService.BeginGroup($"Render {totalElements} Shape Elements");
-        GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
         this.openGLService.EndGroup();
 
         this.openGLService.EndGroup();

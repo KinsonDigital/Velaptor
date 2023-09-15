@@ -95,4 +95,9 @@ internal static class PushNotifications
     /// Gets the unique <see cref="Guid"/> for push notifications when the lines need to be rendered.
     /// </summary>
     public static Guid RenderLinesId { get; } = new ("3fb13cdb-db24-4d28-b117-b9604722277f");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications when the state of a text box changes.
+    /// </summary>
+    public static Guid TextBoxStateId { get; } = new ("71931561-826b-431b-bce6-b139034a1ff4");
 }

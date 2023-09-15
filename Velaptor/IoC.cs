@@ -10,7 +10,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Batching;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content;
 using Content.Caching;
 using Content.Factories;
@@ -30,6 +30,7 @@ using Scene;
 using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -59,10 +60,32 @@ internal static class IoC
     }
 
     /// <summary>
+    /// Disposes of all registered types that are capable of being disposed.
+    /// </summary>
+    /// <remarks>
+    ///     All transient and singleton types are not disposed of by SimpleInjector.
+    ///     This is common practice for DI containers.  Because of this, it is left to
+    ///     the developer to dispose of these types.  This method will dispose of all
+    ///     registered types that are capable of being disposed.
+    /// </remarks>
+    public static void DisposeOfRegisteredTypes()
+    {
+        // Get all of the registered types that are capable of being disposed
+        var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
+
+        foreach (var regType in disposableRegistrations)
+        {
+            IoCContainer.DisposeOfType(regType);
+        }
+    }
+
+    /// <summary>
     /// Sets up the IoC container.
     /// </summary>
     private static void SetupContainer()
     {
+        IoCContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+
         SetupNativeInterop();
 
         SetupBuffers();
@@ -264,14 +287,13 @@ internal static class IoC
                 IoCContainer.GetInstance<IDirectory>(),
                 IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 
-        IoCContainer.Register<ITaskService, TaskService>();
-        IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
+        IoCContainer.Register<ITaskService, TaskService>(Lifestyle.Singleton);
     }
 
     /// <summary>
     /// Sets up the container registration related to content.
     /// </summary>
-    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
+    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
 
     /// <summary>
     /// Sets up the container registration related to reactables.
@@ -299,6 +321,6 @@ internal static class IoC
         IoCContainer.Register<IRenderBatchReactable<ShapeBatchItem>, RenderBatchReactable<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
 
-        IoCContainer.Register<IPushReactable<TextBoxStateData>, PushReactable<TextBoxStateData>>(suppressDisposal: true);
+        IoCContainer.Register<IPushReactable<TextBoxStateData>, PushReactable<TextBoxStateData>>(Lifestyle.Transient, true);
     }
 }

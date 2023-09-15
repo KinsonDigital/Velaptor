@@ -5,7 +5,7 @@
 namespace Velaptor.Graphics;
 
 using System.Drawing;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Factories;
 using NativeInterop.OpenGL;
 using ReactableData;
