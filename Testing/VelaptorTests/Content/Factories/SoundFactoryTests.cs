@@ -10,7 +10,6 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
 using Moq;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
@@ -91,20 +90,6 @@ public class SoundFactoryTests
 
         // Assert
         actual.Should().Be(1);
-    }
-
-    [Fact]
-    public void ShutDown_WhenInvoked_ShutsDownFactory()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockDisposeSoundUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

@@ -4,12 +4,11 @@
 
 namespace Velaptor.Content.Factories;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Carbonate.NonDirectional;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Guards;
 using ReactableData;
@@ -21,8 +20,6 @@ using Velaptor.Factories;
 internal sealed class SoundFactory : ISoundFactory
 {
     private readonly Dictionary<uint, string> sounds = new ();
-    private readonly IDisposable disposeSoundUnsubscriber;
-    private readonly IDisposable shutDownUnsubscriber;
     private readonly IPushReactable<DisposeSoundData> disposeReactable;
 
     /// <summary>
@@ -33,23 +30,14 @@ internal sealed class SoundFactory : ISoundFactory
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
-        var soundDisposeName = this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId));
-        this.disposeSoundUnsubscriber = this.disposeReactable.Subscribe(new ReceiveSubscription<DisposeSoundData>(
-                id: PushNotifications.SoundDisposedId,
-                name: soundDisposeName,
-                onReceive: data =>
-                {
-                    this.sounds.Remove(data.SoundId);
-                }));
+        var disposeSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.SoundDisposedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId)))
+            .BuildOneWayReceive<DisposeSoundData>(data => this.sounds.Remove(data.SoundId));
 
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
+        this.disposeReactable.Subscribe(disposeSubscription);
     }
 
     /// <inheritdoc/>
@@ -79,14 +67,5 @@ internal sealed class SoundFactory : ISoundFactory
         this.sounds.Add(newId, filePath);
 
         return new Sound(this.disposeReactable, filePath, newId);
-    }
-
-    /// <summary>
-    /// Disposes of all sounds.
-    /// </summary>
-    private void ShutDown()
-    {
-        this.disposeSoundUnsubscriber.Dispose();
-        this.shutDownUnsubscriber.Dispose();
     }
 }
