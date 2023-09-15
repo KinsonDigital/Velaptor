@@ -229,20 +229,6 @@ public class RenderMediatorTests
 
     #region Indirect Tests
     [Fact]
-    public void ShutDownReactable_WhenReceivingNotification_ShutsDownMediator()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockEndBatchUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
-    [Fact]
     public void PushReactable_WithBatchEndNotification_CoordinatesRenderCalls()
     {
         // Arrange

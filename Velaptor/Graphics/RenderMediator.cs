@@ -7,6 +7,7 @@ namespace Velaptor.Graphics;
 using System;
 using System.Collections.Generic;
 using Batching;
+using Carbonate.Fluent;
 using Carbonate.NonDirectional;
 using Factories;
 using Guards;
@@ -15,7 +16,7 @@ using OpenGL.Batching;
 /// <inheritdoc/>
 internal sealed class RenderMediator : IRenderMediator
 {
-    private readonly IPushReactable pushReactable;
+    private readonly IPushReactable endBatchReactable;
     private readonly IBatchPullReactable<TextureBatchItem> texturePullReactable;
     private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
     private readonly IBatchPullReactable<ShapeBatchItem> shapePullReactable;
@@ -28,8 +29,6 @@ internal sealed class RenderMediator : IRenderMediator
     private readonly IComparer<RenderItem<FontGlyphBatchItem>> fontItemComparer;
     private readonly IComparer<RenderItem<ShapeBatchItem>> shapeItemComparer;
     private readonly IComparer<RenderItem<LineBatchItem>> lineItemComparer;
-    private readonly IDisposable endBatchUnsubscriber;
-    private readonly IDisposable shutDownUnsubscriber;
 
     // The total amount of layers supported
     private readonly Memory<int> allLayers = new (new int[1000]);
@@ -55,19 +54,14 @@ internal sealed class RenderMediator : IRenderMediator
         EnsureThat.ParamIsNotNull(shapeItemComparer);
         EnsureThat.ParamIsNotNull(lineItemComparer);
 
-        this.pushReactable = reactableFactory.CreateNoDataPushReactable();
+        this.endBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var batchEndName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId));
-        this.endBatchUnsubscriber = this.pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.BatchHasEndedId,
-            name: batchEndName,
-            onReceive: CoordinateRenders));
+        var endBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasEndedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId)))
+            .BuildNonReceive(CoordinateRenders);
 
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = this.pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
+        this.endBatchReactable.Subscribe(endBatchSubscription);
 
         this.texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
         this.fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
@@ -213,15 +207,6 @@ internal sealed class RenderMediator : IRenderMediator
             this.allLayers.Span[i] = int.MaxValue;
         }
 
-        this.pushReactable.Push(PushNotifications.EmptyBatchId);
-    }
-
-    /// <summary>
-    /// Shuts down the <see cref="RenderMediator"/>.
-    /// </summary>
-    private void ShutDown()
-    {
-        this.endBatchUnsubscriber.Dispose();
-        this.shutDownUnsubscriber.Dispose();
+        this.endBatchReactable.Push(PushNotifications.EmptyBatchId);
     }
 }
