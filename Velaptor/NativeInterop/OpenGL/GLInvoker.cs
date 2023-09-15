@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
+// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,19 +41,22 @@ internal sealed class GLInvoker : IGLInvoker
     /// <summary>
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
-    /// <param name="reactable">Sends and receives push notifications.</param>
+    /// <param name="glReactable">Sends and receives push notifications.</param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
-    public GLInvoker(IPushReactable<GL> reactable, ILoggingService loggingService)
+    public GLInvoker(IPushReactable<GL> glReactable, ILoggingService loggingService)
     {
-        var glContextName = this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveSubscription<GL>(
-            id: PushNotifications.GLContextCreatedId,
-            name: glContextName,
-            onReceive: glObj =>
+        var glContextSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.GLContextCreatedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId)))
+            .BuildOneWayReceive<GL>(glObj =>
             {
-                this.gl = glObj ?? throw new PushNotificationException($"{nameof(GLInvoker)}.Constructor()", PushNotifications.GLContextCreatedId);
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+                this.gl = glObj ??
+                          throw new PushNotificationException(
+                              $"{nameof(GLInvoker)}.Constructor()",
+                              PushNotifications.GLContextCreatedId);
+            });
+
+        glReactable.Subscribe(glContextSubscription);
 
         this.loggingService = loggingService;
     }
