@@ -153,7 +153,7 @@ public class GpuBufferBaseTests
         var actual = buffer.BatchSize;
 
         // Assert
-        Assert.Equal(100u, actual);
+        actual.Should().Be(100u);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class GpuBufferBaseTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(buffer.IsInitialized);
+        buffer.IsInitialized.Should().BeTrue();
     }
     #endregion
 
@@ -225,26 +225,28 @@ public class GpuBufferBaseTests
     public void OpenGLInit_WhenInvoked_GeneratesVertexData()
     {
         // Arrange
+        const string becauseMsg = $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.";
         var sut  = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.GenerateDataInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
+        sut.GenerateDataInvoked.Should().BeTrue(becauseMsg);
     }
 
     [Fact]
     public void OpenGLInit_WhenInvoked_GeneratesIndicesData()
     {
         // Arrange
+        const string becauseMsg = $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.";
         var sut = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.GenerateIndicesInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
+        sut.GenerateIndicesInvoked.Should().BeTrue(becauseMsg);
     }
 
     [Fact]
@@ -283,13 +285,14 @@ public class GpuBufferBaseTests
     public void OpenGLInit_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
+        const string becauseMsg = $"The method '{nameof(GpuBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.";
         var sut = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnReceive();
 
         // Assert
-        Assert.True(sut.SetupVAOInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
+        sut.SetupVAOInvoked.Should().BeTrue(becauseMsg);
     }
 
     [Fact]
@@ -337,15 +340,16 @@ public class GpuBufferBaseTests
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
 
         // Check that the setup data group was called first
-        Assert.Equal(1, setupDataGroupSequence);
-        Assert.Equal(2, uploadVertexDataGroupSequence);
-        Assert.Equal(3, uploadIndicesDataGroupSequence);
+        setupDataGroupSequence.Should().Be(1);
+        uploadVertexDataGroupSequence.Should().Be(2);
+        uploadIndicesDataGroupSequence.Should().Be(3);
     }
 
     [Fact]
     public void UploadData_WhenInvoked_PreparesGpuForDataUpload()
     {
         // Arrange
+        const string becauseMsg = $"the method '{nameof(GpuBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.";
         var sut = CreateSystemUnderTest();
         var batchItem = default(TextureBatchItem);
 
@@ -353,13 +357,14 @@ public class GpuBufferBaseTests
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(sut.PrepareForUseInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
+        sut.PrepareForUseInvoked.Should().BeTrue(becauseMsg);
     }
 
     [Fact]
     public void UploadData_WhenInvoked_UpdatesGpuData()
     {
         // Arrange
+        const string becauseMsg = $"the method '{nameof(GpuBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.";
         var sut = CreateSystemUnderTest();
         var batchItem = default(TextureBatchItem);
 
@@ -367,7 +372,7 @@ public class GpuBufferBaseTests
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(sut.UpdateVertexDataInvoked, $"The method '{nameof(GpuBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
+        sut.UpdateVertexDataInvoked.Should().BeTrue(becauseMsg);
     }
 
     [Fact]
