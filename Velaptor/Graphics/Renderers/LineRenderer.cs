@@ -18,8 +18,9 @@ using OpenGL.Buffers;
 using OpenGL.Shaders;
 
 /// <inheritdoc cref="ILineRenderer"/>
-internal sealed class LineRenderer : RendererBase, ILineRenderer
+internal sealed class LineRenderer : ILineRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<LineBatchItem> buffer;
@@ -42,13 +43,14 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         IGpuBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
@@ -153,7 +155,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var totalElements = 6u * totalItemsToRender;
 
         this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
-        GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
         this.openGLService.EndGroup();
 
         this.openGLService.EndGroup();

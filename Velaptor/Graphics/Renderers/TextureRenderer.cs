@@ -21,8 +21,9 @@ using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
 
 /// <inheritdoc cref="ITextureRenderer"/>
-internal sealed class TextureRenderer : RendererBase, ITextureRenderer
+internal sealed class TextureRenderer : ITextureRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<TextureBatchItem> buffer;
@@ -45,13 +46,14 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
         IGpuBuffer<TextureBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
@@ -330,7 +332,7 @@ internal sealed class TextureRenderer : RendererBase, ITextureRenderer
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
-            GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
             this.openGLService.EndGroup();
 
             totalItemsToRender = 0;

@@ -16,8 +16,9 @@ using OpenGL.Buffers;
 using OpenGL.Shaders;
 
 /// <inheritdoc cref="IShapeRenderer"/>
-internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
+internal sealed class ShapeRenderer : IShapeRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<ShapeBatchItem> buffer;
@@ -40,13 +41,14 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         IGpuBuffer<ShapeBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
@@ -131,7 +133,7 @@ internal sealed class ShapeRenderer : RendererBase, IShapeRenderer
         var totalElements = 6u * totalItemsToRender;
 
         this.openGLService.BeginGroup($"Render {totalElements} Shape Elements");
-        GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
         this.openGLService.EndGroup();
 
         this.openGLService.EndGroup();
