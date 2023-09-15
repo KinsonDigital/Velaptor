@@ -421,6 +421,17 @@ internal sealed class GLWindow : VelaptorIWindow
         SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
+        /* NOTE:
+         * Pushing this notification is very very important.  The reason is because
+         * currently in this method, the GL context still exists.  After leaving this method,
+         * the GL context will be destroyed.  Any further disposal attempts to textures
+         * will fail due to the GL context being destroyed.  Sending this push notification
+         * will trigger subscriptions in the texture cache which in turn will send
+         * disposal notifications to all textures.
+         *
+         * Other types that depend on this shutdown process occurring before the GL context
+         * is destroyed are the shaders and gpu buffers.
+         */
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
         this.afterUnloadAction?.Invoke();
