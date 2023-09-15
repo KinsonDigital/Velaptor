@@ -351,49 +351,6 @@ public class SoundCacheTests
     }
     #endregion
 
-    #region Indirect Tests
-    [Fact]
-    public void PushReactable_WithShutDownNotification_ShutsDownCache()
-    {
-        // Arrange
-        var mockSoundA = new Mock<ISound>();
-        mockSoundA.SetupGet(p => p.Id).Returns(11u);
-        mockSoundA.Name = nameof(mockSoundA);
-
-        var mockSoundB = new Mock<ISound>();
-        mockSoundB.SetupGet(p => p.Id).Returns(22u);
-        mockSoundB.Name = nameof(mockSoundB);
-
-        const string soundPathA = $"{SoundDirPath}/soundA{OggFileExtension}";
-        const string soundPathB = $"{SoundDirPath}/soundB{OggFileExtension}";
-
-        this.mockSoundFactory.Setup(m => m.Create(soundPathA))
-            .Returns(mockSoundA.Object);
-
-        this.mockSoundFactory.Setup(m => m.Create(soundPathB))
-            .Returns(mockSoundB.Object);
-
-        this.mockPath.Setup(m => m.GetExtension(soundPathA)).Returns(OggFileExtension);
-        this.mockPath.Setup(m => m.GetExtension(soundPathB)).Returns(OggFileExtension);
-
-        this.mockFile.Setup(m => m.Exists(soundPathA)).Returns(true);
-        this.mockFile.Setup(m => m.Exists(soundPathB)).Returns(true);
-
-        var sut = CreateSystemUnderTest();
-
-        sut.GetItem(soundPathA);
-        sut.GetItem(soundPathB);
-
-        // Act
-        this.shutDownReactor?.OnReceive();
-        this.shutDownReactor?.OnReceive();
-
-        // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockDisposeReactable.VerifyOnce(m => m.Unsubscribe(PushNotifications.SoundDisposedId));
-    }
-    #endregion
-
     /// <summary>
     /// Creates a new instance of <see cref="SoundCache"/> for the purpose of testing.
     /// </summary>
