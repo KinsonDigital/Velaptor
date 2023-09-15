@@ -223,7 +223,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             }
         }
 
-        return this.textures.GetOrAdd(cacheKey, _ =>
+        return this.textures.GetOrAdd(cacheKey, value =>
         {
             ImageData imageData;
 
@@ -234,7 +234,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;
 #if DEBUG
-                AppStats.RecordLoadedFont(cacheKey);
+                AppStats.RecordLoadedFont(value);
 #endif
             }
             else
