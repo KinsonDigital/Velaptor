@@ -31,7 +31,6 @@ public class TextureShaderTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
 
@@ -68,15 +67,8 @@ public class TextureShaderTests
                 }
             });
 
-        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
-
         var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
         mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Returns<IReceiveSubscription<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return this.mockBatchSizeUnsubscriber.Object;
-            })
             .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");

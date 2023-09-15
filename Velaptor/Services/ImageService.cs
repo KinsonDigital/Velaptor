@@ -34,7 +34,7 @@ internal sealed class ImageService : IImageService
     /// <inheritdoc/>
     public ImageData Load(string filePath)
     {
-        if (this.file.Exists(filePath) is false)
+        if (!this.file.Exists(filePath))
         {
             throw new FileNotFoundException("The image file was not found.", filePath);
         }

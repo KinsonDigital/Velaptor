@@ -27,7 +27,6 @@ public class SceneBaseTests
 {
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockUnsubscriber;
     private IReceiveSubscription<WindowSizeData>? winSizeReactor;
 
     /// <summary>
@@ -36,7 +35,6 @@ public class SceneBaseTests
     public SceneBaseTests()
     {
         this.mockContentLoader = new Mock<IContentLoader>();
-        this.mockUnsubscriber = new Mock<IDisposable>();
 
         var mockWinSizeReactable = new Mock<IPushReactable<WindowSizeData>>();
         mockWinSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<WindowSizeData>>()))
@@ -46,11 +44,6 @@ public class SceneBaseTests
                 reactor.Name.Should().Be($"SceneBase.Init - {nameof(PushNotifications.WindowSizeChangedId)}");
 
                 this.winSizeReactor = reactor;
-            })
-            .Returns<IReceiveSubscription<WindowSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit tests.");
-                return this.mockUnsubscriber.Object;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();

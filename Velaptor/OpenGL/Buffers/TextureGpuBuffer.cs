@@ -68,7 +68,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     /// <inheritdoc/>
     protected internal override void UploadVertexData(TextureBatchItem textureQuad, uint batchIndex)
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -172,7 +172,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     /// <inheritdoc/>
     protected internal override void PrepareForUpload()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -183,7 +183,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -201,7 +201,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     /// <inheritdoc/>
     protected internal override void SetupVAO()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -230,7 +230,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     /// <inheritdoc/>
     protected internal override uint[] GenerateIndices()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }

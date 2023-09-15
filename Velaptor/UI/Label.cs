@@ -227,12 +227,12 @@ public class Label : ControlBase
     /// <param name="layer">The layer to render the label.</param>
     internal void Render(string text, int layer)
     {
-        if (IsLoaded is false || Visible is false)
+        if (!IsLoaded || !Visible)
         {
             return;
         }
 
-        if (string.IsNullOrEmpty(text) is false)
+        if (!string.IsNullOrEmpty(text))
         {
             this.fontRenderer.Render(
                 Font,
@@ -253,7 +253,7 @@ public class Label : ControlBase
     /// </summary>
     private void CalcTextCharacterBounds()
     {
-        if (IsLoaded is false)
+        if (!IsLoaded)
         {
             return;
         }

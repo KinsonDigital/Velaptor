@@ -37,7 +37,7 @@ public static class TestHelpers
     /// </summary>
     public static void SetupTestResultDirPath()
     {
-        if (Directory.Exists(TestResultDirPath) is false)
+        if (!Directory.Exists(TestResultDirPath))
         {
             Directory.CreateDirectory(TestResultDirPath);
         }

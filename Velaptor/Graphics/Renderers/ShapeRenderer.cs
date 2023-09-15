@@ -89,7 +89,7 @@ internal sealed class ShapeRenderer : IShapeRenderer
     /// </exception>
     private void RenderBase(ShapeBatchItem batchItem, int layer)
     {
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }

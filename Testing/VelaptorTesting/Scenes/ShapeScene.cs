@@ -950,7 +950,7 @@ public class ShapeScene : SceneBase
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
     private void ChangeRectSize(FrameTime frameTime)
     {
-        if (this.currentKeyState.IsLeftShiftKeyDown() is false && this.currentKeyState.IsRightShiftKeyDown() is false)
+        if (!this.currentKeyState.IsLeftShiftKeyDown() && !this.currentKeyState.IsRightShiftKeyDown())
         {
             return;
         }

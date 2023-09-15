@@ -212,7 +212,7 @@ internal sealed class FontService : IFontService
     /// <inheritdoc/>
     public float GetKerning(nint facePtr, uint leftGlyphIndex, uint rightGlyphIndex)
     {
-        if (HasKerning(facePtr) is false || leftGlyphIndex == 0 || rightGlyphIndex == 0)
+        if (!HasKerning(facePtr) || leftGlyphIndex == 0 || rightGlyphIndex == 0)
         {
             return 0f;
         }
@@ -233,7 +233,7 @@ internal sealed class FontService : IFontService
     {
         FontStyle result;
 
-        if (File.Exists(fontFilePath) is false)
+        if (!File.Exists(fontFilePath))
         {
             throw new FileNotFoundException("The font file does not exist", fontFilePath);
         }
@@ -264,7 +264,7 @@ internal sealed class FontService : IFontService
     {
         string? result;
 
-        if (File.Exists(fontFilePath) is false)
+        if (!File.Exists(fontFilePath))
         {
             throw new FileNotFoundException("The font file does not exist", fontFilePath);
         }

@@ -179,7 +179,7 @@ public static class AppStats
 
         var dataItem = (fileName, fontSizeSections[1]);
 
-        if (LoadedFonts.Contains(dataItem) is false)
+        if (!LoadedFonts.Contains(dataItem))
         {
             LoadedFonts.Add(dataItem);
         }
@@ -191,7 +191,7 @@ public static class AppStats
     /// <param name="fontInfo">Clears the loaded font information.</param>
     internal static void ClearLoadedFont(string fontInfo)
     {
-        if (string.IsNullOrEmpty(fontInfo) is false &&
+        if (!string.IsNullOrEmpty(fontInfo) &&
             fontInfo.Contains("|size:"))
         {
             var sections = fontInfo.Split('|');
@@ -202,7 +202,7 @@ public static class AppStats
 
                 var dataItem = (fontSizeSections[0], fontSizeSections[1]);
 
-                if (LoadedFonts.Contains(dataItem) is false)
+                if (!LoadedFonts.Contains(dataItem))
                 {
                     LoadedFonts.Remove(dataItem);
                 }

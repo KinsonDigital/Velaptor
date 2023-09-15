@@ -276,19 +276,19 @@ public class TextRenderingScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         // Rotate CW
-        if (this.cwButtonDown && this.ccwButtonDown is false)
+        if (this.cwButtonDown && !this.ccwButtonDown)
         {
             this.angle += AngularVelocity * (float)frameTime.ElapsedTime.TotalSeconds;
         }
 
         // Rotate CCW
-        if (this.ccwButtonDown && this.cwButtonDown is false)
+        if (this.ccwButtonDown && !this.cwButtonDown)
         {
             this.angle -= AngularVelocity * (float)frameTime.ElapsedTime.TotalSeconds;
         }
 
         // Increase Render Size
-        if (this.increaseRenderSizeBtnDown && this.decreaseRenderBtnDown is false)
+        if (this.increaseRenderSizeBtnDown && !this.decreaseRenderBtnDown)
         {
             this.renderSize += SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
             this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
@@ -296,7 +296,7 @@ public class TextRenderingScene : SceneBase
         }
 
         // Decrease Render Size
-        if (this.decreaseRenderBtnDown && this.increaseRenderSizeBtnDown is false)
+        if (this.decreaseRenderBtnDown && !this.increaseRenderSizeBtnDown)
         {
             this.renderSize -= SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
             this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";

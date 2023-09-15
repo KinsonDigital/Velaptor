@@ -515,7 +515,7 @@ public class ShapeGpuBufferTests
         sut.SetupVAO();
 
         // Assert
-        Assert.All(paramData, data =>
+        paramData.Should().AllSatisfy(data =>
         {
             this.mockGL.Verify(m =>
                     m.VertexAttribPointer(data.index,
@@ -527,11 +527,10 @@ public class ShapeGpuBufferTests
                 $"The '{data.label}' vertex attribute pointer layout is incorrect.");
         });
 
-        Assert.All(enableVertexAttribArrayParamData, data =>
+        enableVertexAttribArrayParamData.Should().AllSatisfy(data =>
         {
-            var (index, label) = data;
-            this.mockGL.Verify(m => m.EnableVertexAttribArray(index),
-                $"Issue enabling vertex attribute pointer '{label}'.");
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(data.index),
+                $"Issue enabling vertex attribute pointer '{data.label}'.");
         });
     }
 
@@ -546,8 +545,8 @@ public class ShapeGpuBufferTests
         var actual = sut.GenerateIndices();
 
         // Assert
-        Assert.Equal(100u, sut.BatchSize);
-        Assert.Equal(expected, actual);
+        sut.BatchSize.Should().Be(100u);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 

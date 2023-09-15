@@ -534,7 +534,7 @@ public class LabelTests
                     var charIndex = i;
                     var alreadyAdded = result.Any(g => g.Glyph == text[charIndex]);
 
-                    if (alreadyAdded is false)
+                    if (!alreadyAdded)
                     {
                         result.Add(new GlyphMetrics
                         {

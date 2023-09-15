@@ -105,7 +105,7 @@ internal sealed class LineRenderer : ILineRenderer
     /// <param name="layer">The layer to render the line.</param>
     private void RenderBase(Vector2 start, Vector2 end, Color color, uint thickness, int layer)
     {
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }

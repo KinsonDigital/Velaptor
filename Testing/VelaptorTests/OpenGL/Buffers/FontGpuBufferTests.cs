@@ -259,7 +259,7 @@ public class FontGpuBufferTests
         var actual = sut.GenerateData();
 
         // Assert
-        Assert.Equal(3_200, actual.Length);
+        actual.Length.Should().Be(3_200);
     }
 
     [Fact]

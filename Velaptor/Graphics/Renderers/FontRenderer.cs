@@ -132,7 +132,7 @@ internal sealed class FontRenderer : IFontRenderer
 
         renderSize = renderSize < 0f ? 0f : renderSize;
 
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
@@ -343,7 +343,7 @@ internal sealed class FontRenderer : IFontRenderer
 
         renderSize = renderSize < 0f ? 0f : renderSize;
 
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }

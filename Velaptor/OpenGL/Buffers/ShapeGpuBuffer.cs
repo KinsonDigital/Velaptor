@@ -126,7 +126,7 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     /// <inheritdoc/>
     protected internal override void PrepareForUpload()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }

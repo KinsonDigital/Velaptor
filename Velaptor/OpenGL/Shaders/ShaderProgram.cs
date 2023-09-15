@@ -122,7 +122,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// </exception>
     public virtual void Use()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new ShaderNotInitializedException("The shader has not been initialized.");
         }

@@ -30,7 +30,7 @@ internal sealed class EmbeddedFontResourceService : IEmbeddedResourceLoaderServi
     /// </exception>
     public Stream? LoadResource(string name)
     {
-        if (string.IsNullOrEmpty(Path.GetDirectoryName(name)) is false)
+        if (!string.IsNullOrEmpty(Path.GetDirectoryName(name)))
         {
             throw new ArgumentException(
                 "The parameter must not contain a directory path when extracting embedded font files.",

@@ -381,7 +381,7 @@ public sealed class TextBox : ControlBase
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
     public override void Update(FrameTime frameTime)
     {
-        if (IsLoaded is false || Enabled is false)
+        if (!IsLoaded || !Enabled)
         {
             return;
         }
@@ -404,7 +404,7 @@ public sealed class TextBox : ControlBase
     /// <inheritdoc/>
     public override void Render()
     {
-        if (IsLoaded is false || Visible is false)
+        if (!IsLoaded || !Visible)
         {
             return;
         }
@@ -552,7 +552,7 @@ public sealed class TextBox : ControlBase
     /// </summary>
     private void StartSelection()
     {
-        var movingIntoSelectionMode = this.inSelectionMode && this.prevInSelectionMode is false;
+        var movingIntoSelectionMode = this.inSelectionMode && !this.prevInSelectionMode;
 
         // When moving into selection mode
         if (!movingIntoSelectionMode)

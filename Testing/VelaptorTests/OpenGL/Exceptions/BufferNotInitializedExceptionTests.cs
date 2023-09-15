@@ -5,6 +5,7 @@
 namespace VelaptorTests.OpenGL.Exceptions;
 
 using System;
+using FluentAssertions;
 using Velaptor.OpenGL.Exceptions;
 using Xunit;
 
@@ -21,7 +22,7 @@ public class BufferNotInitializedExceptionTests
         var exception = new BufferNotInitializedException();
 
         // Assert
-        Assert.Equal("The buffer has not been initialized.", exception.Message);
+        exception.Message.Should().Be("The buffer has not been initialized.");
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class BufferNotInitializedExceptionTests
         var exception = new BufferNotInitializedException("test-message");
 
         // Assert
-        Assert.Equal("test-message", exception.Message);
+        exception.Message.Should().Be("test-message");
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class BufferNotInitializedExceptionTests
         var exception = new BufferNotInitializedException("test-message", bufferName);
 
         // Assert
-        Assert.Equal("test-buffer test-message", exception.Message);
+        exception.Message.Should().Be("test-buffer test-message");
     }
 
     [Fact]
@@ -55,8 +56,8 @@ public class BufferNotInitializedExceptionTests
         var deviceException = new BufferNotInitializedException("test-exception", innerException);
 
         // Assert
-        Assert.Equal("inner-exception", deviceException.InnerException.Message);
-        Assert.Equal("test-exception", deviceException.Message);
+        deviceException.InnerException.Message.Should().Be("inner-exception");
+        deviceException.Message.Should().Be("test-exception");
     }
     #endregion
 }

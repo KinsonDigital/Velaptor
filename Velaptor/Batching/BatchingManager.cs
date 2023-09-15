@@ -335,7 +335,7 @@ internal sealed class BatchingManager : IBatchingManager
     /// </exception>
     private void SetNewBatchSize(uint newBatchSize, BatchType batchType)
     {
-        if (this.batchTypes.Contains(batchType) is false)
+        if (!this.batchTypes.Contains(batchType))
         {
             throw new EnumOutOfRangeException<BatchType>(nameof(BatchingManager), nameof(SetNewBatchSize));
         }

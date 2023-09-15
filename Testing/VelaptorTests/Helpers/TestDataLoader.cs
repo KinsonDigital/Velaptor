@@ -53,7 +53,7 @@ public static class TestDataLoader
             Assert.Fail($"{loadTestDataPrefix}The parameter '{nameof(fileName)}' must not be null or empty.");
         }
 
-        if (Path.HasExtension(fileName) is false)
+        if (!Path.HasExtension(fileName))
         {
             Assert.Fail($"{loadTestDataPrefix}The file name '{fileName}' must be a file name with an extension.");
         }
@@ -72,14 +72,14 @@ public static class TestDataLoader
 
         var fullDirPath = $"{RootDirPath}{CrossPlatDirSeparatorChar}{relativeDirPath}";
 
-        if (Directory.Exists(fullDirPath) is false)
+        if (!Directory.Exists(fullDirPath))
         {
             Assert.Fail($"{loadTestDataPrefix}The directory path '{fullDirPath}' does not exist.");
         }
 
         var fullTestDataFilePath = $"{fullDirPath}{CrossPlatDirSeparatorChar}{fileName}";
 
-        if (File.Exists(fullTestDataFilePath) is false)
+        if (!File.Exists(fullTestDataFilePath))
         {
             Assert.Fail($"{loadTestDataPrefix}The test data file path '{fullTestDataFilePath}' does not exist.");
         }
