@@ -10,8 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.OneWay;
+using Carbonate.Fluent;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
@@ -31,8 +30,6 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<FontGlyphBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -63,21 +60,23 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var renderStateName = this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId));
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveSubscription(
-            id: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId));
-        this.renderUnsubscriber = fontRenderBatchReactable.Subscribe(new ReceiveSubscription<Memory<RenderItem<FontGlyphBatchItem>>>(
-            id: PushNotifications.RenderFontsId,
-            name: renderReactorName,
-            onReceive: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderFontReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderFontsId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderFontsId)))
+            .BuildOneWayReceive<Memory<RenderItem<FontGlyphBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
         /// <inheritdoc/>
@@ -181,22 +180,6 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         {
             this.batchManager.AddFontItem(item, layer, renderStamp);
         }
-    }
-
-    /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
     }
 
     /// <summary>
