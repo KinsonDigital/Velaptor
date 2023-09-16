@@ -1,4 +1,4 @@
-// <copyright file="SoundFactoryTests.cs" company="KinsonDigital">
+﻿// <copyright file="SoundFactoryTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Moq;
+using Velaptor;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.ReactableData;
@@ -63,6 +64,43 @@ public class SoundFactoryTests
 
         // Assert
         actual.Should().Be(1);
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    public void DisposeSoundReactable_WithDisposeNotification_RemovesSoundReference()
+    {
+        // Arrange
+        IReceiveSubscription<DisposeSoundData>? subscription = null;
+
+        this.mockDisposeSoundReactable
+            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
+            .Callback<IReceiveSubscription<DisposeSoundData>>((subscriptionParam) =>
+            {
+                subscriptionParam.Should().NotBeNull();
+                subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
+                subscriptionParam.Name.Should().Be("SoundFactoryTests.Ctor - SoundDisposedId");
+
+                subscription = subscriptionParam;
+            });
+
+        this.mockDisposeSoundReactable
+            .Setup(m => m.Push(It.IsAny<DisposeSoundData>(), It.IsAny<Guid>()))
+            .Callback((in DisposeSoundData data, Guid eventId) =>
+            {
+                data.SoundId.Should().Be(1);
+                eventId.Should().Be(PushNotifications.SoundDisposedId);
+            });
+
+        var sut = CreateSystemUnderTest();
+        this.mockDisposeSoundReactable.Object.Push(new DisposeSoundData { SoundId = 1 }, PushNotifications.SoundDisposedId);
+
+        // Act
+        subscription.OnReceive(new DisposeSoundData { SoundId = 1 });
+
+        // Assert
+        sut.Sounds.Should().BeEmpty();
     }
     #endregion
 
