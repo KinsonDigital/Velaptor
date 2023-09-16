@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -65,6 +65,7 @@ public class GLWindowTests
     private readonly Mock<IPushReactable<GL>> mockGLReactable;
     private readonly Mock<SilkWindow> mockSilkWindow;
     private readonly Mock<IWindowFactory> mockWindowFactory;
+    private readonly Mock<ITimerService> mockTimerService;
     private Mock<INativeInputFactory>? mockNativeInputFactory;
     private Mock<IInputContext>? mockSilkInputContext;
     private Mock<IKeyboard>? mockSilkKeyboard;
@@ -109,6 +110,8 @@ public class GLWindowTests
         this.mockReactableFactory.Setup(m => m.CreateGLReactable()).Returns(this.mockGLReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateWindowSizeReactable()).Returns(this.mockWinSizeReactable.Object);
+
+        this.mockTimerService = new Mock<ITimerService>();
     }
 
     #region Contructor Tests
@@ -129,7 +132,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -153,7 +157,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -177,7 +182,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -201,7 +207,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -225,7 +232,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -249,7 +257,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -273,7 +282,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -297,7 +307,8 @@ public class GLWindowTests
                 null,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -321,7 +332,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 null,
                 this.mockSceneManager.Object,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -345,7 +357,8 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 null,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory.Object,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -369,11 +382,37 @@ public class GLWindowTests
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
-                null);
+                null,
+                this.mockTimerService.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullTimerServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
+                It.IsAny<uint>(),
+                It.IsAny<uint>(),
+                this.mockAppService.Object,
+                this.mockWindowFactory.Object,
+                this.mockNativeInputFactory.Object,
+                this.mockGL.Object,
+                this.mockGlfw.Object,
+                this.mockDisplayService.Object,
+                this.mockPlatform.Object,
+                this.mockTaskService.Object,
+                this.mockContentLoader.Object,
+                this.mockSceneManager.Object,
+                this.mockReactableFactory.Object,
+                null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'timerService')");
     }
     #endregion
 
@@ -1078,6 +1117,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Update += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
+        this.mockTimerService.VerifyOnce(m => m.Start());
         sutUpdateInvoked.Should().BeTrue($"{nameof(GLWindow.Update)} was not invoked.");
         this.mockMouseReactable.VerifyOnce(m =>
             m.Push(It.Ref<MouseStateData>.IsAny, PushNotifications.MouseStateChangedId));
@@ -1119,6 +1159,7 @@ public class GLWindowTests
     public void GLWindow_WhenRenderingFrame_InvokesDrawAndSwapsBuffer()
     {
         // Arrange
+        this.mockTimerService.SetupGet(p => p.MillisecondsPassed).Returns(4);
         var drawInvoked = false;
         var sut = CreateSystemUnderTest();
         sut.Draw = time =>
@@ -1135,6 +1176,9 @@ public class GLWindowTests
         // Assert
         drawInvoked.Should().BeTrue($"the '{nameof(GLWindow.Draw)}()' method should of been invoked.");
         this.mockGLContext.VerifyOnce(m => m.SwapBuffers());
+        this.mockTimerService.VerifyOnce(m => m.Stop());
+        sut.Fps.Should().Be(250);
+        this.mockTimerService.VerifyOnce(m => m.Reset());
     }
 
     [Fact]
@@ -1398,8 +1442,7 @@ public class GLWindowTests
     /// <param name="height">The height of the sut.</param>
     /// <returns>The instance to test.</returns>
     private GLWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
-        => new (
-            width,
+        => new (width,
             height,
             this.mockAppService.Object,
             this.mockWindowFactory.Object,
@@ -1411,7 +1454,8 @@ public class GLWindowTests
             this.mockTaskService.Object,
             this.mockContentLoader.Object,
             this.mockSceneManager.Object,
-            this.mockReactableFactory.Object);
+            this.mockReactableFactory.Object,
+            this.mockTimerService.Object);
 
     private void MockWindowLoadEvent()
     {

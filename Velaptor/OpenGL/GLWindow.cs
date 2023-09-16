@@ -54,6 +54,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> winSizeReactable;
+    private readonly ITimerService timerService;
     private MouseStateData mouseStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
@@ -78,6 +79,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="timerService">Measures the time it takes to process the game loop.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -91,7 +93,8 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         ISceneManager sceneManager,
-        IReactableFactory reactableFactory)
+        IReactableFactory reactableFactory,
+        ITimerService timerService)
     {
         EnsureThat.ParamIsNotNull(appService);
         EnsureThat.ParamIsNotNull(windowFactory);
@@ -104,6 +107,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(sceneManager);
         EnsureThat.ParamIsNotNull(reactableFactory);
+        EnsureThat.ParamIsNotNull(timerService);
 
         this.appService = appService;
         this.windowFactory = windowFactory;
@@ -122,6 +126,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glReactable = reactableFactory.CreateGLReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        this.timerService = timerService;
 
         this.mouseStateData = default;
 
@@ -213,6 +218,9 @@ internal sealed class GLWindow : VelaptorIWindow
 
     /// <inheritdoc/>
     public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
+    public float Fps { get; private set; }
 
     /// <inheritdoc/>
     public int UpdateFrequency
@@ -461,6 +469,8 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Update(double time)
     {
+        this.timerService.Start();
+
         if (this.isShuttingDown)
         {
             return;
@@ -515,6 +525,10 @@ internal sealed class GLWindow : VelaptorIWindow
         Draw?.Invoke(frameTime);
 
         this.glWindow.SwapBuffers();
+
+        this.timerService.Stop();
+        Fps = 1000f / this.timerService.MillisecondsPassed;
+        this.timerService.Reset();
     }
 
     /// <summary>

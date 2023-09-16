@@ -181,6 +181,9 @@ public abstract class Window : IWindow
     /// <inheritdoc/>
     public bool Initialized => this.nativeWindow.Initialized;
 
+    /// <inheritdoc/>
+    public float Fps => this.nativeWindow.Fps;
+
     /// <summary>
     /// Shows the window.
     /// </summary>
