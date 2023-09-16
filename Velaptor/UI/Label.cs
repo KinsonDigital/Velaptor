@@ -23,9 +23,9 @@ public class Label : ControlBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const uint DefaultFontSize = 12;
-    private readonly IContentLoader contentLoader;
     private readonly Color disabledColor = Color.DarkGray;
-    private readonly IFontRenderer fontRenderer;
+    private IContentLoader contentLoader = null!;
+    private IFontRenderer fontRenderer = null!;
     private string labelText = string.Empty;
     private (char character, RectangleF bounds)[]? textCharBounds;
 
@@ -35,12 +35,9 @@ public class Label : ControlBase
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Label()
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-
-        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
-        Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+
+        Init(ContentLoaderFactory.CreateContentLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
     }
 
     /// <summary>
@@ -51,13 +48,10 @@ public class Label : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Label(string text)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-
-        this.contentLoader = ContentLoaderFactory.CreateContentLoader();
-        Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
         Text = text;
+
+        Init(ContentLoaderFactory.CreateContentLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
     }
 
     /// <summary>
@@ -83,9 +77,8 @@ public class Label : ControlBase
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(rendererFactory);
 
-        this.contentLoader = contentLoader;
         Font = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
-        this.fontRenderer = rendererFactory.CreateFontRenderer();
+        Init(contentLoader, rendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
@@ -244,6 +237,17 @@ public class Label : ControlBase
         }
 
         base.Render();
+    }
+
+    /// <summary>
+    /// Initializes the <see cref="Label"/> class.
+    /// </summary>
+    /// <param name="newContentLoader">Loads various kinds of content.</param>
+    /// <param name="newFontRenderer">Renders font.</param>
+    private void Init(IContentLoader newContentLoader, IFontRenderer newFontRenderer)
+    {
+        this.contentLoader = newContentLoader;
+        this.fontRenderer = newFontRenderer;
     }
 
     /// <summary>
