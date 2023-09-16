@@ -11,18 +11,20 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">New Features ✨</h2>
 
-1. [#734](https://github.com/KinsonDigital/Velaptor/issues/734) - Add ability to keep track of fps
+1. [#734](https://github.com/KinsonDigital/Velaptor/issues/734) - Added the ability to keep track of the fps(frames per second) of the main loop.
+   - For a demo of this, refer to the ***VelaptorTesting*** application.
+2. [#734](https://github.com/KinsonDigital/Velaptor/issues/734) - Added the ability for creating `Label` objects to be done outside of the window/scene loading process.
 
 <h2 align="center" style="font-weight: bold;">Breaking Changes 🧨</h2>
 
-1. [#734](https://github.com/KinsonDigital/Velaptor/issues/734) - Add ability to keep track of fps
+1. [#734](https://github.com/KinsonDigital/Velaptor/issues/734) - Replaced the `Label.Font` property with `FontStyle`, `FontSize`, and `FontFamilyName`.
 
 <h2 align="center" style="font-weight: bold;">Dependency Updates 📦</h2>
 
-1. [#733](https://github.com/KinsonDigital/Velaptor/pull/733) - Update to latest version of carbonate
-2. [#730](https://github.com/KinsonDigital/Velaptor/pull/730) - chore(deps): update dependency nsubstitute to v5.1.0
-3. [#729](https://github.com/KinsonDigital/Velaptor/pull/729) - chore(deps): update dependency benchmarkdotnet to v0.13.8
+1. [#733](https://github.com/KinsonDigital/Velaptor/pull/733) - Updated the dependency _**carbonate**_ to _**v1.0.0-preview.16**_
+2. [#730](https://github.com/KinsonDigital/Velaptor/pull/730) - Updated the dependency _**nsubstitute**_ to _**v5.1.0**_
+3. [#729](https://github.com/KinsonDigital/Velaptor/pull/729) - Updated the dependency _**benchmarkdotnet**_ to _**v0.13.8**_
 
 <h2 align="center" style="font-weight: bold;">Other 🪧</h2>
 
-1. [#360](https://github.com/KinsonDigital/Velaptor/issues/360) - Refactor unit test assertions
+1. [#360](https://github.com/KinsonDigital/Velaptor/issues/360) - Refactored unit test assertions.
