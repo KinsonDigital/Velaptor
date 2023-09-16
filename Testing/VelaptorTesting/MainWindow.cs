@@ -4,6 +4,7 @@
 
 namespace VelaptorTesting;
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -27,9 +28,10 @@ public class MainWindow : Window
         'U', 'V', 'W', 'X', 'Y', 'Z',
     };
     private readonly IAppInput<KeyboardState> keyboard;
+    private readonly IBatcher batcher;
     private readonly Button nextButton;
     private readonly Button previousButton;
-    private readonly IBatcher batcher;
+    private readonly Label lblFps;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -42,10 +44,15 @@ public class MainWindow : Window
 
         this.keyboard = HardwareFactory.GetKeyboard();
 
+        this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
+
         this.nextButton = new Button { Text = "-->" };
         this.previousButton = new Button { Text = "<--" };
 
-        this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
+        this.lblFps = new Label("FPS: 0.0");
+        this.lblFps.Color = Color.White;
+        this.lblFps.Left = 75;
+        this.lblFps.Bottom = (int)Height - ((int)this.lblFps.HalfHeight + 20);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -134,11 +141,11 @@ public class MainWindow : Window
         const int rightMargin = 15;
 
         this.nextButton.Click += (_, _) => SceneManager.NextScene();
-
         this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
 
         this.nextButton.LoadContent();
         this.previousButton.LoadContent();
+        this.lblFps.LoadContent();
 
         var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
         var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
@@ -168,6 +175,9 @@ public class MainWindow : Window
         this.nextButton.Update(frameTime);
         this.previousButton.Update(frameTime);
 
+        this.lblFps.Text = $"FPS: {Math.Round(Fps, 2)}";
+        this.lblFps.Update(frameTime);
+
         this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
@@ -186,6 +196,7 @@ public class MainWindow : Window
         // Render the scene manager UI on top of all other textures
         this.nextButton.Render();
         this.previousButton.Render();
+        this.lblFps.Render();
 
         this.batcher.End();
     }
@@ -195,6 +206,7 @@ public class MainWindow : Window
     {
         this.previousButton.UnloadContent();
         this.nextButton.UnloadContent();
+        this.lblFps.UnloadContent();
 
         base.OnUnload();
     }
