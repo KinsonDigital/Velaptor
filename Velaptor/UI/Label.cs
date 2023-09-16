@@ -128,18 +128,8 @@ public class Label : ControlBase
     /// </summary>
     public override uint Width
     {
-        get
-        {
-            if (!AutoSize)
-            {
-                return base.Width;
-            }
-
-            var textSize = Font.Measure(this.labelText);
-            base.Width = (uint)textSize.Width;
-            return base.Width;
-        }
-        set => base.Width = value;
+        get => this.cachedWidth?.GetValue() ?? 0u;
+        set => this.cachedWidth?.SetValue(value);
     }
 
     /// <summary>
@@ -147,17 +137,8 @@ public class Label : ControlBase
     /// </summary>
     public override uint Height
     {
-        get
-        {
-            if (!AutoSize)
-            {
-                return base.Height;
-            }
-
-            var textSize = Font.Measure(this.labelText);
-            return (uint)textSize.Height;
-        }
-        set => base.Height = value;
+        get => this.cachedHeight?.GetValue() ?? 0u;
+        set => this.cachedHeight?.SetValue(value);
     }
 
     /// <summary>
@@ -191,6 +172,12 @@ public class Label : ControlBase
         base.LoadContent();
 
         CalcTextCharacterBounds();
+
+        if (this.cachedWidth is not null && this.cachedHeight is not null)
+        {
+            this.cachedWidth.IsCaching = false;
+            this.cachedHeight.IsCaching = false;
+        }
     }
 
     /// <inheritdoc cref="ControlBase.UnloadContent"/>
@@ -248,6 +235,41 @@ public class Label : ControlBase
     {
         this.contentLoader = newContentLoader;
         this.fontRenderer = newFontRenderer;
+
+        this.cachedWidth = new (
+            defaultValue: base.Width,
+            getterWhenNotCaching: () =>
+            {
+                if (!AutoSize)
+                {
+                    return base.Width;
+                }
+
+                var textSize = Font.Measure(this.labelText);
+                base.Width = (uint)textSize.Width;
+                return base.Width;
+            },
+            setterWhenNotCaching: (value) =>
+            {
+                base.Width = value;
+            });
+
+        this.cachedHeight = new (
+            defaultValue: base.Width,
+            getterWhenNotCaching: () =>
+            {
+                if (!AutoSize)
+                {
+                    return base.Height;
+                }
+
+                var textSize = Font.Measure(this.labelText);
+                return (uint)textSize.Height;
+            },
+            setterWhenNotCaching: (value) =>
+            {
+                base.Height = value;
+            });
     }
 
     /// <summary>
