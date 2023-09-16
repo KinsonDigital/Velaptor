@@ -329,12 +329,12 @@ public sealed class Button : ControlBase
     /// </summary>
     public uint FontSize
     {
-        get => Label?.Font.Size ?? 0u;
+        get => Label?.FontSize ?? 0u;
         set
         {
-            if (Label != null)
+            if (Label is not null)
             {
-                Label.Font.Size = value;
+                Label.FontSize = value;
             }
         }
     }

@@ -351,7 +351,7 @@ public class TextBoxScene : SceneBase
 
         var lines = this.instructions.Text.Split('\n');
 
-        var maxLineWidth = lines.Max(l => this.instructions.Font.Measure(l).Width);
+        var maxLineWidth = lines.Max(l => this.instructions.Width);
         this.currentSetting.Position = new Point(WindowCenter.X, 30);
         this.instructions.Left = WindowCenter.X - ((int)maxLineWidth / 2);
         this.instructions.Top = 60;

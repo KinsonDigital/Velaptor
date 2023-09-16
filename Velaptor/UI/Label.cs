@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using Content;
+using Content.Exceptions;
 using Content.Fonts;
 using Factories;
 using Graphics.Renderers;
@@ -26,8 +27,13 @@ public class Label : ControlBase
     private readonly Color disabledColor = Color.DarkGray;
     private IContentLoader contentLoader = null!;
     private IFontRenderer fontRenderer = null!;
+    private CachedValue<uint> cachedWidth = null!;
+    private CachedValue<uint> cachedHeight = null!;
+    private CachedValue<FontStyle> cachedFontStyle = null!;
+    private CachedValue<uint> cachedFontSize = null!;
     private string labelText = string.Empty;
     private (char character, RectangleF bounds)[]? textCharBounds;
+    private IFont? font;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
@@ -77,7 +83,6 @@ public class Label : ControlBase
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(rendererFactory);
 
-        Font = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
         Init(contentLoader, rendererFactory.CreateFontRenderer());
     }
 
@@ -128,8 +133,8 @@ public class Label : ControlBase
     /// </summary>
     public override uint Width
     {
-        get => this.cachedWidth?.GetValue() ?? 0u;
-        set => this.cachedWidth?.SetValue(value);
+        get => this.cachedWidth.GetValue();
+        set => this.cachedWidth.SetValue(value);
     }
 
     /// <summary>
@@ -137,8 +142,8 @@ public class Label : ControlBase
     /// </summary>
     public override uint Height
     {
-        get => this.cachedHeight?.GetValue() ?? 0u;
-        set => this.cachedHeight?.SetValue(value);
+        get => this.cachedHeight.GetValue();
+        set => this.cachedHeight.SetValue(value);
     }
 
     /// <summary>
@@ -146,19 +151,29 @@ public class Label : ControlBase
     /// </summary>
     public FontStyle Style
     {
-        get => Font.Style;
-        set => Font.Style = value;
+        get => this.cachedFontStyle.GetValue();
+        set => this.cachedFontStyle.SetValue(value);
     }
+
+    /// <summary>
+    /// Gets or sets the font size.
+    /// </summary>
+    public uint FontSize
+    {
+        get => this.cachedFontSize.GetValue();
+        set => this.cachedFontSize.SetValue(value);
+    }
+
+    /// <summary>
+    /// Gets the font family name.
+    /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API")]
+    public string FontFamilyName => this.font?.FamilyName ?? string.Empty;
 
     /// <summary>
     /// Gets or sets the color of the text.
     /// </summary>
     public Color Color { get; set; } = Color.Black;
-
-    /// <summary>
-    /// Gets the font for the label.
-    /// </summary>
-    public IFont Font { get; }
 
     /// <inheritdoc cref="ControlBase.UnloadContent"/>
     /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
@@ -169,15 +184,16 @@ public class Label : ControlBase
             return;
         }
 
+        var loadedFont = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
+
+        this.font = loadedFont ?? throw new LoadFontException("Failed to load the default font for the label.");
+
         base.LoadContent();
 
         CalcTextCharacterBounds();
 
-        if (this.cachedWidth is not null && this.cachedHeight is not null)
-        {
-            this.cachedWidth.IsCaching = false;
-            this.cachedHeight.IsCaching = false;
-        }
+        this.cachedWidth.IsCaching = false;
+        this.cachedHeight.IsCaching = false;
     }
 
     /// <inheritdoc cref="ControlBase.UnloadContent"/>
@@ -188,7 +204,10 @@ public class Label : ControlBase
             return;
         }
 
-        this.contentLoader.UnloadFont(Font);
+        if (this.font is not null)
+        {
+            this.contentLoader.UnloadFont(this.font);
+        }
 
         base.UnloadContent();
     }
@@ -210,10 +229,10 @@ public class Label : ControlBase
             return;
         }
 
-        if (!string.IsNullOrEmpty(text))
+        if (!string.IsNullOrEmpty(text) && this.font is not null)
         {
             this.fontRenderer.Render(
-                Font,
+                this.font,
                 text,
                 Position.X,
                 Position.Y,
@@ -245,9 +264,11 @@ public class Label : ControlBase
                     return base.Width;
                 }
 
-                var textSize = Font.Measure(this.labelText);
-                base.Width = (uint)textSize.Width;
-                return base.Width;
+                var textLines = this.labelText.Split("\n");
+
+                var textSize = textLines.Max(l => this.font?.Measure(l).Width);
+
+                return textSize is null ? 0u : (uint)textSize;
             },
             setterWhenNotCaching: (value) =>
             {
@@ -263,12 +284,38 @@ public class Label : ControlBase
                     return base.Height;
                 }
 
-                var textSize = Font.Measure(this.labelText);
+                var textSize = this.font?.Measure(this.labelText) ?? SizeF.Empty;
                 return (uint)textSize.Height;
             },
             setterWhenNotCaching: (value) =>
             {
                 base.Height = value;
+            });
+
+        this.cachedFontStyle = new (
+            defaultValue: this.font?.Style ?? FontStyle.Regular,
+            getterWhenNotCaching: () => this.font?.Style ?? FontStyle.Regular,
+            setterWhenNotCaching: (value) =>
+            {
+                if (this.font is null)
+                {
+                    return;
+                }
+
+                this.font.Style = value;
+            });
+
+        this.cachedFontSize = new (
+            defaultValue: DefaultFontSize,
+            getterWhenNotCaching: () => this.font?.Size ?? 0u,
+            setterWhenNotCaching: (value) =>
+            {
+                if (this.font is null)
+                {
+                    return;
+                }
+
+                this.font.Size = value;
             });
     }
 
@@ -286,8 +333,8 @@ public class Label : ControlBase
         var textPos = Position.ToVector2();
         textPos.X -= Width / 2f;
 
-        var charBounds = Font.GetCharacterBounds(this.labelText, textPos);
+        var charBounds = this.font?.GetCharacterBounds(this.labelText, textPos);
 
-        this.textCharBounds = charBounds.ToArray();
+        this.textCharBounds = charBounds?.ToArray();
     }
 }
