@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -46,7 +46,7 @@ using VelaptorWindowBorder = Velaptor.WindowBorder;
 /// <summary>
 /// Tests the <see cref="GLWindow"/> class.
 /// </summary>
-public class GLWindowTests
+public class GLWindowTests : TestsBase
 {
     private readonly Mock<IAppService> mockAppService;
     private readonly Mock<IGLInvoker> mockGL;
@@ -116,6 +116,7 @@ public class GLWindowTests
 
     #region Contructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullAppServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -141,6 +142,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullWindowFactoryParam_ThrowsException()
     {
         // Arrange & Act
@@ -166,6 +168,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullNativeInputFactoryParam_ThrowsException()
     {
         // Arrange & Act
@@ -191,6 +194,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
         // Arrange & Act
@@ -216,6 +220,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
     {
         // Arrange & Act
@@ -241,6 +246,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullSystemDisplayServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -266,6 +272,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
         // Arrange & Act
@@ -291,6 +298,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullTaskServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -316,6 +324,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullContentLoaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -341,6 +350,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullSceneManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -366,6 +376,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
@@ -391,6 +402,7 @@ public class GLWindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullTimerServiceParam_ThrowsException()
     {
         // Arrange & Act
