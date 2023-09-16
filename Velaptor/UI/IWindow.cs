@@ -140,6 +140,11 @@ public interface IWindow : IDisposable
     public bool AutoSceneRendering { get; set; }
 
     /// <summary>
+    /// Gets the frames per second that the main loop is running at.
+    /// </summary>
+    public float Fps { get; }
+
+    /// <summary>
     /// Shows the window.
     /// </summary>
     void Show();

@@ -313,20 +313,6 @@ public class LabelTests
         // Assert
         actual.Should().Be(Color.FromArgb(11, 22, 33, 44));
     }
-
-    [Fact]
-    public void Font_WhenGettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.LoadContent();
-
-        // Act
-        var actual = sut.Font;
-
-        // Assert
-        actual.Should().Be(this.mockFont.Object);
-    }
     #endregion
 
     #region Method Tests

@@ -91,7 +91,7 @@ public sealed class TextureLoader : ILoader<ITexture>
 
         var isPathRooted = this.path.IsPathRooted(contentPathOrName);
 
-        if (isPathRooted)
+        if (!isPathRooted)
         {
             var contentDirPath = this.texturePathResolver.ResolveDirPath();
 

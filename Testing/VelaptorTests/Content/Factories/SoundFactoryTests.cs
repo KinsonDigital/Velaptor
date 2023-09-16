@@ -5,12 +5,11 @@
 namespace VelaptorTests.Content.Factories;
 
 using System;
-using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
-using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Moq;
+using Velaptor;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.ReactableData;
@@ -21,44 +20,19 @@ using Xunit;
 /// </summary>
 public class SoundFactoryTests
 {
-    private readonly Mock<IDisposable> mockDisposeSoundUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveSubscription? shutDownReactor;
+    private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeSoundReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactoryTests"/> class.
     /// </summary>
     public SoundFactoryTests()
     {
-        this.mockDisposeSoundUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return this.mockShutDownUnsubscriber.Object;
-            })
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.shutDownReactor = reactor;
-            });
-
-        var mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
-        mockDisposeSoundReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
-            .Returns<IReceiveSubscription<DisposeSoundData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return this.mockDisposeSoundUnsubscriber.Object;
-            });
+        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable()).Returns(mockDisposeSoundReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable())
+            .Returns(this.mockDisposeSoundReactable.Object);
     }
 
     #region Constructor Tests
@@ -93,10 +67,46 @@ public class SoundFactoryTests
     }
     #endregion
 
+    #region Reactable Tests
+    [Fact]
+    public void DisposeSoundReactable_WithDisposeNotification_RemovesSoundReference()
+    {
+        // Arrange
+        IReceiveSubscription<DisposeSoundData>? subscription = null;
+
+        this.mockDisposeSoundReactable
+            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
+            .Callback<IReceiveSubscription<DisposeSoundData>>((subscriptionParam) =>
+            {
+                subscriptionParam.Should().NotBeNull();
+                subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
+                subscriptionParam.Name.Should().Be("SoundFactoryTests.Ctor - SoundDisposedId");
+
+                subscription = subscriptionParam;
+            });
+
+        this.mockDisposeSoundReactable
+            .Setup(m => m.Push(It.IsAny<DisposeSoundData>(), It.IsAny<Guid>()))
+            .Callback((in DisposeSoundData data, Guid eventId) =>
+            {
+                data.SoundId.Should().Be(1);
+                eventId.Should().Be(PushNotifications.SoundDisposedId);
+            });
+
+        var sut = CreateSystemUnderTest();
+        this.mockDisposeSoundReactable.Object.Push(new DisposeSoundData { SoundId = 1 }, PushNotifications.SoundDisposedId);
+
+        // Act
+        subscription.OnReceive(new DisposeSoundData { SoundId = 1 });
+
+        // Assert
+        sut.Sounds.Should().BeEmpty();
+    }
+    #endregion
+
     /// <summary>
     /// Creates a new instance of <see cref="SoundFactory"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SoundFactory CreateSystemUnderTest()
-        => new (this.mockReactableFactory.Object);
+    private SoundFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

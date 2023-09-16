@@ -65,8 +65,6 @@ public class ShapeRendererTests
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
 
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
