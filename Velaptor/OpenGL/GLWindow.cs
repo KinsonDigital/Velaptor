@@ -11,7 +11,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content;
 using Factories;
 using Guards;
@@ -54,6 +54,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> winSizeReactable;
+    private readonly ITimerService timerService;
     private MouseStateData mouseStateData;
     private SilkIWindow glWindow = null!;
     private IInputContext glInputContext = null!;
@@ -78,6 +79,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="timerService">Measures the time it takes to process the game loop.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -91,7 +93,8 @@ internal sealed class GLWindow : VelaptorIWindow
         ITaskService taskService,
         IContentLoader contentLoader,
         ISceneManager sceneManager,
-        IReactableFactory reactableFactory)
+        IReactableFactory reactableFactory,
+        ITimerService timerService)
     {
         EnsureThat.ParamIsNotNull(appService);
         EnsureThat.ParamIsNotNull(windowFactory);
@@ -104,6 +107,7 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(sceneManager);
         EnsureThat.ParamIsNotNull(reactableFactory);
+        EnsureThat.ParamIsNotNull(timerService);
 
         this.appService = appService;
         this.windowFactory = windowFactory;
@@ -122,6 +126,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glReactable = reactableFactory.CreateGLReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        this.timerService = timerService;
 
         this.mouseStateData = default;
 
@@ -213,6 +218,9 @@ internal sealed class GLWindow : VelaptorIWindow
 
     /// <inheritdoc/>
     public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
+    public float Fps { get; private set; }
 
     /// <inheritdoc/>
     public int UpdateFrequency
@@ -330,7 +338,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         this.glWindow = this.windowFactory.CreateSilkWindow();
 
-        this.glWindow.UpdatesPerSecond = 120;
+        this.glWindow.UpdatesPerSecond = 60;
         this.glWindow.Load += GLWindow_Load;
         this.glWindow.Closing += GLWindow_Closing;
         this.glWindow.Resize += GLWindow_Resize;
@@ -421,6 +429,17 @@ internal sealed class GLWindow : VelaptorIWindow
         SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
+        /* NOTE:
+         * Pushing this notification is very very important.  The reason is because
+         * currently in this method, the GL context still exists.  After leaving this method,
+         * the GL context will be destroyed.  Any further disposal attempts to textures
+         * will fail due to the GL context being destroyed.  Sending this push notification
+         * will trigger subscriptions in the texture cache which in turn will send
+         * disposal notifications to all textures.
+         *
+         * Other types that depend on this shutdown process occurring before the GL context
+         * is destroyed are the shaders and gpu buffers.
+         */
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
         this.afterUnloadAction?.Invoke();
@@ -450,6 +469,8 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Update(double time)
     {
+        this.timerService.Start();
+
         if (this.isShuttingDown)
         {
             return;
@@ -504,6 +525,10 @@ internal sealed class GLWindow : VelaptorIWindow
         Draw?.Invoke(frameTime);
 
         this.glWindow.SwapBuffers();
+
+        this.timerService.Stop();
+        Fps = 1000f / this.timerService.MillisecondsPassed;
+        this.timerService.Reset();
     }
 
     /// <summary>

@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeasureTextPerf", "Performa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{0F186A14-6114-4CC0-850E-2E062A55CF52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaTesting", "Testing\AvaloniaTesting\AvaloniaTesting.csproj", "{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -85,6 +87,14 @@ Global
 		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release|x64.Build.0 = Release|x64
 		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release-Console|x64.ActiveCfg = Release|x64
 		{8690A40A-D3B2-488B-92B6-5771C21010E0}.Release-Console|x64.Build.0 = Release|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Debug|x64.ActiveCfg = Debug|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Debug-Console|x64.ActiveCfg = Debug|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Debug-Console|x64.Build.0 = Debug|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Release|x64.ActiveCfg = Release|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Release|x64.Build.0 = Release|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Release-Console|x64.ActiveCfg = Release|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Debug|x64.Build.0 = Debug|x64
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC}.Release-Console|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +104,7 @@ Global
 		{C6AFDF55-196C-41D6-9174-0A03A934586F} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{8690A40A-D3B2-488B-92B6-5771C21010E0} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
 		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
+		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

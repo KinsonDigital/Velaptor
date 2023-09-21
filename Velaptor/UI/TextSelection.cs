@@ -8,7 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
+using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
 using Input;
@@ -17,39 +18,24 @@ using ReactableData;
 /// <inheritdoc/>
 internal class TextSelection : ITextSelection
 {
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
-    private readonly IDisposable textBoxDataUnsubscriber;
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextSelection"/> class.
     /// </summary>
-    /// <param name="textBoxDataReactable">Receives notifications of the state of the text box.</param>
+    /// <param name="textBoxStateReactable">Receives notifications of the state of the text box.</param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown if the type of text mutation is invalid.
     /// </exception>
-    public TextSelection(IPushReactable<TextBoxStateData> textBoxDataReactable)
+    public TextSelection(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        this.textBoxDataUnsubscriber = textBoxDataReactable.Subscribe(new ReceiveReactor<TextBoxStateData>(
-            eventId: this.textBoxDataEventId,
-            name: "TextBoxStateDataUpdate",
-            onReceiveData: textBoxData =>
-            {
-                switch (textBoxData.TextMutateType)
-                {
-                    case MutateType.PreMutate:
-                        this.preMutateState = textBoxData;
-                        break;
-                    case MutateType.PostMutate:
-                        this.postMutateState = textBoxData;
-                        break;
-                    default:
-                        const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
-                        throw new InvalidEnumArgumentException(argName, (int)textBoxData.TextMutateType, typeof(MutateType));
-                }
-            },
-            onUnsubscribe: () => this.textBoxDataUnsubscriber?.Dispose()));
+        var textBoxStateSubscription= ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.TextBoxStateId)
+            .WithName("TextBoxStateDataUpdate")
+            .BuildOneWayReceive<TextBoxStateData>(UpdateState);
+
+        textBoxStateReactable.Subscribe(textBoxStateSubscription);
 
         SelectionRect = SelectionRect with { Color = Color.CornflowerBlue };
     }
@@ -93,7 +79,7 @@ internal class TextSelection : ITextSelection
             (selectionLen, rectRight) = HandleMovingToTheLeft();
         }
 
-        if (this.postMutateState.InSelectionMode is false)
+        if (!this.postMutateState.InSelectionMode)
         {
             return;
         }
@@ -133,6 +119,29 @@ internal class TextSelection : ITextSelection
         this.preMutateState = default;
         this.postMutateState = default;
         SelectedText = string.Empty;
+    }
+
+    /// <summary>
+    /// Updates the state of the cursor.
+    /// </summary>
+    /// <param name="data">The state of a text box.</param>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the <see cref="TextBoxStateData.TextMutateType"/> is not a valid value.
+    /// </exception>
+    private void UpdateState(TextBoxStateData data)
+    {
+        switch (data.TextMutateType)
+        {
+            case MutateType.PreMutate:
+                this.preMutateState = data;
+                break;
+            case MutateType.PostMutate:
+                this.postMutateState = data;
+                break;
+            default:
+                const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
+                throw new InvalidEnumArgumentException(argName, (int)data.TextMutateType, typeof(MutateType));
+        }
     }
 
     /// <summary>

@@ -181,6 +181,9 @@ public abstract class Window : IWindow
     /// <inheritdoc/>
     public bool Initialized => this.nativeWindow.Initialized;
 
+    /// <inheritdoc/>
+    public float Fps => this.nativeWindow.Fps;
+
     /// <summary>
     /// Shows the window.
     /// </summary>
@@ -216,7 +219,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
-        if (AutoSceneLoading is false)
+        if (!AutoSceneLoading)
         {
             return;
         }
@@ -231,7 +234,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
-        if (AutoSceneUpdating is false)
+        if (!AutoSceneUpdating)
         {
             return;
         }
@@ -246,7 +249,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        if (AutoSceneRendering is false || SceneManager.TotalScenes <= 0)
+        if (!AutoSceneRendering || SceneManager.TotalScenes <= 0)
         {
             return;
         }
@@ -262,10 +265,9 @@ public abstract class Window : IWindow
     /// <summary>
     /// Invoked when the window is unloaded.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUnload()
     {
-        if (AutoSceneUnloading is false)
+        if (!AutoSceneUnloading)
         {
             return;
         }
@@ -304,6 +306,14 @@ public abstract class Window : IWindow
         }
 
         this.isDisposed = true;
+
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+
+        // Only when not running unit tests, dispose of all Carbonate types
+        IoC.DisposeOfRegisteredTypes();
     }
 
     /// <summary>

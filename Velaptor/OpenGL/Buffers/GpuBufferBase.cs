@@ -1,4 +1,4 @@
-﻿// <copyright file="GpuBufferBase.cs" company="KinsonDigital">
+// <copyright file="GpuBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,8 +6,7 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -21,11 +20,7 @@ using NETSizeF = System.Drawing.SizeF;
 internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     where TData : struct
 {
-    private readonly IDisposable shutDownUnsubscriber;
-    private readonly IDisposable glInitUnsubscriber;
-    private readonly IDisposable viewPortSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
-    private uint[] indices = Array.Empty<uint>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBufferBase{TData}"/> class.
@@ -36,7 +31,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal GpuBufferBase(
+    private protected GpuBufferBase(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
@@ -48,30 +43,35 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var signalReactable = reactableFactory.CreateNoDataPushReactable();
+
+        // Subscribe to GL initialized signal
+        var initSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.GLInitializedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
+            .BuildNonReceive(Init);
+
+        signalReactable.Subscribe(initSubscription);
+
+        // Subscribe to the shut down signal
+        var shutDownSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.SystemShuttingDownId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
+            .BuildNonReceive(ShutDown);
+
+        signalReactable.Subscribe(shutDownSubscription);
+
+        // Subscribe to port size change notifications
         var portSizeReactable = reactableFactory.CreateViewPortReactable();
-
-        var glInitName = this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId));
-        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.GLInitializedId,
-            name: glInitName,
-            onReceive: Init,
-            onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
-
-        var shutDownName = this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId));
-        this.shutDownUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.SystemShuttingDownId,
-            name: shutDownName,
-            onReceive: ShutDown));
-
-        var viewPortName = this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId));
-        this.viewPortSizeUnsubscriber = portSizeReactable.Subscribe(new ReceiveReactor<ViewPortSizeData>(
-            eventId: PushNotifications.ViewPortSizeChangedId,
-            name: viewPortName,
-            onReceiveData: data =>
+        var viewPorSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.ViewPortSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId)))
+            .BuildOneWayReceive<ViewPortSizeData>(data =>
             {
                 ViewPortSize = new SizeU(data.Width, data.Height);
-            }));
+            });
+
+        portSizeReactable.Subscribe(viewPorSubscription);
 
         ProcessCustomAttributes();
     }
@@ -198,11 +198,11 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
 
         OpenGLService.BeginGroup($"Set size of {Name} Indices Data");
 
-        this.indices = GenerateIndices();
+        var indices = GenerateIndices();
 
         // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
         OpenGLService.BindEBO(this.ebo);
-        GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
+        GL.BufferData(GLBufferTarget.ElementArrayBuffer, indices, GLBufferUsageHint.StaticDraw);
 
         OpenGLService.UnbindVBO();
         OpenGLService.UnbindVAO();
@@ -214,15 +214,13 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// <summary>
     /// Shuts down the application by disposing of resources.
     /// </summary>
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Kept for future use.")]
     protected virtual void ShutDown()
     {
         if (IsDisposed)
         {
             return;
         }
-
-        this.viewPortSizeUnsubscriber.Dispose();
-        this.shutDownUnsubscriber.Dispose();
 
         GL.DeleteVertexArray(VAO);
         GL.DeleteBuffer(VBO);

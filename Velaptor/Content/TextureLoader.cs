@@ -91,11 +91,11 @@ public sealed class TextureLoader : ILoader<ITexture>
 
         var isPathRooted = this.path.IsPathRooted(contentPathOrName);
 
-        if (isPathRooted is false)
+        if (!isPathRooted)
         {
             var contentDirPath = this.texturePathResolver.ResolveDirPath();
 
-            if (this.directory.Exists(contentDirPath) is false)
+            if (!this.directory.Exists(contentDirPath))
             {
                 this.directory.CreateDirectory(contentDirPath);
             }

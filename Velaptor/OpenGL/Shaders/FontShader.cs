@@ -5,7 +5,7 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -18,7 +18,6 @@ using Services;
 [ShaderName("Font")]
 internal sealed class FontShader : ShaderProgram
 {
-    private readonly IDisposable unsubscriber;
     private int fontTextureUniformLocation = -1;
 
     /// <summary>
@@ -40,20 +39,21 @@ internal sealed class FontShader : ShaderProgram
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        var reactable = reactableFactory.CreateBatchSizeReactable();
+        var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = reactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        // Subscribe to batch size changes
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch == BatchType.Font)
                 {
                     BatchSize = data.BatchSize;
                 }
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>

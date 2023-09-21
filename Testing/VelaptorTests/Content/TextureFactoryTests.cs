@@ -5,7 +5,7 @@
 namespace VelaptorTests.Content;
 
 using System;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Moq;
 using Velaptor.Content.Factories;

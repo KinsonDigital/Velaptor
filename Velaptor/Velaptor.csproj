@@ -7,10 +7,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.25</Version>
+    <Version>1.0.0-preview.27</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.25</FileVersion>
+    <FileVersion>1.0.0-preview.27</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -81,8 +81,8 @@
 
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="1.1.3" />
+    <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.16" />
     <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.16" />
-    <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.15" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

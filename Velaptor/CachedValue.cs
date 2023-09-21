@@ -53,7 +53,7 @@ internal sealed class CachedValue<T>
 
         this.cachedValue = defaultValue;
 
-        if (isCaching is false)
+        if (!isCaching)
         {
             this.setterWhenNotCaching(defaultValue);
         }
@@ -93,7 +93,7 @@ internal sealed class CachedValue<T>
                 case false when value:
                     this.cachedValue = this.getterWhenNotCaching();
                     break;
-                case true when value is false:
+                case true when !value:
                     this.setterWhenNotCaching(this.cachedValue);
                     break;
             }

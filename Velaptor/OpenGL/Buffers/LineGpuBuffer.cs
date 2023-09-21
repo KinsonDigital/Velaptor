@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Batching;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
@@ -23,7 +23,6 @@ using ReactableData;
 internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
 {
     private const string BufferNotInitMsg = "The line buffer has not been initialized.";
-    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
@@ -42,11 +41,10 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var batchSizeName = this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId));
-        this.unsubscriber = batchSizeReactable.Subscribe(new ReceiveReactor<BatchSizeData>(
-            eventId: PushNotifications.BatchSizeChangedId,
-            name: batchSizeName,
-            onReceiveData: data =>
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
+            .BuildOneWayReceive<BatchSizeData>(data =>
             {
                 if (data.TypeOfBatch != BatchType.Line)
                 {
@@ -59,13 +57,15 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
                 {
                     ResizeBatch();
                 }
-            }));
+            });
+
+        batchSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
     protected internal override void UploadVertexData(LineBatchItem lineData, uint batchIndex)
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -104,7 +104,7 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     /// <inheritdoc/>
     protected internal override void PrepareForUpload()
     {
-        if (IsInitialized is false)
+        if (!IsInitialized)
         {
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
@@ -161,18 +161,5 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
         }
 
         return result.ToArray();
-    }
-
-    /// <inheritdoc/>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.unsubscriber.Dispose();
-
-        base.ShutDown();
     }
 }

@@ -198,7 +198,7 @@ public record struct CircleShape
         BorderThickness <= 1f &&
         Diameter <= 1f &&
         Color.IsEmpty &&
-        IsSolid is false &&
+        !IsSolid &&
         GradientType == ColorGradient.None &&
         GradientStart.IsEmpty &&
         GradientStop.IsEmpty;

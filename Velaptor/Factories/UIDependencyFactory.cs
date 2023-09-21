@@ -4,7 +4,7 @@
 
 namespace Velaptor.Factories;
 
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using ReactableData;
 using UI;
 

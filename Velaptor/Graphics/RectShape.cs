@@ -239,7 +239,7 @@ public record struct RectShape
         Width <= 1f &&
         Height <= 1f &&
         Color.IsEmpty &&
-        IsSolid is false &&
+        !IsSolid &&
         BorderThickness <= 1f &&
         CornerRadius.IsEmpty() &&
         GradientType == ColorGradient.None &&

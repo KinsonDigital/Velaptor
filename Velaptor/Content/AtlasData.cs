@@ -69,7 +69,7 @@ public sealed class AtlasData : IAtlasData
 
         dirPath = dirPath.ToCrossPlatPath().TrimDirSeparatorFromEnd();
 
-        if (directory.Exists(dirPath) is false)
+        if (!directory.Exists(dirPath))
         {
             throw new DirectoryNotFoundException($"The directory '{dirPath}' does not exist.");
         }
@@ -139,7 +139,7 @@ public sealed class AtlasData : IAtlasData
     {
         EnsureThat.StringParamIsNotNullOrEmpty(subTextureId);
 
-        if (this.dataGroups.ContainsKey(subTextureId) is false)
+        if (!this.dataGroups.ContainsKey(subTextureId))
         {
             throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
         }

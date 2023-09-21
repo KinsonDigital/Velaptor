@@ -24,7 +24,6 @@ internal sealed class FontAtlasService : IFontAtlasService
 {
     private readonly IFontService fontService;
     private readonly IImageService imageService;
-    private readonly ISystemDisplayService displayService;
     private readonly IFile file;
     private readonly char[] glyphChars =
     {
@@ -55,7 +54,6 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         this.fontService = fontService;
         this.imageService = imageService;
-        this.displayService = systemDisplayService;
         this.file = file;
     }
 
@@ -67,7 +65,7 @@ internal sealed class FontAtlasService : IFontAtlasService
             throw new ArgumentNullException(nameof(fontFilePath), "The font file path argument must not be null.");
         }
 
-        if (this.file.Exists(fontFilePath) is false)
+        if (!this.file.Exists(fontFilePath))
         {
             throw new FileNotFoundException($"The file '{fontFilePath}' does not exist.");
         }

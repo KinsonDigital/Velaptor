@@ -12,9 +12,9 @@ using System.Linq;
 using System.Numerics;
 using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
+using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -43,11 +43,9 @@ public class ShapeGpuBufferTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
-    private IReceiveReactor? glInitReactor;
-    private IReceiveReactor<BatchSizeData>? batchSizeReactor;
-    private IReceiveReactor<ViewPortSizeData>? viewPortSizeReactor;
-    private IReceiveReactor? shutDownReactor;
+    private IReceiveSubscription? glInitReactor;
+    private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
+    private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
     private bool vboGenerated;
 
     /// <summary>
@@ -72,13 +70,9 @@ public class ShapeGpuBufferTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
-        var mockViewPortSizeUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
-
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Callback<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -86,54 +80,22 @@ public class ShapeGpuBufferTests
                 {
                     this.glInitReactor = reactor;
                 }
-                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    this.shutDownReactor = reactor;
-                }
-                else
-                {
-                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                }
-            })
-            .Returns<IReceiveReactor>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
             });
 
         var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<ViewPortSizeData>>()))
-            .Callback<IReceiveReactor<ViewPortSizeData>>(reactor =>
+        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
+            .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.viewPortSizeReactor = reactor;
-            })
-            .Returns<IReceiveReactor<ViewPortSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                return mockViewPortSizeUnsubscriber.Object;
             });
 
         var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(reactor =>
+        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.batchSizeReactor = reactor;
-            })
-            .Returns<IReceiveReactor<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                return this.mockBatchSizeUnsubscriber.Object;
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
@@ -553,7 +515,7 @@ public class ShapeGpuBufferTests
         sut.SetupVAO();
 
         // Assert
-        Assert.All(paramData, data =>
+        paramData.Should().AllSatisfy(data =>
         {
             this.mockGL.Verify(m =>
                     m.VertexAttribPointer(data.index,
@@ -565,11 +527,10 @@ public class ShapeGpuBufferTests
                 $"The '{data.label}' vertex attribute pointer layout is incorrect.");
         });
 
-        Assert.All(enableVertexAttribArrayParamData, data =>
+        enableVertexAttribArrayParamData.Should().AllSatisfy(data =>
         {
-            var (index, label) = data;
-            this.mockGL.Verify(m => m.EnableVertexAttribArray(index),
-                $"Issue enabling vertex attribute pointer '{label}'.");
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(data.index),
+                $"Issue enabling vertex attribute pointer '{data.label}'.");
         });
     }
 
@@ -584,8 +545,8 @@ public class ShapeGpuBufferTests
         var actual = sut.GenerateIndices();
 
         // Assert
-        Assert.Equal(100u, sut.BatchSize);
-        Assert.Equal(expected, actual);
+        sut.BatchSize.Should().Be(100u);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -595,8 +556,8 @@ public class ShapeGpuBufferTests
     {
         // Arrange
         var mockReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Callback<IReceiveReactor<BatchSizeData>>(Act);
+        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Callback<IReceiveSubscription<BatchSizeData>>(Act);
 
         this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable())
             .Returns(mockReactable.Object);
@@ -604,7 +565,7 @@ public class ShapeGpuBufferTests
         _ = CreateSystemUnderTest();
 
         // Act & Assert
-        void Act(IReactor reactor)
+        void Act(ISubscription reactor)
         {
             reactor.Should().NotBeNull("it is required for this unit test.");
             reactor.Name.Should().Be("ShapeGpuBufferTests.Ctor - BatchSizeChangedId");
@@ -653,20 +614,6 @@ public class ShapeGpuBufferTests
         this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Vertex Data"), Times.AtLeastOnce);
         this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeast(2));
         this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Indices Data"), Times.AtLeastOnce);
-    }
-
-    [Fact]
-    public void ShutDownReactable_WhenReceivingNotification_ShutsDownShader()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 

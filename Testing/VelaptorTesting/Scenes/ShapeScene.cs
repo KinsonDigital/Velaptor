@@ -12,13 +12,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.Scene;
 using Velaptor.UI;
 
 /// <summary>
@@ -950,7 +950,7 @@ public class ShapeScene : SceneBase
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
     private void ChangeRectSize(FrameTime frameTime)
     {
-        if (this.currentKeyState.IsLeftShiftKeyDown() is false && this.currentKeyState.IsRightShiftKeyDown() is false)
+        if (!this.currentKeyState.IsLeftShiftKeyDown() && !this.currentKeyState.IsRightShiftKeyDown())
         {
             return;
         }

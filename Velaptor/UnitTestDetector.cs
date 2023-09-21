@@ -21,11 +21,6 @@ internal static class UnitTestDetector
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        if (assemblies is null)
-        {
-            throw new InvalidOperationException("Something went wrong.  No assemblies loaded.");
-        }
-
         foreach (var assembly in assemblies)
         {
             if (string.IsNullOrEmpty(assembly.FullName) ||

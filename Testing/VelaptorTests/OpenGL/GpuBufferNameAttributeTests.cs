@@ -5,7 +5,7 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using Helpers;
+using FluentAssertions;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -20,11 +20,12 @@ public class GpuBufferNameAttributeTests
     [InlineData(null)]
     public void Ctor_WithNullOrEmptyNameParam_ThrowsException(string value)
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GpuBufferNameAttribute(value);
-        }, "The string parameter must not be null or empty. (Parameter 'name')");
+        // Arrange & Act
+        var act = () => _ = new GpuBufferNameAttribute(value);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public class GpuBufferNameAttributeTests
         var attribute = new GpuBufferNameAttribute("test-name");
 
         // Assert
-        Assert.Equal("test-name", attribute.Name);
+        attribute.Name.Should().Be("test-name");
     }
     #endregion
 }

@@ -174,7 +174,7 @@ public sealed class FontLoader : ILoader<IFont>
                 // If the file path is a full file path, leave it be.
                 // If it is not, then it is a content name and could be a file name with an extension.
                 // If this is the case, remove the extension
-                if (this.path.IsPathRooted(parseResult.MetaDataPrefix) is false)
+                if (!this.path.IsPathRooted(parseResult.MetaDataPrefix))
                 {
                     var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
@@ -207,7 +207,7 @@ public sealed class FontLoader : ILoader<IFont>
             : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 
         // If the full font file path is empty, then the font does not exist. Throw an exception
-        if (this.file.Exists(fullFontFilePath) is false)
+        if (!this.file.Exists(fullFontFilePath))
         {
             var exceptionMsg = $"The font content item '{fullFontFilePath}' does not exist.";
 
@@ -280,7 +280,7 @@ public sealed class FontLoader : ILoader<IFont>
         var fontContentDirPath = $"{contentDirPath}{separator}{contentDirName}";
 
         // Create the font content directory if it does not exist
-        if (this.directory.Exists(fontContentDirPath) is false)
+        if (!this.directory.Exists(fontContentDirPath))
         {
             this.directory.CreateDirectory(fontContentDirPath);
         }

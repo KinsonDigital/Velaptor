@@ -8,8 +8,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
-using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
 using Factories;
 using Guards;
 using NativeInterop.OpenGL;
@@ -19,14 +18,13 @@ using OpenGL.Buffers;
 using OpenGL.Shaders;
 
 /// <inheritdoc cref="ILineRenderer"/>
-internal sealed class LineRenderer : RendererBase, ILineRenderer
+internal sealed class LineRenderer : ILineRenderer
 {
+    private readonly IGLInvoker gl;
     private readonly IBatchingManager batchManager;
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private readonly IDisposable renderUnsubscriber;
-    private readonly IDisposable renderBatchBegunUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -45,33 +43,36 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         IGpuBuffer<LineBatchItem> buffer,
         IShaderProgram shader,
         IBatchingManager batchManager)
-            : base(gl, reactableFactory)
     {
+        EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
         EnsureThat.ParamIsNotNull(buffer);
         EnsureThat.ParamIsNotNull(shader);
         EnsureThat.ParamIsNotNull(batchManager);
 
+        this.gl = gl;
         this.batchManager = batchManager;
         this.openGLService = openGLService;
         this.buffer = buffer;
         this.shader = shader;
 
-        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        const string renderStateName = $"{nameof(LineRenderer)}.Ctor - {nameof(PushNotifications.BatchHasBegunId)}";
-        this.renderBatchBegunUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.BatchHasBegunId,
-            name: renderStateName,
-            onReceive: () => this.hasBegun = true));
+        var beginBatchSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.BatchHasBegunId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
+            .BuildNonReceive(() => this.hasBegun = true);
 
-        var lineRenderBatchReactable = reactableFactory.CreateRenderLineReactable();
+        beginBatchReactable.Subscribe(beginBatchSubscription);
 
-        var renderReactorName = this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId));
-        this.renderUnsubscriber = lineRenderBatchReactable.Subscribe(new ReceiveReactor<Memory<RenderItem<LineBatchItem>>>(
-            eventId: PushNotifications.RenderLinesId,
-            name: renderReactorName,
-            onReceiveData: RenderBatch));
+        var renderReactable = reactableFactory.CreateRenderLineReactable();
+
+        var renderSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.RenderLinesId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId)))
+            .BuildOneWayReceive<Memory<RenderItem<LineBatchItem>>>(RenderBatch);
+
+        renderReactable.Subscribe(renderSubscription);
     }
 
     /// <inheritdoc/>
@@ -95,22 +96,6 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         RenderBase(start, end, color, thickness, layer);
 
     /// <summary>
-    /// Shuts down the application by disposing resources.
-    /// </summary>
-    protected override void ShutDown()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        this.renderUnsubscriber.Dispose();
-        this.renderBatchBegunUnsubscriber.Dispose();
-
-        base.ShutDown();
-    }
-
-    /// <summary>
     /// The main root method for rendering lines.
     /// </summary>
     /// <param name="start">The start of the line.</param>
@@ -120,7 +105,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
     /// <param name="layer">The layer to render the line.</param>
     private void RenderBase(Vector2 start, Vector2 end, Color color, uint thickness, int layer)
     {
-        if (this.hasBegun is false)
+        if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
@@ -170,7 +155,7 @@ internal sealed class LineRenderer : RendererBase, ILineRenderer
         var totalElements = 6u * totalItemsToRender;
 
         this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
-        GL.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
         this.openGLService.EndGroup();
 
         this.openGLService.EndGroup();

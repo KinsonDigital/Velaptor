@@ -9,8 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Carbonate.UniDirectional;
-using Velaptor;
+using Carbonate.Fluent;
 using Content;
 using Factories;
 using Guards;
@@ -24,7 +23,6 @@ using UI;
 public abstract class SceneBase : IScene
 {
     private readonly List<IControl> controls = new ();
-    private IDisposable? unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
@@ -112,7 +110,7 @@ public abstract class SceneBase : IScene
     /// <inheritdoc/>
     public virtual void Update(FrameTime frameTime)
     {
-        if (IsLoaded is false)
+        if (!IsLoaded)
         {
             return;
         }
@@ -126,7 +124,7 @@ public abstract class SceneBase : IScene
     /// <inheritdoc/>
     public virtual void Render()
     {
-        if (IsLoaded is false)
+        if (!IsLoaded)
         {
             return;
         }
@@ -160,8 +158,6 @@ public abstract class SceneBase : IScene
             UnloadAllControls();
 
             this.controls.Clear();
-
-            this.unsubscriber?.Dispose();
         }
 
         IsDisposed = true;
@@ -184,15 +180,16 @@ public abstract class SceneBase : IScene
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private void Init(IReactableFactory reactableFactory)
     {
-        var reactorName = this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId));
         var winSizeReactable = reactableFactory.CreateWindowSizeReactable();
 
-        this.unsubscriber = winSizeReactable.Subscribe(new ReceiveReactor<WindowSizeData>(
-            eventId: PushNotifications.WindowSizeChangedId,
-            name: reactorName,
-            onReceiveData: data =>
+        var winSizeSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.WindowSizeChangedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId)))
+            .BuildOneWayReceive<WindowSizeData>(data =>
             {
                 WindowSize = new SizeU(data.Width, data.Height);
-            }));
+            });
+
+        winSizeReactable.Subscribe(winSizeSubscription);
     }
 }

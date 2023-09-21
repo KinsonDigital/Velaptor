@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
@@ -19,7 +19,6 @@ using Graphics;
 using Graphics.Renderers;
 using Input;
 using ReactableData;
-using Color = System.Drawing.Color;
 
 /// <summary>
 /// Provides the ability to enter text into a box.
@@ -32,7 +31,6 @@ public sealed class TextBox : ControlBase
     private const int MarginRight = 2;
     private const int BorderThickness = 2;
     private const bool RenderAllText = false;
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly ITextSelection textSelection;
@@ -383,7 +381,7 @@ public sealed class TextBox : ControlBase
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
     public override void Update(FrameTime frameTime)
     {
-        if (IsLoaded is false || Enabled is false)
+        if (!IsLoaded || !Enabled)
         {
             return;
         }
@@ -406,7 +404,7 @@ public sealed class TextBox : ControlBase
     /// <inheritdoc/>
     public override void Render()
     {
-        if (IsLoaded is false || Visible is false)
+        if (!IsLoaded || !Visible)
         {
             return;
         }
@@ -554,7 +552,7 @@ public sealed class TextBox : ControlBase
     /// </summary>
     private void StartSelection()
     {
-        var movingIntoSelectionMode = this.inSelectionMode && this.prevInSelectionMode is false;
+        var movingIntoSelectionMode = this.inSelectionMode && !this.prevInSelectionMode;
 
         // When moving into selection mode
         if (!movingIntoSelectionMode)
@@ -859,11 +857,11 @@ public sealed class TextBox : ControlBase
         {
             case MutateType.PreMutate:
                 this.preTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, this.textBoxDataEventId);
+                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
                 break;
             case MutateType.PostMutate:
                 this.postTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, this.textBoxDataEventId);
+                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(mutateType), mutateType, null);

@@ -151,7 +151,7 @@ public class ImageServiceTests : IDisposable
         // Arrange
         var service = CreateSystemUnderTest();
 
-        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
         // Act
         var flippedImage = service.FlipVertically(comparisonSample);
@@ -197,7 +197,7 @@ public class ImageServiceTests : IDisposable
     {
         // Arrange
         var service = CreateSystemUnderTest();
-        var comparisonSample = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
         // Act
         var flippedImage = service.FlipHorizontally(comparisonSample);
@@ -320,9 +320,9 @@ public class ImageServiceTests : IDisposable
     [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
     private static NETColor[,] LoadSaveResultImage(string filePath)
     {
-        if (File.Exists(filePath) is false)
+        if (!File.Exists(filePath))
         {
-            Assert.True(false, $"The resulting image '{filePath}' from unit test '{nameof(Save_WhenInvoked_CorrectlySavesImage)}()' does not exist.");
+            Assert.Fail($"The resulting image '{filePath}' from unit test '{nameof(Save_WhenInvoked_CorrectlySavesImage)}()' does not exist.");
         }
 
         var image = Image.Load<Rgba32>(filePath);

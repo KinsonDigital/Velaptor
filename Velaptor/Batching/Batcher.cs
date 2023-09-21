@@ -6,8 +6,9 @@ namespace Velaptor.Batching;
 
 using System;
 using System.Drawing;
+using Carbonate.Fluent;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using Graphics.Renderers.Exceptions;
 using NativeInterop.OpenGL;
 using OpenGL;
@@ -18,9 +19,8 @@ internal sealed class Batcher : IBatcher
 {
     private const string RenderExceptionMsg = "The renderer is not initialized.";
     private const uint InitialBatchSize = 1000;
-    private readonly IDisposable? glInitUnsubscriber;
     private readonly IGLInvoker glInvoker;
-    private readonly IPushReactable pushReactable;
+    private readonly IPushReactable glInitReactable;
     private readonly CachedValue<Color> cachedClearColor;
     private bool isInitialized;
 
@@ -28,25 +28,24 @@ internal sealed class Batcher : IBatcher
     /// Initializes a new instance of the <see cref="Batcher"/> class.
     /// </summary>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
-    /// <param name="pushReactable">Gets a notification that OpenGL is initialized.</param>
+    /// <param name="glInitReactable">Gets a notification that OpenGL is initialized.</param>
     /// <param name="batchSizeReactable">Sends notifications of the batch sizes to the different types of renderers.</param>
     public Batcher(
         IGLInvoker glInvoker,
-        IPushReactable pushReactable,
+        IPushReactable glInitReactable,
         IPushReactable<BatchSizeData> batchSizeReactable)
     {
         ArgumentNullException.ThrowIfNull(glInvoker);
-        ArgumentNullException.ThrowIfNull(pushReactable);
+        ArgumentNullException.ThrowIfNull(glInitReactable);
         ArgumentNullException.ThrowIfNull(batchSizeReactable);
 
         this.glInvoker = glInvoker;
-        this.pushReactable = pushReactable;
+        this.glInitReactable = glInitReactable;
 
-        const string glInitName = $"{nameof(Batcher)}.Ctor - {nameof(PushNotifications.GLInitializedId)}";
-        this.glInitUnsubscriber = pushReactable.Subscribe(new ReceiveReactor(
-            eventId: PushNotifications.GLInitializedId,
-            name: glInitName,
-            onReceive: () =>
+        var glInitSubscription = ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.GLInitializedId)
+            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
+            .BuildNonReceive(() =>
             {
                 if (this.isInitialized)
                 {
@@ -71,8 +70,9 @@ internal sealed class Batcher : IBatcher
                 }
 
                 this.isInitialized = true;
-            },
-            onUnsubscribe: () => this.glInitUnsubscriber?.Dispose()));
+            });
+
+        glInitReactable.Subscribe(glInitSubscription);
 
         this.cachedClearColor = new CachedValue<Color>(
             Color.FromArgb(255, 16, 29, 36),
@@ -112,19 +112,19 @@ internal sealed class Batcher : IBatcher
     /// <inheritdoc/>
     public void Begin()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }
 
         HasBegun = true;
-        this.pushReactable.Push(PushNotifications.BatchHasBegunId);
+        this.glInitReactable.Push(PushNotifications.BatchHasBegunId);
     }
 
     /// <inheritdoc/>
     public void Clear()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }
@@ -135,12 +135,12 @@ internal sealed class Batcher : IBatcher
     /// <inheritdoc/>
     public void End()
     {
-        if (this.isInitialized is false)
+        if (!this.isInitialized)
         {
             throw new RendererException(RenderExceptionMsg);
         }
 
         HasBegun = false;
-        this.pushReactable.Push(PushNotifications.BatchHasEndedId);
+        this.glInitReactable.Push(PushNotifications.BatchHasEndedId);
     }
 }

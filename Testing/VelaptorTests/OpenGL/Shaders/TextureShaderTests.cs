@@ -7,9 +7,9 @@ namespace VelaptorTests.OpenGL.Shaders;
 using System;
 using System.Linq;
 using Carbonate.Core.NonDirectional;
-using Carbonate.Core.UniDirectional;
+using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
-using Carbonate.UniDirectional;
+using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
@@ -31,9 +31,8 @@ public class TextureShaderTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
-    private IReceiveReactor? glInitReactor;
-    private IReceiveReactor<BatchSizeData>? batchSizeReactor;
+    private IReceiveSubscription? glInitReactor;
+    private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureShaderTests"/> class.
@@ -45,8 +44,8 @@ public class TextureShaderTests
         this.mockShaderLoader = new Mock<IShaderLoaderService>();
 
         var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor>()))
-            .Returns<IReceiveReactor>(reactor =>
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Returns<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -58,7 +57,7 @@ public class TextureShaderTests
                 Assert.Fail("Unrecognized event id.");
                 return null;
             })
-            .Callback<IReceiveReactor>(reactor =>
+            .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -68,16 +67,9 @@ public class TextureShaderTests
                 }
             });
 
-        this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
-
         var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveReactor<BatchSizeData>>()))
-            .Returns<IReceiveReactor<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                return this.mockBatchSizeUnsubscriber.Object;
-            })
-            .Callback<IReceiveReactor<BatchSizeData>>(reactor =>
+        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.batchSizeReactor = reactor;
@@ -153,20 +145,6 @@ public class TextureShaderTests
     #endregion
 
     #region Indirect Tests
-    [Fact]
-    public void BatchSizeReactable_WithUnsubscribeNotification_UnsubscribesFromReactable()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.batchSizeReactor.OnUnsubscribe();
-        this.batchSizeReactor.OnUnsubscribe();
-
-        // Assert
-        this.mockBatchSizeUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
     [Fact]
     public void BatchSizeReactable_WhenReceivingReactableNotification_SetsBatchSize()
     {

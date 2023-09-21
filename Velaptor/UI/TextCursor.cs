@@ -8,7 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.UniDirectional;
+using Carbonate.Fluent;
+using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
 using Input;
@@ -19,12 +20,9 @@ using ReactableData;
 /// </summary>
 internal class TextCursor : ITextCursor
 {
-    private readonly Guid textBoxDataEventId = new ("71931561-826B-431B-BCE6-B139034A1FF4");
-    private readonly IDisposable unsubscriber;
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
     private RectShape cursor;
-    private KeyCode lastMovementKey;
     private bool visible = true;
 
     /// <summary>
@@ -33,31 +31,12 @@ internal class TextCursor : ITextCursor
     /// <param name="textBoxStateReactable">Receives notifications of text box state data.</param>
     public TextCursor(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        this.unsubscriber = textBoxStateReactable.Subscribe(new ReceiveReactor<TextBoxStateData>(
-            eventId: this.textBoxDataEventId,
-            name: "TextBoxStateDataUpdate",
-            onReceiveData: data =>
-            {
-                switch (data.TextMutateType)
-                {
-                    case MutateType.PreMutate:
-                        this.preMutateState = data;
-                        break;
-                    case MutateType.PostMutate:
-                        this.postMutateState = data;
+        var textBoxStateSubscription= ISubscriptionBuilder.Create()
+            .WithId(PushNotifications.TextBoxStateId)
+            .WithName("TextBoxStateDataUpdate")
+            .BuildOneWayReceive<TextBoxStateData>(UpdateState);
 
-                        if (this.postMutateState.Key.IsMoveCursorKey())
-                        {
-                            this.lastMovementKey = this.postMutateState.Key;
-                        }
-
-                        break;
-                    default:
-                        const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
-                        throw new InvalidEnumArgumentException(argName, (int)this.postMutateState.TextMutateType, typeof(MutateType));
-                }
-            },
-            onUnsubscribe: () => this.unsubscriber?.Dispose()));
+        textBoxStateReactable.Subscribe(textBoxStateSubscription);
 
         Cursor = new RectShape
         {
@@ -159,6 +138,29 @@ internal class TextCursor : ITextCursor
     };
 
     /// <summary>
+    /// Updates the state of the cursor.
+    /// </summary>
+    /// <param name="data">The state of a text box.</param>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the <see cref="TextBoxStateData.TextMutateType"/> is not a valid value.
+    /// </exception>
+    private void UpdateState(TextBoxStateData data)
+    {
+        switch (data.TextMutateType)
+        {
+            case MutateType.PreMutate:
+                this.preMutateState = data;
+                break;
+            case MutateType.PostMutate:
+                this.postMutateState = data;
+                break;
+            default:
+                const string argName = $"{nameof(TextBoxStateData)}.{nameof(TextBoxStateData.TextMutateType)}";
+                throw new InvalidEnumArgumentException(argName, (int)data.TextMutateType, typeof(MutateType));
+        }
+    }
+
+    /// <summary>
     /// Handles the cursor position related to the <see cref="TextBoxEvent.MovingCursor"/> event.
     /// </summary>
     /// <param name="key">The keyboard key related to the event.</param>
@@ -211,10 +213,10 @@ internal class TextCursor : ITextCursor
 
         var charIndexIsAtStart = this.postMutateState.CharIndex <= 0;
         var charIndexIsAtEnd = this.postMutateState.CharIndex >= this.postMutateState.TextLength - 1;
-        var charIndexIsInMiddle = charIndexIsAtStart is false && charIndexIsAtEnd is false;
+        var charIndexIsInMiddle = !charIndexIsAtStart && !charIndexIsAtEnd;
 
         var charIndexIsStartOrMiddle = charIndexIsAtStart || charIndexIsInMiddle;
-        var cursorIsNotAtRightEndOfText = this.postMutateState.Text.IsEmpty() is false && this.cursor.Right <= this.postMutateState.TextRight;
+        var cursorIsNotAtRightEndOfText = !this.postMutateState.Text.IsEmpty() && this.cursor.Right <= this.postMutateState.TextRight;
 
         if ((charIndexWasAtEnd && cursorWasNotAtRightEndOfText && charIndexIsAtEnd) ||
                  (charIndexIsStartOrMiddle && cursorIsNotAtRightEndOfText))
@@ -238,7 +240,7 @@ internal class TextCursor : ITextCursor
         var charIndexWasNotAtStart = this.preMutateState.CharIndex > 0;
         var charIndexWasAtEnd = this.preMutateState.CharIndex >= this.preMutateState.TextLength - 1;
         var charIndexWasInMiddle = charIndexWasNotAtStart && !charIndexWasAtEnd;
-        var cursorWasNotAtRightEndOfText = this.preMutateState.Text.IsEmpty() is false && Cursor.Right <= this.preMutateState.TextRight;
+        var cursorWasNotAtRightEndOfText = !this.preMutateState.Text.IsEmpty() && Cursor.Right <= this.preMutateState.TextRight;
 
         var charIndexIsAtStart = this.postMutateState.CharIndex <= 0;
         var charIndexIsAtEnd = this.postMutateState.CharIndex >= this.postMutateState.TextLength - 1;
@@ -327,9 +329,6 @@ internal class TextCursor : ITextCursor
                 }
                 else if (selectionRightToLeft)
                 {
-                    displacement = lastCharVisible
-                        ? Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft)
-                        : displacement;
                     this.cursor.Left += displacement;
                 }
             }
@@ -344,18 +343,15 @@ internal class TextCursor : ITextCursor
             {
                 this.cursor.Left -= displacement;
             }
-            else if (selectionLeftToRight is false && selectionRightToLeft is false)
+            else if (!selectionRightToLeft)
             {
                 this.cursor.Left = this.postMutateState.TextRight;
             }
-            else if (prevTextIsLargerThanView && !currTextIsLargerThanView)
+            else if (prevTextIsLargerThanView)
             {
                 displacement = Math.Abs(this.preMutateState.TextLeft - this.postMutateState.TextLeft);
 
-                if (selectionRightToLeft)
-                {
-                    this.cursor.Left += displacement;
-                }
+                this.cursor.Left += displacement;
             }
         }
     }
@@ -405,7 +401,7 @@ internal class TextCursor : ITextCursor
                 SnapCursorToRight();
             }
 
-            if (firstCharVisible is false && lastCharVisible is false)
+            if (!firstCharVisible && !lastCharVisible)
             {
                 var cursorPastRight = this.cursor.Position.X > this.postMutateState.TextView.Right;
                 var cursorPastLeft = this.cursor.Position.X < this.postMutateState.TextView.Left;

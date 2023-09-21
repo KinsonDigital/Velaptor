@@ -51,7 +51,7 @@ internal sealed class EventLoggerService : IEventLoggerService
     /// <inheritdoc/>
     public void Event(string eventName, string msg)
     {
-        if (this.appSettingsService.Settings.LoggingEnabled is false)
+        if (!this.appSettingsService.Settings.LoggingEnabled)
         {
             return;
         }
@@ -117,7 +117,7 @@ internal sealed class EventLoggerService : IEventLoggerService
         var filePath = $"{baseDirPath}/{LogsDirName}/{fileName}.txt";
         var isFirstEntry = false;
 
-        if (this.file.Exists(filePath) is false)
+        if (!this.file.Exists(filePath))
         {
             this.file.WriteAllText(filePath, string.Empty);
             isFirstEntry = true;

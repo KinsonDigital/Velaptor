@@ -8,14 +8,14 @@ defaults:
 
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [main, preview]
 
 
 jobs:
   build_status_check:
     name: ${{ vars.PROJECT_NAME }} Build Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.0.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.0.1
     with:
       project-name: "${{ vars.PROJECT_NAME }}"
       build-config: Debug

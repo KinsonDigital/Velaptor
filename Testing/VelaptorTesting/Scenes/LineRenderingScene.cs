@@ -7,7 +7,6 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Scene;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -15,6 +14,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Velaptor.Scene;
 
 /// <summary>
 /// Used to test whether or not lines are properly rendered to the screen.
@@ -76,7 +76,7 @@ public class LineRenderingScene : SceneBase
         this.currentKeyState = this.keyboard.GetState();
         this.currentMouseState = this.mouse.GetState();
 
-        if (this.mouseEnteredAtLeastOnce is false)
+        if (!this.mouseEnteredAtLeastOnce)
         {
             var mousePos = this.currentMouseState.GetPosition();
 

@@ -538,7 +538,7 @@ public class FontTests : IDisposable
          * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
          */
         // Arrange
-        var text = $"hello\nworld";
+        var text = "hello\nworld";
 
         this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
             .Returns(2f);
@@ -680,9 +680,9 @@ public class FontTests : IDisposable
     /// <param name="text">The text to mock the kerning values for.</param>
     private void MockGlyphKernings(string text)
     {
-        if (this.glyphMetrics is null || this.glyphMetrics.Count <= 0)
+        if (this.glyphMetrics.Count <= 0)
         {
-            Assert.True(false, $"Cannot run test with the static class member '{this.glyphMetrics}' being null or empty.");
+            Assert.Fail($"Cannot run test with the static class member '{this.glyphMetrics}' being null or empty.");
         }
 
         // Strip new line and carriage feed characters.  This white space characters
