@@ -192,16 +192,16 @@ public class RectShapeTests
         var sut = new RectShape();
 
         // Assert
-        Assert.Equal(Vector2.Zero, sut.Position);
-        Assert.Equal(1f, sut.Width);
-        Assert.Equal(1f, sut.Height);
-        Assert.Equal(Color.White, sut.Color);
-        Assert.True(sut.IsSolid);
-        Assert.Equal(1f, sut.BorderThickness);
-        Assert.Equal(new CornerRadius(1f, 1f, 1f, 1f), sut.CornerRadius);
-        Assert.Equal(ColorGradient.None, sut.GradientType);
-        Assert.Equal(Color.White, sut.GradientStart);
-        Assert.Equal(Color.White, sut.GradientStop);
+        sut.Position.Should().Be(Vector2.Zero);
+        sut.Width.Should().Be(1f);
+        sut.Height.Should().Be(1f);
+        sut.Color.Should().Be(Color.White);
+        sut.IsSolid.Should().BeTrue();
+        sut.BorderThickness.Should().Be(1f);
+        sut.CornerRadius.Should().Be(new CornerRadius(1f, 1f, 1f, 1f));
+        sut.GradientType.Should().Be(ColorGradient.None);
+        sut.GradientStart.Should().Be(Color.White);
+        sut.GradientStop.Should().Be(Color.White);
     }
     #endregion
 
@@ -220,7 +220,7 @@ public class RectShapeTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -237,7 +237,7 @@ public class RectShapeTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class RectShapeTests
         var actual = sut.HalfWidth;
 
         // Assert
-        Assert.Equal(50f, actual);
+        actual.Should().Be(50f);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class RectShapeTests
         var actual = sut.HalfHeight;
 
         // Assert
-        Assert.Equal(50f, actual);
+        actual.Should().Be(50f);
     }
 
     [Theory]
@@ -289,7 +289,7 @@ public class RectShapeTests
         var actual = sut.BorderThickness;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -302,10 +302,10 @@ public class RectShapeTests
         var actual = sut.CornerRadius;
 
         // Assert
-        AssertExtensions.EqualWithMessage(0f, actual.TopLeft, "The top left value is incorrect.");
-        AssertExtensions.EqualWithMessage(0f, actual.BottomLeft, "The bottom left value is incorrect.");
-        AssertExtensions.EqualWithMessage(0f, actual.BottomRight, "The bottom right value is incorrect.");
-        AssertExtensions.EqualWithMessage(0f, actual.TopRight, "The top right value is incorrect.");
+        actual.TopLeft.Should().Be(0f, "The top left value is incorrect.");
+        actual.BottomLeft.Should().Be(0f, "The bottom left value is incorrect.");
+        actual.BottomRight.Should().Be(0f, "The bottom right value is incorrect.");
+        actual.TopRight.Should().Be(0f, "The top right value is incorrect.");
     }
 
     [Fact]
@@ -319,10 +319,10 @@ public class RectShapeTests
         var actual = sut.CornerRadius;
 
         // Assert
-        AssertExtensions.EqualWithMessage(11f, actual.TopLeft, "The top left value is incorrect.");
-        AssertExtensions.EqualWithMessage(22f, actual.BottomLeft, "The bottom left value is incorrect.");
-        AssertExtensions.EqualWithMessage(33f, actual.BottomRight, "The bottom right value is incorrect.");
-        AssertExtensions.EqualWithMessage(44f, actual.TopRight, "The top right value is incorrect.");
+        actual.TopLeft.Should().Be(11f, "The top left value is incorrect.");
+        actual.BottomLeft.Should().Be(22f, "The bottom left value is incorrect.");
+        actual.BottomRight.Should().Be(33f, "The bottom right value is incorrect.");
+        actual.TopRight.Should().Be(44f, "The top right value is incorrect.");
     }
 
     [Fact]
@@ -339,9 +339,9 @@ public class RectShapeTests
         var actual = sut.Top;
 
         // Assert
-        AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Top)} value incorrect.");
-        AssertExtensions.EqualWithMessage(100, sut.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-        AssertExtensions.EqualWithMessage(65f, sut.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.Should().Be(40f, $"{nameof(RectShape.Top)} value incorrect.");
+        sut.Position.X.Should().Be(100, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.Should().Be(65f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -358,9 +358,9 @@ public class RectShapeTests
         var actual = sut.Right;
 
         // Assert
-        AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Right)} value incorrect.");
-        AssertExtensions.EqualWithMessage(50, sut.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-        AssertExtensions.EqualWithMessage(100f, sut.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.Should().Be(100f, $"{nameof(RectShape.Right)} value incorrect.");
+        sut.Position.X.Should().Be(50, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.Should().Be(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -377,9 +377,9 @@ public class RectShapeTests
         var actual = sut.Bottom;
 
         // Assert
-        AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
-        AssertExtensions.EqualWithMessage(100, sut.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-        AssertExtensions.EqualWithMessage(15f, sut.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.Should().Be(40f, $"{nameof(RectShape.Bottom)} value incorrect.");
+        sut.Position.X.Should().Be(100, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.Should().Be(15f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -396,9 +396,9 @@ public class RectShapeTests
         var actual = sut.Left;
 
         // Assert
-        AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Left)} value incorrect.");
-        AssertExtensions.EqualWithMessage(150, sut.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-        AssertExtensions.EqualWithMessage(100f, sut.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.Should().Be(100f, $"{nameof(RectShape.Left)} value incorrect.");
+        sut.Position.X.Should().Be(150, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.Should().Be(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
     #endregion
 
@@ -460,7 +460,7 @@ public class RectShapeTests
         var actual = sut.IsEmpty();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -483,16 +483,16 @@ public class RectShapeTests
         sut.Empty();
 
         // Assert
-        Assert.Equal(Vector2.Zero, sut.Position);
-        Assert.Equal(1f, sut.Width);
-        Assert.Equal(1f, sut.Height);
-        Assert.Equal(Color.Empty, sut.Color);
-        Assert.False(sut.IsSolid);
-        Assert.Equal(1f, sut.BorderThickness);
-        Assert.Equal(new CornerRadius(0f, 0f, 0f, 0f), sut.CornerRadius);
-        Assert.Equal(ColorGradient.None, sut.GradientType);
-        Assert.Equal(Color.Empty, sut.GradientStart);
-        Assert.Equal(Color.Empty, sut.GradientStop);
+        sut.Position.Should().Be(Vector2.Zero);
+        sut.Width.Should().Be(1f);
+        sut.Height.Should().Be(1f);
+        sut.Color.Should().Be(Color.Empty);
+        sut.IsSolid.Should().BeFalse();
+        sut.BorderThickness.Should().Be(1f);
+        sut.CornerRadius.Should().Be(new CornerRadius(0f, 0f, 0f, 0f));
+        sut.GradientType.Should().Be(ColorGradient.None);
+        sut.GradientStart.Should().Be(Color.Empty);
+        sut.GradientStop.Should().Be(Color.Empty);
     }
     #endregion
 }
