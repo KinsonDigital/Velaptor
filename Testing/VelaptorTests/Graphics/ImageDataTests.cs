@@ -25,40 +25,45 @@ public class ImageDataTests
         var imageData = new ImageData(null, 3, 2);
 
         // Assert
-        Assert.Equal(2, imageData.Pixels.GetUpperBound(0));
-        Assert.Equal(1, imageData.Pixels.GetUpperBound(1));
+        imageData.Pixels.GetUpperBound(0).Should().Be(2);
+        imageData.Pixels.GetUpperBound(1).Should().Be(1);
 
         var row0 = GetRow(imageData.Pixels, 0);
 
-        Assert.All(row0, pixel =>
+        row0.Should().AllSatisfy(pixel =>
         {
-            Assert.True(pixel == Color.White, $"Actual Pixel Color (Row 0): {pixel}");
-        });
-
-        Assert.All(row0, pixel =>
-        {
-            Assert.True(pixel == Color.White, $"Actual Pixel Color (Row 0): {pixel}");
+            pixel.Should().Be(Color.White, $"Actual Pixel Color (Row 0): {pixel}");
         });
     }
 
     [Fact]
     public void Ctor_WhenWidthAndPixelDimensionDoesNotMatch_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new ImageData(new Color[1, 2], 11, 2);
-        }, "The length of the 1st dimension of the 'pixels' parameter must match the 'width' parameter.");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The length of the 1st dimension of the 'pixels' parameter must match the 'width' parameter.");
     }
 
     [Fact]
     public void Ctor_WhenHeightAndPixelDimensionDoesNotMatch_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new ImageData(new Color[1, 2], 1, 22);
-        }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
     }
 
     [Fact]
@@ -100,14 +105,6 @@ public class ImageDataTests
         // Act
         var actual = targetImgData.DrawImage(srcImgData, new Point(2, 2));
 
-        bool ClrMatches(Color clrA, Color clrB)
-        {
-            return clrA.A == clrB.A &&
-                   clrA.R == clrB.R &&
-                   clrA.G == clrB.G &&
-                   clrA.B == clrB.B;
-        }
-
         // First 2 rows
         var row0 = TestHelpers.GetRow(actual, 0);
         var row1 = TestHelpers.GetRow(actual, 1);
@@ -134,28 +131,28 @@ public class ImageDataTests
 
         // Assert
         // First 2 rows
-        Assert.All(row0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(row1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(row2, clr => Assert.True(ClrMatches(clr, Color.Green)));
+        row0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row2.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
 
         // Middle rows
-        Assert.All(row3, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row4, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row5, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row6, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row7, clr => Assert.True(ClrMatches(clr, Color.Green)));
+        row3.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row4.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row5.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row6.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row7.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
 
         // Last 2 rows
-        Assert.All(row8, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(row9, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        row8.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row9.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
 
         // First 2 columns
-        Assert.All(col0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(col1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        col0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
 
         // Last 2 columns
-        Assert.All(col8, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(col9, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        col8.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col9.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
     }
 
     [Fact]
@@ -226,12 +223,17 @@ public class ImageDataTests
         // Act
         var actual = targetImgData.DrawImage(srcImgData, new Point(2, 2));
 
-        bool ClrMatches(Color clrA, Color clrB)
+        void ClrShouldMatch(Color clrA, Color clrB)
         {
-            return clrA.A == clrB.A &&
-                   clrA.R == clrB.R &&
-                   clrA.G == clrB.G &&
-                   clrA.B == clrB.B;
+            var alphaMatches = clrA.A == clrB.A;
+            var redMatches = clrA.R == clrB.R;
+            var greenMatches = clrA.G == clrB.G;
+            var blueMatches = clrA.B == clrB.B;
+
+            alphaMatches.Should().BeTrue();
+            redMatches.Should().BeTrue();
+            greenMatches.Should().BeTrue();
+            blueMatches.Should().BeTrue();
         }
 
         // First top 2 blue rows
@@ -250,18 +252,18 @@ public class ImageDataTests
 
         // Assert
         // First top 2 blue rows
-        Assert.All(row0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(row1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        row0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
 
-        // Green rows below top 2 blue rows
-        Assert.All(row2, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row3, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row4, clr => Assert.True(ClrMatches(clr, Color.Green)));
-        Assert.All(row5, clr => Assert.True(ClrMatches(clr, Color.Green)));
+        // // Green rows below top 2 blue rows
+        row2.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row3.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row4.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row5.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
 
-        // First 2 blue columns columns
-        Assert.All(col0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
-        Assert.All(col1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        // // First 2 blue columns columns
+        col0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
     }
 
     [Fact]
@@ -275,7 +277,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -303,7 +305,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -317,7 +319,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -331,7 +333,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -345,7 +347,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -359,7 +361,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -373,7 +375,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -387,7 +389,7 @@ public class ImageDataTests
         var actual = imageDataA == imageDataB;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -401,7 +403,7 @@ public class ImageDataTests
         var actual = imageDataA == imageDataB;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -415,7 +417,7 @@ public class ImageDataTests
         var actual = imageDataA != imageDataB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Theory]
@@ -431,7 +433,7 @@ public class ImageDataTests
         var actual = data.IsEmpty();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -467,5 +469,23 @@ public class ImageDataTests
         }
 
         return result.ToArray();
+    }
+
+    /// <summary>
+    /// Verifies if colors match.
+    /// </summary>
+    /// <param name="clrA">The first of two colors to compare.</param>
+    /// <param name="clrB">The second of two colors to compare.</param>
+    private static void ClrShouldMatch(Color clrA, Color clrB)
+    {
+        var alphaMatches = clrA.A == clrB.A;
+        var redMatches = clrA.R == clrB.R;
+        var greenMatches = clrA.G == clrB.G;
+        var blueMatches = clrA.B == clrB.B;
+
+        alphaMatches.Should().BeTrue();
+        redMatches.Should().BeTrue();
+        greenMatches.Should().BeTrue();
+        blueMatches.Should().BeTrue();
     }
 }
