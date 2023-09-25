@@ -6,6 +6,7 @@ namespace VelaptorTests.Graphics;
 
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -170,7 +171,7 @@ public class GlyphMetricsTests
         var actual = metrics.ToString();
 
         // Assert
-        Assert.Equal("Name: Z | Bounds: {X=11,Y=22,Width=33,Height=44}", actual);
+        actual.Should().Be("Name: Z | Bounds: {X=11,Y=22,Width=33,Height=44}");
     }
 
     [Theory]
@@ -229,7 +230,7 @@ public class GlyphMetricsTests
         var actual = metricsA.Equals(metricsB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -258,7 +259,7 @@ public class GlyphMetricsTests
         var actual = metricsA.Equals(metricsB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -303,7 +304,7 @@ public class GlyphMetricsTests
         var actual = metricsA.Equals(metricsB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -346,7 +347,7 @@ public class GlyphMetricsTests
         var actual = metricsA == metricsB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -375,7 +376,7 @@ public class GlyphMetricsTests
         var actual = metricsA != metricsB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
     #endregion
 }

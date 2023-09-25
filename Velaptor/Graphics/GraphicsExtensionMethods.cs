@@ -28,7 +28,7 @@ public static class GraphicsExtensionMethods
     /// <param name="index">The index of the list of glyph metric lists to get the offset from.</param>
     /// <returns>The maximum vertical offset.</returns>
     internal static float MaxVerticalOffset(this List<GlyphMetrics[]> value, int index)
-        => value.ToArray()[index]
+        => value[index]
             .Max(i => i.GlyphHeight - i.HoriBearingY > 0
                 ? i.GlyphHeight - i.HoriBearingY
                 : 0);
