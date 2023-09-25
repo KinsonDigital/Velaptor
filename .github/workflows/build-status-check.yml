@@ -8,7 +8,7 @@ defaults:
 
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [main, preview]
 
 
@@ -20,3 +20,5 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME }}"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}

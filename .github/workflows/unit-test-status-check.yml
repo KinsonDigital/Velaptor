@@ -9,11 +9,13 @@ defaults:
 
 on:
   workflow_dispatch:
-  pull_request:
+  pull_request_target:
     branches: [main, preview]
 
 
 jobs:
+  # These are not tests but it is testing related. This is just here to make sure that the
+  # 'test' related project at least builds.
   build_velaptor_testing:
     name: Build ${{ vars.PROJECT_NAME }} Testing App
     uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.1.0
@@ -21,8 +23,12 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME }}Testing"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
 
 
+  # These are not tests but it is testing related. This is just here to make sure that the
+  # 'test' related project at least builds.
   build_avalonia_testing:
     name: Build Avalonia Testing App
     uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.1.0
@@ -30,6 +36,8 @@ jobs:
       project-name: "AvaloniaTesting"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
 
 
   run_tests:
@@ -39,6 +47,8 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME }}Tests"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
 
 
   test_status_check:
