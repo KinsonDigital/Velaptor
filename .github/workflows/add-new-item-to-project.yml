@@ -28,7 +28,7 @@ jobs:
   add_new_issue_to_project:
     name: Add New Issue
     needs: get_item_number
-    uses: KinsonDigital/Infrastructure/.github/workflows/add-item-to-project.yml@v13.0.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/add-item-to-project.yml@v13.1.0
     with:
       org-name: "${{ vars.ORGANIZATION_NAME }}"
       org-project-name: "${{ vars.ORG_PROJECT_NAME }}"
