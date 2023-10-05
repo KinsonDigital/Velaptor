@@ -234,9 +234,9 @@ public sealed class FontLoader : ILoader<IFont>
     }
 
     /// <inheritdoc/>
-    public void Unload(string contentWithMetaData)
+    public void Unload(string contentPathOrName)
     {
-        var parseResult = this.fontMetaDataParser.Parse(contentWithMetaData);
+        var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
 
         if (parseResult.ContainsMetaData)
         {
@@ -252,7 +252,7 @@ public sealed class FontLoader : ILoader<IFont>
             }
             else
             {
-                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentWithMetaData}'.";
+                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentPathOrName}'.";
                 exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
                 exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
                 throw new CachingMetaDataException(exceptionMsg);
