@@ -10,6 +10,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
@@ -63,7 +64,8 @@ public class LayeredTextRenderingScene : SceneBase
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        this.font = ContentLoader.LoadFont(DefaultFont, 12);
+        var fontLoader = new FontLoader();
+        this.font = fontLoader.Load(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
         this.font.Size = 24;
 
@@ -207,12 +209,13 @@ public class LayeredTextRenderingScene : SceneBase
     {
         if (this.currentKeyState.IsKeyDown(KeyCode.L) && this.prevKeyState.IsKeyUp(KeyCode.L))
         {
+            var paramName = $"this.{nameof(this.whiteLayer)}";
             this.whiteLayer = this.whiteLayer switch
             {
                 RenderLayer.One => RenderLayer.Three,
                 RenderLayer.Three => RenderLayer.Five,
                 RenderLayer.Five => RenderLayer.One,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException(paramName, this.whiteLayer, "Invalid enum value.")
             };
         }
     }
