@@ -500,7 +500,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentWithMetaData')");
+            .WithMessage("The parameter must not be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoader.cs" company="KinsonDigital">
+// <copyright file="FontLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -126,10 +126,10 @@ public sealed class FontLoader : ILoader<IFont>
     /// <summary>
     /// Loads font content from the application's content directory or directly using a full file path.
     /// </summary>
-    /// <param name="contentWithMetaData">The name or full file path to the font with metadata.</param>
+    /// <param name="contentPathOrName">The name or full file path to the font with metadata.</param>
     /// <returns>The loaded font.</returns>
     /// <exception cref="ArgumentNullException">
-    ///     Occurs when the <paramref name="contentWithMetaData"/> argument is null or empty.
+    ///     Occurs when the <paramref name="contentPathOrName"/> argument is null or empty.
     /// </exception>
     /// <exception cref="CachingMetaDataException">
     ///     Occurs if the metadata is missing or invalid.
@@ -155,14 +155,14 @@ public sealed class FontLoader : ILoader<IFont>
     ///     ContentLoader.Load("my-font|size:12");
     ///     </code>
     /// </example>
-    public IFont Load(string contentWithMetaData)
+    public IFont Load(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentWithMetaData))
+        if (string.IsNullOrEmpty(contentPathOrName))
         {
-            throw new ArgumentNullException(nameof(contentWithMetaData), "The parameter must not be null.");
+            throw new ArgumentNullException(nameof(contentPathOrName), "The parameter must not be null.");
         }
 
-        var parseResult = this.fontMetaDataParser.Parse(contentWithMetaData);
+        var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
         string fullFontFilePath;
 
         if (parseResult.ContainsMetaData)
@@ -188,7 +188,7 @@ public sealed class FontLoader : ILoader<IFont>
             }
             else
             {
-                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when loading '{contentWithMetaData}'.";
+                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when loading '{contentPathOrName}'.";
                 exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
                 exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
                 throw new CachingMetaDataException(exceptionMsg);
@@ -234,9 +234,9 @@ public sealed class FontLoader : ILoader<IFont>
     }
 
     /// <inheritdoc/>
-    public void Unload(string contentWithMetaData)
+    public void Unload(string contentPathOrName)
     {
-        var parseResult = this.fontMetaDataParser.Parse(contentWithMetaData);
+        var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
 
         if (parseResult.ContainsMetaData)
         {
@@ -252,7 +252,7 @@ public sealed class FontLoader : ILoader<IFont>
             }
             else
             {
-                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentWithMetaData}'.";
+                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentPathOrName}'.";
                 exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
                 exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
                 throw new CachingMetaDataException(exceptionMsg);

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Scene;
@@ -62,10 +63,10 @@ public class TextRenderingScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var renderFactory = new RendererFactory();
-
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
-        this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
+        var fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.textFont = fontLoader.Load(DefaultRegularFont, 12);
 
         // Rotate CW Button
         this.btnRotateCW = new Button
