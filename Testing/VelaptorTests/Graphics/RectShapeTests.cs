@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
-using Helpers;
 using Velaptor.Graphics;
 using Xunit;
 
