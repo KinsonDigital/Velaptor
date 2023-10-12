@@ -6,6 +6,7 @@ namespace VelaptorTests.NativeInterop.GLFW;
 
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
+using FluentAssertions;
 
 public class GlfwDisplayChangedEventArgsTests
 {
@@ -17,7 +18,7 @@ public class GlfwDisplayChangedEventArgsTests
         var eventArgs = new GlfwDisplayChangedEventArgs(true);
 
         // Assert
-        Assert.True(eventArgs.IsConnected);
+        eventArgs.IsConnected.Should().BeTrue();
     }
     #endregion
 }
