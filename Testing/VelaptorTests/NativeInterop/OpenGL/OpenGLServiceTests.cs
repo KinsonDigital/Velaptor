@@ -7,11 +7,11 @@ namespace VelaptorTests.NativeInterop.OpenGL;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Helpers;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
+using FluentAssertions;
 
 /// <summary>
 /// Tests the <see cref="OpenGLService"/> class.
@@ -47,13 +47,14 @@ public class OpenGLServiceTests
     [Fact]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new OpenGLService(null);
-        }, "The parameter must not be null. (Parameter 'glInvoker')");
+        // Arrange & Act
+        var act = () => new OpenGLService(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
     }
     #endregion
+
     #region Prop Tests
     [Fact]
     public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
@@ -68,8 +69,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsVBOBound;
 
         // Assert
-        Assert.True(isBound);
-        Assert.False(isUnbound);
+        isBound.Should().BeTrue();
+        isUnbound.Should().BeFalse();
     }
 
     [Fact]
@@ -85,8 +86,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsEBOBound;
 
         // Assert
-        Assert.True(isBound);
-        Assert.False(isUnbound);
+        isBound.Should().BeTrue();
+        isUnbound.Should().BeFalse();
     }
 
     [Fact]
@@ -102,8 +103,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsVAOBound;
 
         // Assert
-        Assert.True(isBound);
-        Assert.False(isUnbound);
+        isBound.Should().BeTrue();
+        isUnbound.Should().BeFalse();
     }
     #endregion
 
@@ -118,7 +119,7 @@ public class OpenGLServiceTests
         var actual = service.GetViewPortSize();
 
         // Assert
-        Assert.Equal(new Size(33, 44), actual);
+        actual.Should().BeEquivalentTo(new Size(33, 44));
     }
 
     [Fact]
@@ -144,7 +145,7 @@ public class OpenGLServiceTests
         var actual = service.GetViewPortPosition();
 
         // Assert
-        Assert.Equal(new Vector2(11, 22), actual);
+        actual.Should().BeEquivalentTo(new Vector2(11, 22));
     }
 
     [Fact]
@@ -193,11 +194,11 @@ public class OpenGLServiceTests
         var service = CreateService();
         service.BindVAO(123u);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
-        {
-            service.UnbindEBO();
-        }, "The VAO object must be unbound before unbinding an EBO object.");
+        // Act
+        var act = service.UnbindEBO;
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>().WithMessage("The VAO object must be unbound before unbinding an EBO object.");
     }
 
     [Fact]
@@ -281,7 +282,7 @@ public class OpenGLServiceTests
         var actual = service.ProgramLinkedSuccessfully(123);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -300,7 +301,7 @@ public class OpenGLServiceTests
         var actual = service.ShaderCompiledSuccessfully(123);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -385,11 +386,11 @@ public class OpenGLServiceTests
         exceptionMsg += $"(Parameter 'bufferType'){Environment.NewLine}Actual value was 123.";
         var service = CreateService();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)123);
-        }, exceptionMsg);
+        // Act
+        var act = () => service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)123);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>().WithMessage(exceptionMsg);
     }
 
     [Theory]
