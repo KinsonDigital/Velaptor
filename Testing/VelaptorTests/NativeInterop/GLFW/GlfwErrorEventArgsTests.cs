@@ -17,7 +17,7 @@ public class GlfwErrorEventArgsTests
     [InlineData(null)]
     public void Ctor_WithNullOrEmptyErrorMessageParam_ThrowsException(string message)
     {
-        // Act
+        // Arrange & Act
         var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, message);
 
         // Assert
