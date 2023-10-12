@@ -16,7 +16,6 @@ using Velaptor.NativeInterop.GLFW;
 using Xunit;
 using FluentAssertions;
 
-
 /// <summary>
 /// Tests the <see cref="GlfwDisplays"/> class.
 /// </summary>
