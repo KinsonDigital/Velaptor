@@ -1039,6 +1039,133 @@ public class KeyCodeExtensionsTests
             new object[] { KeyCode.KeyPadAdd, true, '+' },
             new object[] { KeyCode.KeyPadAdd, false, '+' },
         };
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsMoveCursorKey(KeyCode)"/> method.
+    /// </summary>
+    public static IEnumerable<object[]> IsMoveCursorKeyTestData =>
+        new List<object[]>
+        {
+            new object[] { KeyCode.A, false },
+            new object[] { KeyCode.B, false },
+            new object[] { KeyCode.C, false },
+            new object[] { KeyCode.D, false },
+            new object[] { KeyCode.E, false },
+            new object[] { KeyCode.F, false },
+            new object[] { KeyCode.G, false },
+            new object[] { KeyCode.H, false },
+            new object[] { KeyCode.I, false },
+            new object[] { KeyCode.J, false },
+            new object[] { KeyCode.K, false },
+            new object[] { KeyCode.L, false },
+            new object[] { KeyCode.M, false },
+            new object[] { KeyCode.N, false },
+            new object[] { KeyCode.O, false },
+            new object[] { KeyCode.P, false },
+            new object[] { KeyCode.Q, false },
+            new object[] { KeyCode.R, false },
+            new object[] { KeyCode.S, false },
+            new object[] { KeyCode.T, false },
+            new object[] { KeyCode.U, false },
+            new object[] { KeyCode.V, false },
+            new object[] { KeyCode.W, false },
+            new object[] { KeyCode.X, false },
+            new object[] { KeyCode.Y, false },
+            new object[] { KeyCode.Z, false },
+            new object[] { KeyCode.Space, false },
+            new object[] { KeyCode.Unknown, false },
+            new object[] { KeyCode.Apostrophe, false },
+            new object[] { KeyCode.Comma, false },
+            new object[] { KeyCode.Minus, false },
+            new object[] { KeyCode.Period, false },
+            new object[] { KeyCode.Slash, false },
+            new object[] { KeyCode.D0, false },
+            new object[] { KeyCode.D1, false },
+            new object[] { KeyCode.D2, false },
+            new object[] { KeyCode.D3, false },
+            new object[] { KeyCode.D4, false },
+            new object[] { KeyCode.D5, false },
+            new object[] { KeyCode.D6, false },
+            new object[] { KeyCode.D7, false },
+            new object[] { KeyCode.D8, false },
+            new object[] { KeyCode.D9, false },
+            new object[] { KeyCode.Semicolon, false },
+            new object[] { KeyCode.Equal, false },
+            new object[] { KeyCode.LeftBracket, false },
+            new object[] { KeyCode.Backslash, false },
+            new object[] { KeyCode.RightBracket, false },
+            new object[] { KeyCode.GraveAccent, false },
+            new object[] { KeyCode.Escape, false },
+            new object[] { KeyCode.Enter, false },
+            new object[] { KeyCode.Tab, false },
+            new object[] { KeyCode.Backspace, false },
+            new object[] { KeyCode.Insert, false },
+            new object[] { KeyCode.Delete, false },
+            new object[] { KeyCode.Right, true },
+            new object[] { KeyCode.Left, true },
+            new object[] { KeyCode.Down, false },
+            new object[] { KeyCode.Up, false },
+            new object[] { KeyCode.PageUp, true },
+            new object[] { KeyCode.PageDown, true },
+            new object[] { KeyCode.Home, true },
+            new object[] { KeyCode.End, true },
+            new object[] { KeyCode.CapsLock, false },
+            new object[] { KeyCode.ScrollLock, false },
+            new object[] { KeyCode.NumLock, false },
+            new object[] { KeyCode.PrintScreen, false },
+            new object[] { KeyCode.Pause, false },
+            new object[] { KeyCode.F1, false },
+            new object[] { KeyCode.F2, false },
+            new object[] { KeyCode.F3, false },
+            new object[] { KeyCode.F4, false },
+            new object[] { KeyCode.F5, false },
+            new object[] { KeyCode.F6, false },
+            new object[] { KeyCode.F7, false },
+            new object[] { KeyCode.F8, false },
+            new object[] { KeyCode.F9, false },
+            new object[] { KeyCode.F10, false },
+            new object[] { KeyCode.F11, false },
+            new object[] { KeyCode.F12, false },
+            new object[] { KeyCode.F13, false },
+            new object[] { KeyCode.F14, false },
+            new object[] { KeyCode.F15, false },
+            new object[] { KeyCode.F16, false },
+            new object[] { KeyCode.F17, false },
+            new object[] { KeyCode.F18, false },
+            new object[] { KeyCode.F19, false },
+            new object[] { KeyCode.F20, false },
+            new object[] { KeyCode.F21, false },
+            new object[] { KeyCode.F22, false },
+            new object[] { KeyCode.F23, false },
+            new object[] { KeyCode.F24, false },
+            new object[] { KeyCode.F25, false },
+            new object[] { KeyCode.KeyPad0, false },
+            new object[] { KeyCode.KeyPad1, false },
+            new object[] { KeyCode.KeyPad2, false },
+            new object[] { KeyCode.KeyPad3, false },
+            new object[] { KeyCode.KeyPad4, false },
+            new object[] { KeyCode.KeyPad5, false },
+            new object[] { KeyCode.KeyPad6, false },
+            new object[] { KeyCode.KeyPad7, false },
+            new object[] { KeyCode.KeyPad8, false },
+            new object[] { KeyCode.KeyPad9, false },
+            new object[] { KeyCode.KeyPadDecimal, false },
+            new object[] { KeyCode.KeyPadDivide, false },
+            new object[] { KeyCode.KeyPadMultiply, false },
+            new object[] { KeyCode.KeyPadSubtract, false },
+            new object[] { KeyCode.KeyPadAdd, false },
+            new object[] { KeyCode.KeyPadEnter, false },
+            new object[] { KeyCode.KeyPadEqual, false },
+            new object[] { KeyCode.LeftShift, false },
+            new object[] { KeyCode.LeftControl, false },
+            new object[] { KeyCode.LeftAlt, false },
+            new object[] { KeyCode.LeftSuper, false },
+            new object[] { KeyCode.RightShift, false },
+            new object[] { KeyCode.RightControl, false },
+            new object[] { KeyCode.RightAlt, false },
+            new object[] { KeyCode.RightSuper, false },
+            new object[] { KeyCode.Menu, false },
+        };
     #endregion
 
     [Theory]
@@ -1124,6 +1251,17 @@ public class KeyCodeExtensionsTests
     {
         // Arrange & Act
         var actual = key.ToChar(anyShiftKeysDown);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(IsMoveCursorKeyTestData))]
+    public void IsMoveCursorKeyTestData_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    {
+        // Arrange & Act
+        var actual = key.IsMoveCursorKey();
 
         // Assert
         actual.Should().Be(expected);
