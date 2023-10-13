@@ -21,7 +21,8 @@ public class GlfwErrorEventArgsTests
         var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, message);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithMessage("The string parameter must not be null or empty. (Parameter 'errorMessage')");
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'errorMessage')");
     }
 
     [Fact]

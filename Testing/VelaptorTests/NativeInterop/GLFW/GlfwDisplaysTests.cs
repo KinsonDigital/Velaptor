@@ -97,7 +97,8 @@ public unsafe class GlfwDisplaysTests
         var act = () => new GlfwDisplays(null, this.mockPlatform.Object);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
@@ -107,7 +108,8 @@ public unsafe class GlfwDisplaysTests
         var act = () => new GlfwDisplays(this.mockGlfwInvoker.Object, null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithMessage("The parameter must not be null. (Parameter 'platform')");
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'platform')");
     }
 
     [Fact]
@@ -176,7 +178,6 @@ public unsafe class GlfwDisplaysTests
         // Arrange
         var refreshInvoked = false;
         CreateDisplays();
-
         this.mockGlfwInvoker.Setup(m => m.GetMonitors())
             .Callback(() => refreshInvoked = true);
 

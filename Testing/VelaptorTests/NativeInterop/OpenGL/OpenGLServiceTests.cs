@@ -51,7 +51,8 @@ public class OpenGLServiceTests
         var act = () => new OpenGLService(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
     }
     #endregion
 
@@ -198,7 +199,8 @@ public class OpenGLServiceTests
         var act = service.UnbindEBO;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>().WithMessage("The VAO object must be unbound before unbinding an EBO object.");
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("The VAO object must be unbound before unbinding an EBO object.");
     }
 
     [Fact]
