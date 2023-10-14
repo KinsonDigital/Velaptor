@@ -4,11 +4,13 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using FluentAssertions;
+using Velaptor;
 using Velaptor.ExtensionMethods;
 using Velaptor.UI;
 using Xunit;
@@ -27,7 +29,7 @@ public class TextBoxExtensionsTests
     public static IEnumerable<object[]> BumpAll_TestData() =>
         new List<object[]>
         {
-            // CharBounds, Expected_amount
+            // CharBounds, amount
             new object[]
             {
                 new List<(char, RectangleF)>
@@ -144,7 +146,7 @@ public class TextBoxExtensionsTests
     public static IEnumerable<object[]> TextMethods_TestData() =>
         new List<object[]>
         {
-            // CharBounds, Expected_amount
+            // CharBounds
             new object[]
             {
                 new List<(char, RectangleF)>
@@ -205,6 +207,127 @@ public class TextBoxExtensionsTests
         var expected = charBounds.TextRight() - charBounds.TextLeft();
         // Act
         var actual = charBounds.TextWidth();
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    #region Test Data
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
+    /// </summary>
+    /// <returns>Data for tests.</returns>
+    public static IEnumerable<object[]> CharMethods_TestData() =>
+        new List<object[]>
+        {
+            // CharBounds, Char index
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(0, 0, 2, 2))),
+                },
+                2,
+            },
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                },
+                3,
+            },
+        };
+    #endregion
+
+    [Theory]
+    [MemberData(nameof(CharMethods_TestData))]
+    public void CharLeft_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, int index)
+    {
+        // Arrange
+        var expected = (index < 0 || index >= charBounds.Count) ? 0f : charBounds[index].bounds.Left;
+        // Act
+        var actual = charBounds.CharLeft(index);
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(CharMethods_TestData))]
+    public void CharRight_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, int index)
+    {
+        // Arrange
+        var expected = (index < 0 || index >= charBounds.Count) ? 0f : charBounds[index].bounds.Right;
+        // Act
+        var actual = charBounds.CharRight(index);
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(TextMethods_TestData))]
+    public void CenterPositionX_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds)
+    {
+        // Arrange
+        var left = charBounds.Min(cb => cb.bounds.Left);
+        var right = charBounds.Max(cb => cb.bounds.Right);
+        var width = Math.Abs(left - right);
+        var expected = (charBounds is null || charBounds.Count <= 0) ? 0f : left + width.Half();
+        // Act
+        var actual = charBounds.CenterPositionX();
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    #region Test Data
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
+    /// </summary>
+    /// <returns>Data for tests.</returns>
+    public static IEnumerable<object[]> GapAtRightEnd_TestData() =>
+        new List<object[]>
+        {
+            // CharBounds, rightEndLimitX
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(2, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(4, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(6, 0, 2, 2))),
+                },
+                10f,
+            },
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(10, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(20, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(30, 0, 2, 2))),
+                },
+                5f,
+            },
+        };
+    #endregion
+
+    [Theory]
+    [MemberData(nameof(GapAtRightEnd_TestData))]
+    public void GapAtRightEnd_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, float rightEndLimitX)
+    {
+        // Arrange
+        var expected = charBounds is not null && charBounds.Count > 0 && charBounds.TextRight() < rightEndLimitX;
+        // Act
+        var actual = charBounds.GapAtRightEnd(rightEndLimitX);
         // Assert
         actual.Should().Be(expected);
     }
