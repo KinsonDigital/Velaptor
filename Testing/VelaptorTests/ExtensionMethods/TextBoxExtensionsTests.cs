@@ -184,5 +184,29 @@ public class TextBoxExtensionsTests
         // Assert
         actual.Should().Be((int)expected);
     }
+
+    [Theory]
+    [MemberData(nameof(TextMethods_TestData))]
+    public void TextRight_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds)
+    {
+        // Arrange
+        var expected = charBounds[^1].bounds.Right;
+        // Act
+        var actual = charBounds.TextRight();
+        // Assert
+        actual.Should().Be((int)expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(TextMethods_TestData))]
+    public void TextWidth_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds)
+    {
+        // Arrange
+        var expected = charBounds.TextRight() - charBounds.TextLeft();
+        // Act
+        var actual = charBounds.TextWidth();
+        // Assert
+        actual.Should().Be(expected);
+    }
     #endregion
 }
