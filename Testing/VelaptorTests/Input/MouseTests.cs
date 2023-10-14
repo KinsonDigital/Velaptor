@@ -5,6 +5,7 @@
 namespace VelaptorTests.Input;
 
 using System;
+using System.ComponentModel;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
@@ -148,7 +149,9 @@ public class MouseTests
     public void PushReactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
     {
         // Arrange
-        const string expected = $"The enum '{nameof(MouseButton)}' is out of range.";
+        var invalidMouseButton = 1234;
+        var expected = $"The value of argument 'data.{nameof(MouseStateData.Button)}' ({invalidMouseButton}) is invalid for Enum type " +
+                       $"'{nameof(MouseButton)}'. (Parameter 'data.{nameof(MouseStateData.Button)}')";
 
         ReceiveMouseDataReactor? reactor = null;
 
@@ -159,7 +162,7 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouseStateData = new MouseStateData { Button = (MouseButton)1234 };
+        var mouseStateData = new MouseStateData { Button = (MouseButton)invalidMouseButton };
 
         _ = CreateSystemUnderTest();
 
@@ -167,7 +170,7 @@ public class MouseTests
         var act = () => reactor.OnReceive(mouseStateData);
 
         // Assert
-        act.Should().Throw<EnumOutOfRangeException<MouseButton>>()
+        act.Should().Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
     }
     #endregion

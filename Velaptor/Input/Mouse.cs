@@ -4,6 +4,7 @@
 
 namespace Velaptor.Input;
 
+using System.ComponentModel;
 using Carbonate.Fluent;
 using Factories;
 using Guards;
@@ -64,8 +65,8 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// Updates the state of the mouse.
     /// </summary>
     /// <param name="data">The mouse change data.</param>
-    /// <exception cref="EnumOutOfRangeException{MouseButton}">
-    ///     Thrown if the mouse button enum is out of range.
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the <see cref="MouseStateData.Button"/> is an invalid value.
     /// </exception>
     private void MouseStateChanged(MouseStateData data)
     {
@@ -86,7 +87,11 @@ internal sealed class Mouse : IAppInput<MouseState>
                 this.rightMouseButton.isDown = data.ButtonIsDown;
                 break;
             default:
-                throw new EnumOutOfRangeException<MouseButton>($"The enum '{nameof(MouseButton)}' is out of range.");
+                const string argName = $"{nameof(data)}.{nameof(MouseStateData.Button)}";
+                throw new InvalidEnumArgumentException(
+                    argName,
+                    (int)data.Button,
+                    typeof(MouseButton));
         }
     }
 }
