@@ -34,10 +34,10 @@ public class TextBoxExtensionsTests
             {
                 new List<(char, RectangleF)>
                 {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('b', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('c', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('d', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(10, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(20, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(30, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(40, 0, 2, 2))),
                 },
                 6,
             },
@@ -45,42 +45,115 @@ public class TextBoxExtensionsTests
             {
                 new List<(char, RectangleF)>
                 {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(100, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(200, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(300, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(400, 0, 2, 2))),
                 },
                 3,
             },
         };
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
+    /// </summary>
+    /// <returns>Data for tests.</returns>
+    public static IEnumerable<object[]> TextMethods_TestData() =>
+        new List<object[]>
+        {
+            // CharBounds
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(10, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(20, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(30, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(40, 0, 2, 2))),
+                },
+            },
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(100, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(200, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(300, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(400, 0, 2, 2))),
+                },
+            },
+        };
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
+    /// </summary>
+    /// <returns>Data for tests.</returns>
+    public static IEnumerable<object[]> CharMethods_TestData() =>
+        new List<object[]>
+        {
+            // CharBounds, Char index
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(10, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(20, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(30, 0, 2, 2))),
+                },
+                2,
+            },
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(100, 0, 20, 20))),
+                    ('a', new RectangleF(new Vector4(200, 0, 20, 20))),
+                    ('a', new RectangleF(new Vector4(300, 0, 20, 20))),
+                    ('a', new RectangleF(new Vector4(400, 0, 20, 20))),
+                },
+                3,
+            },
+        };
+
+    /// <summary>
+    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
+    /// </summary>
+    /// <returns>Data for tests.</returns>
+    public static IEnumerable<object[]> GapAtRightEnd_TestData() =>
+        new List<object[]>
+        {
+            // CharBounds, rightEndLimitX
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('b', new RectangleF(new Vector4(2, 0, 2, 2))),
+                    ('c', new RectangleF(new Vector4(4, 0, 2, 2))),
+                    ('d', new RectangleF(new Vector4(6, 0, 2, 2))),
+                },
+                10f,
+            },
+            new object[]
+            {
+                new List<(char, RectangleF)>
+                {
+                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(10, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(20, 0, 2, 2))),
+                    ('a', new RectangleF(new Vector4(30, 0, 2, 2))),
+                },
+                5f,
+            },
+        };
     #endregion
 
+    #region Method Tests
     [Theory]
     [MemberData(nameof(BumpAll_TestData))]
     public void BumpAllToLeft_WhenInvoked_BumpsAmountCharsToLeft(List<(char character, RectangleF bounds)> charBounds, float amount)
     {
-        // Arrange
-        var original = charBounds.ToList();
-        // Act
-        charBounds.BumpAllToLeft(amount);
-        // Assert
-        for (var i = 0; i < charBounds.Count; i++)
-        {
-            charBounds[i].bounds.X.Should().Be(original[i].bounds.X - amount);
-        }
-    }
-
-    // MODO 2 - Implicit check, without external test data
-    [Fact]
-    public void BumpAllToLeft_WhenInvoked_BumpsAmountCharsToLeft2()
-    {
-        var charBounds = new List<(char character, RectangleF bounds)>(new[]
-        {
-            ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-            ('b', new RectangleF(new Vector4(4, 0, 2, 2))),
-            ('c', new RectangleF(new Vector4(8, 0, 2, 2))),
-        });
-        var amount = 5;
         // Arrange
         var original = charBounds.ToList();
         // Act
@@ -137,46 +210,8 @@ public class TextBoxExtensionsTests
         }
     }
 
-    #region Test Data
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
-    /// </summary>
-    /// <returns>Data for tests.</returns>
-    public static IEnumerable<object[]> TextMethods_TestData() =>
-        new List<object[]>
-        {
-            // CharBounds
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('b', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('c', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('d', new RectangleF(new Vector4(0, 0, 2, 2))),
-                },
-            },
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                },
-            },
-        };
-    #endregion
-
-    #region Method Tests
     [Theory]
     [MemberData(nameof(TextMethods_TestData))]
-    // *** InlineData is restricted, you cannot new objects there ***
-    //[InlineData(new ReadOnlyCollection<(char, RectangleF)>( new[] { ('a', new RectangleF(1, 2, 3, 4)) }), 5)]
-    //[InlineData("", 7)]
-    //[InlineData("", 188)]
     public void TextLeft_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds)
     {
         // Arrange
@@ -210,41 +245,6 @@ public class TextBoxExtensionsTests
         // Assert
         actual.Should().Be(expected);
     }
-
-    #region Test Data
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
-    /// </summary>
-    /// <returns>Data for tests.</returns>
-    public static IEnumerable<object[]> CharMethods_TestData() =>
-        new List<object[]>
-        {
-            // CharBounds, Char index
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('b', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('c', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('d', new RectangleF(new Vector4(0, 0, 2, 2))),
-                },
-                2,
-            },
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                },
-                3,
-            },
-        };
-    #endregion
 
     [Theory]
     [MemberData(nameof(CharMethods_TestData))]
@@ -284,41 +284,6 @@ public class TextBoxExtensionsTests
         // Assert
         actual.Should().Be(expected);
     }
-
-    #region Test Data
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="TextBoxExtensions"/> methods.
-    /// </summary>
-    /// <returns>Data for tests.</returns>
-    public static IEnumerable<object[]> GapAtRightEnd_TestData() =>
-        new List<object[]>
-        {
-            // CharBounds, rightEndLimitX
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('b', new RectangleF(new Vector4(2, 0, 2, 2))),
-                    ('c', new RectangleF(new Vector4(4, 0, 2, 2))),
-                    ('d', new RectangleF(new Vector4(6, 0, 2, 2))),
-                },
-                10f,
-            },
-            new object[]
-            {
-                new List<(char, RectangleF)>
-                {
-                    ('a', new RectangleF(new Vector4(0, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(10, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(20, 0, 2, 2))),
-                    ('a', new RectangleF(new Vector4(30, 0, 2, 2))),
-                },
-                5f,
-            },
-        };
-    #endregion
 
     [Theory]
     [MemberData(nameof(GapAtRightEnd_TestData))]
