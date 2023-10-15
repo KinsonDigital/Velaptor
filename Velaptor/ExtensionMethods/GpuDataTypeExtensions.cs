@@ -5,6 +5,7 @@
 namespace Velaptor.ExtensionMethods;
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -25,6 +26,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="pos">The position to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetVertexPos(this ShapeGpuData gpuData, Vector2 pos, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -33,7 +37,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -47,15 +51,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -65,6 +68,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="pos">The position to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static LineGpuData SetVertexPos(this LineGpuData gpuData, Vector2 pos, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -73,22 +79,21 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new LineVertexData(
             pos,
             oldVertex.Color);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new LineGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new LineGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new LineGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new LineGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -98,6 +103,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="rect">The rectangle to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetRectangle(this ShapeGpuData gpuData, Vector4 rect, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -106,7 +114,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -120,15 +128,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -155,6 +162,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="isSolid">The solid setting to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetAsSolid(this ShapeGpuData gpuData, bool isSolid, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -163,7 +173,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -177,15 +187,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -212,6 +221,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="borderThickness">The border thickness to apply to the vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetBorderThickness(this ShapeGpuData gpuData, float borderThickness, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -220,7 +232,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -234,15 +246,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -269,6 +280,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="topLeftCornerRadius">The top left corner radius to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetTopLeftCornerRadius(this ShapeGpuData gpuData, float topLeftCornerRadius, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -277,7 +291,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -291,15 +305,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -326,6 +339,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="bottomLeftCornerRadius">The bottom left corner radius to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetBottomLeftCornerRadius(this ShapeGpuData gpuData, float bottomLeftCornerRadius, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -334,7 +350,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -348,15 +364,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -383,6 +398,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="bottomRightCornerRadius">The bottom right corner radius to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetBottomRightCornerRadius(this ShapeGpuData gpuData, float bottomRightCornerRadius, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -391,7 +409,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -405,15 +423,14 @@ internal static class GpuDataTypeExtensions
             bottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -440,6 +457,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="topRightCornerRadius">The top right corner radius to apply to a vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetTopRightCornerRadius(this ShapeGpuData gpuData, float topRightCornerRadius, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -448,7 +468,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -462,15 +482,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             topRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -497,6 +516,9 @@ internal static class GpuDataTypeExtensions
     /// <param name="color">The color to set the vertex.</param>
     /// <param name="vertexNumber">The vertex to update.</param>
     /// <returns>The updated GPU data.</returns>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the given <paramref name="vertexNumber"/> is an invalid value.
+    /// </exception>
     public static ShapeGpuData SetColor(this ShapeGpuData gpuData, Color color, VertexNumber vertexNumber)
     {
         var oldVertex = vertexNumber switch
@@ -505,7 +527,7 @@ internal static class GpuDataTypeExtensions
             VertexNumber.Two => gpuData.Vertex2,
             VertexNumber.Three => gpuData.Vertex3,
             VertexNumber.Four => gpuData.Vertex4,
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
 
         var newVertexData = new ShapeVertexData(
@@ -519,15 +541,14 @@ internal static class GpuDataTypeExtensions
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
-#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new ShapeGpuData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new ShapeGpuData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new ShapeGpuData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            _ => throw new InvalidEnumArgumentException(nameof(vertexNumber), (int)vertexNumber, typeof(VertexNumber)),
         };
-#pragma warning restore CS8524
     }
 
     /// <summary>

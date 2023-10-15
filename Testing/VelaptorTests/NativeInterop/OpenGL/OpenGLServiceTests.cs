@@ -5,8 +5,10 @@
 namespace VelaptorTests.NativeInterop.OpenGL;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
@@ -381,15 +383,18 @@ public class OpenGLServiceTests
     public void LabelBuffer_WithInvalidBufferType_ThrowsException()
     {
         // Arrange
-        var exceptionMsg = "Exception of type 'System.ArgumentOutOfRangeException' was thrown. ";
-        exceptionMsg += $"(Parameter 'bufferType'){Environment.NewLine}Actual value was 123.";
+        var invalidValue = 123;
+        var expected = $"The value of argument 'bufferType' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(OpenGLBufferType)}'. (Parameter 'bufferType')";
+
         var service = CreateService();
 
+        // Act
+        var act = () => service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)invalidValue);
+
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)123);
-        }, exceptionMsg);
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]

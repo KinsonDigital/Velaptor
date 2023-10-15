@@ -7,6 +7,7 @@ namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -233,15 +234,20 @@ public class ShapeGpuBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var shape = BatchItemFactory.CreateShapeItemWithOrderedValues(gradientType: (ColorGradient)1234);
+        var invalidValue = 1234;
+        var expected = $"The value of argument 'shape.{nameof(ShapeBatchItem.GradientType)}' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(ColorGradient)}'. (Parameter 'shape.{nameof(ShapeBatchItem.GradientType)}')";
+
+        var shape = BatchItemFactory.CreateShapeItemWithOrderedValues(gradientType: (ColorGradient)invalidValue);
 
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            sut.UploadVertexData(shape, 0);
-        }, "The gradient type is invalid. (Parameter 'GradientType')");
+        // Act
+        var act = () => sut.UploadVertexData(shape, 0);
+
+        // Assert
+        act.Should().Throw<InvalidEnumArgumentException>()
+           .WithMessage(expected);
     }
 
     [Fact]
