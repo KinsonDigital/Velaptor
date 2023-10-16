@@ -386,7 +386,7 @@ public class OpenGLServiceTests
     public void LabelBuffer_WithInvalidBufferType_ThrowsException()
     {
         // Arrange
-        var invalidValue = 123;
+        const int invalidValue = 123;
         var expected = $"The value of argument 'bufferType' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(OpenGLBufferType)}'. (Parameter 'bufferType')";
 
@@ -395,7 +395,7 @@ public class OpenGLServiceTests
         // Act
         var act = () => service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)invalidValue);
 
-        // Act & Assert
+        // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
 

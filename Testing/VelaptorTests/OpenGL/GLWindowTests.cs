@@ -671,7 +671,7 @@ public class GLWindowTests : TestsBase
     public void WindowState_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'this.glWindow.{nameof(WindowState)}' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(WindowState)}'. (Parameter 'this.glWindow.{nameof(WindowState)}')";
 
@@ -693,7 +693,7 @@ public class GLWindowTests : TestsBase
     public void WindowState_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'value' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(StateOfWindow)}'. (Parameter 'value')";
 
@@ -792,7 +792,7 @@ public class GLWindowTests : TestsBase
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'this.glWindow.{nameof(WindowBorder)}' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(WindowBorder)}'. (Parameter 'this.glWindow.{nameof(WindowBorder)}')";
 
@@ -814,7 +814,7 @@ public class GLWindowTests : TestsBase
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'value' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(WindowBorder)}'. (Parameter 'value')";
 

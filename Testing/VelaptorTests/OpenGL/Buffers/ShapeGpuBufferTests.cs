@@ -234,7 +234,7 @@ public class ShapeGpuBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'shape.{nameof(ShapeBatchItem.GradientType)}' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(ColorGradient)}'. (Parameter 'shape.{nameof(ShapeBatchItem.GradientType)}')";
 

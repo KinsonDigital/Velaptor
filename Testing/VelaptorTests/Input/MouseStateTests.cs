@@ -65,7 +65,7 @@ public class MouseStateTests
     public void IsButtonDown_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
-        var invalidMouseButton = 1234;
+        const int invalidMouseButton = 1234;
         var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
                        $"'{nameof(MouseButton)}'. (Parameter 'button')";
 
@@ -147,7 +147,7 @@ public class MouseStateTests
     public void IsButtonUp_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
-        var invalidMouseButton = 1234;
+        const int invalidMouseButton = 1234;
         var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
                        $"'{nameof(MouseButton)}'. (Parameter 'button')";
 

@@ -518,7 +518,7 @@ public class BatchingManagerTests
     public void AddTextureItem_WithFullBatchAndInvalidBatchType_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'batchType' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(BatchType)}'. (Parameter 'batchType')";
 

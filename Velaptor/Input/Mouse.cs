@@ -66,7 +66,7 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// </summary>
     /// <param name="data">The mouse change data.</param>
     /// <exception cref="InvalidEnumArgumentException">
-    ///     Occurs if the <see cref="MouseStateData.Button"/> is an invalid value.
+    ///     Occurs if the <see cref="MouseStateData"/>.<see cref="MouseStateData.Button"/> is an invalid value.
     /// </exception>
     private void MouseStateChanged(MouseStateData data)
     {

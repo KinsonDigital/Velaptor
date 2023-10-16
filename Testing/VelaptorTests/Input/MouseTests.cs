@@ -149,7 +149,7 @@ public class MouseTests
     public void PushReactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
     {
         // Arrange
-        var invalidMouseButton = 1234;
+        const int invalidMouseButton = 1234;
         var expected = $"The value of argument 'data.{nameof(MouseStateData.Button)}' ({invalidMouseButton}) is invalid for Enum type " +
                        $"'{nameof(MouseButton)}'. (Parameter 'data.{nameof(MouseStateData.Button)}')";
 

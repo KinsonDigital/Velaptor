@@ -26,7 +26,7 @@ public class GpuDataTypeExtensionsTests
     public void SetVertexPos_WithRectGpuDataAndInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -83,7 +83,7 @@ public class GpuDataTypeExtensionsTests
     public void SetVertexPos_WithInvalidVertexNumber_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -105,7 +105,7 @@ public class GpuDataTypeExtensionsTests
     public void SetRectangle_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -179,7 +179,7 @@ public class GpuDataTypeExtensionsTests
     public void SetAsSolid_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -252,7 +252,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBorderThickness_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -326,7 +326,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -400,7 +400,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -474,7 +474,7 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -548,7 +548,7 @@ public class GpuDataTypeExtensionsTests
     public void SetTopRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
@@ -622,7 +622,7 @@ public class GpuDataTypeExtensionsTests
     public void SetColor_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
-        var invalidValue = 1234;
+        const int invalidValue = 1234;
         var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
 
