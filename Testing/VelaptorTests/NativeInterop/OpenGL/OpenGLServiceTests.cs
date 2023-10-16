@@ -398,9 +398,6 @@ public class OpenGLServiceTests
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
-
-        // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>().WithMessage(exceptionMsg);
     }
 
     [Theory]
