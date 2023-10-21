@@ -74,7 +74,9 @@ public class MouseStateTests
         var act = () => state.IsButtonDown((MouseButton)1234);
 
         //Assert
-        act.Should().Throw<EnumOutOfRangeException<MouseButton>>().WithMessage(expected);
+        act.Should()
+            .Throw<EnumOutOfRangeException<MouseButton>>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -153,7 +155,9 @@ public class MouseStateTests
         var act = () => state.IsButtonUp((MouseButton)1234);
 
         //Assert
-        act.Should().Throw<EnumOutOfRangeException<MouseButton>>().WithMessage(expected);
+        act.Should()
+            .Throw<EnumOutOfRangeException<MouseButton>>()
+            .WithMessage(expected);
     }
 
     [Fact]
