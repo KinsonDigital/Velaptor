@@ -85,8 +85,8 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.Equal(11, actual.GetPosition().X);
-        Assert.Equal(22, actual.GetPosition().Y);
+        actual.GetPosition().X.Should().Be(11);
+        actual.GetPosition().Y.Should().Be(22);
     }
 
     [Theory]
@@ -115,7 +115,7 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.True(actual.GetButtonState(mouseButton));
+        actual.GetButtonState(mouseButton).Should().BeTrue();
     }
 
     [Fact]
@@ -140,8 +140,8 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
-        Assert.Equal(33, actual.GetScrollWheelValue());
+        actual.GetScrollDirection().Should().Be(MouseScrollDirection.ScrollDown);
+        actual.GetScrollWheelValue().Should().Be(33);
     }
 
     [Fact]
