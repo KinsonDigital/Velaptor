@@ -5,6 +5,7 @@
 namespace Velaptor.Input;
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Velaptor.Exceptions;
@@ -61,20 +62,17 @@ public struct MouseState : IEquatable<MouseState>
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
     /// <returns>True if the mouse button is in the down position.</returns>
-    public bool IsButtonDown(MouseButton button)
-    {
-        switch (button)
+    public bool IsButtonDown(MouseButton button) =>
+        button switch
         {
-            case MouseButton.LeftButton:
-                return this.isLeftButtonDown;
-            case MouseButton.MiddleButton:
-                return this.isMiddleButtonDown;
-            case MouseButton.RightButton:
-                return this.isRightButtonDown;
-            default:
-                throw new EnumOutOfRangeException<MouseButton>(nameof(MouseState), nameof(IsButtonDown));
-        }
-    }
+            MouseButton.LeftButton => this.isLeftButtonDown,
+            MouseButton.MiddleButton => this.isMiddleButtonDown,
+            MouseButton.RightButton => this.isRightButtonDown,
+            _ => throw new InvalidEnumArgumentException(
+                nameof(button),
+                (int)button,
+                typeof(MouseButton)),
+        };
 
     /// <summary>
     /// Returns a value indicating whether or not the given mouse <paramref name="button"/>
@@ -82,20 +80,20 @@ public struct MouseState : IEquatable<MouseState>
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
     /// <returns>True if the mouse button is in the up position.</returns>
-    public bool IsButtonUp(MouseButton button)
-    {
-        switch (button)
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Occurs if the <see cref="MouseButton"/> is an invalid value.
+    /// </exception>
+    public bool IsButtonUp(MouseButton button) =>
+        button switch
         {
-            case MouseButton.LeftButton:
-                return !this.isLeftButtonDown;
-            case MouseButton.MiddleButton:
-                return !this.isMiddleButtonDown;
-            case MouseButton.RightButton:
-                return !this.isRightButtonDown;
-            default:
-                throw new EnumOutOfRangeException<MouseButton>(nameof(MouseState), nameof(IsButtonUp));
-        }
-    }
+            MouseButton.LeftButton => !this.isLeftButtonDown,
+            MouseButton.MiddleButton => !this.isMiddleButtonDown,
+            MouseButton.RightButton => !this.isRightButtonDown,
+            _ => throw new InvalidEnumArgumentException(
+                nameof(button),
+                (int)button,
+                typeof(MouseButton))
+        };
 
     /// <summary>
     /// Gets or sets a value indicating whether or not the left mouse button is in the down position.

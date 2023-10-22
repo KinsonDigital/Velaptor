@@ -6,7 +6,6 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
-using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Velaptor.ExtensionMethods;

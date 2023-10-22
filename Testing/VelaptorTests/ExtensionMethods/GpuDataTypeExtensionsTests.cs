@@ -7,6 +7,7 @@
 namespace VelaptorTests.ExtensionMethods;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
@@ -25,14 +26,18 @@ public class GpuDataTypeExtensionsTests
     public void SetVertexPos_WithRectGpuDataAndInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)1234);
+        var act = () => gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -78,6 +83,10 @@ public class GpuDataTypeExtensionsTests
     public void SetVertexPos_WithInvalidVertexNumber_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = new LineGpuData(
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty),
@@ -85,23 +94,29 @@ public class GpuDataTypeExtensionsTests
             new LineVertexData(Vector2.Zero, Color.Empty));
 
         // Act
-        var act = () => gpuData.SetVertexPos(Vector2.Zero, (VertexNumber)1234);
+        var act = () => gpuData.SetVertexPos(Vector2.Zero, (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Fact]
     public void SetRectangle_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act & Assert
-        var act = () => gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)1234);
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        // Act
+        var act = () => gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)invalidValue);
+
+        // Assert
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -164,14 +179,18 @@ public class GpuDataTypeExtensionsTests
     public void SetAsSolid_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)1234);
+        var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -233,14 +252,18 @@ public class GpuDataTypeExtensionsTests
     public void SetBorderThickness_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)1234);
+        var act = () => gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -303,14 +326,18 @@ public class GpuDataTypeExtensionsTests
     public void SetTopLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+        var act = () => gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -373,14 +400,18 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+        var act = () => gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -443,14 +474,18 @@ public class GpuDataTypeExtensionsTests
     public void SetBottomRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+        var act = () => gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -513,14 +548,18 @@ public class GpuDataTypeExtensionsTests
     public void SetTopRightCornerRadius_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+        var act = () => gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]
@@ -583,14 +622,18 @@ public class GpuDataTypeExtensionsTests
     public void SetColor_WithInvalidVertexValue_ThrowsException()
     {
         // Arrange
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'vertexNumber' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(VertexNumber)}'. (Parameter 'vertexNumber')";
+
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetColor(It.IsAny<Color>(), (VertexNumber)1234);
+        var act = () => gpuData.SetColor(It.IsAny<Color>(), (VertexNumber)invalidValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+        act.Should().Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Theory]

@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.OpenGL;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using Guards;
@@ -196,7 +197,7 @@ internal sealed class OpenGLService : IOpenGLService
         {
             OpenGLBufferType.VertexBufferObject => "VBO",
             OpenGLBufferType.IndexArrayObject => "EBO",
-            _ => throw new ArgumentOutOfRangeException(nameof(bufferType), bufferType, null)
+            _ => throw new InvalidEnumArgumentException(nameof(bufferType), (int)bufferType, typeof(OpenGLBufferType))
         };
 
         var newLabel = $"{label} {bufferTypeAcronym}";
