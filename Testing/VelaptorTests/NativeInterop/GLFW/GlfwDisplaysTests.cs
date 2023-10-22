@@ -8,13 +8,13 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Helpers;
 using Moq;
 using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
+using FluentAssertions;
 
 /// <summary>
 /// Tests the <see cref="GlfwDisplays"/> class.
@@ -93,21 +93,23 @@ public unsafe class GlfwDisplaysTests
     [Fact]
     public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GlfwDisplays(null, this.mockPlatform.Object);
-        }, "The parameter must not be null. (Parameter 'glfwInvoker')");
+        // Arrange & Act
+        var act = () => new GlfwDisplays(null, this.mockPlatform.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GlfwDisplays(this.mockGlfwInvoker.Object, null);
-        }, "The parameter must not be null. (Parameter 'platform')");
+        // Arrange & Act
+        var act = () => new GlfwDisplays(this.mockGlfwInvoker.Object, null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'platform')");
     }
 
     [Fact]
@@ -165,8 +167,7 @@ public unsafe class GlfwDisplaysTests
         var actual = displays.SystemDisplays;
 
         // Assert
-        Assert.Equal(expectedDisplayA, actual[0]);
-        Assert.Equal(expectedDisplayB, actual[1]);
+        actual.Should().HaveCount(2).And.ContainInOrder(expectedDisplayA, expectedDisplayB);
     }
     #endregion
 
@@ -177,7 +178,6 @@ public unsafe class GlfwDisplaysTests
         // Arrange
         var refreshInvoked = false;
         CreateDisplays();
-
         this.mockGlfwInvoker.Setup(m => m.GetMonitors())
             .Callback(() => refreshInvoked = true);
 
@@ -186,7 +186,7 @@ public unsafe class GlfwDisplaysTests
             => e.OnDisplayChanged += null, new GlfwDisplayChangedEventArgs(true));
 
         // Assert
-        Assert.True(refreshInvoked);
+        refreshInvoked.Should().BeTrue();
     }
 
     [Fact]
