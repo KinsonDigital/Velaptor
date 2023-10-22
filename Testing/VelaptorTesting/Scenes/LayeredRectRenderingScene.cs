@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using Velaptor;
@@ -207,7 +208,7 @@ public class LayeredRectRenderingScene : SceneBase
     /// <summary>
     /// Updates the current layer of the white rectangle.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the <see cref="RenderLayer"/> is out of range.
     /// </exception>
     private void UpdateWhiteRectLayer()
@@ -219,7 +220,7 @@ public class LayeredRectRenderingScene : SceneBase
                 RenderLayer.One => RenderLayer.Three,
                 RenderLayer.Three => RenderLayer.Five,
                 RenderLayer.Five => RenderLayer.One,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new InvalidEnumArgumentException($"this.{nameof(this.whiteLayer)}", (int)this.whiteLayer, typeof(RenderLayer))
             };
         }
     }
