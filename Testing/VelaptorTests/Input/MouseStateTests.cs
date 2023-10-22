@@ -30,7 +30,7 @@ public class MouseStateTests
         var actual = state.GetPosition();
 
         // Arrange
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class MouseStateTests
         var actual = state.GetX();
 
         // Assert
-        Assert.Equal(123, actual);
+        actual.Should().Be(123);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class MouseStateTests
         var actual = state.GetY();
 
         // Assert
-        Assert.Equal(123, actual);
+        actual.Should().Be(123);
     }
 
     [Fact]
@@ -96,9 +96,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonDown(MouseButton.RightButton);
 
         // Assert
-        Assert.True(actualLeft);
-        Assert.False(actualMiddle);
-        Assert.False(actualRight);
+        actualLeft.Should().BeTrue();
+        actualMiddle.Should().BeFalse();
+        actualRight.Should().BeFalse();
     }
 
     [Fact]
@@ -117,9 +117,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonDown(MouseButton.RightButton);
 
         // Assert
-        Assert.False(actualLeft);
-        Assert.True(actualMiddle);
-        Assert.False(actualRight);
+        actualLeft.Should().BeFalse();
+        actualMiddle.Should().BeTrue();
+        actualRight.Should().BeFalse();
     }
 
     [Fact]
@@ -138,9 +138,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonDown(MouseButton.RightButton);
 
         // Assert
-        Assert.False(actualLeft);
-        Assert.False(actualMiddle);
-        Assert.True(actualRight);
+        actualLeft.Should().BeFalse();
+        actualMiddle.Should().BeFalse();
+        actualRight.Should().BeTrue();
     }
 
     [Fact]
@@ -178,9 +178,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonUp(MouseButton.RightButton);
 
         // Assert
-        Assert.True(actualLeft);
-        Assert.False(actualMiddle);
-        Assert.False(actualRight);
+        actualLeft.Should().BeTrue();
+        actualMiddle.Should().BeFalse();
+        actualRight.Should().BeFalse();
     }
 
     [Fact]
@@ -199,9 +199,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonUp(MouseButton.RightButton);
 
         // Assert
-        Assert.False(actualLeft);
-        Assert.True(actualMiddle);
-        Assert.False(actualRight);
+        actualLeft.Should().BeFalse();
+        actualMiddle.Should().BeTrue();
+        actualRight.Should().BeFalse();
     }
 
     [Fact]
@@ -220,9 +220,9 @@ public class MouseStateTests
         var actualRight = state.IsButtonDown(MouseButton.RightButton);
 
         // Assert
-        Assert.True(actualLeft);
-        Assert.True(actualMiddle);
-        Assert.False(actualRight);
+        actualLeft.Should().BeTrue();
+        actualMiddle.Should().BeTrue();
+        actualRight.Should().BeFalse();
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class MouseStateTests
         var actual = state.GetScrollWheelValue();
 
         // Assert
-        Assert.Equal(123, actual);
+        actual.Should().Be(123);
     }
 
     [Theory]
@@ -255,9 +255,9 @@ public class MouseStateTests
         var actualRight = state.GetButtonState(MouseButton.RightButton);
 
         // Assert
-        Assert.Equal(expectedLeft, actualLeft);
-        Assert.Equal(expectedMiddle, actualMiddle);
-        Assert.Equal(expectedRight, actualRight);
+        actualLeft.Should().Be(expectedLeft);
+        actualMiddle.Should().Be(expectedMiddle);
+        actualRight.Should().Be(expectedRight);
     }
 
     [Theory]
@@ -275,7 +275,7 @@ public class MouseStateTests
         var actual = state.AnyButtonsDown();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class MouseStateTests
         var actual = state.AnyButtonsDown();
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -305,7 +305,7 @@ public class MouseStateTests
         var actual = state.IsLeftButtonDown();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -319,7 +319,7 @@ public class MouseStateTests
         var actual = state.IsMiddleButtonDown();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -333,7 +333,7 @@ public class MouseStateTests
         var actual = state.IsRightButtonDown();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public class MouseStateTests
         var actual = state.IsLeftButtonUp();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -361,7 +361,7 @@ public class MouseStateTests
         var actual = state.IsMiddleButtonUp();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class MouseStateTests
         var actual = state.IsRightButtonUp();
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Theory]
@@ -392,7 +392,7 @@ public class MouseStateTests
         var actual = state.GetButtonState(mouseButton);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -410,7 +410,7 @@ public class MouseStateTests
         var actual = state.GetButtonState(downButton);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class MouseStateTests
         var actual = state.GetButtonState((MouseButton)1234);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -437,7 +437,7 @@ public class MouseStateTests
         var actual = stateA.Equals(stateB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -451,7 +451,7 @@ public class MouseStateTests
         var actual = stateA.Equals(stateB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -465,7 +465,7 @@ public class MouseStateTests
         var actual = stateA.Equals(stateB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -479,7 +479,7 @@ public class MouseStateTests
         var actual = stateA == stateB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -494,7 +494,7 @@ public class MouseStateTests
         var actual = stateA == stateB;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -508,7 +508,7 @@ public class MouseStateTests
         var actual = stateA != stateB;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -523,7 +523,7 @@ public class MouseStateTests
         var actual = stateA != stateB;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
     #endregion
 }
