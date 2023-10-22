@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -760,13 +761,18 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: StateOfWindow.Normal,
             getterWhenNotCaching: () =>
             {
+                const string argName = $"this.{nameof(this.glWindow)}.{nameof(this.glWindow.WindowState)}";
+
                 return this.glWindow.WindowState switch
                 {
                     Silk.NET.Windowing.WindowState.Normal => StateOfWindow.Normal,
                     Silk.NET.Windowing.WindowState.Minimized => StateOfWindow.Minimized,
                     Silk.NET.Windowing.WindowState.Maximized => StateOfWindow.Maximized,
                     Silk.NET.Windowing.WindowState.Fullscreen => StateOfWindow.FullScreen,
-                    _ => throw new EnumOutOfRangeException<WindowState>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
+                    _ => throw new InvalidEnumArgumentException(
+                        argName,
+                        (int)this.glWindow.WindowState,
+                        typeof(WindowState)),
                 };
             },
             setterWhenNotCaching: value =>
@@ -777,7 +783,10 @@ internal sealed class GLWindow : VelaptorIWindow
                     StateOfWindow.Minimized => Silk.NET.Windowing.WindowState.Minimized,
                     StateOfWindow.Maximized => Silk.NET.Windowing.WindowState.Maximized,
                     StateOfWindow.FullScreen => Silk.NET.Windowing.WindowState.Fullscreen,
-                    _ => throw new EnumOutOfRangeException<StateOfWindow>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
+                    _ => throw new InvalidEnumArgumentException(
+                        nameof(value),
+                        (int)value,
+                        typeof(StateOfWindow)),
                 };
             });
 
@@ -785,12 +794,17 @@ internal sealed class GLWindow : VelaptorIWindow
             defaultValue: VelaptorWindowBorder.Resizable,
             getterWhenNotCaching: () =>
             {
+                const string argName = $"this.{nameof(this.glWindow)}.{nameof(this.glWindow.WindowBorder)}";
+
                 return this.glWindow.WindowBorder switch
                 {
                     SilkWindowBorder.Fixed => VelaptorWindowBorder.Fixed,
                     SilkWindowBorder.Hidden => VelaptorWindowBorder.Hidden,
                     SilkWindowBorder.Resizable => VelaptorWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException<WindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
+                    _ => throw new InvalidEnumArgumentException(
+                        argName,
+                        (int)this.glWindow.WindowBorder,
+                        typeof(WindowBorder)),
                 };
             },
             setterWhenNotCaching: value =>
@@ -800,7 +814,10 @@ internal sealed class GLWindow : VelaptorIWindow
                     VelaptorWindowBorder.Fixed => SilkWindowBorder.Fixed,
                     VelaptorWindowBorder.Hidden => SilkWindowBorder.Hidden,
                     VelaptorWindowBorder.Resizable => SilkWindowBorder.Resizable,
-                    _ => throw new EnumOutOfRangeException<VelaptorWindowBorder>(nameof(GLWindow), nameof(SetupOtherPropCaches)),
+                    _ => throw new InvalidEnumArgumentException(
+                        nameof(value),
+                        (int)value,
+                        typeof(WindowBorder)),
                 };
             });
     }

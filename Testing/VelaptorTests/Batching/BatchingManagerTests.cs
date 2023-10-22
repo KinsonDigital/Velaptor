@@ -5,6 +5,7 @@
 namespace VelaptorTests.Batching;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -517,8 +518,9 @@ public class BatchingManagerTests
     public void AddTextureItem_WithFullBatchAndInvalidBatchType_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(BatchType)}' used in the class '{nameof(BatchingManager)}' and";
-        expected += " method 'SetNewBatchSize' is invalid and out of range.";
+        const int invalidValue = 1234;
+        var expected = $"The value of argument 'batchType' ({invalidValue}) is invalid for Enum type " +
+                       $"'{nameof(BatchType)}'. (Parameter 'batchType')";
 
         var itemA = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(10, 20, 30, 40));
         var itemB = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(50, 60, 70, 80));
@@ -527,7 +529,7 @@ public class BatchingManagerTests
         this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
             .Callback((in BatchSizeData _, Guid _) =>
             {
-                this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = (BatchType)1234 });
+                this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = (BatchType)invalidValue });
             });
 
         var sut = CreateSystemUnderTest();
@@ -542,7 +544,8 @@ public class BatchingManagerTests
         var act = () => sut.AddTextureItem(itemC, 3, DateTime.Now);
 
         // Assert
-        act.Should().Throw<EnumOutOfRangeException<BatchType>>()
+        act.Should()
+            .Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
     }
 
