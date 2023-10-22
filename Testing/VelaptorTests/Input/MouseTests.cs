@@ -5,6 +5,7 @@
 namespace VelaptorTests.Input;
 
 using System;
+using System.ComponentModel;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
@@ -85,8 +86,8 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.Equal(11, actual.GetPosition().X);
-        Assert.Equal(22, actual.GetPosition().Y);
+        actual.GetPosition().X.Should().Be(11);
+        actual.GetPosition().Y.Should().Be(22);
     }
 
     [Theory]
@@ -115,7 +116,7 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.True(actual.GetButtonState(mouseButton));
+        actual.GetButtonState(mouseButton).Should().BeTrue();
     }
 
     [Fact]
@@ -140,15 +141,17 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
-        Assert.Equal(33, actual.GetScrollWheelValue());
+        actual.GetScrollDirection().Should().Be(MouseScrollDirection.ScrollDown);
+        actual.GetScrollWheelValue().Should().Be(33);
     }
 
     [Fact]
     public void PushReactable_WithOnNextMessageActionAndInvalidMouseButton_ThrowsException()
     {
         // Arrange
-        const string expected = $"The enum '{nameof(MouseButton)}' is out of range.";
+        const int invalidMouseButton = 1234;
+        var expected = $"The value of argument 'data.{nameof(MouseStateData.Button)}' ({invalidMouseButton}) is invalid for Enum type " +
+                       $"'{nameof(MouseButton)}'. (Parameter 'data.{nameof(MouseStateData.Button)}')";
 
         ReceiveMouseDataReactor? reactor = null;
 
@@ -159,7 +162,7 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouseStateData = new MouseStateData { Button = (MouseButton)1234 };
+        var mouseStateData = new MouseStateData { Button = (MouseButton)invalidMouseButton };
 
         _ = CreateSystemUnderTest();
 
@@ -167,7 +170,7 @@ public class MouseTests
         var act = () => reactor.OnReceive(mouseStateData);
 
         // Assert
-        act.Should().Throw<EnumOutOfRangeException<MouseButton>>()
+        act.Should().Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
     }
     #endregion
