@@ -5,7 +5,7 @@
 namespace VelaptorTests.NativeInterop.FreeType;
 
 using System;
-using Helpers;
+using FluentAssertions;
 using Velaptor.NativeInterop.FreeType;
 using Xunit;
 
@@ -20,11 +20,12 @@ public class FreeTypeErrorEventArgsTests
     [InlineData(null)]
     public void Ctor_WithNullErrorMessageParam_ThrowsException(string message)
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new FreeTypeErrorEventArgs(message);
-        }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
+        // Assert
+        var act = () => new FreeTypeErrorEventArgs(message);
+
+        // Act
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public class FreeTypeErrorEventArgsTests
         var eventArgs = new FreeTypeErrorEventArgs("test-message");
 
         // Assert
-        Assert.Equal("test-message", eventArgs.ErrorMessage);
+        eventArgs.ErrorMessage.Should().Be("test-message");
     }
     #endregion
 }
