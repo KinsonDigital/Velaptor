@@ -209,7 +209,7 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <summary>
     /// Updates the current layer of the white box.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the <see cref="RenderLayer"/> is out of range.
     /// </exception>
     private void UpdateWhiteBoxLayer()

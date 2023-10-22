@@ -5,6 +5,7 @@
 namespace VelaptorTesting;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using Velaptor.Graphics;
 using Velaptor.UI;
@@ -231,82 +232,68 @@ public static class ExtensionMethods
         callback(clrStr);
     }
 
-    public static void IncreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void IncreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.SelectionColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.SelectionColor.IncreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.SelectionColor.IncreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.SelectionColor.IncreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static void DecreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void DecreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.SelectionColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.SelectionColor.DecreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.SelectionColor.DecreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.SelectionColor.DecreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static void IncreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void IncreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.TextColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.TextColor.IncreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.TextColor.IncreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.TextColor.IncreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static void DecreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void DecreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.TextColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.TextColor.DecreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.TextColor.DecreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.TextColor.DecreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static void IncreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void IncreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.CursorColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.CursorColor.IncreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.CursorColor.IncreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.CursorColor.IncreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static void DecreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount)
-    {
+    public static void DecreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
         textBox.CursorColor = clrComp switch
         {
             TxtBoxColorComponent.Red => textBox.CursorColor.DecreaseRedBy(amount),
             TxtBoxColorComponent.Green => textBox.CursorColor.DecreaseGreenBy(amount),
             TxtBoxColorComponent.Blue => textBox.CursorColor.DecreaseBlueBy(amount),
-            _ => throw new ArgumentOutOfRangeException($"{nameof(textBox)}", "Enum is out of range.")
+            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
         };
-    }
 
-    public static ColorGradient SwapGradient(this ColorGradient gradient)
-    {
-        return gradient switch
+    public static ColorGradient SwapGradient(this ColorGradient gradient) =>
+        gradient switch
         {
             ColorGradient.None => ColorGradient.Horizontal,
             ColorGradient.Horizontal => ColorGradient.Vertical,
             ColorGradient.Vertical => ColorGradient.None,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new InvalidEnumArgumentException(nameof(gradient), (int)gradient, typeof(ColorGradient))
         };
-    }
 
     public static T Next<T>(this T enumValue)
         where T : Enum

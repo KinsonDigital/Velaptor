@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -224,7 +225,7 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     /// <param name="data">The data to apply the color to.</param>
     /// <param name="shape">The shape that holds the color to apply to the data.</param>
     /// <returns>The original GPU <paramref name="data"/> with the color applied.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="shape"/>
     ///     is an invalid value.
     /// </exception>
@@ -247,7 +248,8 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
                 data = data.SetColor(shape.GradientStop, VertexNumber.Four); // BOTTOM RIGHT
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(shape.GradientType), "The gradient type is invalid.");
+                const string argName = $"{nameof(shape)}.{nameof(shape.GradientType)}";
+                throw new InvalidEnumArgumentException(argName, (int)shape.GradientType, typeof(ColorGradient));
         }
 
         return data;

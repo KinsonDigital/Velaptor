@@ -4,7 +4,9 @@
 
 namespace VelaptorTests.Input;
 
+using System.ComponentModel;
 using System.Drawing;
+using FluentAssertions;
 using Helpers;
 using Velaptor.Exceptions;
 using Velaptor.Input;
@@ -63,16 +65,19 @@ public class MouseStateTests
     public void IsButtonDown_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(MouseButton)}' used in the class '{nameof(MouseState)}' and";
-        expected += $" method '{nameof(MouseState.IsButtonDown)}' is invalid and out of range.";
+        const int invalidMouseButton = 1234;
+        var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
+                       $"'{nameof(MouseButton)}'. (Parameter 'button')";
 
         var state = default(MouseState);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<MouseButton>>(() =>
-        {
-            state.IsButtonDown((MouseButton)1234);
-        }, expected);
+        // Act
+        var act = () => state.IsButtonDown((MouseButton)1234);
+
+        // Assert
+        act.Should()
+            .Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -142,16 +147,19 @@ public class MouseStateTests
     public void IsButtonUp_WithInvalidParamValue_ThrowsException()
     {
         // Arrange
-        var expected = $"The value of the enum '{nameof(MouseButton)}' used in the class '{nameof(MouseState)}' and";
-        expected += $" method '{nameof(MouseState.IsButtonUp)}' is invalid and out of range.";
+        const int invalidMouseButton = 1234;
+        var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
+                       $"'{nameof(MouseButton)}'. (Parameter 'button')";
 
         var state = default(MouseState);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException<MouseButton>>(() =>
-        {
-            state.IsButtonUp((MouseButton)1234);
-        }, expected);
+        // Act
+        var act = () => state.IsButtonUp((MouseButton)invalidMouseButton);
+
+        // Assert
+        act.Should()
+            .Throw<InvalidEnumArgumentException>()
+            .WithMessage(expected);
     }
 
     [Fact]

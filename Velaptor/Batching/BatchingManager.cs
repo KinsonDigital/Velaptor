@@ -5,6 +5,7 @@
 namespace Velaptor.Batching;
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
@@ -26,7 +27,6 @@ internal sealed class BatchingManager : IBatchingManager
     private readonly IDisposable requestLinesUnsubscriber;
     private readonly IDisposable emptyBatchUnsubscriber;
     private readonly IPushReactable<BatchSizeData> batchSizeReactable;
-    private readonly BatchType[] batchTypes = Enum.GetValues<BatchType>();
     private Memory<RenderItem<TextureBatchItem>> textureItems;
     private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
     private Memory<RenderItem<ShapeBatchItem>> shapeItems;
@@ -311,44 +311,37 @@ internal sealed class BatchingManager : IBatchingManager
     /// </summary>
     /// <param name="batchType">The type of batch.</param>
     /// <returns>The new batch size for a particular batch type.</returns>
-    /// <exception cref="EnumOutOfRangeException{T}">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the given <paramref name="batchType"/> is an invalid value.
     /// </exception>
     private uint CalcNewBatchSize(BatchType batchType) =>
-#pragma warning disable CS8524
         batchType switch
         {
             BatchType.Texture => (uint)(this.textureBatchSize + (this.textureBatchSize * BatchIncreasePercentage)),
             BatchType.Font => (uint)(this.fontBatchSize + (this.fontBatchSize * BatchIncreasePercentage)),
             BatchType.Rect => (uint)(this.shapeBatchSize + (this.shapeBatchSize * BatchIncreasePercentage)),
             BatchType.Line => (uint)(this.lineBatchSize + (this.lineBatchSize * BatchIncreasePercentage)),
+            _ => throw new InvalidEnumArgumentException(nameof(batchType), (int)batchType, typeof(BatchType))
         };
-#pragma warning restore CS8524
 
     /// <summary>
     /// Sets the size of the batch for the given <paramref name="batchType"/> to the given <paramref name="newBatchSize"/>.
     /// </summary>
     /// <param name="newBatchSize">The new batch size.</param>
     /// <param name="batchType">The type of batch.</param>
-    /// <exception cref="EnumOutOfRangeException{T}">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the given <paramref name="batchType"/> is an invalid value.
     /// </exception>
     private void SetNewBatchSize(uint newBatchSize, BatchType batchType)
     {
-        if (!this.batchTypes.Contains(batchType))
-        {
-            throw new EnumOutOfRangeException<BatchType>(nameof(BatchingManager), nameof(SetNewBatchSize));
-        }
-
-#pragma warning disable CS8524
         var increaseAmount = batchType switch
         {
             BatchType.Texture => newBatchSize - this.textureBatchSize,
             BatchType.Font => newBatchSize - this.fontBatchSize,
             BatchType.Rect => newBatchSize - this.shapeBatchSize,
             BatchType.Line => newBatchSize - this.lineBatchSize,
+            _ => throw new InvalidEnumArgumentException(nameof(batchType), (int)batchType, typeof(BatchType))
         };
-#pragma warning restore CS8524
 
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (batchType)
