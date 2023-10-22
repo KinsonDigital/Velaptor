@@ -215,7 +215,7 @@ public class ShapeScene : SceneBase
     /// <summary>
     /// Creates the buttons for the scene.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Thrown if the <see cref="ColorGradient"/> is invalid.
     /// </exception>
     [SuppressMessage(
@@ -889,7 +889,9 @@ public class ShapeScene : SceneBase
     /// <summary>
     /// Contains the current shape within the window.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown with an invalid <see cref="ShapeType"/>.</exception>
+    /// <exception cref="InvalidEnumArgumentException">
+    ///     Thrown if the <see cref="ShapeType"/> is invalid.
+    /// </exception>
     private void ContainShape()
     {
         var shapePos = this.shapeType == ShapeType.Rectangle
