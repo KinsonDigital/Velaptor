@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using Velaptor;
@@ -202,20 +203,19 @@ public class LayeredTextRenderingScene : SceneBase
     /// <summary>
     /// Updates the current layer of the white box.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the <see cref="RenderLayer"/> is out of range.
     /// </exception>
     private void UpdateWhiteBoxLayer()
     {
         if (this.currentKeyState.IsKeyDown(KeyCode.L) && this.prevKeyState.IsKeyUp(KeyCode.L))
         {
-            var paramName = $"this.{nameof(this.whiteLayer)}";
             this.whiteLayer = this.whiteLayer switch
             {
                 RenderLayer.One => RenderLayer.Three,
                 RenderLayer.Three => RenderLayer.Five,
                 RenderLayer.Five => RenderLayer.One,
-                _ => throw new ArgumentOutOfRangeException(paramName, this.whiteLayer, "Invalid enum value.")
+                _ => throw new InvalidEnumArgumentException($"this.{nameof(this.whiteLayer)}", (int)this.whiteLayer, typeof(RenderLayer))
             };
         }
     }

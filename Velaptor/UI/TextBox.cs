@@ -6,6 +6,7 @@ namespace Velaptor.UI;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
@@ -795,7 +796,7 @@ public sealed class TextBox : ControlBase
     /// <param name="textRight">The right end of the text.</param>
     /// <param name="key">The key that has been pressed.</param>
     /// <param name="textBoxEvent">The type of text box event that has occured.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
+    /// <exception cref="InvalidEnumArgumentException">
     ///     Thrown if the <paramref name="mutateType"/> is an invalid value.
     /// </exception>
     private void UpdateState(MutateType mutateType, bool boundsExist, int textRight, KeyCode key, TextBoxEvent textBoxEvent)
@@ -815,7 +816,7 @@ public sealed class TextBox : ControlBase
         {
             MutateType.PreMutate => this.preTextBoxState.Key,
             MutateType.PostMutate => this.postTextBoxState.Key,
-            _ => throw new ArgumentOutOfRangeException(nameof(mutateType), mutateType, null)
+            _ => throw new InvalidEnumArgumentException(nameof(mutateType), (int)mutateType, typeof(MutateType))
         };
 
         var firstVisibleCharBounds = this.charBounds.IsEmpty()
@@ -864,7 +865,7 @@ public sealed class TextBox : ControlBase
                 this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(mutateType), mutateType, null);
+                throw new InvalidEnumArgumentException(nameof(mutateType), (int)mutateType, typeof(MutateType));
         }
     }
 
