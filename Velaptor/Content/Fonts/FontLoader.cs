@@ -134,7 +134,7 @@ public sealed class FontLoader : ILoader<IFont>
     ///     Occurs when the <paramref name="contentPathOrName"/> argument is null or empty.
     /// </exception>
     /// <exception cref="CachingMetaDataException">
-    ///     Occurs if the metadata is missing or invalid.
+    ///     Occurs if the metadata is invalid.
     /// </exception>
     /// <exception cref="FileNotFoundException">
     ///     Occurs if the font file does not exist.
@@ -142,19 +142,30 @@ public sealed class FontLoader : ILoader<IFont>
     /// <remarks>
     ///     If a path is used, it must be a fully qualified file path.
     ///     <para>Directory paths are not valid.</para>
+    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
     /// </remarks>
     /// <example>
     ///     <code>
-    ///     // Valid Value
-    ///     ContentLoader.Load("my-font|size:12");
-    ///
-    ///     // Valid Value
-    ///     ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
-    ///
-    ///     // Invalid Value
-    ///     ContentLoader.Load("my-font|size:12");
-    ///
-    ///     ContentLoader.Load("my-font|size:12");
+    ///         // Valid Example 1
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Valid Example 2
+    ///         ContentLoader.Load("my-font");
+    ///         <br/>
+    ///         // Valid Example 3
+    ///         ContentLoader.Load("my-font.ttf");
+    ///         <br/>
+    ///         // Valid Example 4
+    ///         ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
+    ///         <br/>
+    ///         // Invalid Example 1
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 2
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 3
+    ///         ContentLoader.Load("my-font|size12");
     ///     </code>
     /// </example>
     public IFont Load(string contentPathOrName)
@@ -239,6 +250,38 @@ public sealed class FontLoader : ILoader<IFont>
     }
 
     /// <inheritdoc/>
+    /// <exception cref="CachingMetaDataException">
+    ///     Thrown when the metadata is invalid if metadata exists.
+    /// </exception>
+    /// <remarks>
+    ///     If a path is used, it must be a fully qualified file path.
+    ///     <para>Directory paths are not valid.</para>
+    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    ///         // Valid Example 1
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Valid Example 2
+    ///         ContentLoader.Unload("my-font");
+    ///         <br/>
+    ///         // Valid Example 3
+    ///         ContentLoader.Unload("my-font.ttf");
+    ///         <br/>
+    ///         // Valid Example 4
+    ///         ContentLoader.Unload(@"C:\fonts\my-font.ttf|size:12");
+    ///         <br/>
+    ///         // Invalid Example 1
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 2
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 3
+    ///         ContentLoader.Unload("my-font|size12");
+    ///     </code>
+    /// </example>
     public void Unload(string contentPathOrName)
     {
         var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
