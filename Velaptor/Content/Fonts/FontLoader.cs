@@ -193,10 +193,18 @@ public sealed class FontLoader : ILoader<IFont>
         }
         else
         {
-            var exceptionMsg = "The font content item 'missing-metadata' must have metadata post fixed to the";
-            exceptionMsg += " end of a content name or full file path";
+            var defaultMetaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
-            throw new CachingMetaDataException(exceptionMsg);
+            parseResult = new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = defaultMetaDataPrefix,
+                MetaData = $"size:{DefaultFontSize}",
+                FontSize = DefaultFontSize,
+            };
+
+            fullFontFilePath = defaultMetaDataPrefix;
         }
 
         fullFontFilePath = this.path.IsPathRooted(fullFontFilePath)
@@ -257,12 +265,29 @@ public sealed class FontLoader : ILoader<IFont>
         }
         else
         {
-            var exceptionMsg = "When unloading fonts, the name of or the full file path of the font";
-            exceptionMsg += " must be supplied with valid metadata syntax.";
-            exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-            exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
+            var metaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
-            throw new CachingMetaDataException(exceptionMsg);
+            parseResult = new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = metaDataPrefix,
+                MetaData = $"size:{DefaultFontSize}",
+                FontSize = DefaultFontSize,
+            };
+
+            var fullFilePath = this.path.IsPathRooted(metaDataPrefix)
+                ? parseResult.MetaDataPrefix
+                : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+
+            var fileName = this.path.GetFileName(fullFilePath);
+            var isDefaultFont = this.defaultFontNames.Contains(fileName);
+
+            var cacheKey = isDefaultFont
+                ? $"[DEFAULT]{fullFilePath}|{parseResult.MetaData}"
+                : $"{fullFilePath}|{parseResult.MetaData}";
+
+            this.textureCache.Unload(cacheKey);
         }
     }
 

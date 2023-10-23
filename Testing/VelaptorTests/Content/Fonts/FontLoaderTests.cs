@@ -1,4 +1,4 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -538,28 +538,42 @@ public class FontLoaderTests
     }
 
     [Fact]
-    public void Load_WithNoMetaData_ThrowsException()
+    public void Load_WithNoMetaData_UsesDefaultMetaData()
     {
         // Arrange
+        const string contentPathOrName = "no-metadata";
+        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(It.IsAny<string>())).Returns(contentPathOrName);
+        this.mockFontPathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+            .Returns($"{FontContentDirPath}/{contentPathOrName}.ttf");
+        this.mockFile.Setup(m => m.Exists(It.IsAny<string?>())).Returns(true);
         this.mockFontMetaDataParser.Setup(m => m.Parse(It.IsAny<string>()))
-            .Returns(new FontMetaDataParseResult(
-                false,
-                false,
-                string.Empty,
-                string.Empty,
-                0));
-
-        var expected = "The font content item 'missing-metadata' must have metadata post fixed to the";
-        expected += " end of a content name or full file path";
+            .Returns(new FontMetaDataParseResult
+            {
+                ContainsMetaData = false,
+                IsValid = false,
+                MetaData = string.Empty,
+                MetaDataPrefix = string.Empty,
+                FontSize = 0,
+            });
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load("missing-metadata");
+        sut.Load(contentPathOrName);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage(expected);
+        this.mockFontPathResolver.VerifyOnce(m => m.ResolveFilePath(contentPathOrName));
+        this.mockFontAtlasService.VerifyOnce(m => m.CreateAtlas(It.IsAny<string>(), 12));
+        this.mockTextureCache
+            .VerifyOnce(m => m.GetItem($"{FontContentDirPath}/{contentPathOrName}.ttf|size:12"));
+        this.mockFontFactory
+            .VerifyOnce(m => m.Create(
+                It.IsAny<ITexture>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                12,
+                It.IsAny<bool>(),
+                It.IsAny<GlyphMetrics[]>()));
     }
 
     [Fact]
@@ -714,18 +728,18 @@ public class FontLoaderTests
             .WithMessage(expected);
     }
 
-    [Fact]
-    public void Unload_WithNoMetaData_ThrowsException()
+    [Theory]
+    [InlineData("no-metadata", $"{FontContentDirPath}/no-metadata.ttf|size:12")]
+    [InlineData("TimesNewRoman-Regular", $"[DEFAULT]{FontContentDirPath}/TimesNewRoman-Regular.ttf|size:12")]
+    public void Unload_WithNoMetaData_UnloadsFont(string contentNameOrPath, string expected)
     {
         // Arrange
-        const string contentName = "missing-metadata";
-
-        var expected = "When unloading fonts, the name of or the full file path of the font";
-        expected += " must be supplied with valid metadata syntax.";
-        expected += $"{Environment.NewLine}\tExpected MetaData Syntax: size:<font-size>";
-        expected += $"{Environment.NewLine}\tExample: size:12";
-
-        this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
+        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(It.IsAny<string?>()))
+            .Returns(contentNameOrPath);
+        this.mockFontPathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+            .Returns($"{FontContentDirPath}/{contentNameOrPath}.ttf");
+        this.mockPath.Setup(m => m.GetFileName(It.IsAny<string?>())).Returns($"{contentNameOrPath}.ttf");
+        this.mockFontMetaDataParser.Setup(m => m.Parse(contentNameOrPath))
             .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = false,
@@ -737,11 +751,10 @@ public class FontLoaderTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Unload(contentName);
+        sut.Unload(contentNameOrPath);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage(expected);
+        this.mockTextureCache.VerifyOnce(m => m.Unload(expected));
     }
 
     [Fact]
