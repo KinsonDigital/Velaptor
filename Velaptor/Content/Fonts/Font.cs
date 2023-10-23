@@ -84,7 +84,7 @@ public sealed class Font : IFont
         this.textureCache = textureCache;
 
         this.metrics = glyphMetrics;
-        this.invalidGlyph = glyphMetrics.FirstOrDefault(m => m.Glyph == InvalidCharacter);
+        this.invalidGlyph = Array.Find(glyphMetrics, m => m.Glyph == InvalidCharacter);
 
         this.facePtr = this.fontService.CreateFontFace(fontFilePath);
 
@@ -354,8 +354,9 @@ public sealed class Font : IFont
         {
             const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
 
-            return this.fontStats.Length == 4 && this.fontStats.All(d =>
-                d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
+            return this.fontStats.Length == 4 && Array.TrueForAll(
+                this.fontStats,
+                d => d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
         }
 
         // If all four styles have been found and finished
