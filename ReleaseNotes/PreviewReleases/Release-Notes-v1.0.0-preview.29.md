@@ -39,5 +39,8 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 align="center" style="font-weight: bold;">Other 🪧</h2>
 
 1. [#751](https://github.com/KinsonDigital/Velaptor/issues/751) - Created unit tests for extension methods.
+   - Thank you [@fkamau1](https://github.com/fkamau1) for your contribution!
 2. [#359](https://github.com/KinsonDigital/Velaptor/issues/359) - Refactored unit test assertions.
+   - Thank you [@thestbar](https://github.com/thestbar) for your contribution!
 3. [#237](https://github.com/KinsonDigital/Velaptor/issues/237) - Refactored switch statements and out of range exceptions.
+   - Thank you [@AndreBonda](https://github.com/AndreBonda) for your contribution!
