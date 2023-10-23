@@ -12,6 +12,7 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
+using Graphics;
 using Guards;
 using Velaptor.Factories;
 using Velaptor.Services;
@@ -27,6 +28,7 @@ public sealed class FontLoader : ILoader<IFont>
     private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
     private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
     private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
+    private const uint DefaultFontSize = 12;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
     private readonly IContentPathResolver contentPathResolver;
@@ -178,12 +180,7 @@ public sealed class FontLoader : ILoader<IFont>
                 {
                     var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
-                    parseResult = new FontMetaDataParseResult(
-                        parseResult.ContainsMetaData,
-                        parseResult.IsValid,
-                        newMetaDataPrefix,
-                        parseResult.MetaData,
-                        parseResult.FontSize);
+                    parseResult = parseResult with { MetaDataPrefix = newMetaDataPrefix };
                 }
             }
             else
@@ -216,7 +213,7 @@ public sealed class FontLoader : ILoader<IFont>
 
         var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-        var (_, glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
+        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
 
         var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
         var fileName = this.path.GetFileName(fullFontFilePath);
@@ -290,7 +287,7 @@ public sealed class FontLoader : ILoader<IFont>
             var filePath = $"{fontContentDirPath}{separator}{fontName}";
 
             // If the regular font does not exist in the font content directory, extract it from the embedded resources
-            if (this.file.Exists(filePath) is not false)
+            if (this.file.Exists(filePath))
             {
                 continue;
             }

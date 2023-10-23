@@ -24,12 +24,14 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
         // If no metadata exists
         if (doesNotContainMetaData)
         {
-            return new FontMetaDataParseResult(
-                !doesNotContainMetaData,
-                dataIsValid,
-                emptyFilePath,
-                emptyMetaData,
-                invalidSize);
+            return new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsValid,
+                MetaDataPrefix = emptyFilePath,
+                MetaData = emptyMetaData,
+                FontSize = invalidSize,
+            };
         }
 
         var startsWithMetaDataSignifier = stringToParse.StartsWith(metaDataSignifier);
@@ -38,12 +40,14 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
 
         if (startsWithMetaDataSignifier || endsWithMetaDataSignifier || tooManyMetaDataSignifiers)
         {
-            return new FontMetaDataParseResult(
-                !doesNotContainMetaData,
-                dataIsInvalid,
-                emptyFilePath,
-                emptyMetaData,
-                invalidSize);
+            return new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsInvalid,
+                MetaDataPrefix = emptyFilePath,
+                MetaData = emptyMetaData,
+                FontSize = invalidSize,
+            };
         }
 
         var doesNotContainNameValueSeparator = stringToParse.DoesNotContain(nameValueSeparator);
@@ -54,7 +58,14 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
 
         if (doesNotContainNameValueSeparator)
         {
-            return new FontMetaDataParseResult(!doesNotContainMetaData, dataIsInvalid, fullFilePath, metaData, invalidSize);
+            return new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsInvalid,
+                MetaDataPrefix = fullFilePath,
+                MetaData = metaData,
+                FontSize = invalidSize,
+            };
         }
 
         var startsWithNameValueSeparator = stringToParse.StartsWith(nameValueSeparator);
@@ -62,12 +73,14 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
 
         if (startsWithNameValueSeparator || endsWithNameValueSeparator)
         {
-            return new FontMetaDataParseResult(
-                !doesNotContainMetaData,
-                dataIsInvalid,
-                fullFilePath,
-                emptyMetaData,
-                invalidSize);
+            return new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsInvalid,
+                MetaDataPrefix = fullFilePath,
+                MetaData = emptyMetaData,
+                FontSize = invalidSize,
+            };
         }
 
         var metaDataSections = metaData.Split(nameValueSeparator);
@@ -75,12 +88,14 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
 
         if (name.DoesNotOnlyContainsLetters())
         {
-            return new FontMetaDataParseResult(
-                !doesNotContainMetaData,
-                dataIsInvalid,
-                fullFilePath,
-                metaData,
-                invalidSize);
+            return new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsInvalid,
+                MetaDataPrefix = fullFilePath,
+                MetaData = metaData,
+                FontSize = invalidSize,
+            };
         }
 
         var valueAsString = metaDataSections[1];
@@ -88,7 +103,21 @@ internal sealed class FontMetaDataParser : IFontMetaDataParser
         var valueParseSuccess = uint.TryParse(valueAsString, out var valueAsInt);
 
         return valueParseSuccess
-            ? new FontMetaDataParseResult(!doesNotContainMetaData, dataIsValid, fullFilePath, metaData, valueAsInt)
-            : new FontMetaDataParseResult(!doesNotContainMetaData, dataIsInvalid, fullFilePath, metaData, invalidSize);
+            ? new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsValid,
+                MetaDataPrefix = fullFilePath,
+                MetaData = metaData,
+                FontSize = valueAsInt,
+            }
+            : new FontMetaDataParseResult
+            {
+                ContainsMetaData = !doesNotContainMetaData,
+                IsValid = dataIsInvalid,
+                MetaDataPrefix = fullFilePath,
+                MetaData = metaData,
+                FontSize = invalidSize,
+            };
     }
 }

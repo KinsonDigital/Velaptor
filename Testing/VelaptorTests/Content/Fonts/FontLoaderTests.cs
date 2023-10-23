@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,9 +30,9 @@ public class FontLoaderTests
     private const string FontExtension = ".ttf";
     private const string FontDirName = "fonts";
     private const string AppDirPath = "C:/app";
-    private const string ContentDirPath = @$"{AppDirPath}/content";
+    private const string ContentDirPath = $"{AppDirPath}/content";
     private const string FontContentName = "test-font";
-    private const string FontContentDirPath = $@"{ContentDirPath}/{FontDirName}";
+    private const string FontContentDirPath = $"{ContentDirPath}/{FontDirName}";
     private readonly string metaData = $"size:{FontSize}";
     private readonly string fontFilePath;
     private readonly string filePathWithMetaData;
@@ -106,21 +106,25 @@ public class FontLoaderTests
         this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
         // Mock for full file paths with metadata
         this.mockFontMetaDataParser.Setup(m => m.Parse(this.filePathWithMetaData))
-            .Returns(new FontMetaDataParseResult(
-                true,
-                true,
-                this.fontFilePath,
-                this.metaData,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = this.fontFilePath,
+                MetaData = this.metaData,
+                FontSize = FontSize,
+            });
 
         // Mock for content names with metadata
         this.mockFontMetaDataParser.Setup(m => m.Parse(this.contentNameWithMetaData))
-            .Returns(new FontMetaDataParseResult(
-                true,
-                true,
-                FontContentName,
-                this.metaData,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = FontContentName,
+                MetaData = this.metaData,
+                FontSize = FontSize,
+            });
 
         this.mockDirectory = new Mock<IDirectory>();
 
@@ -515,12 +519,14 @@ public class FontLoaderTests
         expected += $"{Environment.NewLine}\tExample: size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
-            .Returns(new FontMetaDataParseResult(
-                true,
-                false,
-                string.Empty,
-                invalidMetaData,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = false,
+                MetaDataPrefix = string.Empty,
+                MetaData = invalidMetaData,
+                FontSize = FontSize,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -583,12 +589,14 @@ public class FontLoaderTests
         const string fileNameWithExtAndMetaData = $"{fileNameWithExt}|size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(fileNameWithExtAndMetaData))
-            .Returns(new FontMetaDataParseResult(
-                true,
-                true,
-                fileNameWithExt,
-                this.metaData,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+                {
+                    ContainsMetaData = true,
+                    IsValid = true,
+                    MetaDataPrefix = fileNameWithExt,
+                    MetaData = this.metaData,
+                    FontSize = FontSize,
+                });
         this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExt)).Returns(FontContentName);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fileNameWithExtAndMetaData)).Returns(FontContentName);
@@ -688,12 +696,14 @@ public class FontLoaderTests
         expected += $"{Environment.NewLine}\tExample: size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
-            .Returns(new FontMetaDataParseResult(
-                true,
-                false,
-                string.Empty,
-                invalidMetaData,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+                {
+                    ContainsMetaData = true,
+                    IsValid = false,
+                    MetaDataPrefix = string.Empty,
+                    MetaData = invalidMetaData,
+                    FontSize = FontSize,
+                });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -716,12 +726,14 @@ public class FontLoaderTests
         expected += $"{Environment.NewLine}\tExample: size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
-            .Returns(new FontMetaDataParseResult(
-                false,
-                false,
-                string.Empty,
-                string.Empty,
-                FontSize));
+            .Returns(new FontMetaDataParseResult
+            {
+                ContainsMetaData = false,
+                IsValid = false,
+                MetaDataPrefix = string.Empty,
+                MetaData = string.Empty,
+                FontSize = FontSize,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act

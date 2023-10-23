@@ -8,47 +8,30 @@ namespace Velaptor.Services;
 /// Holds information after the result of parsing font metadata from font file paths.
 /// using the <see cref="FontMetaDataParser"/>.
 /// </summary>
-internal readonly struct FontMetaDataParseResult
+internal readonly record struct FontMetaDataParseResult
 {
     /// <summary>
     /// Gets a value indicating whether or not a string contains metadata.
     /// </summary>
-    public readonly bool ContainsMetaData;
+    public bool ContainsMetaData { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether or not the metadata in the string is valid.
     /// </summary>
-    public readonly bool IsValid;
+    public bool IsValid { get; init; }
 
     /// <summary>
     /// Gets the data before the metadata section.
     /// </summary>
-    public readonly string MetaDataPrefix;
+    public string MetaDataPrefix { get; init; }
 
     /// <summary>
     /// Gets the metadata string.
     /// </summary>
-    public readonly string MetaData;
+    public string MetaData { get; init; }
 
     /// <summary>
     /// Gets the font size that was embedded in the metadata.
     /// </summary>
-    public readonly uint FontSize;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FontMetaDataParseResult"/> struct.
-    /// </summary>
-    /// <param name="containsMetaData">Value indicating whether or not the string contains metadata.</param>
-    /// <param name="isValid">Value indicating whether or not the metadata is valid.</param>
-    /// <param name="metaData">The metadata in a string.</param>
-    /// <param name="metaDataPrefix">The data before the metadata section.</param>
-    /// <param name="fontSize">The size of the font embedded in the metadata.</param>
-    public FontMetaDataParseResult(bool containsMetaData, bool isValid, string metaDataPrefix, string metaData, uint fontSize)
-    {
-        this.ContainsMetaData = containsMetaData;
-        this.IsValid = isValid;
-        this.MetaDataPrefix = metaDataPrefix;
-        this.MetaData = metaData;
-        this.FontSize = fontSize;
-    }
+    public uint FontSize { get; init; }
 }
