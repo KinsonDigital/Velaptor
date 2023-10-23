@@ -6,7 +6,6 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
-using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;

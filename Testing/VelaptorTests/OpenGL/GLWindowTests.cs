@@ -22,7 +22,6 @@ using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Hardware;
 using Velaptor.Input;

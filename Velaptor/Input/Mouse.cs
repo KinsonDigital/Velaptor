@@ -9,7 +9,6 @@ using Carbonate.Fluent;
 using Factories;
 using Guards;
 using ReactableData;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Gets or sets the state of the mouse.

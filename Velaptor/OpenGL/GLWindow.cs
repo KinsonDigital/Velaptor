@@ -26,7 +26,6 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
-using Velaptor.Exceptions;
 using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
