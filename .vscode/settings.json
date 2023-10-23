@@ -51,6 +51,8 @@
         "Vorbis",
         "xunit",
 		"Avalonia",
+		"fkamau1",
+		"thestbar",
     ],
 	"files.exclude": {
 		"**/.github/cicd/": true,
