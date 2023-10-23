@@ -48,21 +48,13 @@
 		],
 		"description": "Link to a pull request for a dependency update."
 	},
-	"Issue Link (Outside Contributor)": {
+	"Outside Contributor ThankYou": {
 		"scope": "markdown",
-		"prefix": "issue-link-oc",
+		"prefix": "outside-contributor-thank-you",
 		"body": [
-			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) ([@${2:Repo Owner}🙏🏼](https://github.com/${2:Repo Owner})) - "
+			"   - Thank you [@${1:contributor-name}](https://github.com/${1:contributor-name}) for your contribution!!"
 		],
-		"description": "Link to an issue with outside contributor"
-	},
-	"Outside Contributor": {
-		"scope": "markdown",
-		"prefix": "outside-contributor",
-		"body": [
-			"([${1:Repo Owner}🙏🏼](https://github.com/${1:Repo Owner}))"
-		],
-		"description": "Outside contributor link"
+		"description": "Outside contributor thank you"
 	},
 	"Repo URL": {
 		"scope": "markdown",
