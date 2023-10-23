@@ -302,12 +302,14 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
-            .Returns(() => new FontMetaDataParseResult(
-                false,
-                false,
-                string.Empty,
-                string.Empty,
-                0));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = false,
+                IsValid = false,
+                MetaDataPrefix = string.Empty,
+                MetaData = string.Empty,
+                FontSize = 0,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -330,12 +332,14 @@ public class TextureCacheTests
         this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFontFilePathWithMetaData))
-            .Returns(() => new FontMetaDataParseResult(
-                true,
-                true,
-                nonFontFilePath,
-                metaData,
-                12));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = nonFontFilePath,
+                MetaData = metaData,
+                FontSize = 12,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -354,12 +358,14 @@ public class TextureCacheTests
         const string nonFullFilePath = $"{FontName}{FontExtension}{metaData}";
         this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(FontExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
-            .Returns(() => new FontMetaDataParseResult(
-                true,
-                true,
-                nonFullFilePath,
-                metaData,
-                12));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = nonFullFilePath,
+                MetaData = metaData,
+                FontSize = 12,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -378,12 +384,14 @@ public class TextureCacheTests
         const string fullFilePath = $"{FontDirPath}/{FontName}{FontExtension}{metaData}";
         this.mockPath.Setup(m => m.GetExtension(fullFilePath)).Returns(FontExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(fullFilePath))
-            .Returns(() => new FontMetaDataParseResult(
-                true,
-                false,
-                fullFilePath,
-                metaData,
-                12));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = false,
+                MetaDataPrefix = fullFilePath,
+                MetaData = metaData,
+                FontSize = 12,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -401,12 +409,14 @@ public class TextureCacheTests
         const string nonFullFilePath = $"{TextureName}{TextureExtension}";
         this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(TextureExtension);
         this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
-            .Returns(() => new FontMetaDataParseResult(
-                false,
-                false,
-                string.Empty,
-                string.Empty,
-                0));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = false,
+                IsValid = false,
+                MetaDataPrefix = string.Empty,
+                MetaData = string.Empty,
+                FontSize = 0,
+            });
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -613,12 +623,14 @@ public class TextureCacheTests
     private void MockTextureParseResult()
     {
         this.mockFontMetaDataParser.Setup(m => m.Parse(TextureFilePath))
-            .Returns(() => new FontMetaDataParseResult(
-                false,
-                true,
-                string.Empty,
-                string.Empty,
-                0));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = false,
+                IsValid = true,
+                MetaDataPrefix = string.Empty,
+                MetaData = string.Empty,
+                FontSize = 0,
+            });
     }
 
     /// <summary>
@@ -627,12 +639,14 @@ public class TextureCacheTests
     private void MockFontParseResult()
     {
         this.mockFontMetaDataParser.Setup(m => m.Parse(this.fontFilePathWithMetaData))
-            .Returns(() => new FontMetaDataParseResult(
-                true,
-                true,
-                FontFilePath,
-                $"size:{FontSize}",
-                FontSize));
+            .Returns(() => new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = FontFilePath,
+                MetaData = $"size:{FontSize}",
+                FontSize = FontSize,
+            });
     }
 
     /// <summary>

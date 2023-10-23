@@ -4,7 +4,6 @@
 
 namespace Velaptor.ExtensionMethods;
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;

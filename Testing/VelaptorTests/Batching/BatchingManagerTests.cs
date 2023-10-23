@@ -18,7 +18,6 @@ using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Batching;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;

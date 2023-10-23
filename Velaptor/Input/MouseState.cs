@@ -8,7 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Velaptor.Exceptions;
 
 /// <summary>
 /// Represents the state of the mouse.

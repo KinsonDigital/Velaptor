@@ -10,7 +10,6 @@ using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Velaptor.Exceptions;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.ReactableData;

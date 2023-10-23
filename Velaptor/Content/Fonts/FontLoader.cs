@@ -12,6 +12,7 @@ using System.Linq;
 using Caching;
 using Exceptions;
 using Factories;
+using Graphics;
 using Guards;
 using Velaptor.Factories;
 using Velaptor.Services;
@@ -27,6 +28,7 @@ public sealed class FontLoader : ILoader<IFont>
     private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
     private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
     private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
+    private const uint DefaultFontSize = 12;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
     private readonly IContentPathResolver contentPathResolver;
@@ -132,7 +134,7 @@ public sealed class FontLoader : ILoader<IFont>
     ///     Occurs when the <paramref name="contentPathOrName"/> argument is null or empty.
     /// </exception>
     /// <exception cref="CachingMetaDataException">
-    ///     Occurs if the metadata is missing or invalid.
+    ///     Occurs if the metadata is invalid.
     /// </exception>
     /// <exception cref="FileNotFoundException">
     ///     Occurs if the font file does not exist.
@@ -140,19 +142,30 @@ public sealed class FontLoader : ILoader<IFont>
     /// <remarks>
     ///     If a path is used, it must be a fully qualified file path.
     ///     <para>Directory paths are not valid.</para>
+    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
     /// </remarks>
     /// <example>
     ///     <code>
-    ///     // Valid Value
-    ///     ContentLoader.Load("my-font|size:12");
-    ///
-    ///     // Valid Value
-    ///     ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
-    ///
-    ///     // Invalid Value
-    ///     ContentLoader.Load("my-font|size:12");
-    ///
-    ///     ContentLoader.Load("my-font|size:12");
+    ///         // Valid Example 1
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Valid Example 2
+    ///         ContentLoader.Load("my-font");
+    ///         <br/>
+    ///         // Valid Example 3
+    ///         ContentLoader.Load("my-font.ttf");
+    ///         <br/>
+    ///         // Valid Example 4
+    ///         ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
+    ///         <br/>
+    ///         // Invalid Example 1
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 2
+    ///         ContentLoader.Load("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 3
+    ///         ContentLoader.Load("my-font|size12");
     ///     </code>
     /// </example>
     public IFont Load(string contentPathOrName)
@@ -178,12 +191,7 @@ public sealed class FontLoader : ILoader<IFont>
                 {
                     var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
-                    parseResult = new FontMetaDataParseResult(
-                        parseResult.ContainsMetaData,
-                        parseResult.IsValid,
-                        newMetaDataPrefix,
-                        parseResult.MetaData,
-                        parseResult.FontSize);
+                    parseResult = parseResult with { MetaDataPrefix = newMetaDataPrefix };
                 }
             }
             else
@@ -196,10 +204,18 @@ public sealed class FontLoader : ILoader<IFont>
         }
         else
         {
-            var exceptionMsg = "The font content item 'missing-metadata' must have metadata post fixed to the";
-            exceptionMsg += " end of a content name or full file path";
+            var defaultMetaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
-            throw new CachingMetaDataException(exceptionMsg);
+            parseResult = new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = defaultMetaDataPrefix,
+                MetaData = $"size:{DefaultFontSize}",
+                FontSize = DefaultFontSize,
+            };
+
+            fullFontFilePath = defaultMetaDataPrefix;
         }
 
         fullFontFilePath = this.path.IsPathRooted(fullFontFilePath)
@@ -216,7 +232,7 @@ public sealed class FontLoader : ILoader<IFont>
 
         var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-        var (_, glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
+        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
 
         var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
         var fileName = this.path.GetFileName(fullFontFilePath);
@@ -234,6 +250,38 @@ public sealed class FontLoader : ILoader<IFont>
     }
 
     /// <inheritdoc/>
+    /// <exception cref="CachingMetaDataException">
+    ///     Thrown when the metadata is invalid if metadata exists.
+    /// </exception>
+    /// <remarks>
+    ///     If a path is used, it must be a fully qualified file path.
+    ///     <para>Directory paths are not valid.</para>
+    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    ///         // Valid Example 1
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Valid Example 2
+    ///         ContentLoader.Unload("my-font");
+    ///         <br/>
+    ///         // Valid Example 3
+    ///         ContentLoader.Unload("my-font.ttf");
+    ///         <br/>
+    ///         // Valid Example 4
+    ///         ContentLoader.Unload(@"C:\fonts\my-font.ttf|size:12");
+    ///         <br/>
+    ///         // Invalid Example 1
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 2
+    ///         ContentLoader.Unload("my-font|size:12");
+    ///         <br/>
+    ///         // Invalid Example 3
+    ///         ContentLoader.Unload("my-font|size12");
+    ///     </code>
+    /// </example>
     public void Unload(string contentPathOrName)
     {
         var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
@@ -260,12 +308,29 @@ public sealed class FontLoader : ILoader<IFont>
         }
         else
         {
-            var exceptionMsg = "When unloading fonts, the name of or the full file path of the font";
-            exceptionMsg += " must be supplied with valid metadata syntax.";
-            exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-            exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
+            var metaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
 
-            throw new CachingMetaDataException(exceptionMsg);
+            parseResult = new FontMetaDataParseResult
+            {
+                ContainsMetaData = true,
+                IsValid = true,
+                MetaDataPrefix = metaDataPrefix,
+                MetaData = $"size:{DefaultFontSize}",
+                FontSize = DefaultFontSize,
+            };
+
+            var fullFilePath = this.path.IsPathRooted(metaDataPrefix)
+                ? parseResult.MetaDataPrefix
+                : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+
+            var fileName = this.path.GetFileName(fullFilePath);
+            var isDefaultFont = this.defaultFontNames.Contains(fileName);
+
+            var cacheKey = isDefaultFont
+                ? $"[DEFAULT]{fullFilePath}|{parseResult.MetaData}"
+                : $"{fullFilePath}|{parseResult.MetaData}";
+
+            this.textureCache.Unload(cacheKey);
         }
     }
 
@@ -290,7 +355,7 @@ public sealed class FontLoader : ILoader<IFont>
             var filePath = $"{fontContentDirPath}{separator}{fontName}";
 
             // If the regular font does not exist in the font content directory, extract it from the embedded resources
-            if (this.file.Exists(filePath) is not false)
+            if (this.file.Exists(filePath))
             {
                 continue;
             }

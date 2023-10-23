@@ -6,10 +6,8 @@ namespace Velaptor.Batching;
 
 using System;
 using System.ComponentModel;
-using System.Linq;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
-using Exceptions;
 using Factories;
 using Guards;
 using OpenGL.Batching;

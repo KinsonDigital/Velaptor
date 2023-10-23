@@ -7,8 +7,6 @@ namespace VelaptorTests.Input;
 using System.ComponentModel;
 using System.Drawing;
 using FluentAssertions;
-using Helpers;
-using Velaptor.Exceptions;
 using Velaptor.Input;
 using Xunit;
 
