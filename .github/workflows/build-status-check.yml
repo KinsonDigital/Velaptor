@@ -15,10 +15,12 @@ on:
 jobs:
   build_status_check:
     name: ${{ vars.PROJECT_NAME }} Build Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.2.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.3.0
     with:
       project-name: "${{ vars.PROJECT_NAME }}"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
       checkout-ref: ${{ github.event.pull_request.head.ref }}
       checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
