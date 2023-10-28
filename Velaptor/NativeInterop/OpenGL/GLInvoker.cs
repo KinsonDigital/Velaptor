@@ -78,7 +78,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void SetupErrorCallback()
     {
-        if (this.debugCallback != null)
+        if (this.debugCallback is not null)
         {
             return;
         }
