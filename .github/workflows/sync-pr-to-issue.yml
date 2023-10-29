@@ -18,8 +18,8 @@ jobs:
     name: Start Initial Sync
     if: |
       github.event_name == 'pull_request_target' &&
-      !startsWith(github.base_ref, 'renovate/')
-    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.1.0
+      !startsWith(github.head_ref, 'renovate/')
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.3.1
     with:
       issue-or-pr-number: ${{ github.event.pull_request.number }}
       sync-type: initial
@@ -33,9 +33,9 @@ jobs:
     name: Start Manual Sync
     if: |
       github.event_name == 'issue_comment' &&
-      contains(github.event.comment.body, '[run-sync]') &&
-      !startsWith(github.base_ref, 'renovate/')
-    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.1.0
+      github.event.issue.pull_request && github.event.issue.pull_request.url != null &&
+      contains(github.event.comment.body, '[run-sync]')
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.3.1
     with:
       issue-or-pr-number: ${{ github.event.issue.number }}
       sync-type: manual
