@@ -65,7 +65,7 @@ public class SoundLoaderTests
 
         // Act
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'soundCache')");
+            .WithMessage("Value cannot be null. (Parameter 'soundCache')");
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class SoundLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'soundPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'soundPathResolver')");
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class SoundLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class SoundLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -145,26 +145,39 @@ public class SoundLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Load_WithNullOrEmptyParam_ThrowsException(string content)
+    [Fact]
+    public void Load_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSoundLoader();
 
         // Act
-        var act = () => sut.Load(content);
+        var act = () => sut.Load(null);
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+    }
+
+    [Fact]
+    public void Load_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSoundLoader();
+
+        // Act
+        var act = () => sut.Load(string.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]

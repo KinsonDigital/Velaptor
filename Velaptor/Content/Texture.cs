@@ -35,7 +35,7 @@ public sealed class Texture : ITexture
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public Texture(string name, ImageData imageData)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         if (string.IsNullOrEmpty(imageData.FilePath))
         {
@@ -60,8 +60,8 @@ public sealed class Texture : ITexture
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Texture(string name, string filePath)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
-        EnsureThat.StringParamIsNotNullOrEmpty(filePath);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(filePath);
 
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
@@ -90,11 +90,11 @@ public sealed class Texture : ITexture
         string filePath,
         ImageData imageData)
     {
-        EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactableFactory);
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
-        EnsureThat.StringParamIsNotNullOrEmpty(filePath);
+        ArgumentNullException.ThrowIfNull(gl);
+        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(filePath);
 
         this.gl = gl;
         this.openGLService = openGLService;
