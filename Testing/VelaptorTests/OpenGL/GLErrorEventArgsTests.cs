@@ -5,7 +5,7 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using Helpers;
+using FluentAssertions;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -15,16 +15,26 @@ using Xunit;
 public class GLErrorEventArgsTests
 {
     #region Constructor Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullErrorMessage_ThrowsException(string value)
+    [Fact]
+    public void Ctor_WithNullParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            _ = new GLErrorEventArgs(value);
-        }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
+        // Arrange & Act
+        var act = () => new GLErrorEventArgs(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullErrorMessage_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new GLErrorEventArgs(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]
