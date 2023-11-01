@@ -99,7 +99,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(message);
+        ArgumentException.ThrowIfNullOrEmpty(message);
 
         AddToGLCallStack(nameof(PushDebugGroup));
         this.gl.PushDebugGroup((DebugSource)source, id, length, message);
@@ -115,7 +115,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(label);
+        ArgumentException.ThrowIfNullOrEmpty(label);
 
         AddToGLCallStack(nameof(ObjectLabel));
         this.gl.ObjectLabel((ObjectIdentifier)identifier, name, length, label);
@@ -166,7 +166,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public int GetUniformLocation(uint program, string name)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         AddToGLCallStack(nameof(Enable));
         return this.gl.GetUniformLocation(program, name);
@@ -281,7 +281,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void ShaderSource(uint shader, string sourceCode)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(sourceCode);
+        ArgumentException.ThrowIfNullOrEmpty(sourceCode);
 
         AddToGLCallStack(nameof(ShaderSource));
         this.gl.ShaderSource(shader, sourceCode);
@@ -551,7 +551,7 @@ internal sealed class GLInvoker : IGLInvoker
 
     private void AddToGLCallStack(string glFunctionName)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(glFunctionName);
+        ArgumentException.ThrowIfNullOrEmpty(glFunctionName);
 
         OpenGLCallStack.Enqueue(glFunctionName);
 
