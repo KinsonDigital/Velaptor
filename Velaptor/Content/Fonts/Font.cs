@@ -70,12 +70,12 @@ public sealed class Font : IFont
         bool isDefaultFont,
         GlyphMetrics[] glyphMetrics)
     {
-        EnsureThat.ParamIsNotNull(texture);
-        EnsureThat.ParamIsNotNull(fontService);
-        EnsureThat.ParamIsNotNull(fontStatsService);
-        EnsureThat.ParamIsNotNull(fontAtlasService);
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(texture);
+        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(fontStatsService);
+        ArgumentNullException.ThrowIfNull(fontAtlasService);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         Atlas = texture;
         this.fontService = fontService;

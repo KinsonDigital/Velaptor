@@ -18,7 +18,7 @@ internal sealed class FreeTypeErrorEventArgs : EventArgs
     /// <param name="errorMessage">The error message.</param>
     public FreeTypeErrorEventArgs(string errorMessage)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
         ErrorMessage = errorMessage;
     }
 
