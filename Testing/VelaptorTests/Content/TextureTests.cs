@@ -95,21 +95,34 @@ public class TextureTests
 
     #region Constructor Tests
     #region Public Constructors
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void PublicCtor_WithNameAndImageDataOverloadAndNullOrEmptyNameParam_ThrowsException(string name)
+    [Fact]
+    public void PublicCtor_WithNullName_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture(name, default(ImageData));
+            _ = new Texture(null, default(ImageData));
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void PublicCtor_WithEmptyName_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture(string.Empty, default(ImageData));
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Theory]
@@ -129,38 +142,64 @@ public class TextureTests
             .WithMessage("The image data must have a file path associated with it. (Parameter 'imageData')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNameAndFilePathOverloadAndNullOrEmptyNameParam_ThrowsException(string name)
+    [Fact]
+    public void Ctor_WithNullName_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture(name, "test-path");
+            _ = new Texture(null, "test-path");
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNameAndFilePathOverloadAndNullOrEmptyFilePathParam_ThrowsException(string filePath)
+    [Fact]
+    public void Ctor_WithEmptyName_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture("test-name", filePath);
+            _ = new Texture(string.Empty, "test-path");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullFilePath_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture("test-name", null);
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
+            .WithMessage("Value cannot be null. (Parameter 'filePath')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyFilePath_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture("test-name", string.Empty);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
     }
     #endregion
 
@@ -179,7 +218,7 @@ public class TextureTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'gl')");
+            .WithMessage("Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -196,7 +235,7 @@ public class TextureTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -213,32 +252,45 @@ public class TextureTests
 
         // Assrt
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void InternalCtor_WithEmptyOrNullNameParam_ThrowsException(string name)
+    [Fact]
+    public void InternalCtor_WithNullName_ThrowsException()
     {
         // Arrange & Act
         var act = () => new Texture(
             this.mockGL.Object,
             this.mockGLService.Object,
             this.mockReactableFactory.Object,
-            name,
+            null,
             TexturePath,
             this.imageData);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void InternalCtor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
+    [Fact]
+    public void InternalCtor_WithEmptyName_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new Texture(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object,
+            string.Empty,
+            TexturePath,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void InternalCtor_WithNullFilePath_ThrowsException()
     {
         // Act & Assert
         var act = () => new Texture(
@@ -246,12 +298,29 @@ public class TextureTests
             this.mockGLService.Object,
             this.mockReactableFactory.Object,
             TextureName,
-            filePath,
+            null,
             this.imageData);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
+            .WithMessage("Value cannot be null. (Parameter 'filePath')");
+    }
+
+    [Fact]
+    public void InternalCtor_WithEmptyFilePath_ThrowsException()
+    {
+        // Act & Assert
+        var act = () => new Texture(
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockReactableFactory.Object,
+            TextureName,
+            string.Empty,
+            this.imageData);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
     }
 
     [Fact]

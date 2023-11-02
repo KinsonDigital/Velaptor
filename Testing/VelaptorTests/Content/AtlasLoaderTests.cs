@@ -87,7 +87,7 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
+            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'atlasDataFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'atlasDataFactory')");
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class AtlasLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'atlasDataPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'atlasDataPathResolver')");
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'jsonService')");
+            .WithMessage("Value cannot be null. (Parameter 'jsonService')");
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -218,25 +218,37 @@ public class AtlasLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Load_WithNullOrEmptyValue_ThrowsException(string value)
+    [Fact]
+    public void Load_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(value);
+        var act = () => sut.Load(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+    }
+
+    [Fact]
+    public void Load_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]

@@ -15,17 +15,26 @@ using Xunit;
 public class GpuBufferNameAttributeTests
 {
     #region Constructor Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullOrEmptyNameParam_ThrowsException(string value)
+    [Fact]
+    public void Ctor_WithNullParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GpuBufferNameAttribute(value);
+        var act = () => _ = new GpuBufferNameAttribute(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => _ = new GpuBufferNameAttribute(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]

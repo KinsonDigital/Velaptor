@@ -57,11 +57,11 @@ public sealed class TextureLoader : ILoader<ITexture>
         IFile file,
         IPath path)
     {
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.ParamIsNotNull(texturePathResolver);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(texturePathResolver);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.textureCache = textureCache;
         this.texturePathResolver = texturePathResolver;
@@ -87,7 +87,7 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     public ITexture Load(string contentPathOrName)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
         var isPathRooted = this.path.IsPathRooted(contentPathOrName);
 
