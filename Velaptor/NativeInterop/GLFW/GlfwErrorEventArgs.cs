@@ -20,7 +20,7 @@ internal sealed class GlfwErrorEventArgs : EventArgs
     /// <param name="errorMessage">The error message.</param>
     public GlfwErrorEventArgs(GlfwErrorCode errorCode, string errorMessage)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
         ErrorCode = errorCode;
         ErrorMessage = errorMessage;
     }

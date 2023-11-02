@@ -19,7 +19,7 @@ internal sealed class ShaderNameAttribute : Attribute
     /// <param name="name">The name to give a shader.</param>
     public ShaderNameAttribute(string name)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
         Name = name;
     }
 

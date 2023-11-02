@@ -87,7 +87,7 @@ public class AtlasDataTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
+            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class AtlasDataTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -129,13 +129,11 @@ public class AtlasDataTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'atlasSubTextureData')");
+            .WithMessage("Value cannot be null. (Parameter 'atlasSubTextureData')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
+    [Fact]
+    public void Ctor_WithNullDirPath_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -145,20 +143,39 @@ public class AtlasDataTests
                 this.mockDirectory.Object,
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
-                dirPath,
+                null,
                 "atlas-name");
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'dirPath')");
+            .WithMessage("Value cannot be null. (Parameter 'dirPath')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
+    [Fact]
+    public void Ctor_WithEmptyDirPath_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AtlasData(
+                this.mockTextureCache.Object,
+                this.mockDirectory.Object,
+                this.mockPath.Object,
+                Array.Empty<AtlasSubTextureData>(),
+                string.Empty,
+                "atlas-name");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'dirPath')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullAtlasName_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -169,12 +186,32 @@ public class AtlasDataTests
                 this.mockPath.Object,
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
-                atlasName);
+                null);
         };
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'atlasName')");
+            .WithMessage("Value cannot be null. (Parameter 'atlasName')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyAtlasName_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AtlasData(
+                this.mockTextureCache.Object,
+                this.mockDirectory.Object,
+                this.mockPath.Object,
+                Array.Empty<AtlasSubTextureData>(),
+                "dir-path",
+                string.Empty);
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'atlasName')");
     }
 
     [Fact]
@@ -348,20 +385,32 @@ public class AtlasDataTests
         actual.Bounds.Should().Be(expected.Bounds);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void GetFrames_WithNullOrEmptySubTextureId_ThrowsException(string subTextureId)
+    [Fact]
+    public void GetFrames_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetFrames(subTextureId);
+        var act = () => sut.GetFrames(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'subTextureId')");
+            .WithMessage("Value cannot be null. (Parameter 'subTextureId')");
+    }
+
+    [Fact]
+    public void GetFrames_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.GetFrames(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'subTextureId')");
     }
 
     [Fact]

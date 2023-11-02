@@ -18,7 +18,7 @@ internal sealed class GLErrorEventArgs : EventArgs
     /// <param name="errorMessage">The error message.</param>
     public GLErrorEventArgs(string errorMessage)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
         ErrorMessage = errorMessage;
     }
 

@@ -98,7 +98,7 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'texture')");
+            .WithMessage("Value cannot be null. (Parameter 'texture')");
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontService')");
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontStatsService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontStatsService')");
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -194,13 +194,11 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
+            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullNameParam_ThrowsException(string name)
+    [Fact]
+    public void Ctor_WithNullName_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -211,7 +209,7 @@ public class FontTests : IDisposable
                 this.mockFontStatsService.Object,
                 this.mockFontAtlasService.Object,
                 this.mockTextureCache.Object,
-                name,
+                null,
                 this.fontFilePath,
                 12u,
                 true,
@@ -220,7 +218,31 @@ public class FontTests : IDisposable
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyName_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Font(
+                this.mockTexture.Object,
+                this.mockFontService.Object,
+                this.mockFontStatsService.Object,
+                this.mockFontAtlasService.Object,
+                this.mockTextureCache.Object,
+                string.Empty,
+                this.fontFilePath,
+                12u,
+                true,
+                this.glyphMetrics.Values.ToArray());
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
