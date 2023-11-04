@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -24,6 +25,7 @@ public class AnimatedGraphicsScene : SceneBase
     private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
     private BackgroundManager? backgroundManager;
+    private ILoader<IAtlasData>? atlasLoader;
     private int elapsedTime;
     private int currentFrame;
 
@@ -42,7 +44,8 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.textureRenderer = renderFactory.CreateTextureRenderer();
 
-        this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("circle");
 
         var instructions = new Label();
@@ -66,7 +69,7 @@ public class AnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        ContentLoader.UnloadAtlas(this.mainAtlas);
+        this.atlasLoader.Unload(this.mainAtlas);
 
         base.UnloadContent();
     }

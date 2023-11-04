@@ -39,6 +39,8 @@ public class LayeredTextRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private Vector2 backgroundPos;
     private SizeF whiteTextSize;
+    private ILoader<ITexture>? textureLoader;
+    private ILoader<IFont>? fontLoader;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string whiteText = string.Empty;
     private string orangeText = string.Empty;
@@ -62,11 +64,13 @@ public class LayeredTextRenderingScene : SceneBase
         this.textureRenderer = renderFactory.CreateTextureRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
-        this.background = ContentLoader.LoadTexture("layered-rendering-background");
+        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
+        this.background = this.textureLoader.Load("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        var fontLoader = new FontLoader();
-        this.font = fontLoader.Load(DefaultFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultFont, 12);
+
         this.font.Style = FontStyle.Bold;
         this.font.Size = 24;
 
@@ -168,8 +172,8 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        ContentLoader.UnloadTexture(this.background);
-        ContentLoader.UnloadFont(this.font);
+        this.textureLoader.Unload(this.background);
+        this.fontLoader.Unload(this.font);
 
         base.UnloadContent();
     }

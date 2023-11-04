@@ -11,6 +11,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -40,8 +41,10 @@ public class LayeredTextureRenderingScene : SceneBase
     private AtlasSubTextureData orangeBoxData;
     private AtlasSubTextureData blueBoxData;
     private BackgroundManager? backgroundManager;
-    private RenderLayer whiteLayer = RenderLayer.One;
+    private ILoader<IFont>? fontLoader;
+    private ILoader<IAtlasData>? atlasLoader;
     private Label? lblBoxState;
+    private RenderLayer whiteLayer = RenderLayer.One;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -63,7 +66,8 @@ public class LayeredTextureRenderingScene : SceneBase
 
         this.textureRenderer = renderFactory.CreateTextureRenderer();
 
-        this.font = ContentLoader.LoadFont(DefaultFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
 
         var textLines = new[]
@@ -79,7 +83,8 @@ public class LayeredTextureRenderingScene : SceneBase
             Position = new Point(WindowCenter.X, 50),
         };
 
-        this.atlas = ContentLoader.LoadAtlas("layered-rendering-atlas");
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.atlas = this.atlasLoader.Load("layered-rendering-atlas");
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
@@ -169,8 +174,8 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.backgroundManager.Unload();
-        ContentLoader.UnloadAtlas(this.atlas);
-        ContentLoader.UnloadFont(this.font);
+        this.fontLoader.Unload(this.font);
+        this.atlasLoader.Unload(this.atlas);
 
         this.atlas = null;
 

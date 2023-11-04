@@ -11,6 +11,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -42,6 +43,8 @@ public class LayeredLineRenderingScene : SceneBase
     private Vector2 lineStateTextPos;
     private Vector2 backgroundPos;
     private SizeF instructionTextSize;
+    private ILoader<ITexture>? textureLoader;
+    private ILoader<IFont>? fontLoader;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string instructions = string.Empty;
     private string lineStateText = string.Empty;
@@ -65,10 +68,13 @@ public class LayeredLineRenderingScene : SceneBase
         this.textureRenderer = renderFactory.CreateTextureRenderer();
         this.lineRenderer = renderFactory.CreateLineRenderer();
 
-        this.background = ContentLoader.LoadTexture("layered-rendering-background");
+        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
+
+        this.background = this.textureLoader.Load("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
         this.font.Style = FontStyle.Bold;
 
         var textLines = new[]
@@ -146,8 +152,8 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        ContentLoader.UnloadFont(this.font);
-        ContentLoader.UnloadTexture(this.background);
+        this.textureLoader.Unload(this.background);
+        this.fontLoader.Unload(this.font);
 
         base.UnloadContent();
     }

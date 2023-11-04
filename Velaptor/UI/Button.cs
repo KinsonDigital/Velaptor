@@ -159,26 +159,17 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="controlFactory">Creates UI controls.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
     /// <param name="rendererFactory">Creates different types of renderers.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     Thrown if the any of the parameters below are null:
-    ///     <list type="bullet">
-    ///         <item><paramref name="contentLoader"/></item>
-    ///     </list>
-    /// </exception>
     internal Button(
-        IContentLoader contentLoader,
         IUIControlFactory controlFactory,
         IAppInput<KeyboardState> keyboard,
         IAppInput<MouseState> mouse,
         IRendererFactory rendererFactory)
         : base(keyboard, mouse)
     {
-        EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(controlFactory);
         EnsureThat.ParamIsNotNull(rendererFactory);
 

@@ -11,6 +11,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -34,6 +35,8 @@ public class NonAnimatedGraphicsScene : SceneBase
     private RenderEffects renderEffects = RenderEffects.None;
     private string instructions = string.Empty;
     private SizeF textSize;
+    private ILoader<IFont> fontLoader;
+    private ILoader<IAtlasData> atlasLoader;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
@@ -56,7 +59,9 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.textureRenderer = renderFactory.CreateTextureRenderer();
         this.fontRenderer = renderFactory.CreateFontRenderer();
 
-        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultRegularFont, 12u);
+
         var textLines = new List<string>
         {
             "Use arrow keys to flip the texture horizontally and vertically.",
@@ -69,7 +74,8 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.textSize = this.font.Measure(this.instructions);
 
-        this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.octagonData = this.mainAtlas.GetFrames("octagon-flip")[0];
 
         base.LoadContent();
@@ -84,8 +90,8 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        ContentLoader.UnloadAtlas(this.mainAtlas);
-        ContentLoader.UnloadFont(this.font);
+        this.fontLoader.Unload(this.font);
+        this.atlasLoader.Unload(this.mainAtlas);
         this.renderEffects = RenderEffects.None;
 
         this.mainAtlas = null;

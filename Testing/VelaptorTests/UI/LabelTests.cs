@@ -29,7 +29,7 @@ public class LabelTests
 {
     private const int LabelLayer = int.MaxValue - 1;
     private const string TextValue = "hello world";
-    private readonly Mock<IContentLoader> mockContentLoader;
+    private readonly Mock<ILoader<IFont>> mockFontLoader;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IAppInput<KeyboardState>> mockKeyboard;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
@@ -42,10 +42,12 @@ public class LabelTests
     public LabelTests()
     {
         this.mockFont = new Mock<IFont>();
+        this.mockFont.SetupGet(p => p.Size).Returns(12u);
+        this.mockFont.SetupGet(p => p.FilePath).Returns("font-file-path");
         MockGlyphs(TextValue);
 
-        this.mockContentLoader = new Mock<IContentLoader>();
-        this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<uint>()))
+        this.mockFontLoader = new Mock<ILoader<IFont>>();
+        this.mockFontLoader.Setup(m => m.Load(It.IsAny<string>()))
             .Returns(this.mockFont.Object);
 
         this.mockKeyboard = new Mock<IAppInput<KeyboardState>>();
@@ -60,7 +62,7 @@ public class LabelTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullContentLoaderParam_ThrowsException()
+    public void Ctor_WithNullFontLoaderParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -74,7 +76,7 @@ public class LabelTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
+            .WithMessage("The parameter must not be null. (Parameter 'fontLoader')");
     }
 
     [Fact]
@@ -84,7 +86,7 @@ public class LabelTests
         var act = () =>
         {
             _ = new Label(
-                this.mockContentLoader.Object,
+                this.mockFontLoader.Object,
                 this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 null);
@@ -387,6 +389,7 @@ public class LabelTests
     public void UnloadContent_WhenLoadedAndNotDisposed_UnloadsContent()
     {
         // Arrange
+        var expected = $"{this.mockFont.Object.FilePath}|size:12";
         var sut = CreateSystemUnderTest();
         sut.LoadContent();
 
@@ -394,20 +397,21 @@ public class LabelTests
         sut.UnloadContent();
 
         // Assert
-        this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Once);
+        this.mockFontLoader.Verify(m => m.Unload(expected), Times.Once);
     }
 
     [Fact]
     public void UnloadContent_WhenNotLoaded_DoesNotUnloadContent()
     {
         // Arrange
+        var expected = $"{this.mockFont.Object.FilePath}|size:12";
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.UnloadContent();
 
         // Assert
-        this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Never);
+        this.mockFontLoader.Verify(m => m.Unload(expected), Times.Never);
     }
 
     [Fact]
@@ -489,7 +493,6 @@ public class LabelTests
         sut.LoadContent();
 
         // Act
-        // sut.Render(TextValue);
         sut.Render();
 
         // Assert
@@ -518,7 +521,7 @@ public class LabelTests
                 for (var i = 0; i < text.Length; i++)
                 {
                     var charIndex = i;
-                    var alreadyAdded = result.Any(g => g.Glyph == text[charIndex]);
+                    var alreadyAdded = result.Exists(g => g.Glyph == text[charIndex]);
 
                     if (!alreadyAdded)
                     {
@@ -541,7 +544,7 @@ public class LabelTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private Label CreateSystemUnderTest() =>
-        new (this.mockContentLoader.Object,
+        new (this.mockFontLoader.Object,
             this.mockKeyboard.Object,
             this.mockMouse.Object,
             this.mockRenderFactory.Object);

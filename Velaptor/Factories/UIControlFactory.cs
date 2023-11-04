@@ -18,7 +18,7 @@ internal class UIControlFactory : IUIControlFactory
     public Label CreateLabel(string labelText)
     {
         var label = new Label(
-            ContentLoaderFactory.CreateContentLoader(),
+            ContentLoaderFactory.CreateFontLoader(),
             IoC.Container.GetInstance<IAppInput<KeyboardState>>(),
             IoC.Container.GetInstance<IAppInput<MouseState>>(),
             IoC.Container.GetInstance<IRendererFactory>())
@@ -33,7 +33,7 @@ internal class UIControlFactory : IUIControlFactory
     public Label CreateLabel(string labelText, IFont font)
     {
         var label = new Label(
-            ContentLoaderFactory.CreateContentLoader(),
+            ContentLoaderFactory.CreateFontLoader(),
             IoC.Container.GetInstance<IAppInput<KeyboardState>>(),
             IoC.Container.GetInstance<IAppInput<MouseState>>(),
             IoC.Container.GetInstance<IRendererFactory>())

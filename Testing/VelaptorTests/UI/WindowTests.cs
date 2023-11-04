@@ -14,7 +14,6 @@ using Helpers;
 using Moq;
 using Velaptor;
 using Velaptor.Batching;
-using Velaptor.Content;
 using Velaptor.Scene;
 using Velaptor.UI;
 using Xunit;
@@ -25,7 +24,6 @@ using Xunit;
 public class WindowTests
 {
     private readonly Mock<IWindow> mockWindow;
-    private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<ISceneManager> mockSceneManager;
     private readonly Mock<IBatcher> mockBatcher;
 
@@ -34,12 +32,10 @@ public class WindowTests
     /// </summary>
     public WindowTests()
     {
-        this.mockContentLoader = new Mock<IContentLoader>();
         this.mockSceneManager = new Mock<ISceneManager>();
         this.mockBatcher = new Mock<IBatcher>();
 
         this.mockWindow = new Mock<IWindow>();
-        this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
         this.mockWindow.SetupProperty(m => m.Initialize);
         this.mockWindow.SetupProperty(m => m.Update);
         this.mockWindow.SetupProperty(m => m.Draw);
@@ -392,21 +388,6 @@ public class WindowTests
         // Assert
         this.mockWindow.VerifySet(p => p.TypeOfBorder = WindowBorder.Resizable, Times.Once());
         this.mockWindow.VerifyGet(p => p.TypeOfBorder, Times.Once());
-    }
-
-    [Fact]
-    public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.ContentLoader = this.mockContentLoader.Object;
-        _ = sut.ContentLoader;
-
-        // Assert
-        this.mockWindow.VerifySet(p => p.ContentLoader = this.mockContentLoader.Object, Times.Once());
-        this.mockWindow.VerifyGet(p => p.ContentLoader, Times.Once());
     }
 
     [Fact]

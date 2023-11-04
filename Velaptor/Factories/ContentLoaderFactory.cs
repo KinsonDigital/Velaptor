@@ -20,22 +20,10 @@ using IVelaptorSound = Content.ISound;
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 public static class ContentLoaderFactory
 {
-    private static IContentLoader? contentLoader;
     private static ILoader<ITexture>? textureLoader;
     private static ILoader<IAtlasData>? atlasLoader;
     private static ILoader<IVelaptorSound>? soundLoader;
     private static ILoader<IFont>? fontLoader;
-
-    /// <summary>
-    /// Creates a single instance of a content loader.
-    /// </summary>
-    /// <returns>A framework content loader implementation.</returns>
-    public static IContentLoader CreateContentLoader() =>
-        contentLoader ??= new ContentLoader(
-            CreateTextureLoader(),
-            CreateSoundLoader(),
-            CreateAtlasLoader(),
-            CreateFontLoader());
 
     /// <summary>
     /// Creates a loader that loads textures from disk.

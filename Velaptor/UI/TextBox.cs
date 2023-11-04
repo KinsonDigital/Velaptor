@@ -344,10 +344,10 @@ public sealed class TextBox : ControlBase
     /// </summary>
     public override void LoadContent()
     {
-        var contentLoader = ContentLoaderFactory.CreateContentLoader();
+        var fontLoader = ContentLoaderFactory.CreateFontLoader();
 
         // the font when the font type or size changes.
-        this.font = contentLoader.LoadFont("TimesNewRoman-Regular", 12);
+        this.font = fontLoader.Load("TimesNewRoman-Regular", 12);
 
         this.maxWidth = this.font.Metrics.Max(m => m.GlyphWidth);
 
