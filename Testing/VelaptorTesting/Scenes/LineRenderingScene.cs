@@ -44,9 +44,8 @@ public class LineRenderingScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-        this.lineRenderer = renderFactory.CreateLineRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.lineRenderer = RendererFactory.CreateLineRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.keyboard = HardwareFactory.GetKeyboard();
 

@@ -65,10 +65,9 @@ public class LayeredRectRenderingScene : SceneBase
             return;
         }
 
-        var renderFactory = new RendererFactory();
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.shapeRenderer = renderFactory.CreateShapeRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
 

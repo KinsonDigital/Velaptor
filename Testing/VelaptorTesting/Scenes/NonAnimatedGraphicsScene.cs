@@ -54,10 +54,8 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.font = this.fontLoader.Load(DefaultRegularFont, 12u);

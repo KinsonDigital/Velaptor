@@ -42,8 +42,7 @@ public sealed class Button : ControlBase
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the IoC container.")]
     public Button()
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
     }
@@ -58,8 +57,7 @@ public sealed class Button : ControlBase
     {
         EnsureThat.ParamIsNotNull(label);
 
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Label = label;
@@ -73,8 +71,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -89,8 +86,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Width = width;
@@ -107,8 +103,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(uint width, uint height, Label? label)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Width = width;
@@ -126,8 +121,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -146,8 +140,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Point position, uint width, uint height, Label? label)
     {
-        var renderFactory = IoC.Container.GetInstance<IRendererFactory>();
-        this.rectRenderer = renderFactory.CreateShapeRenderer();
+        this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
         Init();
         Position = position;
@@ -162,19 +155,15 @@ public sealed class Button : ControlBase
     /// <param name="controlFactory">Creates UI controls.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
-    /// <param name="rendererFactory">Creates different types of renderers.</param>
     internal Button(
         IUIControlFactory controlFactory,
         IAppInput<KeyboardState> keyboard,
-        IAppInput<MouseState> mouse,
-        IRendererFactory rendererFactory)
+        IAppInput<MouseState> mouse)
         : base(keyboard, mouse)
     {
         EnsureThat.ParamIsNotNull(controlFactory);
-        EnsureThat.ParamIsNotNull(rendererFactory);
 
         this.controlFactory = controlFactory;
-        this.rectRenderer = rendererFactory.CreateShapeRenderer();
     }
 
     /// <summary>

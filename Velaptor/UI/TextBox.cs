@@ -66,9 +66,8 @@ public sealed class TextBox : ControlBase
         this.textCursor = new TextCursor(this.textBoxDataReactable);
         this.textSelection = new TextSelection(this.textBoxDataReactable);
 
-        var rendererFactory = new RendererFactory();
-        this.shapeRenderer = rendererFactory.CreateShapeRenderer();
-        this.fontRenderer = rendererFactory.CreateFontRenderer();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
     }
 
@@ -81,14 +80,13 @@ public sealed class TextBox : ControlBase
     /// <param name="uiDependencyFactory">Creates UI dependencies.</param>
     internal TextBox(
         IPushReactable<TextBoxStateData> textBoxDataReactable,
-        IRendererFactory rendererFactory,
         IAppInput<KeyboardState> keyboard,
         IUIDependencyFactory uiDependencyFactory)
     {
         this.textBoxDataReactable = textBoxDataReactable;
 
-        this.shapeRenderer = rendererFactory.CreateShapeRenderer();
-        this.fontRenderer = rendererFactory.CreateFontRenderer();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.textCursor = uiDependencyFactory.CreateTextCursor(this.textBoxDataReactable);
         this.textSelection = uiDependencyFactory.CreateTextSelection(this.textBoxDataReactable);

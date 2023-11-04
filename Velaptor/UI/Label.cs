@@ -44,7 +44,7 @@ public class Label : ControlBase
     {
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
-        Init(ContentLoaderFactory.CreateFontLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
+        Init(ContentLoaderFactory.CreateFontLoader(), RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class Label : ControlBase
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
         Text = text;
 
-        Init(ContentLoaderFactory.CreateFontLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
+        Init(ContentLoaderFactory.CreateFontLoader(), RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
@@ -67,7 +67,6 @@ public class Label : ControlBase
     /// <param name="fontLoader">Loads fonts.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
-    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
@@ -77,14 +76,12 @@ public class Label : ControlBase
     internal Label(
         ILoader<IFont> fontLoader,
         IAppInput<KeyboardState> keyboard,
-        IAppInput<MouseState> mouse,
-        IRendererFactory rendererFactory)
+        IAppInput<MouseState> mouse)
             : base(keyboard, mouse)
     {
         EnsureThat.ParamIsNotNull(fontLoader);
-        EnsureThat.ParamIsNotNull(rendererFactory);
 
-        Init(fontLoader, rendererFactory.CreateFontRenderer());
+        Init(fontLoader, RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>

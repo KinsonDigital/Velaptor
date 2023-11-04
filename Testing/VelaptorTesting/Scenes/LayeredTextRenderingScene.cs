@@ -59,10 +59,8 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        var renderFactory = new RendererFactory();
-
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
         this.background = this.textureLoader.Load("layered-rendering-background");

@@ -40,9 +40,7 @@ public class AnimatedGraphicsScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
 
         this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");

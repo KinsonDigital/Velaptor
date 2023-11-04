@@ -33,7 +33,6 @@ public class LabelTests
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IAppInput<KeyboardState>> mockKeyboard;
     private readonly Mock<IAppInput<MouseState>> mockMouse;
-    private readonly Mock<IRendererFactory> mockRenderFactory;
     private readonly Mock<IFontRenderer> mockFontRenderer;
 
     /// <summary>
@@ -54,10 +53,6 @@ public class LabelTests
         this.mockMouse = new Mock<IAppInput<MouseState>>();
 
         this.mockFontRenderer = new Mock<IFontRenderer>();
-
-        this.mockRenderFactory = new Mock<IRendererFactory>();
-        this.mockRenderFactory.Setup(m => m.CreateFontRenderer())
-            .Returns(this.mockFontRenderer.Object);
     }
 
     #region Constructor Tests
@@ -70,31 +65,12 @@ public class LabelTests
             _ = new Label(
                 null,
                 this.mockKeyboard.Object,
-                this.mockMouse.Object,
-                this.mockRenderFactory.Object);
+                this.mockMouse.Object);
         };
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'fontLoader')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullRendererFactoryParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Label(
-                this.mockFontLoader.Object,
-                this.mockKeyboard.Object,
-                this.mockMouse.Object,
-                null);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'rendererFactory')");
     }
     #endregion
 
@@ -480,31 +456,6 @@ public class LabelTests
             It.IsAny<Color>(),
             It.IsAny<int>()), Times.Never);
     }
-
-    [Fact]
-    public void Render_WhenInvoked_RendersText()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.Text = TextValue;
-        sut.Position = new Point(100, 200);
-        sut.Visible = true;
-        sut.Color = Color.FromArgb(11, 22, 33, 44);
-        sut.LoadContent();
-
-        // Act
-        sut.Render();
-
-        // Assert
-        this.mockFontRenderer.Verify(m => m.Render(this.mockFont.Object,
-            TextValue,
-            100,
-            200,
-            1f,
-            0f,
-            Color.FromArgb(11, 22, 33, 44),
-            LabelLayer), Times.Once);
-    }
     #endregion
 
     /// <summary>
@@ -546,6 +497,5 @@ public class LabelTests
     private Label CreateSystemUnderTest() =>
         new (this.mockFontLoader.Object,
             this.mockKeyboard.Object,
-            this.mockMouse.Object,
-            this.mockRenderFactory.Object);
+            this.mockMouse.Object);
 }

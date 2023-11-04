@@ -85,10 +85,8 @@ public class ShapeScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-        this.shapeRenderer = renderFactory.CreateShapeRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
         this.rectangle = new RectShape
         {

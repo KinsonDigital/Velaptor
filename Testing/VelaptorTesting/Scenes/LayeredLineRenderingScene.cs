@@ -62,11 +62,9 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        var renderFactory = new RendererFactory();
-
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.lineRenderer = renderFactory.CreateLineRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.lineRenderer = RendererFactory.CreateLineRenderer();
 
         this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
 

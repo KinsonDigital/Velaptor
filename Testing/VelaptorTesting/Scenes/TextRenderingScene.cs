@@ -64,8 +64,7 @@ public class TextRenderingScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);

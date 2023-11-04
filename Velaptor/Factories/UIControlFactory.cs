@@ -20,8 +20,7 @@ internal class UIControlFactory : IUIControlFactory
         var label = new Label(
             ContentLoaderFactory.CreateFontLoader(),
             IoC.Container.GetInstance<IAppInput<KeyboardState>>(),
-            IoC.Container.GetInstance<IAppInput<MouseState>>(),
-            IoC.Container.GetInstance<IRendererFactory>())
+            IoC.Container.GetInstance<IAppInput<MouseState>>())
         {
             Text = labelText,
         };
@@ -35,8 +34,7 @@ internal class UIControlFactory : IUIControlFactory
         var label = new Label(
             ContentLoaderFactory.CreateFontLoader(),
             IoC.Container.GetInstance<IAppInput<KeyboardState>>(),
-            IoC.Container.GetInstance<IAppInput<MouseState>>(),
-            IoC.Container.GetInstance<IRendererFactory>())
+            IoC.Container.GetInstance<IAppInput<MouseState>>())
         {
             Text = labelText,
         };

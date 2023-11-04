@@ -39,8 +39,7 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
-        var rendererFactory = new RendererFactory();
-        this.batcher = rendererFactory.CreateBatcher();
+        this.batcher = RendererFactory.CreateBatcher();
 
         this.keyboard = HardwareFactory.GetKeyboard();
 
