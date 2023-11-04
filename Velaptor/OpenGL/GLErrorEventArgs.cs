@@ -5,7 +5,6 @@
 namespace Velaptor.OpenGL;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Holds information about OpenGL errors that occur.

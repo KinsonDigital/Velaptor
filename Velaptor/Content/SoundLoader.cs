@@ -11,7 +11,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using Caching;
 using Exceptions;
-using Guards;
 using Velaptor.Factories;
 
 /// <summary>

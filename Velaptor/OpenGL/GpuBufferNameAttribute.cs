@@ -5,7 +5,6 @@
 namespace Velaptor.OpenGL;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Represents the name of a buffer.
