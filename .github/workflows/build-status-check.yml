@@ -20,7 +20,7 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME }}"
       build-config: Debug
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      checkout-ref: ${{ github.event.pull_request.head.ref }}
       checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
     secrets:
       cicd-pat: ${{ secrets.CICD_TOKEN }}
