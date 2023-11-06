@@ -21,7 +21,6 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Hardware;
 using Velaptor.Input;
@@ -55,7 +54,6 @@ public class GLWindowTests : TestsBase
     private readonly Mock<IGLContext> mockGLContext;
     private readonly Mock<ISystemDisplayService> mockDisplayService;
     private readonly Mock<IPlatform> mockPlatform;
-    private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<ISceneManager> mockSceneManager;
     private readonly Mock<ITaskService> mockTaskService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
@@ -92,7 +90,6 @@ public class GLWindowTests : TestsBase
         this.mockGlfw = new Mock<IGlfwInvoker>();
         this.mockDisplayService = new Mock<ISystemDisplayService>();
         this.mockPlatform = new Mock<IPlatform>();
-        this.mockContentLoader = new Mock<IContentLoader>();
         this.mockSceneManager = new Mock<ISceneManager>();
         this.mockTaskService = new Mock<ITaskService>();
 
@@ -132,7 +129,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -158,7 +154,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -184,7 +179,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -210,7 +204,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -236,7 +229,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -262,7 +254,6 @@ public class GLWindowTests : TestsBase
                 null,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -288,7 +279,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 null,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -314,7 +304,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 null,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -322,32 +311,6 @@ public class GLWindowTests : TestsBase
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("The parameter must not be null. (Parameter 'taskService')");
-    }
-
-    [Fact]
-    [Trait("Category", Ctor)]
-    public void Ctor_WithNullContentLoaderParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () => _ = new GLWindow(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                this.mockAppService.Object,
-                this.mockWindowFactory.Object,
-                this.mockNativeInputFactory.Object,
-                this.mockGL.Object,
-                this.mockGlfw.Object,
-                this.mockDisplayService.Object,
-                this.mockPlatform.Object,
-                this.mockTaskService.Object,
-                null,
-                this.mockSceneManager.Object,
-                this.mockReactableFactory.Object,
-                this.mockTimerService.Object);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
     }
 
     [Fact]
@@ -366,7 +329,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 null,
                 this.mockReactableFactory.Object,
                 this.mockTimerService.Object);
@@ -392,7 +354,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 null,
                 this.mockTimerService.Object);
@@ -418,7 +379,6 @@ public class GLWindowTests : TestsBase
                 this.mockDisplayService.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockContentLoader.Object,
                 this.mockSceneManager.Object,
                 this.mockReactableFactory.Object,
                 null);
@@ -618,21 +578,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         actual.Should().Be(30);
-    }
-
-    [Fact]
-    public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var mockOtherContentLoader = new Mock<IContentLoader>();
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.ContentLoader = mockOtherContentLoader.Object;
-        var actual = sut.ContentLoader;
-
-        // Assert
-        actual.Should().BeSameAs(mockOtherContentLoader.Object);
     }
 
     [Fact]
@@ -1473,7 +1418,6 @@ public class GLWindowTests : TestsBase
             this.mockDisplayService.Object,
             this.mockPlatform.Object,
             this.mockTaskService.Object,
-            this.mockContentLoader.Object,
             this.mockSceneManager.Object,
             this.mockReactableFactory.Object,
             this.mockTimerService.Object);

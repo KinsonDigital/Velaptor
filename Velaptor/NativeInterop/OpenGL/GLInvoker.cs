@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
-using Guards;
 using Services;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;

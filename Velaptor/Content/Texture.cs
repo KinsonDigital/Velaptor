@@ -11,7 +11,6 @@ using System.IO;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Graphics;
-using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using ReactableData;

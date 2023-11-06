@@ -51,7 +51,6 @@ internal static class WindowFactory
             IoC.Container.GetInstance<ISystemDisplayService>(),
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
-            ContentLoaderFactory.CreateContentLoader(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
             IoC.Container.GetInstance<ITimerService>());

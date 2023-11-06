@@ -7,7 +7,6 @@ namespace Velaptor.Scene;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Content;
 using UI;
 
 /// <summary>
@@ -42,12 +41,6 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     Point WindowCenter { get; }
-
-    /// <summary>
-    /// Gets the content loader.
-    /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
-    IContentLoader ContentLoader { get; }
 
     /// <summary>
     /// Loads the scene content.

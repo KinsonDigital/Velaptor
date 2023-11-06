@@ -12,6 +12,8 @@ using System.Linq;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
+using Velaptor.Factories;
 using Velaptor.Scene;
 using Velaptor.UI;
 
@@ -26,6 +28,7 @@ public class SoundScene : SceneBase
     private Label? lblRepeat;
     private Button? btnRepeat;
     private BackgroundManager? backgroundManager;
+    private ILoader<ISound>? soundLoader;
     private ISound? sound;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -34,7 +37,8 @@ public class SoundScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.sound = ContentLoader.LoadSound("test-song");
+        this.soundLoader = ContentLoaderFactory.CreateSoundLoader();
+        this.sound = this.soundLoader.Load("test-song");
 
         CreateLabels();
         CreateButtons();
@@ -76,7 +80,7 @@ public class SoundScene : SceneBase
         if (this.sound is not null)
         {
             this.sound.Stop();
-            ContentLoader.UnloadSound(this.sound);
+            this.soundLoader.Unload(this.sound);
         }
 
         this.backgroundManager?.Unload();

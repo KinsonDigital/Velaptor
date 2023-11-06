@@ -8,7 +8,6 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Batching;
-using Content;
 using Scene;
 
 /// <summary>
@@ -108,11 +107,6 @@ public interface IWindow : IDisposable
     /// Gets or sets the type of border that the <see cref="IWindow"/> will have.
     /// </summary>
     WindowBorder TypeOfBorder { get; set; }
-
-    /// <summary>
-    /// Gets or sets the content loader for loading content.
-    /// </summary>
-    IContentLoader ContentLoader { get; set; }
 
     /// <summary>
     /// Gets the scene manager.

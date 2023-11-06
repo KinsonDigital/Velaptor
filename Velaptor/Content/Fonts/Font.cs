@@ -14,7 +14,6 @@ using Caching;
 using Exceptions;
 using ExtensionMethods;
 using Graphics;
-using Guards;
 using Services;
 using Velaptor.Services;
 using VelFontStyle = FontStyle;

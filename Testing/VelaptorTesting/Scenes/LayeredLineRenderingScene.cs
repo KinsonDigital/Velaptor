@@ -11,6 +11,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -42,6 +43,8 @@ public class LayeredLineRenderingScene : SceneBase
     private Vector2 lineStateTextPos;
     private Vector2 backgroundPos;
     private SizeF instructionTextSize;
+    private ILoader<ITexture>? textureLoader;
+    private ILoader<IFont>? fontLoader;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string instructions = string.Empty;
     private string lineStateText = string.Empty;
@@ -59,16 +62,17 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        var renderFactory = new RendererFactory();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.lineRenderer = RendererFactory.CreateLineRenderer();
 
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
-        this.lineRenderer = renderFactory.CreateLineRenderer();
+        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
 
-        this.background = ContentLoader.LoadTexture("layered-rendering-background");
+        this.background = this.textureLoader.Load("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
         this.font.Style = FontStyle.Bold;
 
         var textLines = new[]
@@ -146,8 +150,8 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        ContentLoader.UnloadFont(this.font);
-        ContentLoader.UnloadTexture(this.background);
+        this.textureLoader.Unload(this.background);
+        this.fontLoader.Unload(this.font);
 
         base.UnloadContent();
     }

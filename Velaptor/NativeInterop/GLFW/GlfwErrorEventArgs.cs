@@ -6,7 +6,6 @@ namespace Velaptor.NativeInterop.GLFW;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Guards;
 
 /// <summary>
 /// Holds GLFW related error information.

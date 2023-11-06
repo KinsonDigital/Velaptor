@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Carbonate.Fluent;
-using Content;
 using Factories;
 using Guards;
 using ReactableData;
@@ -28,23 +27,16 @@ public abstract class SceneBase : IScene
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    protected SceneBase()
-    {
-        ContentLoader = ContentLoaderFactory.CreateContentLoader();
-        Init(IoC.Container.GetInstance<IReactableFactory>());
-    }
+    protected SceneBase() => Init(IoC.Container.GetInstance<IReactableFactory>());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    private protected SceneBase(IContentLoader contentLoader, IReactableFactory reactableFactory)
+    private protected SceneBase(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        ContentLoader = contentLoader;
         Init(reactableFactory);
     }
 
@@ -67,9 +59,6 @@ public abstract class SceneBase : IScene
 
     /// <inheritdoc/>
     public Point WindowCenter => new ((int)WindowSize.Width / 2, (int)WindowSize.Height / 2);
-
-    /// <inheritdoc/>
-    public IContentLoader ContentLoader { get; }
 
     /// <summary>
     /// Gets a value indicating whether or not the scene has been disposed.

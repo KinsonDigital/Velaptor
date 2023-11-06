@@ -28,8 +28,7 @@ public class BackgroundManager : IDrawable
     /// <param name="position">The position to place the background.</param>
     public void Load(Vector2 position)
     {
-        var renderFactory = new RendererFactory();
-        this.textureRenderer = renderFactory.CreateTextureRenderer();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.loader = ContentLoaderFactory.CreateTextureLoader();
 
         this.background = this.loader.Load(BackgroundTextureName);
