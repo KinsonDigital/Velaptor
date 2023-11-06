@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using Content;
 using Factories;
 using Guards;
 using Input;
@@ -76,7 +75,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="systemDisplayService">Provides information about the system's displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
-    /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="timerService">Measures the time it takes to process the game loop.</param>
@@ -91,7 +89,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ISystemDisplayService systemDisplayService,
         IPlatform platform,
         ITaskService taskService,
-        IContentLoader contentLoader,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
         ITimerService timerService)
@@ -104,7 +101,6 @@ internal sealed class GLWindow : VelaptorIWindow
         EnsureThat.ParamIsNotNull(systemDisplayService);
         EnsureThat.ParamIsNotNull(platform);
         EnsureThat.ParamIsNotNull(taskService);
-        EnsureThat.ParamIsNotNull(contentLoader);
         EnsureThat.ParamIsNotNull(sceneManager);
         EnsureThat.ParamIsNotNull(reactableFactory);
         EnsureThat.ParamIsNotNull(timerService);
@@ -117,7 +113,6 @@ internal sealed class GLWindow : VelaptorIWindow
         this.systemDisplayService = systemDisplayService;
         this.platform = platform;
         this.taskService = taskService;
-        ContentLoader = contentLoader;
         SceneManager = sceneManager;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -200,9 +195,6 @@ internal sealed class GLWindow : VelaptorIWindow
         get => CachedTypeOfBorder.GetValue();
         set => CachedTypeOfBorder.SetValue(value);
     }
-
-    /// <inheritdoc/>
-    public IContentLoader ContentLoader { get; set; }
 
     /// <inheritdoc/>
     public ISceneManager SceneManager { get; }

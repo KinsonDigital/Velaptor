@@ -12,7 +12,6 @@ using System.Linq;
 using Caching;
 using ExtensionMethods;
 using Graphics;
-using Guards;
 using Velaptor.Exceptions;
 
 /// <summary>
@@ -48,12 +47,12 @@ public sealed class AtlasData : IAtlasData
         string atlasName)
     {
         // ReSharper disable PossibleMultipleEnumeration
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(atlasSubTextureData);
-        EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
-        EnsureThat.StringParamIsNotNullOrEmpty(atlasName);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(atlasSubTextureData);
+        ArgumentException.ThrowIfNullOrEmpty(dirPath);
+        ArgumentException.ThrowIfNullOrEmpty(atlasName);
 
         var groups = atlasSubTextureData.GroupBy(x => x.Name).ToArray();
 
@@ -137,7 +136,7 @@ public sealed class AtlasData : IAtlasData
     /// </exception>
     public AtlasSubTextureData[] GetFrames(string subTextureId)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(subTextureId);
+        ArgumentException.ThrowIfNullOrEmpty(subTextureId);
 
         if (!this.dataGroups.ContainsKey(subTextureId))
         {

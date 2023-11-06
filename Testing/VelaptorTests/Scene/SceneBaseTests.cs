@@ -13,7 +13,6 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
@@ -25,7 +24,6 @@ using Xunit;
 /// </summary>
 public class SceneBaseTests
 {
-    private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private IReceiveSubscription<WindowSizeData>? winSizeReactor;
 
@@ -34,8 +32,6 @@ public class SceneBaseTests
     /// </summary>
     public SceneBaseTests()
     {
-        this.mockContentLoader = new Mock<IContentLoader>();
-
         var mockWinSizeReactable = new Mock<IPushReactable<WindowSizeData>>();
         mockWinSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<WindowSizeData>>()))
             .Callback<IReceiveSubscription<WindowSizeData>>(reactor =>
@@ -53,27 +49,12 @@ public class SceneBaseTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullContentLoaderParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new SceneBaseFake(null, this.mockReactableFactory.Object);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
-    }
-
-    [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new SceneBaseFake(this.mockContentLoader.Object, null);
+            _ = new SceneBaseFake(null);
         };
 
         // Assert
@@ -93,7 +74,6 @@ public class SceneBaseTests
         sut.Id.Should().NotBe(Guid.Empty);
         sut.IsLoaded.Should().BeFalse();
         sut.WindowSize.Should().BeEquivalentTo(default(SizeU));
-        sut.ContentLoader.Should().NotBeNull();
     }
     #endregion
 
@@ -102,7 +82,7 @@ public class SceneBaseTests
     public void Name_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act
-        var sut = new SceneBaseFake(this.mockContentLoader.Object, this.mockReactableFactory.Object)
+        var sut = new SceneBaseFake(this.mockReactableFactory.Object)
         {
             Name = "test-value",
         };
@@ -336,6 +316,5 @@ public class SceneBaseTests
     /// Creates a new instance of <see cref="SceneBaseFake"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SceneBaseFake CreateSystemUnderTest()
-        => new (this.mockContentLoader.Object, this.mockReactableFactory.Object);
+    private SceneBaseFake CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

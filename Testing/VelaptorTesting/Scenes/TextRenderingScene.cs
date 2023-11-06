@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Velaptor;
+using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
@@ -42,6 +43,7 @@ public class TextRenderingScene : SceneBase
     private Button? btnIncreaseFontSize;
     private Button? btnDecreaseFontSize;
     private BackgroundManager? backgroundManager;
+    private ILoader<IFont>? fontLoader;
     private bool cwButtonDown;
     private bool ccwButtonDown;
     private bool increaseRenderSizeBtnDown;
@@ -62,11 +64,10 @@ public class TextRenderingScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
-        var fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.textFont = fontLoader.Load(DefaultRegularFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);
 
         // Rotate CW Button
         this.btnRotateCW = new Button
@@ -251,7 +252,8 @@ public class TextRenderingScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        ContentLoader.UnloadFont(this.textFont);
+
+        this.fontLoader.Unload(this.textFont);
 
         this.btnRotateCW = null;
         this.btnRotateCCW = null;

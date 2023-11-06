@@ -5,7 +5,6 @@
 namespace Velaptor.NativeInterop.FreeType;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Occurs when there is an error message related to the <c>FreeType</c> font library.
@@ -18,7 +17,7 @@ internal sealed class FreeTypeErrorEventArgs : EventArgs
     /// <param name="errorMessage">The error message.</param>
     public FreeTypeErrorEventArgs(string errorMessage)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
         ErrorMessage = errorMessage;
     }
 

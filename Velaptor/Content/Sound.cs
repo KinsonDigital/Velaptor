@@ -4,12 +4,12 @@
 
 namespace Velaptor.Content;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using CASL;
 using Factories;
-using Guards;
 using ReactableData;
 using CASLSound = CASL.Sound;
 
@@ -29,7 +29,7 @@ public sealed class Sound : ISound
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Sound(string filePath)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(filePath);
+        ArgumentException.ThrowIfNullOrEmpty(filePath);
 
         var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
         var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeSoundData>>();

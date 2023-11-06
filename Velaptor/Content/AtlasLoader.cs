@@ -13,7 +13,6 @@ using Caching;
 using Exceptions;
 using Factories;
 using Graphics;
-using Guards;
 using Services;
 using Velaptor.Factories;
 
@@ -71,13 +70,13 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
         IFile file,
         IPath path)
     {
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.ParamIsNotNull(atlasDataFactory);
-        EnsureThat.ParamIsNotNull(atlasDataPathResolver);
-        EnsureThat.ParamIsNotNull(jsonService);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(atlasDataFactory);
+        ArgumentNullException.ThrowIfNull(atlasDataPathResolver);
+        ArgumentNullException.ThrowIfNull(jsonService);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.textureCache = textureCache;
         this.atlasDataFactory = atlasDataFactory;
@@ -119,7 +118,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// </remarks>
     public IAtlasData Load(string contentPathOrName)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
         var isPathRooted = this.path.IsPathRooted(contentPathOrName);
         var contentDirPath = isPathRooted

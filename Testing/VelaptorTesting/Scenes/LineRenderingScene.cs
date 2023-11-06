@@ -10,6 +10,7 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -35,6 +36,7 @@ public class LineRenderingScene : SceneBase
     private string instructions = string.Empty;
     private Vector2 instructionsPos;
     private bool mouseEnteredAtLeastOnce;
+    private ILoader<IFont>? fontLoader;
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
@@ -42,12 +44,13 @@ public class LineRenderingScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-        this.lineRenderer = renderFactory.CreateLineRenderer();
-        this.fontRenderer = renderFactory.CreateFontRenderer();
+        this.lineRenderer = RendererFactory.CreateLineRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.keyboard = HardwareFactory.GetKeyboard();
-        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
         this.mouse = HardwareFactory.GetMouse();
 
         this.line = default;
@@ -111,7 +114,7 @@ public class LineRenderingScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        ContentLoader.UnloadFont(this.font);
+        this.fontLoader.Unload(this.font);
 
         base.UnloadContent();
     }

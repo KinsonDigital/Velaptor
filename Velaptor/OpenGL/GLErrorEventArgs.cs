@@ -5,7 +5,6 @@
 namespace Velaptor.OpenGL;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Holds information about OpenGL errors that occur.
@@ -18,7 +17,7 @@ internal sealed class GLErrorEventArgs : EventArgs
     /// <param name="errorMessage">The error message.</param>
     public GLErrorEventArgs(string errorMessage)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
         ErrorMessage = errorMessage;
     }
 

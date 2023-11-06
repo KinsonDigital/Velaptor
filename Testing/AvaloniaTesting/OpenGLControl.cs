@@ -62,9 +62,8 @@ public class OpenGLControl : OpenGlControlBase
         this.scaleFactor = HardwareFactory.GetMainDisplay().HorizontalScale;
         this.renderContext = Velaptor.App.UseAvaloniaRenderContext(glObj, width, height);
 
-        var rendererFactory = new RendererFactory();
-        this.batcher = rendererFactory.CreateBatcher();
-        this.textureRenderer = rendererFactory.CreateTextureRenderer();
+        this.batcher = RendererFactory.CreateBatcher();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
         var contentLoader = ContentLoaderFactory.CreateTextureLoader();
 
         this.texture = contentLoader.Load("velaptor-logo");

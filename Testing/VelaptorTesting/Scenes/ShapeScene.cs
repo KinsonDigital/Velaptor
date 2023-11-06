@@ -13,7 +13,9 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Velaptor;
+using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -38,6 +40,7 @@ public class ShapeScene : SceneBase
     private readonly List<string> circleButtons = new ();
     private IFontRenderer? fontRenderer;
     private IShapeRenderer? shapeRenderer;
+    private ILoader<IFont>? fontLoader;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -82,10 +85,8 @@ public class ShapeScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var renderFactory = new RendererFactory();
-
-        this.fontRenderer = renderFactory.CreateFontRenderer();
-        this.shapeRenderer = renderFactory.CreateShapeRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
         this.rectangle = new RectShape
         {
@@ -111,7 +112,8 @@ public class ShapeScene : SceneBase
             IsSolid = false,
         };
 
-        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
 
         var rectLines = new[]
         {
@@ -154,6 +156,7 @@ public class ShapeScene : SceneBase
     public override void UnloadContent()
     {
         this.backgroundManager?.Unload();
+        this.fontLoader.Unload(this.font);
         base.UnloadContent();
     }
 

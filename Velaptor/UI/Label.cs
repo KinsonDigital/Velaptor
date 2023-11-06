@@ -12,6 +12,7 @@ using System.Linq;
 using Content;
 using Content.Exceptions;
 using Content.Fonts;
+using ExtensionMethods;
 using Factories;
 using Graphics.Renderers;
 using Guards;
@@ -25,7 +26,7 @@ public class Label : ControlBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const uint DefaultFontSize = 12;
     private readonly Color disabledColor = Color.DarkGray;
-    private IContentLoader contentLoader = null!;
+    private ILoader<IFont> fontLoader = null!;
     private IFontRenderer fontRenderer = null!;
     private CachedValue<uint> cachedWidth = null!;
     private CachedValue<uint> cachedHeight = null!;
@@ -43,7 +44,7 @@ public class Label : ControlBase
     {
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
-        Init(ContentLoaderFactory.CreateContentLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
+        Init(ContentLoaderFactory.CreateFontLoader(), RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
@@ -57,33 +58,30 @@ public class Label : ControlBase
         Keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
         Text = text;
 
-        Init(ContentLoaderFactory.CreateContentLoader(), IoC.Container.GetInstance<IRendererFactory>().CreateFontRenderer());
+        Init(ContentLoaderFactory.CreateFontLoader(), RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class.
     /// </summary>
-    /// <param name="contentLoader">Loads various kinds of content.</param>
+    /// <param name="fontLoader">Loads fonts.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">Used to get the state of the mouse.</param>
-    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
-    ///         <item><paramref name="contentLoader"/></item>
+    ///         <item><paramref name="fontLoader"/></item>
     ///     </list>
     /// </exception>
     internal Label(
-        IContentLoader contentLoader,
+        ILoader<IFont> fontLoader,
         IAppInput<KeyboardState> keyboard,
-        IAppInput<MouseState> mouse,
-        IRendererFactory rendererFactory)
+        IAppInput<MouseState> mouse)
             : base(keyboard, mouse)
     {
-        EnsureThat.ParamIsNotNull(contentLoader);
-        EnsureThat.ParamIsNotNull(rendererFactory);
+        EnsureThat.ParamIsNotNull(fontLoader);
 
-        Init(contentLoader, rendererFactory.CreateFontRenderer());
+        Init(fontLoader, RendererFactory.CreateFontRenderer());
     }
 
     /// <summary>
@@ -184,7 +182,7 @@ public class Label : ControlBase
             return;
         }
 
-        var loadedFont = this.contentLoader.LoadFont(DefaultRegularFont, DefaultFontSize);
+        var loadedFont = this.fontLoader.Load(DefaultRegularFont, DefaultFontSize);
 
         this.font = loadedFont ?? throw new LoadFontException("Failed to load the default font for the label.");
 
@@ -206,7 +204,7 @@ public class Label : ControlBase
 
         if (this.font is not null)
         {
-            this.contentLoader.UnloadFont(this.font);
+            this.fontLoader.Unload(this.font);
         }
 
         base.UnloadContent();
@@ -248,11 +246,11 @@ public class Label : ControlBase
     /// <summary>
     /// Initializes the <see cref="Label"/> class.
     /// </summary>
-    /// <param name="newContentLoader">Loads various kinds of content.</param>
+    /// <param name="newFontLoader">Loads various kinds of content.</param>
     /// <param name="newFontRenderer">Renders font.</param>
-    private void Init(IContentLoader newContentLoader, IFontRenderer newFontRenderer)
+    private void Init(ILoader<IFont> newFontLoader, IFontRenderer newFontRenderer)
     {
-        this.contentLoader = newContentLoader;
+        this.fontLoader = newFontLoader;
         this.fontRenderer = newFontRenderer;
 
         this.cachedWidth = new (

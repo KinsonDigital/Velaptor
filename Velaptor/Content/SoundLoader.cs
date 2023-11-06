@@ -11,7 +11,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using Caching;
 using Exceptions;
-using Guards;
 using Velaptor.Factories;
 
 /// <summary>
@@ -59,11 +58,11 @@ public sealed class SoundLoader : ILoader<ISound>
         IFile file,
         IPath path)
     {
-        EnsureThat.ParamIsNotNull(soundCache);
-        EnsureThat.ParamIsNotNull(soundPathResolver);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(soundCache);
+        ArgumentNullException.ThrowIfNull(soundPathResolver);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.soundCache = soundCache;
         this.soundPathResolver = soundPathResolver;
@@ -89,7 +88,7 @@ public sealed class SoundLoader : ILoader<ISound>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     public ISound Load(string contentPathOrName)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(contentPathOrName);
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
         var isPathRooted = this.path.IsPathRooted(contentPathOrName);
 

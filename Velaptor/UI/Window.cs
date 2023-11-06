@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
 using Batching;
-using Content;
 using Factories;
 using Guards;
 using Scene;
@@ -150,13 +149,6 @@ public abstract class Window : IWindow
     {
         get => this.nativeWindow.TypeOfBorder;
         set => this.nativeWindow.TypeOfBorder = value;
-    }
-
-    /// <inheritdoc/>
-    public IContentLoader ContentLoader
-    {
-        get => this.nativeWindow.ContentLoader;
-        set => this.nativeWindow.ContentLoader = value;
     }
 
     /// <inheritdoc/>

@@ -254,7 +254,6 @@ internal static class IoC
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
-        IoCContainer.Register<IRendererFactory, RendererFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>

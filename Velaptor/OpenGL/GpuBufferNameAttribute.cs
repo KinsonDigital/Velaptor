@@ -5,7 +5,6 @@
 namespace Velaptor.OpenGL;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Represents the name of a buffer.
@@ -19,7 +18,7 @@ internal sealed class GpuBufferNameAttribute : Attribute
     /// <param name="name">The name to give a buffer.</param>
     public GpuBufferNameAttribute(string name)
     {
-        EnsureThat.StringParamIsNotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
         Name = name;
     }
 

@@ -12,17 +12,26 @@ using Xunit;
 public class GlfwErrorEventArgsTests
 {
     #region Constructor Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullOrEmptyErrorMessageParam_ThrowsException(string message)
+    [Fact]
+    public void Ctor_WithNullErrorMessageParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, message);
+        var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'errorMessage')");
+            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyErrorMessageParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]

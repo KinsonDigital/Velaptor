@@ -15,17 +15,26 @@ using Xunit;
 public class FreeTypeErrorEventArgsTests
 {
     #region Constructor Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNullErrorMessageParam_ThrowsException(string message)
+    [Fact]
+    public void Ctor_WithNullParam_ThrowsException()
     {
         // Assert
-        var act = () => new FreeTypeErrorEventArgs(message);
+        var act = () => new FreeTypeErrorEventArgs(null);
 
         // Act
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'errorMessage')");
+            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+    }
+
+    [Fact]
+    public void Ctor_WithEmptyParam_ThrowsException()
+    {
+        // Assert
+        var act = () => new FreeTypeErrorEventArgs(string.Empty);
+
+        // Act
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]
