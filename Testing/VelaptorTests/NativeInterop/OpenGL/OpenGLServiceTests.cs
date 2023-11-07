@@ -53,7 +53,7 @@ public class OpenGLServiceTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
+            .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
     }
     #endregion
 
