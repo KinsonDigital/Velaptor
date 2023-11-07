@@ -42,7 +42,7 @@ internal sealed class BatchingManager : IBatchingManager
     /// <param name="reactableFactory">Creates reactable objects.</param>
     public BatchingManager(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         // Subscribe to batch size changes
         this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();

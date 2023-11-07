@@ -4,6 +4,7 @@
 
 namespace Velaptor.Factories;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Guards;
 using Silk.NET.Input;
@@ -19,7 +20,7 @@ internal sealed class NativeInputFactory : INativeInputFactory
     /// <param name="windowFactory">Creates a window object.</param>
     public NativeInputFactory(IWindowFactory windowFactory)
     {
-        EnsureThat.ParamIsNotNull(windowFactory);
+        ArgumentNullException.ThrowIfNull(windowFactory);
         this.windowFactory = windowFactory;
     }
 

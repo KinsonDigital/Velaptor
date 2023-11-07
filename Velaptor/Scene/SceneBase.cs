@@ -35,7 +35,7 @@ public abstract class SceneBase : IScene
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private protected SceneBase(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         Init(reactableFactory);
     }
