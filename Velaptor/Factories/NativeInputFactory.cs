@@ -6,7 +6,6 @@ namespace Velaptor.Factories;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Guards;
 using Silk.NET.Input;
 
 /// <inheritdoc/>

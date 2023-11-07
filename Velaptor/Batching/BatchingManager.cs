@@ -9,7 +9,6 @@ using System.ComponentModel;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Factories;
-using Guards;
 using OpenGL.Batching;
 using ReactableData;
 

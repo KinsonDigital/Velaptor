@@ -8,7 +8,6 @@ using System;
 using Batching;
 using Carbonate.Fluent;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Batching;

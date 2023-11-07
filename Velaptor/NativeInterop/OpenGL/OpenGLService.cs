@@ -8,7 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Guards;
 using Velaptor.OpenGL;
 
 /// <summary>

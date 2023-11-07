@@ -11,7 +11,6 @@ using Batching;
 using Carbonate.Fluent;
 using Content;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Batching;

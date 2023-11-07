@@ -10,7 +10,6 @@ using Batching;
 using Carbonate.Fluent;
 using Carbonate.NonDirectional;
 using Factories;
-using Guards;
 using OpenGL.Batching;
 
 /// <inheritdoc/>
