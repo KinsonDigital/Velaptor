@@ -48,11 +48,11 @@ internal sealed class RenderMediator : IRenderMediator
         IComparer<RenderItem<ShapeBatchItem>> shapeItemComparer,
         IComparer<RenderItem<LineBatchItem>> lineItemComparer)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
-        EnsureThat.ParamIsNotNull(textureItemComparer);
-        EnsureThat.ParamIsNotNull(fontItemComparer);
-        EnsureThat.ParamIsNotNull(shapeItemComparer);
-        EnsureThat.ParamIsNotNull(lineItemComparer);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(textureItemComparer);
+        ArgumentNullException.ThrowIfNull(fontItemComparer);
+        ArgumentNullException.ThrowIfNull(shapeItemComparer);
+        ArgumentNullException.ThrowIfNull(lineItemComparer);
 
         this.endBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
