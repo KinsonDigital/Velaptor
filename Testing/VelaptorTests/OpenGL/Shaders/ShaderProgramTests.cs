@@ -125,7 +125,7 @@ public class ShaderProgramTests
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'gl')");
+        }, "Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class ShaderProgramTests
                 null,
                 this.mockShaderLoader.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'openGLService')");
+        }, "Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class ShaderProgramTests
                 this.mockGLService.Object,
                 null,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
+        }, "Value cannot be null. (Parameter 'shaderLoaderService')");
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class ShaderProgramTests
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+        }, "Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 

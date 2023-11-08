@@ -65,7 +65,7 @@ public class ImageServiceTests : IDisposable
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
     #endregion
 
