@@ -4,7 +4,7 @@
 
 namespace Velaptor.Services;
 
-using Guards;
+using System;
 
 /// <inheritdoc/>
 internal sealed class LoggingService : ILoggingService
@@ -27,10 +27,10 @@ internal sealed class LoggingService : ILoggingService
         IFileLoggerService fileLoggerService,
         IEventLoggerService eventLoggerService)
     {
-        EnsureThat.ParamIsNotNull(appSettingsService);
-        EnsureThat.ParamIsNotNull(consoleLoggerService);
-        EnsureThat.ParamIsNotNull(fileLoggerService);
-        EnsureThat.ParamIsNotNull(eventLoggerService);
+        ArgumentNullException.ThrowIfNull(appSettingsService);
+        ArgumentNullException.ThrowIfNull(consoleLoggerService);
+        ArgumentNullException.ThrowIfNull(fileLoggerService);
+        ArgumentNullException.ThrowIfNull(eventLoggerService);
 
         this.appSettingsService = appSettingsService;
         this.consoleLoggerService = consoleLoggerService;
