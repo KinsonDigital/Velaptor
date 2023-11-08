@@ -70,16 +70,28 @@ public class ImageServiceTests : IDisposable
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Load_WithNullOrEmptyParam_ThrowsException(string value)
+    [Fact]
+    public void Load_WithNullParam_ThrowsException()
     {
         // Arrange
         var service = CreateSystemUnderTest();
 
         // Act
-        var act = () => service.Load(value);
+        var act = () => service.Load(null);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage("The image file was not found.");
+    }
+
+    [Fact]
+    public void Load_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.Load(string.Empty);
 
         // Assert
         act.Should().Throw<FileNotFoundException>()
