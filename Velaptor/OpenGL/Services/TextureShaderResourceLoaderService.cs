@@ -4,8 +4,8 @@
 
 namespace Velaptor.OpenGL.Services;
 
+using System;
 using System.IO.Abstractions;
-using Guards;
 using Velaptor.Services;
 
 /// <summary>
@@ -26,8 +26,8 @@ internal sealed class TextureShaderResourceLoaderService : IShaderLoaderService
     /// <param name="path">Processes directory and file paths.</param>
     public TextureShaderResourceLoaderService(IEmbeddedResourceLoaderService<string> resourceLoaderService, IPath path)
     {
-        EnsureThat.ParamIsNotNull(resourceLoaderService);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(resourceLoaderService);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.resourceLoaderService = resourceLoaderService;
         this.path = path;
