@@ -46,7 +46,7 @@ public class WindowsFontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class WindowsFontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'platform')");
+            .WithMessage("Value cannot be null. (Parameter 'platform')");
     }
 
     [Fact]
@@ -109,20 +109,32 @@ public class WindowsFontPathResolverTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void ResolveFilePath_WhenNullOrEmpty_ThrowsException(string contentName)
+    [Fact]
+    public void ResolveFilePath_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.ResolveFilePath(contentName);
+        var act = () => sut.ResolveFilePath(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentName')");
+    }
+
+    [Fact]
+    public void ResolveFilePath_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.ResolveFilePath(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentName')");
     }
 
     [Fact]

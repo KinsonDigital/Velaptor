@@ -96,7 +96,7 @@ public class TextureTests
     #region Constructor Tests
     #region Public Constructors
     [Fact]
-    public void PublicCtor_WithNullName_ThrowsException()
+    public void Ctor_WithNullNameAndImageData_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -111,7 +111,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void PublicCtor_WithEmptyName_ThrowsException()
+    public void Ctor_WithEmptyNameAndImageData_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -125,25 +125,38 @@ public class TextureTests
             .WithMessage("The value cannot be an empty string. (Parameter 'name')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Ctor_WithNameAndImageDataOverloadAndNullOrEmptyImageDataFilePath_ThrowsException(string filePath)
+    [Fact]
+    public void Ctor_WithNameAndNullImageDataFilePath_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, filePath));
+            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, null));
         };
 
         // Assert
         act.Should()
             .Throw<ArgumentException>()
-            .WithMessage("The image data must have a file path associated with it. (Parameter 'imageData')");
+            .WithMessage("The value cannot be an empty string. (Parameter 'imageData.FilePath')");
     }
 
     [Fact]
-    public void Ctor_WithNullName_ThrowsException()
+    public void Ctor_WithNameAndEmptyImageDataFilePath_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, string.Empty));
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'imageData.FilePath')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullNameAndFilePath_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -158,7 +171,7 @@ public class TextureTests
     }
 
     [Fact]
-    public void Ctor_WithEmptyName_ThrowsException()
+    public void Ctor_WithEmptyNameAndFilePath_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
