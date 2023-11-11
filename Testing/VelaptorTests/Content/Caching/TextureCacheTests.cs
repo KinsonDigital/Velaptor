@@ -135,7 +135,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'imageService')");
+            .WithMessage("Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'textureFactory')");
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -198,7 +198,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontMetaDataParser')");
+            .WithMessage("Value cannot be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class TextureCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -278,20 +278,32 @@ public class TextureCacheTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void GetItem_WithNullOrEmptyFilePath_ThrowsException(string filePath)
+    [Fact]
+    public void GetItem_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetItem(filePath);
+        var act = () => sut.GetItem(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'textureFilePath')");
+            .WithMessage("Value cannot be null. (Parameter 'textureFilePath')");
+    }
+
+    [Fact]
+    public void GetItem_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.GetItem(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'textureFilePath')");
     }
 
     [Fact]

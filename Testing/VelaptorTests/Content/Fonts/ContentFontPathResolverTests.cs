@@ -51,7 +51,7 @@ public class ContentFontPathResolverTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'Directory')");
+            .WithMessage("Value cannot be null. (Parameter 'Directory')");
     }
 
     [Fact]

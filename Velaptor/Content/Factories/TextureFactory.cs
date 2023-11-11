@@ -39,9 +39,9 @@ internal sealed class TextureFactory : ITextureFactory
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(gl);
+        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.gl = gl;
         this.mockGLService = openGLService;
@@ -51,15 +51,8 @@ internal sealed class TextureFactory : ITextureFactory
     /// <inheritdoc/>
     public ITexture Create(string name, string filePath, ImageData imageData)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name), "The string parameter must not be null or empty.");
-        }
-
-        if (string.IsNullOrEmpty(filePath))
-        {
-            throw new ArgumentNullException(nameof(filePath), "The string parameter must not be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(filePath);
 
         return new Texture(this.gl, this.mockGLService, this.reactableFactory, name, filePath, imageData);
     }

@@ -98,17 +98,17 @@ public sealed class FontLoader : ILoader<IFont>
         IFileStreamFactory fileStream,
         IPath path)
     {
-        EnsureThat.ParamIsNotNull(fontAtlasService);
-        EnsureThat.ParamIsNotNull(embeddedFontResourceService);
-        EnsureThat.ParamIsNotNull(contentPathResolver);
-        EnsureThat.ParamIsNotNull(fontPathResolver);
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.ParamIsNotNull(fontFactory);
-        EnsureThat.ParamIsNotNull(fontMetaDataParser);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(fileStream);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(fontAtlasService);
+        ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
+        ArgumentNullException.ThrowIfNull(contentPathResolver);
+        ArgumentNullException.ThrowIfNull(fontPathResolver);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(fontFactory);
+        ArgumentNullException.ThrowIfNull(fontMetaDataParser);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(fileStream);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.fontAtlasService = fontAtlasService;
         this.embeddedFontResourceService = embeddedFontResourceService;
@@ -170,10 +170,7 @@ public sealed class FontLoader : ILoader<IFont>
     /// </example>
     public IFont Load(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentPathOrName))
-        {
-            throw new ArgumentNullException(nameof(contentPathOrName), "The parameter must not be null.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
         var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
         string fullFontFilePath;

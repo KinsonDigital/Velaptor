@@ -51,11 +51,11 @@ internal sealed class FontPathResolver : IContentPathResolver
         IDirectory directory,
         IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(contentFontPathResolver);
-        EnsureThat.ParamIsNotNull(windowsFontPathResolver);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(contentFontPathResolver);
+        ArgumentNullException.ThrowIfNull(windowsFontPathResolver);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(platform);
 
         this.contentFontPathResolver = contentFontPathResolver;
         this.windowsFontPathResolver = windowsFontPathResolver;
