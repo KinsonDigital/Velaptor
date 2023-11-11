@@ -4,6 +4,7 @@
 
 namespace Velaptor.Content.Fonts.Services;
 
+using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
@@ -36,11 +37,11 @@ internal sealed class FontStatsService : IFontStatsService
         IDirectory directory,
         IPath path)
     {
-        EnsureThat.ParamIsNotNull(fontService);
-        EnsureThat.ParamIsNotNull(contentPathResolver);
-        EnsureThat.ParamIsNotNull(sysFontPathResolver);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(path);
+        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(contentPathResolver);
+        ArgumentNullException.ThrowIfNull(sysFontPathResolver);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.fontService = fontService;
         this.contentPathResolver = contentPathResolver;

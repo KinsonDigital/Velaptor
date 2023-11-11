@@ -63,12 +63,12 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         IPath path,
         IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(imageService);
-        EnsureThat.ParamIsNotNull(textureFactory);
-        EnsureThat.ParamIsNotNull(fontAtlasService);
-        EnsureThat.ParamIsNotNull(fontMetaDataParser);
-        EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(imageService);
+        ArgumentNullException.ThrowIfNull(textureFactory);
+        ArgumentNullException.ThrowIfNull(fontAtlasService);
+        ArgumentNullException.ThrowIfNull(fontMetaDataParser);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.imageService = imageService;
         this.textureFactory = textureFactory;
@@ -140,10 +140,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// </exception>
     public ITexture GetItem(string textureFilePath)
     {
-        if (string.IsNullOrEmpty(textureFilePath))
-        {
-            throw new ArgumentNullException(nameof(textureFilePath), "The string parameter must not be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(textureFilePath);
 
         var parseResult = this.fontMetaDataParser.Parse(textureFilePath);
 

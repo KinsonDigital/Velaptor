@@ -39,9 +39,9 @@ internal sealed class FontService : IFontService
         ISystemDisplayService sysDisplayService,
         IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(freeTypeInvoker);
-        EnsureThat.ParamIsNotNull(sysDisplayService);
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(freeTypeInvoker);
+        ArgumentNullException.ThrowIfNull(sysDisplayService);
+        ArgumentNullException.ThrowIfNull(platform);
 
         this.freeTypeInvoker = freeTypeInvoker;
         this.sysDisplayService = sysDisplayService;

@@ -54,7 +54,7 @@ public class TextureFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'gl')");
+            .WithMessage("Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class TextureFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -90,41 +90,65 @@ public class TextureFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Create_WhenUsingNullOrEmptyName_ThrowsException(string name)
+    [Fact]
+    public void Create_WithNullName_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create(name, "test-path", new ImageData(null, 1, 2));
+        var act = () => sut.Create(null, "test-path", new ImageData(null, 1, 2));
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'name')");
+            .WithMessage("Value cannot be null. (Parameter 'name')");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Create_WhenUsingNullOrEmptyFilePath_ThrowsException(string filePath)
+    [Fact]
+    public void Create_WithEmptyName_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create("test-name", filePath, new ImageData(null, 1, 2));
+        var act = () => sut.Create(string.Empty, "test-path", new ImageData(null, 1, 2));
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+    }
+
+    [Fact]
+    public void Create_WithNullFilePath_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Create("test-name", null, new ImageData(null, 1, 2));
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'filePath')");
+            .WithMessage("Value cannot be null. (Parameter 'filePath')");
+    }
+
+    [Fact]
+    public void Create_WithEmptyFilePath_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Create("test-name", string.Empty, new ImageData(null, 1, 2));
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
     }
 
     [Fact]
