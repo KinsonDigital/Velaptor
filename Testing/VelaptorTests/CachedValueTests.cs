@@ -26,7 +26,7 @@ public class CachedValueTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'getterWhenNotCaching')");
+            .WithMessage("Value cannot be null. (Parameter 'getterWhenNotCaching')");
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class CachedValueTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'setterWhenNotCaching')");
+            .WithMessage("Value cannot be null. (Parameter 'setterWhenNotCaching')");
     }
 
     [Fact]

@@ -7,7 +7,6 @@ namespace Velaptor.Services;
 using System;
 using System.IO.Abstractions;
 using ExtensionMethods;
-using Guards;
 
 /// <inheritdoc/>
 internal sealed class EventLoggerService : IEventLoggerService
@@ -35,11 +34,11 @@ internal sealed class EventLoggerService : IEventLoggerService
         IDateTimeService dateTimeService,
         IAppSettingsService appSettingsService)
     {
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(consoleService);
-        EnsureThat.ParamIsNotNull(dateTimeService);
-        EnsureThat.ParamIsNotNull(appSettingsService);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(consoleService);
+        ArgumentNullException.ThrowIfNull(dateTimeService);
+        ArgumentNullException.ThrowIfNull(appSettingsService);
 
         this.directory = directory;
         this.file = file;

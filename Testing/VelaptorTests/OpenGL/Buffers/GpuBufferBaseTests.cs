@@ -112,7 +112,7 @@ public class GpuBufferBaseTests
                 null,
                 this.mockGLService.Object,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'gl')");
+        }, "Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class GpuBufferBaseTests
                 this.mockGL.Object,
                 null,
                 this.mockReactableFactory.Object);
-        }, "The parameter must not be null. (Parameter 'openGLService')");
+        }, "Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class GpuBufferBaseTests
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'reactableFactory')");
+        }, "Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 

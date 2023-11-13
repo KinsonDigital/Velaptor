@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.Fluent;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using NETSizeF = System.Drawing.SizeF;
@@ -36,9 +35,9 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         IOpenGLService openGLService,
         IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(gl);
+        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;
