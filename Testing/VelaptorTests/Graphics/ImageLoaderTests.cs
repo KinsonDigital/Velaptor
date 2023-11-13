@@ -47,7 +47,7 @@ public class ImageLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class ImageLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'imageService')");
+            .WithMessage("Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ImageLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'texturePathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'texturePathResolver')");
     }
     #endregion
 

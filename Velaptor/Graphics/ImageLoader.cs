@@ -4,11 +4,11 @@
 
 namespace Velaptor.Graphics;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Content;
 using Factories;
-using Guards;
 using Services;
 
 /// <inheritdoc/>
@@ -37,9 +37,9 @@ public class ImageLoader : IImageLoader
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     internal ImageLoader(IPath path, IImageService imageService, IContentPathResolver texturePathResolver)
     {
-        EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(imageService);
-        EnsureThat.ParamIsNotNull(texturePathResolver);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(imageService);
+        ArgumentNullException.ThrowIfNull(texturePathResolver);
 
         this.path = path;
         this.imageService = imageService;
