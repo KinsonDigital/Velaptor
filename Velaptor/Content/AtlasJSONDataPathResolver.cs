@@ -8,7 +8,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Guards;
 
 /// <summary>
 /// Resolves paths to atlas data content.
@@ -25,7 +24,7 @@ internal sealed class AtlasJSONDataPathResolver : ContentPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     public AtlasJSONDataPathResolver(IDirectory directory)
     {
-        EnsureThat.ParamIsNotNull(directory);
+        ArgumentNullException.ThrowIfNull(directory);
         this.directory = directory;
         ContentDirectoryName = "Atlas";
     }

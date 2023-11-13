@@ -9,7 +9,6 @@ using System.ComponentModel;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Factories;
-using Guards;
 using OpenGL.Batching;
 using ReactableData;
 
@@ -42,7 +41,7 @@ internal sealed class BatchingManager : IBatchingManager
     /// <param name="reactableFactory">Creates reactable objects.</param>
     public BatchingManager(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         // Subscribe to batch size changes
         this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();

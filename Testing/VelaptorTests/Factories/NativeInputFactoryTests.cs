@@ -28,7 +28,7 @@ public class NativeInputFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'windowFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'windowFactory')");
     }
 
     [Fact]
