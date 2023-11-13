@@ -25,7 +25,7 @@ internal sealed class ContentFontPathResolver : ContentPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     public ContentFontPathResolver(IDirectory directory)
     {
-        EnsureThat.ParamIsNotNull(directory);
+        ArgumentNullException.ThrowIfNull(directory);
         this.directory = directory;
         ContentDirectoryName = "Fonts";
     }
