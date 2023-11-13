@@ -156,7 +156,7 @@ public static class AppStats
     /// <param name="fontInfo">The loaded font info.</param>
     internal static void RecordLoadedFont(string fontInfo)
     {
-        if (string.IsNullOrEmpty(fontInfo) is not false || !fontInfo.Contains("|size:"))
+        if (string.IsNullOrEmpty(fontInfo) || !fontInfo.Contains("|size:"))
         {
             return;
         }
