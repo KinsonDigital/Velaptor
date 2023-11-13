@@ -92,7 +92,7 @@ public class SoundCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'soundFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'soundFactory')");
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class SoundCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class SoundCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class SoundCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -185,20 +185,32 @@ public class SoundCacheTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void GetItem_WithNullOrEmptySoundFilePath_ThrowsException(string filePath)
+    [Fact]
+    public void GetItem_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetItem(filePath);
+        var act = () => sut.GetItem(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'soundFilePath')");
+            .WithMessage("Value cannot be null. (Parameter 'soundFilePath')");
+    }
+
+    [Fact]
+    public void GetItem_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.GetItem(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'soundFilePath')");
     }
 
     [Fact]

@@ -26,8 +26,8 @@ internal sealed class WindowsFontPathResolver : IContentPathResolver
     /// <param name="platform">Provides information about the current platform.</param>
     public WindowsFontPathResolver(IDirectory directory, IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(platform);
 
         // This should only be running if on windows.  If not windows, throw an exception.
         if (platform.CurrentPlatform != OSPlatform.Windows)
@@ -48,10 +48,7 @@ internal sealed class WindowsFontPathResolver : IContentPathResolver
     /// <inheritdoc/>
     public string ResolveFilePath(string contentName)
     {
-        if (string.IsNullOrEmpty(contentName))
-        {
-            throw new ArgumentNullException(nameof(contentName), "The string parameter must not be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(contentName);
 
         if (contentName.EndsWith(CrossPlatDirSeparatorChar))
         {
