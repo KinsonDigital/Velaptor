@@ -98,7 +98,7 @@ public unsafe class GlfwDisplaysTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
+            .WithMessage("Value cannot be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public unsafe class GlfwDisplaysTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'platform')");
+            .WithMessage("Value cannot be null. (Parameter 'platform')");
     }
 
     [Fact]

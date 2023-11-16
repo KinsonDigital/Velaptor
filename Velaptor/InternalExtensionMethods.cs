@@ -221,7 +221,7 @@ internal static class InternalExtensionMethods
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public static ImmutableArray<Type> GetDisposableRegistrations(this Container container)
     {
-        TypeFilter disposableFilter = (type, _) => type.GetInterface(nameof(IDisposable)) != null;
+        TypeFilter disposableFilter = (type, _) => type.GetInterface(nameof(IDisposable)) is not null;
 
         return container.GetCurrentRegistrations()
             .Where(r => r.ServiceType.FindInterfaces(disposableFilter, null).Length > 0)

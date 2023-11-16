@@ -143,7 +143,7 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureItemComparer')");
+            .WithMessage("Value cannot be null. (Parameter 'textureItemComparer')");
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontItemComparer')");
+            .WithMessage("Value cannot be null. (Parameter 'fontItemComparer')");
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'shapeItemComparer')");
+            .WithMessage("Value cannot be null. (Parameter 'shapeItemComparer')");
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class RenderMediatorTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'lineItemComparer')");
+            .WithMessage("Value cannot be null. (Parameter 'lineItemComparer')");
     }
     #endregion
 

@@ -32,7 +32,7 @@ public class SystemDisplayServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'displays')");
+            .WithMessage("Value cannot be null. (Parameter 'displays')");
     }
     #endregion
 

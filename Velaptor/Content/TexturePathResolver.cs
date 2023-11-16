@@ -8,7 +8,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Guards;
 
 /// <summary>
 /// Resolves paths to texture content.
@@ -25,7 +24,7 @@ internal class TexturePathResolver : ContentPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     public TexturePathResolver(IDirectory directory)
     {
-        EnsureThat.ParamIsNotNull(directory);
+        ArgumentNullException.ThrowIfNull(directory);
         this.directory = directory;
         ContentDirectoryName = "Graphics";
     }

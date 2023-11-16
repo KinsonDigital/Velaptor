@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Guards;
 using Hardware;
 using NativeInterop.GLFW;
 
@@ -32,7 +31,7 @@ internal sealed class SystemDisplayService : ISystemDisplayService
     /// <param name="displays">Holds the list of displays in the system.</param>
     internal SystemDisplayService(IDisplays displays)
     {
-        EnsureThat.ParamIsNotNull(displays);
+        ArgumentNullException.ThrowIfNull(displays);
         this.displays = displays;
     }
 

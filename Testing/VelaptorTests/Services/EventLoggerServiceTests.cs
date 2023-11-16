@@ -53,7 +53,7 @@ public class EventLoggerServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class EventLoggerServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class EventLoggerServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'consoleService')");
+            .WithMessage("Value cannot be null. (Parameter 'consoleService')");
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class EventLoggerServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'dateTimeService')");
+            .WithMessage("Value cannot be null. (Parameter 'dateTimeService')");
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class EventLoggerServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'appSettingsService')");
+            .WithMessage("Value cannot be null. (Parameter 'appSettingsService')");
     }
     #endregion
 

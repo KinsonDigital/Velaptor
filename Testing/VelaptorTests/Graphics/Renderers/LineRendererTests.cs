@@ -149,7 +149,7 @@ public class LineRendererTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'openGLService')");
+            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class LineRendererTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'buffer')");
+            .WithMessage("Value cannot be null. (Parameter 'buffer')");
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class LineRendererTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'shader')");
+            .WithMessage("Value cannot be null. (Parameter 'shader')");
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class LineRendererTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'batchManager')");
+            .WithMessage("Value cannot be null. (Parameter 'batchManager')");
     }
     #endregion
 

@@ -11,7 +11,6 @@ using Batching;
 using Carbonate.Fluent;
 using Content;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using OpenGL;
 using OpenGL.Batching;
@@ -47,11 +46,11 @@ internal sealed class TextureRenderer : ITextureRenderer
         IShaderProgram shader,
         IBatchingManager batchManager)
     {
-        EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(buffer);
-        EnsureThat.ParamIsNotNull(shader);
-        EnsureThat.ParamIsNotNull(batchManager);
+        ArgumentNullException.ThrowIfNull(gl);
+        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(buffer);
+        ArgumentNullException.ThrowIfNull(shader);
+        ArgumentNullException.ThrowIfNull(batchManager);
 
         this.gl = gl;
         this.batchManager = batchManager;

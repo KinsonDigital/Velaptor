@@ -7,7 +7,6 @@ namespace Velaptor.NativeInterop.GLFW;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Guards;
 using Hardware;
 
 /// <summary>
@@ -28,8 +27,8 @@ internal sealed class GlfwDisplays : IDisplays
     /// <param name="platform">Provides information about the current platform.</param>
     public GlfwDisplays(IGlfwInvoker glfwInvoker, IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(glfwInvoker);
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(glfwInvoker);
+        ArgumentNullException.ThrowIfNull(platform);
 
         this.glfwInvoker = glfwInvoker;
         this.platform = platform;

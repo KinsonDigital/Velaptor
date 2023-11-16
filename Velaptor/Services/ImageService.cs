@@ -4,10 +4,10 @@
 
 namespace Velaptor.Services;
 
+using System;
 using System.IO;
 using System.IO.Abstractions;
 using Graphics;
-using Guards;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -27,7 +27,7 @@ internal sealed class ImageService : IImageService
     /// <param name="file">Performs operations with files.</param>
     public ImageService(IFile file)
     {
-        EnsureThat.ParamIsNotNull(file);
+        ArgumentNullException.ThrowIfNull(file);
         this.file = file;
     }
 

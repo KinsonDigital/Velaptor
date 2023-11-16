@@ -135,7 +135,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'appService')");
+            .WithMessage("Value cannot be null. (Parameter 'appService')");
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'windowFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'windowFactory')");
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'nativeInputFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'nativeInputFactory')");
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'glInvoker')");
+            .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'glfwInvoker')");
+            .WithMessage("Value cannot be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'systemDisplayService')");
+            .WithMessage("Value cannot be null. (Parameter 'systemDisplayService')");
     }
 
     [Fact]
@@ -285,7 +285,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'platform')");
+            .WithMessage("Value cannot be null. (Parameter 'platform')");
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'taskService')");
+            .WithMessage("Value cannot be null. (Parameter 'taskService')");
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'sceneManager')");
+            .WithMessage("Value cannot be null. (Parameter 'sceneManager')");
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -385,7 +385,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'timerService')");
+            .WithMessage("Value cannot be null. (Parameter 'timerService')");
     }
     #endregion
 

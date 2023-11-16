@@ -5,7 +5,6 @@
 namespace Velaptor;
 
 using System;
-using Guards;
 
 /// <summary>
 /// Caches a value as long as caching is turned on.
@@ -43,8 +42,8 @@ internal sealed class CachedValue<T>
     /// </remarks>
     public CachedValue(T defaultValue, Func<T> getterWhenNotCaching, Action<T> setterWhenNotCaching, bool isCaching = true)
     {
-        EnsureThat.ParamIsNotNull(getterWhenNotCaching);
-        EnsureThat.ParamIsNotNull(setterWhenNotCaching);
+        ArgumentNullException.ThrowIfNull(getterWhenNotCaching);
+        ArgumentNullException.ThrowIfNull(setterWhenNotCaching);
 
         this.isCaching = isCaching;
 

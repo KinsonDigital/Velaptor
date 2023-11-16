@@ -44,7 +44,7 @@ public class TexturePathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
