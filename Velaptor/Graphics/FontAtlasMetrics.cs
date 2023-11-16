@@ -10,36 +10,25 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>
 /// Provides metric data for a single font atlas texture.
 /// </summary>
-internal struct FontAtlasMetrics
+internal readonly record struct FontAtlasMetrics
 {
     /// <summary>
-    /// The number of rows in the atlas.
+    /// Gets the number of rows in the atlas.
     /// </summary>
-    public uint Rows;
+    public uint Rows { get; init; }
 
     /// <summary>
-    /// The number of columns in the atlas.
+    /// Gets the number of columns in the atlas.
     /// </summary>
-    public uint Columns;
+    public uint Columns { get; init; }
 
     /// <summary>
-    /// The width of the atlas.
+    /// Gets the width of the atlas.
     /// </summary>
-    public uint Width;
+    public uint Width { get; init; }
 
     /// <summary>
-    /// The height of the atlas.
+    /// Gets the height of the atlas.
     /// </summary>
-    public uint Height;
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is FontAtlasMetrics other &&
-                                                this.Rows == other.Rows &&
-                                                this.Columns == other.Columns &&
-                                                this.Width == other.Width &&
-                                                this.Height == other.Height;
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode() => HashCode.Combine(this.Rows, this.Columns, this.Width, this.Height);
+    public uint Height { get; init; }
 }

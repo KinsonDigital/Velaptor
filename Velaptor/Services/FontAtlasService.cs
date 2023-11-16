@@ -111,27 +111,25 @@ internal sealed class FontAtlasService : IFontAtlasService
     /// <returns>The various metrics of the font atlas.</returns>
     private static FontAtlasMetrics CalcAtlasMetrics(Dictionary<char, ImageData> glyphImages)
     {
-        FontAtlasMetrics result = default;
-
         const int antiEdgeCroppingMargin = 3;
         var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + antiEdgeCroppingMargin;
         var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + antiEdgeCroppingMargin;
 
         var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
 
-        result.Rows = possibleRowAndColumnCount % 2 != 0
+        var rows = possibleRowAndColumnCount % 2 != 0
             ? (uint)Math.Round(possibleRowAndColumnCount + 1.0, MidpointRounding.ToZero)
             : (uint)possibleRowAndColumnCount;
 
         // Add an extra row for certain situations where there are couple extra glyph chars
-        result.Rows++;
+        rows++;
 
-        result.Columns = result.Rows;
+        var columns = rows;
 
-        result.Width = maxGlyphWidth * result.Columns;
-        result.Height = maxGlyphHeight * result.Rows;
+        var width = maxGlyphWidth * columns;
+        var height = maxGlyphHeight * rows;
 
-        return result;
+        return new FontAtlasMetrics { Rows = rows, Columns = columns, Width = width, Height = height };
     }
 
     /// <summary>
