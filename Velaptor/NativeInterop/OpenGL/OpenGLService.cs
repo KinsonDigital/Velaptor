@@ -8,7 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Guards;
 using Velaptor.OpenGL;
 
 /// <summary>
@@ -24,7 +23,7 @@ internal sealed class OpenGLService : IOpenGLService
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
     public OpenGLService(IGLInvoker glInvoker)
     {
-        EnsureThat.ParamIsNotNull(glInvoker);
+        ArgumentNullException.ThrowIfNull(glInvoker);
         this.glInvoker = glInvoker;
     }
 

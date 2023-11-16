@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Factories;
-using Guards;
 using Input;
 using Input.Exceptions;
 using NativeInterop.GLFW;
@@ -93,17 +92,17 @@ internal sealed class GLWindow : VelaptorIWindow
         IReactableFactory reactableFactory,
         ITimerService timerService)
     {
-        EnsureThat.ParamIsNotNull(appService);
-        EnsureThat.ParamIsNotNull(windowFactory);
-        EnsureThat.ParamIsNotNull(nativeInputFactory);
-        EnsureThat.ParamIsNotNull(glInvoker);
-        EnsureThat.ParamIsNotNull(glfwInvoker);
-        EnsureThat.ParamIsNotNull(systemDisplayService);
-        EnsureThat.ParamIsNotNull(platform);
-        EnsureThat.ParamIsNotNull(taskService);
-        EnsureThat.ParamIsNotNull(sceneManager);
-        EnsureThat.ParamIsNotNull(reactableFactory);
-        EnsureThat.ParamIsNotNull(timerService);
+        ArgumentNullException.ThrowIfNull(appService);
+        ArgumentNullException.ThrowIfNull(windowFactory);
+        ArgumentNullException.ThrowIfNull(nativeInputFactory);
+        ArgumentNullException.ThrowIfNull(glInvoker);
+        ArgumentNullException.ThrowIfNull(glfwInvoker);
+        ArgumentNullException.ThrowIfNull(systemDisplayService);
+        ArgumentNullException.ThrowIfNull(platform);
+        ArgumentNullException.ThrowIfNull(taskService);
+        ArgumentNullException.ThrowIfNull(sceneManager);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(timerService);
 
         this.appService = appService;
         this.windowFactory = windowFactory;

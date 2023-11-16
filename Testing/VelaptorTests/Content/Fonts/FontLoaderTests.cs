@@ -167,7 +167,7 @@ public class FontLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class FontLoaderTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'embeddedFontResourceService')");
+            .WithMessage("Value cannot be null. (Parameter 'embeddedFontResourceService')");
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathResolver')");
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'fontPathResolver')");
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
+            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -293,7 +293,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'fontFactory')");
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public class FontLoaderTests
         };
 
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontMetaDataParser')");
+            .WithMessage("Value cannot be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -392,7 +392,7 @@ public class FontLoaderTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fileStream')");
+            .WithMessage("Value cannot be null. (Parameter 'fileStream')");
     }
 
     [Fact]
@@ -417,7 +417,7 @@ public class FontLoaderTests
 
         // Arrange
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'path')");
+            .WithMessage("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -491,20 +491,32 @@ public class FontLoaderTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Load_WithNullOrEmptyParam_ThrowsException(string contentName)
+    [Fact]
+    public void Load_WithNullParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(contentName);
+        var act = () => sut.Load(null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentPathOrName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+    }
+
+    [Fact]
+    public void Load_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load(string.Empty);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]

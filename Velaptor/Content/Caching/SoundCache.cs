@@ -43,10 +43,10 @@ internal sealed class SoundCache : IItemCache<string, ISound>
         IPath path,
         IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(soundFactory);
-        EnsureThat.ParamIsNotNull(file);
-        EnsureThat.ParamIsNotNull(path);
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(soundFactory);
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.soundFactory = soundFactory;
         this.file = file;
@@ -92,10 +92,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// </exception>
     public ISound GetItem(string soundFilePath)
     {
-        if (string.IsNullOrEmpty(soundFilePath))
-        {
-            throw new ArgumentNullException(nameof(soundFilePath), "The string parameter must not be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(soundFilePath);
 
         var extension = this.path.GetExtension(soundFilePath);
 

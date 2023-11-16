@@ -7,7 +7,6 @@ namespace Velaptor.OpenGL.Shaders;
 using System;
 using Carbonate.Fluent;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Services;
@@ -37,7 +36,7 @@ internal sealed class FontShader : ShaderProgram
         IReactableFactory reactableFactory)
             : base(gl, openGLService, shaderLoaderService, reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 

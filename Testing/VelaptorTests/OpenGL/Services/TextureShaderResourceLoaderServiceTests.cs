@@ -58,7 +58,7 @@ public class TextureShaderResourceLoaderServiceTests
             _ = new TextureShaderResourceLoaderService(
                 null,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'resourceLoaderService')");
+        }, "Value cannot be null. (Parameter 'resourceLoaderService')");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class TextureShaderResourceLoaderServiceTests
             _ = new TextureShaderResourceLoaderService(
                 this.mockResourceLoaderService.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        }, "Value cannot be null. (Parameter 'path')");
     }
     #endregion
 

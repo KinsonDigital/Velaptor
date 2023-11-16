@@ -9,7 +9,6 @@ using System.IO.Abstractions;
 using System.Text.Json;
 using Exceptions;
 using ExtensionMethods;
-using Guards;
 
 /// <inheritdoc/>
 internal sealed class AppSettingsService : IAppSettingsService
@@ -28,9 +27,9 @@ internal sealed class AppSettingsService : IAppSettingsService
     /// <exception cref="AppSettingsException">Occurs if there are issues with loading the application settings file.</exception>
     public AppSettingsService(IJSONService jsonService, IDirectory directory, IFile file)
     {
-        EnsureThat.ParamIsNotNull(jsonService);
-        EnsureThat.ParamIsNotNull(directory);
-        EnsureThat.ParamIsNotNull(file);
+        ArgumentNullException.ThrowIfNull(jsonService);
+        ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(file);
 
         this.jsonService = jsonService;
         this.file = file;

@@ -53,7 +53,7 @@ public class AppSettingsServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'jsonService')");
+            .WithMessage("Value cannot be null. (Parameter 'jsonService')");
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class AppSettingsServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class AppSettingsServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]

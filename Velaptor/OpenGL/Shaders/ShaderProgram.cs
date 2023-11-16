@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using Carbonate.Fluent;
 using Exceptions;
 using Factories;
-using Guards;
 using NativeInterop.OpenGL;
 using Services;
 
@@ -39,10 +38,10 @@ internal abstract class ShaderProgram : IShaderProgram
         IShaderLoaderService shaderLoaderService,
         IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(gl);
-        EnsureThat.ParamIsNotNull(openGLService);
-        EnsureThat.ParamIsNotNull(shaderLoaderService);
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(gl);
+        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(shaderLoaderService);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         GL = gl;
         OpenGLService = openGLService;

@@ -35,11 +35,7 @@ public sealed class Texture : ITexture
     public Texture(string name, ImageData imageData)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-
-        if (string.IsNullOrEmpty(imageData.FilePath))
-        {
-            throw new ArgumentException("The image data must have a file path associated with it.", nameof(imageData));
-        }
+        ArgumentException.ThrowIfNullOrEmpty(imageData.FilePath);
 
         this.gl = IoC.Container.GetInstance<IGLInvoker>();
         this.openGLService = IoC.Container.GetInstance<IOpenGLService>();

@@ -68,7 +68,7 @@ public class FontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'contentFontPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'contentFontPathResolver')");
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class FontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'windowsFontPathResolver')");
+            .WithMessage("Value cannot be null. (Parameter 'windowsFontPathResolver')");
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class FontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'file')");
+            .WithMessage("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class FontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'directory')");
+            .WithMessage("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class FontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'platform')");
+            .WithMessage("Value cannot be null. (Parameter 'platform')");
     }
     #endregion
 

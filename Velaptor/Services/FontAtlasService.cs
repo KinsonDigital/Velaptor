@@ -12,7 +12,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using Content.Fonts.Services;
 using Graphics;
-using Guards;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectangle = System.Drawing.Rectangle;
@@ -47,10 +46,10 @@ internal sealed class FontAtlasService : IFontAtlasService
         ISystemDisplayService systemDisplayService,
         IFile file)
     {
-        EnsureThat.ParamIsNotNull(fontService);
-        EnsureThat.ParamIsNotNull(imageService);
-        EnsureThat.ParamIsNotNull(systemDisplayService);
-        EnsureThat.ParamIsNotNull(file);
+        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(imageService);
+        ArgumentNullException.ThrowIfNull(systemDisplayService);
+        ArgumentNullException.ThrowIfNull(file);
 
         this.fontService = fontService;
         this.imageService = imageService;

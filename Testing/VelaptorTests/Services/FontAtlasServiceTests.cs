@@ -129,7 +129,7 @@ public class FontAtlasServiceTests
                 this.mockImageService.Object,
                 this.mockDisplayService.Object,
                 this.mockFile.Object);
-        }, "The parameter must not be null. (Parameter 'fontService')");
+        }, "Value cannot be null. (Parameter 'fontService')");
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class FontAtlasServiceTests
                 null,
                 this.mockDisplayService.Object,
                 this.mockFile.Object);
-        }, "The parameter must not be null. (Parameter 'imageService')");
+        }, "Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class FontAtlasServiceTests
                 this.mockImageService.Object,
                 null,
                 this.mockFile.Object);
-        }, "The parameter must not be null. (Parameter 'systemDisplayService')");
+        }, "Value cannot be null. (Parameter 'systemDisplayService')");
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class FontAtlasServiceTests
                 this.mockImageService.Object,
                 this.mockDisplayService.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'file')");
+        }, "Value cannot be null. (Parameter 'file')");
     }
     #endregion
 
