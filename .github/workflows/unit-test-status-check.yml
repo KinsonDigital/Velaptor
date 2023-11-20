@@ -18,7 +18,7 @@ jobs:
   # 'test' related project at least builds.
   build_velaptor_testing:
     name: Build ${{ vars.PROJECT_NAME }} Testing App
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.3.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.4.0-preview
     with:
       project-name: "${{ vars.PROJECT_NAME }}Testing"
       build-config: Debug
@@ -33,7 +33,7 @@ jobs:
   # 'test' related project at least builds.
   build_avalonia_testing:
     name: Build Avalonia Testing App
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.3.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.4.0-preview
     with:
       project-name: "AvaloniaTesting"
       build-config: Debug
@@ -46,7 +46,7 @@ jobs:
 
   run_tests:
     name: Run ${{ vars.PROJECT_NAME }} Tests
-    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v13.3.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v13.4.0-preview
     with:
       project-name: "${{ vars.PROJECT_NAME }}Tests"
       build-config: Debug
