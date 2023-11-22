@@ -4,42 +4,11 @@
 
 namespace Velaptor.Graphics;
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-
 /// <summary>
 /// Provides metric data for a single font atlas texture.
+/// <param name="Rows">Number of rows in the atlas.</param>
+/// <param name="Columns">Number of columns in the atlas.</param>
+/// <param name="Width">Width of the atlas.</param>
+/// <param name="Height">Height of the atlas.</param>
 /// </summary>
-internal struct FontAtlasMetrics
-{
-    /// <summary>
-    /// The number of rows in the atlas.
-    /// </summary>
-    public uint Rows;
-
-    /// <summary>
-    /// The number of columns in the atlas.
-    /// </summary>
-    public uint Columns;
-
-    /// <summary>
-    /// The width of the atlas.
-    /// </summary>
-    public uint Width;
-
-    /// <summary>
-    /// The height of the atlas.
-    /// </summary>
-    public uint Height;
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is FontAtlasMetrics other &&
-                                                this.Rows == other.Rows &&
-                                                this.Columns == other.Columns &&
-                                                this.Width == other.Width &&
-                                                this.Height == other.Height;
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode() => HashCode.Combine(this.Rows, this.Columns, this.Width, this.Height);
-}
+internal readonly record struct FontAtlasMetrics(uint Rows, uint Columns, uint Width, uint Height);
