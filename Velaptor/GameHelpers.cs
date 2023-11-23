@@ -396,7 +396,7 @@ public static class GameHelpers
     ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.CharIndex"/></item>
     ///     </list>
     /// </remarks>
-    public static GlyphMetrics ApplySize(this GlyphMetrics value, float size) => new GlyphMetrics
+    public static GlyphMetrics ApplySize(this GlyphMetrics value, float size) => value with
     {
         GlyphBounds = value.GlyphBounds.ApplySize(size),
         Ascender = value.Ascender.ApplySize(size),
