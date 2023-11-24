@@ -4,26 +4,12 @@
 
 namespace Velaptor.Graphics;
 
-using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 /// <summary>
 /// Holds all of the various metrics of a glyph for rendering purposes.
 /// </summary>
-public readonly record struct GlyphMetrics(char Glyph,
-                                           RectangleF GlyphBounds,
-                                           float Ascender,
-                                           float Descender,
-                                           float HoriBearingX,
-                                           float HoriBearingY,
-                                           float GlyphWidth,
-                                           float GlyphHeight,
-                                           float XMin,
-                                           float XMax,
-                                           float YMin,
-                                           float YMax,
-                                           uint CharIndex)
+public readonly record struct GlyphMetrics
 {
     /// <summary>
     /// Gets the glyph character.
@@ -114,68 +100,4 @@ public readonly record struct GlyphMetrics(char Glyph,
     ///     The value of 0 means ‘undefined character code’.
     /// </remarks>
     public uint CharIndex { get; init; }
-
-    /*
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are equal.</returns>
-    public static bool operator ==(GlyphMetrics left, GlyphMetrics right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand compared with the right operand.</param>
-    /// <param name="right">The right operand compared with the left operand.</param>
-    /// <returns>True if both operands are not equal.</returns>
-    public static bool operator !=(GlyphMetrics left, GlyphMetrics right) => !left.Equals(right);
-
-    /// <inheritdoc/>
-    public override string ToString() => $"Name: {Glyph} | Bounds: {GlyphBounds}";
-
-    /// <inheritdoc cref="object.Equals(object?)"/>
-    public override bool Equals(object? obj) => obj is GlyphMetrics metric && Equals(metric);
-
-    /// <inheritdoc cref="IEquatable{T}"/>
-    public bool Equals(GlyphMetrics other) =>
-        Glyph == other.Glyph &&
-        GlyphBounds.Equals(other.GlyphBounds) &&
-        Ascender.Equals(other.Ascender) &&
-        Descender.Equals(other.Descender) &&
-        HoriBearingX.Equals(other.HoriBearingX) &&
-        HoriBearingY.Equals(other.HoriBearingY) &&
-        HorizontalAdvance.Equals(other.HorizontalAdvance) &&
-        GlyphWidth.Equals(other.GlyphWidth) &&
-        GlyphHeight.Equals(other.GlyphHeight) &&
-        XMin.Equals(other.XMin) &&
-        XMax.Equals(other.XMax) &&
-        YMin.Equals(other.YMin) &&
-        YMax.Equals(other.YMax) &&
-        CharIndex == other.CharIndex;
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-    {
-        var hashCode = default(HashCode);
-        hashCode.Add(Glyph);
-        hashCode.Add(GlyphBounds);
-        hashCode.Add(Ascender);
-        hashCode.Add(Descender);
-        hashCode.Add(HoriBearingX);
-        hashCode.Add(HoriBearingY);
-        hashCode.Add(HorizontalAdvance);
-        hashCode.Add(GlyphWidth);
-        hashCode.Add(GlyphHeight);
-        hashCode.Add(XMin);
-        hashCode.Add(XMax);
-        hashCode.Add(YMin);
-        hashCode.Add(YMax);
-        hashCode.Add(CharIndex);
-
-        return hashCode.ToHashCode();
-    }
-    */
 }

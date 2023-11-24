@@ -108,7 +108,7 @@ internal sealed class FontService : IFontService
 
                 if (Environment.Is64BitProcess)
                 {
-                    metric = new GlyphMetrics
+                    metric = metric with
                     {
                         Ascender = (int)face.size->metrics.ascender.ToInt64() >> 6,
                         Descender = (int)face.size->metrics.descender.ToInt64() >> 6,
@@ -129,7 +129,7 @@ internal sealed class FontService : IFontService
                 }
                 else
                 {
-                    metric = new GlyphMetrics
+                    metric = metric with
                     {
                         Ascender = face.size->metrics.ascender.ToInt32() >> 6,
                         Descender = face.size->metrics.descender.ToInt32() >> 6,
