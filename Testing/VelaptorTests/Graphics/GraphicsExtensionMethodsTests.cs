@@ -18,9 +18,9 @@ public class GraphicsExtensionMethodsTests
     public void MaxHeight_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var metric1 = default(GlyphMetrics) with { GlyphHeight = 10 };
+        var metric1 = new GlyphMetrics { GlyphHeight = 10 };
 
-        var metric2 = default(GlyphMetrics) with { GlyphHeight = 20 };
+        var metric2 = new GlyphMetrics { GlyphHeight = 20 };
 
         var metrics = new List<GlyphMetrics[]> { new[] { metric1, metric2 } };
 
@@ -37,9 +37,9 @@ public class GraphicsExtensionMethodsTests
     public void MaxVerticalOffset_WhenInvoked_ReturnsCorrectResult(float glyphHeight, float horiBearingY, float expected)
     {
         // Arrange
-        var metric1 = default(GlyphMetrics) with { GlyphHeight = 100, HoriBearingY = 30, };
+        var metric1 = new GlyphMetrics { GlyphHeight = 100, HoriBearingY = 30, };
 
-        var metric2 = default(GlyphMetrics) with { GlyphHeight = glyphHeight, HoriBearingY = horiBearingY, };
+        var metric2 = new GlyphMetrics { GlyphHeight = glyphHeight, HoriBearingY = horiBearingY, };
 
         var metrics = new List<GlyphMetrics[]> { new[] { metric1, metric2 } };
 

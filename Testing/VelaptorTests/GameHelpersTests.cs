@@ -338,7 +338,7 @@ public class GameHelpersTests
     public void ApplySize_WithGlyphMetrics_ReturnsCorrectResult()
     {
         // Arrange
-        var metrics = default(GlyphMetrics) with
+        var metrics = new GlyphMetrics
         {
             Glyph = 'V',
             GlyphBounds = new RectangleF(2f, 4f, 6f, 8f),

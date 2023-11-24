@@ -163,7 +163,7 @@ public class GlyphMetricsTests
     public void ToString_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var metrics = default(GlyphMetrics) with
+        var metrics = new GlyphMetrics
         {
             GlyphBounds = new RectangleF(11, 22, 33, 44),
             Glyph = 'Z'
@@ -196,7 +196,7 @@ public class GlyphMetricsTests
         bool expected)
     {
         // Arrange
-        var metricsA = default(GlyphMetrics) with
+        var metricsA = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
@@ -214,7 +214,7 @@ public class GlyphMetricsTests
             HoriBearingY = 16,
         };
 
-        var metricsB = default(GlyphMetrics) with
+        var metricsB = new GlyphMetrics
         {
             Ascender = ascender,
             Descender = descender,
@@ -242,7 +242,7 @@ public class GlyphMetricsTests
     public void Equal_WithObjectParamNotOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics) with
+        var metricsA = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
@@ -273,7 +273,7 @@ public class GlyphMetricsTests
     public void Equal_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics) with
+        var metricsA = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
@@ -320,7 +320,7 @@ public class GlyphMetricsTests
     public void EqualsOperator_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics) with
+        var metricsA = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
@@ -338,7 +338,7 @@ public class GlyphMetricsTests
             HoriBearingY = 16,
         };
 
-        var metricsB = default(GlyphMetrics) with
+        var metricsB = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
@@ -367,7 +367,7 @@ public class GlyphMetricsTests
     public void NotEqualsOperator_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics) with
+        var metricsA = new GlyphMetrics
         {
             Ascender = 1,
             Descender = 2,
