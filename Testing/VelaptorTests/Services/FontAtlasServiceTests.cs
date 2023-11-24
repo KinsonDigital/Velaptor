@@ -69,22 +69,22 @@ public class FontAtlasServiceTests
 
                 for (var i = 0; i < this.glyphChars.Length; i++)
                 {
-                    GlyphMetrics newMetric = default;
-
-                    newMetric.Glyph = this.glyphChars[i];
-                    newMetric.CharIndex = this.glyphIndices[this.glyphChars[i]];
-                    newMetric.Ascender = (i + 1) * 10;
-                    newMetric.Descender = (i + 2) * 10;
-                    newMetric.GlyphWidth = (i + 3) * 10;
-                    newMetric.GlyphHeight = (i + 4) * 10;
-                    newMetric.HoriBearingX = (i + 5) * 10;
-                    newMetric.HoriBearingY = (i + 6) * 10;
-                    newMetric.HorizontalAdvance = (i + 7) * 10;
-                    newMetric.XMin = (i + 8) * 10;
-                    newMetric.XMax = (i + 9) * 10;
-                    newMetric.YMin = (i + 10) * 10;
-                    newMetric.YMax = (i + 11) * 10;
-
+                    GlyphMetrics newMetric = new GlyphMetrics
+                    {
+                        Glyph = this.glyphChars[i],
+                        CharIndex = this.glyphIndices[this.glyphChars[i]],
+                        Ascender = (i + 1) * 10,
+                        Descender = (i + 2) * 10,
+                        GlyphWidth = (i + 3) * 10,
+                        GlyphHeight = (i + 4) * 10,
+                        HoriBearingX = (i + 5) * 10,
+                        HoriBearingY = (i + 6) * 10,
+                        HorizontalAdvance = (i + 7) * 10,
+                        XMin = (i + 8) * 10,
+                        XMax = (i + 9) * 10,
+                        YMin = (i + 10) * 10,
+                        YMax = (i + 11) * 10,
+                    };
                     result.Add(this.glyphChars[i], newMetric);
                 }
 

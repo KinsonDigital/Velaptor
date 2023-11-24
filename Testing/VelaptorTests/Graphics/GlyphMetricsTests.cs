@@ -163,9 +163,11 @@ public class GlyphMetricsTests
     public void ToString_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var metrics = default(GlyphMetrics);
-        metrics.GlyphBounds = new RectangleF(11, 22, 33, 44);
-        metrics.Glyph = 'Z';
+        var metrics = default(GlyphMetrics) with
+        {
+            GlyphBounds = new RectangleF(11, 22, 33, 44),
+            Glyph = 'Z'
+        };
 
         // Act
         var actual = metrics.ToString();
@@ -194,38 +196,41 @@ public class GlyphMetricsTests
         bool expected)
     {
         // Arrange
-        var metricsA = default(GlyphMetrics);
-        metricsA.Ascender = 1;
-        metricsA.Descender = 2;
-        metricsA.Glyph = 'c';
-        metricsA.CharIndex = 3;
-        metricsA.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsA.GlyphHeight = 8;
-        metricsA.GlyphWidth = 9;
-        metricsA.HorizontalAdvance = 10;
-        metricsA.XMax = 11;
-        metricsA.XMin = 12;
-        metricsA.YMax = 13;
-        metricsA.YMin = 14;
-        metricsA.HoriBearingX = 15;
-        metricsA.HoriBearingY = 16;
+        var metricsA = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
-        var metricsB = default(GlyphMetrics);
-        metricsB.Ascender = ascender;
-        metricsB.Descender = descender;
-        metricsB.Glyph = glyph;
-        metricsB.CharIndex = charIndex;
-        metricsB.GlyphBounds = glyphBounds;
-        metricsB.GlyphHeight = glyphHeight;
-        metricsB.GlyphWidth = glyphWidth;
-        metricsB.HorizontalAdvance = horizontalAdvance;
-        metricsB.XMax = xMax;
-        metricsB.XMin = xMin;
-        metricsB.YMax = yMax;
-        metricsB.YMin = yMin;
-        metricsB.HoriBearingX = horiBearingX;
-        metricsB.HoriBearingY = horiBearingY;
-
+        var metricsB = default(GlyphMetrics) with
+        {
+            Ascender = ascender,
+            Descender = descender,
+            Glyph = glyph,
+            CharIndex = charIndex,
+            GlyphBounds = glyphBounds,
+            GlyphHeight = glyphHeight,
+            GlyphWidth = glyphWidth,
+            HorizontalAdvance = horizontalAdvance,
+            XMax = xMax,
+            XMin = xMin,
+            YMax = yMax,
+            YMin = yMin,
+            HoriBearingX = horiBearingX,
+            HoriBearingY = horiBearingY,
+        };
         // Act
         var actual = metricsA.Equals(metricsB);
 
@@ -237,21 +242,23 @@ public class GlyphMetricsTests
     public void Equal_WithObjectParamNotOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics);
-        metricsA.Ascender = 1;
-        metricsA.Descender = 2;
-        metricsA.Glyph = 'c';
-        metricsA.CharIndex = 3;
-        metricsA.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsA.GlyphHeight = 8;
-        metricsA.GlyphWidth = 9;
-        metricsA.HorizontalAdvance = 10;
-        metricsA.XMax = 11;
-        metricsA.XMin = 12;
-        metricsA.YMax = 13;
-        metricsA.YMin = 14;
-        metricsA.HoriBearingX = 15;
-        metricsA.HoriBearingY = 16;
+        var metricsA = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
         var metricsB = new object();
 
@@ -266,21 +273,23 @@ public class GlyphMetricsTests
     public void Equal_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics);
-        metricsA.Ascender = 1;
-        metricsA.Descender = 2;
-        metricsA.Glyph = 'c';
-        metricsA.CharIndex = 3;
-        metricsA.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsA.GlyphHeight = 8;
-        metricsA.GlyphWidth = 9;
-        metricsA.HorizontalAdvance = 10;
-        metricsA.XMax = 11;
-        metricsA.XMin = 12;
-        metricsA.YMax = 13;
-        metricsA.YMin = 14;
-        metricsA.HoriBearingX = 15;
-        metricsA.HoriBearingY = 16;
+        var metricsA = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
         object metricsB = new GlyphMetrics
         {
@@ -311,37 +320,41 @@ public class GlyphMetricsTests
     public void EqualsOperator_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics);
-        metricsA.Ascender = 1;
-        metricsA.Descender = 2;
-        metricsA.Glyph = 'c';
-        metricsA.CharIndex = 3;
-        metricsA.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsA.GlyphHeight = 8;
-        metricsA.GlyphWidth = 9;
-        metricsA.HorizontalAdvance = 10;
-        metricsA.XMax = 11;
-        metricsA.XMin = 12;
-        metricsA.YMax = 13;
-        metricsA.YMin = 14;
-        metricsA.HoriBearingX = 15;
-        metricsA.HoriBearingY = 16;
+        var metricsA = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
-        var metricsB = default(GlyphMetrics);
-        metricsB.Ascender = 1;
-        metricsB.Descender = 2;
-        metricsB.Glyph = 'c';
-        metricsB.CharIndex = 3;
-        metricsB.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsB.GlyphHeight = 8;
-        metricsB.GlyphWidth = 9;
-        metricsB.HorizontalAdvance = 10;
-        metricsB.XMax = 11;
-        metricsB.XMin = 12;
-        metricsB.YMax = 13;
-        metricsB.YMin = 14;
-        metricsB.HoriBearingX = 15;
-        metricsB.HoriBearingY = 16;
+        var metricsB = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
         // Act
         var actual = metricsA == metricsB;
@@ -354,21 +367,23 @@ public class GlyphMetricsTests
     public void NotEqualsOperator_WithObjectParamOfSameType_ReturnsCorrectResult()
     {
         // Arrange
-        var metricsA = default(GlyphMetrics);
-        metricsA.Ascender = 1;
-        metricsA.Descender = 2;
-        metricsA.Glyph = 'c';
-        metricsA.CharIndex = 3;
-        metricsA.GlyphBounds = new RectangleF(4, 5, 6, 7);
-        metricsA.GlyphHeight = 8;
-        metricsA.GlyphWidth = 9;
-        metricsA.HorizontalAdvance = 10;
-        metricsA.XMax = 11;
-        metricsA.XMin = 12;
-        metricsA.YMax = 13;
-        metricsA.YMin = 14;
-        metricsA.HoriBearingX = 15;
-        metricsA.HoriBearingY = 16;
+        var metricsA = default(GlyphMetrics) with
+        {
+            Ascender = 1,
+            Descender = 2,
+            Glyph = 'c',
+            CharIndex = 3,
+            GlyphBounds = new RectangleF(4, 5, 6, 7),
+            GlyphHeight = 8,
+            GlyphWidth = 9,
+            HorizontalAdvance = 10,
+            XMax = 11,
+            XMin = 12,
+            YMax = 13,
+            YMin = 14,
+            HoriBearingX = 15,
+            HoriBearingY = 16,
+        };
 
         var metricsB = default(GlyphMetrics);
 

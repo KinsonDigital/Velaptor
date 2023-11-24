@@ -338,21 +338,23 @@ public class GameHelpersTests
     public void ApplySize_WithGlyphMetrics_ReturnsCorrectResult()
     {
         // Arrange
-        var metrics = default(GlyphMetrics);
-        metrics.Glyph = 'V';
-        metrics.GlyphBounds = new RectangleF(2f, 4f, 6f, 8f);
-        metrics.Ascender = 2f;
-        metrics.Descender = 2f;
-        metrics.HorizontalAdvance = 2f;
-        metrics.HoriBearingX = 2f;
-        metrics.HoriBearingY = 2f;
-        metrics.GlyphWidth = 2f;
-        metrics.GlyphHeight = 2f;
-        metrics.XMin = 2f;
-        metrics.XMax = 2f;
-        metrics.YMin = 2f;
-        metrics.YMax = 2f;
-        metrics.CharIndex = 123u;
+        var metrics = default(GlyphMetrics) with
+        {
+            Glyph = 'V',
+            GlyphBounds = new RectangleF(2f, 4f, 6f, 8f),
+            Ascender = 2f,
+            Descender = 2f,
+            HorizontalAdvance = 2f,
+            HoriBearingX = 2f,
+            HoriBearingY = 2f,
+            GlyphWidth = 2f,
+            GlyphHeight = 2f,
+            XMin = 2f,
+            XMax = 2f,
+            YMin = 2f,
+            YMax = 2f,
+            CharIndex = 123u,
+        };
 
         // Act
         var actual = metrics.ApplySize(2f);
