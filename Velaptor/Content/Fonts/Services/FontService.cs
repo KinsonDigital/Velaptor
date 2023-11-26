@@ -114,12 +114,10 @@ internal sealed class FontService : IFontService
                         Descender = (int)face.size->metrics.descender.ToInt64() >> 6,
                         Glyph = glyphKeyValue.Key,
                         CharIndex = glyphKeyValue.Value,
-
                         XMin = (int)face.bbox.xMin.ToInt64() >> 6,
                         XMax = (int)face.bbox.xMax.ToInt64() >> 6,
                         YMin = (int)face.bbox.yMin.ToInt64() >> 6,
                         YMax = (int)face.bbox.yMax.ToInt64() >> 6,
-
                         GlyphWidth = (int)face.glyph->metrics.width.ToInt64() >> 6,
                         GlyphHeight = (int)face.glyph->metrics.height.ToInt64() >> 6,
                         HorizontalAdvance = (int)face.glyph->metrics.horiAdvance.ToInt64() >> 6,
