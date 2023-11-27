@@ -629,7 +629,7 @@ public sealed class TextBox : ControlBase
                 return (glyphMetrics, clr);
             }
 
-            glyphMetrics.GlyphBounds = glyphMetrics.GlyphBounds with { Width = 0 };
+            glyphMetrics = glyphMetrics with { GlyphBounds = glyphMetrics.GlyphBounds with { Width = 0 } };
 
             return (glyphMetrics, clr);
         }).ToArray().AsSpan();

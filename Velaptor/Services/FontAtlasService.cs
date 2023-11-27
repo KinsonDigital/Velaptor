@@ -160,7 +160,7 @@ internal sealed class FontAtlasService : IFontAtlasService
                 where m.Value.Glyph == glyph.Key
                 select m.Value).FirstOrDefault();
 
-            glyphMetric.GlyphBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
+            glyphMetric = glyphMetric with { GlyphBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height) };
             glyphMetrics[glyph.Key] = glyphMetric;
 
             if (cellX >= columnCount - 1)

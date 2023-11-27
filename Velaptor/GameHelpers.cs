@@ -396,23 +396,21 @@ public static class GameHelpers
     ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.CharIndex"/></item>
     ///     </list>
     /// </remarks>
-    public static GlyphMetrics ApplySize(this GlyphMetrics value, float size)
+    public static GlyphMetrics ApplySize(this GlyphMetrics value, float size) => value with
     {
-        value.GlyphBounds = value.GlyphBounds.ApplySize(size);
-        value.Ascender = value.Ascender.ApplySize(size);
-        value.Descender = value.Descender.ApplySize(size);
-        value.HorizontalAdvance = value.HorizontalAdvance.ApplySize(size);
-        value.HoriBearingX = value.HoriBearingX.ApplySize(size);
-        value.HoriBearingY = value.HoriBearingY.ApplySize(size);
-        value.GlyphWidth = value.GlyphWidth.ApplySize(size);
-        value.GlyphHeight = value.GlyphHeight.ApplySize(size);
-        value.XMin = value.XMin.ApplySize(size);
-        value.XMax = value.XMax.ApplySize(size);
-        value.YMin = value.YMin.ApplySize(size);
-        value.YMax = value.YMax.ApplySize(size);
-
-        return value;
-    }
+        GlyphBounds = value.GlyphBounds.ApplySize(size),
+        Ascender = value.Ascender.ApplySize(size),
+        Descender = value.Descender.ApplySize(size),
+        HorizontalAdvance = value.HorizontalAdvance.ApplySize(size),
+        HoriBearingX = value.HoriBearingX.ApplySize(size),
+        HoriBearingY = value.HoriBearingY.ApplySize(size),
+        GlyphWidth = value.GlyphWidth.ApplySize(size),
+        GlyphHeight = value.GlyphHeight.ApplySize(size),
+        XMin = value.XMin.ApplySize(size),
+        XMax = value.XMax.ApplySize(size),
+        YMin = value.YMin.ApplySize(size),
+        YMax = value.YMax.ApplySize(size),
+    };
 
     /// <summary>
     /// Returns a value indicating whether or not the character is a letter.
