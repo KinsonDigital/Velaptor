@@ -86,12 +86,22 @@ internal sealed class GlfwInvoker : IGlfwInvoker
         {
             var pVideoMode = this.glfw.GetVideoMode((Monitor*)monitor);
 
-            result.RedBits = pVideoMode->RedBits;
-            result.GreenBits = pVideoMode->GreenBits;
-            result.BlueBits = pVideoMode->BlueBits;
-            result.Width = pVideoMode->Width;
-            result.Height = pVideoMode->Height;
-            result.RefreshRate = pVideoMode->RefreshRate;
+            result = result with
+            {
+                RedBits = pVideoMode->RedBits,
+                GreenBits = pVideoMode->GreenBits,
+                BlueBits = pVideoMode->BlueBits,
+                Width = pVideoMode->Width,
+                Height = pVideoMode->Height,
+                RefreshRate = pVideoMode->RefreshRate,
+            };
+            result = new GlfwVideoMode(
+                Width: pVideoMode->Width,
+                Height: pVideoMode->Height,
+                RedBits: pVideoMode->RedBits,
+                GreenBits: pVideoMode->GreenBits,
+                BlueBits: pVideoMode->BlueBits,
+                RefreshRate: pVideoMode->RefreshRate);
         }
 
         return result;
