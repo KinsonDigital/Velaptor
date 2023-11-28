@@ -95,13 +95,6 @@ internal sealed class GlfwInvoker : IGlfwInvoker
                 Height = pVideoMode->Height,
                 RefreshRate = pVideoMode->RefreshRate,
             };
-            result = new GlfwVideoMode(
-                Width: pVideoMode->Width,
-                Height: pVideoMode->Height,
-                RedBits: pVideoMode->RedBits,
-                GreenBits: pVideoMode->GreenBits,
-                BlueBits: pVideoMode->BlueBits,
-                RefreshRate: pVideoMode->RefreshRate);
         }
 
         return result;
