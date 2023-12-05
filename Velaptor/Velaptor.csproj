@@ -99,7 +99,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="19.2.87" />
+    <PackageReference Include="System.IO.Abstractions" Version="19.2.91" />
   </ItemGroup>
 
 </Project>
