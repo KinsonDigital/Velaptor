@@ -22,7 +22,7 @@ jobs:
           java-version: 11
           distribution: 'zulu' # Alternative distribution options are available.
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         name: Setup dotnet
         with:
           dotnet-version: '${{ vars.NET_SDK_VERSION }}'
