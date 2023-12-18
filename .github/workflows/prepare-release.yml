@@ -74,7 +74,7 @@ jobs:
   prepare_release:
     name: Prepare ${{ inputs.release-type }} Release Of ${{ vars.PROJECT_NAME }}
     needs: print_validate_workflow
-    uses: KinsonDigital/Infrastructure/.github/workflows/prepare-release.yml@v13.4.0-preview
+    uses: KinsonDigital/Infrastructure/.github/workflows/prepare-release.yml@v13.6.0
     with:
       project-name: "${{ vars.PROJECT_NAME }}"
       release-type: "${{ inputs.release-type }}"
