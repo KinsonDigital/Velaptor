@@ -21,6 +21,7 @@ using Input;
 /// <summary>
 /// A label that renders text on the screen.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in a future release.")]
 public class Label : ControlBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
