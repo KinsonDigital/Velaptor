@@ -18,6 +18,7 @@ using Input;
 /// <summary>
 /// A button that can be clicked to execute functionality.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in a future release.")]
 public sealed class Button : ControlBase
 {
     private const int TextLayer = int.MaxValue - 1;
@@ -170,9 +171,11 @@ public sealed class Button : ControlBase
     /// Gets the <see cref="Label"/> of the <see cref="Button"/>.
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Label? Label { get; private set; }
 
     /// <inheritdoc cref="IControl"/>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override Point Position
     {
         get => base.Position;
@@ -196,6 +199,7 @@ public sealed class Button : ControlBase
     ///     desire.  If the size is less than the width or height of the text, then only the text characters
     ///     that are still within the bounds of the <see cref="UI.Label"/> will be rendered.
     /// </remarks>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public bool AutoSize
     {
         get => this.autoSize;
@@ -220,6 +224,7 @@ public sealed class Button : ControlBase
     ///     If <see cref="AutoSize"/> is <c>true</c>, the <see cref="Width"/> value will be set but ignored
     ///     and the <see cref="Width"/> will be automatic based on the <see cref="Width"/> of the <see cref="Text"/>.
     /// </remarks>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override uint Width
     {
         get => AutoSize ? Label?.Width + (HorizontalMargin * 2u) ?? HorizontalMargin * 2u : base.Width;
@@ -242,6 +247,7 @@ public sealed class Button : ControlBase
     ///     If <see cref="AutoSize"/> is <c>true</c>, the <see cref="Height"/> value will be set but ignored
     ///     and the <see cref="Height"/> will be automatic based on the <see cref="Height"/> of the <see cref="Text"/>.
     /// </remarks>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override uint Height
     {
         get => AutoSize ? Label?.Height + (HorizontalMargin * 2u) ?? HorizontalMargin * 2u : base.Height;
@@ -258,6 +264,7 @@ public sealed class Button : ControlBase
     /// Gets or sets the text of the button.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public string Text
     {
         get => IsLoaded
@@ -278,11 +285,13 @@ public sealed class Button : ControlBase
     /// <summary>
     /// Gets or sets a value indicating whether or not the border of the <see cref="Button"/> is visible.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public bool BorderVisible { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the color of the <see cref="Button"/> border.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color BorderColor { get; set; } = Color.SlateGray;
 
     /// <summary>
@@ -291,22 +300,26 @@ public sealed class Button : ControlBase
     /// <remarks>
     ///     This value uses pixels as unit of measure.
     /// </remarks>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public uint BorderThickness { get; set; } = 2u;
 
     /// <summary>
     /// Gets or sets the color of the face of the <see cref="Button"/>.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color FaceColor { get; set; } = Color.DarkGray;
 
     /// <summary>
     /// Gets or sets the radius values for each corner of the <see cref="Button"/>
     /// border and face.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public CornerRadius CornerRadius { get; set; } = new (6f);
 
     /// <summary>
     /// Gets or sets the font size of the text on the face of the button.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public uint FontSize
     {
         get => Label?.FontSize ?? 0u;

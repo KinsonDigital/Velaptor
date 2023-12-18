@@ -24,6 +24,7 @@ using ReactableData;
 /// <summary>
 /// Provides the ability to enter text into a box.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in a future release.")]
 public sealed class TextBox : ControlBase
 {
     private const uint CursorBlinkRate = 500;
@@ -97,6 +98,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the text in the <see cref="TextBox"/>.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public string Text
     {
         get => this.text.ToString();
@@ -110,16 +112,19 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets the selected text.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public string SelectedText => this.textSelection.SelectedText;
 
     /// <summary>
     /// Gets or sets the color of the text.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color TextColor { get; set; } = Color.White;
 
     /// <summary>
     /// Gets or sets the color of the cursor.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color CursorColor
     {
         get => this.textCursor.Color;
@@ -129,6 +134,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the width of the cursor.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public int CursorWidth
     {
         get => this.textCursor.Width;
@@ -138,6 +144,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the size of the font of the text box.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public uint FontSize
     {
         get => this.font?.Size ?? 0u;
@@ -188,6 +195,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets or sets the color of the text selection rectangle.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color SelectionColor
     {
         get => this.textSelection.SelectionColor;
@@ -198,11 +206,13 @@ public sealed class TextBox : ControlBase
     /// Gets or sets the color of the selected text.
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public Color SelectedTextColor { get; set; } = Color.White;
 
     /// <summary>
     /// Gets or sets the width of the <see cref="TextBox"/>.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override uint Width
     {
         get => this.width;
@@ -273,11 +283,13 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Gets the height of the <see cref="TextBox"/>.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override uint Height => this.height;
 
     /// <summary>
     /// Gets or sets the position of the <see cref="TextBox"/> on the screen.
     /// </summary>
+    [Obsolete("This property is deprecated and will be removed in a future release.")]
     public override Point Position
     {
         get => base.Position;
@@ -340,6 +352,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Loads the content of the <see cref="TextBox"/>.
     /// </summary>
+    [Obsolete("This method is deprecated and will be removed in a future release.")]
     public override void LoadContent()
     {
         var fontLoader = ContentLoaderFactory.CreateFontLoader();
@@ -378,6 +391,7 @@ public sealed class TextBox : ControlBase
     /// Updates the text box.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
+    [Obsolete("This method is deprecated and will be removed in a future release.")]
     public override void Update(FrameTime frameTime)
     {
         if (!IsLoaded || !Enabled)
@@ -401,6 +415,7 @@ public sealed class TextBox : ControlBase
     }
 
     /// <inheritdoc/>
+    [Obsolete("This method is deprecated and will be removed in a future release.")]
     public override void Render()
     {
         if (!IsLoaded || !Visible)
