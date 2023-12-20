@@ -197,3 +197,15 @@ csharp_prefer_simple_using_statement = true:suggestion
 # Using directives must be placed inside of a namespace declaration
 # IDE0065: Misplaced using directive
 csharp_using_directive_placement = inside_namespace
+
+#############################################################
+# Resharper Rules                                           #
+# Resharper rule name syntax                                #
+# resharper_<inspection_name>_highlighting=<severity_level> #
+#############################################################
+
+# noinspection EditorConfigKeyCorrectness
+
+resharper_bad_parens_spaces_highlighting = none
+
+# inspection EditorConfigKeyCorrectness
