@@ -30,7 +30,7 @@ public class SoundCacheTests
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private const string SoundDirPath = @"C:/sounds";
+    private const string SoundDirPath = "C:/sounds";
     private const string SoundName = "test-sound";
     private const string OggSoundFilePath = $"{SoundDirPath}/{SoundName}{OggFileExtension}";
     private const string Mp3SoundFilePath = $"{SoundDirPath}/{SoundName}{Mp3FileExtension}";
@@ -214,7 +214,7 @@ public class SoundCacheTests
     public void GetItem_WithUnsupportedFileType_ThrowsException()
     {
         // Arrange
-        const string dirPath = @"C:/my-sounds";
+        const string dirPath = "C:/my-sounds";
         const string soundName = "test-sound";
         const string invalidExtension = ".txt";
         const string soundFilePath = $"{dirPath}/{soundName}{invalidExtension}";

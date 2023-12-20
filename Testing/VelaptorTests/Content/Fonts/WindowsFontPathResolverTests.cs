@@ -91,7 +91,7 @@ public class WindowsFontPathResolverTests
         var actual = sut.RootDirectoryPath;
 
         // Assert
-        actual.Should().Be(@"C:/Windows");
+        actual.Should().Be("C:/Windows");
     }
 
     [Fact]
@@ -144,23 +144,23 @@ public class WindowsFontPathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.ResolveFilePath(@"test-content/");
+        var act = () => sut.ResolveFilePath("test-content/");
 
         // Assert
         act.Should().Throw<ArgumentException>()
-            .WithMessage(@"The 'test-content/' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+            .WithMessage("The 'test-content/' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
 
     [Fact]
     public void ResolveFilePath_WhenInvoking_ReturnsCorrectResolvedFilePath()
     {
         // Arrange
-        const string rootDir = @"C:/Windows";
+        const string rootDir = "C:/Windows";
         const string contentDirName = "Fonts";
         const string contentName = "test-content";
         const string extension = ".ttf";
-        const string fullContentDirPath = $@"{rootDir}/{contentDirName}";
-        const string expected = $@"{fullContentDirPath}/{contentName}{extension}";
+        const string fullContentDirPath = $"{rootDir}/{contentDirName}";
+        const string expected = $"{fullContentDirPath}/{contentName}{extension}";
 
         var files = new[]
         {

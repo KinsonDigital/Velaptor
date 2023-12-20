@@ -174,12 +174,12 @@ public class StringExtensionsTests
     [Theory]
     [InlineData("", false)]
     [InlineData(@"C:\", true)]
-    [InlineData(@"C:/", true)]
-    [InlineData(@"C:", false)]
+    [InlineData("C:/", true)]
+    [InlineData("C:", false)]
     [InlineData(@"C\", false)]
-    [InlineData(@"C/", false)]
+    [InlineData("C/", false)]
     [InlineData(@"C:\test-file.txt", false)]
-    [InlineData(@"C:/test-file.txt", false)]
+    [InlineData("C:/test-file.txt", false)]
     public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
     {
         // Act
@@ -288,8 +288,8 @@ public class StringExtensionsTests
     [Theory]
     [InlineData(@"test\")]
     [InlineData(@"test\\")]
-    [InlineData(@"test/")]
-    [InlineData(@"test//")]
+    [InlineData("test/")]
+    [InlineData("test//")]
     [InlineData(@"test\/")]
     [InlineData(@"test\\//")]
     [InlineData(@"test/\")]

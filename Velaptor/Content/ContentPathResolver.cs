@@ -16,9 +16,9 @@ internal abstract class ContentPathResolver : IContentPathResolver
 {
     private const char WinDirSeparatorChar = '\\';
     private const char CrossPlatDirSeparatorChar = '/';
-    private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private static readonly string BaseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
-    private string rootDirPath = @$"{BaseDir}{CrossPlatDirSeparatorChar}Content";
+    private string rootDirPath = $"{BaseDir}{CrossPlatDirSeparatorChar}Content";
     private string contentDirName = string.Empty;
 
     /// <inheritdoc/>
@@ -69,11 +69,11 @@ internal abstract class ContentPathResolver : IContentPathResolver
     }
 
     /// <inheritdoc/>
-    public string ResolveDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
+    public string ResolveDirPath() => $"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
 
     /// <summary>
     /// Gets the directory path of the content.
     /// </summary>
     /// <returns>The full directory path to the content directory.</returns>
-    protected string GetContentDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
+    protected string GetContentDirPath() => $"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
 }

@@ -19,7 +19,7 @@ using Xunit;
 public class ContentPathResolverTests
 {
     private const string ContentName = "test-content.png";
-    private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private static readonly string BaseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath();
 
     /// <summary>
@@ -52,8 +52,8 @@ public class ContentPathResolverTests
     [Theory]
     [InlineData(@"C:\temp\test-dir-name", "test-dir-name")]
     [InlineData(@"C:\temp\test-dir-name\", "test-dir-name")]
-    [InlineData(@"C:/temp/test-dir-name", "test-dir-name")]
-    [InlineData(@"C:/temp/test-dir-name/", "test-dir-name")]
+    [InlineData("C:/temp/test-dir-name", "test-dir-name")]
+    [InlineData("C:/temp/test-dir-name/", "test-dir-name")]
     public void ContentDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult(
         string contentDirName,
         string expected)
@@ -96,7 +96,7 @@ public class ContentPathResolverTests
         var actual = resolver.ResolveDirPath();
 
         // Assert
-        actual.Should().Be(@"C:/temp/my-content/test-content");
+        actual.Should().Be("C:/temp/my-content/test-content");
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class ContentPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentException>()
-            .WithMessage($@"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
+            .WithMessage($"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
     #endregion
 }

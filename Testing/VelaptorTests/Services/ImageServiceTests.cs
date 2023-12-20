@@ -30,7 +30,7 @@ public class ImageServiceTests : IDisposable
 {
     private const string TestAssetDirName = "TestAssets";
     private const string TestImageFileName = "TestCompareImage.png";
-    private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private readonly string basePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath();
     private readonly string testAssetFilePath;
     private readonly Mock<IFile> mockFile;
@@ -41,7 +41,7 @@ public class ImageServiceTests : IDisposable
     /// </summary>
     public ImageServiceTests()
     {
-        this.testAssetFilePath = $@"{this.basePath}/{TestAssetDirName}/{TestImageFileName}";
+        this.testAssetFilePath = $"{this.basePath}/{TestAssetDirName}/{TestImageFileName}";
 
         TestHelpers.SetupTestResultDirPath();
 

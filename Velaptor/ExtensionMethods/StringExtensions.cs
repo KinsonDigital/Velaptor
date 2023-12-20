@@ -274,7 +274,7 @@ internal static class StringExtensions
 
         path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-        if (path.DoesNotStartWith($@"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
+        if (path.DoesNotStartWith($"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
         {
             return false;
         }

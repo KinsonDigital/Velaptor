@@ -29,9 +29,9 @@ public class TexturePathResolverTests
     /// </summary>
     public TexturePathResolverTests()
     {
-        this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+        this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
             .ToCrossPlatPath();
-        this.atlasContentDir = $@"{this.baseDir}/Content/Graphics";
+        this.atlasContentDir = $"{this.baseDir}/Content/Graphics";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.png";
     }
 

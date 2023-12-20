@@ -22,9 +22,9 @@ using NETPoint = System.Drawing.Point;
 public static class TestHelpers
 {
     private const string TestResultDirName = "ImageTestResults";
-    private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private static readonly string BasePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath();
-    private static readonly string TestResultDirPath = @$"{BasePath}/{TestResultDirName}";
+    private static readonly string TestResultDirPath = $"{BasePath}/{TestResultDirName}";
 
     /// <summary>
     /// Returns the directory path to the test result directory.

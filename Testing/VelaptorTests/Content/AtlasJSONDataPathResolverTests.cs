@@ -29,9 +29,9 @@ public class AtlasJSONDataPathResolverTests
     /// </summary>
     public AtlasJSONDataPathResolverTests()
     {
-        this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+        this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
             .ToCrossPlatPath();
-        this.atlasContentDir = $@"{this.baseDir}/Content/Atlas";
+        this.atlasContentDir = $"{this.baseDir}/Content/Atlas";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.json";
     }
 

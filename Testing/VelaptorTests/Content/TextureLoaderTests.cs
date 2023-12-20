@@ -21,7 +21,7 @@ using Xunit;
 public class TextureLoaderTests
 {
     private const string TextureExtension = ".png";
-    private const string TextureDirPath = @"C:/textures";
+    private const string TextureDirPath = "C:/textures";
     private const string TextureFileName = "test-texture";
     private const string TextureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;

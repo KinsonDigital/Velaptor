@@ -57,7 +57,7 @@ public class FontLoaderTests
     /// </summary>
     public FontLoaderTests()
     {
-        this.fontFilePath = $@"{ContentDirPath}{FontDirName}/{FontContentName}{FontExtension}";
+        this.fontFilePath = $"{ContentDirPath}{FontDirName}/{FontContentName}{FontExtension}";
         this.filePathWithMetaData = $"{this.fontFilePath}|{this.metaData}";
         this.contentNameWithMetaData = $"{FontContentName}|{this.metaData}";
 

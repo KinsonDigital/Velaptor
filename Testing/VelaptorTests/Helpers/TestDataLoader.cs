@@ -19,7 +19,7 @@ public static class TestDataLoader
     private const char WinDirSeparatorChar = '\\';
     private const char CrossPlatDirSeparatorChar = '/';
     private const string TestDataFolderName = "SampleTestData";
-    private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private static readonly string RootDirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
                                                      .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) +
                                                  $"{CrossPlatDirSeparatorChar}{TestDataFolderName}";
 
@@ -68,7 +68,7 @@ public static class TestDataLoader
         // Add a directory separator if one does not exist
         relativeDirPath = Path.EndsInDirectorySeparator(relativeDirPath)
             ? relativeDirPath
-            : @$"{relativeDirPath}";
+            : $"{relativeDirPath}";
 
         var fullDirPath = $"{RootDirPath}{CrossPlatDirSeparatorChar}{relativeDirPath}";
 

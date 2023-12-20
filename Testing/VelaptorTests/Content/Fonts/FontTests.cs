@@ -30,7 +30,7 @@ using Xunit;
 public class FontTests
 {
     private const char InvalidCharacter = '□';
-    private const string DirPath = @"C:/test-dir/fonts";
+    private const string DirPath = "C:/test-dir/fonts";
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private readonly string fontFilePath;
@@ -40,7 +40,7 @@ public class FontTests
     private readonly Mock<ITexture> mockTexture;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
-    private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private readonly string sampleTestDataDirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath() + "/SampleTestData";
     private readonly Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 

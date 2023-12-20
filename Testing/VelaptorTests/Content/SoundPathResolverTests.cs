@@ -29,9 +29,9 @@ public class SoundPathResolverTests
     /// </summary>
     public SoundPathResolverTests()
     {
-        this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+        this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
             .ToCrossPlatPath();
-        this.atlasContentDir = $@"{this.baseDir}/Content/Sounds";
+        this.atlasContentDir = $"{this.baseDir}/Content/Sounds";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}";
     }
 
