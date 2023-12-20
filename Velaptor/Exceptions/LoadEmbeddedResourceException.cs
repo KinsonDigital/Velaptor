@@ -5,13 +5,10 @@
 namespace Velaptor.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Occurs when something goes wrong with loading an embedded resource.
 /// </summary>
-[Serializable]
 public sealed class LoadEmbeddedResourceException : Exception
 {
     /// <summary>
@@ -40,17 +37,6 @@ public sealed class LoadEmbeddedResourceException : Exception
     /// </param>
     public LoadEmbeddedResourceException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoadEmbeddedResourceException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private LoadEmbeddedResourceException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

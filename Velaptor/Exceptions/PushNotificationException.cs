@@ -5,13 +5,10 @@
 namespace Velaptor.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Thrown when there is an issue with the push notification system.
 /// </summary>
-[Serializable]
 public sealed class PushNotificationException : Exception
 {
     /// <summary>
@@ -50,17 +47,6 @@ public sealed class PushNotificationException : Exception
     /// <param name="subscriptionId">The subscription ID.</param>
     public PushNotificationException(string subscriberSrc, Guid subscriptionId)
         : base($"There was an issue with the '{subscriberSrc}' subscription source for subscription ID '{subscriptionId}'.")
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PushNotificationException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private PushNotificationException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }
