@@ -17,7 +17,6 @@ using Graphics;
 using NativeInterop.OpenGL;
 using ReactableData;
 using Velaptor.Exceptions;
-using NETRect = System.Drawing.Rectangle;
 
 /// <summary>
 /// Updates texture data in the GPU buffer.

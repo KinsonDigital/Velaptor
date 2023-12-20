@@ -6,6 +6,7 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using Velaptor.Input;
@@ -25,15 +26,16 @@ public class KeyboardStateTests
     {
         var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-        for (var i = 0; i < keyCodes.Length; i++)
+        foreach (var keyCode in keyCodes)
         {
-            this.keyStates.Add(keyCodes[i], false);
+            this.keyStates.Add(keyCode, false);
         }
     }
 
     public static IEnumerable<object[]> StandardNumberKeyCodeData =>
         new List<object[]>
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
             new object[] { KeyCode.D0,          true },
             new object[] { KeyCode.D1,          true },
@@ -56,11 +58,13 @@ public class KeyboardStateTests
             new object[] { KeyCode.KeyPad7,     false },
             new object[] { KeyCode.KeyPad8,     false },
             new object[] { KeyCode.KeyPad9,     false },
+            // ReSharper restore MultipleSpaces
         };
 
     public static IEnumerable<object[]> StandardNumberKeysWithShiftDownCharacterData =>
         new List<object[]>
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
             new object[] { KeyCode.D0,          ')' },
             new object[] { KeyCode.D1,          '!' },
@@ -72,11 +76,13 @@ public class KeyboardStateTests
             new object[] { KeyCode.D7,          '&' },
             new object[] { KeyCode.D8,          '*' },
             new object[] { KeyCode.D9,          '(' },
+            // ReSharper restore MultipleSpaces
         };
 
     public static IEnumerable<object[]> StandardNumberKeysWithShiftUpCharacterData =>
         new List<object[]>
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
             new object[] { KeyCode.D0,          '0' },
             new object[] { KeyCode.D1,          '1' },
@@ -88,11 +94,13 @@ public class KeyboardStateTests
             new object[] { KeyCode.D7,          '7' },
             new object[] { KeyCode.D8,          '8' },
             new object[] { KeyCode.D9,          '9' },
+            // ReSharper restore MultipleSpaces
         };
 
     public static IEnumerable<object[]> NumpadNumberKeyCodeData =>
         new List<object[]>
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
             new object[] { KeyCode.D0,          false },
             new object[] { KeyCode.D1,          false },
@@ -115,6 +123,7 @@ public class KeyboardStateTests
             new object[] { KeyCode.KeyPad7,     true },
             new object[] { KeyCode.KeyPad8,     true },
             new object[] { KeyCode.KeyPad9,     true },
+            // ReSharper restore MultipleSpaces
         };
 
     public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
@@ -372,7 +381,7 @@ public class KeyboardStateTests
     }
 
     [Fact]
-    public void IsKeyUp_WhenKeyIsInUpPostion_ReturnsTrue()
+    public void IsKeyUp_WhenKeyIsInUpPosition_ReturnsTrue()
     {
         // Arrange
         SetAllStatesTo(true);
@@ -482,6 +491,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(StandardNumberKeysWithShiftDownCharacterData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyDownAndStandardNumberAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -498,6 +508,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(SymbolKeyCharacterWithShiftDownData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyDownAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -530,6 +541,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(SymbolKeyCharacterWithShiftUpData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyUpAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -546,6 +558,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(StandardNumberKeysWithShiftUpCharacterData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyUpAndStandardNumberKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -590,6 +603,7 @@ public class KeyboardStateTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void Equals_WhenUsingOverloadWithSameParamTypeWhileNotHavingSameKeys_ReturnsTrue()
     {
         // Arrange

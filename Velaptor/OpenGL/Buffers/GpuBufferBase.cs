@@ -10,7 +10,6 @@ using Carbonate.Fluent;
 using Factories;
 using NativeInterop.OpenGL;
 using ReactableData;
-using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
 /// Base functionality for managing buffer data in the GPU.

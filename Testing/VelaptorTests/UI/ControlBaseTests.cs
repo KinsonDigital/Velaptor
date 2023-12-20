@@ -38,10 +38,12 @@ public class ControlBaseTests
         new List<object[]>
         {
             //              xPos    yPos    mouseDown   expectedAlpha   expectedRed     expectedGreen       expectedBlue
+            // ReSharper disable MultipleSpaces
             new object[] {   75,     75,      true,          255,            190,           190,                190 },
             new object[] {   75,     75,      false,         255,            230,           230,                230 },
             new object[] {   200,    75,      true,          255,            255,           255,                255 },
             new object[] {   200,    75,      false,         255,            255,           255,                255 },
+            // ReSharper restore MultipleSpaces
         };
 
     #region Prop Tests

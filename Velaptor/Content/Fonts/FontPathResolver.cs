@@ -7,7 +7,6 @@ namespace Velaptor.Content.Fonts;
 using System;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using Guards;
 
 /// <summary>
 /// Resolves paths to font content to be used for rendering text.

@@ -22,7 +22,7 @@ public readonly record struct CornerRadius
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The standard text is incorrect and says class instead of struct.")]
-    public CornerRadius(float topLeft, float bottomLeft,  float bottomRight, float topRight)
+    public CornerRadius(float topLeft, float bottomLeft, float bottomRight, float topRight)
     {
         TopLeft = topLeft;
         TopRight = topRight;

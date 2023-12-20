@@ -76,7 +76,6 @@ public sealed class TextBox : ControlBase
     /// Initializes a new instance of the <see cref="TextBox"/> class.
     /// </summary>
     /// <param name="textBoxDataReactable">Manages notifications to the text box cursor and selection objects.</param>
-    /// <param name="rendererFactory">Creates different types of renderers.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="uiDependencyFactory">Creates UI dependencies.</param>
     internal TextBox(
@@ -812,6 +811,7 @@ public sealed class TextBox : ControlBase
     /// <exception cref="InvalidEnumArgumentException">
     ///     Thrown if the <paramref name="mutateType"/> is an invalid value.
     /// </exception>
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Will be removed in the future")]
     private void UpdateState(MutateType mutateType, bool boundsExist, int textRight, KeyCode key, TextBoxEvent textBoxEvent)
     {
         RectangleF selStartCharBounds = default;
@@ -962,6 +962,7 @@ public sealed class TextBox : ControlBase
     /// Updates the character bounds of the text based on the given keyboard <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The keyboard key.</param>
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Will be removed in the future")]
     private void UpdateBounds(KeyCode key)
     {
         /* NOTE:
@@ -1061,6 +1062,7 @@ public sealed class TextBox : ControlBase
     /// </summary>
     /// <param name="key">The key that was pressed.</param>
     /// <returns>The new character bounds index.</returns>
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Will be removed in the future")]
     private int CalcNextCharIndex(KeyCode key)
     {
         var charIndexAtEnd = this.preTextBoxState.CharIndex >= this.preTextBoxState.TextLength - 1;

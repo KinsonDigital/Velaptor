@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using Exceptions;
 using FreeTypeSharp.Native;
 using Graphics;
-using Guards;
 using NativeInterop.FreeType;
 using Velaptor.Services;
 

@@ -23,7 +23,7 @@ public interface IItemCache<in TCacheKey, out TCacheType>
     /// <summary>
     /// Gets the list of all cache keys.
     /// </summary>
-    IReadOnlyCollection<string> CacheKeys { get;  }
+    IReadOnlyCollection<string> CacheKeys { get; }
 
     /// <summary>
     /// Gets a cached item that matches the given <paramref name="cacheKey"/>.

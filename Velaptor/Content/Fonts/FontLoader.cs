@@ -13,7 +13,6 @@ using Caching;
 using Exceptions;
 using Factories;
 using Graphics;
-using Guards;
 using Velaptor.Factories;
 using Velaptor.Services;
 

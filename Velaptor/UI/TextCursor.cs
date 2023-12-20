@@ -6,6 +6,7 @@ namespace Velaptor.UI;
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Carbonate.Fluent;
@@ -31,7 +32,7 @@ internal class TextCursor : ITextCursor
     /// <param name="textBoxStateReactable">Receives notifications of text box state data.</param>
     public TextCursor(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        var textBoxStateSubscription= ISubscriptionBuilder.Create()
+        var textBoxStateSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.TextBoxStateId)
             .WithName("TextBoxStateDataUpdate")
             .BuildOneWayReceive<TextBoxStateData>(UpdateState);
@@ -359,6 +360,7 @@ internal class TextCursor : ITextCursor
     /// <summary>
     /// Handles the cursor position when the text box has resized.
     /// </summary>
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Will be removed in the future")]
     private void HandleTextBoxResizing()
     {
         var postTextWidth = Math.Abs(this.postMutateState.TextLeft - this.postMutateState.TextRight);

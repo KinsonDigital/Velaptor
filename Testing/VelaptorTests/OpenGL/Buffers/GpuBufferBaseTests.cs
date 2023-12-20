@@ -226,7 +226,7 @@ public class GpuBufferBaseTests
     {
         // Arrange
         const string becauseMsg = $"The method '{nameof(GpuBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.";
-        var sut  = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnReceive();

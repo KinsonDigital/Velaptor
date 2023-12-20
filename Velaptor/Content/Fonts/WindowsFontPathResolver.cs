@@ -8,7 +8,6 @@ using System;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Guards;
 
 /// <summary>
 /// Resolves paths to Windows system fonts.

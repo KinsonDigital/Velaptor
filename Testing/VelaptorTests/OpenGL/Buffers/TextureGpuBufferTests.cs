@@ -418,7 +418,7 @@ public class TextureGpuBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture  });
+        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
         sut.BatchSize.Should().Be(123);

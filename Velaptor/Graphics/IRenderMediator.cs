@@ -4,9 +4,12 @@
 
 namespace Velaptor.Graphics;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Manages rendering between the different renderers.
 /// </summary>
+[SuppressMessage("ReSharper", "RedundantTypeDeclarationBody", Justification = "Intentional")]
 public interface IRenderMediator
 {
 }

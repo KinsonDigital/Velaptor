@@ -251,7 +251,7 @@ public class TextBoxExtensionsTests
     public void CharLeft_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, int index)
     {
         // Arrange
-        var expected = (index < 0 || index >= charBounds.Count) ? 0f : charBounds[index].bounds.Left;
+        var expected = index < 0 || index >= charBounds.Count ? 0f : charBounds[index].bounds.Left;
         // Act
         var actual = charBounds.CharLeft(index);
         // Assert
@@ -263,7 +263,7 @@ public class TextBoxExtensionsTests
     public void CharRight_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, int index)
     {
         // Arrange
-        var expected = (index < 0 || index >= charBounds.Count) ? 0f : charBounds[index].bounds.Right;
+        var expected = index < 0 || index >= charBounds.Count ? 0f : charBounds[index].bounds.Right;
         // Act
         var actual = charBounds.CharRight(index);
         // Assert
@@ -278,7 +278,7 @@ public class TextBoxExtensionsTests
         var left = charBounds.Min(cb => cb.bounds.Left);
         var right = charBounds.Max(cb => cb.bounds.Right);
         var width = Math.Abs(left - right);
-        var expected = (charBounds is null || charBounds.Count <= 0) ? 0f : left + width.Half();
+        var expected = charBounds.Count <= 0 ? 0f : left + width.Half();
         // Act
         var actual = charBounds.CenterPositionX();
         // Assert
@@ -290,7 +290,7 @@ public class TextBoxExtensionsTests
     public void GapAtRightEnd_WhenInvoked_ReturnsCorrectResult(List<(char character, RectangleF bounds)> charBounds, float rightEndLimitX)
     {
         // Arrange
-        var expected = charBounds is not null && charBounds.Count > 0 && charBounds.TextRight() < rightEndLimitX;
+        var expected = charBounds.Count > 0 && charBounds.TextRight() < rightEndLimitX;
         // Act
         var actual = charBounds.GapAtRightEnd(rightEndLimitX);
         // Assert

@@ -24,7 +24,6 @@ using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
-using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
 /// Tests the <see cref="Velaptor.InternalExtensionMethods"/> class.

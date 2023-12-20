@@ -264,6 +264,7 @@ public class ShapeGpuBufferTests
          */
         var expectedRawData = new float[]
         {
+            // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
             /*                   Color.R    Color.G     Color.B     Color.A                 */
             0, 0, 0, 0, 0, 0,       6,         7,          8,         5,     0, 0, 0, 0, 0, 0,
@@ -279,6 +280,7 @@ public class ShapeGpuBufferTests
             // Items 48-63 = Vertex 4
             /*                   Color.R    Color.G     Color.B     Color.A                 */
             0, 0, 0, 0, 0, 0,       6,         7,          8,         5,     0, 0, 0, 0, 0, 0,
+            // ReSharper restore MultipleSpaces
         };
 
         float[]? actualRawData = null;
@@ -330,6 +332,7 @@ public class ShapeGpuBufferTests
          */
         var expectedRawData = new float[]
         {
+            // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
             /*                   Color.R    Color.G     Color.B     Color.A                   */
             0, 0, 0, 0, 0, 0,       15,       16,          17,         14,     0, 0, 0, 0, 0, 0,
@@ -345,6 +348,7 @@ public class ShapeGpuBufferTests
             // Items 48-63 = Vertex 4
             /*                   Color.R    Color.G     Color.B     Color.A                   */
             0, 0, 0, 0, 0, 0,       19,       20,          21,         18,     0, 0, 0, 0, 0, 0,
+            // ReSharper restore MultipleSpaces
         };
 
         float[]? actualRawData = null;
@@ -396,6 +400,7 @@ public class ShapeGpuBufferTests
          */
         var expectedRawData = new float[]
         {
+            // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
             /*                   Color.R    Color.G     Color.B     Color.A                   */
             0, 0, 0, 0, 0, 0,       15,       16,          17,         14,     0, 0, 0, 0, 0, 0,
@@ -411,6 +416,7 @@ public class ShapeGpuBufferTests
             // Items 48-63 = Vertex 4
             /*                   Color.R    Color.G     Color.B     Color.A                   */
             0, 0, 0, 0, 0, 0,       19,       20,          21,         18,     0, 0, 0, 0, 0, 0,
+            // ReSharper restore MultipleSpaces
         };
 
         float[]? actualRawData = null;
@@ -598,7 +604,7 @@ public class ShapeGpuBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Rect  });
+        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Rect });
 
         // Assert
         sut.BatchSize.Should().Be(123);

@@ -179,7 +179,7 @@ public class FontAtlasServiceTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void CreateFontAtlas_WithNullOrEmptyFilePath_ThrowsException(string fontFilePath)
+    public void CreateFontAtlas_WithNullOrEmptyFilePath_ThrowsException(string? fontFilePath)
     {
         // Arrange
         var service = CreateService();

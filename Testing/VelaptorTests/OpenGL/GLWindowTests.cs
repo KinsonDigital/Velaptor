@@ -37,9 +37,7 @@ using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
 using SysVector2 = System.Numerics.Vector2;
-using VelaptorKeyboardState = Velaptor.Input.KeyboardState;
 using VelaptorMouseButton = Velaptor.Input.MouseButton;
-using VelaptorMouseState = Velaptor.Input.MouseState;
 using VelaptorWindowBorder = Velaptor.WindowBorder;
 using WindowBorder = Velaptor.WindowBorder;
 

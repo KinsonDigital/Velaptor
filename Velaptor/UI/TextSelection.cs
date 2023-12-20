@@ -30,7 +30,7 @@ internal class TextSelection : ITextSelection
     /// </exception>
     public TextSelection(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        var textBoxStateSubscription= ISubscriptionBuilder.Create()
+        var textBoxStateSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.TextBoxStateId)
             .WithName("TextBoxStateDataUpdate")
             .BuildOneWayReceive<TextBoxStateData>(UpdateState);

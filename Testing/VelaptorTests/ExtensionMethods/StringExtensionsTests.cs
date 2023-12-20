@@ -203,7 +203,7 @@ public class StringExtensionsTests
     [InlineData(@"C:\temp\test-file.txt", "temp")]
     [InlineData("C:/temp/test-file.txt", "temp")]
     [InlineData("C:/temp/extra-dir/test-file.txt", "extra-dir")]
-    public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string value, string expected)
+    public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string? value, string expected)
     {
         // Act
         var actual = value.GetLastDirName();
@@ -225,7 +225,7 @@ public class StringExtensionsTests
     [InlineData(@"\home\user-dir\test-file.txt", "user-dir")]
     [InlineData(@"\home\test-file.text", "home")]
     [InlineData(@"\test-file.txt", "/")]
-    public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string value, string expected)
+    public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string? value, string expected)
     {
         // Act
         var actual = value.GetLastDirName();
@@ -274,7 +274,7 @@ public class StringExtensionsTests
     [InlineData("test\r", "test")]
     [InlineData("test\n\r", "test")]
     [InlineData("test\r\n", "test")]
-    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value, string expected)
+    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string? value, string expected)
     {
         // Arrange & Act
         var actual = value.TrimNewLineFromEnd();

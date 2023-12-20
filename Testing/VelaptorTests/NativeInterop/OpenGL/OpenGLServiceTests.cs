@@ -368,7 +368,7 @@ public class OpenGLServiceTests
     [InlineData("", "NOT SET VAO")]
     [InlineData(null, "NOT SET VAO")]
     [InlineData("test-label", "test-label VAO")]
-    public void LabelVertexArray_WhenInvoked_LabelsVertexArray(string label, string expected)
+    public void LabelVertexArray_WhenInvoked_LabelsVertexArray(string? label, string expected)
     {
         // Arrange
         var service = CreateService();
@@ -406,7 +406,7 @@ public class OpenGLServiceTests
     [InlineData("", (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData(null, (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData("test-label", (int)OpenGLBufferType.IndexArrayObject, "test-label EBO")]
-    public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, int bufferTypeNumericalValue, string expected)
+    public void LabelBuffer_WhenInvoked_LabelsVertexArray(string? label, int bufferTypeNumericalValue, string expected)
     {
         // Arrange
         var bufferType = (OpenGLBufferType)bufferTypeNumericalValue;
@@ -424,7 +424,7 @@ public class OpenGLServiceTests
     [InlineData("", "NOT SET")]
     [InlineData(null, "NOT SET")]
     [InlineData("test-label", "test-label")]
-    public void LabelTexture_WhenInvoked_LabelsTexture(string label, string expected)
+    public void LabelTexture_WhenInvoked_LabelsTexture(string? label, string expected)
     {
         // Arrange
         var service = CreateService();

@@ -107,7 +107,7 @@ internal sealed class Batcher : IBatcher
     }
 
     /// <inheritdoc/>
-    public bool HasBegun { get; private set;  }
+    public bool HasBegun { get; private set; }
 
     /// <inheritdoc/>
     public void Begin()

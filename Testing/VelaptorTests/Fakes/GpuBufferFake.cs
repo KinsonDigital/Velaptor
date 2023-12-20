@@ -9,7 +9,6 @@ using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
-using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
 /// Used to test the abstract class <see cref="GpuBufferBase{TData}"/>.

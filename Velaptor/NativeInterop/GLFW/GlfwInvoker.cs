@@ -80,7 +80,7 @@ internal sealed class GlfwInvoker : IGlfwInvoker
     /// <inheritdoc/>
     public GlfwVideoMode GetVideoMode(nint monitor)
     {
-        GlfwVideoMode result = default;
+        GlfwVideoMode result;
 
         unsafe
         {
