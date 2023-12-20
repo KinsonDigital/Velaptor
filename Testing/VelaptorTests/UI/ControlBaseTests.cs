@@ -5,7 +5,6 @@
 namespace VelaptorTests.UI;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using Fakes;
 using FluentAssertions;
@@ -34,15 +33,15 @@ public class ControlBaseTests
     /// <summary>
     /// Gets the mouse test data.
     /// </summary>
-    public static IEnumerable<object[]> MouseData =>
-        new List<object[]>
+    public static TheoryData<int, int, bool, byte, byte, byte, byte> MouseData =>
+        new ()
         {
-            //              xPos    yPos    mouseDown   expectedAlpha   expectedRed     expectedGreen       expectedBlue
+            // xPos    yPos    mouseDown   expectedAlpha   expectedRed     expectedGreen       expectedBlue
             // ReSharper disable MultipleSpaces
-            new object[] {   75,     75,      true,          255,            190,           190,                190 },
-            new object[] {   75,     75,      false,         255,            230,           230,                230 },
-            new object[] {   200,    75,      true,          255,            255,           255,                255 },
-            new object[] {   200,    75,      false,         255,            255,           255,                255 },
+            {   75,     75,      true,          255,            190,           190,                190 },
+            {   75,     75,      false,         255,            230,           230,                230 },
+            {   200,    75,      true,          255,            255,           255,                255 },
+            {   200,    75,      false,         255,            255,           255,                255 },
             // ReSharper restore MultipleSpaces
         };
 

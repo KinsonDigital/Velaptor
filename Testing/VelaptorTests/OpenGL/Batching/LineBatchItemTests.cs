@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.OpenGL.Batching;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
@@ -29,54 +28,16 @@ public class LineBatchItemTests
     /// Gets all of the test data related to testing the <see cref="IsEmptyTestData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsEmptyTestData()
-    {
-        yield return new object[]
+    public static TheoryData<Vector2, Vector2, Color, float, string, bool> IsEmptyTestData =>
+        new ()
         {
-            Vector2.Zero, // p1
-            Vector2.Zero, // p2
-            Color.Empty, // color
-            0f, // thickness
-            "Fully Empty", // TEST NAME
-            true, // Expected
+            // p1, p2, color, thickness, TEST NAME, Expected
+            { Vector2.Zero, Vector2.Zero, Color.Empty, 0f, "Fully Empty", true },
+            { new Vector2(1, 2), Vector2.Zero, Color.Empty, 0f, "p1", false },
+            { Vector2.Zero, new Vector2(1, 2), Color.Empty, 0f, "p2", false },
+            { Vector2.Zero, Vector2.Zero, Color.FromArgb(1, 2, 3, 4), 0f, "color", false },
+            { Vector2.Zero, Vector2.Zero, Color.Empty, 1f, "thickness", false },
         };
-        yield return new object[]
-        {
-            new Vector2(1, 2), // p1
-            Vector2.Zero, // p2
-            Color.Empty, // color
-            0f, // thickness
-            "p1", // TEST NAME
-            false,
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // p1
-            new Vector2(1, 2), // p2
-            Color.Empty, // color
-            0f, // thickness
-            "p2", // TEST NAME
-            false,
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // p1
-            Vector2.Zero, // p2
-            Color.FromArgb(1, 2, 3, 4), // color
-            0f, // thickness
-            "color", // TEST NAME
-            false,
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // p1
-            Vector2.Zero, // p2
-            Color.Empty, // color
-            1f, // thickness
-            "thickness", // TEST NAME
-            false,
-        };
-    }
 
     #region Constructor Tests
     [Fact]

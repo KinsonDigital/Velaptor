@@ -5,7 +5,6 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
@@ -102,56 +101,49 @@ public class TextureGpuBufferTests
     }
 
     /// <summary>
-    /// Provides sample data to test if the correct data is being sent to the GPU.
+    /// Gets the sample data to test if the correct data is being sent to the GPU.
     /// </summary>
     /// <returns>The data to test against.</returns>
-    public static IEnumerable<object[]> GetGpuUploadTestData()
-    {
-        yield return new object[]
+    public static TheoryData<RenderEffects, float[]> GetGpuUploadTestData =>
+        new ()
         {
-            RenderEffects.None,
-            new[]
             {
-                -0.847915947f, 0.916118085f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f,
-                0.760554552f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
+                RenderEffects.None,
+                [
+                    -0.847915947f, 0.916118085f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f,
+                    0.760554552f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f,
+                    0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f, 0.571428597f,
+                    0.25f, 147f, 112f, 219f, 255f
+                ]
+            },
+            {
+                RenderEffects.FlipHorizontally,
+                [
+                    -0.760411441f, 0.79944545f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f,
+                    0.643881917f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f,
+                    0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f, 0.571428597f,
+                    0.25f, 147f, 112f, 219f, 255f,
+                ]
+            },
+            {
+                RenderEffects.FlipVertically,
+                [
+                    -0.964588523f, 0.760554552f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f,
+                    0.916118085f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f,
+                    0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f, 0.571428597f,
+                    0.25f, 147f, 112f, 219f, 255f,
+                ]
+            },
+            {
+                RenderEffects.FlipBothDirections,
+                [
+                    -0.877084076f, 0.643881917f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f,
+                    0.79944545f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f,
+                    0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f, 0.571428597f,
+                    0.25f, 147f, 112f, 219f, 255f,
+                ]
             },
         };
-        yield return new object[]
-        {
-            RenderEffects.FlipHorizontally,
-            new[]
-            {
-                -0.760411441f, 0.79944545f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f,
-                0.643881917f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
-        yield return new object[]
-        {
-            RenderEffects.FlipVertically,
-            new[]
-            {
-                -0.964588523f, 0.760554552f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f,
-                0.916118085f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
-        yield return new object[]
-        {
-            RenderEffects.FlipBothDirections,
-            new[]
-            {
-                -0.877084076f, 0.643881917f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f,
-                0.79944545f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
-    }
 
     #region Constructor Tests
     [Fact]

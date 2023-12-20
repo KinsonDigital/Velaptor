@@ -6,7 +6,7 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
@@ -25,28 +25,21 @@ public class RenderingExtensionsTests
     /// Gets the rectangle vertice data for the <see cref="CreateRectFromLine_WhenInvoked_ReturnsCorrectResult"/> unit test.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> GetExpectedRectPointData()
-    {
-        // X and Y axis aligned rectangle
-        yield return new object[]
+    public static TheoryData<Vector2, Vector2, Color, float, Vector2, Vector2, Vector2, Vector2> ExpectedRectPointData =>
+        new ()
         {
-            new LineBatchItem(new Vector2(50f, 100f), new Vector2(200f, 100f), Color.White, 20),
-            new Vector2(50f, 90f),
-            new Vector2(200f, 90f),
-            new Vector2(200f, 110f),
-            new Vector2(50f, 110f),
-        };
+            // X and Y axis aligned rectangle
+            {
+                new Vector2(50f, 100f), new Vector2(200f, 100f), Color.White, 20, new Vector2(50f, 90f),
+                new Vector2(200f, 90f), new Vector2(200f, 110f), new Vector2(50f, 110f)
+            },
 
-        // X and Y axis aligned rectangle rotated 45 degrees clockwise
-        yield return new object[]
-        {
-            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), Color.White, 100f),
-            new Vector2(135.35535f, 64.64465f),
-            new Vector2(235.35535f, 164.64467f),
-            new Vector2(164.64465f, 235.35533f),
-            new Vector2(64.64465f, 135.35535f),
+            // X and Y axis aligned rectangle rotated 45 degrees clockwise
+            {
+                new Vector2(100f, 100f), new Vector2(200f, 200f), Color.White, 100f, new Vector2(135.35535f, 64.64465f),
+                new Vector2(235.35535f, 164.64467f), new Vector2(164.64465f, 235.35533f), new Vector2(64.64465f, 135.35535f)
+            },
         };
-    }
     #endregion
 
     [Fact]
@@ -197,9 +190,13 @@ public class RenderingExtensionsTests
     }
 
     [Theory]
-    [MemberData(nameof(GetExpectedRectPointData))]
+    [MemberData(nameof(ExpectedRectPointData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     internal void CreateRectFromLine_WhenInvoked_ReturnsCorrectResult(
-        LineBatchItem lineItem,
+        Vector2 p1,
+        Vector2 p2,
+        Color clr,
+        float thickness,
         Vector2 topLeftCorner,
         Vector2 topRightCorner,
         Vector2 bottomRightCorner,
@@ -214,7 +211,7 @@ public class RenderingExtensionsTests
             bottomLeftCorner,
         };
 
-        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness);
+        var line = new LineBatchItem(p1, p2, clr, thickness);
 
         // Act
         var actual = line.CreateRectFromLine();

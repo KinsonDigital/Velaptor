@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.OpenGL.Batching;
 
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using FluentAssertions;
 using Velaptor.Graphics;
@@ -26,96 +26,21 @@ public class TextureBatchItemTests
     public TextureBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
 
     /// <summary>
-    /// Provides test data for the <see cref="IsEmptyOriginal_WhenBatchItemIsEmpty_ReturnsTrue"/> test method.
+    /// Gets test data for the <see cref="IsEmptyOriginal_WhenBatchItemIsEmpty_ReturnsTrue"/> test method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsEmptyData()
-    {
-        yield return new object[]
+    public static TheoryData<RectangleF, RectangleF, float, float, Color, RenderEffects, uint, string, bool> IsEmptyData =>
+        new ()
         {
-            new RectangleF(4, 5, 6, 7), // SrcRect
-            RectangleF.Empty, // DestRect
-            0f, // Size
-            0f, // Angle
-            Color.Empty, // TintColor
-            0, // Effects
-            0, // TextureId
-            "srcRect", // TEST NAME
-            false, // Expected result
+            // DestRect, Size, Angle, TintColor, Effects, TextureId, TEST NAME, Expected result
+            { new RectangleF(4, 5, 6, 7), RectangleF.Empty, 0f, 0f, Color.Empty, RenderEffects.None, 0, "srcRect", false },
+            { RectangleF.Empty, new RectangleF(8, 9, 10, 11), 0f, 0f, Color.Empty, RenderEffects.None, 0, "destRect", false },
+            { RectangleF.Empty, RectangleF.Empty, 2f, 0f, Color.Empty, RenderEffects.None, 0, "size", false },
+            { RectangleF.Empty, RectangleF.Empty, 0f, 3f, Color.Empty, RenderEffects.None, 0, "angle", false },
+            { RectangleF.Empty, RectangleF.Empty, 0f, 0f, Color.FromArgb(12, 13, 14, 15), RenderEffects.None, 0, "tintColor", false },
+            { RectangleF.Empty, RectangleF.Empty, 0f, 0f, Color.Empty, RenderEffects.None, 0, "Fully Empty", true },
+            { RectangleF.Empty, RectangleF.Empty, 0f, 0f, Color.Empty, RenderEffects.None, 1, "textureId", false },
         };
-        yield return new object[]
-        {
-            RectangleF.Empty, // SrcRect
-            new RectangleF(8, 9, 10, 11), // DestRect
-            0f, // Size
-            0f, // Angle
-            Color.Empty, // TintColor
-            0, // Effects
-            0, // TextureId
-            "destRect", // TEST NAME
-            false, // Expected result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // SrcRect
-            RectangleF.Empty, // DestRect
-            2f, // Size
-            0f, // Angle
-            Color.Empty, // TintColor
-            0, // Effects
-            0, // TextureId
-            "size", // TEST NAME
-            false, // Expected result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // SrcRect
-            RectangleF.Empty, // DestRect
-            0f, // Size
-            3f, // Angle
-            Color.Empty, // TintColor
-            0, // Effects
-            0, // TextureId
-            "angle", // TEST NAME
-            false, // Expected result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // SrcRect
-            RectangleF.Empty, // DestRect
-            0f, // Size
-            0f, // Angle
-            Color.FromArgb(12, 13, 14, 15), // TintColor
-            0, // Effects
-            0, // TextureId
-            "tintColor", // TEST NAME
-            false, // Expected result
-        };
-        yield return new object[] // FAIL
-        {
-            RectangleF.Empty, // SrcRect
-            RectangleF.Empty, // DestRect
-            0f, // Size
-            0f, // Angle
-            Color.Empty, // TintColor
-            RenderEffects.None, // Effects
-            0, // TextureId
-            "Fully Empty", // TEST NAME
-            true, // Expected result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // SrcRect
-            RectangleF.Empty, // DestRect
-            0f, // Size
-            0f, // Angle
-            Color.Empty, // TintColor
-            0, // Effects
-            1, // TextureId
-            "textureId", // TEST NAME
-            false, // Expected result
-        };
-    }
 
     #region Constructor Tests
     [Fact]
@@ -145,6 +70,7 @@ public class TextureBatchItemTests
     #region Method Tests
     [Theory]
     [MemberData(nameof(IsEmptyData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmptyOriginal_WhenBatchItemIsEmpty_ReturnsTrue(
         RectangleF srcRect,
         RectangleF destRect,

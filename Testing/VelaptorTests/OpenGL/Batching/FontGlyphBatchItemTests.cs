@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.OpenGL.Batching;
 
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using FluentAssertions;
 using Velaptor.Graphics;
@@ -29,126 +29,21 @@ public class FontGlyphBatchItemTests
     /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsEmptyData()
-    {
-        yield return new object[]
+    public static TheoryData<RectangleF, RectangleF, char, float, float, Color, RenderEffects, uint, string, bool> IsEmptyData =>
+        new ()
         {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "Fully Empty", // TEST NAME
-            true, // Expected Result
+            // Dest Rect, Src Rect, Glyph, Size, Angle, Tint Color, ender Effects, TextureId, TEST NAME, Expected Result
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 0, Color.Empty, RenderEffects.None, 0, "Fully Empty", true },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 0, Color.Empty, RenderEffects.None, 0, "Fully Empty", true },
+            { new RectangleF(10, 20, 30, 40), RectangleF.Empty, '\0', 0, 0, Color.Empty, RenderEffects.None, 0, "srcRect", false },
+            { RectangleF.Empty, new RectangleF(10, 20, 30, 40), 'V', 0, 0, Color.Empty, RenderEffects.None, 0, "destRect", false },
+            { RectangleF.Empty, RectangleF.Empty, 'V', 0, 0, Color.Empty, RenderEffects.None, 0, "glyph", false },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 10, 0, Color.Empty, RenderEffects.None, 0, "size", false },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 10, Color.Empty, RenderEffects.None, 0, "angle", false },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 0, Color.FromArgb(10, 20, 30, 40), RenderEffects.None, 0, "tintColor", false },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 0, Color.Empty, RenderEffects.FlipHorizontally, 0, "effects", false },
+            { RectangleF.Empty, RectangleF.Empty, '\0', 0, 0, Color.Empty, RenderEffects.None, 10, "textureId", false },
         };
-        yield return new object[]
-        {
-            new RectangleF(10, 20, 30, 40), // Src Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "srcRect", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            new RectangleF(10, 20, 30, 40), // Dest Rect
-            'V', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "destRect", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            'V', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "glyph", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            10, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "size", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            10, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "angle", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            0, // Angle
-            Color.FromArgb(10, 20, 30, 40), // Tint Color
-            RenderEffects.None, //Render Effects
-            0, // TextureId
-            "tintColor", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.FlipHorizontally, //Render Effects
-            0, // TextureId
-            "effects", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            RectangleF.Empty, // Dest Rect
-            RectangleF.Empty, // Src Rect
-            '\0', // Glyph
-            0, // Size
-            0, // Angle
-            Color.Empty, // Tint Color
-            RenderEffects.None, //Render Effects
-            10, // TextureId
-            "textureId", // TEST NAME
-            false, // Expected Result
-        };
-    }
 
     #region Constructor Tests
     [Fact]
@@ -180,6 +75,7 @@ public class FontGlyphBatchItemTests
     #region Method Tests
     [Theory]
     [MemberData(nameof(IsEmptyData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue(
         RectangleF srcRect,
         RectangleF destRect,

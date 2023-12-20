@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Fakes;
@@ -26,12 +25,12 @@ public class ContentPathResolverTests
     /// <summary>
     /// Gets test data for the <see cref="RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult"/> test.
     /// </summary>
-    public static IEnumerable<object[]> ContentRootPaths =>
-        new List<object[]>
+    public static TheoryData<string, string> ContentRootPaths =>
+        new ()
         {
-            new object[] { null, @$"{BaseDir}/Content" },
-            new object[] { @"C:\base-content\", @"C:/base-content" },
-            new object[] { @"C:\base-content", @"C:/base-content" },
+            { null, $"{BaseDir}/Content" },
+            { @"C:\base-content\", "C:/base-content" },
+            { @"C:\base-content", "C:/base-content" },
         };
 
     #region Prop Tests
