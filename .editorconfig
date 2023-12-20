@@ -59,10 +59,10 @@ dotnet_naming_style.pascal_case_style.capitalization             = pascal_case
 
 # Use PascalCase for constant fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
 dotnet_naming_symbols.constant_fields.applicable_kinds            = field
-dotnet_naming_symbols.constant_fields.applicable_accessibilities  = *
+dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
 dotnet_naming_symbols.constant_fields.required_modifiers          = const
 
 
@@ -207,5 +207,7 @@ csharp_using_directive_placement = inside_namespace
 # noinspection EditorConfigKeyCorrectness
 
 resharper_bad_parens_spaces_highlighting = none
+resharper_bad_list_line_breaks_highlighting = none
+resharper_bad_parens_line_breaks_highlighting = none
 
 # inspection EditorConfigKeyCorrectness
