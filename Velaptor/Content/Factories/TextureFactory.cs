@@ -7,7 +7,6 @@ namespace Velaptor.Content.Factories;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Graphics;
-using Guards;
 using NativeInterop.OpenGL;
 using Velaptor.Factories;
 

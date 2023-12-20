@@ -6,6 +6,7 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using Velaptor.Input;
@@ -25,209 +26,215 @@ public class KeyboardStateTests
     {
         var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-        for (var i = 0; i < keyCodes.Length; i++)
+        foreach (var keyCode in keyCodes)
         {
-            this.keyStates.Add(keyCodes[i], false);
+            this.keyStates.Add(keyCode, false);
         }
     }
 
-    public static IEnumerable<object[]> StandardNumberKeyCodeData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, bool> StandardNumberKeyCodeData =>
+        new ()
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
-            new object[] { KeyCode.D0,          true },
-            new object[] { KeyCode.D1,          true },
-            new object[] { KeyCode.D2,          true },
-            new object[] { KeyCode.D3,          true },
-            new object[] { KeyCode.D4,          true },
-            new object[] { KeyCode.D5,          true },
-            new object[] { KeyCode.D6,          true },
-            new object[] { KeyCode.D7,          true },
-            new object[] { KeyCode.D8,          true },
-            new object[] { KeyCode.D9,          true },
-
-            new object[] { KeyCode.KeyPad0,     false },
-            new object[] { KeyCode.KeyPad1,     false },
-            new object[] { KeyCode.KeyPad2,     false },
-            new object[] { KeyCode.KeyPad3,     false },
-            new object[] { KeyCode.KeyPad4,     false },
-            new object[] { KeyCode.KeyPad5,     false },
-            new object[] { KeyCode.KeyPad6,     false },
-            new object[] { KeyCode.KeyPad7,     false },
-            new object[] { KeyCode.KeyPad8,     false },
-            new object[] { KeyCode.KeyPad9,     false },
+            { KeyCode.D0,          true },
+            { KeyCode.D1,          true },
+            { KeyCode.D2,          true },
+            { KeyCode.D3,          true },
+            { KeyCode.D4,          true },
+            { KeyCode.D5,          true },
+            { KeyCode.D6,          true },
+            { KeyCode.D7,          true },
+            { KeyCode.D8,          true },
+            { KeyCode.D9,          true },
+            { KeyCode.KeyPad0,     false },
+            { KeyCode.KeyPad1,     false },
+            { KeyCode.KeyPad2,     false },
+            { KeyCode.KeyPad3,     false },
+            { KeyCode.KeyPad4,     false },
+            { KeyCode.KeyPad5,     false },
+            { KeyCode.KeyPad6,     false },
+            { KeyCode.KeyPad7,     false },
+            { KeyCode.KeyPad8,     false },
+            { KeyCode.KeyPad9,     false },
+            // ReSharper restore MultipleSpaces
         };
 
-    public static IEnumerable<object[]> StandardNumberKeysWithShiftDownCharacterData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> StandardNumberKeysWithShiftDownCharacterData =>
+        new ()
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
-            new object[] { KeyCode.D0,          ')' },
-            new object[] { KeyCode.D1,          '!' },
-            new object[] { KeyCode.D2,          '@' },
-            new object[] { KeyCode.D3,          '#' },
-            new object[] { KeyCode.D4,          '$' },
-            new object[] { KeyCode.D5,          '%' },
-            new object[] { KeyCode.D6,          '^' },
-            new object[] { KeyCode.D7,          '&' },
-            new object[] { KeyCode.D8,          '*' },
-            new object[] { KeyCode.D9,          '(' },
+            { KeyCode.D0,          ')' },
+            { KeyCode.D1,          '!' },
+            { KeyCode.D2,          '@' },
+            { KeyCode.D3,          '#' },
+            { KeyCode.D4,          '$' },
+            { KeyCode.D5,          '%' },
+            { KeyCode.D6,          '^' },
+            { KeyCode.D7,          '&' },
+            { KeyCode.D8,          '*' },
+            { KeyCode.D9,          '(' },
+            // ReSharper restore MultipleSpaces
         };
 
-    public static IEnumerable<object[]> StandardNumberKeysWithShiftUpCharacterData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> StandardNumberKeysWithShiftUpCharacterData =>
+        new ()
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
-            new object[] { KeyCode.D0,          '0' },
-            new object[] { KeyCode.D1,          '1' },
-            new object[] { KeyCode.D2,          '2' },
-            new object[] { KeyCode.D3,          '3' },
-            new object[] { KeyCode.D4,          '4' },
-            new object[] { KeyCode.D5,          '5' },
-            new object[] { KeyCode.D6,          '6' },
-            new object[] { KeyCode.D7,          '7' },
-            new object[] { KeyCode.D8,          '8' },
-            new object[] { KeyCode.D9,          '9' },
+            { KeyCode.D0,          '0' },
+            { KeyCode.D1,          '1' },
+            { KeyCode.D2,          '2' },
+            { KeyCode.D3,          '3' },
+            { KeyCode.D4,          '4' },
+            { KeyCode.D5,          '5' },
+            { KeyCode.D6,          '6' },
+            { KeyCode.D7,          '7' },
+            { KeyCode.D8,          '8' },
+            { KeyCode.D9,          '9' },
+            // ReSharper restore MultipleSpaces
         };
 
-    public static IEnumerable<object[]> NumpadNumberKeyCodeData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, bool> NumpadNumberKeyCodeData =>
+        new ()
         {
+            // ReSharper disable MultipleSpaces
             //              key param       expected param
-            new object[] { KeyCode.D0,          false },
-            new object[] { KeyCode.D1,          false },
-            new object[] { KeyCode.D2,          false },
-            new object[] { KeyCode.D3,          false },
-            new object[] { KeyCode.D4,          false },
-            new object[] { KeyCode.D5,          false },
-            new object[] { KeyCode.D6,          false },
-            new object[] { KeyCode.D7,          false },
-            new object[] { KeyCode.D8,          false },
-            new object[] { KeyCode.D9,          false },
-
-            new object[] { KeyCode.KeyPad0,     true },
-            new object[] { KeyCode.KeyPad1,     true },
-            new object[] { KeyCode.KeyPad2,     true },
-            new object[] { KeyCode.KeyPad3,     true },
-            new object[] { KeyCode.KeyPad4,     true },
-            new object[] { KeyCode.KeyPad5,     true },
-            new object[] { KeyCode.KeyPad6,     true },
-            new object[] { KeyCode.KeyPad7,     true },
-            new object[] { KeyCode.KeyPad8,     true },
-            new object[] { KeyCode.KeyPad9,     true },
+            { KeyCode.D0,          false },
+            { KeyCode.D1,          false },
+            { KeyCode.D2,          false },
+            { KeyCode.D3,          false },
+            { KeyCode.D4,          false },
+            { KeyCode.D5,          false },
+            { KeyCode.D6,          false },
+            { KeyCode.D7,          false },
+            { KeyCode.D8,          false },
+            { KeyCode.D9,          false },
+            { KeyCode.KeyPad0,     true },
+            { KeyCode.KeyPad1,     true },
+            { KeyCode.KeyPad2,     true },
+            { KeyCode.KeyPad3,     true },
+            { KeyCode.KeyPad4,     true },
+            { KeyCode.KeyPad5,     true },
+            { KeyCode.KeyPad6,     true },
+            { KeyCode.KeyPad7,     true },
+            { KeyCode.KeyPad8,     true },
+            { KeyCode.KeyPad9,     true },
+            // ReSharper restore MultipleSpaces
         };
 
-    public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> LetterKeyUpperCaseCharacterData =>
+        new ()
         {
-            new object[] { KeyCode.A, 'A' },
-            new object[] { KeyCode.B, 'B' },
-            new object[] { KeyCode.C, 'C' },
-            new object[] { KeyCode.D, 'D' },
-            new object[] { KeyCode.E, 'E' },
-            new object[] { KeyCode.F, 'F' },
-            new object[] { KeyCode.G, 'G' },
-            new object[] { KeyCode.H, 'H' },
-            new object[] { KeyCode.I, 'I' },
-            new object[] { KeyCode.J, 'J' },
-            new object[] { KeyCode.K, 'K' },
-            new object[] { KeyCode.L, 'L' },
-            new object[] { KeyCode.M, 'M' },
-            new object[] { KeyCode.N, 'N' },
-            new object[] { KeyCode.O, 'O' },
-            new object[] { KeyCode.P, 'P' },
-            new object[] { KeyCode.Q, 'Q' },
-            new object[] { KeyCode.R, 'R' },
-            new object[] { KeyCode.S, 'S' },
-            new object[] { KeyCode.T, 'T' },
-            new object[] { KeyCode.U, 'U' },
-            new object[] { KeyCode.V, 'V' },
-            new object[] { KeyCode.W, 'W' },
-            new object[] { KeyCode.X, 'X' },
-            new object[] { KeyCode.Y, 'Y' },
-            new object[] { KeyCode.Z, 'Z' },
-            new object[] { KeyCode.Space, ' ' },
+            { KeyCode.A, 'A' },
+            { KeyCode.B, 'B' },
+            { KeyCode.C, 'C' },
+            { KeyCode.D, 'D' },
+            { KeyCode.E, 'E' },
+            { KeyCode.F, 'F' },
+            { KeyCode.G, 'G' },
+            { KeyCode.H, 'H' },
+            { KeyCode.I, 'I' },
+            { KeyCode.J, 'J' },
+            { KeyCode.K, 'K' },
+            { KeyCode.L, 'L' },
+            { KeyCode.M, 'M' },
+            { KeyCode.N, 'N' },
+            { KeyCode.O, 'O' },
+            { KeyCode.P, 'P' },
+            { KeyCode.Q, 'Q' },
+            { KeyCode.R, 'R' },
+            { KeyCode.S, 'S' },
+            { KeyCode.T, 'T' },
+            { KeyCode.U, 'U' },
+            { KeyCode.V, 'V' },
+            { KeyCode.W, 'W' },
+            { KeyCode.X, 'X' },
+            { KeyCode.Y, 'Y' },
+            { KeyCode.Z, 'Z' },
+            { KeyCode.Space, ' ' },
         };
 
-    public static IEnumerable<object[]> LetterKeyLowerCaseCharacterData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> LetterKeyLowerCaseCharacterData =>
+        new ()
         {
-            new object[] { KeyCode.A, 'a' },
-            new object[] { KeyCode.B, 'b' },
-            new object[] { KeyCode.C, 'c' },
-            new object[] { KeyCode.D, 'd' },
-            new object[] { KeyCode.E, 'e' },
-            new object[] { KeyCode.F, 'f' },
-            new object[] { KeyCode.G, 'g' },
-            new object[] { KeyCode.H, 'h' },
-            new object[] { KeyCode.I, 'i' },
-            new object[] { KeyCode.J, 'j' },
-            new object[] { KeyCode.K, 'k' },
-            new object[] { KeyCode.L, 'l' },
-            new object[] { KeyCode.M, 'm' },
-            new object[] { KeyCode.N, 'n' },
-            new object[] { KeyCode.O, 'o' },
-            new object[] { KeyCode.P, 'p' },
-            new object[] { KeyCode.Q, 'q' },
-            new object[] { KeyCode.R, 'r' },
-            new object[] { KeyCode.S, 's' },
-            new object[] { KeyCode.T, 't' },
-            new object[] { KeyCode.U, 'u' },
-            new object[] { KeyCode.V, 'v' },
-            new object[] { KeyCode.W, 'w' },
-            new object[] { KeyCode.X, 'x' },
-            new object[] { KeyCode.Y, 'y' },
-            new object[] { KeyCode.Z, 'z' },
-            new object[] { KeyCode.Space, ' ' },
+            { KeyCode.A, 'a' },
+            { KeyCode.B, 'b' },
+            { KeyCode.C, 'c' },
+            { KeyCode.D, 'd' },
+            { KeyCode.E, 'e' },
+            { KeyCode.F, 'f' },
+            { KeyCode.G, 'g' },
+            { KeyCode.H, 'h' },
+            { KeyCode.I, 'i' },
+            { KeyCode.J, 'j' },
+            { KeyCode.K, 'k' },
+            { KeyCode.L, 'l' },
+            { KeyCode.M, 'm' },
+            { KeyCode.N, 'n' },
+            { KeyCode.O, 'o' },
+            { KeyCode.P, 'p' },
+            { KeyCode.Q, 'q' },
+            { KeyCode.R, 'r' },
+            { KeyCode.S, 's' },
+            { KeyCode.T, 't' },
+            { KeyCode.U, 'u' },
+            { KeyCode.V, 'v' },
+            { KeyCode.W, 'w' },
+            { KeyCode.X, 'x' },
+            { KeyCode.Y, 'y' },
+            { KeyCode.Z, 'z' },
+            { KeyCode.Space, ' ' },
         };
 
-    public static IEnumerable<object[]> SymbolKeyCharacterWithShiftUpData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> SymbolKeyCharacterWithShiftUpData =>
+        new ()
         {
-            new object[] { KeyCode.Equal, '=' },
-            new object[] { KeyCode.Comma, ',' },
-            new object[] { KeyCode.Minus, '-' },
-            new object[] { KeyCode.Period, '.' },
-            new object[] { KeyCode.Slash, '/' },
-            new object[] { KeyCode.Backslash, '\\' },
-            new object[] { KeyCode.LeftBracket, '[' },
-            new object[] { KeyCode.RightBracket, ']' },
-            new object[] { KeyCode.Apostrophe, '\'' },
-            new object[] { KeyCode.Semicolon, ';' },
-            new object[] { KeyCode.Period, '.' },
-            new object[] { KeyCode.KeyPadDivide, '/' },
-            new object[] { KeyCode.KeyPadMultiply, '*' },
-            new object[] { KeyCode.KeyPadSubtract, '-' },
-            new object[] { KeyCode.KeyPadAdd, '+' },
+            { KeyCode.Equal, '=' },
+            { KeyCode.Comma, ',' },
+            { KeyCode.Minus, '-' },
+            { KeyCode.Period, '.' },
+            { KeyCode.Slash, '/' },
+            { KeyCode.Backslash, '\\' },
+            { KeyCode.LeftBracket, '[' },
+            { KeyCode.RightBracket, ']' },
+            { KeyCode.Apostrophe, '\'' },
+            { KeyCode.Semicolon, ';' },
+            { KeyCode.Period, '.' },
+            { KeyCode.KeyPadDivide, '/' },
+            { KeyCode.KeyPadMultiply, '*' },
+            { KeyCode.KeyPadSubtract, '-' },
+            { KeyCode.KeyPadAdd, '+' },
         };
 
-    public static IEnumerable<object[]> SymbolKeyCharacterWithShiftDownData =>
-        new List<object[]>
+    public static TheoryData<KeyCode, char> SymbolKeyCharacterWithShiftDownData =>
+        new ()
         {
-            new object[] { KeyCode.Equal, '+' },
-            new object[] { KeyCode.Comma, '<' },
-            new object[] { KeyCode.Minus, '_' },
-            new object[] { KeyCode.Period, '>' },
-            new object[] { KeyCode.Slash, '?' },
-            new object[] { KeyCode.Backslash, '|' },
-            new object[] { KeyCode.LeftBracket, '{' },
-            new object[] { KeyCode.RightBracket, '}' },
-            new object[] { KeyCode.Apostrophe, '\'' },
-            new object[] { KeyCode.Semicolon, ':' },
-            new object[] { KeyCode.D1, '!' },
-            new object[] { KeyCode.D2, '@' },
-            new object[] { KeyCode.D3, '#' },
-            new object[] { KeyCode.D4, '$' },
-            new object[] { KeyCode.D5, '%' },
-            new object[] { KeyCode.D6, '^' },
-            new object[] { KeyCode.D7, '&' },
-            new object[] { KeyCode.D8, '*' },
-            new object[] { KeyCode.D9, '(' },
-            new object[] { KeyCode.D0, ')' },
-            new object[] { KeyCode.KeyPadDivide, '/' },
-            new object[] { KeyCode.KeyPadMultiply, '*' },
-            new object[] { KeyCode.KeyPadSubtract, '-' },
-            new object[] { KeyCode.Equal, '+' },
+            { KeyCode.Equal, '+' },
+            { KeyCode.Comma, '<' },
+            { KeyCode.Minus, '_' },
+            { KeyCode.Period, '>' },
+            { KeyCode.Slash, '?' },
+            { KeyCode.Backslash, '|' },
+            { KeyCode.LeftBracket, '{' },
+            { KeyCode.RightBracket, '}' },
+            { KeyCode.Apostrophe, '\'' },
+            { KeyCode.Semicolon, ':' },
+            { KeyCode.D1, '!' },
+            { KeyCode.D2, '@' },
+            { KeyCode.D3, '#' },
+            { KeyCode.D4, '$' },
+            { KeyCode.D5, '%' },
+            { KeyCode.D6, '^' },
+            { KeyCode.D7, '&' },
+            { KeyCode.D8, '*' },
+            { KeyCode.D9, '(' },
+            { KeyCode.D0, ')' },
+            { KeyCode.KeyPadDivide, '/' },
+            { KeyCode.KeyPadMultiply, '*' },
+            { KeyCode.KeyPadSubtract, '-' },
+            { KeyCode.Equal, '+' },
         };
 
     #region Prop Tests
@@ -372,7 +379,7 @@ public class KeyboardStateTests
     }
 
     [Fact]
-    public void IsKeyUp_WhenKeyIsInUpPostion_ReturnsTrue()
+    public void IsKeyUp_WhenKeyIsInUpPosition_ReturnsTrue()
     {
         // Arrange
         SetAllStatesTo(true);
@@ -482,6 +489,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(StandardNumberKeysWithShiftDownCharacterData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyDownAndStandardNumberAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -498,6 +506,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(SymbolKeyCharacterWithShiftDownData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyDownAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -530,6 +539,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(SymbolKeyCharacterWithShiftUpData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyUpAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -546,6 +556,7 @@ public class KeyboardStateTests
 
     [Theory]
     [MemberData(nameof(StandardNumberKeysWithShiftUpCharacterData))]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void KeyToChar_WithShiftKeyUpAndStandardNumberKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
@@ -590,6 +601,7 @@ public class KeyboardStateTests
     }
 
     [Fact]
+    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
     public void Equals_WhenUsingOverloadWithSameParamTypeWhileNotHavingSameKeys_ReturnsTrue()
     {
         // Arrange

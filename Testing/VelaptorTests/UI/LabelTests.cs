@@ -1,6 +1,8 @@
-﻿// // <copyright file="LabelTests.cs" company="KinsonDigital">
-// // Copyright (c) KinsonDigital. All rights reserved.
-// // </copyright>
+﻿// <copyright file="LabelTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+#pragma warning disable
 //
 // namespace VelaptorTests.UI;
 //

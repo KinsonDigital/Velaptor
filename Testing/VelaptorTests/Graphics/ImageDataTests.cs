@@ -84,7 +84,7 @@ public class ImageDataTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string filePath)
+    public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string? filePath)
     {
         // Arrange & Act
         var sut = new ImageData(null, 1, 1, filePath);
@@ -223,19 +223,6 @@ public class ImageDataTests
         // Act
         var actual = targetImgData.DrawImage(srcImgData, new Point(2, 2));
 
-        void ClrShouldMatch(Color clrA, Color clrB)
-        {
-            var alphaMatches = clrA.A == clrB.A;
-            var redMatches = clrA.R == clrB.R;
-            var greenMatches = clrA.G == clrB.G;
-            var blueMatches = clrA.B == clrB.B;
-
-            alphaMatches.Should().BeTrue();
-            redMatches.Should().BeTrue();
-            greenMatches.Should().BeTrue();
-            blueMatches.Should().BeTrue();
-        }
-
         // First top 2 blue rows
         var row0 = TestHelpers.GetRow(actual, 0);
         var row1 = TestHelpers.GetRow(actual, 1);
@@ -298,8 +285,8 @@ public class ImageDataTests
     public void Equals_WhenBothAreSameTypeAndIsEqual_ReturnsTrue()
     {
         // Arrange
-        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
-        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "asdf");
+        var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "test-path");
+        var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2, "test-path");
 
         // Act
         var actual = imageDataA.Equals(imageDataB);
@@ -313,7 +300,7 @@ public class ImageDataTests
     {
         // Arrange
         var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
-        var imageDataB = TestHelpers.CreateImageData(Color.Blue,  2, 2);
+        var imageDataB = TestHelpers.CreateImageData(Color.Blue, 2, 2);
 
         // Act
         var actual = imageDataA.Equals(imageDataB);
@@ -440,7 +427,7 @@ public class ImageDataTests
     [InlineData(10, 20, null, "10 x 20")]
     [InlineData(10, 20, "", "10 x 20")]
     [InlineData(10, 20, "test-file", "10 x 20 | test-file")]
-    public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string filePath, string expected)
+    public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string? filePath, string expected)
     {
         // Arrange
         var sut = new ImageData(new Color[width, height], width, height, filePath);

@@ -30,10 +30,10 @@ public class ContentFontPathResolverTests
     public ContentFontPathResolverTests()
     {
         this.mockDirectory = new Mock<IDirectory>();
-        var baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+        var baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
             .ToCrossPlatPath();
-        var baseContentDir = $@"{baseDir}/Content";
-        this.atlasContentDir = $@"{baseContentDir}/Fonts";
+        var baseContentDir = $"{baseDir}/Content";
+        this.atlasContentDir = $"{baseContentDir}/Fonts";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.ttf";
     }
 

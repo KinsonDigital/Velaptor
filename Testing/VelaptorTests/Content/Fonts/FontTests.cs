@@ -27,10 +27,10 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="Font"/> class.
 /// </summary>
-public class FontTests : IDisposable
+public class FontTests
 {
     private const char InvalidCharacter = '□';
-    private const string DirPath = @"C:/test-dir/fonts";
+    private const string DirPath = "C:/test-dir/fonts";
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private readonly string fontFilePath;
@@ -40,9 +40,9 @@ public class FontTests : IDisposable
     private readonly Mock<ITexture> mockTexture;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
-    private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private readonly string sampleTestDataDirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath() + "/SampleTestData";
-    private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
+    private readonly Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontTests"/> class.
@@ -537,7 +537,7 @@ public class FontTests : IDisposable
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Measure_WithNullOrEmptyText_ReturnsEmptySize(string text)
+    public void Measure_WithNullOrEmptyText_ReturnsEmptySize(string? text)
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -555,6 +555,7 @@ public class FontTests : IDisposable
     [InlineData(false, 20)]
     public void Measure_WhenInvoked_ReturnsCorrectResult(bool useCaching, int executeKerningCount)
     {
+        // ReSharper disable once CommentTypo
         /* NOTE:
          * The kerning invoke count is 20 because the Measure() method is being called twice.
          * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
@@ -606,7 +607,7 @@ public class FontTests : IDisposable
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void GetCharacterBounds_WithNullOrEmptyText_ReturnsEmptyResult(string value)
+    public void GetCharacterBounds_WithNullOrEmptyText_ReturnsEmptyResult(string? value)
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -632,7 +633,7 @@ public class FontTests : IDisposable
         actual.Should().AllSatisfy(data =>
         {
             var character = data.character;
-            testText.ToArray().Should().Contain(character, $"the character '{character}' should be in the text '{testText}'.");
+            testText.Should().Contain(character.ToString(), $"the character '{character}' should be in the text '{testText}'.");
         });
 
         // Assert that the test text characters all have a bounds Y position of 0
@@ -676,9 +677,6 @@ public class FontTests : IDisposable
     }
     #endregion
 
-    /// <inheritdoc/>
-    public void Dispose() => this.glyphMetrics = null;
-
     /// <summary>
     /// Creates a new instance of <see cref="Font"/> for the purpose of testing.
     /// </summary>
@@ -713,6 +711,7 @@ public class FontTests : IDisposable
         text = text.Replace("\r", string.Empty);
         text = text.Replace("\n", string.Empty);
 
+        // ReSharper disable once CommentTypo
         /* NOTE:
          * For the text 'hello\nworld', the kerning values should be mocked for each character below
          * h = 1

@@ -19,8 +19,6 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
-using NETRect = System.Drawing.Rectangle;
-using NETSizeF = System.Drawing.SizeF;
 
 /// <inheritdoc cref="IFontRenderer"/>
 internal sealed class FontRenderer : IFontRenderer

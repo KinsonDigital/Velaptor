@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.Graphics;
 
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -18,166 +17,25 @@ using Xunit;
 public class RectShapeTests
 {
     /// <summary>
-    /// Provides test data for the <see cref="RectShape.IsEmpty"/> method unit test.
+    /// Gets test data for the <see cref="RectShape.IsEmpty"/> method unit test.
     /// </summary>
     /// <returns>The data to use during the test.</returns>
-    public static IEnumerable<object[]> IsEmptyTestData()
+    public static TheoryData<Vector2, float, float, Color, bool, float, CornerRadius, ColorGradient, (Color, Color), bool> IsEmptyTestData =>
+        new ()
     {
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            true, // EXPECTED
-        };
-        yield return new object[]
-        {
-            new Vector2(44, 44), // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            44f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            44f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.FromArgb(44, 44, 44, 44), // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            true, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(44f, 44f, 44f, 44f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.Horizontal, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.FromArgb(44, 44, 44, 44), // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.FromArgb(44, 44, 44, 44), // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Width
-            1f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            true, // EXPECTED
-        };
-    }
+        // Position, Width, Height, Color, IsSolid, Border Thickness, Corner Radius, Gradient Type, (Gradient Start, Gradient Stop), EXPECTED
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), true },
+        { new Vector2(44, 44), 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 44f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 44f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.FromArgb(44, 44, 44, 44), false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, true, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(44f, 44f, 44f, 44f), ColorGradient.None, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.Horizontal, (Color.Empty, Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.FromArgb(44, 44, 44, 44), Color.Empty), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.FromArgb(44, 44, 44, 44)), false },
+        { Vector2.Zero, 1f, 1f, Color.Empty, false, 1f, new CornerRadius(0f, 0f, 0f, 0f), ColorGradient.None, (Color.Empty, Color.Empty), true },
+    };
 
     #region Constructor Tests
     [Fact]
@@ -429,6 +287,7 @@ public class RectShapeTests
 
     [Theory]
     [MemberData(nameof(IsEmptyTestData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
         Vector2 position,
         float width,
@@ -438,8 +297,7 @@ public class RectShapeTests
         float borderThickness,
         CornerRadius cornerRadius,
         ColorGradient gradientType,
-        Color gradientStart,
-        Color gradientStop,
+        (Color, Color) gradientClrs,
         bool expected)
     {
         // Arrange
@@ -452,8 +310,7 @@ public class RectShapeTests
         sut.BorderThickness = borderThickness;
         sut.CornerRadius = cornerRadius;
         sut.GradientType = gradientType;
-        sut.GradientStart = gradientStart;
-        sut.GradientStop = gradientStop;
+        (sut.GradientStart, sut.GradientStop) = gradientClrs;
 
         // Act
         var actual = sut.IsEmpty();

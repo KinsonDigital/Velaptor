@@ -29,10 +29,10 @@ public class TextureCacheTests
 {
     private const int FontSize = 12;
     private const string TextureExtension = ".png";
-    private const string TextureDirPath = @"C:/textures";
+    private const string TextureDirPath = "C:/textures";
     private const string TextureName = "text-texture";
     private const string FontAtlasPrefix = "FontAtlas";
-    private const string FontDirPath = @"C:/fonts";
+    private const string FontDirPath = "C:/fonts";
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private const string TextureFilePath = $"{TextureDirPath}/{TextureName}{TextureExtension}";

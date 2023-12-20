@@ -9,4 +9,10 @@ namespace AvaloniaTesting.ViewModels;
 /// </summary>
 public class MainWindowViewModel : ViewModelBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindowViewModel"/> class.
+    /// </summary>
+    public MainWindowViewModel()
+    {
+    }
 }

@@ -6,11 +6,11 @@
              x:Class="AvaloniaTesting.RenderControl"
              xmlns:local="clr-namespace:AvaloniaTesting">
 
-    <Border x:Name="overlay" BorderBrush="DarkOrange" BorderThickness="2" Background="Transparent"
+    <Border x:Name="Overlay" BorderBrush="DarkOrange" BorderThickness="2" Background="Transparent"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
         <local:OpenGLControl
-            Name="glControl"
+            Name="GlControl"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"/>
     </Border>

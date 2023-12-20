@@ -6,7 +6,6 @@ namespace VelaptorTests.Batching;
 
 using System;
 using System.Drawing;
-using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
@@ -28,8 +27,7 @@ public class BatcherTests
     private readonly IGLInvoker mockGLInvoker;
     private readonly IPushReactable mockPushReactable;
     private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
-    private readonly IDisposable mockUnsubscriber;
-    private IReceiveSubscription? reactor;
+    private ReceiveSubscription? reactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatcherTests"/> class.
@@ -38,11 +36,11 @@ public class BatcherTests
     {
         this.mockGLInvoker = Substitute.For<IGLInvoker>();
 
-        this.mockUnsubscriber = Substitute.For<IDisposable>();
+        var mockUnsubscriber = Substitute.For<IDisposable>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
         this.mockPushReactable.Subscribe(Arg.Any<ReceiveSubscription>())
-            .Returns(this.mockUnsubscriber)
+            .Returns(mockUnsubscriber)
             .AndDoes(callInfo =>
             {
                 var reactorParam = callInfo.Arg<ReceiveSubscription>();

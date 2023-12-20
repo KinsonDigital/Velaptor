@@ -8,7 +8,6 @@ using System;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Guards;
 
 /// <summary>
 /// Resolves paths to Windows system fonts.
@@ -55,7 +54,7 @@ internal sealed class WindowsFontPathResolver : IContentPathResolver
             throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
         }
 
-        var contentDirPath = $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
+        var contentDirPath = $"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
         var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}";
 
         var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
@@ -72,5 +71,5 @@ internal sealed class WindowsFontPathResolver : IContentPathResolver
     }
 
     /// <inheritdoc/>
-    public string ResolveDirPath() => $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
+    public string ResolveDirPath() => $"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
 }

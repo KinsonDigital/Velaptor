@@ -15,7 +15,6 @@ using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Graphics;
-using Guards;
 using ReactableData;
 using Services;
 using Velaptor.Factories;

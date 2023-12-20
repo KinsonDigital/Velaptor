@@ -65,5 +65,4 @@ internal readonly record struct LineBatchItem
           P2 != Vector2.Zero ||
           Color.IsEmpty != true ||
           Thickness != 0f);
-
 }

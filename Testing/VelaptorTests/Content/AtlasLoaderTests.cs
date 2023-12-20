@@ -27,7 +27,7 @@ public class AtlasLoaderTests
 {
     private const string TextureExtension = ".png";
     private const string AtlasDataExtension = ".json";
-    private const string DirPath = @"C:/Content/Atlas";
+    private const string DirPath = "C:/Content/Atlas";
     private const string AtlasContentName = "test-atlas";
     private const string FakeJSONData = "fake-json-data";
     private const string AtlasImageFilePath = $"{DirPath}/{AtlasContentName}{TextureExtension}";

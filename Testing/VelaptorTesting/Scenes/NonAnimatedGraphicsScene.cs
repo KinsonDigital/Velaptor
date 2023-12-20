@@ -25,9 +25,11 @@ public class NonAnimatedGraphicsScene : SceneBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
+    private readonly ITextureRenderer? textureRenderer;
+    private readonly IFontRenderer? fontRenderer;
+    private readonly ILoader<IFont> fontLoader;
+    private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? mainAtlas;
-    private ITextureRenderer? textureRenderer;
-    private IFontRenderer? fontRenderer;
     private IFont? font;
     private AtlasSubTextureData octagonData;
     private KeyboardState prevKeyState;
@@ -35,13 +37,18 @@ public class NonAnimatedGraphicsScene : SceneBase
     private RenderEffects renderEffects = RenderEffects.None;
     private string instructions = string.Empty;
     private SizeF textSize;
-    private ILoader<IFont> fontLoader;
-    private ILoader<IAtlasData> atlasLoader;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
     /// </summary>
-    public NonAnimatedGraphicsScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public NonAnimatedGraphicsScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -54,10 +61,6 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
-
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.font = this.fontLoader.Load(DefaultRegularFont, 12u);
 
         var textLines = new List<string>
@@ -72,7 +75,6 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.textSize = this.font.Measure(this.instructions);
 
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.octagonData = this.mainAtlas.GetFrames("octagon-flip")[0];
 

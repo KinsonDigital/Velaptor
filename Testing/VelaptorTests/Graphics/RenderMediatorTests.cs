@@ -25,8 +25,6 @@ public class RenderMediatorTests
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IPushReactable> mockPushReactable;
-    private readonly Mock<IDisposable> mockEndBatchUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<IComparer<RenderItem<TextureBatchItem>>> mockTextureComparer;
     private readonly Mock<IComparer<RenderItem<FontGlyphBatchItem>>> mockFontComparer;
     private readonly Mock<IComparer<RenderItem<ShapeBatchItem>>> mockShapeComparer;
@@ -42,15 +40,14 @@ public class RenderMediatorTests
     private readonly Mock<IBatchPullReactable<LineBatchItem>> mockLinePullReactable;
 
     private IReceiveSubscription? endBatchReactor;
-    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediatorTests"/> class.
     /// </summary>
     public RenderMediatorTests()
     {
-        this.mockEndBatchUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+        var mockEndBatchUnsubscriber = new Mock<IDisposable>();
+        var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockPushReactable = new Mock<IPushReactable>();
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
@@ -67,7 +64,6 @@ public class RenderMediatorTests
                 if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
                     reactor.Name.Should().Be($"RenderMediatorTests.Ctor - {nameof(PushNotifications.SystemShuttingDownId)}");
-                    this.shutDownReactor = reactor;
                 }
             })
             .Returns<IReceiveSubscription>(reactor =>
@@ -76,12 +72,12 @@ public class RenderMediatorTests
 
                 if (reactor.Id == PushNotifications.BatchHasEndedId)
                 {
-                    return this.mockEndBatchUnsubscriber.Object;
+                    return mockEndBatchUnsubscriber.Object;
                 }
 
                 if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    return this.mockShutDownUnsubscriber.Object;
+                    return mockShutDownUnsubscriber.Object;
                 }
 
                 Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");

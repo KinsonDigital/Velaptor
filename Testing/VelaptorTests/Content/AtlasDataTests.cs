@@ -21,7 +21,7 @@ using Xunit;
 /// </summary>
 public class AtlasDataTests
 {
-    private const string DirPath = @"C:/Content/Atlas";
+    private const string DirPath = "C:/Content/Atlas";
     private const string AtlasName = "test-atlas";
     private const string TextureExtension = ".png";
     private const string JSONFileExtension = ".json";

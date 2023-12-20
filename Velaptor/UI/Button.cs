@@ -156,6 +156,8 @@ public sealed class Button : ControlBase
     /// <param name="controlFactory">Creates UI controls.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
+    // ReSharper disable UnusedMember.Global
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     internal Button(
         IUIControlFactory controlFactory,
         IAppInput<KeyboardState> keyboard,
@@ -166,6 +168,10 @@ public sealed class Button : ControlBase
 
         this.controlFactory = controlFactory;
     }
+
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    // ReSharper restore UnusedMember.Global
 
     /// <summary>
     /// Gets the <see cref="Label"/> of the <see cref="Button"/>.

@@ -5,13 +5,10 @@
 namespace Velaptor.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Occurs when there is an issue with one of the system displays.
 /// </summary>
-[Serializable]
 public sealed class SystemDisplayException : Exception
 {
     /// <summary>
@@ -40,17 +37,6 @@ public sealed class SystemDisplayException : Exception
     /// </param>
     public SystemDisplayException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SystemDisplayException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private SystemDisplayException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

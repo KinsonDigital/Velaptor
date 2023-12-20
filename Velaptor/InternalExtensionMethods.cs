@@ -22,8 +22,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
-using NETRectF = System.Drawing.RectangleF;
-using NETSizeF = System.Drawing.SizeF;
 
 /// <summary>
 /// Provides extensions to various things to help make better code.

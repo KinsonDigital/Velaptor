@@ -19,7 +19,7 @@ public class LoggingServiceTests
 {
     private readonly Mock<IAppSettingsService> mockAppSettingsService;
     private readonly Mock<IConsoleLoggerService> mockConsoleLoggerService;
-    private readonly Mock<IFileLoggerService>  mockFileLoggerService;
+    private readonly Mock<IFileLoggerService> mockFileLoggerService;
     private readonly Mock<IEventLoggerService> mockEventLoggerService;
     private readonly Mock<ILogger> mockConsoleLogger;
     private readonly Mock<ILogger> mockFileLogger;

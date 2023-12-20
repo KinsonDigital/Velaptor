@@ -5,11 +5,13 @@
 namespace Velaptor.Graphics;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Carbonate.OneWay;
 using OpenGL.Batching;
 
 /// <inheritdoc cref="IRenderBatchReactable{TBatchItem}"/>
 /// <typeparam name="TBatchItem">The type of batch item to send.</typeparam>
+[SuppressMessage("ReSharper", "RedundantTypeDeclarationBody", Justification = "Intentional")]
 internal sealed class RenderBatchReactable<TBatchItem> : PushReactable<Memory<RenderItem<TBatchItem>>>, IRenderBatchReactable<TBatchItem>
 {
 }

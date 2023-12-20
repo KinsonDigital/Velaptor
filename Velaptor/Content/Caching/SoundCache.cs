@@ -13,7 +13,6 @@ using System.Linq;
 using Carbonate.OneWay;
 using Exceptions;
 using Factories;
-using Guards;
 using ReactableData;
 using Velaptor.Factories;
 

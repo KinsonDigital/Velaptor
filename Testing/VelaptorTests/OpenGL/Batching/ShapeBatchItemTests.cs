@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.OpenGL.Batching;
 
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
@@ -30,174 +30,22 @@ public class ShapeBatchItemTests
     /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsEmptyData()
+    public static TheoryData<Vector2, (float, float), Color, bool, float, CornerRadius, ColorGradient, (Color, Color), string, bool> IsEmptyData =>
+        new ()
     {
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "Fully Empty", // TEST NAME
-            true, // Expected Result
-        };
-        yield return new object[]
-        {
-            new Vector2(10, 20), // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "position", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            10f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "width", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            10f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "height", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.FromArgb(10, 20, 30, 40), // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "color", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            true, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "isSolid", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            10f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "borderThickness", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            new CornerRadius(1, 2, 3, 4), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "cornerRadius", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.Horizontal, // GradientType
-            Color.Empty, // GradientStart
-            Color.Empty, // GradientStop
-            "gradientType", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.FromArgb(10, 20, 30, 40), // GradientStart
-            Color.Empty, // GradientStop
-            "gradientStart", // TEST NAME
-            false, // Expected Result
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            0f, // Width
-            0f, // Height
-            Color.Empty, // Color
-            false, // IsSolid
-            0f, // BorderThickness
-            CornerRadius.Empty(), // CornerRadius
-            ColorGradient.None, // GradientType
-            Color.Empty, // GradientStart
-            Color.FromArgb(10, 20, 30, 40), // GradientStop
-            "gradientStop", // TEST NAME
-            false, // Expected Result
-        };
-    }
+         // Position, Size, Color, IsSolid, BorderThickness, CornerRadius, GradientType, Gradients, TEST NAME, Expected Result
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "Fully Empty", true },
+         { new Vector2(10, 20), (0f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "position", false },
+         { Vector2.Zero, (10f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "width", false },
+         { Vector2.Zero, (0f, 10f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "height", false },
+         { Vector2.Zero, (0f, 0f), Color.FromArgb(10, 20, 30, 40), false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "color", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, true, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "isSolid", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 10f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.Empty), "borderThickness", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 0f, new CornerRadius(1, 2, 3, 4), ColorGradient.None, (Color.Empty, Color.Empty), "cornerRadius", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.Horizontal, (Color.Empty, Color.Empty), "gradientType", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.FromArgb(10, 20, 30, 40), Color.Empty), "gradientStart", false },
+         { Vector2.Zero, (0f, 0f), Color.Empty, false, 0f, CornerRadius.Empty(), ColorGradient.None, (Color.Empty, Color.FromArgb(10, 20, 30, 40)), "gradientStop", false },
+    };
 
     #region Constructor Tests
     [Fact]
@@ -233,20 +81,22 @@ public class ShapeBatchItemTests
     #region Method Tests
     [Theory]
     [MemberData(nameof(IsEmptyData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
         Vector2 position,
-        float width,
-        float height,
+        (float, float) size,
         Color color,
         bool isSolid,
         float borderThickness,
         CornerRadius cornerRadius,
         ColorGradient gradientType,
-        Color gradientStart,
-        Color gradientStop,
+        (Color, Color) gradientClrs,
         string testName, // Only used for test output
         bool expected)
     {
+        var (width, height) = size;
+        (Color gradientStart, Color gradientStop) = gradientClrs;
+
         // Arrange
         var sut = new ShapeBatchItem(
             position,

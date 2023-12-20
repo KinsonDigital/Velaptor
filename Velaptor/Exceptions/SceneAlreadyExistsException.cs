@@ -5,13 +5,10 @@
 namespace Velaptor.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Thrown when a scene already exists.
 /// </summary>
-[Serializable]
 public sealed class SceneAlreadyExistsException : Exception
 {
     /// <summary>
@@ -50,17 +47,6 @@ public sealed class SceneAlreadyExistsException : Exception
     /// </param>
     public SceneAlreadyExistsException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SceneAlreadyExistsException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private SceneAlreadyExistsException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 

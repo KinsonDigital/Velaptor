@@ -39,7 +39,7 @@ public class SceneAlreadyExistsExceptionTests
         "c0b7410a-356d-488c-8b62-cb48a30b76e5",
         "The scene with the ID 'c0b7410a-356d-488c-8b62-cb48a30b76e5' already exists.")]
     public void Ctor_WithSceneNameAndID_CorrectlySetsExceptionMessage(
-        string name,
+        string? name,
         Guid id,
         string expected)
     {

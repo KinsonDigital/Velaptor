@@ -46,7 +46,7 @@ public class EnsureThatTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void StringParamIsNotNullOrEmpty_WhenInvoked_ThrowsException(string value)
+    public void StringParamIsNotNullOrEmpty_WhenInvoked_ThrowsException(string? value)
     {
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>

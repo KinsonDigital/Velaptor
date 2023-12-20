@@ -129,7 +129,13 @@ internal sealed class FontAtlasService : IFontAtlasService
         var width = maxGlyphWidth * columns;
         var height = maxGlyphHeight * rows;
 
-        return new FontAtlasMetrics(rows, columns, width, height);
+        return new FontAtlasMetrics
+        {
+            Rows = rows,
+            Columns = columns,
+            Width = width,
+            Height = height,
+        };
     }
 
     /// <summary>

@@ -23,6 +23,7 @@ public static class Program
         {
             Console.WriteLine("Velaptor Starting . . .");
 
+            // ReSharper disable once BadParensLineBreaks
             await gameWindow.ShowAsync(() =>
             {
                 var command = string.Empty;

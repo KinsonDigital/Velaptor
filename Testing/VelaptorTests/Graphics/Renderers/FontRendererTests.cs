@@ -256,7 +256,7 @@ public class FontRendererTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Render_WithNullOrEmptyText_DoesNotRenderText(string renderText)
+    public void Render_WithNullOrEmptyText_DoesNotRenderText(string? renderText)
     {
         // Arrange
         var sut = CreateSystemUnderTest();

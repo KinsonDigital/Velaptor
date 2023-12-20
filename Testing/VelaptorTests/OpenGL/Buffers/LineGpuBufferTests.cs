@@ -196,6 +196,7 @@ public class LineGpuBufferTests
         // Arrange
         var expectedData = new[]
         {
+            // ReSharper disable MultipleSpaces
             // Vertex 1
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
             -0.923431456f,  1.00828433f,     5f,     6f,     7f,     4f,
@@ -211,6 +212,7 @@ public class LineGpuBufferTests
             // Vertex 4
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
             -0.996568561f,  0.931715727f,     5f,     6f,     7f,     4f,
+            // ReSharper restore MultipleSpaces
         };
 
         var p1 = new Vector2(1, 2);
@@ -381,7 +383,7 @@ public class LineGpuBufferTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line  });
+        this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line });
 
         // Assert
         sut.BatchSize.Should().Be(123);

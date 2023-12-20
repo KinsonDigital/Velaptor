@@ -5,7 +5,6 @@
 namespace VelaptorTests.Hardware;
 
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Helpers;
@@ -23,25 +22,27 @@ public class SystemDisplayTests
     /// Gets horizontal DPI data for testing.
     /// </summary>
     /// <returns>The horizontal DPI data and expected results.</returns>
-    public static IEnumerable<object[]> GetHorizontalDPIData()
-    {
-        yield return new object[] { OSPlatform.Windows, 672 };
-        yield return new object[] { OSPlatform.Linux, 672 };
-        yield return new object[] { OSPlatform.FreeBSD, 672 };
-        yield return new object[] { OSPlatform.OSX, 504 };
-    }
+    public static TheoryData<OSPlatform, int> GetHorizontalDPIData =>
+        new ()
+        {
+            { OSPlatform.Windows, 672 },
+            { OSPlatform.Linux, 672 },
+            { OSPlatform.FreeBSD, 672 },
+            { OSPlatform.OSX, 504 },
+        };
 
     /// <summary>
     /// Gets vertical DPI data for testing.
     /// </summary>
     /// <returns>The vertical DPI data and expected results.</returns>
-    public static IEnumerable<object[]> GetVerticalDPIData()
-    {
-        yield return new object[] { OSPlatform.Windows, 768 };
-        yield return new object[] { OSPlatform.Linux, 768 };
-        yield return new object[] { OSPlatform.FreeBSD, 768 };
-        yield return new object[] { OSPlatform.OSX, 576 };
-    }
+    public static TheoryData<OSPlatform, int> GetVerticalDPIData =>
+        new ()
+        {
+            { OSPlatform.Windows, 768 },
+            { OSPlatform.Linux, 768 },
+            { OSPlatform.FreeBSD, 768 },
+            { OSPlatform.OSX, 576 },
+        };
 
     #region Constructor Tests
     [Fact]

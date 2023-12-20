@@ -5,14 +5,10 @@
 namespace Velaptor.Input.Exceptions;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Occurs when invalid input has occured.
 /// </summary>
-[Serializable]
 public sealed class InvalidInputException : Exception
 {
     /// <summary>
@@ -41,18 +37,6 @@ public sealed class InvalidInputException : Exception
     /// </param>
     public InvalidInputException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    [ExcludeFromCodeCoverage(Justification = "No implementation to test")]
-    private InvalidInputException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

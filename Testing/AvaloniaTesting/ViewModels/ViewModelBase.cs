@@ -11,4 +11,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 /// </summary>
 public class ViewModelBase : ObservableObject
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ViewModelBase"/> class.
+    /// </summary>
+    protected ViewModelBase()
+    {
+    }
 }

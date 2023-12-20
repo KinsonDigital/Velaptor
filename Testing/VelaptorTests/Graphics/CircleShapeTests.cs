@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.Graphics;
 
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -21,134 +20,22 @@ public class CircleShapeTests
     /// Provides test data for the <see cref="CircleShape.IsEmpty"/> method unit test.
     /// </summary>
     /// <returns>The data to use during the test.</returns>
-    public static IEnumerable<object[]> IsEmptyTestData()
-    {
-        yield return new object[]
+    public static TheoryData<Vector2, float, Color, bool, float, ColorGradient, Color, Color, bool> IsEmptyTestData() =>
+        new ()
         {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            true, // EXPECTED
+            // Position, Diameter, Color, IsSolid, Thickness, Type, Start, Stop, EXPECTED
+            { Vector2.Zero, 1f, Color.Empty, false, 1f, ColorGradient.None, Color.Empty, Color.Empty, true },
+            { new Vector2(44, 44), 1f, Color.Empty, false, 1f, ColorGradient.None, Color.Empty, Color.Empty, false },
+            { Vector2.Zero, 44f, Color.Empty, false, 1f, ColorGradient.None, Color.Empty, Color.Empty, false },
+            { Vector2.Zero, 1f, Color.FromArgb(44, 44, 44, 44), false, 1f, ColorGradient.None, Color.Empty, Color.Empty, false },
+            { Vector2.Zero, 1f, Color.Empty, true, 1f, ColorGradient.None, Color.Empty, Color.Empty, false },
+            // The diameter in this test data must be greater than the border thickness multiplied by 2.
+            // This is because we need to have the diameter large enough to not restrict the value of the border thickness below the value of 44.
+            { Vector2.Zero, 100f, Color.Empty, false, 44f, ColorGradient.None, Color.Empty, Color.Empty, false },
+            { Vector2.Zero, 1f, Color.Empty, false, 1f, ColorGradient.Horizontal, Color.Empty, Color.Empty, false },
+            { Vector2.Zero, 1f, Color.Empty, false, 1f, ColorGradient.None, Color.FromArgb(44, 44, 44, 44), Color.Empty, false },
+            { Vector2.Zero, 1f, Color.Empty, false, 1f, ColorGradient.None, Color.Empty, Color.FromArgb(44, 44, 44, 44), false },
         };
-        yield return new object[]
-        {
-            new Vector2(44, 44), // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            44f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.FromArgb(44, 44, 44, 44), // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            true, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            /* NOTE:
-             * The diameter in this test data must be greater than the border thickness
-             * multiplied by 2.  This is because we need to have the diameter large enough
-             * to not restrict the value of the border thickness below the value of 44.
-             */
-            Vector2.Zero, // Position
-            100f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            44f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.Horizontal, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.FromArgb(44, 44, 44, 44), // Gradient Start
-            Color.Empty, // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.FromArgb(44, 44, 44, 44), // Gradient Stop
-            false, // EXPECTED
-        };
-        yield return new object[]
-        {
-            Vector2.Zero, // Position
-            1f, // Diameter
-            Color.Empty, // Color
-            false, // IsSolid
-            1f, // Border Thickness
-            ColorGradient.None, // Gradient Type
-            Color.Empty, // Gradient Start
-            Color.Empty, // Gradient Stop
-            true, // EXPECTED
-        };
-    }
 
     #region Constructor Tests
     [Fact]
@@ -301,6 +188,7 @@ public class CircleShapeTests
     #region Method Tests
     [Theory]
     [MemberData(nameof(IsEmptyTestData))]
+    [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
         Vector2 position,
         float diameter,

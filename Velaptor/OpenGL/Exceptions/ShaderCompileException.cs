@@ -5,13 +5,10 @@
 namespace Velaptor.OpenGL.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Thrown when there is an issue compiling a shader.
 /// </summary>
-[Serializable]
 public sealed class ShaderCompileException : Exception
 {
     /// <summary>
@@ -41,17 +38,6 @@ public sealed class ShaderCompileException : Exception
     /// </param>
     public ShaderCompileException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ShaderCompileException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private ShaderCompileException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

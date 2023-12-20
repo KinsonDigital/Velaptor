@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Fakes;
@@ -20,18 +19,18 @@ using Xunit;
 public class ContentPathResolverTests
 {
     private const string ContentName = "test-content.png";
-    private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+    private static readonly string BaseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath();
 
     /// <summary>
     /// Gets test data for the <see cref="RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult"/> test.
     /// </summary>
-    public static IEnumerable<object[]> ContentRootPaths =>
-        new List<object[]>
+    public static TheoryData<string, string> ContentRootPaths =>
+        new ()
         {
-            new object[] { null, @$"{BaseDir}/Content" },
-            new object[] { @"C:\base-content\", @"C:/base-content" },
-            new object[] { @"C:\base-content", @"C:/base-content" },
+            { null, $"{BaseDir}/Content" },
+            { @"C:\base-content\", "C:/base-content" },
+            { @"C:\base-content", "C:/base-content" },
         };
 
     #region Prop Tests
@@ -53,8 +52,8 @@ public class ContentPathResolverTests
     [Theory]
     [InlineData(@"C:\temp\test-dir-name", "test-dir-name")]
     [InlineData(@"C:\temp\test-dir-name\", "test-dir-name")]
-    [InlineData(@"C:/temp/test-dir-name", "test-dir-name")]
-    [InlineData(@"C:/temp/test-dir-name/", "test-dir-name")]
+    [InlineData("C:/temp/test-dir-name", "test-dir-name")]
+    [InlineData("C:/temp/test-dir-name/", "test-dir-name")]
     public void ContentDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult(
         string contentDirName,
         string expected)
@@ -97,7 +96,7 @@ public class ContentPathResolverTests
         var actual = resolver.ResolveDirPath();
 
         // Assert
-        actual.Should().Be(@"C:/temp/my-content/test-content");
+        actual.Should().Be("C:/temp/my-content/test-content");
     }
 
     [Fact]
@@ -127,7 +126,7 @@ public class ContentPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentException>()
-            .WithMessage($@"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
+            .WithMessage($"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
     #endregion
 }

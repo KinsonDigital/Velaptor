@@ -16,6 +16,7 @@ public class FontMetaDataParserTests
     private const string FontFilePath = "meta-data-prefix";
 
     #region Method Tests
+    // ReSharper disable MultipleSpaces
     [Theory]
     /*                    stringToParse         |       containsMetaData,   |    isValid,    |     metaDataPrefix    |       metaData        |  fontSize */
     [InlineData(FontFilePath,                                false,              true,           "",                  "",                         0u)]
@@ -29,8 +30,9 @@ public class FontMetaDataParserTests
     [InlineData(FontFilePath + "|size:not-a-number",         true,               false,          FontFilePath,        "size:not-a-number",        0u)]
     [InlineData(FontFilePath + "|size:22",                   true,               true,           FontFilePath,        "size:22",                  22u)]
     [InlineData(null,                                        false,              true,           "",                  "",                         0u)]
+    // ReSharper restore MultipleSpaces
     public void Parse_Invoke_ReturnsCorrectResult(
-        string stringToParse,
+        string? stringToParse,
         bool containsMetaData,
         bool isValid,
         string metaDataPrefix,

@@ -6,7 +6,6 @@ namespace VelaptorTesting.Scenes;
 
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Factories;
@@ -349,10 +348,8 @@ public class TextBoxScene : SceneBase
                     typeof(TextBoxSetting));
         }
 
-        var lines = this.instructions.Text.Split('\n');
-
-        var maxLineWidth = lines.Max(l => this.instructions.Width);
-        this.currentSetting.Position = new Point(WindowCenter.X, 30);
+        var maxLineWidth = this.instructions.Width;
+        this.currentSetting.Position = WindowCenter with { Y = 30 };
         this.instructions.Left = WindowCenter.X - ((int)maxLineWidth / 2);
         this.instructions.Top = 60;
     }

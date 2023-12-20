@@ -5,6 +5,7 @@
 namespace Velaptor.Guards;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 /// <summary>
@@ -69,6 +70,7 @@ internal static class EnsureThat
     /// <exception cref="NullReferenceException">
     ///     Thrown if the <paramref name="pointer"/> is a value of zero.
     /// </exception>
+    [SuppressMessage("csharpsquid|should not be thrown by user code.", "S112", Justification = "Intentional")]
     public static void PointerIsNotNull(nint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
     {
         if (pointer != nint.Zero)
@@ -91,6 +93,7 @@ internal static class EnsureThat
     /// <exception cref="NullReferenceException">
     ///     Thrown if the <paramref name="pointer"/> is a value of zero.
     /// </exception>
+    [SuppressMessage("csharpsquid|should not be thrown by user code.", "S112", Justification = "Intentional")]
     public static void PointerIsNotNull(nuint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
     {
         if (pointer != nuint.Zero)

@@ -5,13 +5,10 @@
 namespace Velaptor.Content.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 /// <summary>
 /// Thrown when there is an issue caching items.
 /// </summary>
-[Serializable]
 public sealed class CachingException : Exception
 {
     /// <summary>
@@ -40,17 +37,6 @@ public sealed class CachingException : Exception
     /// </param>
     public CachingException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CachingException"/> class.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> to populate the data.</param>
-    /// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-    /// <exception cref="SecurityException">The caller does not have the required permissions.</exception>
-    private CachingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

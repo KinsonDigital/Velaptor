@@ -30,7 +30,6 @@ using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
 using VelaptorIWindow = UI.IWindow;
 using VelaptorMouseButton = Input.MouseButton;
-using VelaptorWindow = UI.Window;
 using VelaptorWindowBorder = WindowBorder;
 
 /// <summary>

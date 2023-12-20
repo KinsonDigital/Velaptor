@@ -30,17 +30,15 @@ public class SoundCacheTests
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private const string SoundDirPath = @"C:/sounds";
+    private const string SoundDirPath = "C:/sounds";
     private const string SoundName = "test-sound";
     private const string OggSoundFilePath = $"{SoundDirPath}/{SoundName}{OggFileExtension}";
     private const string Mp3SoundFilePath = $"{SoundDirPath}/{SoundName}{Mp3FileExtension}";
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
     private readonly Mock<ISoundFactory> mockSoundFactory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeReactable;
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCacheTests"/> class.
@@ -56,17 +54,16 @@ public class SoundCacheTests
         this.mockPath.Setup(m => m.GetExtension(OggSoundFilePath)).Returns(OggFileExtension);
         this.mockPath.Setup(m => m.GetExtension(Mp3SoundFilePath)).Returns(Mp3FileExtension);
 
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber.Name = nameof(this.mockShutDownUnsubscriber);
+        var mockShutDownUnsubscriber = new Mock<IDisposable>();
+        mockShutDownUnsubscriber.Name = nameof(mockShutDownUnsubscriber);
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Name = nameof(mockPushReactable);
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns(this.mockShutDownUnsubscriber.Object)
+            .Returns(mockShutDownUnsubscriber.Object)
             .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
-                this.shutDownReactor = reactor;
             });
 
         this.mockDisposeReactable = new Mock<IPushReactable<DisposeSoundData>>();
@@ -217,7 +214,7 @@ public class SoundCacheTests
     public void GetItem_WithUnsupportedFileType_ThrowsException()
     {
         // Arrange
-        const string dirPath = @"C:/my-sounds";
+        const string dirPath = "C:/my-sounds";
         const string soundName = "test-sound";
         const string invalidExtension = ".txt";
         const string soundFilePath = $"{dirPath}/{soundName}{invalidExtension}";

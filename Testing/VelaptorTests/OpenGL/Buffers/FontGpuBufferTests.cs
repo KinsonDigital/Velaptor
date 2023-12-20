@@ -37,7 +37,6 @@ public class FontGpuBufferTests
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
-    private IReceiveSubscription? shutDownReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -79,7 +78,7 @@ public class FontGpuBufferTests
                 }
                 else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    this.shutDownReactor = reactor;
+                    // Do nothing
                 }
                 else
                 {

@@ -123,10 +123,12 @@ public class OpenGLExtensionMethodsTests
         // Arrange
         var expected = new[]
         {
+            // ReSharper disable MultipleSpaces
             1f,  2f,  3f,  4f,  6f,  7f,  8f,  5f,  // Vertex 1
             9f, 10f, 11f, 12f, 14f, 15f, 16f, 13f,  // Vertex 2
             17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Vertex 3
             25f, 26f, 27f, 28f, 30f, 31f, 32f, 29f, // Vertex 4
+            // ReSharper restore MultipleSpaces
         };
         var vertex1 = new TextureVertexData(
             new Vector2(1, 2),
@@ -212,10 +214,12 @@ public class OpenGLExtensionMethodsTests
         // Arrange
         var expected = new[]
         {
+            // ReSharper disable MultipleSpaces
             1f,   2f,  3f,  4f,  6f,  7f,  8f,  5f, // Vertex 1
             9f,  10f, 11f, 12f, 14f, 15f, 16f, 13f, // Vertex 2
             17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Vertex 3
             25f, 26f, 27f, 28f, 30f, 31f, 32f, 29f, // Vertex 4
+            // ReSharper restore MultipleSpaces
         };
 
         var quad = CreateNewQuad(1);
@@ -233,6 +237,7 @@ public class OpenGLExtensionMethodsTests
         // Arrange
         var expected = new[]
         {
+            // ReSharper disable MultipleSpaces
             1f,   2f,  3f,  4f,  6f,  7f,  8f,  5f, // Quad 1 Vertex 1
             9f,  10f, 11f, 12f, 14f, 15f, 16f, 13f, // Quad 1 Vertex 2
             17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Quad 1 Vertex 3
@@ -241,6 +246,7 @@ public class OpenGLExtensionMethodsTests
             41f, 42f, 43f, 44f, 46f, 47f, 48f, 45f, // Quad 2 Vertex 2
             49f, 50f, 51f, 52f, 54f, 55f, 56f, 53f, // Quad 2 Vertex 3
             57f, 58f, 59f, 60f, 62f, 63f, 64f, 61f, // Quad 2 Vertex 4
+            // ReSharper restore MultipleSpaces
         };
 
         var quads = new List<TextureGpuData> { CreateNewQuad(1), CreateNewQuad(33) };

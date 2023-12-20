@@ -1,10 +1,9 @@
-﻿// <copyright file="StringExtensionsTests.cs" company="KinsonDigital">
+// <copyright file="StringExtensionsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTests.ExtensionMethods;
 
-using System.Collections.Generic;
 using FluentAssertions;
 using Helpers;
 using Velaptor.ExtensionMethods;
@@ -21,54 +20,57 @@ public class StringExtensionsTests
 
     #region Test Data
     /// <summary>
-    /// Provides unit test data for the <see cref="StringExtensions.HasValidDriveSyntax"/>() method.
+    /// Gets the unit test data for the <see cref="StringExtensions.HasValidDriveSyntax"/>() method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> ContainsValidDriveTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { "windows", false };
-        yield return new object[] { ":", false };
-        yield return new object[] { "C", false };
-        yield return new object[] { ":C", false };
-        yield return new object[] { "1:", false };
-        yield return new object[] { "windowsC:system32", false };
-        yield return new object[] { @"C:\Windows\System32", true };
-        yield return new object[] { @"C:windows", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-    }
+    public static TheoryData<string, bool> ContainsValidDriveTestData =>
+        new ()
+        {
+            { string.Empty, false },
+            { null, false },
+            { "windows", false },
+            { ":", false },
+            { "C", false },
+            { ":C", false },
+            { "1:", false },
+            { "windowsC:system32", false },
+            { @"C:\Windows\System32", true },
+            { "C:windows", true },
+            { $"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true },
+        };
 
     /// <summary>
-    /// Provides unit test data for the <see cref="StringExtensions.HasValidFullDirPathSyntax"/>() method.
+    /// Gets the unit test data for the <see cref="StringExtensions.HasValidFullDirPathSyntax"/>() method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsFullyQualifiedDirPathTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { @"\Windows\System32", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
-        yield return new object[] { "C:Windows", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}fake-file.txt", false };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-        yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}", true };
-    }
+    public static TheoryData<string, bool> IsFullyQualifiedDirPathTestData =>
+        new ()
+        {
+            { string.Empty, false },
+            { null, false },
+            { @"\Windows\System32", false },
+            { $"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false },
+            { "C:Windows", false },
+            { $"{CrossPlatDirSeparatorChar}WindowsC:", false },
+            { $"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}fake-file.txt", false },
+            { $"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true },
+            { $"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}", true },
+        };
 
     /// <summary>
-    /// Provides unit test data for the <see cref="StringExtensions.HasValidUNCPathSyntax"/>() method.
+    /// Gets the unit test data for the <see cref="StringExtensions.HasValidUNCPathSyntax"/>() method.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static IEnumerable<object[]> IsUNCPathTestData()
-    {
-        yield return new object[] { string.Empty, false };
-        yield return new object[] { null, false };
-        yield return new object[] { @"\\", false };
-        yield return new object[] { @"directory", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
-        yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
-    }
+    public static TheoryData<string, bool> IsUNCPathTestData =>
+        new ()
+        {
+            { string.Empty, false },
+            { null, false },
+            { @"\\", false },
+            { "directory", false },
+            { $"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false },
+            { $"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true },
+        };
     #endregion
 
     [Theory]
@@ -172,12 +174,12 @@ public class StringExtensionsTests
     [Theory]
     [InlineData("", false)]
     [InlineData(@"C:\", true)]
-    [InlineData(@"C:/", true)]
-    [InlineData(@"C:", false)]
+    [InlineData("C:/", true)]
+    [InlineData("C:", false)]
     [InlineData(@"C\", false)]
-    [InlineData(@"C/", false)]
+    [InlineData("C/", false)]
     [InlineData(@"C:\test-file.txt", false)]
-    [InlineData(@"C:/test-file.txt", false)]
+    [InlineData("C:/test-file.txt", false)]
     public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
     {
         // Act
@@ -203,7 +205,7 @@ public class StringExtensionsTests
     [InlineData(@"C:\temp\test-file.txt", "temp")]
     [InlineData("C:/temp/test-file.txt", "temp")]
     [InlineData("C:/temp/extra-dir/test-file.txt", "extra-dir")]
-    public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string value, string expected)
+    public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string? value, string expected)
     {
         // Act
         var actual = value.GetLastDirName();
@@ -225,7 +227,7 @@ public class StringExtensionsTests
     [InlineData(@"\home\user-dir\test-file.txt", "user-dir")]
     [InlineData(@"\home\test-file.text", "home")]
     [InlineData(@"\test-file.txt", "/")]
-    public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string value, string expected)
+    public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string? value, string expected)
     {
         // Act
         var actual = value.GetLastDirName();
@@ -274,7 +276,7 @@ public class StringExtensionsTests
     [InlineData("test\r", "test")]
     [InlineData("test\n\r", "test")]
     [InlineData("test\r\n", "test")]
-    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value, string expected)
+    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string? value, string expected)
     {
         // Arrange & Act
         var actual = value.TrimNewLineFromEnd();
@@ -286,8 +288,8 @@ public class StringExtensionsTests
     [Theory]
     [InlineData(@"test\")]
     [InlineData(@"test\\")]
-    [InlineData(@"test/")]
-    [InlineData(@"test//")]
+    [InlineData("test/")]
+    [InlineData("test//")]
     [InlineData(@"test\/")]
     [InlineData(@"test\\//")]
     [InlineData(@"test/\")]

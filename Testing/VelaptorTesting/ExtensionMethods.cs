@@ -321,7 +321,7 @@ public static class ExtensionMethods
     private static Color IncreaseRedBy(this Color clr, int amount)
     {
         var newValue = clr.R + amount;
-        newValue = newValue > 255 ? 255  : newValue;
+        newValue = newValue > 255 ? 255 : newValue;
 
         return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
     }
@@ -337,7 +337,7 @@ public static class ExtensionMethods
     private static Color IncreaseGreenBy(this Color clr, int amount)
     {
         var newValue = clr.G + amount;
-        newValue = newValue > 255 ? 255  : newValue;
+        newValue = newValue > 255 ? 255 : newValue;
 
         return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
     }
@@ -353,7 +353,7 @@ public static class ExtensionMethods
     private static Color IncreaseBlueBy(this Color clr, int amount)
     {
         var newValue = clr.B + amount;
-        newValue = newValue > 255 ? 255  : newValue;
+        newValue = newValue > 255 ? 255 : newValue;
 
         return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
     }
