@@ -22,17 +22,17 @@ public partial class RenderControl : UserControl
     {
         InitializeComponent();
 
-        this.overlay.PointerReleased += (_, args) =>
+        this.Overlay.PointerReleased += (_, args) =>
         {
             var controlOverlay = this.GetVisualAncestors().OfType<UserControl>().FirstOrDefault();
 
             var x = (float)args.GetCurrentPoint(controlOverlay).Position.X;
             var y = (float)args.GetCurrentPoint(controlOverlay).Position.Y;
 
-            this.glControl.OnMouseReleased(new Vector2(x, y));
+            this.GlControl.OnMouseReleased(new Vector2(x, y));
         };
 
-        this.overlay.PointerMoved += (_, args) =>
+        this.Overlay.PointerMoved += (_, args) =>
         {
             var controlOverlay = this.GetVisualAncestors().OfType<UserControl>().FirstOrDefault();
 
@@ -47,9 +47,9 @@ public partial class RenderControl : UserControl
             }
         };
 
-        this.overlay.SizeChanged += (_, args) =>
+        this.Overlay.SizeChanged += (_, args) =>
         {
-            this.glControl.RenderPosition = new Vector2((float)args.NewSize.Width / 2f, (float)args.NewSize.Height / 2f);
+            this.GlControl.RenderPosition = new Vector2((float)args.NewSize.Width / 2f, (float)args.NewSize.Height / 2f);
         };
     }
 }
