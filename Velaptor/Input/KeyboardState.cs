@@ -327,10 +327,10 @@ public struct KeyboardState : IEquatable<KeyboardState>
             // When the shift key is down, the standard number keys and symbol keys return symbols.
             if (StandardNumberKeys.Contains(key))
             {
-                return WithShiftSymbolCharacters[key];
+                return KeyboardKeyGroups.WithShiftSymbolCharacters[key];
             }
 
-            return WithShiftSymbolCharacters[key];
+            return KeyboardKeyGroups.WithShiftSymbolCharacters[key];
         }
 
         if (LetterKeys.Contains(key))
