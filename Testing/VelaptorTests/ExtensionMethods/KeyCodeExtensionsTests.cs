@@ -158,7 +158,7 @@ public class KeyCodeExtensionsTests
         // Arrange
         var keyCodes = CreateDefaultTestData();
         var letterKeys = KeyboardKeyGroups.LetterKeys;
-        SetKeysToTrue(letterKeys, keyCodes);
+        SetKeysToValue(letterKeys, keyCodes, true);
 
         // Act & Assert
         keyCodes.Should().AllSatisfy(data =>
@@ -176,8 +176,8 @@ public class KeyCodeExtensionsTests
         var keyCodes = CreateDefaultTestData();
         var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
         var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
-        SetKeysToTrue(numPadKeys, keyCodes);
-        SetKeysToTrue(standardNumKeys, keyCodes);
+        SetKeysToValue(numPadKeys, keyCodes, true);
+        SetKeysToValue(standardNumKeys, keyCodes, true);
 
         // Act & Assert
         keyCodes.Should().AllSatisfy(data =>
@@ -194,7 +194,7 @@ public class KeyCodeExtensionsTests
         // Arrange
         var keyCodes = CreateDefaultTestData();
         var symbolKeys = KeyboardKeyGroups.SymbolKeys;
-        SetKeysToTrue(symbolKeys, keyCodes);
+        SetKeysToValue(symbolKeys, keyCodes, true);
 
         // Act & Assert
         keyCodes.Should().AllSatisfy(data =>
@@ -214,10 +214,10 @@ public class KeyCodeExtensionsTests
         var symbolKeys = KeyboardKeyGroups.SymbolKeys;
         var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
         var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
-        SetKeysToTrue(letterKeys, keyCodes);
-        SetKeysToTrue(symbolKeys, keyCodes);
-        SetKeysToTrue(standardNumKeys, keyCodes);
-        SetKeysToTrue(numPadKeys, keyCodes);
+        SetKeysToValue(letterKeys, keyCodes, true);
+        SetKeysToValue(symbolKeys, keyCodes, true);
+        SetKeysToValue(standardNumKeys, keyCodes, true);
+        SetKeysToValue(numPadKeys, keyCodes, true);
 
         // Act & Assert
         keyCodes.Should().AllSatisfy(data =>
@@ -225,6 +225,29 @@ public class KeyCodeExtensionsTests
             (KeyCode actualKey, var actualValue) = data;
 
             actualKey.IsVisibleKey().Should().Be(actualValue);
+        });
+    }
+
+    [Fact]
+    public void IsNotVisibleKey_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var keyCodes = CreateDefaultTestData(true);
+        var letterKeys = KeyboardKeyGroups.LetterKeys;
+        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
+        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
+        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
+        SetKeysToValue(letterKeys, keyCodes, false);
+        SetKeysToValue(symbolKeys, keyCodes, false);
+        SetKeysToValue(standardNumKeys, keyCodes, false);
+        SetKeysToValue(numPadKeys, keyCodes, false);
+
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsNotVisibleKey().Should().Be(actualValue);
         });
     }
 
@@ -293,7 +316,7 @@ public class KeyCodeExtensionsTests
     }
 
     [Fact]
-    public void IsMoveCursorKeyTestData_WhenInvoked_ReturnsCorrectResult()
+    public void IsMoveCursorKey_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
         var keyCodes = CreateDefaultTestData();
@@ -316,6 +339,29 @@ public class KeyCodeExtensionsTests
     }
 
     [Fact]
+    public void IsNotMoveCursorKey_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var keyCodes = CreateDefaultTestData(true);
+        keyCodes[KeyCode.Left] = false;
+        keyCodes[KeyCode.Up] = false;
+        keyCodes[KeyCode.Right] = false;
+        keyCodes[KeyCode.Down] = false;
+        keyCodes[KeyCode.PageUp] = false;
+        keyCodes[KeyCode.PageDown] = false;
+        keyCodes[KeyCode.Home] = false;
+        keyCodes[KeyCode.End] = false;
+
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsNotMoveCursorKey().Should().Be(actualValue);
+        });
+    }
+
+    [Fact]
     public void IsDeletionKey_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
@@ -332,32 +378,50 @@ public class KeyCodeExtensionsTests
         });
     }
 
+    [Fact]
+    public void IsNotDeletionKey_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var keyCodes = CreateDefaultTestData(true);
+        keyCodes[KeyCode.Delete] = false;
+        keyCodes[KeyCode.Backspace] = false;
+
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsNotDeletionKey().Should().Be(actualValue);
+        });
+    }
+
     /// <summary>
     /// Creates a dictionary of <see cref="KeyCode"/>s with all values set to <see langword="false"/>.
     /// </summary>
     /// <returns>The test data.</returns>
-    private static Dictionary<KeyCode, bool> CreateDefaultTestData()
+    private static Dictionary<KeyCode, bool> CreateDefaultTestData(bool defaultValue = false)
     {
         var testData = new Dictionary<KeyCode, bool>();
 
         foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
         {
-            testData.Add(key, false);
+            testData.Add(key, defaultValue);
         }
 
         return testData;
     }
 
     /// <summary>
-    /// Sets the specified <paramref name="keys"/> in the <paramref name="keyList"/> to <see langword="true"/>.
+    /// Sets the specified <paramref name="keys"/> in the <paramref name="keyList"/> to the given default <paramref name="value"/>.
     /// </summary>
     /// <param name="keys">The keys to set.</param>
     /// <param name="keyList">The list of keys to change.</param>
-    private static void SetKeysToTrue(IEnumerable<KeyCode> keys, IDictionary<KeyCode, bool> keyList)
+    /// <param name="value">The value to set the key to.</param>
+    private static void SetKeysToValue(IEnumerable<KeyCode> keys, IDictionary<KeyCode, bool> keyList, bool value)
     {
         foreach (var k in keys)
         {
-            keyList[k] = true;
+            keyList[k] = value;
         }
     }
 }
