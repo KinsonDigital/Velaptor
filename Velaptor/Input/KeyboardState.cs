@@ -340,9 +340,9 @@ public struct KeyboardState : IEquatable<KeyboardState>
 #pragma warning restore CA1304 // Specify CultureInfo
         }
 
-        if (SymbolKeys.Contains(key))
+        if (KeyboardKeyGroups.SymbolKeys.Contains(key))
         {
-            return NoShiftSymbolCharacters[key];
+            return KeyboardKeyGroups.NoShiftSymbolCharacters[key];
         }
 
         // When the shift is up, the standard number keys return numbers.
