@@ -1,4 +1,8 @@
-﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// <copyright file="MeasureTextBenchmarks.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace MeasureTextPerf;
 
@@ -18,15 +22,15 @@ using Velaptor.Services;
 /// Performance benchmarks for measuring the time it takes to measure text.
 /// </summary>
 [MemoryDiagnoser]
-public class Benchmarks
+public class MeasureTextBenchmarks
 {
     private readonly IFont font;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Benchmarks"/> class.
+    /// Initializes a new instance of the <see cref="MeasureTextBenchmarks"/> class.
     /// </summary>
     /// <exception cref="Exception">Thrown if there is an issue loading the sample data for benchmarking.</exception>
-    public Benchmarks()
+    public MeasureTextBenchmarks()
     {
         var baseDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var metricDataFilePath = $"{baseDirPath}/glyph-test-data.json";
