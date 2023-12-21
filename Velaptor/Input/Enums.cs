@@ -96,13 +96,15 @@ public enum KeyCode
 
     /// <summary>
     /// The semicolon key.
+    /// This is the ';' character.
     /// </summary>
-    Semicolon = 59 /* ; */,
+    Semicolon = 59,
 
     /// <summary>
     /// The equal key.
+    /// This is the '=' character.
     /// </summary>
-    Equal = 61 /* = */,
+    Equal = 61,
 
     /// <summary>
     /// The A key.
