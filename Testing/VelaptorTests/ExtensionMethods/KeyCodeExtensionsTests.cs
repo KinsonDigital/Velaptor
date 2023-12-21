@@ -6,6 +6,8 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
+using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Velaptor.ExtensionMethods;
 using Velaptor.Input;
@@ -17,894 +19,6 @@ using Xunit;
 public class KeyCodeExtensionsTests
 {
     #region Test Data
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsLetterKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsLetterKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, true },
-            { KeyCode.B, true },
-            { KeyCode.C, true },
-            { KeyCode.D, true },
-            { KeyCode.E, true },
-            { KeyCode.F, true },
-            { KeyCode.G, true },
-            { KeyCode.H, true },
-            { KeyCode.I, true },
-            { KeyCode.J, true },
-            { KeyCode.K, true },
-            { KeyCode.L, true },
-            { KeyCode.M, true },
-            { KeyCode.N, true },
-            { KeyCode.O, true },
-            { KeyCode.P, true },
-            { KeyCode.Q, true },
-            { KeyCode.R, true },
-            { KeyCode.S, true },
-            { KeyCode.T, true },
-            { KeyCode.U, true },
-            { KeyCode.V, true },
-            { KeyCode.W, true },
-            { KeyCode.X, true },
-            { KeyCode.Y, true },
-            { KeyCode.Z, true },
-            { KeyCode.Space, true },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsNumberKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsNumberKeyTestData =>
-        new ()
-        {
-            { KeyCode.D0, true },
-            { KeyCode.D1, true },
-            { KeyCode.D2, true },
-            { KeyCode.D3, true },
-            { KeyCode.D4, true },
-            { KeyCode.D5, true },
-            { KeyCode.D6, true },
-            { KeyCode.D7, true },
-            { KeyCode.D8, true },
-            { KeyCode.D9, true },
-            { KeyCode.KeyPad0, true },
-            { KeyCode.KeyPad1, true },
-            { KeyCode.KeyPad2, true },
-            { KeyCode.KeyPad3, true },
-            { KeyCode.KeyPad4, true },
-            { KeyCode.KeyPad5, true },
-            { KeyCode.KeyPad6, true },
-            { KeyCode.KeyPad7, true },
-            { KeyCode.KeyPad8, true },
-            { KeyCode.KeyPad9, true },
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsSymbolKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsSymbolKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, true },
-            { KeyCode.Equal, true },
-            { KeyCode.Comma, true },
-            { KeyCode.Minus, true },
-            { KeyCode.Period, true },
-            { KeyCode.Slash, true },
-            { KeyCode.LeftBracket, true },
-            { KeyCode.RightBracket, true },
-            { KeyCode.Apostrophe, true },
-            { KeyCode.KeyPadDivide, true },
-            { KeyCode.KeyPadMultiply, true },
-            { KeyCode.KeyPadSubtract, true },
-            { KeyCode.KeyPadAdd, true },
-            { KeyCode.KeyPadDecimal, true },
-            { KeyCode.Backslash, true },
-            { KeyCode.GraveAccent, true },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsVisibleKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsVisibleKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, true },
-            { KeyCode.B, true },
-            { KeyCode.C, true },
-            { KeyCode.D, true },
-            { KeyCode.E, true },
-            { KeyCode.F, true },
-            { KeyCode.G, true },
-            { KeyCode.H, true },
-            { KeyCode.I, true },
-            { KeyCode.J, true },
-            { KeyCode.K, true },
-            { KeyCode.L, true },
-            { KeyCode.M, true },
-            { KeyCode.N, true },
-            { KeyCode.O, true },
-            { KeyCode.P, true },
-            { KeyCode.Q, true },
-            { KeyCode.R, true },
-            { KeyCode.S, true },
-            { KeyCode.T, true },
-            { KeyCode.U, true },
-            { KeyCode.V, true },
-            { KeyCode.W, true },
-            { KeyCode.X, true },
-            { KeyCode.Y, true },
-            { KeyCode.Z, true },
-            { KeyCode.Space, true },
-            { KeyCode.Unknown, false },
-            { KeyCode.D0, true },
-            { KeyCode.D1, true },
-            { KeyCode.D2, true },
-            { KeyCode.D3, true },
-            { KeyCode.D4, true },
-            { KeyCode.D5, true },
-            { KeyCode.D6, true },
-            { KeyCode.D7, true },
-            { KeyCode.D8, true },
-            { KeyCode.D9, true },
-            { KeyCode.Semicolon, true },
-            { KeyCode.Equal, true },
-            { KeyCode.Comma, true },
-            { KeyCode.Minus, true },
-            { KeyCode.Period, true },
-            { KeyCode.Slash, true },
-            { KeyCode.LeftBracket, true },
-            { KeyCode.RightBracket, true },
-            { KeyCode.Apostrophe, true },
-            { KeyCode.KeyPadDivide, true },
-            { KeyCode.KeyPadMultiply, true },
-            { KeyCode.KeyPadSubtract, true },
-            { KeyCode.KeyPadAdd, true },
-            { KeyCode.KeyPadDecimal, true },
-            { KeyCode.Backslash, true },
-            { KeyCode.GraveAccent, true },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, true },
-            { KeyCode.KeyPad1, true },
-            { KeyCode.KeyPad2, true },
-            { KeyCode.KeyPad3, true },
-            { KeyCode.KeyPad4, true },
-            { KeyCode.KeyPad5, true },
-            { KeyCode.KeyPad6, true },
-            { KeyCode.KeyPad7, true },
-            { KeyCode.KeyPad8, true },
-            { KeyCode.KeyPad9, true },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsShiftKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsShiftKeyTestData =>
-        new ()
-        {
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, true },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, true },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsArrowKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsArrowKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, true },
-            { KeyCode.Left, true },
-            { KeyCode.Down, true },
-            { KeyCode.Up, true },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsCtrlKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsCtrlKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, true },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, true },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
     /// <summary>
     /// Gets the data for testing the <see cref="KeyCodeExtensions.ToChar(KeyCode, bool)"/> method.
     /// </summary>
@@ -1036,337 +150,135 @@ public class KeyCodeExtensionsTests
             { KeyCode.KeyPadAdd, true, '+' },
             { KeyCode.KeyPadAdd, false, '+' },
         };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsMoveCursorKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsMoveCursorKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, false },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, false },
-            { KeyCode.Right, true },
-            { KeyCode.Left, true },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, true },
-            { KeyCode.PageDown, true },
-            { KeyCode.Home, true },
-            { KeyCode.End, true },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
-
-    /// <summary>
-    /// Gets the data for testing the <see cref="KeyCodeExtensions.IsDeletionKey(KeyCode)"/> method.
-    /// </summary>
-    public static TheoryData<KeyCode, bool> IsDeletionKeyTestData =>
-        new ()
-        {
-            { KeyCode.A, false },
-            { KeyCode.B, false },
-            { KeyCode.C, false },
-            { KeyCode.D, false },
-            { KeyCode.E, false },
-            { KeyCode.F, false },
-            { KeyCode.G, false },
-            { KeyCode.H, false },
-            { KeyCode.I, false },
-            { KeyCode.J, false },
-            { KeyCode.K, false },
-            { KeyCode.L, false },
-            { KeyCode.M, false },
-            { KeyCode.N, false },
-            { KeyCode.O, false },
-            { KeyCode.P, false },
-            { KeyCode.Q, false },
-            { KeyCode.R, false },
-            { KeyCode.S, false },
-            { KeyCode.T, false },
-            { KeyCode.U, false },
-            { KeyCode.V, false },
-            { KeyCode.W, false },
-            { KeyCode.X, false },
-            { KeyCode.Y, false },
-            { KeyCode.Z, false },
-            { KeyCode.Space, false },
-            { KeyCode.Unknown, false },
-            { KeyCode.Apostrophe, false },
-            { KeyCode.Comma, false },
-            { KeyCode.Minus, false },
-            { KeyCode.Period, false },
-            { KeyCode.Slash, false },
-            { KeyCode.D0, false },
-            { KeyCode.D1, false },
-            { KeyCode.D2, false },
-            { KeyCode.D3, false },
-            { KeyCode.D4, false },
-            { KeyCode.D5, false },
-            { KeyCode.D6, false },
-            { KeyCode.D7, false },
-            { KeyCode.D8, false },
-            { KeyCode.D9, false },
-            { KeyCode.Semicolon, false },
-            { KeyCode.Equal, false },
-            { KeyCode.LeftBracket, false },
-            { KeyCode.Backslash, false },
-            { KeyCode.RightBracket, false },
-            { KeyCode.GraveAccent, false },
-            { KeyCode.Escape, false },
-            { KeyCode.Enter, false },
-            { KeyCode.Tab, false },
-            { KeyCode.Backspace, true },
-            { KeyCode.Insert, false },
-            { KeyCode.Delete, true },
-            { KeyCode.Right, false },
-            { KeyCode.Left, false },
-            { KeyCode.Down, false },
-            { KeyCode.Up, false },
-            { KeyCode.PageUp, false },
-            { KeyCode.PageDown, false },
-            { KeyCode.Home, false },
-            { KeyCode.End, false },
-            { KeyCode.CapsLock, false },
-            { KeyCode.ScrollLock, false },
-            { KeyCode.NumLock, false },
-            { KeyCode.PrintScreen, false },
-            { KeyCode.Pause, false },
-            { KeyCode.F1, false },
-            { KeyCode.F2, false },
-            { KeyCode.F3, false },
-            { KeyCode.F4, false },
-            { KeyCode.F5, false },
-            { KeyCode.F6, false },
-            { KeyCode.F7, false },
-            { KeyCode.F8, false },
-            { KeyCode.F9, false },
-            { KeyCode.F10, false },
-            { KeyCode.F11, false },
-            { KeyCode.F12, false },
-            { KeyCode.F13, false },
-            { KeyCode.F14, false },
-            { KeyCode.F15, false },
-            { KeyCode.F16, false },
-            { KeyCode.F17, false },
-            { KeyCode.F18, false },
-            { KeyCode.F19, false },
-            { KeyCode.F20, false },
-            { KeyCode.F21, false },
-            { KeyCode.F22, false },
-            { KeyCode.F23, false },
-            { KeyCode.F24, false },
-            { KeyCode.F25, false },
-            { KeyCode.KeyPad0, false },
-            { KeyCode.KeyPad1, false },
-            { KeyCode.KeyPad2, false },
-            { KeyCode.KeyPad3, false },
-            { KeyCode.KeyPad4, false },
-            { KeyCode.KeyPad5, false },
-            { KeyCode.KeyPad6, false },
-            { KeyCode.KeyPad7, false },
-            { KeyCode.KeyPad8, false },
-            { KeyCode.KeyPad9, false },
-            { KeyCode.KeyPadDecimal, false },
-            { KeyCode.KeyPadDivide, false },
-            { KeyCode.KeyPadMultiply, false },
-            { KeyCode.KeyPadSubtract, false },
-            { KeyCode.KeyPadAdd, false },
-            { KeyCode.KeyPadEnter, false },
-            { KeyCode.KeyPadEqual, false },
-            { KeyCode.LeftShift, false },
-            { KeyCode.LeftControl, false },
-            { KeyCode.LeftAlt, false },
-            { KeyCode.LeftSuper, false },
-            { KeyCode.RightShift, false },
-            { KeyCode.RightControl, false },
-            { KeyCode.RightAlt, false },
-            { KeyCode.RightSuper, false },
-            { KeyCode.Menu, false },
-        };
     #endregion
 
-    [Theory]
-    [MemberData(nameof(IsLetterKeyTestData))]
-    public void IsLetterKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsLetterKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsLetterKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        var letterKeys = KeyboardKeyGroups.LetterKeys;
+        SetKeysToTrue(letterKeys, keyCodes);
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsLetterKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsNumberKeyTestData))]
-    public void IsNumberKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsNumberKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsNumberKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
+        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
+        SetKeysToTrue(numPadKeys, keyCodes);
+        SetKeysToTrue(standardNumKeys, keyCodes);
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsNumberKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsSymbolKeyTestData))]
-    public void IsSymbolKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsSymbolKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsSymbolKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
+        SetKeysToTrue(symbolKeys, keyCodes);
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsSymbolKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsVisibleKeyTestData))]
-    public void IsVisibleKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsVisibleKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsVisibleKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        var letterKeys = KeyboardKeyGroups.LetterKeys;
+        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
+        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
+        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
+        SetKeysToTrue(letterKeys, keyCodes);
+        SetKeysToTrue(symbolKeys, keyCodes);
+        SetKeysToTrue(standardNumKeys, keyCodes);
+        SetKeysToTrue(numPadKeys, keyCodes);
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsVisibleKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsShiftKeyTestData))]
-    public void IsShiftKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsShiftKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsShiftKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        keyCodes[KeyCode.LeftShift] = true;
+        keyCodes[KeyCode.RightShift] = true;
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsShiftKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsArrowKeyTestData))]
-    public void IsArrowKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsArrowKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsArrowKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        keyCodes[KeyCode.Left] = true;
+        keyCodes[KeyCode.Up] = true;
+        keyCodes[KeyCode.Right] = true;
+        keyCodes[KeyCode.Down] = true;
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsArrowKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsCtrlKeyTestData))]
-    public void IsCtrlKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsCtrlKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsCtrlKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        keyCodes[KeyCode.LeftControl] = true;
+        keyCodes[KeyCode.RightControl] = true;
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsCtrlKey().Should().Be(actualValue);
+        });
     }
 
     [Theory]
@@ -1380,25 +292,72 @@ public class KeyCodeExtensionsTests
         actual.Should().Be(expected);
     }
 
-    [Theory]
-    [MemberData(nameof(IsMoveCursorKeyTestData))]
-    public void IsMoveCursorKeyTestData_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsMoveCursorKeyTestData_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsMoveCursorKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        keyCodes[KeyCode.Left] = true;
+        keyCodes[KeyCode.Up] = true;
+        keyCodes[KeyCode.Right] = true;
+        keyCodes[KeyCode.Down] = true;
+        keyCodes[KeyCode.PageUp] = true;
+        keyCodes[KeyCode.PageDown] = true;
+        keyCodes[KeyCode.Home] = true;
+        keyCodes[KeyCode.End] = true;
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsMoveCursorKey().Should().Be(actualValue);
+        });
     }
 
-    [Theory]
-    [MemberData(nameof(IsDeletionKeyTestData))]
-    public void IsDeletionKey_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+    [Fact]
+    public void IsDeletionKey_WhenInvoked_ReturnsCorrectResult()
     {
-        // Arrange & Act
-        var actual = key.IsDeletionKey();
+        // Arrange
+        var keyCodes = CreateDefaultTestData();
+        keyCodes[KeyCode.Delete] = true;
+        keyCodes[KeyCode.Backspace] = true;
 
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        keyCodes.Should().AllSatisfy(data =>
+        {
+            (KeyCode actualKey, var actualValue) = data;
+
+            actualKey.IsDeletionKey().Should().Be(actualValue);
+        });
+    }
+
+    /// <summary>
+    /// Creates a dictionary of <see cref="KeyCode"/>s with all values set to <see langword="false"/>.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    private static Dictionary<KeyCode, bool> CreateDefaultTestData()
+    {
+        var testData = new Dictionary<KeyCode, bool>();
+
+        foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+        {
+            testData.Add(key, false);
+        }
+
+        return testData;
+    }
+
+    /// <summary>
+    /// Sets the specified <paramref name="keys"/> in the <paramref name="keyList"/> to <see langword="true"/>.
+    /// </summary>
+    /// <param name="keys">The keys to set.</param>
+    /// <param name="keyList">The list of keys to change.</param>
+    private static void SetKeysToTrue(IEnumerable<KeyCode> keys, IDictionary<KeyCode, bool> keyList)
+    {
+        foreach (var k in keys)
+        {
+            keyList[k] = true;
+        }
     }
 }

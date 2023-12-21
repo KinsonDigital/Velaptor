@@ -116,7 +116,9 @@ internal static class KeyCodeExtensions
         key switch
         {
             KeyCode.Left => true,
+            KeyCode.Up => true,
             KeyCode.Right => true,
+            KeyCode.Down => true,
             KeyCode.PageUp => true,
             KeyCode.PageDown => true,
             KeyCode.Home => true,
