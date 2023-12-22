@@ -31,6 +31,7 @@ internal readonly record struct KeyboardKeyGroups
     /// <summary>
     /// Gets a list of the function keys.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Kept for future use.")]
     public static IReadOnlyList<KeyCode> FunctionKeys { get; } = new[]
     {
         KeyCode.F1, KeyCode.F2, KeyCode.F3, KeyCode.F4, KeyCode.F5,
