@@ -1,7 +1,8 @@
-﻿// <copyright file="KeyboardStateTests.cs" company="KinsonDigital">
+// <copyright file="KeyboardStateTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1129 // This needs to be disabled so the constructor can be used.
 namespace VelaptorTests.Input;
 
 using System;
@@ -17,6 +18,7 @@ using Xunit;
 /// </summary>
 public class KeyboardStateTests
 {
+    private const char InvalidCharacter = '□';
     private readonly Dictionary<KeyCode, bool> keyStates = new ();
 
     /// <summary>
@@ -219,7 +221,7 @@ public class KeyboardStateTests
             { KeyCode.Backslash, '|' },
             { KeyCode.LeftBracket, '{' },
             { KeyCode.RightBracket, '}' },
-            { KeyCode.Apostrophe, '\'' },
+            { KeyCode.Apostrophe, '"' },
             { KeyCode.Semicolon, ':' },
             { KeyCode.D1, '!' },
             { KeyCode.D2, '@' },
@@ -242,7 +244,7 @@ public class KeyboardStateTests
     public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftShift, true);
 
         // Act
@@ -256,7 +258,7 @@ public class KeyboardStateTests
     public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.RightShift, true);
 
         // Act
@@ -270,7 +272,7 @@ public class KeyboardStateTests
     public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftControl, true);
 
         // Act
@@ -284,7 +286,7 @@ public class KeyboardStateTests
     public void IsRightControlDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.RightControl, true);
 
         // Act
@@ -298,7 +300,7 @@ public class KeyboardStateTests
     public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftAlt, true);
 
         // Act
@@ -312,7 +314,7 @@ public class KeyboardStateTests
     public void IsRightAltDown_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.RightAlt, true);
 
         // Act
@@ -333,7 +335,7 @@ public class KeyboardStateTests
             KeyCode.D, KeyCode.E, KeyCode.H, KeyCode.L, KeyCode.O,
         };
 
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         state.SetKeyState(KeyCode.D, true);
         state.SetKeyState(KeyCode.E, true);
@@ -345,14 +347,14 @@ public class KeyboardStateTests
         var actual = state.GetDownKeys();
 
         // Assert
-        actual.Should().Equal(expected);
+        actual.ToArray().Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void AnyKeysDown_WithNoArgumentsAndSingleDownKey_ReturnsTrue()
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.H, true);
 
         // Act
@@ -368,7 +370,7 @@ public class KeyboardStateTests
         // Arrange
         var downKeys = new[] { KeyCode.H, KeyCode.I };
 
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.H, true);
 
         // Act
@@ -384,7 +386,7 @@ public class KeyboardStateTests
         // Arrange
         SetAllStatesTo(true);
         SetKeyState(KeyCode.C, false);
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         // Act
         var actual = state.IsKeyUp(KeyCode.C);
@@ -398,7 +400,7 @@ public class KeyboardStateTests
     public void AnyStandardNumberKeysDown_WhenInvokedWithNumberKeyDown_ReturnsTrue(KeyCode key, bool expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(key, expected);
 
         // Act
@@ -413,7 +415,7 @@ public class KeyboardStateTests
     public void AnyNumpadNumberKeysDown_WhenInvokedWithNumberKeyDown_ReturnsTrue(KeyCode key, bool expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(key, expected);
 
         // Act
@@ -429,7 +431,7 @@ public class KeyboardStateTests
     public void IsAnyShiftKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(key, expected);
 
         // Act
@@ -445,7 +447,7 @@ public class KeyboardStateTests
     public void IsAnyCtrlKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(key, expected);
 
         // Act
@@ -461,7 +463,7 @@ public class KeyboardStateTests
     public void IsAnyAltKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(key, expected);
 
         // Act
@@ -476,7 +478,7 @@ public class KeyboardStateTests
     public void KeyToChar_WithShiftKeyDownAndLetterKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftShift, true);
         state.SetKeyState(key, true);
 
@@ -493,7 +495,7 @@ public class KeyboardStateTests
     public void KeyToChar_WithShiftKeyDownAndStandardNumberAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftShift, true);
         state.SetKeyState(key, true);
 
@@ -510,7 +512,7 @@ public class KeyboardStateTests
     public void KeyToChar_WithShiftKeyDownAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
     {
         // Arrange
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
         state.SetKeyState(KeyCode.LeftShift, true);
         state.SetKeyState(key, true);
 
@@ -528,7 +530,7 @@ public class KeyboardStateTests
         // Arrange
         SetKeyState(KeyCode.LeftShift, false);
         SetKeyState(key, true);
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         // Act
         var actual = state.KeyToChar(key);
@@ -545,7 +547,7 @@ public class KeyboardStateTests
         // Arrange
         SetKeyState(KeyCode.LeftShift, false);
         SetKeyState(key, true);
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         // Act
         var actual = state.KeyToChar(key);
@@ -562,7 +564,7 @@ public class KeyboardStateTests
         // Arrange
         SetKeyState(KeyCode.LeftShift, false);
         SetKeyState(key, true);
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         // Act
         var actual = state.KeyToChar(key);
@@ -577,102 +579,20 @@ public class KeyboardStateTests
         // Arrange
         SetKeyState(KeyCode.LeftShift, false);
         SetKeyState(default, true);
-        var state = default(KeyboardState);
+        var state = new KeyboardState();
 
         // Act
         var actual = state.KeyToChar(default);
 
         // Assert
-        actual.Should().Be(default);
-    }
-
-    [Fact]
-    public void Equals_WhenUsingOverloadWithSameParamTypeWhileEqual_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        var stateB = default(KeyboardState);
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    [SuppressMessage("csharpsquid|Methods should not have identical implementations", "S4144", Justification = "Intentional")]
-    public void Equals_WhenUsingOverloadWithSameParamTypeWhileNotHavingSameKeys_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        var stateB = default(KeyboardState);
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Equals_WhenUsingOverloadWithObjectParamWithSameEqualType_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        object stateB = default(KeyboardState);
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Equals_WhenUsingOverloadWithObjectParamWithSameUnequalType_ReturnsFalse()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        var stateB = new object();
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeFalse();
-    }
-
-    [Fact]
-    public void EqualsOperator_WhenInvokedWithEqualOperands_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        var stateB = default(KeyboardState);
-
-        // Act
-        var actual = stateA == stateB;
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void NotEqualsOperator_WhenInvokedWithEqualOperands_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(KeyboardState);
-        var stateB = default(KeyboardState);
-        stateB.SetKeyState(KeyCode.C, true);
-
-        // Act
-        var actual = stateA != stateB;
-
-        // Assert
-        actual.Should().BeTrue();
+        actual.Should().Be(InvalidCharacter);
     }
     #endregion
 
+    /// <summary>
+    /// Sets all of the keyboard keys to the given <paramref name="state"/>.
+    /// </summary>
+    /// <param name="state">The state to set.</param>
     private void SetAllStatesTo(bool state)
     {
         for (var i = 0; i < this.keyStates.Keys.Count; i++)
@@ -681,5 +601,10 @@ public class KeyboardStateTests
         }
     }
 
+    /// <summary>
+    /// Sets the given <paramref name="key"/> to the given <paramref name="state"/>.
+    /// </summary>
+    /// <param name="key">The key to set.</param>
+    /// <param name="state">The state to set the key co.</param>
     private void SetKeyState(KeyCode key, bool state) => this.keyStates[key] = state;
 }

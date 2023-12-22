@@ -157,7 +157,7 @@ public class KeyCodeExtensionsTests
     {
         // Arrange
         var keyCodes = CreateDefaultTestData();
-        var letterKeys = KeyboardKeyGroups.LetterKeys;
+        var letterKeys = KeyboardKeyGroups.GetLetterKeys();
         SetKeysToValue(letterKeys, keyCodes, true);
 
         // Act & Assert
@@ -174,8 +174,8 @@ public class KeyCodeExtensionsTests
     {
         // Arrange
         var keyCodes = CreateDefaultTestData();
-        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
-        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
+        var numPadKeys = KeyboardKeyGroups.GetNumpadNumberKeys();
+        var standardNumKeys = KeyboardKeyGroups.GetStandardNumberKeys();
         SetKeysToValue(numPadKeys, keyCodes, true);
         SetKeysToValue(standardNumKeys, keyCodes, true);
 
@@ -193,7 +193,7 @@ public class KeyCodeExtensionsTests
     {
         // Arrange
         var keyCodes = CreateDefaultTestData();
-        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
+        var symbolKeys = KeyboardKeyGroups.GetSymbolKeys();
         SetKeysToValue(symbolKeys, keyCodes, true);
 
         // Act & Assert
@@ -210,10 +210,10 @@ public class KeyCodeExtensionsTests
     {
         // Arrange
         var keyCodes = CreateDefaultTestData();
-        var letterKeys = KeyboardKeyGroups.LetterKeys;
-        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
-        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
-        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
+        var letterKeys = KeyboardKeyGroups.GetLetterKeys();
+        var symbolKeys = KeyboardKeyGroups.GetSymbolKeys();
+        var standardNumKeys = KeyboardKeyGroups.GetStandardNumberKeys();
+        var numPadKeys = KeyboardKeyGroups.GetNumpadNumberKeys();
         SetKeysToValue(letterKeys, keyCodes, true);
         SetKeysToValue(symbolKeys, keyCodes, true);
         SetKeysToValue(standardNumKeys, keyCodes, true);
@@ -233,10 +233,10 @@ public class KeyCodeExtensionsTests
     {
         // Arrange
         var keyCodes = CreateDefaultTestData(true);
-        var letterKeys = KeyboardKeyGroups.LetterKeys;
-        var symbolKeys = KeyboardKeyGroups.SymbolKeys;
-        var standardNumKeys = KeyboardKeyGroups.StandardNumberKeys;
-        var numPadKeys = KeyboardKeyGroups.NumpadNumberKeys;
+        var letterKeys = KeyboardKeyGroups.GetLetterKeys();
+        var symbolKeys = KeyboardKeyGroups.GetSymbolKeys();
+        var standardNumKeys = KeyboardKeyGroups.GetStandardNumberKeys();
+        var numPadKeys = KeyboardKeyGroups.GetNumpadNumberKeys();
         SetKeysToValue(letterKeys, keyCodes, false);
         SetKeysToValue(symbolKeys, keyCodes, false);
         SetKeysToValue(standardNumKeys, keyCodes, false);
@@ -417,7 +417,7 @@ public class KeyCodeExtensionsTests
     /// <param name="keys">The keys to set.</param>
     /// <param name="keyList">The list of keys to change.</param>
     /// <param name="value">The value to set the key to.</param>
-    private static void SetKeysToValue(IEnumerable<KeyCode> keys, IDictionary<KeyCode, bool> keyList, bool value)
+    private static void SetKeysToValue(Span<KeyCode> keys, IDictionary<KeyCode, bool> keyList, bool value)
     {
         foreach (var k in keys)
         {

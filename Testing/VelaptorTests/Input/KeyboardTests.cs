@@ -6,14 +6,11 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using Carbonate.Core.OneWay;
-using Carbonate.OneWay;
+using System.Collections.Immutable;
 using FluentAssertions;
-using Helpers;
-using Moq;
-using Velaptor.Factories;
+using NSubstitute;
 using Velaptor.Input;
-using Velaptor.ReactableData;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -21,23 +18,16 @@ using Xunit;
 /// </summary>
 public class KeyboardTests
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<KeyboardKeyStateData>> mockKeyboardReactable;
+    private readonly IKeyboardDataService mockKeyDataService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardTests"/> class.
     /// </summary>
-    public KeyboardTests()
-    {
-        this.mockKeyboardReactable = new Mock<IPushReactable<KeyboardKeyStateData>>();
-
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateKeyboardReactable()).Returns(this.mockKeyboardReactable.Object);
-    }
+    public KeyboardTests() => this.mockKeyDataService = Substitute.For<IKeyboardDataService>();
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
+    public void Ctor_WithNullKeyboardDataStoreParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -48,18 +38,7 @@ public class KeyboardTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'reactableFactory')");
-    }
-
-    [Fact]
-    public void Ctor_WhenInvoked_SubscribesToReactable()
-    {
-        // Arrange & Act
-        _ = CreateSystemUnderTest();
-
-        // Assert
-        this.mockKeyboardReactable.VerifyOnce(m =>
-            m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()));
+            .WithMessage("The parameter must not be null. (Parameter 'keyboardDataService')");
     }
     #endregion
 
@@ -68,30 +47,18 @@ public class KeyboardTests
     public void GetState_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        IReceiveSubscription<KeyboardKeyStateData>? reactor = null;
+        var expected = new Dictionary<KeyCode, bool> { { KeyCode.K, true }, };
 
-        var expected = new KeyValuePair<KeyCode, bool>(KeyCode.K, true);
-
-        var keyState = new KeyboardKeyStateData
-        {
-            Key = KeyCode.K,
-            IsDown = true,
-        };
-
-        this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<KeyboardKeyStateData>>()))
-            .Callback<IReceiveSubscription<KeyboardKeyStateData>>(reactorObj =>
-            {
-                reactor = reactorObj;
-             });
+        this.mockKeyDataService.GetKeyStates().Returns(new (KeyCode, bool)[] { (KeyCode.K, true) }.ToImmutableArray());
 
         var sut = CreateSystemUnderTest();
-        reactor.OnReceive(keyState);
 
         // Act
-        var actual = sut.GetState().GetKeyStates();
+        var state = sut.GetState();
+        var actual = state.GetKeyStates();
 
         // Assert
-        actual.Should().Contain(expected);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -99,5 +66,5 @@ public class KeyboardTests
     /// Creates a new instance of <see cref="Keyboard"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private Keyboard CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private Keyboard CreateSystemUnderTest() => new (this.mockKeyDataService);
 }

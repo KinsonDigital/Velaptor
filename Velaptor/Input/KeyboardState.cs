@@ -2,19 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1642 // This warning shows it should be described as a class but it is a struct
 namespace Velaptor.Input;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ExtensionMethods;
 
 /// <summary>
 /// Represents a single keyboard state at a particular time.
 /// </summary>
-public struct KeyboardState : IEquatable<KeyboardState>
+public record struct KeyboardState
 {
-    private Dictionary<KeyCode, bool> keyStates;
+    private static readonly int Capacity = Enum.GetNames(typeof(KeyCode)).Length;
+    private Dictionary<KeyCode, bool> keyStates = new (Capacity);
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeyboardState"/> struct.
+    /// </summary>
+    public KeyboardState()
+    {
+    }
 
     /*
     /// <summary>
@@ -29,29 +38,12 @@ public struct KeyboardState : IEquatable<KeyboardState>
     */
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if operands are equal.</returns>
-    public static bool operator ==(KeyboardState left, KeyboardState right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if operands are not equal.</returns>
-    public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
-
-    /// <summary>
     /// Returns all of the keys and their states.
     /// </summary>
     /// <returns>The keys and given state for each key.</returns>
     public Dictionary<KeyCode, bool> GetKeyStates()
     {
-        InitKeys();
-
+        InitKeyStates();
         return this.keyStates;
     }
 
@@ -95,22 +87,13 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// Returns all of the keys that are in the down position.
     /// </summary>
     /// <returns>A list of the keys that are currently in the down position.</returns>
-    public KeyCode[] GetDownKeys()
+    public Span<KeyCode> GetDownKeys()
     {
+        InitKeyStates();
         IsRightAltKeyDown();
-        InitKeys();
 
-        var downKeys = new List<KeyCode>();
-
-        foreach (var key in this.keyStates)
-        {
-            if (key.Value)
-            {
-                downKeys.Add(key.Key);
-            }
-        }
-
-        return downKeys.ToArray();
+        return this.keyStates.Where(s => s.Value)
+            .Select(s => s.Key).ToArray().AsSpan();
     }
 
     /// <summary>
@@ -119,9 +102,8 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <returns><c>true</c> if any keys on the keyboard are in the down position.</returns>
     public bool AnyKeysDown()
     {
-        InitKeys();
-
-        return this.keyStates.Any(i => i.Value);
+        InitKeyStates();
+        return this.keyStates?.Any(i => i.Value) ?? false;
     }
 
     /// <summary>
@@ -131,19 +113,14 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <returns><c>true</c> if any of the given <paramref name="keys"/> are in the down position.</returns>
     public bool AnyKeysDown(IEnumerable<KeyCode> keys)
     {
-        InitKeys();
-
-        var downKeys = new List<KeyCode>();
-
-        foreach (var key in this.keyStates)
+        if (this.keyStates is null)
         {
-            if (key.Value)
-            {
-                downKeys.Add(key.Key);
-            }
+            return false;
         }
 
-        return keys.Any(k => downKeys.Contains(k));
+        var states = this.keyStates;
+
+        return keys.Any(k => states[k]);
     }
 
     /// <summary>
@@ -153,9 +130,14 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <returns><c>true</c> if the given <paramref name="key"/> is in the down position.</returns>
     public bool IsKeyDown(KeyCode key)
     {
-        InitKeys();
+        InitKeyStates();
 
-        return this.keyStates[key];
+        if (!this.keyStates.TryGetValue(key, out var value))
+        {
+            return false;
+        }
+
+        return value;
     }
 
     /// <summary>
@@ -163,12 +145,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if the given <paramref name="key"/> is in the up position.</returns>
-    public bool IsKeyUp(KeyCode key)
-    {
-        InitKeys();
-
-        return !this.keyStates[key];
-    }
+    public bool IsKeyUp(KeyCode key) => !IsKeyDown(key);
 
     /// <summary>
     /// Returns a value indicating whether or not any of the standard number keys,
@@ -177,10 +154,9 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <returns><c>true</c> if any of the standard number keys are in the down position.</returns>
     public bool AnyStandardNumberKeysDown()
     {
-        InitKeys();
-
         // Check all of the standard number keys
-        foreach (var key in KeyboardKeyGroups.StandardNumberKeys)
+        // TODO: Need to perf test if the recommend linq method is faster than the foreach loop below
+        foreach (var key in KeyboardKeyGroups.GetStandardNumberKeys())
         {
             if (IsKeyDown(key))
             {
@@ -199,7 +175,8 @@ public struct KeyboardState : IEquatable<KeyboardState>
     public bool AnyNumpadNumberKeysDown()
     {
         // Check all of the numpad number keys
-        foreach (var key in KeyboardKeyGroups.NumpadNumberKeys)
+        // TODO: Need to perf test if the recommend linq method is faster than the foreach loop below
+        foreach (var key in KeyboardKeyGroups.GetNumpadNumberKeys())
         {
             if (IsKeyDown(key))
             {
@@ -235,67 +212,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns>The character that matches the given key.</returns>
-    public char KeyToChar(KeyCode key)
-    {
-        if (AnyShiftKeysDown())
-        {
-            if (KeyboardKeyGroups.LetterKeys.Contains(key))
-            {
-                return key == KeyCode.Space ? ' ' : key.ToString().ToUpperInvariant()[0];
-            }
-
-            // When the shift key is down, the standard number keys and symbol keys return symbols.
-            if (KeyboardKeyGroups.StandardNumberKeys.Contains(key))
-            {
-                return KeyboardKeyGroups.WithShiftSymbolCharacters[key];
-            }
-
-            return KeyboardKeyGroups.WithShiftSymbolCharacters[key];
-        }
-
-        if (KeyboardKeyGroups.LetterKeys.Contains(key))
-        {
-#pragma warning disable CA1304 // Specify CultureInfo
-            return key == KeyCode.Space ? ' ' : key.ToString().ToLower()[0];
-#pragma warning restore CA1304 // Specify CultureInfo
-        }
-
-        if (KeyboardKeyGroups.SymbolKeys.Contains(key))
-        {
-            return KeyboardKeyGroups.NoShiftSymbolCharacters[key];
-        }
-
-        // When the shift is up, the standard number keys return numbers.
-        if (KeyboardKeyGroups.StandardNumberKeys.Contains(key))
-        {
-            return KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
-        }
-
-        return (char)0;
-    }
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode() => this.keyStates.GetHashCode();
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not KeyboardState state)
-        {
-            return false;
-        }
-
-        return Equals(state);
-    }
-
-    /// <inheritdoc/>
-    public bool Equals(KeyboardState other)
-    {
-        InitKeys();
-
-        return !this.keyStates.Any(i => !other.GetKeyStates().Contains(i));
-    }
+    public char KeyToChar(KeyCode key) => key.ToChar(AnyShiftKeysDown());
 
     /// <summary>
     /// Sets the state of the given <paramref name="key"/> to the given <paramref name="state"/> value.
@@ -304,28 +221,12 @@ public struct KeyboardState : IEquatable<KeyboardState>
     /// <param name="state">The state of the key.</param>
     public void SetKeyState(KeyCode key, bool state)
     {
-        InitKeys();
-
+        InitKeyStates();
         this.keyStates[key] = state;
     }
 
     /// <summary>
-    /// Initializes the key states.
+    /// Initializes the key states if they are null.
     /// </summary>
-    private void InitKeys()
-    {
-        if (this.keyStates is not null && this.keyStates.Count > 0)
-        {
-            return;
-        }
-
-        this.keyStates = new Dictionary<KeyCode, bool>();
-
-        var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
-
-        foreach (var key in keys)
-        {
-            this.keyStates.Add(key, false);
-        }
-    }
+    private void InitKeyStates() => this.keyStates ??= new (Capacity);
 }
