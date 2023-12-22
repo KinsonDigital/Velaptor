@@ -12,10 +12,8 @@
 namespace KeyboardPerf;
 
 using BenchmarkDotNet.Attributes;
-using Carbonate.OneWay;
-using Velaptor;
 using Velaptor.Input;
-using Velaptor.ReactableData;
+using Velaptor.Services;
 
 /// <summary>
 /// Measures performance of the <see cref="KeyboardState"/> class.
@@ -31,7 +29,7 @@ public class KeyboardBenchmarks
     /// </summary>
     public KeyboardBenchmarks()
     {
-        this.keyboardState = default;
+        this.keyboardState = new KeyboardState();
         SetupKeyboardState();
         SetupKeyboard();
     }
@@ -169,9 +167,9 @@ public class KeyboardBenchmarks
     /// </summary>
     private void SetupKeyboard()
     {
-        var reactable = new PushReactable<KeyboardKeyStateData>();
-        var reactableFactory = new ReactableFactoryFake(reactable);
-        this.keyboard = new Keyboard(reactableFactory);
+        var reactable = new PushReactableFake();
+        var keyboardDataStore = new KeyboardDataService(reactable);
+        this.keyboard = new Keyboard(keyboardDataStore);
 
         // Fill the data in the keyboard to default values for every single key
         // var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();

@@ -38,7 +38,7 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 
 **Velaptor Version:** v1.0.0-preview.31  
-**Description:** Changes for this version.
+**Description:** Changes for this version without KeyboardKeyGroups frozen dictionaries.
 
 ## **Stats**:
 BenchmarkDotNet v0.13.11, Windows 11 (10.0.22631.2861/23H2/2023Update/SunValley3)
@@ -48,4 +48,26 @@ BenchmarkDotNet v0.13.11, Windows 11 (10.0.22631.2861/23H2/2023Update/SunValley3
 DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 
-~~~~
+| Method                                  | Mean       | Error     | StdDev    | Gen0   | Gen1   | Allocated |
+|---------------------------------------- |-----------:|----------:|----------:|-------:|-------:|----------:|
+| KeyboardState.IsKeyDown                 |  0.0223 ns | 0.0209 ns | 0.0185 ns |      - |      - |         - |
+| KeyboardState.IsKeyUp                   |  0.0462 ns | 0.0179 ns | 0.0159 ns |      - |      - |         - |
+| KeyboardState.SetKeyState               | 86.5721 ns | 1.7339 ns | 2.7501 ns | 0.2193 |      - |    2752 B |
+| KeyboardState.SetKeyState               |   3.306 ns | 0.0565 ns | 0.0529 ns |      - |      - |         - |
+| KeyboardState.AnyKeysDown               |  1.5269 ns | 0.0499 ns | 0.0467 ns |      - |      - |         - |
+| KeyboardState.KeyToChar                 |  5.1001 ns | 0.0689 ns | 0.0645 ns |      - |      - |         - |
+| KeyboardState.GetDownKeys               |  1.5725 ns | 0.0368 ns | 0.0344 ns |      - |      - |         - |
+| KeyboardState.GetKeyStates              |  0.0557 ns | 0.0218 ns | 0.0204 ns |      - |      - |         - |
+| KeyboardState.AnyAltKeysDown            |  0.7100 ns | 0.0393 ns | 0.0667 ns |      - |      - |         - |
+| KeyboardState.AnyCtrlKeysDown           |  0.6955 ns | 0.0379 ns | 0.0437 ns |      - |      - |         - |
+| KeyboardState.AnyShiftKeysDown          |  0.6806 ns | 0.0323 ns | 0.0286 ns |      - |      - |         - |
+| KeyboardState.AnyNumpadNumberKeysDown   | 19.8618 ns | 0.2548 ns | 0.2384 ns | 0.0051 |      - |      64 B |
+| KeyboardState.AnyStandardNumberKeysDown | 17.9653 ns | 0.3300 ns | 0.3087 ns | 0.0051 |      - |      64 B |
+| KeyboardState.IsLeftAltKeyDown          |  0.0405 ns | 0.0168 ns | 0.0157 ns |      - |      - |         - |
+| KeyboardState.IsLeftCtrlKeyDown         |  0.0350 ns | 0.0185 ns | 0.0173 ns |      - |      - |         - |
+| KeyboardState.IsLeftShiftKeyDown        |  0.3593 ns | 0.0216 ns | 0.0202 ns |      - |      - |         - |
+| KeyboardState.IsRightAltKeyDown         |  0.0370 ns | 0.0170 ns | 0.0159 ns |      - |      - |         - |
+| KeyboardState.IsRightCtrlKeyDown        |  0.0276 ns | 0.0079 ns | 0.0070 ns |      - |      - |         - |
+| KeyboardState.IsRightShiftKeyDown       |  0.0312 ns | 0.0169 ns | 0.0158 ns |      - |      - |         - |
+| Keyboard.GetState                       |   848.2 ns |  16.41 ns |  15.35 ns | 0.3748 | 0.0029 |   4.59 KB |
+---

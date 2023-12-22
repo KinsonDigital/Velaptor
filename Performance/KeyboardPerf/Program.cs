@@ -10,10 +10,8 @@ using KeyboardPerf;
 #if DEBUG
 
 var keyboardStateBenchMarks = new KeyboardBenchmarks();
-keyboardStateBenchMarks.IsKeyDown();
-
-var keyboardBenchmarks = new KeyboardBenchmarks();
-keyboardBenchmarks.GetState();
+keyboardStateBenchMarks.GetKeyStates();
+keyboardStateBenchMarks.GetKeyStates();
 
 #elif RELEASE
 
