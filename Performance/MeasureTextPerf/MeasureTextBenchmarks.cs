@@ -67,22 +67,25 @@ public class MeasureTextBenchmarks
     }
 
     /// <summary>
-    /// The total number of characters of text to use for the benchmarks.
+    /// Gets or sets the total number of characters of text to use for the benchmarks.
     /// </summary>
     [Params(10, 100, 1_000, 10_000, 100_000)]
     public int TotalCharacters { get; set; }
 
     /// <summary>
-    /// The total number of lines of text to use for the benchmarks.
+    /// Gets or sets the total number of lines of text to use for the benchmarks.
     /// </summary>
     [Params(1, 10, 50, 100)]
     public int TotalLines { get; set; }
 
     /// <summary>
-    /// The text to use for the benchmarks.
+    /// Gets or sets the text to use for the benchmarks.
     /// </summary>
     private string Text { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Sets up the test.
+    /// </summary>
     [IterationSetup]
     public void IterationSetup()
     {
@@ -106,6 +109,9 @@ public class MeasureTextBenchmarks
         Text = textToMeasure.ToString();
     }
 
+    /// <summary>
+    /// Runs performance testing on the text measure process.
+    /// </summary>
     [Benchmark(Description = "Measure String()")]
     public void MeasureString() => this.font.Measure(Text);
 }
