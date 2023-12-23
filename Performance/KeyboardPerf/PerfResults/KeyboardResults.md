@@ -1,4 +1,4 @@
-## **Velaptor Stats**
+## **Velaptor Stats (Baseline)**
 **Velaptor Version:** v1.0.0-preview.30  
 **Description**: Baseline before changes for v1.0.0-preview.31
 
@@ -10,33 +10,31 @@ BenchmarkDotNet v0.13.11, Windows 11 (10.0.22631.2861/23H2/2023Update/SunValley3
 DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 
 
-| Method                                  | Mean       | Error     | StdDev    | Gen0   | Gen1   | Allocated |
-|---------------------------------------- |-----------:|----------:|----------:|-------:|-------:|----------:|
-| KeyboardState.IsKeyDown                 |   3.548 ns | 0.0597 ns | 0.0499 ns |      - |      - |         - |
-| KeyboardState.IsKeyUp                   |   3.757 ns | 0.0813 ns | 0.0968 ns |      - |      - |         - |
-| KeyboardState.SetKeyState               |   3.823 ns | 0.0655 ns | 0.0511 ns |      - |      - |         - |
-| KeyboardState.AnyKeysDown               | 140.306 ns | 1.4158 ns | 1.3244 ns | 0.0038 |      - |      48 B |
-| KeyboardState.KeyToChar                 |  33.482 ns | 0.3216 ns | 0.2850 ns | 0.0038 |      - |      48 B |
-| KeyboardState.GetDownKeys               |  96.916 ns | 1.3483 ns | 1.2612 ns | 0.0025 |      - |      32 B |
-| KeyboardState.GetKeyStates              |   1.292 ns | 0.0286 ns | 0.0267 ns |      - |      - |         - |
-| KeyboardState.AnyAltKeysDown            |   5.628 ns | 0.0779 ns | 0.0728 ns |      - |      - |         - |
-| KeyboardState.AnyCtrlKeysDown           |   5.691 ns | 0.0624 ns | 0.0553 ns |      - |      - |         - |
-| KeyboardState.AnyShiftKeysDown          |   5.592 ns | 0.0675 ns | 0.0599 ns |      - |      - |         - |
-| KeyboardState.AnyNumpadNumberKeysDown   |  39.268 ns | 0.2728 ns | 0.2552 ns | 0.0025 |      - |      32 B |
-| KeyboardState.AnyStandardNumberKeysDown |  37.958 ns | 0.2148 ns | 0.2009 ns | 0.0025 |      - |      32 B |
-| KeyboardState.IsLeftAltKeyDown          |   2.822 ns | 0.0334 ns | 0.0279 ns |      - |      - |         - |
-| KeyboardState.IsLeftCtrlKeyDown         |   2.879 ns | 0.0728 ns | 0.0681 ns |      - |      - |         - |
-| KeyboardState.IsLeftShiftKeyDown        |   2.816 ns | 0.0224 ns | 0.0210 ns |      - |      - |         - |
-| KeyboardState.IsRightAltKeyDown         |   2.857 ns | 0.0510 ns | 0.0477 ns |      - |      - |         - |
-| KeyboardState.IsRightCtrlKeyDown        |   2.822 ns | 0.0429 ns | 0.0380 ns |      - |      - |         - |
-| KeyboardState.IsRightShiftKeyDown       |   2.824 ns | 0.0525 ns | 0.0492 ns |      - |      - |         - |
-| Keyboard.GetState                       |   1.674 us | 0.0268 us | 0.0237 us | 0.6695 | 0.0095 |    8.2 KB |
+| Method                                  | Mean     | Error     | StdDev    | Median   | Gen0   | Gen1   | Allocated |
+|---------------------------------------- |---------:|----------:|----------:|---------:|-------:|-------:|----------:|
+| KeyboardState.IsKeyDown                 | 1.965 us | 0.0495 us | 0.1459 us | 2.002 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsKeyUp                   | 1.971 us | 0.0389 us | 0.0785 us | 1.984 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.SetKeyState               | 2.042 us | 0.0397 us | 0.0641 us | 2.054 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.AnyKeysDown               | 2.164 us | 0.0584 us | 0.1704 us | 2.194 us | 0.6733 | 0.0153 |   8.25 KB |
+| KeyboardState.KeyToChar                 | 1.980 us | 0.0582 us | 0.1661 us | 2.019 us | 0.6733 | 0.0153 |   8.25 KB |
+| KeyboardState.GetDownKeys               | 2.136 us | 0.0427 us | 0.1162 us | 2.190 us | 0.6714 | 0.0114 |   8.23 KB |
+| KeyboardState.GetKeyStates              | 2.017 us | 0.0683 us | 0.1958 us | 2.048 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.AnyAltKeysDown            | 2.054 us | 0.1041 us | 0.3053 us | 2.155 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.AnyCtrlKeysDown           | 2.100 us | 0.0478 us | 0.1341 us | 2.126 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.AnyShiftKeysDown          | 2.571 us | 0.3406 us | 1.0043 us | 2.007 us | 0.6676 | 0.0076 |    8.2 KB |
+| KeyboardState.AnyNumpadNumberKeysDown   | 2.061 us | 0.0474 us | 0.1398 us | 2.055 us | 0.6714 | 0.0095 |   8.23 KB |
+| KeyboardState.AnyStandardNumberKeysDown | 1.985 us | 0.0714 us | 0.2061 us | 2.036 us | 0.6714 | 0.0114 |   8.23 KB |
+| KeyboardState.IsLeftAltKeyDown          | 1.684 us | 0.1207 us | 0.3559 us | 1.887 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsLeftCtrlKeyDown         | 1.969 us | 0.0560 us | 0.1634 us | 1.986 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsLeftShiftKeyDown        | 1.940 us | 0.0394 us | 0.1156 us | 1.974 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsRightAltKeyDown         | 1.894 us | 0.0889 us | 0.2606 us | 1.958 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsRightCtrlKeyDown        | 1.966 us | 0.0477 us | 0.1376 us | 1.991 us | 0.6695 | 0.0095 |    8.2 KB |
+| KeyboardState.IsRightShiftKeyDown       | 1.933 us | 0.0551 us | 0.1626 us | 1.974 us | 0.6695 | 0.0095 |    8.2 KB |
+| Keyboard.GetState                       | 3.230 us | 0.0642 us | 0.0713 us | 3.255 us | 0.6695 | 0.0095 |    8.2 KB |
 
 ---
 
-## **Velaptor Stats**
-
-
+## **Velaptor Stats (Test 2)**
 **Velaptor Version:** v1.0.0-preview.31  
 **Description:** Changes for this version without KeyboardKeyGroups frozen dictionaries.
 
@@ -70,4 +68,16 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.IsRightCtrlKeyDown        |  0.0276 ns | 0.0079 ns | 0.0070 ns |      - |      - |         - |
 | KeyboardState.IsRightShiftKeyDown       |  0.0312 ns | 0.0169 ns | 0.0158 ns |      - |      - |         - |
 | Keyboard.GetState                       |   848.2 ns |  16.41 ns |  15.35 ns | 0.3748 | 0.0029 |   4.59 KB |
+
 ---
+
+## **Velaptor Stats (Test 3)**
+**Velaptor Version:** v1.0.0-preview.31  
+**Description:** Changes from test 2 is that KeyboardKeyGroups uses frozen dictionaries and immutable lists.
+
+## **Stats**:
+BenchmarkDotNet v0.13.11, Windows 11 (10.0.22631.2861/23H2/2023Update/SunValley3)
+12th Gen Intel Core i9-12900HK, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 8.0.100
+[Host]     : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2 [AttachedDebugger]
+DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
