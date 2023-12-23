@@ -7,6 +7,7 @@ namespace Velaptor.Input;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ExtensionMethods;
 
@@ -162,10 +163,13 @@ public record struct KeyboardState
     /// above the letter keys, are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the standard number keys are in the down position.</returns>
+    [SuppressMessage(
+        "csharpsquid|Loops should be simplified with LINQ expressions",
+        "S3267",
+        Justification = "Left as foreach for perf.")]
     public bool AnyStandardNumberKeysDown()
     {
         // Check all of the standard number keys
-        // TODO: Need to perf test if the recommend linq method is faster than the foreach loop below
         foreach (var key in KeyboardKeyGroups.GetStandardNumberKeys())
         {
             if (IsKeyDown(key))
@@ -182,10 +186,13 @@ public record struct KeyboardState
     /// are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the numpad number keys are in the down position.</returns>
+    [SuppressMessage(
+        "csharpsquid|Loops should be simplified with LINQ expressions",
+        "S3267",
+        Justification = "Left as foreach for perf.")]
     public bool AnyNumpadNumberKeysDown()
     {
         // Check all of the numpad number keys
-        // TODO: Need to perf test if the recommend linq method is faster than the foreach loop below
         foreach (var key in KeyboardKeyGroups.GetNumpadNumberKeys())
         {
             if (IsKeyDown(key))

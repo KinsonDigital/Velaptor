@@ -4,10 +4,8 @@
 
 namespace Velaptor.Input;
 
-using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -21,10 +19,10 @@ internal readonly record struct KeyboardKeyGroups
     /// </summary>
     public const char InvalidCharacter = '□';
 
-    private static IImmutableList<KeyCode>? noShiftLetterCharacters;
-    private static IImmutableList<KeyCode>? noShiftSymbolCharacters;
-    private static IImmutableList<KeyCode>? noShiftStandardNumberCharacters;
-    private static IImmutableList<KeyCode>? noShiftNumpadNumberCharacters;
+    private static KeyCode[]? noShiftLetterCharacters;
+    private static KeyCode[]? noShiftSymbolCharacters;
+    private static KeyCode[]? noShiftStandardNumberCharacters;
+    private static KeyCode[]? noShiftNumpadNumberCharacters;
 
     /// <summary>
     /// Gets a list of the cursor movement keys.
@@ -147,39 +145,39 @@ internal readonly record struct KeyboardKeyGroups
     /// Gets a list of all the keys that produce a letter character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a lowercase letter character.</returns>
-    public static Span<KeyCode> GetLetterKeys()
+    public static KeyCode[] GetLetterKeys()
     {
-        noShiftLetterCharacters ??= NoShiftLetterCharacters.Keys;
-        return noShiftLetterCharacters.ToArray().AsSpan();
+        noShiftLetterCharacters ??= NoShiftLetterCharacters.Keys.ToArray();
+        return noShiftLetterCharacters;
     }
 
     /// <summary>
     /// Gets a list of all the keys that produce a standard number character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a standard number character.</returns>
-    public static Span<KeyCode> GetStandardNumberKeys()
+    public static KeyCode[] GetStandardNumberKeys()
     {
-        noShiftStandardNumberCharacters ??= NoShiftStandardNumberCharacters.Keys;
-        return noShiftStandardNumberCharacters.ToArray().AsSpan();
+        noShiftStandardNumberCharacters ??= NoShiftStandardNumberCharacters.Keys.ToArray();
+        return noShiftStandardNumberCharacters;
     }
 
     /// <summary>
     /// Gets a list of all the keys that produce a numpad number character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a numpad number character.</returns>
-    public static Span<KeyCode> GetNumpadNumberKeys()
+    public static KeyCode[] GetNumpadNumberKeys()
     {
-        noShiftNumpadNumberCharacters ??= NoShiftNumpadNumberCharacters.Keys;
-        return noShiftNumpadNumberCharacters.ToArray().AsSpan();
+        noShiftNumpadNumberCharacters ??= NoShiftNumpadNumberCharacters.Keys.ToArray();
+        return noShiftNumpadNumberCharacters;
     }
 
     /// <summary>
     /// Gets a list of all the keys that produce a symbol character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a symbol character.</returns>
-    public static Span<KeyCode> GetSymbolKeys()
+    public static KeyCode[] GetSymbolKeys()
     {
-        noShiftSymbolCharacters ??= NoShiftSymbolCharacters.Keys;
-        return noShiftSymbolCharacters.ToArray().AsSpan();
+        noShiftSymbolCharacters ??= NoShiftSymbolCharacters.Keys.ToArray();
+        return noShiftSymbolCharacters;
     }
 }

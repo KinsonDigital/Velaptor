@@ -55,8 +55,8 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.AnyAltKeysDown            |   4.144 ns | 0.0307 ns | 0.0273 ns |      - |      - |         - |
 | KeyboardState.AnyCtrlKeysDown           |   4.144 ns | 0.0481 ns | 0.0450 ns |      - |      - |         - |
 | KeyboardState.AnyShiftKeysDown          |   4.212 ns | 0.0414 ns | 0.0387 ns |      - |      - |         - |
-| KeyboardState.AnyNumpadNumberKeysDown   |  31.248 ns | 0.5581 ns | 0.5220 ns | 0.0051 |      - |      64 B |
-| KeyboardState.AnyStandardNumberKeysDown |  33.310 ns | 0.6660 ns | 0.6230 ns | 0.0051 |      - |      64 B |
+| KeyboardState.AnyNumpadNumberKeysDown   |   16.14 ns |  0.110 ns |  0.103 ns |      - |      - |         - |
+| KeyboardState.AnyStandardNumberKeysDown |   20.54 ns |  0.341 ns |  0.319 ns |      - |      - |         - |
 | KeyboardState.IsLeftAltKeyDown          |   1.658 ns | 0.0223 ns | 0.0208 ns |      - |      - |         - |
 | KeyboardState.IsLeftCtrlKeyDown         |   1.703 ns | 0.0428 ns | 0.0400 ns |      - |      - |         - |
 | KeyboardState.IsLeftShiftKeyDown        |   1.733 ns | 0.0519 ns | 0.0711 ns |      - |      - |         - |

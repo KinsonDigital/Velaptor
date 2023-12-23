@@ -150,6 +150,7 @@ public class KeyboardBenchmarks
     {
         var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
+        // NOTE: This is used for worse case scenario for checking if a single key is in the down position
         var midIndex = keys.Length / 2;
 
         for (var i = 0; i < keys.Length; i++)
