@@ -84,10 +84,17 @@ public record struct KeyboardState
     public Span<KeyCode> GetDownKeys()
     {
         InitKeyStates();
-        IsRightAltKeyDown();
 
-        return KeyStates.Where(s => s.Value)
-            .Select(s => s.Key).ToArray().AsSpan();
+        var results = new List<KeyCode>();
+        foreach ((KeyCode key, var state) in KeyStates)
+        {
+            if (state)
+            {
+                results.Add(key);
+            }
+        }
+
+        return results.ToArray().AsSpan();
     }
 
     /// <summary>
