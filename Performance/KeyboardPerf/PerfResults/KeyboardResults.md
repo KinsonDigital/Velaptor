@@ -63,4 +63,4 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.IsRightAltKeyDown         |   1.697 ns | 0.0195 ns | 0.0182 ns |      - |      - |         - |
 | KeyboardState.IsRightCtrlKeyDown        |   1.663 ns | 0.0155 ns | 0.0137 ns |      - |      - |         - |
 | KeyboardState.IsRightShiftKeyDown       |   1.689 ns | 0.0287 ns | 0.0268 ns |      - |      - |         - |
-| Keyboard.GetState                       | 530.845 ns | 7.8372 ns | 7.3309 ns | 0.2346 | 0.0019 |    2944 B |
+| Keyboard.GetState                       |   603.3 ns |  11.83 ns |  11.62 ns | 0.2193 |      - |   2.69 KB |
