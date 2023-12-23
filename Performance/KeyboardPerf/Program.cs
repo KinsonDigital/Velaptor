@@ -10,8 +10,6 @@ using KeyboardPerf;
 #if DEBUG
 
 var keyboardStateBenchMarks = new KeyboardBenchmarks();
-keyboardStateBenchMarks.GetKeyStates();
-keyboardStateBenchMarks.GetKeyStates();
 
 #elif RELEASE
 
@@ -21,6 +19,6 @@ var config = DefaultConfig.Instance.WithOptions(ConfigOptions.DisableOptimizatio
 var keyboardResults = BenchmarkRunner.Run<KeyboardBenchmarks>(config);
 Console.WriteLine(keyboardResults);
 
-Console.ReadLine();
-
 #endif
+
+Console.ReadLine();
