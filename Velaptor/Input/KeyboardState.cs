@@ -104,7 +104,16 @@ public record struct KeyboardState
     public bool AnyKeysDown()
     {
         InitKeyStates();
-        return KeyStates?.Any(i => i.Value) ?? false;
+
+        foreach (var keyState in KeyStates)
+        {
+            if (keyState.Value)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

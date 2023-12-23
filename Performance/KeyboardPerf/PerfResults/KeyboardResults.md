@@ -49,7 +49,7 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.IsKeyDown                 |   2.344 ns | 0.0202 ns | 0.0179 ns |      - |      - |         - |
 | KeyboardState.IsKeyUp                   |   2.687 ns | 0.0709 ns | 0.0663 ns |      - |      - |         - |
 | KeyboardState.SetKeyState               |   3.246 ns | 0.0321 ns | 0.0285 ns |      - |      - |         - |
-| KeyboardState.AnyKeysDown               | 147.008 ns | 1.1478 ns | 1.0736 ns | 0.0038 |      - |      48 B |
+| KeyboardState.AnyKeysDown               |   49.99 ns |  0.457 ns |  0.428 ns |      - |      - |         - |
 | KeyboardState.KeyToChar                 |   7.539 ns | 0.1729 ns | 0.1617 ns |      - |      - |         - |
 | KeyboardState.GetDownKeys               |   98.26 ns |  0.790 ns |  0.660 ns | 0.0025 |      - |      32 B |
 | KeyboardState.AnyAltKeysDown            |   4.144 ns | 0.0307 ns | 0.0273 ns |      - |      - |         - |

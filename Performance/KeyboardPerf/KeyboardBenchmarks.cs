@@ -150,9 +150,12 @@ public class KeyboardBenchmarks
     {
         var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-        foreach (var key in keys)
+        var midIndex = keys.Length / 2;
+
+        for (var i = 0; i < keys.Length; i++)
         {
-            this.keyboardState.SetKeyState(key, false);
+            KeyCode key = keys[i];
+            this.keyboardState.SetKeyState(key, i == midIndex);
         }
     }
 
