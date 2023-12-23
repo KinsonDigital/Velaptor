@@ -1,11 +1,13 @@
-﻿// <copyright file="KeyboardKeyGroups.cs" company="KinsonDigital">
+// <copyright file="KeyboardKeyGroups.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Input;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -18,6 +20,11 @@ internal readonly record struct KeyboardKeyGroups
     /// Gets a character that represents an invalid character.
     /// </summary>
     public const char InvalidCharacter = '□';
+
+    private static IImmutableList<KeyCode>? noShiftLetterCharacters;
+    private static IImmutableList<KeyCode>? noShiftSymbolCharacters;
+    private static IImmutableList<KeyCode>? noShiftStandardNumberCharacters;
+    private static IImmutableList<KeyCode>? noShiftNumpadNumberCharacters;
 
     /// <summary>
     /// Gets a list of the cursor movement keys.
@@ -51,7 +58,7 @@ internal readonly record struct KeyboardKeyGroups
     /// letter keys when no shift modifier keys are in the down position.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Not worth testing")]
-    public static IReadOnlyDictionary<KeyCode, char> NoShiftLetterCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> NoShiftLetterCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.A, 'a' }, { KeyCode.B, 'b' }, { KeyCode.C, 'c' }, { KeyCode.D, 'd' }, { KeyCode.E, 'e' },
         { KeyCode.F, 'f' }, { KeyCode.G, 'g' }, { KeyCode.H, 'h' }, { KeyCode.I, 'i' }, { KeyCode.J, 'j' },
@@ -59,14 +66,14 @@ internal readonly record struct KeyboardKeyGroups
         { KeyCode.P, 'p' }, { KeyCode.Q, 'q' }, { KeyCode.R, 'r' }, { KeyCode.S, 's' }, { KeyCode.T, 't' },
         { KeyCode.U, 'u' }, { KeyCode.V, 'v' }, { KeyCode.W, 'w' }, { KeyCode.X, 'x' }, { KeyCode.Y, 'y' },
         { KeyCode.Z, 'z' }, { KeyCode.Space, ' ' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by the
     /// letter keys when any of the shift modifier keys are in the down position.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Not worth testing")]
-    public static IReadOnlyDictionary<KeyCode, char> WithShiftLetterCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> WithShiftLetterCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.A, 'A' }, { KeyCode.B, 'B' }, { KeyCode.C, 'C' }, { KeyCode.D, 'D' }, { KeyCode.E, 'E' },
         { KeyCode.F, 'F' }, { KeyCode.G, 'G' }, { KeyCode.H, 'H' }, { KeyCode.I, 'I' }, { KeyCode.J, 'J' },
@@ -74,47 +81,47 @@ internal readonly record struct KeyboardKeyGroups
         { KeyCode.P, 'P' }, { KeyCode.Q, 'Q' }, { KeyCode.R, 'R' }, { KeyCode.S, 'S' }, { KeyCode.T, 'T' },
         { KeyCode.U, 'U' }, { KeyCode.V, 'V' }, { KeyCode.W, 'W' }, { KeyCode.X, 'X' }, { KeyCode.Y, 'Y' },
         { KeyCode.Z, 'Z' }, { KeyCode.Space, ' ' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by the
     /// standard number keys when no shift modifier keys are in the down position.
     /// </summary>
-    public static IReadOnlyDictionary<KeyCode, char> NoShiftStandardNumberCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> NoShiftStandardNumberCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.D0, '0' }, { KeyCode.D1, '1' }, { KeyCode.D2, '2' },
         { KeyCode.D3, '3' }, { KeyCode.D4, '4' }, { KeyCode.D5, '5' },
         { KeyCode.D6, '6' }, { KeyCode.D7, '7' }, { KeyCode.D8, '8' }, { KeyCode.D9, '9' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by the
     /// standard number keys when no shift modifier keys are in the down position.
     /// </summary>
-    public static IReadOnlyDictionary<KeyCode, char> WithShiftStandardNumberCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> WithShiftStandardNumberCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.D1, '!' }, { KeyCode.D2, '@' }, { KeyCode.D3, '#' }, { KeyCode.D4, '$' }, { KeyCode.D5, '%' },
         { KeyCode.D6, '^' }, { KeyCode.D7, '&' }, { KeyCode.D8, '*' }, { KeyCode.D9, '(' }, { KeyCode.D0, ')' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by the
     /// keyboard when no shift modifier keys are in the down position.
     /// </summary>
-    public static IReadOnlyDictionary<KeyCode, char> NoShiftSymbolCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> NoShiftSymbolCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.Equal, '=' }, { KeyCode.Comma, ',' }, { KeyCode.Minus, '-' }, { KeyCode.Period, '.' }, { KeyCode.Slash, '/' },
         { KeyCode.Backslash, '\\' }, { KeyCode.LeftBracket, '[' }, { KeyCode.RightBracket, ']' },
         { KeyCode.Apostrophe, '\'' }, { KeyCode.Semicolon, ';' }, { KeyCode.KeyPadAdd, '+' }, { KeyCode.KeyPadDecimal, '.' },
         { KeyCode.KeyPadDivide, '/' }, { KeyCode.KeyPadMultiply, '*' }, { KeyCode.KeyPadSubtract, '-' },
         { KeyCode.GraveAccent, '`' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/>produced by
     /// the keyboard when any shift modifier keys are in the down position.
     /// </summary>
-    public static IReadOnlyDictionary<KeyCode, char> WithShiftSymbolCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> WithShiftSymbolCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.Equal, '+' }, { KeyCode.Comma, '<' }, { KeyCode.Minus, '_' }, { KeyCode.Period, '>' }, { KeyCode.Slash, '?' },
         { KeyCode.Backslash, '|' }, { KeyCode.LeftBracket, '{' }, { KeyCode.RightBracket, '}' },
@@ -123,40 +130,56 @@ internal readonly record struct KeyboardKeyGroups
         { KeyCode.D6, '^' }, { KeyCode.D7, '&' }, { KeyCode.D8, '*' }, { KeyCode.D9, '(' },
         { KeyCode.D0, ')' }, { KeyCode.KeyPadDivide, '/' }, { KeyCode.KeyPadMultiply, '*' }, { KeyCode.KeyPadSubtract, '-' },
         { KeyCode.KeyPadAdd, '+' }, { KeyCode.KeyPadDecimal, '.' }, { KeyCode.GraveAccent, '~' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by by
     /// the keyboard when no shift modifier keys are in the down position.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Not worth testing")]
-    public static IReadOnlyDictionary<KeyCode, char> NoShiftNumpadNumberCharacters { get; } = new Dictionary<KeyCode, char>
+    public static FrozenDictionary<KeyCode, char> NoShiftNumpadNumberCharacters { get; } = new Dictionary<KeyCode, char>
     {
         { KeyCode.KeyPad0, '0' }, { KeyCode.KeyPad1, '1' }, { KeyCode.KeyPad2, '2' }, { KeyCode.KeyPad3, '3' }, { KeyCode.KeyPad4, '4' },
         { KeyCode.KeyPad5, '5' }, { KeyCode.KeyPad6, '6' }, { KeyCode.KeyPad7, '7' }, { KeyCode.KeyPad8, '8' }, { KeyCode.KeyPad9, '9' },
-    };
+    }.ToFrozenDictionary();
 
     /// <summary>
     /// Gets a list of all the keys that produce a letter character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a lowercase letter character.</returns>
-    public static Span<KeyCode> GetLetterKeys() => NoShiftLetterCharacters.Keys.ToArray().AsSpan();
+    public static Span<KeyCode> GetLetterKeys()
+    {
+        noShiftLetterCharacters ??= NoShiftLetterCharacters.Keys;
+        return noShiftLetterCharacters.ToArray().AsSpan();
+    }
 
     /// <summary>
     /// Gets a list of all the keys that produce a standard number character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a standard number character.</returns>
-    public static Span<KeyCode> GetStandardNumberKeys() => NoShiftStandardNumberCharacters.Keys.ToArray().AsSpan();
+    public static Span<KeyCode> GetStandardNumberKeys()
+    {
+        noShiftStandardNumberCharacters ??= NoShiftStandardNumberCharacters.Keys;
+        return noShiftStandardNumberCharacters.ToArray().AsSpan();
+    }
 
     /// <summary>
     /// Gets a list of all the keys that produce a numpad number character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a numpad number character.</returns>
-    public static Span<KeyCode> GetNumpadNumberKeys() => NoShiftNumpadNumberCharacters.Keys.ToArray().AsSpan();
+    public static Span<KeyCode> GetNumpadNumberKeys()
+    {
+        noShiftNumpadNumberCharacters ??= NoShiftNumpadNumberCharacters.Keys;
+        return noShiftNumpadNumberCharacters.ToArray().AsSpan();
+    }
 
     /// <summary>
     /// Gets a list of all the keys that produce a symbol character when no shift modifier keys are in the down position.
     /// </summary>
     /// <returns>The keys that produce a symbol character.</returns>
-    public static Span<KeyCode> GetSymbolKeys() => NoShiftSymbolCharacters.Keys.ToArray().AsSpan();
+    public static Span<KeyCode> GetSymbolKeys()
+    {
+        noShiftSymbolCharacters ??= NoShiftSymbolCharacters.Keys;
+        return noShiftSymbolCharacters.ToArray().AsSpan();
+    }
 }

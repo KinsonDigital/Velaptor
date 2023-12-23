@@ -70,12 +70,6 @@ public class KeyboardBenchmarks
         this.keyboardState.GetDownKeys();
     }
 
-    [Benchmark(Description = $"{nameof(KeyboardState)}.{nameof(KeyboardState.GetKeyStates)}")]
-    public void GetKeyStates()
-    {
-        this.keyboardState.GetKeyStates();
-    }
-
     [Benchmark(Description = $"{nameof(KeyboardState)}.{nameof(KeyboardState.AnyAltKeysDown)}")]
     public void AnyAltKeysDown()
     {
@@ -170,14 +164,6 @@ public class KeyboardBenchmarks
         var reactable = new PushReactableFake();
         var keyboardDataStore = new KeyboardDataService(reactable);
         this.keyboard = new Keyboard(keyboardDataStore);
-
-        // Fill the data in the keyboard to default values for every single key
-        // var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
-        // foreach (var key in keys)
-        // {
-        //     var data = new KeyboardKeyStateData { Key = key, IsDown = false };
-        //     reactable.Push(data, PushNotifications.KeyboardStateChangedId);
-        // }
     }
     #endregion
 }

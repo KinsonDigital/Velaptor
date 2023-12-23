@@ -6,7 +6,6 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using FluentAssertions;
 using NSubstitute;
 using Velaptor.Input;
@@ -49,13 +48,13 @@ public class KeyboardTests
         // Arrange
         var expected = new Dictionary<KeyCode, bool> { { KeyCode.K, true }, };
 
-        this.mockKeyDataService.GetKeyStates().Returns(new (KeyCode, bool)[] { (KeyCode.K, true) }.ToImmutableArray());
+        this.mockKeyDataService.GetKeyStates().Returns(expected);
 
         var sut = CreateSystemUnderTest();
 
         // Act
         var state = sut.GetState();
-        var actual = state.GetKeyStates();
+        var actual = state.KeyStates;
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

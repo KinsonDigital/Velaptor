@@ -5,7 +5,7 @@
 namespace Velaptor.Services;
 
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using Input;
 
 /// <summary>
@@ -17,5 +17,5 @@ internal interface IKeyboardDataService : IDisposable
     /// Gets the state of all the keys on the keyboard.
     /// </summary>
     /// <returns>The state of the keys.</returns>
-    ImmutableArray<(KeyCode, bool)> GetKeyStates();
+    Dictionary<KeyCode, bool> GetKeyStates();
 }

@@ -16,7 +16,11 @@ using ExtensionMethods;
 public record struct KeyboardState
 {
     private static readonly int Capacity = Enum.GetNames(typeof(KeyCode)).Length;
-    private Dictionary<KeyCode, bool> keyStates = new (Capacity);
+
+    /// <summary>
+    /// Gets the state of the keys.
+    /// </summary>
+    internal Dictionary<KeyCode, bool> KeyStates { get; private set; } = new (Capacity);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardState"/> struct.
@@ -38,26 +42,16 @@ public record struct KeyboardState
     */
 
     /// <summary>
-    /// Returns all of the keys and their states.
+    /// Gets a value indicating whether or not the right shift key is in the down position.
     /// </summary>
-    /// <returns>The keys and given state for each key.</returns>
-    public Dictionary<KeyCode, bool> GetKeyStates()
-    {
-        InitKeyStates();
-        return this.keyStates;
-    }
+    /// <returns><c>true</c> if the right shift key is down.</returns>
+    public bool IsRightShiftKeyDown() => IsKeyDown(KeyCode.RightShift);
 
     /// <summary>
     /// Gets a value indicating whether or not the left shift key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the left shift key is down.</returns>
     public bool IsLeftShiftKeyDown() => IsKeyDown(KeyCode.LeftShift);
-
-    /// <summary>
-    /// Gets a value indicating whether or not the right shift key is in the down position.
-    /// </summary>
-    /// <returns><c>true</c> if the right shift key is down.</returns>
-    public bool IsRightShiftKeyDown() => IsKeyDown(KeyCode.RightShift);
 
     /// <summary>
     /// Gets a value indicating whether or not the left control key is in the down position.
@@ -92,7 +86,7 @@ public record struct KeyboardState
         InitKeyStates();
         IsRightAltKeyDown();
 
-        return this.keyStates.Where(s => s.Value)
+        return KeyStates.Where(s => s.Value)
             .Select(s => s.Key).ToArray().AsSpan();
     }
 
@@ -103,7 +97,7 @@ public record struct KeyboardState
     public bool AnyKeysDown()
     {
         InitKeyStates();
-        return this.keyStates?.Any(i => i.Value) ?? false;
+        return KeyStates?.Any(i => i.Value) ?? false;
     }
 
     /// <summary>
@@ -113,12 +107,12 @@ public record struct KeyboardState
     /// <returns><c>true</c> if any of the given <paramref name="keys"/> are in the down position.</returns>
     public bool AnyKeysDown(IEnumerable<KeyCode> keys)
     {
-        if (this.keyStates is null)
+        if (KeyStates is null)
         {
             return false;
         }
 
-        var states = this.keyStates;
+        var states = KeyStates;
 
         return keys.Any(k => states[k]);
     }
@@ -132,7 +126,7 @@ public record struct KeyboardState
     {
         InitKeyStates();
 
-        if (!this.keyStates.TryGetValue(key, out var value))
+        if (!KeyStates.TryGetValue(key, out var value))
         {
             return false;
         }
@@ -222,11 +216,11 @@ public record struct KeyboardState
     public void SetKeyState(KeyCode key, bool state)
     {
         InitKeyStates();
-        this.keyStates[key] = state;
+        KeyStates[key] = state;
     }
 
     /// <summary>
     /// Initializes the key states if they are null.
     /// </summary>
-    private void InitKeyStates() => this.keyStates ??= new (Capacity);
+    private void InitKeyStates() => KeyStates ??= new (Capacity);
 }

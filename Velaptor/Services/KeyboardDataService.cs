@@ -6,7 +6,6 @@ namespace Velaptor.Services;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
@@ -40,19 +39,7 @@ internal sealed class KeyboardDataService : IKeyboardDataService
     }
 
     /// <inheritdoc/>
-    public ImmutableArray<(KeyCode, bool)> GetKeyStates()
-    {
-        // Assuming you have a pre-allocated array or memory block
-        (KeyCode, bool)[] preAllocatedArray = new (KeyCode, bool)[this.keyStates.Count];
-
-        var i = 0;
-        foreach (var kvp in this.keyStates)
-        {
-            preAllocatedArray[i++] = (kvp.Key, kvp.Value);
-        }
-
-        return preAllocatedArray.ToImmutableArray();
-    }
+    public Dictionary<KeyCode, bool> GetKeyStates() => this.keyStates;
 
     /// <inheritdoc/>
     public void Dispose()

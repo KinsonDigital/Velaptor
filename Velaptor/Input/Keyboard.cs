@@ -5,6 +5,7 @@
 #pragma warning disable SA1129 // Do not use default value type constructor
 namespace Velaptor.Input;
 
+using System.Linq;
 using Guards;
 using Services;
 
@@ -36,9 +37,9 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
         var currentKeyStates = this.keyboardDataService.GetKeyStates();
 
-        foreach ((KeyCode key, var state) in currentKeyStates)
+        foreach (var key in currentKeyStates.Keys.Where(key => keyboardState.KeyStates.ContainsKey(key)))
         {
-            keyboardState.SetKeyState(key, state);
+            keyboardState.KeyStates[key] = currentKeyStates[key];
         }
 
         return keyboardState;
