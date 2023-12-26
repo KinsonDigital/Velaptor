@@ -61,12 +61,12 @@ public class KeyboardDataServiceTests
     public void GetKeyStates_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new List<(KeyCode, bool)>();
+        var expected = new List<KeyValuePair<KeyCode, bool>>();
         var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
         foreach (var key in keys)
         {
-            expected.Add((key, key == KeyCode.V));
+            expected.Add(new KeyValuePair<KeyCode, bool>(key, key == KeyCode.V));
         }
 
         var sut = new KeyboardDataService(this.mockKeyboardDataReactable);
