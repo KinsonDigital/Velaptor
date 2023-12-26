@@ -8,7 +8,6 @@ namespace Velaptor.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using ExtensionMethods;
 
 /// <summary>
@@ -96,42 +95,6 @@ public record struct KeyboardState
         }
 
         return results.ToArray().AsSpan();
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether or not any keys are in the down position.
-    /// </summary>
-    /// <returns><c>true</c> if any keys on the keyboard are in the down position.</returns>
-    public bool AnyKeysDown()
-    {
-        InitKeyStates();
-
-        foreach (var keyState in KeyStates)
-        {
-            if (keyState.Value)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Returns a value indicating whether or not any of the given <paramref name="keys"/> are in the down position.
-    /// </summary>
-    /// <param name="keys">The list of key codes to check.</param>
-    /// <returns><c>true</c> if any of the given <paramref name="keys"/> are in the down position.</returns>
-    public bool AnyKeysDown(IEnumerable<KeyCode> keys)
-    {
-        if (KeyStates is null)
-        {
-            return false;
-        }
-
-        var states = KeyStates;
-
-        return keys.Any(k => states[k]);
     }
 
     /// <summary>

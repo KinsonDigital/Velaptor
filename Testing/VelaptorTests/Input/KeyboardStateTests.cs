@@ -351,36 +351,6 @@ public class KeyboardStateTests
     }
 
     [Fact]
-    public void AnyKeysDown_WithNoArgumentsAndSingleDownKey_ReturnsTrue()
-    {
-        // Arrange
-        var state = new KeyboardState();
-        state.SetKeyState(KeyCode.H, true);
-
-        // Act
-        var actual = state.AnyKeysDown();
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void AnyKeysDown_WhenCheckingCertainKeysAndAtLeastOneOfThemIsDown_ReturnsTrue()
-    {
-        // Arrange
-        var downKeys = new[] { KeyCode.H, KeyCode.I };
-
-        var state = new KeyboardState();
-        state.SetKeyState(KeyCode.H, true);
-
-        // Act
-        var actual = state.AnyKeysDown(downKeys);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
     public void IsKeyUp_WhenKeyIsInUpPosition_ReturnsTrue()
     {
         // Arrange

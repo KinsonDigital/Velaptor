@@ -52,12 +52,6 @@ public class KeyboardBenchmarks
         this.keyboardState.SetKeyState(KeyCode.B, true);
     }
 
-    [Benchmark(Description = $"{nameof(KeyboardState)}.{nameof(KeyboardState.AnyKeysDown)}")]
-    public void AnyKeysDown()
-    {
-        this.keyboardState.AnyKeysDown();
-    }
-
     [Benchmark(Description = $"{nameof(KeyboardState)}.{nameof(KeyboardState.KeyToChar)}")]
     public void KeyToChar()
     {

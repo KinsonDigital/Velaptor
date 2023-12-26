@@ -15,7 +15,6 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.IsKeyDown                 | 1.965 us | 0.0495 us | 0.1459 us | 2.002 us | 0.6695 | 0.0095 |    8.2 KB |
 | KeyboardState.IsKeyUp                   | 1.971 us | 0.0389 us | 0.0785 us | 1.984 us | 0.6695 | 0.0095 |    8.2 KB |
 | KeyboardState.SetKeyState               | 2.042 us | 0.0397 us | 0.0641 us | 2.054 us | 0.6695 | 0.0095 |    8.2 KB |
-| KeyboardState.AnyKeysDown               | 2.164 us | 0.0584 us | 0.1704 us | 2.194 us | 0.6733 | 0.0153 |   8.25 KB |
 | KeyboardState.KeyToChar                 | 1.980 us | 0.0582 us | 0.1661 us | 2.019 us | 0.6733 | 0.0153 |   8.25 KB |
 | KeyboardState.GetDownKeys               | 2.136 us | 0.0427 us | 0.1162 us | 2.190 us | 0.6714 | 0.0114 |   8.23 KB |
 | KeyboardState.AnyAltKeysDown            | 2.054 us | 0.1041 us | 0.3053 us | 2.155 us | 0.6695 | 0.0095 |    8.2 KB |
@@ -49,7 +48,6 @@ DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 | KeyboardState.IsKeyDown                 |   2.344 ns | 0.0202 ns | 0.0179 ns |      - |      - |         - |
 | KeyboardState.IsKeyUp                   |   2.687 ns | 0.0709 ns | 0.0663 ns |      - |      - |         - |
 | KeyboardState.SetKeyState               |   3.246 ns | 0.0321 ns | 0.0285 ns |      - |      - |         - |
-| KeyboardState.AnyKeysDown               |   49.99 ns |  0.457 ns |  0.428 ns |      - |      - |         - |
 | KeyboardState.KeyToChar                 |   7.539 ns | 0.1729 ns | 0.1617 ns |      - |      - |         - |
 | KeyboardState.GetDownKeys               |   98.26 ns |  0.790 ns |  0.660 ns | 0.0025 |      - |      32 B |
 | KeyboardState.AnyAltKeysDown            |   4.144 ns | 0.0307 ns | 0.0273 ns |      - |      - |         - |
