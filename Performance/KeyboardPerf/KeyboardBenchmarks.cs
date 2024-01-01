@@ -6,6 +6,7 @@
 
 // ReSharper disable ArrangeMethodOrOperatorBody
 // ReSharper disable PossiblyImpureMethodCallOnReadonlyVariable
+#pragma warning disable SA1129
 #pragma warning disable SA1124
 #pragma warning disable SA1514
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
