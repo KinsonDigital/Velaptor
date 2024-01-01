@@ -1,0 +1,61 @@
+name: ✅Build Perf Projects Status Check
+run-name: ✅Build Perf Projects Status Check (${{ github.base_ref }} branch)
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  pull_request_target:
+    branches: [main, preview]
+
+
+jobs:
+  build_measure_text_perf_project:
+    name: Build Measure Text Perf Project
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.0
+    with:
+      project-name: "MeasureTextPerf"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
+
+
+  build_keyboard_perf_project:
+    name: Build Keyboard Perf Project
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.0
+    with:
+      project-name: "KeyboardPerf"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
+
+
+  build_mouse_perf_project:
+    name: Build Mouse Perf Project
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.0
+    with:
+      project-name: "MousePerf"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
+      
+
+  build_perf_projects_status_check:
+    name: ${{ vars.PROJECT_NAME }} Build Perf Projects Status Check
+    needs: [build_measure_text_perf_project, build_keyboard_perf_project, build_mouse_perf_project]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Status Check Pass Message
+        run: Write-Host "::notice::✅Build Status Check Passed✅";
