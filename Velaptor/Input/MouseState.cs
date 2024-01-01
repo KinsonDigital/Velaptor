@@ -4,38 +4,45 @@
 
 namespace Velaptor.Input;
 
-using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 /// <summary>
 /// Represents the state of the mouse.
 /// </summary>
-public struct MouseState : IEquatable<MouseState>
+public readonly struct MouseState
 {
-    private Point position;
-    private int scrollWheelValue;
-    private bool isLeftButtonDown;
-    private bool isRightButtonDown;
-    private bool isMiddleButtonDown;
-    private MouseScrollDirection scrollDirection;
+    private readonly Point position;
+    private readonly int scrollWheelValue;
+    private readonly bool isLeftButtonDown;
+    private readonly bool isRightButtonDown;
+    private readonly bool isMiddleButtonDown;
+    private readonly MouseScrollDirection scrollDirection;
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
+    /// Initializes a new instance of the <see cref="MouseState"/> struct.
     /// </summary>
-    /// <param name="left">The left side of the operator.</param>
-    /// <param name="right">The right side of the operator.</param>
-    /// <returns><c>true</c> if the operands are equal.</returns>
-    public static bool operator ==(MouseState left, MouseState right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left side of the operator.</param>
-    /// <param name="right">The right side of the operator.</param>
-    /// <returns><c>true</c> if the operands are not equal.</returns>
-    public static bool operator !=(MouseState left, MouseState right) => !left.Equals(right);
+    /// <param name="pos">The position of the mouse.</param>
+    /// <param name="isLeftButtonDown">True if the left button is down.</param>
+    /// <param name="isRightButtonDown">True if the right button is down.</param>
+    /// <param name="isMiddleButtonDown">True if the middle button is down.</param>
+    /// <param name="scrollDirection">The travel direction of the mouse wheel.</param>
+    /// <param name="scrollWheelValue">The value of the mouse wheel.</param>
+    public MouseState(
+        Point pos,
+        bool isLeftButtonDown,
+        bool isRightButtonDown,
+        bool isMiddleButtonDown,
+        MouseScrollDirection scrollDirection,
+        int scrollWheelValue)
+    {
+        this.position = pos;
+        this.isLeftButtonDown = isLeftButtonDown;
+        this.isRightButtonDown = isRightButtonDown;
+        this.isMiddleButtonDown = isMiddleButtonDown;
+        this.scrollDirection = scrollDirection;
+        this.scrollWheelValue = scrollWheelValue;
+    }
 
     /// <summary>
     /// Gets or sets the position of the mouse.
@@ -164,78 +171,4 @@ public struct MouseState : IEquatable<MouseState>
     /// </summary>
     /// <returns>The scroll direction of the mouse wheel.</returns>
     public MouseScrollDirection GetScrollDirection() => this.scrollDirection;
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not MouseState state)
-        {
-            return false;
-        }
-
-        return Equals(state);
-    }
-
-    /// <inheritdoc/>
-    public bool Equals(MouseState other)
-        => this.scrollWheelValue == other.scrollWheelValue &&
-           this.position.X == other.position.X &&
-           this.position.Y == other.position.Y &&
-           this.isLeftButtonDown == other.isLeftButtonDown &&
-           this.isMiddleButtonDown == other.isMiddleButtonDown &&
-           this.isRightButtonDown == other.isRightButtonDown;
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-        => HashCode.Combine(
-            this.scrollWheelValue,
-            this.position.X,
-            this.position.Y,
-            this.isLeftButtonDown,
-            this.isMiddleButtonDown,
-            this.isRightButtonDown);
-
-    /// <summary>
-    /// Sets the position of the mouse using the given <paramref name="x"/> and <paramref name="y"/> values.
-    /// </summary>
-    /// <param name="x">The X position of the mouse.</param>
-    /// <param name="y">The Y position of the mouse.</param>
-    internal void SetPosition(int x, int y) => this.position = new Point(x, y);
-
-    /// <summary>
-    /// Sets the value of the scroll wheel.
-    /// </summary>
-    /// <param name="value">The value to set the scroll to.</param>
-    internal void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
-
-    /// <summary>
-    /// Sets the scroll direction of the mouse wheel.
-    /// </summary>
-    /// <param name="direction">The scroll direction.</param>
-    internal void SetScrollWheelDirection(MouseScrollDirection direction) => this.scrollDirection = direction;
-
-    /// <summary>
-    /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
-    /// </summary>
-    /// <param name="mouseButton">The button to set.</param>
-    /// <param name="state">Sets the state of the <paramref name="mouseButton"/>.</param>
-    internal void SetButtonState(MouseButton mouseButton, bool state)
-    {
-        // ReSharper disable ConvertIfStatementToSwitchStatement
-        if (mouseButton == MouseButton.LeftButton)
-        {
-            this.isLeftButtonDown = state;
-        }
-        else if (mouseButton == MouseButton.RightButton)
-        {
-            this.isRightButtonDown = state;
-        }
-        else if (mouseButton == MouseButton.MiddleButton)
-        {
-            this.isMiddleButtonDown = state;
-        }
-
-        // ReSharper restore ConvertIfStatementToSwitchStatement
-    }
 }

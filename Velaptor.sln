@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaTesting", "Testing\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyboardPerf", "Performance\KeyboardPerf\KeyboardPerf.csproj", "{43B4ED10-6225-4F9E-ADFB-474130E71B45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MousePerf", "Performance\MousePerf\MousePerf.csproj", "{6387C428-D725-4C43-B7BB-9FDB65A821D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -105,6 +107,14 @@ Global
 		{43B4ED10-6225-4F9E-ADFB-474130E71B45}.Release|x64.Build.0 = Release|Any CPU
 		{43B4ED10-6225-4F9E-ADFB-474130E71B45}.Release-Console|x64.ActiveCfg = Debug|Any CPU
 		{43B4ED10-6225-4F9E-ADFB-474130E71B45}.Release-Console|x64.Build.0 = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Debug|x64.Build.0 = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Debug-Console|x64.ActiveCfg = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Debug-Console|x64.Build.0 = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release|x64.ActiveCfg = Release|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release|x64.Build.0 = Release|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release-Console|x64.ActiveCfg = Debug|Any CPU
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release-Console|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +126,7 @@ Global
 		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
 		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{43B4ED10-6225-4F9E-ADFB-474130E71B45} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
+		{6387C428-D725-4C43-B7BB-9FDB65A821D1} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

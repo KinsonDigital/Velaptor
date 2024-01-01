@@ -356,9 +356,13 @@ public class ControlBaseTests
             Height = 100,
         };
 
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(xPos, yPos);
-        mouseState.SetButtonState(MouseButton.LeftButton, mouseDown);
+        var mouseState = new MouseState(
+            new Point(xPos, yPos),
+            mouseDown,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         this.mockMouseInput.Setup(m => m.GetState())
             .Returns(mouseState);
@@ -379,11 +383,15 @@ public class ControlBaseTests
     public void Update_WhenMouseMovesOverCtrl_RaisesMouseMoveEvent()
     {
         // Arrange
-        var mouseStateWhenNotOverControl = default(MouseState);
-        mouseStateWhenNotOverControl.SetPosition(75, 75);
+        var mouseStateWhenNotOverControl = new MouseState(
+            new Point(80, 80),
+            false,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         var mouseStateWhenOverControl = default(MouseState);
-        mouseStateWhenOverControl.SetPosition(80, 80);
 
         // Set the mouse position before moving it over the control
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenNotOverControl);
@@ -410,9 +418,13 @@ public class ControlBaseTests
     public void Update_WithMouseButtonDownAndOverCtrl_RaisesMouseDownEvent()
     {
         // Arrange
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(75, 75);
-        mouseState.SetButtonState(MouseButton.LeftButton, true);
+        var mouseState = new MouseState(
+            new Point(75, 75),
+            true,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 
@@ -435,12 +447,20 @@ public class ControlBaseTests
     public void Update_WithMouseButtonDownThenUpOverCtrl_RaisesMouseUpAndClickEvent()
     {
         // Arrange
-        var mouseButtonDownOverControlState = default(MouseState);
-        mouseButtonDownOverControlState.SetPosition(75, 75);
-        mouseButtonDownOverControlState.SetButtonState(MouseButton.LeftButton, true);
-        var mouseButtonUpOverControlState = default(MouseState);
-        mouseButtonUpOverControlState.SetPosition(75, 75);
-        mouseButtonUpOverControlState.SetButtonState(MouseButton.LeftButton, false);
+        var mouseButtonDownOverControlState = new MouseState(
+            new Point(75, 75),
+            true,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
+        var mouseButtonUpOverControlState = new MouseState(
+            new Point(75, 75),
+            false,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonDownOverControlState);
 
@@ -489,9 +509,13 @@ public class ControlBaseTests
     public void Update_WhenContentIsNotLoaded_DoesNotUpdateCtrl()
     {
         // Arrange
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(75, 75);
-        mouseState.SetButtonState(MouseButton.LeftButton, true);
+        var mouseState = new MouseState(
+            new Point(75, 75),
+            true,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 
@@ -513,9 +537,13 @@ public class ControlBaseTests
     public void Update_WhenDisabled_DoesNotUpdateCtrl()
     {
         // Arrange
-        var mouseState = default(MouseState);
-        mouseState.SetPosition(75, 75);
-        mouseState.SetButtonState(MouseButton.LeftButton, true);
+        var mouseState = new MouseState(
+            new Point(75, 75),
+            true,
+            false,
+            false,
+            MouseScrollDirection.ScrollDown,
+            0);
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 

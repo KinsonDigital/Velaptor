@@ -65,7 +65,7 @@ jobs:
           if (($releaseVersion -match $prodVersionRegex) -or ($releaseVersion -match $prevVersionRegex)) {
             Write-Host "::notice::The 'release-version' workflow input is valid.";
           } else {
-            $versionSyntax = $releaseType == "production" ? "v#.#.#" : "v#.#.#-preview.#";
+            $versionSyntax = $releaseType -eq "production" ? "v#.#.#" : "v#.#.#-preview.#";
             Write-Host "::error::The 'release-version' workflow input is not valid.  Expected format: '$versionSyntax";
             exit 1;
           }

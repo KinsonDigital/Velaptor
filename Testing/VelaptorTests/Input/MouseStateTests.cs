@@ -17,29 +17,26 @@ public class MouseStateTests
 {
     #region Method Tests
     [Fact]
-    public void SetPosition_WhenInvoked_SetsPosition()
+    public void GetPosition_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new Point(11, 22);
-        var state = default(MouseState);
+        var sut = CreateSystemUnderTest(10, 20);
 
         // Act
-        state.SetPosition(11, 22);
-        var actual = state.GetPosition();
+        var actual = sut.GetPosition();
 
-        // Arrange
-        actual.Should().Be(expected);
+        // Assert
+        actual.Should().Be(new Point(10, 20));
     }
 
     [Fact]
     public void GetX_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(MouseState);
-        state.SetPosition(123, 0);
+        var sut = CreateSystemUnderTest(x: 123, y: 0);
 
         // Act
-        var actual = state.GetX();
+        var actual = sut.GetX();
 
         // Assert
         actual.Should().Be(123);
@@ -49,11 +46,10 @@ public class MouseStateTests
     public void GetY_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(MouseState);
-        state.SetPosition(0, 123);
+        var sut = CreateSystemUnderTest(x: 0, y: 123);
 
         // Act
-        var actual = state.GetY();
+        var actual = sut.GetY();
 
         // Assert
         actual.Should().Be(123);
@@ -67,78 +63,15 @@ public class MouseStateTests
         var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
                        $"'{nameof(MouseButton)}'. (Parameter 'button')";
 
-        var state = default(MouseState);
+        var sut = default(MouseState);
 
         // Act
-        var act = () => state.IsButtonDown((MouseButton)1234);
+        var act = () => sut.IsButtonDown((MouseButton)1234);
 
         // Assert
         act.Should()
             .Throw<InvalidEnumArgumentException>()
             .WithMessage(expected);
-    }
-
-    [Fact]
-    public void IsButtonDown_WithLeftButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, true);
-        state.SetButtonState(MouseButton.MiddleButton, false);
-        state.SetButtonState(MouseButton.RightButton, false);
-
-        // Act
-        var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonDown(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeTrue();
-        actualMiddle.Should().BeFalse();
-        actualRight.Should().BeFalse();
-    }
-
-    [Fact]
-    public void IsButtonDown_WithMiddleButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, false);
-        state.SetButtonState(MouseButton.MiddleButton, true);
-        state.SetButtonState(MouseButton.RightButton, false);
-
-        // Act
-        var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonDown(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeFalse();
-        actualMiddle.Should().BeTrue();
-        actualRight.Should().BeFalse();
-    }
-
-    [Fact]
-    public void IsButtonDown_WithRightButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, false);
-        state.SetButtonState(MouseButton.MiddleButton, false);
-        state.SetButtonState(MouseButton.RightButton, true);
-
-        // Act
-        var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonDown(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeFalse();
-        actualMiddle.Should().BeFalse();
-        actualRight.Should().BeTrue();
     }
 
     [Fact]
@@ -149,10 +82,10 @@ public class MouseStateTests
         var expected = $"The value of argument 'button' ({invalidMouseButton}) is invalid for Enum type " +
                        $"'{nameof(MouseButton)}'. (Parameter 'button')";
 
-        var state = default(MouseState);
+        var sut = default(MouseState);
 
         // Act
-        var act = () => state.IsButtonUp((MouseButton)invalidMouseButton);
+        var act = () => sut.IsButtonUp((MouseButton)invalidMouseButton);
 
         // Assert
         act.Should()
@@ -160,234 +93,179 @@ public class MouseStateTests
             .WithMessage(expected);
     }
 
-    [Fact]
-    public void IsButtonUp_WithLeftButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, false);
-        state.SetButtonState(MouseButton.MiddleButton, true);
-        state.SetButtonState(MouseButton.RightButton, true);
-
-        // Act
-        var actualLeft = state.IsButtonUp(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonUp(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonUp(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeTrue();
-        actualMiddle.Should().BeFalse();
-        actualRight.Should().BeFalse();
-    }
-
-    [Fact]
-    public void IsButtonUp_WithMiddleButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, true);
-        state.SetButtonState(MouseButton.MiddleButton, false);
-        state.SetButtonState(MouseButton.RightButton, true);
-
-        // Act
-        var actualLeft = state.IsButtonUp(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonUp(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonUp(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeFalse();
-        actualMiddle.Should().BeTrue();
-        actualRight.Should().BeFalse();
-    }
-
-    [Fact]
-    public void IsButtonUp_WithRightButtonDown_ReturnsCorrectResult()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(MouseButton.LeftButton, true);
-        state.SetButtonState(MouseButton.MiddleButton, true);
-        state.SetButtonState(MouseButton.RightButton, false);
-
-        // Act
-        var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
-        var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
-        var actualRight = state.IsButtonDown(MouseButton.RightButton);
-
-        // Assert
-        actualLeft.Should().BeTrue();
-        actualMiddle.Should().BeTrue();
-        actualRight.Should().BeFalse();
-    }
-
-    [Fact]
-    public void SetScrollWheelValue_WhenInvoked_SetsValue()
-    {
-        // Arrange
-        var state = default(MouseState);
-
-        // Act
-        state.SetScrollWheelValue(123);
-        var actual = state.GetScrollWheelValue();
-
-        // Assert
-        actual.Should().Be(123);
-    }
-
     [Theory]
-    [InlineData(MouseButton.LeftButton, true, false, false)]
-    [InlineData(MouseButton.MiddleButton, false, true, false)]
-    [InlineData(MouseButton.RightButton, false, false, true)]
-    public void SetButtonState_WhenInvoked_SetsState(MouseButton mouseButton, bool expectedLeft, bool expectedMiddle, bool expectedRight)
+    [InlineData(MouseButton.LeftButton, true)]
+    [InlineData(MouseButton.MiddleButton, true)]
+    [InlineData(MouseButton.RightButton, true)]
+    public void IsButtonUp_WhenInvoked_ReturnsCorrectResult(MouseButton button, bool expected)
     {
         // Arrange
-        var state = default(MouseState);
+        var sut = CreateSystemUnderTest(
+            isLeftButtonDown: button != MouseButton.LeftButton,
+            isRightButtonDown: button != MouseButton.RightButton,
+            isMiddleButtonDown: button != MouseButton.MiddleButton);
 
         // Act
-        state.SetButtonState(mouseButton, true);
-        var actualLeft = state.GetButtonState(MouseButton.LeftButton);
-        var actualMiddle = state.GetButtonState(MouseButton.MiddleButton);
-        var actualRight = state.GetButtonState(MouseButton.RightButton);
+        var actual = sut.IsButtonUp(button);
 
         // Assert
-        actualLeft.Should().Be(expectedLeft);
-        actualMiddle.Should().Be(expectedMiddle);
-        actualRight.Should().Be(expectedRight);
+        actual.Should().Be(expected);
     }
 
     [Theory]
     [InlineData(MouseButton.LeftButton, true)]
     [InlineData(MouseButton.MiddleButton, true)]
     [InlineData(MouseButton.RightButton, true)]
-    public void AnyButtonsDown_WhenInvoked_ReturnsTrue(MouseButton button, bool expected)
+    public void IsButtonDown_WhenInvoked_ReturnsCorrectResult(MouseButton button, bool expected)
     {
         // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(button, expected);
+        var sut = CreateSystemUnderTest(
+            isLeftButtonDown: button == MouseButton.LeftButton,
+            isRightButtonDown: button == MouseButton.RightButton,
+            isMiddleButtonDown: button == MouseButton.MiddleButton);
 
         // Act
-        var actual = state.AnyButtonsDown();
+        var actual = sut.IsButtonDown(button);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, false, false, true)]
+    [InlineData(false, true, false, true)]
+    [InlineData(false, false, true, true)]
+    [InlineData(false, false, false, false)]
+    public void AnyButtonsDown_WhenInvoked_ReturnsCorrectResult(
+        bool leftButtonState,
+        bool rightButtonState,
+        bool middleButtonState,
+        bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(
+            isLeftButtonDown: leftButtonState,
+            isRightButtonDown: rightButtonState,
+            isMiddleButtonDown: middleButtonState);
+
+        // Act
+        var actual = sut.AnyButtonsDown();
 
         // Assert
         actual.Should().Be(expected);
     }
 
     [Fact]
-    public void AnyButtonsDown_WithNoButtonsDown_ReturnsFalse()
+    public void GetScrollWheelValue_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.LeftButton, false);
-        state.SetButtonState(MouseButton.MiddleButton, false);
-        state.SetButtonState(MouseButton.RightButton, false);
+        var sut = CreateSystemUnderTest(scrollWheelValue: 123);
 
         // Act
-        var actual = state.AnyButtonsDown();
+        var actual = sut.GetScrollWheelValue();
 
         // Assert
-        actual.Should().BeFalse();
+        actual.Should().Be(123);
     }
 
     [Fact]
-    public void IsLeftButtonDown_WhenLeftButtonIsDown_ReturnsTrue()
+    public void GetScrollDirection_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.LeftButton, true);
+        var sut = CreateSystemUnderTest(scrollDirection: MouseScrollDirection.ScrollDown);
 
         // Act
-        var actual = state.IsLeftButtonDown();
+        var actual = sut.GetScrollDirection();
 
         // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsMiddleButtonDown_WhenLeftButtonIsDown_ReturnsTrue()
-    {
-        // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.MiddleButton, true);
-
-        // Act
-        var actual = state.IsMiddleButtonDown();
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsRightButtonDown_WhenLeftButtonIsDown_ReturnsTrue()
-    {
-        // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.RightButton, true);
-
-        // Act
-        var actual = state.IsRightButtonDown();
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsLeftButtonUp_WhenLeftButtonIsUp_ReturnsTrue()
-    {
-        // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.LeftButton, false);
-
-        // Act
-        var actual = state.IsLeftButtonUp();
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsMiddleButtonUp_WhenLeftButtonIsUp_ReturnsTrue()
-    {
-        // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.MiddleButton, false);
-
-        // Act
-        var actual = state.IsMiddleButtonUp();
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsRightButtonUp_WhenLeftButtonIsUp_ReturnsTrue()
-    {
-        // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(MouseButton.RightButton, false);
-
-        // Act
-        var actual = state.IsRightButtonUp();
-
-        // Assert
-        actual.Should().BeTrue();
+        actual.Should().Be(MouseScrollDirection.ScrollDown);
     }
 
     [Theory]
-    [InlineData(MouseButton.LeftButton, true)]
-    [InlineData(MouseButton.MiddleButton, true)]
-    [InlineData(MouseButton.RightButton, true)]
-    public void GetButtonState_WhenInvoked_ReturnsCorrectResult(MouseButton mouseButton, bool expected)
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void IsLeftButtonDown_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
     {
         // Arrange
-        var state = default(MouseState);
-        state.SetButtonState(mouseButton, expected);
+        var sut = CreateSystemUnderTest(isLeftButtonDown: isButtonDown);
 
         // Act
-        var actual = state.GetButtonState(mouseButton);
+        var actual = sut.IsLeftButtonDown();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void IsMiddleButtonDown_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(isMiddleButtonDown: isButtonDown);
+
+        // Act
+        var actual = sut.IsMiddleButtonDown();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void IsRightButtonDown_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(isRightButtonDown: isButtonDown);
+
+        // Act
+        var actual = sut.IsRightButtonDown();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void IsLeftButtonUp_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(isLeftButtonDown: isButtonDown);
+
+        // Act
+        var actual = sut.IsLeftButtonUp();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void IsMiddleButtonUp_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(isMiddleButtonDown: isButtonDown);
+
+        // Act
+        var actual = sut.IsMiddleButtonUp();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void IsRightButtonUp_WhenInvoked_ReturnsCorrectResult(bool isButtonDown, bool expected)
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest(isRightButtonDown: isButtonDown);
+
+        // Act
+        var actual = sut.IsRightButtonUp();
 
         // Assert
         actual.Should().Be(expected);
@@ -400,12 +278,13 @@ public class MouseStateTests
     public void GetButtonState_WhenButtonIsDown_ReturnsTrue(MouseButton downButton, bool expected)
     {
         // Arrange
-        var state = default(MouseState);
-
-        state.SetButtonState(downButton, true);
+        var sut = CreateSystemUnderTest(
+            isLeftButtonDown: downButton == MouseButton.LeftButton,
+            isMiddleButtonDown: downButton == MouseButton.MiddleButton,
+            isRightButtonDown: downButton == MouseButton.RightButton);
 
         // Act
-        var actual = state.GetButtonState(downButton);
+        var actual = sut.GetButtonState(downButton);
 
         // Assert
         actual.Should().Be(expected);
@@ -415,113 +294,35 @@ public class MouseStateTests
     public void GetButtonState_WithInvalidMouseButton_ReturnsFalse()
     {
         // Arrange
-        var state = default(MouseState);
+        var sut = default(MouseState);
 
         // Act
-        var actual = state.GetButtonState((MouseButton)1234);
+        var actual = sut.GetButtonState((MouseButton)1234);
 
         // Assert
         actual.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Equals_WhenUsingSameTypeParamWhenEqual_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = default(MouseState);
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Equals_WhenUsingObjectParamOfDifferentType_ReturnsFalse()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = new object();
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Equals_WhenUsingObjectParamOfSameTypeWhenEqual_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        object stateB = default(MouseState);
-
-        // Act
-        var actual = stateA.Equals(stateB);
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void EqualsOperator_WhenBothOperandsAreEqual_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = default(MouseState);
-
-        // Act
-        var actual = stateA == stateB;
-
-        // Assert
-        actual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void EqualsOperator_WhenBothOperandsAreNotEqual_ReturnsFalse()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = default(MouseState);
-        stateB.SetPosition(11, 22);
-
-        // Act
-        var actual = stateA == stateB;
-
-        // Assert
-        actual.Should().BeFalse();
-    }
-
-    [Fact]
-    public void NotEqualsOperator_WhenBothOperandsAreEqual_ReturnsFalse()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = default(MouseState);
-
-        // Act
-        var actual = stateA != stateB;
-
-        // Assert
-        actual.Should().BeFalse();
-    }
-
-    [Fact]
-    public void NotEqualsOperator_WhenBothOperandsAreNotEqual_ReturnsTrue()
-    {
-        // Arrange
-        var stateA = default(MouseState);
-        var stateB = default(MouseState);
-        stateB.SetPosition(11, 22);
-
-        // Act
-        var actual = stateA != stateB;
-
-        // Assert
-        actual.Should().BeTrue();
     }
     #endregion
+
+    /// <summary>
+    /// Creates a new instance of <see cref="MouseState"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private static MouseState CreateSystemUnderTest(
+        int x = 0,
+        int y = 0,
+        bool isLeftButtonDown = false,
+        bool isRightButtonDown = false,
+        bool isMiddleButtonDown = false,
+        MouseScrollDirection scrollDirection = MouseScrollDirection.None,
+        int scrollWheelValue = 0)
+    {
+        return new MouseState(
+            new Point(x, y),
+            isLeftButtonDown,
+            isRightButtonDown,
+            isMiddleButtonDown,
+            scrollDirection,
+            scrollWheelValue);
+    }
 }
