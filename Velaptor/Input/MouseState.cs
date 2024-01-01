@@ -4,15 +4,13 @@
 
 namespace Velaptor.Input;
 
-using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 /// <summary>
 /// Represents the state of the mouse.
 /// </summary>
-public struct MouseState : IEquatable<MouseState>
+public struct MouseState
 {
     private Point position;
     private int scrollWheelValue;
@@ -20,22 +18,6 @@ public struct MouseState : IEquatable<MouseState>
     private bool isRightButtonDown;
     private bool isMiddleButtonDown;
     private MouseScrollDirection scrollDirection;
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left side of the operator.</param>
-    /// <param name="right">The right side of the operator.</param>
-    /// <returns><c>true</c> if the operands are equal.</returns>
-    public static bool operator ==(MouseState left, MouseState right) => left.Equals(right);
-
-    /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// </summary>
-    /// <param name="left">The left side of the operator.</param>
-    /// <param name="right">The right side of the operator.</param>
-    /// <returns><c>true</c> if the operands are not equal.</returns>
-    public static bool operator !=(MouseState left, MouseState right) => !left.Equals(right);
 
     /// <summary>
     /// Gets or sets the position of the mouse.
@@ -164,37 +146,6 @@ public struct MouseState : IEquatable<MouseState>
     /// </summary>
     /// <returns>The scroll direction of the mouse wheel.</returns>
     public MouseScrollDirection GetScrollDirection() => this.scrollDirection;
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not MouseState state)
-        {
-            return false;
-        }
-
-        return Equals(state);
-    }
-
-    /// <inheritdoc/>
-    public bool Equals(MouseState other)
-        => this.scrollWheelValue == other.scrollWheelValue &&
-           this.position.X == other.position.X &&
-           this.position.Y == other.position.Y &&
-           this.isLeftButtonDown == other.isLeftButtonDown &&
-           this.isMiddleButtonDown == other.isMiddleButtonDown &&
-           this.isRightButtonDown == other.isRightButtonDown;
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode()
-        => HashCode.Combine(
-            this.scrollWheelValue,
-            this.position.X,
-            this.position.Y,
-            this.isLeftButtonDown,
-            this.isMiddleButtonDown,
-            this.isRightButtonDown);
 
     /// <summary>
     /// Sets the position of the mouse using the given <paramref name="x"/> and <paramref name="y"/> values.
