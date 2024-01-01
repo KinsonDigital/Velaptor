@@ -5,6 +5,7 @@
 namespace Velaptor.Input;
 
 using System.ComponentModel;
+using System.Drawing;
 using Carbonate.Fluent;
 using Factories;
 using Guards;
@@ -45,20 +46,13 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// Gets the current state of the mouse.
     /// </summary>
     /// <returns>The state of the mouse.</returns>
-    public MouseState GetState()
-    {
-        var result = default(MouseState);
-        result.SetPosition(this.xPos, this.yPos);
-        result.SetScrollWheelValue(this.scrollWheelValue);
-        result.SetScrollWheelDirection(this.mouseScrollDirection);
-
-        // Set all of the states for the buttons
-        result.SetButtonState(MouseButton.LeftButton, this.leftMouseButton.isDown);
-        result.SetButtonState(MouseButton.MiddleButton, this.middleMouseButton.isDown);
-        result.SetButtonState(MouseButton.RightButton, this.rightMouseButton.isDown);
-
-        return result;
-    }
+    public MouseState GetState() =>
+        new (new Point(this.xPos, this.yPos),
+            this.leftMouseButton.isDown,
+            this.rightMouseButton.isDown,
+            this.middleMouseButton.isDown,
+            this.mouseScrollDirection,
+            this.scrollWheelValue);
 
     /// <summary>
     /// Updates the state of the mouse.

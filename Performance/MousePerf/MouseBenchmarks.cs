@@ -10,6 +10,7 @@
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 namespace MousePerf;
 
+using System.Drawing;
 using BenchmarkDotNet.Attributes;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -17,8 +18,8 @@ using Velaptor.Input;
 [MemoryDiagnoser]
 public class MouseBenchmarks
 {
-    private readonly MouseState mouseState;
     private readonly Mouse mouse;
+    private MouseState mouseState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseBenchmarks"/> class.
@@ -27,11 +28,6 @@ public class MouseBenchmarks
     {
         IReactableFactory factoryFake = new ReactableFactoryFake();
         this.mouse = new Mouse(factoryFake);
-
-        this.mouseState = new MouseState();
-        this.mouseState.SetPosition(10, 20);
-        this.mouseState.SetScrollWheelValue(30);
-        this.mouseState.SetScrollWheelDirection(MouseScrollDirection.ScrollDown);
     }
 
     [Params(MouseButton.LeftButton, MouseButton.RightButton, MouseButton.MiddleButton)]
@@ -43,7 +39,13 @@ public class MouseBenchmarks
     [IterationSetup]
     public void IterationSetup()
     {
-        this.mouseState.SetButtonState(MouseButton, IsDown);
+        this.mouseState = new MouseState(
+            new Point(10, 20),
+            MouseButton == MouseButton.LeftButton,
+            MouseButton == MouseButton.RightButton,
+            MouseButton == MouseButton.MiddleButton,
+            MouseScrollDirection.ScrollDown,
+            30);
     }
 
     [Benchmark(Description = $"{nameof(MouseState)}.{nameof(GetPosition)}")]

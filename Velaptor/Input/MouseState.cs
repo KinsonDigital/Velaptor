@@ -10,14 +10,39 @@ using System.Drawing;
 /// <summary>
 /// Represents the state of the mouse.
 /// </summary>
-public struct MouseState
+public readonly struct MouseState
 {
-    private Point position;
-    private int scrollWheelValue;
-    private bool isLeftButtonDown;
-    private bool isRightButtonDown;
-    private bool isMiddleButtonDown;
-    private MouseScrollDirection scrollDirection;
+    private readonly Point position;
+    private readonly int scrollWheelValue;
+    private readonly bool isLeftButtonDown;
+    private readonly bool isRightButtonDown;
+    private readonly bool isMiddleButtonDown;
+    private readonly MouseScrollDirection scrollDirection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseState"/> struct.
+    /// </summary>
+    /// <param name="pos">The position of the mouse.</param>
+    /// <param name="isLeftButtonDown">True if the left button is down.</param>
+    /// <param name="isRightButtonDown">True if the right button is down.</param>
+    /// <param name="isMiddleButtonDown">True if the middle button is down.</param>
+    /// <param name="scrollDirection">The travel direction of the mouse wheel.</param>
+    /// <param name="scrollWheelValue">The value of the mouse wheel.</param>
+    public MouseState(
+        Point pos,
+        bool isLeftButtonDown,
+        bool isRightButtonDown,
+        bool isMiddleButtonDown,
+        MouseScrollDirection scrollDirection,
+        int scrollWheelValue)
+    {
+        this.position = pos;
+        this.isLeftButtonDown = isLeftButtonDown;
+        this.isRightButtonDown = isRightButtonDown;
+        this.isMiddleButtonDown = isMiddleButtonDown;
+        this.scrollDirection = scrollDirection;
+        this.scrollWheelValue = scrollWheelValue;
+    }
 
     /// <summary>
     /// Gets or sets the position of the mouse.
@@ -146,47 +171,4 @@ public struct MouseState
     /// </summary>
     /// <returns>The scroll direction of the mouse wheel.</returns>
     public MouseScrollDirection GetScrollDirection() => this.scrollDirection;
-
-    /// <summary>
-    /// Sets the position of the mouse using the given <paramref name="x"/> and <paramref name="y"/> values.
-    /// </summary>
-    /// <param name="x">The X position of the mouse.</param>
-    /// <param name="y">The Y position of the mouse.</param>
-    internal void SetPosition(int x, int y) => this.position = new Point(x, y);
-
-    /// <summary>
-    /// Sets the value of the scroll wheel.
-    /// </summary>
-    /// <param name="value">The value to set the scroll to.</param>
-    internal void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
-
-    /// <summary>
-    /// Sets the scroll direction of the mouse wheel.
-    /// </summary>
-    /// <param name="direction">The scroll direction.</param>
-    internal void SetScrollWheelDirection(MouseScrollDirection direction) => this.scrollDirection = direction;
-
-    /// <summary>
-    /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
-    /// </summary>
-    /// <param name="mouseButton">The button to set.</param>
-    /// <param name="state">Sets the state of the <paramref name="mouseButton"/>.</param>
-    internal void SetButtonState(MouseButton mouseButton, bool state)
-    {
-        // ReSharper disable ConvertIfStatementToSwitchStatement
-        if (mouseButton == MouseButton.LeftButton)
-        {
-            this.isLeftButtonDown = state;
-        }
-        else if (mouseButton == MouseButton.RightButton)
-        {
-            this.isRightButtonDown = state;
-        }
-        else if (mouseButton == MouseButton.MiddleButton)
-        {
-            this.isMiddleButtonDown = state;
-        }
-
-        // ReSharper restore ConvertIfStatementToSwitchStatement
-    }
 }
