@@ -114,6 +114,7 @@ internal static class IoC
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
         IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
+        IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
 
         isInitialized = true;
     }

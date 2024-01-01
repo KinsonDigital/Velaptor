@@ -2,41 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1129 // Do not use default value type constructor
 namespace Velaptor.Input;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Carbonate.Fluent;
-using Factories;
 using Guards;
-using ReactableData;
+using Services;
 
 /// <summary>
 /// Provides functionality for the keyboard.
 /// </summary>
 internal sealed class Keyboard : IAppInput<KeyboardState>
 {
-    private readonly Dictionary<KeyCode, bool> keyStates = new ();
+    private readonly IKeyboardDataService keyboardDataService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Keyboard"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public Keyboard(IReactableFactory reactableFactory)
+    /// <param name="keyboardDataService">Creates reactables for sending and receiving notifications with or without data.</param>
+    public Keyboard(IKeyboardDataService keyboardDataService)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        EnsureThat.ParamIsNotNull(keyboardDataService);
 
-        var keyboardDataReactable = reactableFactory.CreateKeyboardReactable();
-
-        var keyboardChangedSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.KeyboardStateChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.KeyboardStateChangedId)))
-            .BuildOneWayReceive<KeyboardKeyStateData>(data => this.keyStates[data.Key] = data.IsDown);
-
-        keyboardDataReactable.Subscribe(keyboardChangedSubscription);
-
-        InitializeKeyStates();
+        this.keyboardDataService = keyboardDataService;
     }
 
     /// <summary>
@@ -45,26 +32,15 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <returns>The state of the keyboard.</returns>
     public KeyboardState GetState()
     {
-        var keyboardState = default(KeyboardState);
+        var keyboardState = new KeyboardState();
 
-        foreach (var state in this.keyStates)
+        var currentKeyStates = this.keyboardDataService.GetKeyStates();
+
+        foreach ((KeyCode key, var state) in currentKeyStates)
         {
-            keyboardState.SetKeyState(state.Key, state.Value);
+            keyboardState.KeyStates[key] = state;
         }
 
         return keyboardState;
-    }
-
-    /// <summary>
-    /// Initializes all of the available keys and default states.
-    /// </summary>
-    private void InitializeKeyStates()
-    {
-        var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
-
-        foreach (var key in keys)
-        {
-            this.keyStates[key] = false;
-        }
     }
 }

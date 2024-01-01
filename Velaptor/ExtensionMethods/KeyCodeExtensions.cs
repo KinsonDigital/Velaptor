@@ -5,7 +5,6 @@
 namespace Velaptor.ExtensionMethods;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Input;
 
 /// <summary>
@@ -13,26 +12,32 @@ using Input;
 /// </summary>
 internal static class KeyCodeExtensions
 {
+    private const char InvalidCharacter = '□';
+
     /// <summary>
     /// Returns a value indicating whether or not the key is a letter key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a letter key.</returns>
-    public static bool IsLetterKey(this KeyCode key) => KeyboardKeyGroups.LetterKeys.Contains(key);
+    public static bool IsLetterKey(this KeyCode key) => KeyboardKeyGroups.NoShiftLetterCharacters.ContainsKey(key);
 
     /// <summary>
     /// Returns a value indicating whether or not the key is a number key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a number key.</returns>
-    public static bool IsNumberKey(this KeyCode key) => KeyboardKeyGroups.StandardNumberKeys.Contains(key) || KeyboardKeyGroups.NumpadNumberKeys.Contains(key);
+    public static bool IsNumberKey(this KeyCode key) =>
+        KeyboardKeyGroups.NoShiftNumpadNumberCharacters.ContainsKey(key) ||
+        KeyboardKeyGroups.NoShiftStandardNumberCharacters.ContainsKey(key);
 
     /// <summary>
     /// Returns a value indicating whether or not the key is a symbol key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a symbol key.</returns>
-    public static bool IsSymbolKey(this KeyCode key) => KeyboardKeyGroups.SymbolKeys.Contains(key);
+    public static bool IsSymbolKey(this KeyCode key) =>
+        KeyboardKeyGroups.NoShiftSymbolCharacters.ContainsKey(key) &&
+        KeyboardKeyGroups.WithShiftSymbolCharacters.ContainsKey(key);
 
     /// <summary>
     /// Returns a value indicating whether or not the key is a visible key.
@@ -78,33 +83,52 @@ internal static class KeyCodeExtensions
     /// <remarks>Not all keyboard keys return characters.</remarks>
     public static char ToChar(this KeyCode key, bool anyShiftKeysDown)
     {
-        if (KeyboardKeyGroups.LetterKeys.Contains(key))
+        if (anyShiftKeysDown)
         {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftLetterKeys[key]
-                : KeyboardKeyGroups.NoShiftLetterKeys[key];
+            // Process symbol characters with the shift key pressed
+            if (KeyboardKeyGroups.WithShiftSymbolCharacters.ContainsKey(key))
+            {
+                return KeyboardKeyGroups.WithShiftSymbolCharacters[key];
+            }
+
+            // Process capitalized letters
+            if (KeyboardKeyGroups.WithShiftLetterCharacters.ContainsKey(key))
+            {
+                return KeyboardKeyGroups.WithShiftLetterCharacters[key];
+            }
+
+            // When the shift is up, the numpad number keys return numbers
+            if (KeyboardKeyGroups.NoShiftNumpadNumberCharacters.ContainsKey(key))
+            {
+                return InvalidCharacter;
+            }
         }
 
-        if (KeyboardKeyGroups.StandardNumberKeys.Contains(key))
+        // Process lowercased letters
+        if (KeyboardKeyGroups.NoShiftLetterCharacters.ContainsKey(key))
         {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftStandardNumberCharacters[key]
-                : KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
+            return KeyboardKeyGroups.NoShiftLetterCharacters[key];
         }
 
-        if (KeyboardKeyGroups.NumpadNumberKeys.Contains(key) && !anyShiftKeysDown)
+        // When the shift is up, the standard number keys return numbers
+        if (KeyboardKeyGroups.NoShiftStandardNumberCharacters.ContainsKey(key))
+        {
+            return KeyboardKeyGroups.NoShiftStandardNumberCharacters[key];
+        }
+
+        // When the shift is up, the numpad number keys return numbers
+        if (KeyboardKeyGroups.NoShiftNumpadNumberCharacters.ContainsKey(key))
         {
             return KeyboardKeyGroups.NoShiftNumpadNumberCharacters[key];
         }
 
-        if (KeyboardKeyGroups.SymbolKeys.Contains(key))
+        // Process symbol characters with the no shift key pressed
+        if (KeyboardKeyGroups.NoShiftSymbolCharacters.ContainsKey(key))
         {
-            return anyShiftKeysDown
-                ? KeyboardKeyGroups.WithShiftSymbolCharacters[key]
-                : KeyboardKeyGroups.NoShiftSymbolCharacters[key];
+            return KeyboardKeyGroups.NoShiftSymbolCharacters[key];
         }
 
-        return KeyboardKeyGroups.InvalidCharacter;
+        return InvalidCharacter;
     }
 
     /// <summary>

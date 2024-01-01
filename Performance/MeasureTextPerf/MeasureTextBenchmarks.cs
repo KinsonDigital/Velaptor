@@ -1,4 +1,8 @@
-﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// <copyright file="MeasureTextBenchmarks.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace MeasureTextPerf;
 
@@ -18,15 +22,15 @@ using Velaptor.Services;
 /// Performance benchmarks for measuring the time it takes to measure text.
 /// </summary>
 [MemoryDiagnoser]
-public class Benchmarks
+public class MeasureTextBenchmarks
 {
     private readonly IFont font;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Benchmarks"/> class.
+    /// Initializes a new instance of the <see cref="MeasureTextBenchmarks"/> class.
     /// </summary>
     /// <exception cref="Exception">Thrown if there is an issue loading the sample data for benchmarking.</exception>
-    public Benchmarks()
+    public MeasureTextBenchmarks()
     {
         var baseDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var metricDataFilePath = $"{baseDirPath}/glyph-test-data.json";
@@ -63,22 +67,25 @@ public class Benchmarks
     }
 
     /// <summary>
-    /// The total number of characters of text to use for the benchmarks.
+    /// Gets or sets the total number of characters of text to use for the benchmarks.
     /// </summary>
     [Params(10, 100, 1_000, 10_000, 100_000)]
     public int TotalCharacters { get; set; }
 
     /// <summary>
-    /// The total number of lines of text to use for the benchmarks.
+    /// Gets or sets the total number of lines of text to use for the benchmarks.
     /// </summary>
     [Params(1, 10, 50, 100)]
     public int TotalLines { get; set; }
 
     /// <summary>
-    /// The text to use for the benchmarks.
+    /// Gets or sets the text to use for the benchmarks.
     /// </summary>
     private string Text { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Sets up the test.
+    /// </summary>
     [IterationSetup]
     public void IterationSetup()
     {
@@ -102,6 +109,9 @@ public class Benchmarks
         Text = textToMeasure.ToString();
     }
 
+    /// <summary>
+    /// Runs performance testing on the text measure process.
+    /// </summary>
     [Benchmark(Description = "Measure String()")]
     public void MeasureString() => this.font.Measure(Text);
 }

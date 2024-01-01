@@ -22,6 +22,9 @@
 	<s:Boolean x:Key="/Default/Environment/ContinuousTesting/TriggerOnSave/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=Velaptor_003B_002A_003BIRenderer_003B_002A/@EntryIndexedValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=Velaptor_003B_002A_003BVelaptor_002EGraphics_002ERenderers_002EIRenderer_003B_002A/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002AMeasureTextPerf_002A_003B_002A_003B_002A_003B_002A/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002AMeasureTextPerf_002A_003B_002A_003B_002A_003B_002A/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002APerf_002A_003B_002A_003B_002A_003B_002A/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002ATesting_002A_003B_002A_003B_002A_003B_002A/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002ATests_002A_003B_002A_003B_002A_003B_002A/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/Filtering/ExcludeCoverageFilters/=_002A_003B_002A_003BIRenderer_003B_002A/@EntryIndexedValue">False</s:Boolean>
