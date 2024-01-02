@@ -26,7 +26,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 align="center" style="font-weight: bold;">Dependency Updates 📦</h2>
 
 1. [#843](https://github.com/KinsonDigital/Velaptor/pull/843) - Updated all projects to dotnet _**v8**_
-2. [#842](https://github.com/KinsonDigital/Velaptor/pull/842) - Updated reusable workflows/infrastructure to _**v13.6.0**_
+2. [#855](https://github.com/KinsonDigital/Velaptor/pull/855) - Updated reusable workflows/infrastructure to _**v13.6.1**_
 4. [#827](https://github.com/KinsonDigital/Velaptor/pull/827) - Updated _**actions/setup-dotnet**_ action to v4
 5. [#825](https://github.com/KinsonDigital/Velaptor/pull/825) - Updated _**actions/setup-java**_ action to v4
 6. [#837](https://github.com/KinsonDigital/Velaptor/pull/837) - Updated _**xunit-dotnet monorepo**_
