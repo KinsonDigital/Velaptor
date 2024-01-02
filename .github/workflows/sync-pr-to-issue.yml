@@ -20,7 +20,7 @@ jobs:
       github.event_name == 'pull_request_target' &&
       !startsWith(github.head_ref, 'renovate/') &&
       github.head_ref != 'prev-release' && github.head_ref != 'prod-release'
-    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.6.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.6.2
     with:
       issue-or-pr-number: ${{ github.event.pull_request.number }}
       sync-type: initial
@@ -37,7 +37,7 @@ jobs:
       github.head_ref != 'prev-release' && github.head_ref != 'prod-release' &&
       github.event.issue.pull_request && github.event.issue.pull_request.url != null &&
       contains(github.event.comment.body, '[run-sync]')
-    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.6.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.6.2
     with:
       issue-or-pr-number: ${{ github.event.issue.number }}
       sync-type: manual

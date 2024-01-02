@@ -15,7 +15,7 @@ on:
 jobs:
   build_measure_text_perf_project:
     name: Build Measure Text Perf Project
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.2
     with:
       project-name: "MeasureTextPerf"
       build-config: Debug
@@ -28,7 +28,7 @@ jobs:
 
   build_keyboard_perf_project:
     name: Build Keyboard Perf Project
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.2
     with:
       project-name: "KeyboardPerf"
       build-config: Debug
@@ -41,7 +41,7 @@ jobs:
 
   build_mouse_perf_project:
     name: Build Mouse Perf Project
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.1
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.2
     with:
       project-name: "MousePerf"
       build-config: Debug
