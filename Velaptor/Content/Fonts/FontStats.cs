@@ -4,9 +4,12 @@
 
 namespace Velaptor.Content.Fonts;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Holds information about fonts.
 /// </summary>
+[ExcludeFromCodeCoverage]
 internal readonly record struct FontStats
 {
     /// <summary>
