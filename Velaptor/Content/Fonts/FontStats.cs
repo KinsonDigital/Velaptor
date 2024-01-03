@@ -4,26 +4,23 @@
 
 namespace Velaptor.Content.Fonts;
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-
 /// <summary>
 /// Holds information about fonts.
 /// </summary>
-internal struct FontStats : IEquatable<FontStats>
+internal readonly record struct FontStats
 {
     /// <summary>
-    /// The file path to the font that the font stats represent.
+    /// Gets the file path to the font that the font stats represent.
     /// </summary>
-    public string FontFilePath;
+    public string FontFilePath { get; init; }
 
     /// <summary>
-    /// The font family.
+    /// Gets the font family.
     /// </summary>
-    public string FamilyName;
+    public string FamilyName { get; init; }
 
     /// <summary>
-    /// The style of font.
+    /// Gets the style of font.
     /// </summary>
     /// <remarks>
     /// <list type="number">
@@ -33,24 +30,10 @@ internal struct FontStats : IEquatable<FontStats>
     ///     <item><see cref="FontStyle.Bold"/><see cref="FontStyle.Italic"/></item>
     /// </list>
     /// </remarks>
-    public FontStyle Style;
+    public FontStyle Style { get; init; }
 
     /// <summary>
-    /// The source of where the font was loaded.
+    /// Gets the source of where the font was loaded.
     /// </summary>
-    public FontSource Source;
-
-    /// <inheritdoc/>
-    public bool Equals(FontStats other) =>
-        this.FontFilePath == other.FontFilePath &&
-        this.FamilyName == other.FamilyName &&
-        this.Style == other.Style &&
-        this.Source == other.Source;
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is FontStats other && Equals(other);
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    public override int GetHashCode() => HashCode.Combine(this.FontFilePath, this.FamilyName, (int)this.Style, this.Source);
+    public FontSource Source { get; init; }
 }
