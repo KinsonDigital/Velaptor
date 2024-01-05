@@ -381,7 +381,7 @@ internal interface IGLInvoker : IDisposable
     /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
     /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
     /// <param name="data">The new data that will be copied into the data store.</param>
-    void BufferSubData(GLBufferTarget target, nint offset, nuint size, float[] data);
+    void BufferSubData(GLBufferTarget target, nint offset, nuint size, in float[] data);
 
     /// <summary>
     /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Delete vertex array objects.
