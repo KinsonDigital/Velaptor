@@ -3,6 +3,7 @@
 // </copyright>
 
 // ReSharper disable RedundantUsingDirective
+// ReSharper disable UnusedVariable
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using KeyboardPerf;
@@ -10,6 +11,7 @@ using KeyboardPerf;
 #if DEBUG
 
 var keyboardStateBenchMarks = new KeyboardBenchmarks();
+keyboardStateBenchMarks.GetState();
 
 #elif RELEASE
 
