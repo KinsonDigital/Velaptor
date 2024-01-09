@@ -29,6 +29,7 @@ using ReactableData;
 using Scene;
 using Services;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
@@ -312,6 +313,7 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+        IoCContainer.Register(() => IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow(), Lifestyle.Singleton);
 
         IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchPullReactable<FontGlyphBatchItem>, BatchPullReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);

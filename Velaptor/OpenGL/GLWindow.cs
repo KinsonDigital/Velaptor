@@ -38,7 +38,6 @@ using VelaptorWindowBorder = WindowBorder;
 internal sealed class GLWindow : VelaptorIWindow
 {
     private readonly IAppService appService;
-    private readonly IWindowFactory windowFactory;
     private readonly INativeInputFactory nativeInputFactory;
     private readonly IGLInvoker gl;
     private readonly IGlfwInvoker glfw;
@@ -66,7 +65,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
     /// <param name="appService">Provides application relates services.</param>
-    /// <param name="windowFactory">Creates a window object.</param>
+    /// <param name="silkWindow">The <see cref="Silk"/> specific <see cref="Silk.NET.Windowing.IWindow"/> object.</param>
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
@@ -80,7 +79,7 @@ internal sealed class GLWindow : VelaptorIWindow
         uint width,
         uint height,
         IAppService appService,
-        IWindowFactory windowFactory,
+        SilkIWindow silkWindow,
         INativeInputFactory nativeInputFactory,
         IGLInvoker glInvoker,
         IGlfwInvoker glfwInvoker,
@@ -92,7 +91,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ITimerService timerService)
     {
         ArgumentNullException.ThrowIfNull(appService);
-        ArgumentNullException.ThrowIfNull(windowFactory);
+        ArgumentNullException.ThrowIfNull(silkWindow);
         ArgumentNullException.ThrowIfNull(nativeInputFactory);
         ArgumentNullException.ThrowIfNull(glInvoker);
         ArgumentNullException.ThrowIfNull(glfwInvoker);
@@ -104,7 +103,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(timerService);
 
         this.appService = appService;
-        this.windowFactory = windowFactory;
+        this.glWindow = silkWindow;
         this.nativeInputFactory = nativeInputFactory;
         this.gl = glInvoker;
         this.glfw = glfwInvoker;
@@ -326,8 +325,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void PreInit()
     {
-        this.glWindow = this.windowFactory.CreateSilkWindow();
-
         this.glWindow.UpdatesPerSecond = 60;
         this.glWindow.Load += GLWindow_Load;
         this.glWindow.Closing += GLWindow_Closing;

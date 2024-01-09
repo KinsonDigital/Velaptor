@@ -11,20 +11,21 @@ using Silk.NET.Windowing;
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
 internal sealed class SilkWindowFactory : IWindowFactory
 {
-    private static IWindow? window;
+    private IWindow? window;
 
     /// <inheritdoc/>
     public IWindow CreateSilkWindow()
     {
-        if (window is not null)
+        if (this.window is not null)
         {
-            return window;
+            return this.window;
         }
 
         var windowOptions = WindowOptions.Default;
         windowOptions.ShouldSwapAutomatically = false;
 
-        window = Window.Create(windowOptions);
-        return window;
+        this.window = Window.Create(windowOptions);
+
+        return this.window;
     }
 }

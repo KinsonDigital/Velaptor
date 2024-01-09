@@ -34,7 +34,7 @@ using Velaptor.Services;
 using Xunit;
 using IWindow = Velaptor.UI.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
-using SilkWindow = Silk.NET.Windowing.IWindow;
+using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
 using SysVector2 = System.Numerics.Vector2;
 using VelaptorMouseButton = Velaptor.Input.MouseButton;
@@ -60,8 +60,7 @@ public class GLWindowTests : TestsBase
     private readonly Mock<IPushReactable<KeyboardKeyStateData>> mockKeyboardReactable;
     private readonly Mock<IPushReactable<WindowSizeData>> mockWinSizeReactable;
     private readonly Mock<IPushReactable<GL>> mockGLReactable;
-    private readonly Mock<SilkWindow> mockSilkWindow;
-    private readonly Mock<IWindowFactory> mockWindowFactory;
+    private readonly Mock<SilkIWindow> mockSilkWindow;
     private readonly Mock<ITimerService> mockTimerService;
     private Mock<INativeInputFactory>? mockNativeInputFactory;
     private Mock<IInputContext>? mockSilkInputContext;
@@ -76,13 +75,10 @@ public class GLWindowTests : TestsBase
     {
         this.mockAppService = new Mock<IAppService>();
         this.mockGLContext = new Mock<IGLContext>();
-        this.mockSilkWindow = new Mock<SilkWindow>();
+        this.mockSilkWindow = new Mock<SilkIWindow>();
         this.mockSilkWindow.SetupGet(p => p.GLContext).Returns(this.mockGLContext.Object);
 
         MockSystemSilkInput();
-
-        this.mockWindowFactory = new Mock<IWindowFactory>();
-        this.mockWindowFactory.Setup(m => m.CreateSilkWindow()).Returns(this.mockSilkWindow.Object);
 
         this.mockGL = new Mock<IGLInvoker>();
         this.mockGlfw = new Mock<IGlfwInvoker>();
@@ -120,7 +116,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 null,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -138,7 +134,7 @@ public class GLWindowTests : TestsBase
 
     [Fact]
     [Trait("Category", Ctor)]
-    public void Ctor_WithNullWindowFactoryParam_ThrowsException()
+    public void Ctor_WithNullSilkWindowParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => _ = new GLWindow(
@@ -158,7 +154,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'windowFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'silkWindow')");
     }
 
     [Fact]
@@ -170,7 +166,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 null,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -195,7 +191,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 null,
                 this.mockGlfw.Object,
@@ -220,7 +216,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 null,
@@ -245,7 +241,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -270,7 +266,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -295,7 +291,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -320,7 +316,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -345,7 +341,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -370,7 +366,7 @@ public class GLWindowTests : TestsBase
                 It.IsAny<uint>(),
                 It.IsAny<uint>(),
                 this.mockAppService.Object,
-                this.mockWindowFactory.Object,
+                this.mockSilkWindow.Object,
                 this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGlfw.Object,
@@ -960,11 +956,11 @@ public class GLWindowTests : TestsBase
         // Assert
         this.mockPushReactable.VerifyOnce(m => m.UnsubscribeAll());
         this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
-        this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Load)}' event did not occur.");
-        this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Update)}' event did not occur.");
-        this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Render)}' event did not occur.");
-        this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(SilkWindow.Resize)}' event did not occur.");
-        this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Closing)}' event did not occur.");
+        this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkIWindow.Load)}' event did not occur.");
+        this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkIWindow.Update)}' event did not occur.");
+        this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkIWindow.Render)}' event did not occur.");
+        this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(SilkIWindow.Resize)}' event did not occur.");
+        this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkIWindow.Closing)}' event did not occur.");
         this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
         this.mockGL.Verify(m => m.Dispose(), Times.Once());
         this.mockGlfw.Verify(m => m.Dispose(), Times.Once());
@@ -1409,7 +1405,7 @@ public class GLWindowTests : TestsBase
         => new (width,
             height,
             this.mockAppService.Object,
-            this.mockWindowFactory.Object,
+            this.mockSilkWindow.Object,
             this.mockNativeInputFactory.Object,
             this.mockGL.Object,
             this.mockGlfw.Object,
