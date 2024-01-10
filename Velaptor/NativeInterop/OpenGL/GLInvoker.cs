@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
+// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -472,7 +472,16 @@ internal sealed class GLInvoker : IGLInvoker
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep same API signature.")]
-    public void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
+    public void TexImage2D<T>(
+        GLTextureTarget target,
+        int level,
+        GLInternalFormat internalformat,
+        uint width,
+        uint height,
+        int border,
+        GLPixelFormat format,
+        GLPixelType type,
+        byte[] pixels)
         where T : unmanaged
     {
         AddToGLCallStack(nameof(TexImage2D));

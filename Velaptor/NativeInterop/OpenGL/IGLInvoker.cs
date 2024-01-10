@@ -1,4 +1,4 @@
-﻿// <copyright file="IGLInvoker.cs" company="KinsonDigital">
+// <copyright file="IGLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ using System.Numerics;
 using Velaptor.OpenGL;
 
 /// <summary>
-/// Invokes OpenGL calls.
+/// Invokes OpenGL functions.
 /// </summary>
 internal interface IGLInvoker : IDisposable
 {
