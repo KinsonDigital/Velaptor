@@ -309,7 +309,10 @@ internal static class IoC
     private static void SetupReactables()
     {
         IoCContainer.Register<IReactableFactory, ReactableFactory>(Lifestyle.Singleton);
+
+        // This is used for pushing notifications of events that do not require any data
         IoCContainer.Register<IPushReactable, PushReactable>(Lifestyle.Singleton);
+
         IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);

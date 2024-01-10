@@ -12,9 +12,9 @@ using System.Runtime.InteropServices;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
-using Services;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.Services;
 
 /// <summary>
 /// Invokes OpenGL calls.
