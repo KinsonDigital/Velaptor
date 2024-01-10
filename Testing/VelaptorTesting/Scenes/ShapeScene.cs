@@ -5,13 +5,11 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -21,23 +19,24 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
-using Velaptor.UI;
 
 /// <summary>
 /// Tests out rectangle rendering.
 /// </summary>
 public class ShapeScene : SceneBase
 {
+    private const int WindowPadding = 10;
     private const int Speed = 200;
-    private const int LeftMargin = 30;
-    private const int RightMargin = 10;
-    private const int BottomMargin = 10;
-    private const int VertButtonSpacing = 10;
-    private const int HoriButtonSpacing = 10;
+    private const float DefaultCircleDiameter = 250;
+    private const float DefaultBorderThickness = 2;
+    private const float DefaultRectWidth = 250;
+    private const float DefaultRectHeight = 250;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly List<string> rectButtons = new ();
-    private readonly List<string> circleButtons = new ();
+    private readonly Color[] clrList =
+    [
+        Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue
+    ];
     private IFontRenderer? fontRenderer;
     private IShapeRenderer? shapeRenderer;
     private ILoader<IFont>? fontLoader;
@@ -45,34 +44,28 @@ public class ShapeScene : SceneBase
     private KeyboardState currentKeyState;
     private RectShape rectangle;
     private CircleShape circle;
-    private ShapeType shapeType = ShapeType.Circle;
-    private Button? btnShapeType;
-    private Button? btnIncCircleDiam;
-    private Button? btnDecCircleDiam;
-    private Button? btnIncreaseWidth;
-    private Button? btnDecreaseWidth;
-    private Button? btnIncreaseHeight;
-    private Button? btnDecreaseHeight;
-    private Button? btnIsSolid;
-    private Button? btnSolidFillClr;
-    private Button? btnIncreaseBorderThickness;
-    private Button? btnDecreaseBorderThickness;
-    private Button? btnIncreaseTopLeftRadius;
-    private Button? btnDecreaseTopLeftRadius;
-    private Button? btnIncreaseBottomLeftRadius;
-    private Button? btnDecreaseBottomLeftRadius;
-    private Button? btnIncreaseBottomRightRadius;
-    private Button? btnDecreaseBottomRightRadius;
-    private Button? btnIncreaseTopRightRadius;
-    private Button? btnDecreaseTopRightRadius;
-    private Button? btnGradientType;
-    private Button? btnGradClrStart;
-    private Button? btnGradClrStop;
-    private string rectInstructions = string.Empty;
-    private string circleInstructions = string.Empty;
+    private IControlGroup? grpShapeType;
+    private IControlGroup? grpCircleCtrls;
+    private IControlGroup? grpCircleClrGradCtrls;
+    private IControlGroup? grpRectClrGradCtrls;
+    private IControlGroup? grpRectCtrls;
+    private IControlGroup? grpRectCornerRadiusCtrls;
     private Vector2 rectInstructionsPos;
     private Vector2 circleInstructionsPos;
     private BackgroundManager? backgroundManager;
+    private ShapeType shapeType = ShapeType.Circle;
+    private string rectInstructions = string.Empty;
+    private string circleInstructions = string.Empty;
+    private string? sldCircleDiameterName;
+    private string? cmbCircleSolidColorName;
+    private string? cmbRectSolidColorName;
+    private string? sldRectWidthName;
+    private string? sldRectHeightName;
+    private string? sldTopLeftRadiusName;
+    private string? sldTopRightRadiusName;
+    private string? sldBottomRightRadiusName;
+    private string? sldBottomLeftRadiusName;
+    private bool isFirstRender = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -91,24 +84,24 @@ public class ShapeScene : SceneBase
         this.rectangle = new RectShape
         {
             Position = new Vector2(WindowCenter.X, WindowCenter.Y),
-            Width = 100,
-            Height = 100,
+            Width = 250,
+            Height = 250,
             Color = Color.CornflowerBlue,
             GradientType = ColorGradient.None,
             GradientStart = Color.IndianRed,
-            GradientStop = Color.IndianRed,
-            IsSolid = true,
+            GradientStop = Color.SeaGreen,
+            IsSolid = false,
         };
 
         this.circle = new CircleShape
         {
             Position = new Vector2(WindowCenter.X, WindowCenter.Y),
-            Diameter = 100,
+            Diameter = DefaultCircleDiameter,
             Color = Color.CornflowerBlue,
             GradientType = ColorGradient.None,
             GradientStart = Color.IndianRed,
-            GradientStop = Color.IndianRed,
-            BorderThickness = 10f,
+            GradientStop = Color.SeaGreen,
+            BorderThickness = DefaultBorderThickness,
             IsSolid = false,
         };
 
@@ -143,13 +136,14 @@ public class ShapeScene : SceneBase
         var circleInstructionsSize = this.font.Measure(this.circleInstructions);
         this.circleInstructionsPos = new Vector2(WindowCenter.X, 25 + (circleInstructionsSize.Height / 2f));
 
-        CreateButtons();
+        CreateShapeTypeCtrls();
+        CreateCircleCtrls();
+        CreateCircleGradCtrls();
+        CreateRectGradCtrls();
+        CreateRectCtrls();
+        CreateRadiusCtrls();
 
         base.LoadContent();
-
-        LayoutButtonsLeftSide();
-        LayoutButtonsRightSide();
-        LayoutButtonsBottom();
     }
 
     /// <inheritdoc cref="IScene.UnloadContent"/>
@@ -166,7 +160,7 @@ public class ShapeScene : SceneBase
         this.currentKeyState = this.keyboard.GetState();
 
         MoveShape(frameTime);
-        ChangeRectSize(frameTime);
+        ChangeShapeSize(frameTime);
 
         base.Update(frameTime);
     }
@@ -212,623 +206,443 @@ public class ShapeScene : SceneBase
         this.backgroundManager?.Render();
         this.fontRenderer.Render(this.font, instructionText, instructionPos, Color.White, 2);
 
+        this.grpShapeType.Render();
+        this.grpCircleCtrls.Render();
+        this.grpCircleClrGradCtrls.Render();
+        this.grpRectClrGradCtrls.Render();
+        this.grpRectCtrls.Render();
+        this.grpRectCornerRadiusCtrls.Render();
+
+        if (this.isFirstRender)
+        {
+            this.grpShapeType.Position = new Point(WindowPadding, WindowPadding);
+            this.grpCircleCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+            this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, this.grpCircleCtrls.Bottom + WindowPadding + 50);
+
+            this.grpRectCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+            this.grpRectCornerRadiusCtrls.Position = new Point(
+                (int)WindowSize.Width - (this.grpRectCornerRadiusCtrls.Size.Width + WindowPadding),
+                ((int)WindowSize.Height / 2) - (this.grpRectCornerRadiusCtrls.Size.Width / 2));
+
+            this.isFirstRender = false;
+        }
+
         base.Render();
     }
 
-    /// <summary>
-    /// Creates the buttons for the scene.
-    /// </summary>
-    /// <exception cref="InvalidEnumArgumentException">
-    ///     Thrown if the <see cref="ColorGradient"/> is invalid.
-    /// </exception>
-    [SuppressMessage(
-        "ReSharper",
-        "SwitchStatementHandlesSomeKnownEnumValuesWithDefault",
-        Justification = "Not required.")]
-    private void CreateButtons()
+    private void CreateShapeTypeCtrls()
     {
-        this.btnShapeType = new Button
+        var cmbShapeType = TestingApp.Container.GetInstance<IComboBox>();
+        cmbShapeType.Position = new Point(WindowPadding, WindowPadding);
+        cmbShapeType.Name = nameof(cmbShapeType);
+        cmbShapeType.Label = "Shape Type:";
+        cmbShapeType.Width = 125;
+        cmbShapeType.Items =
+        [
+            ShapeType.Rectangle.ToString(),
+            ShapeType.Circle.ToString(),
+        ];
+        cmbShapeType.SelectedItemIndex = 1;
+        cmbShapeType.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            Text = this.shapeType switch
+            this.shapeType = (ShapeType)selectedIndex;
+
+            this.grpCircleCtrls.Visible = this.shapeType == ShapeType.Circle;
+            this.grpCircleClrGradCtrls.Visible = this.shapeType == ShapeType.Circle;
+
+            this.grpRectCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+            this.grpRectClrGradCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+            this.grpRectCornerRadiusCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+        };
+
+        this.grpShapeType = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpShapeType.TitleBarVisible = false;
+        this.grpShapeType.AutoSizeToFitContent = true;
+        this.grpShapeType.Add(cmbShapeType);
+    }
+
+    private void CreateCircleCtrls()
+    {
+        var sldCircleBorderThickness = TestingApp.Container.GetInstance<ISlider>();
+        sldCircleBorderThickness.Name = nameof(sldCircleBorderThickness);
+        sldCircleBorderThickness.Text = "Border Thickness:";
+        sldCircleBorderThickness.Value = DefaultBorderThickness;
+        sldCircleBorderThickness.Min = 1;
+        sldCircleBorderThickness.Max = DefaultCircleDiameter / 2;
+        sldCircleBorderThickness.ValueChanged += (_, newValue) =>
+        {
+            this.circle.BorderThickness = newValue;
+        };
+
+        var sldCircleDiameter = TestingApp.Container.GetInstance<ISlider>();
+        this.sldCircleDiameterName = nameof(sldCircleDiameter);
+        sldCircleDiameter.Name = nameof(sldCircleDiameter);
+        sldCircleDiameter.Text = "Diameter:";
+        sldCircleDiameter.Value = DefaultCircleDiameter;
+        sldCircleDiameter.Min = 10;
+        sldCircleDiameter.Max = 500;
+        sldCircleDiameter.ValueChanged += (_, newValue) =>
+        {
+            var sldBorderThickness = this.grpCircleCtrls.GetControl<ISlider>(nameof(sldCircleBorderThickness));
+            sldBorderThickness.Max = newValue / 2;
+            this.circle.Diameter = newValue;
+        };
+
+        var cmbCircleSolidColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbCircleSolidColor.Name = nameof(cmbCircleSolidColor);
+        this.cmbCircleSolidColorName = nameof(cmbCircleSolidColor);
+        cmbCircleSolidColor.Label = "Solid Color:";
+        cmbCircleSolidColor.Width = 100;
+        cmbCircleSolidColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbCircleSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        {
+            this.circle.Color = this.clrList[selectedIndex];
+        };
+        cmbCircleSolidColor.SelectedItemIndex = 2;
+
+        var chkCircleIsSolid = TestingApp.Container.GetInstance<ICheckBox>();
+        chkCircleIsSolid.Name = nameof(chkCircleIsSolid);
+        chkCircleIsSolid.LabelWhenChecked = "Solid";
+        chkCircleIsSolid.LabelWhenUnchecked = "Not Solid";
+        chkCircleIsSolid.CheckedChanged += (_, isChecked) =>
+        {
+            this.circle.IsSolid = isChecked;
+        };
+
+        this.grpCircleCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleCtrls.Title = "Circle Props";
+        this.grpCircleCtrls.AutoSizeToFitContent = true;
+        this.grpCircleCtrls.Add(chkCircleIsSolid);
+        this.grpCircleCtrls.Add(cmbCircleSolidColor);
+        this.grpCircleCtrls.Add(sldCircleBorderThickness);
+        this.grpCircleCtrls.Add(sldCircleDiameter);
+    }
+
+    private void CreateCircleGradCtrls()
+    {
+        var cmbCircleGradType = TestingApp.Container.GetInstance<IComboBox>();
+        cmbCircleGradType.Name = nameof(cmbCircleGradType);
+        cmbCircleGradType.Label = "Gradient Type:";
+        cmbCircleGradType.Width = 125;
+        cmbCircleGradType.Items =
+        [
+            ColorGradient.None.ToString(),
+            ColorGradient.Horizontal.ToString(),
+            ColorGradient.Vertical.ToString(),
+        ];
+        cmbCircleGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
+        {
+            var selectedGradType = (ColorGradient)selectedIndex;
+            var cmbSolidClr = this.grpCircleCtrls.GetControl<IComboBox>(this.cmbCircleSolidColorName);
+
+            if (cmbSolidClr is not null)
             {
-                ShapeType.Rectangle => "Rectangle",
-                ShapeType.Circle => "Circle",
-                _ => throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType)),
-            },
-            Name = nameof(this.btnShapeType),
-        };
-        this.btnShapeType.Click += btnShapeType_Click;
+                cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
+            }
 
-        this.btnIncCircleDiam = new Button { Text = "Diameter +", Name = nameof(this.btnIncCircleDiam), };
-        this.btnIncCircleDiam.MouseDown += (_, _) =>
-        {
-            this.circle.IncreaseDiameter(5);
+            this.circle.GradientType = selectedGradType;
         };
 
-        this.btnDecCircleDiam = new Button { Text = "Diameter -", Name = nameof(this.btnDecCircleDiam), };
-        this.btnDecCircleDiam.MouseDown += (_, _) =>
+        var cmbCircleGradStartColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbCircleGradStartColor.Name = nameof(cmbCircleGradStartColor);
+        cmbCircleGradStartColor.Label = "Grad Start Color:";
+        cmbCircleGradStartColor.Width = 100;
+        cmbCircleGradStartColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbCircleGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            this.circle.DecreaseDiameter(5);
+            switch (this.shapeType)
+            {
+                case ShapeType.Rectangle:
+                    this.rectangle.GradientStart = this.clrList[selectedIndex];
+                    break;
+                case ShapeType.Circle:
+                    this.circle.GradientStart = this.clrList[selectedIndex];
+                    break;
+            }
         };
 
-        this.btnIncreaseWidth = new Button
+        var cmbCircleGradStopColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbCircleGradStopColor.Name = nameof(cmbCircleGradStopColor);
+        cmbCircleGradStopColor.Label = "Grad Stop Color:";
+        cmbCircleGradStopColor.Width = 100;
+        cmbCircleGradStopColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbCircleGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            Text = "Width +",
-            Name = nameof(this.btnIncreaseWidth),
+            switch (this.shapeType)
+            {
+                case ShapeType.Rectangle:
+                    this.rectangle.GradientStop = this.clrList[selectedIndex];
+                    break;
+                case ShapeType.Circle:
+                    this.circle.GradientStop = this.clrList[selectedIndex];
+                    break;
+            }
         };
-        this.btnIncreaseWidth.MouseDown += (_, _) => this.rectangle.IncreaseWidth(5);
+        cmbCircleGradStopColor.SelectedItemIndex = 1;
 
-        this.btnDecreaseWidth = new Button
-        {
-            Text = "Width -",
-            Name = nameof(this.btnDecreaseWidth),
-        };
-        this.btnDecreaseWidth.MouseDown += (_, _) => this.rectangle.DecreaseWidth(5);
+        this.grpCircleClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleClrGradCtrls.Title = "Color Gradient Props";
+        this.grpCircleClrGradCtrls.AutoSizeToFitContent = true;
+        this.grpCircleClrGradCtrls.Add(cmbCircleGradType);
+        this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
+        this.grpCircleClrGradCtrls.Add(cmbCircleGradStartColor);
+    }
 
-        this.btnIncreaseHeight = new Button
+    private void CreateRectGradCtrls()
+    {
+        var cmbRectGradType = TestingApp.Container.GetInstance<IComboBox>();
+        cmbRectGradType.Name = nameof(cmbRectGradType);
+        cmbRectGradType.Label = "Gradient Type:";
+        cmbRectGradType.Width = 125;
+        cmbRectGradType.Items =
+        [
+            ColorGradient.None.ToString(),
+            ColorGradient.Horizontal.ToString(),
+            ColorGradient.Vertical.ToString(),
+        ];
+        cmbRectGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            Text = "Height +",
-            Name = nameof(this.btnIncreaseHeight),
-        };
-        this.btnIncreaseHeight.MouseDown += (_, _) => this.rectangle.IncreaseHeight(5);
+            var selectedGradType = (ColorGradient)selectedIndex;
+            var cmbSolidClr = this.grpRectCtrls.GetControl<IComboBox>(this.cmbRectSolidColorName);
 
-        this.btnDecreaseHeight = new Button
-        {
-            Text = "Height -",
-            Name = nameof(this.btnDecreaseHeight),
-        };
-        this.btnDecreaseHeight.MouseDown += (_, _) => this.rectangle.DecreaseHeight(5);
+            if (cmbSolidClr is not null)
+            {
+                cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
+            }
 
-        this.btnIsSolid = new Button
-        {
-            Text = $"Is Solid: {(this.shapeType == ShapeType.Rectangle ? this.rectangle.IsSolid : this.circle.IsSolid)}",
-            Name = nameof(this.btnIsSolid),
+            this.rectangle.GradientType = selectedGradType;
         };
-        this.btnIsSolid.Click += btnIsSolid_Click;
 
-        this.btnSolidFillClr = new Button
+        var cmbRectGradStartColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbRectGradStartColor.Name = nameof(cmbRectGradStartColor);
+        cmbRectGradStartColor.Label = "Grad Start Color:";
+        cmbRectGradStartColor.Width = 100;
+        cmbRectGradStartColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbRectGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            Text = "Solid Fill Clr: Blue",
-            Name = nameof(this.btnSolidFillClr),
+            this.rectangle.GradientStart = this.clrList[selectedIndex];
         };
-        this.btnSolidFillClr.Click += btnSolidFillClr_Click;
 
-        this.btnIncreaseBorderThickness = new Button
+        var cmbRectGradStopColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbRectGradStopColor.Name = nameof(cmbRectGradStopColor);
+        cmbRectGradStopColor.Label = "Grad Stop Color:";
+        cmbRectGradStopColor.Width = 100;
+        cmbRectGradStopColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbRectGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            Text = "Border Thickness +",
-            Name = nameof(this.btnIncreaseBorderThickness),
-            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsSolid : !this.circle.IsSolid,
+            this.rectangle.GradientStop = this.clrList[selectedIndex];
         };
-        this.btnIncreaseBorderThickness.MouseDown += btnIncreaseBorderThickness_MouseDown;
+        cmbRectGradStopColor.SelectedItemIndex = 1;
 
-        this.btnDecreaseBorderThickness = new Button
-        {
-            Text = "Border Thickness -",
-            Name = nameof(this.btnDecreaseBorderThickness),
-            Enabled = this.shapeType == ShapeType.Rectangle ? !this.rectangle.IsSolid : !this.circle.IsSolid,
-        };
-        this.btnDecreaseBorderThickness.MouseDown += btnDecreaseBorderThickness_MouseDown;
+        this.grpRectClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectClrGradCtrls.Title = "Color Gradient Props";
+        this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
+        this.grpRectClrGradCtrls.Visible = false;
+        this.grpRectClrGradCtrls.Add(cmbRectGradType);
+        this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
+        this.grpRectClrGradCtrls.Add(cmbRectGradStartColor);
+    }
 
-        this.btnIncreaseTopLeftRadius = new Button
+    private void CreateRectCtrls()
+    {
+        var sldRectBorderThickness = TestingApp.Container.GetInstance<ISlider>();
+        sldRectBorderThickness.Name = nameof(sldRectBorderThickness);
+        sldRectBorderThickness.Text = "Border Thickness:";
+        sldRectBorderThickness.Value = DefaultBorderThickness;
+        sldRectBorderThickness.Min = 1;
+        sldRectBorderThickness.Max = 125;
+        sldRectBorderThickness.ValueChanged += (_, newValue) =>
         {
-            Text = "Top Left Radius +",
-            Name = nameof(this.btnIncreaseTopLeftRadius),
+            this.rectangle.BorderThickness = newValue;
         };
-        this.btnIncreaseTopLeftRadius.MouseDown += (_, _) =>
+
+        var sldRectWidth = TestingApp.Container.GetInstance<ISlider>();
+        sldRectWidth.Name = nameof(sldRectWidth);
+        this.sldRectWidthName = nameof(sldRectWidth);
+        sldRectWidth.Text = "Width:";
+        sldRectWidth.Value = DefaultRectWidth;
+        sldRectWidth.Min = 50;
+        sldRectWidth.Max = 500;
+        sldRectWidth.ValueChanged += (_, newWidth) =>
+        {
+            this.rectangle.Width = newWidth;
+            var newValue = (this.rectangle.Width < this.rectangle.Height
+                ? this.rectangle.Width
+                : this.rectangle.Height) / 2;
+
+            var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
+            var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
+            var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
+            var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
+            var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
+
+            sldBorderThicknessCtrl.Max = newValue;
+            sldTopLeftRadiusCtrl.Max = newValue;
+            sldTopRightRadiusCtrl.Max = newValue;
+            sldBottomRightRadiusCtrl.Max = newValue;
+            sldBottomLeftRadiusCtrl.Max = newValue;
+        };
+
+        var sldRectHeight = TestingApp.Container.GetInstance<ISlider>();
+        sldRectHeight.Name = nameof(sldRectHeight);
+        this.sldRectHeightName = nameof(sldRectHeight);
+        sldRectHeight.Text = "Height:";
+        sldRectHeight.Value = DefaultRectHeight;
+        sldRectHeight.Min = 50;
+        sldRectHeight.Max = 500;
+        sldRectHeight.ValueChanged += (_, newHeight) =>
+        {
+            this.rectangle.Height = newHeight;
+            var newValue = (this.rectangle.Height < this.rectangle.Width
+                ? this.rectangle.Height
+                : this.rectangle.Width) / 2;
+
+            var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
+            var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
+            var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
+            var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
+            var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
+
+            sldBorderThicknessCtrl.Max = newValue;
+            sldTopLeftRadiusCtrl.Max = newValue;
+            sldTopRightRadiusCtrl.Max = newValue;
+            sldBottomRightRadiusCtrl.Max = newValue;
+            sldBottomLeftRadiusCtrl.Max = newValue;
+        };
+
+        var cmbRectSolidColor = TestingApp.Container.GetInstance<IComboBox>();
+        cmbRectSolidColor.Name = nameof(cmbRectSolidColor);
+        this.cmbRectSolidColorName = nameof(cmbRectSolidColor);
+        cmbRectSolidColor.Label = "Solid Color:";
+        cmbRectSolidColor.Width = 100;
+        cmbRectSolidColor.Items =
+        [
+            "Red",
+            "Green",
+            "Blue",
+        ];
+        cmbRectSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        {
+            this.rectangle.Color = this.clrList[selectedIndex];
+        };
+        cmbRectSolidColor.SelectedItemIndex = 2;
+
+        var chkRectIsSolid = TestingApp.Container.GetInstance<ICheckBox>();
+        chkRectIsSolid.Name = nameof(chkRectIsSolid);
+        chkRectIsSolid.LabelWhenChecked = "Solid";
+        chkRectIsSolid.LabelWhenUnchecked = "Not Solid";
+        chkRectIsSolid.CheckedChanged += (_, isChecked) =>
+        {
+            this.rectangle.IsSolid = isChecked;
+        };
+
+        this.grpRectCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectCtrls.Title = "Rectangle Props";
+        this.grpRectCtrls.AutoSizeToFitContent = true;
+        this.grpRectCtrls.Visible = false;
+        this.grpRectCtrls.Add(chkRectIsSolid);
+        this.grpRectCtrls.Add(cmbRectSolidColor);
+        this.grpRectCtrls.Add(sldRectBorderThickness);
+        this.grpRectCtrls.Add(sldRectHeight);
+        this.grpRectCtrls.Add(sldRectWidth);
+    }
+
+    [SuppressMessage("csharpsquid", "S2583", Justification = "Need to leave as is in case of constant value change.")]
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Do not care about cognitive complexity.")]
+    private void CreateRadiusCtrls()
+    {
+        // ReSharper disable once HeuristicUnreachableCode
+        const float defaultRadius = (DefaultRectWidth < DefaultRectHeight ? DefaultRectWidth : DefaultRectHeight) / 2;
+
+        var sldTopLeftRadius = TestingApp.Container.GetInstance<ISlider>();
+        sldTopLeftRadius.Name = nameof(sldTopLeftRadius);
+        this.sldTopLeftRadiusName = nameof(sldTopLeftRadius);
+        sldTopLeftRadius.Text = "Top Left Radius:";
+        sldTopLeftRadius.Min = 0;
+        sldTopLeftRadius.Max = defaultRadius;
+        sldTopLeftRadius.ValueChanged += (_, newRadius) =>
         {
             var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
+            var newValue = this.rectangle.CornerRadius.TopLeft > maxValue ? maxValue : newRadius;
 
-            var newValue = this.rectangle.CornerRadius.TopLeft > maxValue ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(newValue);
-        };
-
-        this.btnDecreaseTopLeftRadius = new Button
-        {
-            Text = "Top Left Radius -",
-            Name = nameof(this.btnDecreaseTopLeftRadius),
-        };
-        this.btnDecreaseTopLeftRadius.MouseDown += (_, _) =>
-        {
-            var newValue = this.rectangle.CornerRadius.TopLeft <= 0 ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(newValue);
+            this.rectangle.CornerRadius = this.rectangle.CornerRadius with { TopLeft = newValue, };
         };
 
-        this.btnIncreaseBottomLeftRadius = new Button
-        {
-            Text = "Bottom Left Radius +",
-            Name = nameof(this.btnIncreaseBottomLeftRadius),
-        };
-        this.btnIncreaseBottomLeftRadius.MouseDown += (_, _) =>
+        var sldTopRightRadius = TestingApp.Container.GetInstance<ISlider>();
+        sldTopRightRadius.Name = nameof(sldTopRightRadius);
+        this.sldTopRightRadiusName = nameof(sldTopRightRadius);
+        sldTopRightRadius.Text = "Top Right:";
+        sldTopRightRadius.Min = 0;
+        sldTopRightRadius.Max = defaultRadius;
+        sldTopRightRadius.ValueChanged += (_, newRadius) =>
         {
             var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
-            var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(newValue);
+            var newValue = this.rectangle.CornerRadius.TopRight > maxValue ? maxValue : newRadius;
+
+            this.rectangle.CornerRadius = this.rectangle.CornerRadius with { TopRight = newValue, };
         };
 
-        this.btnDecreaseBottomLeftRadius = new Button
-        {
-            Text = "Bottom Left Radius -",
-            Name = nameof(this.btnDecreaseBottomLeftRadius),
-        };
-        this.btnDecreaseBottomLeftRadius.MouseDown += (_, _) =>
-        {
-            var newValue = this.rectangle.CornerRadius.BottomLeft <= 0 ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(newValue);
-        };
-
-        this.btnIncreaseBottomRightRadius = new Button
-        {
-            Text = "Bottom Right Radius +",
-            Name = nameof(this.btnIncreaseBottomRightRadius),
-        };
-        this.btnIncreaseBottomRightRadius.MouseDown += (_, _) =>
+        var sldBottomRightRadius = TestingApp.Container.GetInstance<ISlider>();
+        sldBottomRightRadius.Name = nameof(sldBottomRightRadius);
+        this.sldBottomRightRadiusName = nameof(sldBottomRightRadius);
+        sldBottomRightRadius.Text = "Bottom Right:";
+        sldBottomRightRadius.Min = 0;
+        sldBottomRightRadius.Max = defaultRadius;
+        sldBottomRightRadius.ValueChanged += (_, newRadius) =>
         {
             var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
-            var newValue = this.rectangle.CornerRadius.BottomRight > maxValue ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(newValue);
+            var newValue = this.rectangle.CornerRadius.BottomRight > maxValue ? maxValue : newRadius;
+
+            this.rectangle.CornerRadius = this.rectangle.CornerRadius with { BottomRight = newValue, };
         };
 
-        this.btnDecreaseBottomRightRadius = new Button
-        {
-            Text = "Bottom Right Radius -",
-            Name = nameof(this.btnDecreaseBottomRightRadius),
-        };
-        this.btnDecreaseBottomRightRadius.MouseDown += (_, _) =>
-        {
-            var newValue = this.rectangle.CornerRadius.BottomRight <= 0 ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(newValue);
-        };
-
-        this.btnIncreaseTopRightRadius = new Button
-        {
-            Text = "Top Right Radius +",
-            Name = nameof(this.btnIncreaseTopRightRadius),
-        };
-        this.btnIncreaseTopRightRadius.MouseDown += (_, _) =>
+        var sldBottomLeftRadius = TestingApp.Container.GetInstance<ISlider>();
+        sldBottomLeftRadius.Name = nameof(sldBottomLeftRadius);
+        this.sldBottomLeftRadiusName = nameof(sldBottomLeftRadius);
+        sldBottomLeftRadius.Text = "Bottom Left:";
+        sldBottomLeftRadius.Min = 0;
+        sldBottomLeftRadius.Max = defaultRadius;
+        sldBottomLeftRadius.ValueChanged += (_, newRadius) =>
         {
             var maxValue = (this.rectangle.Width > this.rectangle.Height ? this.rectangle.Width : this.rectangle.Height) / 2f;
-            var newValue = this.rectangle.CornerRadius.TopRight > maxValue ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(newValue);
+            var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue ? maxValue : newRadius;
+
+            this.rectangle.CornerRadius = this.rectangle.CornerRadius with { BottomLeft = newValue, };
         };
 
-        this.btnDecreaseTopRightRadius = new Button
-        {
-            Text = "Top Right Radius -",
-            Name = nameof(this.btnDecreaseTopRightRadius),
-        };
-        this.btnDecreaseTopRightRadius.MouseDown += (_, _) =>
-        {
-            var newValue = this.rectangle.CornerRadius.TopRight <= 0 ? 0 : 1;
-            this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(newValue);
-        };
-
-        this.btnGradientType = new Button
-        {
-            Text = "Gradient Type: None",
-            Name = nameof(this.btnGradientType),
-        };
-        this.btnGradientType.Click += btnGradientType_Click;
-
-        this.btnGradClrStart = new Button
-        {
-            Text = "Grad Clr Start: Red",
-            Name = nameof(this.btnGradClrStart),
-        };
-        this.btnGradClrStart.Click += btnGradClrStart_Click;
-
-        this.btnGradClrStop = new Button
-        {
-            Text = "Grad Clr Stop: Red",
-            Name = nameof(this.btnGradClrStop),
-        };
-        this.btnGradClrStop.Click += btnGradClrStop_Click;
-
-        AddControl(this.btnShapeType);
-        AddControl(this.btnIncCircleDiam);
-        AddControl(this.btnDecCircleDiam);
-        AddControl(this.btnIncreaseWidth);
-        AddControl(this.btnDecreaseWidth);
-        AddControl(this.btnIncreaseHeight);
-        AddControl(this.btnDecreaseHeight);
-        AddControl(this.btnIsSolid);
-        AddControl(this.btnSolidFillClr);
-        AddControl(this.btnIncreaseBorderThickness);
-        AddControl(this.btnDecreaseBorderThickness);
-        AddControl(this.btnIncreaseTopLeftRadius);
-        AddControl(this.btnDecreaseTopLeftRadius);
-        AddControl(this.btnIncreaseBottomLeftRadius);
-        AddControl(this.btnDecreaseBottomLeftRadius);
-        AddControl(this.btnIncreaseBottomRightRadius);
-        AddControl(this.btnDecreaseBottomRightRadius);
-        AddControl(this.btnIncreaseTopRightRadius);
-        AddControl(this.btnDecreaseTopRightRadius);
-        AddControl(this.btnGradientType);
-        AddControl(this.btnGradClrStart);
-        AddControl(this.btnGradClrStop);
-
-        // Circle buttons
-        this.circleButtons.Add(nameof(this.btnIncCircleDiam));
-        this.circleButtons.Add(nameof(this.btnDecCircleDiam));
-        this.circleButtons.Add(nameof(this.btnShapeType));
-        this.circleButtons.Add(nameof(this.btnIsSolid));
-        this.circleButtons.Add(nameof(this.btnSolidFillClr));
-        this.circleButtons.Add(nameof(this.btnIncreaseBorderThickness));
-        this.circleButtons.Add(nameof(this.btnDecreaseBorderThickness));
-        this.circleButtons.Add(nameof(this.btnGradientType));
-        this.circleButtons.Add(nameof(this.btnGradClrStart));
-        this.circleButtons.Add(nameof(this.btnGradClrStop));
-
-        // Rectangle buttons
-        this.rectButtons.Add(nameof(this.btnShapeType));
-        this.rectButtons.Add(nameof(this.btnIncreaseWidth));
-        this.rectButtons.Add(nameof(this.btnDecreaseWidth));
-        this.rectButtons.Add(nameof(this.btnIncreaseHeight));
-        this.rectButtons.Add(nameof(this.btnDecreaseHeight));
-        this.rectButtons.Add(nameof(this.btnIsSolid));
-        this.rectButtons.Add(nameof(this.btnSolidFillClr));
-        this.rectButtons.Add(nameof(this.btnIncreaseBorderThickness));
-        this.rectButtons.Add(nameof(this.btnDecreaseBorderThickness));
-        this.rectButtons.Add(nameof(this.btnIncreaseTopLeftRadius));
-        this.rectButtons.Add(nameof(this.btnDecreaseTopLeftRadius));
-        this.rectButtons.Add(nameof(this.btnIncreaseBottomLeftRadius));
-        this.rectButtons.Add(nameof(this.btnDecreaseBottomLeftRadius));
-        this.rectButtons.Add(nameof(this.btnIncreaseBottomRightRadius));
-        this.rectButtons.Add(nameof(this.btnDecreaseBottomRightRadius));
-        this.rectButtons.Add(nameof(this.btnIncreaseTopRightRadius));
-        this.rectButtons.Add(nameof(this.btnDecreaseTopRightRadius));
-        this.rectButtons.Add(nameof(this.btnGradientType));
-        this.rectButtons.Add(nameof(this.btnGradClrStart));
-        this.rectButtons.Add(nameof(this.btnGradClrStop));
-
-        ShowButtonsForShape();
-        LayoutButtonsLeftSide();
-    }
-
-    // Element should begin with upper-case letter
-    #pragma warning disable SA1300
-    #region Control Events
-    private void btnIsSolid_Click(object? sender, EventArgs e)
-    {
-        bool isSolid;
-
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.IsSolid = !this.rectangle.IsSolid;
-                isSolid = this.rectangle.IsSolid;
-                break;
-            case ShapeType.Circle:
-                this.circle.IsSolid = !this.circle.IsSolid;
-                isSolid = this.circle.IsSolid;
-                break;
-            default:
-                throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType));
-        }
-
-        this.btnIsSolid.Text = isSolid ? "Is Solid: true" : "Is Solid: false";
-        this.btnIncreaseBorderThickness.Enabled = !isSolid;
-        this.btnDecreaseBorderThickness.Enabled = !isSolid;
-        LayoutButtonsLeftSide();
-    }
-
-    private void btnSolidFillClr_Click(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
-                break;
-            case ShapeType.Circle:
-                this.circle.SwapFillColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnSolidFillClr.Text = $"Solid Fill Clr: {color}");
-                break;
-        }
-
-        LayoutButtonsLeftSide();
-    }
-
-    private void btnIncreaseBorderThickness_MouseDown(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness += 1;
-                break;
-            case ShapeType.Circle:
-                this.circle.BorderThickness = this.circle.BorderThickness += 1;
-                break;
-            default:
-                throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType));
-        }
-    }
-
-    private void btnDecreaseBorderThickness_MouseDown(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= 1;
-                break;
-            case ShapeType.Circle:
-                this.circle.BorderThickness = this.circle.BorderThickness -= 1;
-                break;
-            default:
-                throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType));
-        }
-    }
-
-    private void btnShapeType_Click(object? sender, EventArgs e)
-    {
-        this.shapeType = this.shapeType switch
-        {
-            ShapeType.Rectangle => ShapeType.Circle,
-            ShapeType.Circle => ShapeType.Rectangle,
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        this.btnShapeType.Text = this.shapeType switch
-        {
-            ShapeType.Rectangle => "Rectangle",
-            ShapeType.Circle => "Circle",
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        this.btnGradientType.Text = this.shapeType switch
-        {
-            ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
-            ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        this.btnSolidFillClr.Enabled = this.shapeType switch
-        {
-            ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
-            ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        ShowButtonsForShape();
-        LayoutButtonsLeftSide();
-        LayoutButtonsBottom();
-    }
-
-    private void btnGradientType_Click(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.GradientType = this.rectangle.GradientType.SwapGradient();
-                break;
-            case ShapeType.Circle:
-                this.circle.GradientType = this.circle.GradientType.SwapGradient();
-                break;
-        }
-
-        this.btnGradientType.Text = this.shapeType switch
-        {
-            ShapeType.Rectangle => $"Gradient Type: {this.rectangle.GradientType}",
-            ShapeType.Circle => $"Gradient Type: {this.circle.GradientType}",
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        this.btnSolidFillClr.Enabled = this.shapeType switch
-        {
-            ShapeType.Rectangle => this.rectangle.GradientType == ColorGradient.None,
-            ShapeType.Circle => this.circle.GradientType == ColorGradient.None,
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        LayoutButtonsBottom();
-    }
-
-    private void btnGradClrStop_Click(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
-                break;
-            case ShapeType.Circle:
-                this.circle.SwapGradStopColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnGradClrStop.Text = $"Solid Fill Clr: {color}");
-                break;
-            default:
-                throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType));
-        }
-
-        LayoutButtonsBottom();
-    }
-
-    private void btnGradClrStart_Click(object? sender, EventArgs e)
-    {
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                this.rectangle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
-                break;
-            case ShapeType.Circle:
-                this.circle.SwapGradStartColor(new[] { Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue },
-                    color => this.btnGradClrStart.Text = $"Solid Fill Clr: {color}");
-                break;
-            default:
-                throw new InvalidEnumArgumentException(
-                    $"this.{nameof(this.shapeType)}",
-                    (int)this.shapeType,
-                    typeof(ShapeType));
-        }
-
-        LayoutButtonsBottom();
-    }
-    #endregion
-    #pragma warning restore SA1300
-
-    /// <summary>
-    /// Lays out the buttons on the left side of the scene.
-    /// </summary>
-    private void LayoutButtonsLeftSide()
-    {
-        var excludeList = new[]
-        {
-            nameof(this.btnShapeType),
-            nameof(this.btnIncCircleDiam),
-            nameof(this.btnDecCircleDiam),
-            nameof(this.btnIncreaseWidth),
-            nameof(this.btnDecreaseWidth),
-            nameof(this.btnIncreaseHeight),
-            nameof(this.btnDecreaseHeight),
-            nameof(this.btnIsSolid),
-            nameof(this.btnSolidFillClr),
-            nameof(this.btnIncreaseBorderThickness),
-            nameof(this.btnDecreaseBorderThickness),
-        };
-
-        var buttons = Controls.Where(c => excludeList.Contains(c.Name) && c.Visible).ToImmutableArray();
-
-        var totalHeight = (from b in buttons
-            select (int)b.Height).Sum();
-        totalHeight += (buttons.Length - 1) * VertButtonSpacing;
-        var totalHalfHeight = totalHeight / 2;
-
-        IControl? prevButton = null;
-
-        foreach (var button in buttons)
-        {
-            button.Left = LeftMargin;
-            button.Top = prevButton?.Bottom + VertButtonSpacing ?? WindowCenter.Y - totalHalfHeight;
-            prevButton = button;
-        }
-    }
-
-    /// <summary>
-    /// Lays out the buttons on the right side of the scene.
-    /// </summary>
-    private void LayoutButtonsRightSide()
-    {
-        var includeList = new[]
-        {
-            nameof(this.btnIncreaseTopLeftRadius),
-            nameof(this.btnDecreaseTopLeftRadius),
-            nameof(this.btnIncreaseBottomLeftRadius),
-            nameof(this.btnDecreaseBottomLeftRadius),
-            nameof(this.btnIncreaseBottomRightRadius),
-            nameof(this.btnDecreaseBottomRightRadius),
-            nameof(this.btnIncreaseTopRightRadius),
-            nameof(this.btnDecreaseTopRightRadius),
-        };
-
-        var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
-
-        var totalHeight = (from b in buttons
-            select (int)b.Height).Sum();
-        totalHeight += (buttons.Length - 1) * VertButtonSpacing;
-        var totalHalfHeight = totalHeight / 2;
-
-        IControl? prevButton = null;
-
-        foreach (var button in buttons)
-        {
-            button.Right = (int)(WindowSize.Width - RightMargin);
-
-            button.Top = prevButton?.Bottom + VertButtonSpacing ?? WindowCenter.Y - totalHalfHeight;
-
-            prevButton = button;
-        }
-    }
-
-    /// <summary>
-    /// Lays out the buttons on the bottom of the scene.
-    /// </summary>
-    private void LayoutButtonsBottom()
-    {
-        var includeList = new[]
-        {
-            nameof(this.btnGradientType),
-            nameof(this.btnGradClrStart),
-            nameof(this.btnGradClrStop),
-        };
-
-        var buttons = Controls.Where(c => includeList.Contains(c.Name) && c is Button).ToImmutableArray();
-
-        var totalWidth = (from b in buttons
-            select (int)b.Width).Sum();
-        totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
-        var totalHalfWidth = totalWidth / 2;
-        var buttonRowStart = WindowCenter.X - totalHalfWidth;
-
-        IControl? prevButton = null;
-
-        foreach (var button in buttons)
-        {
-            button.Bottom = (int)(WindowSize.Height - BottomMargin);
-            button.Left = prevButton?.Right + HoriButtonSpacing ?? buttonRowStart;
-            prevButton = button;
-        }
-    }
-
-    private void ShowButtonsForShape()
-    {
-        var rectControls = Controls.Where(c => this.rectButtons.Contains(c.Name) && c is Button).ToImmutableArray();
-        var circleControls = Controls.Where(c => this.circleButtons.Contains(c.Name) && c is Button).ToImmutableArray();
-
-        // Set all buttons to be false to start off
-        foreach (var ctrl in Controls)
-        {
-            ctrl.Visible = false;
-        }
-
-        switch (this.shapeType)
-        {
-            case ShapeType.Rectangle:
-                foreach (var button in rectControls)
-                {
-                    button.Visible = this.shapeType == ShapeType.Rectangle;
-                }
-
-                break;
-            case ShapeType.Circle:
-                foreach (var button in circleControls)
-                {
-                    button.Visible = this.shapeType == ShapeType.Circle;
-                }
-
-                break;
-        }
+        this.grpRectCornerRadiusCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectCornerRadiusCtrls.Title = "Rect Radius Props";
+        this.grpRectCornerRadiusCtrls.AutoSizeToFitContent = true;
+        this.grpRectCornerRadiusCtrls.Visible = false;
+        this.grpRectCornerRadiusCtrls.Add(sldBottomLeftRadius);
+        this.grpRectCornerRadiusCtrls.Add(sldBottomRightRadius);
+        this.grpRectCornerRadiusCtrls.Add(sldTopRightRadius);
+        this.grpRectCornerRadiusCtrls.Add(sldTopLeftRadius);
     }
 
     /// <summary>
@@ -953,7 +767,8 @@ public class ShapeScene : SceneBase
     /// Changes the size of the shape using the keyboard keys.
     /// </summary>
     /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
-    private void ChangeRectSize(FrameTime frameTime)
+    [SuppressMessage("csharpsquid", "S3776", Justification = "Do not care about cognitive complexity.")]
+    private void ChangeShapeSize(FrameTime frameTime)
     {
         if (!this.currentKeyState.IsLeftShiftKeyDown() && !this.currentKeyState.IsRightShiftKeyDown())
         {
@@ -1004,9 +819,29 @@ public class ShapeScene : SceneBase
             case ShapeType.Rectangle:
                 this.rectangle.Width = size.X;
                 this.rectangle.Height = size.Y;
+
+                var sldRectWidthCtrl = this.grpRectCtrls.GetControl<ISlider>(this.sldRectWidthName);
+                var sldRectHeightCtrl = this.grpRectCtrls.GetControl<ISlider>(this.sldRectHeightName);
+
+                this.rectangle.Width = this.rectangle.Width > sldRectWidthCtrl.Max ? sldRectWidthCtrl.Max : this.rectangle.Width;
+                this.rectangle.Width = this.rectangle.Width < sldRectWidthCtrl.Min ? sldRectWidthCtrl.Min : this.rectangle.Width;
+
+                this.rectangle.Height = this.rectangle.Height > sldRectHeightCtrl.Max ? sldRectHeightCtrl.Max : this.rectangle.Height;
+                this.rectangle.Height = this.rectangle.Height < sldRectHeightCtrl.Min ? sldRectHeightCtrl.Min : this.rectangle.Height;
+
+                sldRectWidthCtrl.Value = this.rectangle.Width;
+                sldRectHeightCtrl.Value = this.rectangle.Height;
+
                 break;
             case ShapeType.Circle:
                 this.circle.Diameter += diameterChange;
+
+                var sldCircleDiameterCtrl = this.grpCircleCtrls.GetControl<ISlider>(this.sldCircleDiameterName);
+
+                this.circle.Diameter = this.circle.Diameter > sldCircleDiameterCtrl.Max ? sldCircleDiameterCtrl.Max : this.circle.Diameter;
+                this.circle.Diameter = this.circle.Diameter < sldCircleDiameterCtrl.Min ? sldCircleDiameterCtrl.Min : this.circle.Diameter;
+
+                sldCircleDiameterCtrl.Value = this.circle.Diameter;
                 break;
             default:
                 throw new InvalidEnumArgumentException(
