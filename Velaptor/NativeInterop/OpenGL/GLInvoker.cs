@@ -450,6 +450,13 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <inheritdoc/>
+    public void PixelStore(in GLPixelStoreParameter pname, in int param)
+    {
+        AddToGLCallStack(nameof(PixelStore));
+        this.gl.PixelStore((PixelStoreParameter)pname, param);
+    }
+
+    /// <inheritdoc/>
     public void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)
     {
         AddToGLCallStack($"{nameof(TexParameter)}(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)");

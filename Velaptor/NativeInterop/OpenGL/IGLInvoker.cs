@@ -1,4 +1,4 @@
-// <copyright file="IGLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="IGLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -480,6 +480,16 @@ internal interface IGLInvoker : IDisposable
     /// </summary>
     /// <param name="textures">[length: n] Specifies an array of textures to be deleted.</param>
     void DeleteTexture(uint textures);
+
+    /// <summary>
+    /// Sets pixel storage modes that affect the operation of subsequent 'glReadPixels' as well as the unpacking of texture patterns.
+    /// </summary>
+    /// <param name="pname">
+    ///     The symbolic constant indicating the parameter to be set, and param is the new value.
+    ///     Six of the twelve storage parameters affect how pixel data is returned to client memory.
+    /// </param>
+    /// <param name="param">The value that <paramref name="pname"/> is set to.</param>
+    void PixelStore(in GLPixelStoreParameter pname, in int param);
 
     /// <summary>
     /// [requires: v1.0] Set texture parameters.

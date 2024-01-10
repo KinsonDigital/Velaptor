@@ -327,6 +327,20 @@ internal enum GLVertexAttribPointerType
 }
 
 /// <summary>
+/// A symbolic constant indicating the parameter to be set, and param is the new value. Six of the twelve storage
+/// parameters affect how pixel data is returned to client memory.
+/// </summary>
+internal enum GLPixelStoreParameter
+{
+    /// <summary>
+    /// Specifies the alignment requirements for the start of each pixel row in memory. The allowable
+    /// values are 1 (byte-alignment), 2 (rows aligned to even-numbered bytes), 4 (word-alignment),
+    /// and 8 (rows start on double-word boundaries).
+    /// </summary>
+    UnpackAlignment = 3317,
+}
+
+/// <summary>
 /// Used in GL.TexParameter, GL.TexParameterI and 6 other functions.
 /// </summary>
 internal enum GLTextureParameterName
