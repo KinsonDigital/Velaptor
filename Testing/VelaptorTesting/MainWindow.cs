@@ -15,12 +15,14 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
+using UI;
 
 /// <summary>
 /// The main window to the testing application.
 /// </summary>
 public class MainWindow : Window
 {
+    private const int WindowPadding = 10;
     private static readonly char[] UpperCaseChars =
     {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -29,9 +31,10 @@ public class MainWindow : Window
     };
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
-    private readonly Button nextButton;
-    private readonly Button previousButton;
-    private readonly Label lblFps;
+    private readonly ILabel lblFps;
+    // TODO: Need to make the stats group 'built into' velaptor
+    private readonly IControlGroup statsGroup;
+    private readonly IControlGroup sceneGroup;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -45,13 +48,26 @@ public class MainWindow : Window
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.nextButton = new Button { Text = "-->" };
-        this.previousButton = new Button { Text = "<--" };
+        this.statsGroup = TestingApp.Container.GetInstance<IControlGroup>();
+        this.statsGroup.Title = "Stats Group";
+        this.statsGroup.Size = new Size(this.statsGroup.Size.Width, 74);
+        this.statsGroup.Position = new Point(WindowPadding, (int)Height - (this.statsGroup.Size.Height + WindowPadding));
 
-        this.lblFps = new Label("FPS: 0.0");
-        this.lblFps.Color = Color.White;
-        this.lblFps.Left = 75;
-        this.lblFps.Bottom = (int)Height - ((int)this.lblFps.HalfHeight + 20);
+        this.sceneGroup = TestingApp.Container.GetInstance<IControlGroup>();
+        this.sceneGroup.Title = "Scene Group";
+        this.sceneGroup.TitleBarVisible = false;
+        this.sceneGroup.AutoSizeToFitContent = true;
+
+        var nextPrevious = TestingApp.Container.GetInstance<INextPrevious>();
+        nextPrevious.Next += (_, _) => SceneManager.NextScene();
+        nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
+
+        this.sceneGroup.Add(nextPrevious);
+
+        this.lblFps = TestingApp.Container.GetInstance<ILabel>();
+        this.lblFps.Text = "FPS: 0.0";
+
+        this.statsGroup.Add(this.lblFps);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -133,27 +149,6 @@ public class MainWindow : Window
         SceneManager.AddScene(soundScene);
     }
 
-    /// <inheritdoc cref="Window.OnLoad"/>
-    protected override void OnLoad()
-    {
-        const int buttonSpacing = 15;
-        const int rightMargin = 15;
-
-        this.nextButton.Click += (_, _) => SceneManager.NextScene();
-        this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
-
-        this.nextButton.LoadContent();
-        this.previousButton.LoadContent();
-        this.lblFps.LoadContent();
-
-        var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
-        var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
-        this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
-        this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
-
-        base.OnLoad();
-    }
-
     /// <inheritdoc cref="Window.OnUpdate"/>
     protected override void OnUpdate(FrameTime frameTime)
     {
@@ -171,12 +166,7 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        this.nextButton.Update(frameTime);
-        this.previousButton.Update(frameTime);
-
         this.lblFps.Text = $"FPS: {Math.Round(Fps, 2)}";
-        this.lblFps.Update(frameTime);
-
         this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
@@ -193,21 +183,13 @@ public class MainWindow : Window
         this.batcher.Begin();
 
         // Render the scene manager UI on top of all other textures
-        this.nextButton.Render();
-        this.previousButton.Render();
-        this.lblFps.Render();
+        this.sceneGroup.Position = new Point(
+            (int)Width - (this.sceneGroup.Size.Width + WindowPadding),
+            (int)Height - (this.sceneGroup.Size.Height + WindowPadding));
+        this.sceneGroup.Render();
+        this.statsGroup.Render();
 
         this.batcher.End();
-    }
-
-    /// <inheritdoc cref="Window.OnUnload"/>
-    protected override void OnUnload()
-    {
-        this.previousButton.UnloadContent();
-        this.nextButton.UnloadContent();
-        this.lblFps.UnloadContent();
-
-        base.OnUnload();
     }
 
     /// <summary>
