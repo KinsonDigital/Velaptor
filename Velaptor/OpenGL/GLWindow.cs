@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
+using Exceptions;
 using Factories;
 using Input;
 using Input.Exceptions;
@@ -298,7 +299,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when an OpenGL error occurs.
     /// </summary>
-    private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
+    private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new GLException(e.ErrorMessage);
 
     /// <summary>
     /// Runs the OpenGL window.
