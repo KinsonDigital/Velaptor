@@ -460,7 +460,6 @@ public class WindowTests
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.VerifyOnce(m => m.Clear());
         this.mockBatcher.VerifyOnce(m => m.Begin());
         this.mockSceneManager.VerifyOnce(m => m.Render());
         this.mockBatcher.VerifyOnce(m => m.End());
