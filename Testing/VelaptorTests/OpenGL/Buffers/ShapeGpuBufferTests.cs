@@ -8,7 +8,6 @@ namespace VelaptorTests.OpenGL.Buffers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Carbonate.Core;
@@ -18,7 +17,7 @@ using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -29,6 +28,7 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Xunit;
+using Color = System.Drawing.Color;
 
 /// <summary>
 /// Tests the <see cref="ShapeGpuBuffer"/> class.
@@ -41,9 +41,9 @@ public class ShapeGpuBufferTests
     private const uint ViewPortWidth = 100u;
     private const uint ViewPortHeight = 200u;
     private const string BufferName = "Shape";
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
@@ -54,11 +54,9 @@ public class ShapeGpuBufferTests
     /// </summary>
     public ShapeGpuBufferTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
-
-        this.mockGL.Setup(m => m.GenBuffer())
-            .Returns(() =>
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.GenVertexArray().Returns(VAO);
+        this.mockGL.GenBuffer().Returns(_ =>
             {
                 if (this.vboGenerated)
                 {
@@ -69,11 +67,10 @@ public class ShapeGpuBufferTests
                 return VBO;
             });
 
-        this.mockGLService = new Mock<IOpenGLService>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
@@ -81,28 +78,26 @@ public class ShapeGpuBufferTests
                 {
                     this.glInitReactor = reactor;
                 }
-            });
+            }));
 
-        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
-            .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
+        var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
+        mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.viewPortSizeReactor = reactor;
-            });
+            }));
 
-        var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
+        var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.batchSizeReactor = reactor;
-            });
+            }));
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockBatchSizeReactable);
+        this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
     }
 
     #region Constructor Tests
@@ -113,8 +108,8 @@ public class ShapeGpuBufferTests
         var act = () =>
         {
             _ = new TextureGpuBuffer(
-                this.mockGL.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockGLService,
                 null);
         };
 
@@ -130,13 +125,6 @@ public class ShapeGpuBufferTests
     public void UploadVertexData_WhenInvoked_BeginsAndEndsGLDebugGroup()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the '{nameof(GpuBufferBase<RectShape>.UploadVertexData)}()' method.",
-            $"3 times in the private '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
-        };
-        var failMessage = string.Join(Environment.NewLine, executionLocations);
-
         var shape = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
@@ -145,23 +133,14 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 123);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Update Shape - BatchItem(123)"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(),
-            Times.Exactly(4),
-            failMessage);
+        this.mockGLService.Received(1).BeginGroup("Update Shape - BatchItem(123)");
+        this.mockGLService.Received(4).EndGroup();
     }
 
     [Fact]
     public void UploadVertexData_WhenInvoked_BindsAndUnbindsVBO()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the private '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
-            $"1 time in the '{nameof(GpuBufferBase<RectShape>.UploadVertexData)}()' method.",
-        };
-        var failMessage = string.Join(Environment.NewLine, executionLocations);
-
         var shape = default(ShapeBatchItem);
 
         var sut = CreateSystemUnderTest();
@@ -170,13 +149,8 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 0);
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVBO(VBO),
-            Times.AtLeastOnce,
-            failMessage);
-
-        this.mockGLService.Verify(m => m.UnbindVBO(),
-            Times.AtLeastOnce,
-            failMessage);
+        this.mockGLService.Received(3).BindVBO(VBO);
+        this.mockGLService.Received(2).UnbindVBO();
     }
 
     [Fact]
@@ -185,7 +159,7 @@ public class ShapeGpuBufferTests
         // Arrange
         const nint expectedOffset = 0;
         const uint expectedTotalBytes = 256u;
-        var expectedRawData = new[]
+        var expected = new[]
         {
             -1.00999999f, 1f, 1f, 2f, 3f, 4f, 6f, 7f, 8f, 5f, 1f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f,
             -1.00999999f, 0.959999979f, 1f, 2f, 3f, 4f, 6f, 7f, 8f, 5f, 1f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f,
@@ -205,14 +179,11 @@ public class ShapeGpuBufferTests
             Color.FromArgb(14, 15, 16, 17),
             Color.FromArgb(18, 19, 20, 21));
 
-        float[]? actualRawData = null;
+        var actual = Array.Empty<float>();
 
-        this.mockGL.Setup(m =>
-                m.BufferSubData(It.IsAny<GLBufferTarget>(), It.IsAny<nint>(), It.IsAny<nuint>(), It.IsAny<float[]>()))
-            .Callback<GLBufferTarget, nint, nuint, float[]>((_, _, _, data) =>
-            {
-                actualRawData = data;
-            });
+        this.mockGL.When(m =>
+                m.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
 
         var viewPortSizeData = new ViewPortSizeData { Width = ViewPortWidth, Height = ViewPortHeight };
 
@@ -224,10 +195,10 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 0);
 
         // Assert
-        this.mockGL.Verify(m =>
-            m.BufferSubData(GLBufferTarget.ArrayBuffer, expectedOffset, expectedTotalBytes, It.IsAny<float[]>()), Times.Once);
-
-        actualRawData.Should().BeEquivalentTo(expectedRawData);
+        this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, expectedOffset, expectedTotalBytes, Arg.Any<float[]>());
+        actual.Should().BeEquivalentTo(expected);
+        this.mockGLService.Received(2).UnbindVBO();
+        this.mockGLService.Received(4).EndGroup();
     }
 
     [Fact]
@@ -262,7 +233,7 @@ public class ShapeGpuBufferTests
          * Vertex 3 Color: index 38-42
          * Vertex 4 Color: index 54-58
          */
-        var expectedRawData = new float[]
+        var expected = new float[]
         {
             // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
@@ -283,14 +254,11 @@ public class ShapeGpuBufferTests
             // ReSharper restore MultipleSpaces
         };
 
-        float[]? actualRawData = null;
+        var actual = Array.Empty<float>();
 
-        this.mockGL.Setup(m =>
-                m.BufferSubData(It.IsAny<GLBufferTarget>(), It.IsAny<nint>(), It.IsAny<nuint>(), It.IsAny<float[]>()))
-            .Callback<GLBufferTarget, nint, nuint, float[]>((_, _, _, data) =>
-            {
-                actualRawData = data;
-            });
+        this.mockGL.When(m =>
+                m.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
 
 #pragma warning disable SA1117
         var shape = new ShapeBatchItem(
@@ -312,10 +280,10 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 0);
 
         // Assert
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 22, 26); // Vertex 2 Color
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 38, 42); // Vertex 3 Color
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 54, 58); // Vertex 4 Color
+        AssertExtensions.SectionEquals(expected, actual, 6, 9); // Vertex 1 Color
+        AssertExtensions.SectionEquals(expected, actual, 22, 26); // Vertex 2 Color
+        AssertExtensions.SectionEquals(expected, actual, 38, 42); // Vertex 3 Color
+        AssertExtensions.SectionEquals(expected, actual, 54, 58); // Vertex 4 Color
     }
 
     [Fact]
@@ -330,7 +298,7 @@ public class ShapeGpuBufferTests
          * Vertex 3 Color: index 38-42
          * Vertex 4 Color: index 54-58
          */
-        var expectedRawData = new float[]
+        var expected = new float[]
         {
             // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
@@ -351,14 +319,11 @@ public class ShapeGpuBufferTests
             // ReSharper restore MultipleSpaces
         };
 
-        float[]? actualRawData = null;
+        var actual = Array.Empty<float>();
 
-        this.mockGL.Setup(m =>
-                m.BufferSubData(It.IsAny<GLBufferTarget>(), It.IsAny<nint>(), It.IsAny<nuint>(), It.IsAny<float[]>()))
-            .Callback<GLBufferTarget, nint, nuint, float[]>((_, _, _, data) =>
-            {
-                actualRawData = data;
-            });
+        this.mockGL.When(m =>
+                m.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
 
 #pragma warning disable SA1117
         var shape = new ShapeBatchItem(
@@ -380,10 +345,10 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 0);
 
         // Assert
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 22, 26); // Vertex 2 Color | Grad Start
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 38, 42); // Vertex 3 Color | Grad Stop
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 54, 58); // Vertex 4 Color | Grad Stop
+        AssertExtensions.SectionEquals(expected, actual, 6, 9); // Vertex 1 Color | Grad Start
+        AssertExtensions.SectionEquals(expected, actual, 22, 26); // Vertex 2 Color | Grad Start
+        AssertExtensions.SectionEquals(expected, actual, 38, 42); // Vertex 3 Color | Grad Stop
+        AssertExtensions.SectionEquals(expected, actual, 54, 58); // Vertex 4 Color | Grad Stop
     }
 
     [Fact]
@@ -398,7 +363,7 @@ public class ShapeGpuBufferTests
          * Vertex 3 Color: index 38-42
          * Vertex 4 Color: index 54-58
          */
-        var expectedRawData = new float[]
+        var expected = new float[]
         {
             // ReSharper disable MultipleSpaces
             // Items 0-15 = Vertex 1
@@ -419,14 +384,11 @@ public class ShapeGpuBufferTests
             // ReSharper restore MultipleSpaces
         };
 
-        float[]? actualRawData = null;
+        var actual = Array.Empty<float>();
 
-        this.mockGL.Setup(m =>
-                m.BufferSubData(It.IsAny<GLBufferTarget>(), It.IsAny<nint>(), It.IsAny<nuint>(), It.IsAny<float[]>()))
-            .Callback<GLBufferTarget, nint, nuint, float[]>((_, _, _, data) =>
-            {
-                actualRawData = data;
-            });
+        this.mockGL.When(m =>
+                m.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
 
         var shape = BatchItemFactory.CreateShapeItemWithOrderedValues();
 
@@ -436,10 +398,10 @@ public class ShapeGpuBufferTests
         sut.UploadVertexData(shape, 0);
 
         // Assert
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 22, 26); // Vertex 2 Color | Grad Stop
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 38, 42); // Vertex 3 Color | Grad Start
-        AssertExtensions.SectionEquals(expectedRawData, actualRawData, 54, 58); // Vertex 4 Color | Grad Stop
+        AssertExtensions.SectionEquals(expected, actual, 6, 9); // Vertex 1 Color | Grad Start
+        AssertExtensions.SectionEquals(expected, actual, 22, 26); // Vertex 2 Color | Grad Stop
+        AssertExtensions.SectionEquals(expected, actual, 38, 42); // Vertex 3 Color | Grad Start
+        AssertExtensions.SectionEquals(expected, actual, 54, 58); // Vertex 4 Color | Grad Stop
     }
 
     [Fact]
@@ -459,20 +421,13 @@ public class ShapeGpuBufferTests
     public void PrepareForUpload_WhenInitialized_BindsVAO()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the '{nameof(ShapeGpuBuffer.PrepareForUpload)}()' method.",
-            $"1 time in the '{nameof(GpuBufferBase<RectShape>)}.Init()' method.",
-        };
-        var failMessage = string.Join(Environment.NewLine, executionLocations);
-
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.PrepareForUpload();
 
         // Assert
-        this.mockGLService.VerifyExactly(m => m.BindVAO(VAO), 3, failMessage);
+        this.mockGLService.Received(3).BindVAO(VAO);
     }
 
     [Fact]
@@ -529,20 +484,17 @@ public class ShapeGpuBufferTests
         // Assert
         paramData.Should().AllSatisfy(data =>
         {
-            this.mockGL.Verify(m =>
-                    m.VertexAttribPointer(data.index,
-                        data.size,
-                        GLVertexAttribPointerType.Float,
-                        data.normalized,
-                        data.stride,
-                        data.offset), Times.Once,
-                $"The '{data.label}' vertex attribute pointer layout is incorrect.");
+            this.mockGL.Received(1).VertexAttribPointer(data.index,
+                data.size,
+                GLVertexAttribPointerType.Float,
+                data.normalized,
+                data.stride,
+                data.offset);
         });
 
         enableVertexAttribArrayParamData.Should().AllSatisfy(data =>
         {
-            this.mockGL.Verify(m => m.EnableVertexAttribArray(data.index),
-                $"Issue enabling vertex attribute pointer '{data.label}'.");
+            this.mockGL.Received(1).EnableVertexAttribArray(data.index);
         });
     }
 
@@ -567,12 +519,11 @@ public class ShapeGpuBufferTests
     public void BatchSizeReactable_WhenSubscribing_UsesCorrectReactorName()
     {
         // Arrange
-        var mockReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(Act);
+        var mockReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockReactable.When(x =>
+            x.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(Act)));
 
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable())
-            .Returns(mockReactable.Object);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockReactable);
 
         _ = CreateSystemUnderTest();
 
@@ -623,9 +574,9 @@ public class ShapeGpuBufferTests
         // Assert
         sut.BatchSize.Should().Be(123);
 
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Vertex Data"), Times.AtLeastOnce);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeast(2));
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Indices Data"), Times.AtLeastOnce);
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
+        this.mockGLService.Received(8).EndGroup();
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Indices Data");
     }
     #endregion
 
@@ -662,10 +613,7 @@ public class ShapeGpuBufferTests
     /// <returns>The instance to test.</returns>
     private ShapeGpuBuffer CreateSystemUnderTest(bool initialize = true)
     {
-        var result = new ShapeGpuBuffer(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object);
+        var result = new ShapeGpuBuffer(this.mockGL, this.mockGLService, this.mockReactableFactory);
 
         if (initialize)
         {
