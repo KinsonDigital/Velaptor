@@ -1,4 +1,4 @@
-// <copyright file="GLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -525,6 +525,22 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <summary>
+    /// Adds the name of the given function to the call stack of functions that have been invoked.
+    /// </summary>
+    /// <param name="glFunctionName">The name of the function.</param>
+    private static void AddToGLCallStack(string glFunctionName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(glFunctionName);
+
+        OpenGLCallStack.Enqueue(glFunctionName);
+
+        if (OpenGLCallStack.Count >= 200)
+        {
+            OpenGLCallStack.Dequeue();
+        }
+    }
+
+    /// <summary>
     /// Invoked when there is an OpenGL related error.
     /// </summary>
     /// <param name="source">The debug source.</param>
@@ -562,18 +578,6 @@ internal sealed class GLInvoker : IGLInvoker
                 this.loggingService.Error(openGLMessage);
                 this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
             }
-        }
-    }
-
-    private void AddToGLCallStack(string glFunctionName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(glFunctionName);
-
-        OpenGLCallStack.Enqueue(glFunctionName);
-
-        if (OpenGLCallStack.Count >= 200)
-        {
-            OpenGLCallStack.Dequeue();
         }
     }
 }
