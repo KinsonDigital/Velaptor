@@ -520,6 +520,7 @@ internal sealed class GLInvoker : IGLInvoker
 
         this.debugCallback = null;
         this.isDisposed = true;
+        this.gl.Dispose();
         GC.SuppressFinalize(this);
     }
 
