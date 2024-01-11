@@ -5,364 +5,125 @@
 namespace VelaptorTesting;
 
 using System;
-using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Velaptor.Graphics;
-using Velaptor.UI;
+using System.Numerics;
+using SimpleInjector;
+using SimpleInjector.Diagnostics;
+using Container = SimpleInjector.Container;
 
 public static class ExtensionMethods
 {
-    public static CornerRadius IncreaseTopLeft(this CornerRadius radius, float amount)
+    /// <summary>
+    /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+    /// a <typeparamref name="TService"/> is requested (transient).
+    /// </summary>
+    /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
+    /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
+    /// <param name="container">The container that the registration applies to.</param>
+    /// <param name="lifeStyle">The lifestyle that specifies how the returned instance will be cached.</param>
+    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
+    /// <remarks>
+    ///     This method uses the container's LifestyleSelectionBehavior to select the exact
+    ///     lifestyle for the specified type. By default this will be Transient.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
+    public static void Register<TService, TImplementation>(this Container container, Lifestyle lifeStyle, bool suppressDisposal = false)
+        where TService : class
+        where TImplementation : class, TService
     {
-        return new CornerRadius(radius.TopLeft + amount, radius.BottomLeft, radius.BottomRight, radius.TopRight);
+        container.Register<TService, TImplementation>(lifeStyle);
+
+        if (suppressDisposal)
+        {
+            SuppressDisposableTransientWarning<TService>(container);
+        }
     }
 
-    public static CornerRadius DecreaseTopLeft(this CornerRadius radius, float amount)
+    /// <summary>
+    /// Registers the specified delegate that allows returning transient instances of
+    /// <typeparamref name="TService" />. The delegate is expected to always return a new instance on
+    /// each call.
+    /// </summary>
+    /// <remarks>
+    /// This method uses the container's
+    /// <see cref="P:SimpleInjector.ContainerOptions.LifestyleSelectionBehavior">LifestyleSelectionBehavior</see> to select
+    /// the exact lifestyle for the specified type. By default this will be
+    /// <see cref="F:SimpleInjector.Lifestyle.Transient">Transient</see>.
+    /// </remarks>
+    /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
+    /// <param name="container">The container that the registration applies to.</param>
+    /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
+    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
+    /// <exception cref="T:System.InvalidOperationException">
+    /// Thrown when this container instance is locked and cannot be altered, or when the
+    /// <typeparamref name="TService" /> has already been registered.</exception>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
+    public static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
+        where TService : class
     {
-        return new CornerRadius(radius.TopLeft - amount, radius.BottomLeft, radius.BottomRight, radius.TopRight);
+        container.Register(instanceCreator);
+
+        if (suppressDisposal)
+        {
+            SuppressDisposableTransientWarning<TService>(container);
+        }
     }
 
-    public static CornerRadius IncreaseBottomLeft(this CornerRadius radius, float amount)
+    /// <summary>
+    /// Registers the specified delegate that allows returning transient instances of
+    /// <typeparamref name="TConcrete" />. The delegate is expected to always return a new instance on
+    /// each call.
+    /// </summary>
+    /// <remarks>
+    /// This method uses the container's
+    /// <see cref="P:SimpleInjector.ContainerOptions.LifestyleSelectionBehavior">LifestyleSelectionBehavior</see> to select
+    /// the exact lifestyle for the specified type. By default this will be
+    /// <see cref="F:SimpleInjector.Lifestyle.Transient">Transient</see>.
+    /// </remarks>
+    /// <typeparam name="TConcrete">The interface or base type that can be used to retrieve instances.</typeparam>
+    /// <param name="container">The container that the registration applies to.</param>
+    /// <param name="lifeStyle">The lifestyle that specifies how the returned instance will be cached.</param>
+    /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
+    /// <exception cref="T:System.InvalidOperationException">
+    /// Thrown when this container instance is locked and cannot be altered, or when the
+    /// <typeparamref name="TConcrete" /> has already been registered.</exception>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
+    public static void Register<TConcrete>(this Container container, Lifestyle lifeStyle, bool suppressDisposal = false)
+        where TConcrete : class
     {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft + amount, radius.BottomRight, radius.TopRight);
+        container.Register<TConcrete>(lifeStyle);
+
+        if (suppressDisposal)
+        {
+            SuppressDisposableTransientWarning<TConcrete>(container);
+        }
     }
 
-    public static CornerRadius DecreaseBottomLeft(this CornerRadius radius, float amount)
+    public static Size ToSize(this Vector2 value) => new ((int)value.X, (int)value.Y);
+
+    public static Vector2 ToVector2(this Point value) => new (value.X, value.Y);
+    public static Vector2 ToVector2(this Size value) => new (value.Width, value.Height);
+
+    public static Point ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
+
+    /// <summary>
+    /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
+    /// inherit from <see cref="IDisposable"/>.
+    /// </summary>
+    /// <typeparam name="T">The type to suppress against.</typeparam>
+    /// <param name="container">The container that the suppression applies to.</param>
+    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
+    private static void SuppressDisposableTransientWarning<T>(this Container container)
     {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft - amount, radius.BottomRight, radius.TopRight);
-    }
-
-    public static CornerRadius IncreaseBottomRight(this CornerRadius radius, float amount)
-    {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft, radius.BottomRight + amount, radius.TopRight);
-    }
-
-    public static CornerRadius DecreaseBottomRight(this CornerRadius radius, float amount)
-    {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft, radius.BottomRight - amount, radius.TopRight);
-    }
-
-    public static CornerRadius IncreaseTopRight(this CornerRadius radius, float amount)
-    {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft, radius.BottomRight, radius.TopRight + amount);
-    }
-
-    public static CornerRadius DecreaseTopRight(this CornerRadius radius, float amount)
-    {
-        return new CornerRadius(radius.TopLeft, radius.BottomLeft, radius.BottomRight, radius.TopRight - amount);
-    }
-
-    public static void IncreaseWidth(ref this RectShape rect, float amount) => rect.Width += amount;
-
-    public static void DecreaseWidth(ref this RectShape rect, float amount) => rect.Width -= amount;
-
-    public static void IncreaseHeight(ref this RectShape rect, float amount) => rect.Height += amount;
-
-    public static void DecreaseHeight(ref this RectShape rect, float amount) => rect.Height -= amount;
-
-    public static void IncreaseDiameter(ref this CircleShape circle, float amount) => circle.Diameter += amount;
-
-    public static void DecreaseDiameter(ref this CircleShape circle, float amount) => circle.Diameter -= amount;
-
-    public static void SwapFillColor(ref this RectShape rect, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (rect.Color == colors[0])
-        {
-            rect.Color = colors[1];
-            clrStr = "Green";
-        }
-        else if (rect.Color == colors[1])
-        {
-            rect.Color = colors[2];
-            clrStr = "Blue";
-        }
-        else if (rect.Color == colors[2])
-        {
-            rect.Color = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void SwapFillColor(ref this CircleShape circle, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (circle.Color == colors[0])
-        {
-            circle.Color = colors[1];
-            clrStr = "Green";
-        }
-        else if (circle.Color == colors[1])
-        {
-            circle.Color = colors[2];
-            clrStr = "Blue";
-        }
-        else if (circle.Color == colors[2])
-        {
-            circle.Color = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void SwapGradStartColor(ref this RectShape rect, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (rect.GradientStart == colors[0])
-        {
-            rect.GradientStart = colors[1];
-            clrStr = "Green";
-        }
-        else if (rect.GradientStart == colors[1])
-        {
-            rect.GradientStart = colors[2];
-            clrStr = "Blue";
-        }
-        else if (rect.GradientStart == colors[2])
-        {
-            rect.GradientStart = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void SwapGradStartColor(ref this CircleShape circle, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (circle.GradientStart == colors[0])
-        {
-            circle.GradientStart = colors[1];
-            clrStr = "Green";
-        }
-        else if (circle.GradientStart == colors[1])
-        {
-            circle.GradientStart = colors[2];
-            clrStr = "Blue";
-        }
-        else if (circle.GradientStart == colors[2])
-        {
-            circle.GradientStart = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void SwapGradStopColor(ref this RectShape rect, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (rect.GradientStop == colors[0])
-        {
-            rect.GradientStop = colors[1];
-            clrStr = "Green";
-        }
-        else if (rect.GradientStop == colors[1])
-        {
-            rect.GradientStop = colors[2];
-            clrStr = "Blue";
-        }
-        else if (rect.GradientStop == colors[2])
-        {
-            rect.GradientStop = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void SwapGradStopColor(ref this CircleShape circle, Color[] colors, Action<string> callback)
-    {
-        if (colors.Length < 3)
-        {
-            return;
-        }
-
-        var clrStr = "ERROR";
-
-        if (circle.GradientStop == colors[0])
-        {
-            circle.GradientStop = colors[1];
-            clrStr = "Green";
-        }
-        else if (circle.GradientStop == colors[1])
-        {
-            circle.GradientStop = colors[2];
-            clrStr = "Blue";
-        }
-        else if (circle.GradientStop == colors[2])
-        {
-            circle.GradientStop = colors[0];
-            clrStr = "Red";
-        }
-
-        callback(clrStr);
-    }
-
-    public static void IncreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.SelectionColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.SelectionColor.IncreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.SelectionColor.IncreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.SelectionColor.IncreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static void DecreaseSelectionClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.SelectionColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.SelectionColor.DecreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.SelectionColor.DecreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.SelectionColor.DecreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static void IncreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.TextColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.TextColor.IncreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.TextColor.IncreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.TextColor.IncreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static void DecreaseTextClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.TextColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.TextColor.DecreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.TextColor.DecreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.TextColor.DecreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static void IncreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.CursorColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.CursorColor.IncreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.CursorColor.IncreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.CursorColor.IncreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static void DecreaseCursorClrComp(this TextBox textBox, TxtBoxColorComponent clrComp, int amount) =>
-        textBox.CursorColor = clrComp switch
-        {
-            TxtBoxColorComponent.Red => textBox.CursorColor.DecreaseRedBy(amount),
-            TxtBoxColorComponent.Green => textBox.CursorColor.DecreaseGreenBy(amount),
-            TxtBoxColorComponent.Blue => textBox.CursorColor.DecreaseBlueBy(amount),
-            _ => throw new InvalidEnumArgumentException(nameof(clrComp), (int)clrComp, typeof(TxtBoxColorComponent))
-        };
-
-    public static ColorGradient SwapGradient(this ColorGradient gradient) =>
-        gradient switch
-        {
-            ColorGradient.None => ColorGradient.Horizontal,
-            ColorGradient.Horizontal => ColorGradient.Vertical,
-            ColorGradient.Vertical => ColorGradient.None,
-            _ => throw new InvalidEnumArgumentException(nameof(gradient), (int)gradient, typeof(ColorGradient))
-        };
-
-    public static T Next<T>(this T enumValue)
-        where T : Enum
-    {
-        T[] enumValues = (T[])Enum.GetValues(typeof(T));
-        var currentIndex = Array.IndexOf(enumValues, enumValue);
-        var nextIndex = (currentIndex + 1) % enumValues.Length;
-
-        return enumValues[nextIndex];
-    }
-
-    public static T Previous<T>(this T enumValue)
-        where T : Enum
-    {
-        T[] enumValues = (T[])Enum.GetValues(typeof(T));
-        var currentIndex = Array.IndexOf(enumValues, enumValue);
-        var nextIndex = (currentIndex - 1) % enumValues.Length;
-        nextIndex = nextIndex < 0
-            ? Array.IndexOf(enumValues, enumValues[^1])
-            : nextIndex;
-
-        return enumValues[nextIndex];
-    }
-
-    private static Color IncreaseRedBy(this Color clr, int amount)
-    {
-        var newValue = clr.R + amount;
-        newValue = newValue > 255 ? 255 : newValue;
-
-        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
-    }
-
-    private static Color DecreaseRedBy(this Color clr, int amount)
-    {
-        var newValue = clr.R - amount;
-        newValue = newValue < 0 ? 0 : newValue;
-
-        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
-    }
-
-    private static Color IncreaseGreenBy(this Color clr, int amount)
-    {
-        var newValue = clr.G + amount;
-        newValue = newValue > 255 ? 255 : newValue;
-
-        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
-    }
-
-    private static Color DecreaseGreenBy(this Color clr, int amount)
-    {
-        var newValue = clr.G - amount;
-        newValue = newValue < 0 ? 0 : newValue;
-
-        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
-    }
-
-    private static Color IncreaseBlueBy(this Color clr, int amount)
-    {
-        var newValue = clr.B + amount;
-        newValue = newValue > 255 ? 255 : newValue;
-
-        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
-    }
-
-    private static Color DecreaseBlueBy(this Color clr, int amount)
-    {
-        var newValue = clr.B - amount;
-        newValue = newValue < 0 ? 0 : newValue;
-
-        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
+        var registration = container.GetRegistration(typeof(T))?.Registration;
+        registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
     }
 }
