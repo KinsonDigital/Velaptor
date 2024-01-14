@@ -2,12 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.OpenGL;
+namespace Velaptor.NativeInterop.Services;
 
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using OpenGL;
 using Velaptor.OpenGL;
 
 /// <summary>

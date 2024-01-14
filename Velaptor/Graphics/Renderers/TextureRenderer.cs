@@ -12,6 +12,7 @@ using Carbonate.Fluent;
 using Content;
 using Factories;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
