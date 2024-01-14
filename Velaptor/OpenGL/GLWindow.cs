@@ -7,6 +7,7 @@ namespace Velaptor.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Exceptions;
 using Factories;
+using ImGuiNET;
 using Input;
 using Input.Exceptions;
 using NativeInterop.GLFW;
@@ -39,6 +41,7 @@ using VelaptorWindowBorder = WindowBorder;
 /// </summary>
 internal sealed class GLWindow : VelaptorIWindow
 {
+    private const int WindowPadding = 10;
     private readonly IAppService appService;
     private readonly SilkIWindow silkWindow;
     private readonly INativeInputFactory nativeInputFactory;
@@ -47,6 +50,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
+    private readonly IStatsWindowService statsWindowServiceService;
     private readonly IImGuiFacade imGuiFacade;
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
@@ -76,6 +80,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="systemDisplayService">Provides information about the system's displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
+    /// <param name="statsWindowServiceService">Manages an <see cref="ImGui"/> window to render runtime stats.</param>
     /// <param name="imGuiFacade">Performs ImGui related operations.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
@@ -91,6 +96,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ISystemDisplayService systemDisplayService,
         IPlatform platform,
         ITaskService taskService,
+        IStatsWindowService statsWindowServiceService,
         IImGuiFacade imGuiFacade,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
@@ -104,6 +110,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(systemDisplayService);
         ArgumentNullException.ThrowIfNull(platform);
         ArgumentNullException.ThrowIfNull(taskService);
+        ArgumentNullException.ThrowIfNull(statsWindowServiceService);
         ArgumentNullException.ThrowIfNull(imGuiFacade);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
@@ -117,6 +124,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.systemDisplayService = systemDisplayService;
         this.platform = platform;
         this.taskService = taskService;
+        this.statsWindowServiceService = statsWindowServiceService;
         this.imGuiFacade = imGuiFacade;
         SceneManager = sceneManager;
 
@@ -133,6 +141,13 @@ internal sealed class GLWindow : VelaptorIWindow
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
+
+        this.statsWindowServiceService.Initialized += (_, _) =>
+        {
+            this.statsWindowServiceService.Position = new Point(
+                WindowPadding,
+                (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
+        };
     }
 
     /// <inheritdoc/>
@@ -489,6 +504,8 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Update?.Invoke(frameTime);
 
+        this.statsWindowServiceService.Update(frameTime);
+
         this.mouseStateData = this.mouseStateData with
         {
             ScrollDirection = MouseScrollDirection.None,
@@ -529,7 +546,12 @@ internal sealed class GLWindow : VelaptorIWindow
         }
 
         this.imGuiFacade.Update(time);
+
         Draw?.Invoke(frameTime);
+
+        this.statsWindowServiceService.UpdateFpsStat(Fps);
+        this.statsWindowServiceService.Render();
+
         this.imGuiFacade.Render();
 
         this.silkWindow.SwapBuffers();
@@ -668,6 +690,7 @@ internal sealed class GLWindow : VelaptorIWindow
             this.silkWindow.Resize -= GLWindow_Resize;
             this.silkWindow.Closing -= GLWindow_Closing;
 
+            this.statsWindowServiceService.Dispose();
             this.taskService.Dispose();
             this.imGuiFacade.Dispose();
 

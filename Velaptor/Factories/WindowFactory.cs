@@ -53,6 +53,7 @@ internal static class WindowFactory
             IoC.Container.GetInstance<ISystemDisplayService>(),
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
+            IoC.Container.GetInstance<IStatsWindowService>(),
             IoC.Container.GetInstance<IImGuiFacade>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
