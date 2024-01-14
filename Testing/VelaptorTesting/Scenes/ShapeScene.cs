@@ -33,29 +33,28 @@ public class ShapeScene : SceneBase
     private const float DefaultRectHeight = 250;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
+
     private readonly Color[] clrList =
     [
         Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue
     ];
-    private IFontRenderer? fontRenderer;
+
     private IShapeRenderer? shapeRenderer;
     private ILoader<IFont>? fontLoader;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
     private CircleShape circle;
+    private IControlGroup? grpRectInstructions;
+    private IControlGroup? grpCircleInstructions;
     private IControlGroup? grpShapeType;
     private IControlGroup? grpCircleCtrls;
     private IControlGroup? grpCircleClrGradCtrls;
-    private IControlGroup? grpRectClrGradCtrls;
     private IControlGroup? grpRectCtrls;
+    private IControlGroup? grpRectClrGradCtrls;
     private IControlGroup? grpRectCornerRadiusCtrls;
-    private Vector2 rectInstructionsPos;
-    private Vector2 circleInstructionsPos;
     private BackgroundManager? backgroundManager;
     private ShapeType shapeType = ShapeType.Circle;
-    private string rectInstructions = string.Empty;
-    private string circleInstructions = string.Empty;
     private string? sldCircleDiameterName;
     private string? cmbCircleSolidColorName;
     private string? cmbRectSolidColorName;
@@ -65,7 +64,6 @@ public class ShapeScene : SceneBase
     private string? sldTopRightRadiusName;
     private string? sldBottomRightRadiusName;
     private string? sldBottomLeftRadiusName;
-    private bool isFirstRender = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -78,7 +76,6 @@ public class ShapeScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
         this.rectangle = new RectShape
@@ -108,34 +105,8 @@ public class ShapeScene : SceneBase
         this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.font = this.fontLoader.Load(DefaultRegularFont, 12);
 
-        var rectLines = new[]
-        {
-            "                    Rectangle Instructions",
-            "----------------------------------------------",
-            "Movement: Arrow Keys",
-            "Size:",
-            "   Increase Width: Shift + Right Arrow",
-            "   Decrease Width: Shift + Left Arrow",
-            "   Increase Height: Shift + Up Arrow",
-            "   Decrease Height: Shift + Down Arrow",
-        };
-        this.rectInstructions = string.Join(Environment.NewLine, rectLines);
-        var rectInstructionsSize = this.font.Measure(this.rectInstructions);
-        this.rectInstructionsPos = new Vector2(WindowCenter.X, 25 + (rectInstructionsSize.Height / 2f));
-
-        var circleLines = new[]
-        {
-            "                    Circle Instructions",
-            "----------------------------------------------",
-            "Movement: Arrow Keys",
-            "Size:",
-            "   Increase Diameter: Shift + Up Or Right Arrow",
-            "   Decrease Diameter: Shift + Down Or Left Arrow",
-        };
-        this.circleInstructions = string.Join(Environment.NewLine, circleLines);
-        var circleInstructionsSize = this.font.Measure(this.circleInstructions);
-        this.circleInstructionsPos = new Vector2(WindowCenter.X, 25 + (circleInstructionsSize.Height / 2f));
-
+        CreateCircleInstructions();
+        CreateRectInstructions();
         CreateShapeTypeCtrls();
         CreateCircleCtrls();
         CreateCircleGradCtrls();
@@ -183,29 +154,10 @@ public class ShapeScene : SceneBase
                     typeof(ShapeType));
         }
 
-        var instructionText = this.shapeType switch
-        {
-            ShapeType.Rectangle => this.rectInstructions,
-            ShapeType.Circle => this.circleInstructions,
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
-        var instructionPos = this.shapeType switch
-        {
-            ShapeType.Rectangle => this.rectInstructionsPos,
-            ShapeType.Circle => this.circleInstructionsPos,
-            _ => throw new InvalidEnumArgumentException(
-                $"this.{nameof(this.shapeType)}",
-                (int)this.shapeType,
-                typeof(ShapeType)),
-        };
-
         this.backgroundManager?.Render();
-        this.fontRenderer.Render(this.font, instructionText, instructionPos, Color.White, 2);
 
+        this.grpCircleInstructions.Render();
+        this.grpRectInstructions.Render();
         this.grpShapeType.Render();
         this.grpCircleCtrls.Render();
         this.grpCircleClrGradCtrls.Render();
@@ -213,27 +165,61 @@ public class ShapeScene : SceneBase
         this.grpRectCtrls.Render();
         this.grpRectCornerRadiusCtrls.Render();
 
-        if (this.isFirstRender)
-        {
-            this.grpShapeType.Position = new Point(WindowPadding, WindowPadding);
-            this.grpCircleCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
-            this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, this.grpCircleCtrls.Bottom + WindowPadding + 50);
-
-            this.grpRectCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
-            this.grpRectCornerRadiusCtrls.Position = new Point(
-                (int)WindowSize.Width - (this.grpRectCornerRadiusCtrls.Size.Width + WindowPadding),
-                ((int)WindowSize.Height / 2) - (this.grpRectCornerRadiusCtrls.Size.Width / 2));
-
-            this.isFirstRender = false;
-        }
-
         base.Render();
+    }
+
+    private void CreateCircleInstructions()
+    {
+        var textLines = new[]
+        {
+            "----Circle Instructions----", "1. Movement: Arrow Keys", "2. Size:", "   - Increase Diameter: Shift + Up Or Right Arrow",
+            "   - Decrease Diameter: Shift + Down Or Left Arrow",
+        };
+        var circleInstructions = string.Join(Environment.NewLine, textLines);
+        var lblCircleInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblCircleInstructions.Name = nameof(lblCircleInstructions);
+        lblCircleInstructions.Text = circleInstructions;
+
+        this.grpCircleInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleInstructions.Title = "Rect Instructions";
+        this.grpCircleInstructions.AutoSizeToFitContent = true;
+        this.grpCircleInstructions.TitleBarVisible = false;
+        this.grpCircleInstructions.Initialized += (_, _) =>
+        {
+            this.grpCircleInstructions.Position = new Point(WindowCenter.X - this.grpCircleInstructions.HalfWidth, WindowPadding);
+        };
+        this.grpCircleInstructions.Add(lblCircleInstructions);
+    }
+
+    private void CreateRectInstructions()
+    {
+        var textLines = new[]
+        {
+            "----Rectangle Instructions----", "1. Movement: Arrow Keys", "2. Size:", "   - Increase Width: Shift + Right Arrow",
+            "   - Decrease Width: Shift + Left Arrow", "   - Increase Height: Shift + Up Arrow", "   - Decrease Height: Shift + Down Arrow",
+        };
+
+        var rectInstructions = string.Join(Environment.NewLine, textLines);
+        var lblRectInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblRectInstructions.Name = nameof(lblRectInstructions);
+        lblRectInstructions.Text = rectInstructions;
+        lblRectInstructions.Visible = false;
+
+        this.grpRectInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectInstructions.Title = "Rect Instructions";
+        this.grpRectInstructions.AutoSizeToFitContent = true;
+        this.grpRectInstructions.TitleBarVisible = false;
+        this.grpRectInstructions.Visible = false;
+        this.grpRectInstructions.Initialized += (_, _) =>
+        {
+            this.grpRectInstructions.Position = new Point(WindowCenter.X - this.grpRectInstructions.HalfWidth, WindowPadding);
+        };
+        this.grpRectInstructions.Add(lblRectInstructions);
     }
 
     private void CreateShapeTypeCtrls()
     {
         var cmbShapeType = TestingApp.Container.GetInstance<IComboBox>();
-        cmbShapeType.Position = new Point(WindowPadding, WindowPadding);
         cmbShapeType.Name = nameof(cmbShapeType);
         cmbShapeType.Label = "Shape Type:";
         cmbShapeType.Width = 125;
@@ -247,17 +233,24 @@ public class ShapeScene : SceneBase
         {
             this.shapeType = (ShapeType)selectedIndex;
 
+            this.grpCircleInstructions.Visible = this.shapeType == ShapeType.Circle;
             this.grpCircleCtrls.Visible = this.shapeType == ShapeType.Circle;
             this.grpCircleClrGradCtrls.Visible = this.shapeType == ShapeType.Circle;
 
+            this.grpRectInstructions.Visible = this.shapeType == ShapeType.Rectangle;
             this.grpRectCtrls.Visible = this.shapeType == ShapeType.Rectangle;
             this.grpRectClrGradCtrls.Visible = this.shapeType == ShapeType.Rectangle;
             this.grpRectCornerRadiusCtrls.Visible = this.shapeType == ShapeType.Rectangle;
         };
 
         this.grpShapeType = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpShapeType.Title = "Shape Type:";
         this.grpShapeType.TitleBarVisible = false;
         this.grpShapeType.AutoSizeToFitContent = true;
+        this.grpShapeType.Initialized += (_, _) =>
+        {
+            this.grpShapeType.Position = new Point(WindowPadding, WindowPadding);
+        };
         this.grpShapeType.Add(cmbShapeType);
     }
 
@@ -317,6 +310,10 @@ public class ShapeScene : SceneBase
         this.grpCircleCtrls = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpCircleCtrls.Title = "Circle Props";
         this.grpCircleCtrls.AutoSizeToFitContent = true;
+        this.grpCircleCtrls.Initialized += (_, _) =>
+        {
+            this.grpCircleCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+        };
         this.grpCircleCtrls.Add(chkCircleIsSolid);
         this.grpCircleCtrls.Add(cmbCircleSolidColor);
         this.grpCircleCtrls.Add(sldCircleBorderThickness);
@@ -360,15 +357,7 @@ public class ShapeScene : SceneBase
         ];
         cmbCircleGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.GradientStart = this.clrList[selectedIndex];
-                    break;
-                case ShapeType.Circle:
-                    this.circle.GradientStart = this.clrList[selectedIndex];
-                    break;
-            }
+            this.circle.GradientStart = this.clrList[selectedIndex];
         };
 
         var cmbCircleGradStopColor = TestingApp.Container.GetInstance<IComboBox>();
@@ -383,21 +372,17 @@ public class ShapeScene : SceneBase
         ];
         cmbCircleGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            switch (this.shapeType)
-            {
-                case ShapeType.Rectangle:
-                    this.rectangle.GradientStop = this.clrList[selectedIndex];
-                    break;
-                case ShapeType.Circle:
-                    this.circle.GradientStop = this.clrList[selectedIndex];
-                    break;
-            }
+            this.circle.GradientStop = this.clrList[selectedIndex];
         };
         cmbCircleGradStopColor.SelectedItemIndex = 1;
 
         this.grpCircleClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpCircleClrGradCtrls.Title = "Color Gradient Props";
+        this.grpCircleClrGradCtrls.Title = "Circle Color Gradient Props";
         this.grpCircleClrGradCtrls.AutoSizeToFitContent = true;
+        this.grpCircleClrGradCtrls.Initialized += (_, _) =>
+        {
+            this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpCircleClrGradCtrls.HalfHeight);
+        };
         this.grpCircleClrGradCtrls.Add(cmbCircleGradType);
         this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
         this.grpCircleClrGradCtrls.Add(cmbCircleGradStartColor);
@@ -460,9 +445,13 @@ public class ShapeScene : SceneBase
         cmbRectGradStopColor.SelectedItemIndex = 1;
 
         this.grpRectClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpRectClrGradCtrls.Title = "Color Gradient Props";
+        this.grpRectClrGradCtrls.Title = "Rect Color Gradient Props";
         this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
-        this.grpRectClrGradCtrls.Visible = false;
+        this.grpRectClrGradCtrls.Initialized += (_, _) =>
+        {
+            this.grpRectClrGradCtrls.Visible = false;
+            this.grpRectClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectClrGradCtrls.HalfHeight);
+        };
         this.grpRectClrGradCtrls.Add(cmbRectGradType);
         this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
         this.grpRectClrGradCtrls.Add(cmbRectGradStartColor);
@@ -565,6 +554,10 @@ public class ShapeScene : SceneBase
         this.grpRectCtrls.Title = "Rectangle Props";
         this.grpRectCtrls.AutoSizeToFitContent = true;
         this.grpRectCtrls.Visible = false;
+        this.grpRectCtrls.Initialized += (_, _) =>
+        {
+            this.grpRectCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+        };
         this.grpRectCtrls.Add(chkRectIsSolid);
         this.grpRectCtrls.Add(cmbRectSolidColor);
         this.grpRectCtrls.Add(sldRectBorderThickness);
@@ -639,6 +632,13 @@ public class ShapeScene : SceneBase
         this.grpRectCornerRadiusCtrls.Title = "Rect Radius Props";
         this.grpRectCornerRadiusCtrls.AutoSizeToFitContent = true;
         this.grpRectCornerRadiusCtrls.Visible = false;
+        this.grpRectCornerRadiusCtrls.Initialized += (_, _) =>
+        {
+            const int grpRectCornerRadiusCtrlsWidth = 260;
+            this.grpRectCornerRadiusCtrls.Position = new Point(
+                (int)WindowSize.Width - (grpRectCornerRadiusCtrlsWidth + WindowPadding),
+                ((int)WindowSize.Height / 2) - (grpRectCornerRadiusCtrlsWidth / 2));
+        };
         this.grpRectCornerRadiusCtrls.Add(sldBottomLeftRadius);
         this.grpRectCornerRadiusCtrls.Add(sldBottomRightRadius);
         this.grpRectCornerRadiusCtrls.Add(sldTopRightRadius);

@@ -91,6 +91,7 @@ internal sealed class ImGuiFacade : IImGuiFacade
         this.imGuiService.AddEmbeddedFont(DefaultFontSize);
 
         RebuildFontAtlas();
+        this.imGuiService.DisableIniFile();
 
         this.isInitialized = true;
     }

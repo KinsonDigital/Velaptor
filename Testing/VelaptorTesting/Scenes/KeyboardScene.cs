@@ -7,21 +7,21 @@ namespace VelaptorTesting.Scenes;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
+using UI;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.Scene;
-using Velaptor.UI;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.
 /// </summary>
 public class KeyboardScene : SceneBase
 {
-    private const int TopMargin = 50;
     private readonly IAppInput<KeyboardState> keyboard;
-    private Label? downKeys;
     private BackgroundManager? backgroundManager;
+    private IControlGroup? grpControls;
+    private string? downKeysName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -39,24 +39,26 @@ public class KeyboardScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var instructions = new Label
+        var instructions = TestingApp.Container.GetInstance<ILabel>();
+        instructions.Name = nameof(instructions);
+
+        instructions.Text = "Hit a key on the keyboard to see if it is correct.";
+
+        var downKeys = TestingApp.Container.GetInstance<ILabel>();
+        downKeys.Name = nameof(downKeys);
+        this.downKeysName = nameof(downKeys);
+
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Keyboard Info";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.TitleBarVisible = false;
+        this.grpControls.Initialized += (_, _) =>
         {
-            Name = "Instructions",
-            Color = Color.White,
-            Text = "Hit a key on the keyboard to see if it is correct.",
+            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
         };
 
-        instructions.Left = WindowCenter.X - (int)(instructions.Width / 2);
-        instructions.Top = (int)(instructions.Height / 2) + TopMargin;
-
-        this.downKeys = new Label
-        {
-            Name = "DownKeys",
-            Color = Color.White,
-        };
-
-        AddControl(instructions);
-        AddControl(this.downKeys);
+        this.grpControls.Add(downKeys);
+        this.grpControls.Add(instructions);
 
         base.LoadContent();
     }
@@ -70,6 +72,9 @@ public class KeyboardScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
+        this.grpControls.Dispose();
+        this.grpControls = null;
+
         base.UnloadContent();
     }
 
@@ -77,6 +82,8 @@ public class KeyboardScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         var currentKeyState = this.keyboard.GetState();
+
+        var downKeysCtrl = this.grpControls.GetControl<ILabel>(this.downKeysName);
 
         if (currentKeyState.GetDownKeys().Length > 0)
         {
@@ -88,17 +95,12 @@ public class KeyboardScene : SceneBase
                 downKeyText.Append(", ");
             }
 
-            this.downKeys.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
+            downKeysCtrl.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
         }
         else
         {
-            this.downKeys.Text = "No Keys Pressed";
+            downKeysCtrl.Text = "No Keys Pressed";
         }
-
-        var posX = WindowCenter.X;
-        var posY = WindowCenter.Y;
-
-        this.downKeys.Position = new Point(posX, posY);
 
         base.Update(frameTime);
     }
@@ -107,6 +109,8 @@ public class KeyboardScene : SceneBase
     public override void Render()
     {
         this.backgroundManager?.Render();
+
+        this.grpControls.Render();
         base.Render();
     }
 

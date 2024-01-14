@@ -25,7 +25,7 @@ public class TextRenderingScene : SceneBase
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private const string SingleLineText = "Change me using the font properties.";
     private readonly string multiLineText = $"Change me using{Environment.NewLine}the buttons to the left.";
-    private readonly IControlGroup ctrlGroup;
+    private IControlGroup? grpControls;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private string text = SingleLineText;
@@ -36,27 +36,38 @@ public class TextRenderingScene : SceneBase
     private bool isBlue;
     private bool isFirstRender = true;
 
-    public TextRenderingScene()
+    /// <inheritdoc cref="IScene.LoadContent"/>
+    public override void LoadContent()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
+        this.backgroundManager = new BackgroundManager();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+        this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);
+
         // Rotate Button
-        var udcRotate = TestingApp.Container.GetInstance<IUpDown>();
-        udcRotate.Name = nameof(udcRotate);
-        udcRotate.Text = "Rotate:";
-        udcRotate.Increment = 2f;
-        udcRotate.Decrement = 2f;
-        udcRotate.Min = 0;
-        udcRotate.Max = 360;
-        udcRotate.ValueChanged += (_, newValue) => this.angle = newValue;
+        var sldRotate = TestingApp.Container.GetInstance<ISlider>();
+        sldRotate.Name = nameof(sldRotate);
+        sldRotate.Text = "Rotate:";
+        sldRotate.Value = 0;
+        sldRotate.Min = 0;
+        sldRotate.Max = 360;
+        sldRotate.ValueChanged += (_, newValue) => this.angle = newValue;
 
         // Increase Render Size Button
-        var udcRenderSize = TestingApp.Container.GetInstance<IUpDown>();
-        udcRenderSize.Name = nameof(udcRenderSize);
-        udcRenderSize.Text = "Render Size:";
-        udcRenderSize.Increment = 0.05f;
-        udcRenderSize.Decrement = 0.05f;
-        udcRenderSize.Min = 1;
-        udcRenderSize.Max = 4;
-        udcRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
+        var sldRenderSize = TestingApp.Container.GetInstance<ISlider>();
+        sldRenderSize.Name = nameof(sldRenderSize);
+        sldRenderSize.Text = "Render Size:";
+        sldRenderSize.Value = 1;
+        sldRenderSize.Min = 0.1f;
+        sldRenderSize.Max = 4;
+        sldRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
 
         // Set Multi-Line
         var chkSetMultiLine = TestingApp.Container.GetInstance<ICheckBox>();
@@ -73,11 +84,13 @@ public class TextRenderingScene : SceneBase
         chkSetColor.CheckedChanged += (_, isChecked) => this.isBlue = isChecked;
 
         // Font size
-        var udcFontSize = TestingApp.Container.GetInstance<IUpDown>();
-        udcFontSize.Name = nameof(udcFontSize);
-        udcFontSize.Text = "Font Size:";
-        udcFontSize.Value = 12;
-        udcFontSize.ValueChanged += (_, value) =>
+        var sldFontSize = TestingApp.Container.GetInstance<ISlider>();
+        sldFontSize.Name = nameof(sldFontSize);
+        sldFontSize.Text = "Font Size:";
+        sldFontSize.Value = 12;
+        sldFontSize.Min = 1;
+        sldFontSize.Max = 50;
+        sldFontSize.ValueChanged += (_, value) =>
         {
             value = value > 100 ? 100 : value;
             value = value < 0 ? 0 : value;
@@ -102,32 +115,19 @@ public class TextRenderingScene : SceneBase
             this.textFont.Style = (FontStyle)selectedIndex;
         };
 
-        this.ctrlGroup = TestingApp.Container.GetInstance<IControlGroup>();
-        this.ctrlGroup.Title = "Font Properties";
-        this.ctrlGroup.AutoSizeToFitContent = true;
-        this.ctrlGroup.Add(udcRotate);
-        this.ctrlGroup.Add(udcRenderSize);
-        this.ctrlGroup.Add(chkSetMultiLine);
-        this.ctrlGroup.Add(chkSetColor);
-        this.ctrlGroup.Add(udcFontSize);
-        this.ctrlGroup.Add(cmbSetStyle);
-    }
-
-    /// <inheritdoc cref="IScene.LoadContent"/>
-    public override void LoadContent()
-    {
-        if (IsLoaded)
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Font Properties";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.Initialized += (_, _) =>
         {
-            return;
-        }
-
-        this.backgroundManager = new BackgroundManager();
-        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
-
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);
+            this.grpControls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpControls.HalfHeight);
+        };
+        this.grpControls.Add(sldRotate);
+        this.grpControls.Add(sldRenderSize);
+        this.grpControls.Add(chkSetMultiLine);
+        this.grpControls.Add(chkSetColor);
+        this.grpControls.Add(sldFontSize);
+        this.grpControls.Add(cmbSetStyle);
 
         base.LoadContent();
     }
@@ -142,8 +142,9 @@ public class TextRenderingScene : SceneBase
 
         this.backgroundManager?.Unload();
         this.fontLoader.Unload(this.textFont);
+        this.grpControls.Dispose();
+        this.grpControls = null;
 
-        this.ctrlGroup.Dispose();
         base.UnloadContent();
     }
 
@@ -153,11 +154,9 @@ public class TextRenderingScene : SceneBase
         var xPos = WindowCenter.X;
         var yPos = WindowCenter.Y;
 
-        this.ctrlGroup.Render();
-
         if (this.isFirstRender)
         {
-            this.ctrlGroup.Position = new Point(WindowPadding, ((int)WindowSize.Height / 2) - this.ctrlGroup.HalfHeight);
+            this.grpControls.Position = new Point(WindowPadding, ((int)WindowSize.Height / 2) - this.grpControls.HalfHeight);
             this.isFirstRender = false;
         }
 
@@ -170,6 +169,8 @@ public class TextRenderingScene : SceneBase
             this.renderSize,
             this.angle,
             this.isBlue ? Color.CornflowerBlue : Color.White);
+
+        this.grpControls.Render();
 
         base.Render();
     }

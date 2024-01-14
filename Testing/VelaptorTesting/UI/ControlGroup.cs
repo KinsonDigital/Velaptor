@@ -235,11 +235,13 @@ internal sealed class ControlGroup : IControlGroup
         flags = AutoSizeToFitContent ? flags | ImGuiWindowFlags.NoResize : flags;
         flags = this.titleBarVisible ? flags : flags | ImGuiWindowFlags.NoMove;
 
-        if (!Visible)
+        if (Visible)
         {
-            flags |= ImGuiWindowFlags.NoTitleBar;
-            flags |= ImGuiWindowFlags.NoBackground;
+            return flags;
         }
+
+        flags |= ImGuiWindowFlags.NoTitleBar;
+        flags |= ImGuiWindowFlags.NoBackground;
 
         return flags;
     }

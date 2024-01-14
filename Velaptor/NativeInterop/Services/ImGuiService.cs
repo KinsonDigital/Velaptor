@@ -19,6 +19,7 @@ internal sealed class ImGuiService : IImGuiService
     private const string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
     private readonly IImGuiInvoker imGuiInvoker;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
+    private string defaultIniFileName = "imgui.ini";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImGuiService"/> class.
@@ -99,5 +100,28 @@ internal sealed class ImGuiService : IImGuiService
 
         // Free the pinned array for GC to move or collect
         pinArrayHandle.Free();
+    }
+
+    /// <inheritdoc/>
+    public void EnableIniFile()
+    {
+        unsafe
+        {
+            fixed (char* iniFileNamePtr = this.defaultIniFileName)
+            {
+                this.imGuiInvoker.GetIO().NativePtr->IniFilename = (byte*)iniFileNamePtr;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void DisableIniFile()
+    {
+        this.defaultIniFileName = this.imGuiInvoker.GetIO().IniFilename;
+
+        unsafe
+        {
+            this.imGuiInvoker.GetIO().NativePtr->IniFilename = null;
+        }
     }
 }

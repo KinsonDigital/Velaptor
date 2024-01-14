@@ -27,7 +27,6 @@ public class SoundScene : SceneBase
     private string? lblSoundStateName;
     private string? lblSoundRepeatsName;
     private string? lblSoundLengthName;
-    private bool isFirstRender = true;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -65,21 +64,6 @@ public class SoundScene : SceneBase
         this.grpInfoCtrls.Render();
         this.grpSoundCtrls.Render();
 
-        if (this.isFirstRender)
-        {
-            var windowCenter = new Point((int)WindowSize.Width / 2, (int)WindowSize.Height / 2);
-
-            this.grpInfoCtrls.Position = new Point(
-                windowCenter.X - (this.grpInfoCtrls.Size.Width + WindowPadding),
-                windowCenter.Y - this.grpInfoCtrls.HalfHeight);
-
-            this.grpSoundCtrls.Position = new Point(
-                windowCenter.X + this.grpSoundCtrls.Size.Width + WindowPadding,
-                windowCenter.Y - this.grpSoundCtrls.HalfHeight);
-
-            this.isFirstRender = false;
-        }
-
         base.Render();
     }
 
@@ -98,6 +82,12 @@ public class SoundScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
+
+        this.grpInfoCtrls.Dispose();
+        this.grpSoundCtrls.Dispose();
+        this.grpInfoCtrls = null;
+        this.grpSoundCtrls = null;
+
         base.UnloadContent();
     }
 
@@ -152,6 +142,13 @@ public class SoundScene : SceneBase
         this.grpInfoCtrls = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpInfoCtrls.Title = "Sound Info";
         this.grpInfoCtrls.AutoSizeToFitContent = true;
+        this.grpInfoCtrls.TitleBarVisible = false;
+        this.grpInfoCtrls.Initialized += (_, _) =>
+        {
+            this.grpInfoCtrls.Position = new Point(
+                WindowCenter.X - (this.grpInfoCtrls.Width + WindowPadding),
+                WindowCenter.Y - this.grpInfoCtrls.HalfHeight);
+        };
 
         this.grpInfoCtrls.Add(lblSoundRepeats);
         this.grpInfoCtrls.Add(lblSoundLength);
@@ -226,6 +223,13 @@ public class SoundScene : SceneBase
         this.grpSoundCtrls = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpSoundCtrls.Title = "Sound Controls";
         this.grpSoundCtrls.AutoSizeToFitContent = true;
+        this.grpSoundCtrls.TitleBarVisible = false;
+        this.grpSoundCtrls.Initialized += (_, _) =>
+        {
+            this.grpSoundCtrls.Position = new Point(
+                WindowCenter.X + WindowPadding,
+                WindowCenter.Y - this.grpSoundCtrls.HalfHeight);
+        };
         this.grpSoundCtrls.Add(btnRewind);
         this.grpSoundCtrls.Add(btnFastForward);
         this.grpSoundCtrls.Add(btnPause);

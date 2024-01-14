@@ -8,29 +8,27 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
-using Velaptor.UI;
 
 /// <summary>
 /// Tests out layered rendering with textures.
 /// </summary>
 public class LayeredTextureRenderingScene : SceneBase
 {
-    private const string DefaultFont = "TimesNewRoman-Regular.ttf";
+    private const int WindowPadding = 10;
     private const float Speed = 200f;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
     private ITextureRenderer? textureRenderer;
-    private IFont? font;
     private IAtlasData? atlas;
     private AtlasSubTextureData whiteBoxData;
     private Vector2 whiteBoxPos;
@@ -41,10 +39,12 @@ public class LayeredTextureRenderingScene : SceneBase
     private AtlasSubTextureData orangeBoxData;
     private AtlasSubTextureData blueBoxData;
     private BackgroundManager? backgroundManager;
-    private ILoader<IFont>? fontLoader;
     private ILoader<IAtlasData>? atlasLoader;
-    private Label? lblBoxState;
+    private IControlGroup? grpInstructions;
+    private IControlGroup? grpTextureState;
     private RenderLayer whiteLayer = RenderLayer.One;
+    private string? lblBoxStateName;
+    private bool isFirstRender = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -59,27 +59,11 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
+        this.isFirstRender = true;
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultFont, 12);
-        this.font.Style = FontStyle.Bold;
-
-        var textLines = new[]
-        {
-            "Use the arrow keys to move the white box.",
-            "Use the 'L' key to change the layer that the white box is rendered on.",
-        };
-
-        var lblInstructions = new Label
-        {
-            Color = Color.White,
-            Text = string.Join(Environment.NewLine, textLines),
-            Position = new Point(WindowCenter.X, 50),
-        };
 
         this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.atlas = this.atlasLoader.Load("layered-rendering-atlas");
@@ -100,10 +84,31 @@ public class LayeredTextureRenderingScene : SceneBase
         this.whiteBoxPos.X = this.orangeBoxPos.X - (this.orangeBoxData.Bounds.Width / 4f);
         this.whiteBoxPos.Y = this.orangeBoxPos.Y + (this.orangeBoxData.Bounds.Height / 4f);
 
-        this.lblBoxState = new Label { Color = Color.White };
+        var textLines = new[]
+        {
+            "Use the arrow keys to move the white box.",
+            "Use the 'L' key to change the layer that the white box is rendered on.",
+        };
 
-        AddControl(this.lblBoxState);
-        AddControl(lblInstructions);
+        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblInstructions.Name = nameof(lblInstructions);
+        lblInstructions.Position = WindowCenter with { Y = 50 };
+        lblInstructions.Text = string.Join(Environment.NewLine, textLines);
+
+        var lblBoxState = TestingApp.Container.GetInstance<ILabel>();
+        lblBoxState.Name = nameof(lblBoxState);
+        this.lblBoxStateName = nameof(lblBoxState);
+
+        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions.Title = "Instructions";
+        this.grpInstructions.AutoSizeToFitContent = true;
+        this.grpInstructions.TitleBarVisible = false;
+        this.grpInstructions.Add(lblInstructions);
+
+        this.grpTextureState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpTextureState.Title = "Texture State";
+        this.grpTextureState.AutoSizeToFitContent = true;
+        this.grpTextureState.Add(lblBoxState);
 
         base.LoadContent();
     }
@@ -160,6 +165,16 @@ public class LayeredTextureRenderingScene : SceneBase
             RenderEffects.None,
             (int)this.whiteLayer);
 
+        this.grpInstructions.Render();
+        this.grpTextureState.Render();
+
+        if (this.isFirstRender)
+        {
+            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+            this.grpTextureState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpTextureState.HalfHeight);
+            this.isFirstRender = false;
+        }
+
         base.Render();
     }
 
@@ -172,10 +187,13 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.backgroundManager.Unload();
-        this.fontLoader.Unload(this.font);
         this.atlasLoader.Unload(this.atlas);
 
         this.atlas = null;
+        this.grpInstructions.Dispose();
+        this.grpTextureState.Dispose();
+        this.grpInstructions = null;
+        this.grpTextureState = null;
 
         base.UnloadContent();
     }
@@ -199,14 +217,13 @@ public class LayeredTextureRenderingScene : SceneBase
         // Render the current enabled box text
         var textLines = new[]
         {
-            $"White Box Layer: {this.whiteLayer}",
-            $"Orange Box Layer: {OrangeLayer}",
-            $"Blue Box Layer: {BlueLayer}",
+            $"2. White Box Layer: {this.whiteLayer}",
+            $"3. Orange Box Layer: {OrangeLayer}",
+            $"4. Blue Box Layer: {BlueLayer}",
         };
-        this.lblBoxState.Text = string.Join(Environment.NewLine, textLines);
 
-        this.lblBoxState.Left = 25;
-        this.lblBoxState.Top = WindowCenter.Y - (int)(this.lblBoxState.Height / 2f);
+        var lblBoxStateCtrl = this.grpTextureState.GetControl<ILabel>(this.lblBoxStateName);
+        lblBoxStateCtrl.Text = string.Join(Environment.NewLine, textLines);
     }
 
     /// <summary>

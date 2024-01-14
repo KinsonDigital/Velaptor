@@ -38,4 +38,14 @@ internal interface IImGuiService
     /// </summary>
     /// <param name="fontSize">The size of the font.</param>
     void AddEmbeddedFont(uint fontSize);
+
+    /// <summary>
+    /// Enables the ini file for saving and loading window positions and sizes.
+    /// </summary>
+    void EnableIniFile();
+
+    /// <summary>
+    /// Disables the ini file for saving and loading window positions and sizes.
+    /// </summary>
+    void DisableIniFile();
 }

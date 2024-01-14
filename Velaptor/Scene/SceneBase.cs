@@ -5,14 +5,12 @@
 namespace Velaptor.Scene;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Carbonate.Fluent;
 using Factories;
 using ReactableData;
-using UI;
 
 /// <summary>
 /// A base scene to be used for creating new custom scenes.
@@ -20,8 +18,6 @@ using UI;
 [DebuggerDisplay("Name = {Name}({Id})")]
 public abstract class SceneBase : IScene
 {
-    private readonly List<IControl> controls = new ();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
@@ -42,11 +38,6 @@ public abstract class SceneBase : IScene
     /// <inheritdoc cref="IScene.Name"/>
     public string Name { get; init; } = string.Empty;
 
-    /// <summary>
-    /// Gets the list of controls that have been added to the scene.
-    /// </summary>
-    public IReadOnlyList<IControl> Controls => this.controls.AsReadOnly();
-
     /// <inheritdoc cref="IScene.Id"/>
     public Guid Id { get; } = Guid.NewGuid();
 
@@ -65,21 +56,7 @@ public abstract class SceneBase : IScene
     protected bool IsDisposed { get; private set; }
 
     /// <inheritdoc/>
-    public void AddControl(IControl control) => this.controls.Add(control);
-
-    /// <inheritdoc/>
-    public void RemoveControl(IControl control) => this.controls.Remove(control);
-
-    /// <inheritdoc/>
-    public virtual void LoadContent()
-    {
-        foreach (var control in this.controls)
-        {
-            control.LoadContent();
-        }
-
-        IsLoaded = true;
-    }
+    public virtual void LoadContent() => IsLoaded = true;
 
     /// <inheritdoc/>
     public virtual void UnloadContent()
@@ -89,9 +66,6 @@ public abstract class SceneBase : IScene
             return;
         }
 
-        UnloadAllControls();
-
-        this.controls.Clear();
         IsLoaded = false;
     }
 
@@ -100,27 +74,12 @@ public abstract class SceneBase : IScene
     {
         if (!IsLoaded)
         {
-            return;
-        }
-
-        foreach (var control in this.controls)
-        {
-            control.Update(frameTime);
         }
     }
 
     /// <inheritdoc/>
     public virtual void Render()
     {
-        if (!IsLoaded)
-        {
-            return;
-        }
-
-        foreach (var control in this.controls)
-        {
-            control.Render();
-        }
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -141,25 +100,7 @@ public abstract class SceneBase : IScene
             return;
         }
 
-        if (disposing)
-        {
-            UnloadAllControls();
-
-            this.controls.Clear();
-        }
-
         IsDisposed = true;
-    }
-
-    /// <summary>
-    /// Unloads all of the controls.
-    /// </summary>
-    private void UnloadAllControls()
-    {
-        foreach (var control in this.controls)
-        {
-            control.UnloadContent();
-        }
     }
 
     /// <summary>

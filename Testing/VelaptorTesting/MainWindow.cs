@@ -4,7 +4,6 @@
 
 namespace VelaptorTesting;
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -24,17 +23,14 @@ public class MainWindow : Window
 {
     private const int WindowPadding = 10;
     private static readonly char[] UpperCaseChars =
-    {
+    [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z',
-    };
+        'U', 'V', 'W', 'X', 'Y', 'Z'
+    ];
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
-    private readonly ILabel lblFps;
-    // TODO: Need to make the stats group 'built into' velaptor
-    private readonly IControlGroup statsGroup;
-    private readonly IControlGroup sceneGroup;
+    private readonly IControlGroup grpSceneCtrls;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -48,26 +44,22 @@ public class MainWindow : Window
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.statsGroup = TestingApp.Container.GetInstance<IControlGroup>();
-        this.statsGroup.Title = "Stats Group";
-        this.statsGroup.Size = new Size(this.statsGroup.Size.Width, 74);
-        this.statsGroup.Position = new Point(WindowPadding, (int)Height - (this.statsGroup.Size.Height + WindowPadding));
-
-        this.sceneGroup = TestingApp.Container.GetInstance<IControlGroup>();
-        this.sceneGroup.Title = "Scene Group";
-        this.sceneGroup.TitleBarVisible = false;
-        this.sceneGroup.AutoSizeToFitContent = true;
+        this.grpSceneCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpSceneCtrls.Title = "Scene Group";
+        this.grpSceneCtrls.TitleBarVisible = false;
+        this.grpSceneCtrls.AutoSizeToFitContent = true;
+        this.grpSceneCtrls.Initialized += (_, _) =>
+        {
+            this.grpSceneCtrls.Position = new Point(
+                (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
+                (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
+        };
 
         var nextPrevious = TestingApp.Container.GetInstance<INextPrevious>();
         nextPrevious.Next += (_, _) => SceneManager.NextScene();
         nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
 
-        this.sceneGroup.Add(nextPrevious);
-
-        this.lblFps = TestingApp.Container.GetInstance<ILabel>();
-        this.lblFps.Text = "FPS: 0.0";
-
-        this.statsGroup.Add(this.lblFps);
+        this.grpSceneCtrls.Add(nextPrevious);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -87,11 +79,6 @@ public class MainWindow : Window
         var mouseScene = new MouseScene
         {
             Name = SplitByUpperCase(nameof(MouseScene)),
-        };
-
-        var textBoxScene = new TextBoxScene
-        {
-            Name = SplitByUpperCase(nameof(TextBoxScene)),
         };
 
         var layeredRenderingScene = new LayeredTextureRenderingScene
@@ -138,7 +125,6 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredTextRenderingScene);
         SceneManager.AddScene(keyboardScene);
         SceneManager.AddScene(mouseScene);
-        SceneManager.AddScene(textBoxScene);
         SceneManager.AddScene(layeredRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
@@ -166,7 +152,6 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        this.lblFps.Text = $"FPS: {Math.Round(Fps, 2)}";
         this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
@@ -182,12 +167,7 @@ public class MainWindow : Window
         // the 'Begin()' and 'End()` methods.
         this.batcher.Begin();
 
-        // Render the scene manager UI on top of all other textures
-        this.sceneGroup.Position = new Point(
-            (int)Width - (this.sceneGroup.Size.Width + WindowPadding),
-            (int)Height - (this.sceneGroup.Size.Height + WindowPadding));
-        this.sceneGroup.Render();
-        this.statsGroup.Render();
+        this.grpSceneCtrls.Render();
 
         this.batcher.End();
     }
