@@ -18,6 +18,11 @@ public interface IControlGroup : IDisposable
     event EventHandler Initialized;
 
     /// <summary>
+    /// Invoked when the control group size has changed.
+    /// </summary>
+    event EventHandler<Size> SizeChanged;
+
+    /// <summary>
     /// Gets or sets the title of the control group.
     /// </summary>
     string Title { get; set; }

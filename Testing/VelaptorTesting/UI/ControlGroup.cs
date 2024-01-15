@@ -24,6 +24,7 @@ internal sealed class ControlGroup : IControlGroup
     private bool shouldSetSize = true;
     private Point position;
     private Size size;
+    private Size prevSize;
     private bool isDisposed;
     private bool autoSizeToFitContent;
     private bool titleBarVisible = true;
@@ -47,6 +48,9 @@ internal sealed class ControlGroup : IControlGroup
 
     /// <inheritdoc/>
     public event EventHandler? Initialized;
+
+    /// <inheritdoc/>
+    public event EventHandler<Size>? SizeChanged;
 
     /// <inheritdoc/>
     public string Title { get; set; } = "ControlGroup";
@@ -195,6 +199,11 @@ internal sealed class ControlGroup : IControlGroup
 
         this.size = this.imGuiInvoker.GetWindowSize().ToSize();
 
+        if (this.size != this.prevSize)
+        {
+            this.SizeChanged?.Invoke(this, this.size);
+        }
+
         // Check if the window is being dragged
         this.isBeingDragged = this.imGuiInvoker.IsWindowFocused() && this.imGuiInvoker.IsMouseDragging(ImGuiMouseButton.Left);
 
@@ -218,6 +227,8 @@ internal sealed class ControlGroup : IControlGroup
         {
             Render();
         }
+
+        this.prevSize = this.size;
     }
 
     /// <inheritdoc/>
