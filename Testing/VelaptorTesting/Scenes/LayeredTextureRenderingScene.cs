@@ -103,6 +103,10 @@ public class LayeredTextureRenderingScene : SceneBase
         this.grpInstructions.Title = "Instructions";
         this.grpInstructions.AutoSizeToFitContent = true;
         this.grpInstructions.TitleBarVisible = false;
+        this.grpInstructions.Initialized += (_, _) =>
+        {
+            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        };
         this.grpInstructions.Add(lblInstructions);
 
         this.grpTextureState = TestingApp.Container.GetInstance<IControlGroup>();
