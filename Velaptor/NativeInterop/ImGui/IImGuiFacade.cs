@@ -12,13 +12,13 @@ using System;
 internal interface IImGuiFacade : IDisposable
 {
     /// <summary>
-    /// Updates the ImGui system.
+    /// Updates the <see cref="ImGui"/> system.
     /// </summary>
     /// <param name="timeSeconds">The current frame time in seconds.</param>
     void Update(double timeSeconds);
 
     /// <summary>
-    /// Renders the ImGui UI controls.
+    /// Renders the <see cref="ImGui"/> UI controls.
     /// </summary>
     void Render();
 }

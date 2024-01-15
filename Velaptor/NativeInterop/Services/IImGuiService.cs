@@ -5,7 +5,7 @@
 namespace Velaptor.NativeInterop.Services;
 
 /// <summary>
-/// Provides extra ImGui functionality.
+/// Provides extra <see cref="ImGui"/> functionality.
 /// </summary>
 internal interface IImGuiService
 {

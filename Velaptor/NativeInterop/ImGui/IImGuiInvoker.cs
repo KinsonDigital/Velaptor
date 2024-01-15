@@ -10,12 +10,12 @@ using System.Numerics;
 using ImGuiNET;
 
 /// <summary>
-/// Invokes ImGui functions.
+/// Invokes <see cref="ImGui"/> functions.
 /// </summary>
 internal interface IImGuiInvoker
 {
     /// <summary>
-    /// Gets the IO object for system and ImGui related settings and information.
+    /// Gets the IO object for system and <see cref="ImGui"/> related settings and information.
     /// </summary>
     /// <returns>The config/settings/info object.</returns>
     // ReSharper disable once InconsistentNaming
