@@ -54,7 +54,7 @@ public class ShapeScene : SceneBase
     private IControlGroup? grpRectClrGradCtrls;
     private IControlGroup? grpRectCornerRadiusCtrls;
     private BackgroundManager? backgroundManager;
-    private ShapeType shapeType = ShapeType.Circle;
+    private ShapeType shapeType;
     private string? sldCircleDiameterName;
     private string? cmbCircleSolidColorName;
     private string? cmbRectSolidColorName;
@@ -73,6 +73,7 @@ public class ShapeScene : SceneBase
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
+        this.shapeType = ShapeType.Circle;
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
@@ -203,7 +204,6 @@ public class ShapeScene : SceneBase
         var lblRectInstructions = TestingApp.Container.GetInstance<ILabel>();
         lblRectInstructions.Name = nameof(lblRectInstructions);
         lblRectInstructions.Text = rectInstructions;
-        lblRectInstructions.Visible = false;
 
         this.grpRectInstructions = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpRectInstructions.Title = "Rect Instructions";
@@ -447,9 +447,9 @@ public class ShapeScene : SceneBase
         this.grpRectClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpRectClrGradCtrls.Title = "Rect Color Gradient Props";
         this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
+        this.grpRectClrGradCtrls.Visible = false;
         this.grpRectClrGradCtrls.Initialized += (_, _) =>
         {
-            this.grpRectClrGradCtrls.Visible = false;
             this.grpRectClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectClrGradCtrls.HalfHeight);
         };
         this.grpRectClrGradCtrls.Add(cmbRectGradType);
