@@ -210,9 +210,9 @@ public class ShapeScene : SceneBase
         this.grpRectInstructions.AutoSizeToFitContent = true;
         this.grpRectInstructions.TitleBarVisible = false;
         this.grpRectInstructions.Visible = false;
-        this.grpRectInstructions.Initialized += (_, _) =>
+        this.grpRectInstructions.SizeChanged += (_, size) =>
         {
-            this.grpRectInstructions.Position = new Point(WindowCenter.X - this.grpRectInstructions.HalfWidth, WindowPadding);
+            this.grpRectInstructions.Position = new Point(WindowCenter.X - (size.Width / 2), WindowPadding);
         };
         this.grpRectInstructions.Add(lblRectInstructions);
     }
@@ -632,12 +632,11 @@ public class ShapeScene : SceneBase
         this.grpRectCornerRadiusCtrls.Title = "Rect Radius Props";
         this.grpRectCornerRadiusCtrls.AutoSizeToFitContent = true;
         this.grpRectCornerRadiusCtrls.Visible = false;
-        this.grpRectCornerRadiusCtrls.Initialized += (_, _) =>
+        this.grpRectCornerRadiusCtrls.SizeChanged += (_, size) =>
         {
-            const int grpRectCornerRadiusCtrlsWidth = 260;
             this.grpRectCornerRadiusCtrls.Position = new Point(
-                (int)WindowSize.Width - (grpRectCornerRadiusCtrlsWidth + WindowPadding),
-                ((int)WindowSize.Height / 2) - (grpRectCornerRadiusCtrlsWidth / 2));
+                (int)WindowSize.Width - (size.Width + WindowPadding),
+                WindowCenter.Y - (size.Height / 2));
         };
         this.grpRectCornerRadiusCtrls.Add(sldBottomLeftRadius);
         this.grpRectCornerRadiusCtrls.Add(sldBottomRightRadius);
