@@ -20,8 +20,6 @@ using KeyState = (Velaptor.Input.KeyCode key, bool state);
 using KeyboardStates = ((Velaptor.Input.KeyCode key, bool state)[], (Velaptor.Input.KeyCode key, bool state)[]);
 #pragma warning restore SA1008
 
-//((KeyCode, bool)[], (KeyCode, bool)[])
-
 /// <summary>
 /// Tests the <see cref="StatsWindowService"/> class.
 /// </summary>
