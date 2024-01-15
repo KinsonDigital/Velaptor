@@ -113,23 +113,9 @@ internal sealed class StatsWindowService : IStatsWindowService
             this.shouldSetPos = false;
         }
 
-        if (!this.isInitialized && this.invokeCount > PreRenderCount)
+        if (!this.isInitialized && this.invokeCount >= PreRenderCount)
         {
-            var winSize = this.imGuiInvoker.GetWindowSize();
-            var textSize = this.imGuiInvoker.CalcTextSize(Title);
-
-            var padding = this.imGuiInvoker.GetStyle().WindowPadding;
-            var horizontalPadding = winSize.X < textSize.X + CollapseArrowButtonWidth
-                ? padding.X + CollapseArrowButtonWidth
-                : padding.X;
-            var verticalPadding = padding.Y;
-
-            var size = new Vector2((int)winSize.X + horizontalPadding, (int)winSize.Y + verticalPadding);
-            Size = new Size((int)size.X, (int)size.Y);
-            this.imGuiInvoker.SetWindowSize(size);
-
-            this.Initialized?.Invoke(this, EventArgs.Empty);
-            this.isInitialized = true;
+           Init();
         }
 
         this.imGuiInvoker.End();
@@ -152,5 +138,27 @@ internal sealed class StatsWindowService : IStatsWindowService
         this.Initialized = null;
 
         this.isDisposed = true;
+    }
+
+    /// <summary>
+    /// Initializes the window.
+    /// </summary>
+    private void Init()
+    {
+        var winSize = this.imGuiInvoker.GetWindowSize();
+        var textSize = this.imGuiInvoker.CalcTextSize(Title);
+
+        var padding = this.imGuiInvoker.GetStyle().WindowPadding;
+        var horizontalPadding = winSize.X < textSize.X + CollapseArrowButtonWidth
+            ? padding.X + CollapseArrowButtonWidth
+            : padding.X;
+        var verticalPadding = padding.Y;
+
+        var size = new Vector2((int)winSize.X + horizontalPadding, (int)winSize.Y + verticalPadding);
+        Size = new Size((int)size.X, (int)size.Y);
+        this.imGuiInvoker.SetWindowSize(size);
+
+        this.Initialized?.Invoke(this, EventArgs.Empty);
+        this.isInitialized = true;
     }
 }
