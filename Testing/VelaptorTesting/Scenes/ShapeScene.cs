@@ -181,7 +181,7 @@ public class ShapeScene : SceneBase
         lblCircleInstructions.Text = circleInstructions;
 
         this.grpCircleInstructions = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpCircleInstructions.Title = "Rect Instructions";
+        this.grpCircleInstructions.Title = "Circle Instructions";
         this.grpCircleInstructions.AutoSizeToFitContent = true;
         this.grpCircleInstructions.TitleBarVisible = false;
         this.grpCircleInstructions.Initialized += (_, _) =>
