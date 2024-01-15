@@ -106,9 +106,9 @@ internal sealed class ComboBox : Control, IComboBox
         // Bump the combo box up to be vertically centered with the label
         ImGuiInvoker.SetCursorPos(currentPos with { Y = currentPos.Y - 3 });
 
+        ImGuiInvoker.PushID(this.ctrlId);
         if (!Enabled)
         {
-            ImGuiInvoker.PushID(this.ctrlId);
             ImGuiInvoker.PushStyleColor(ImGuiCol.Text, Color.DarkGray);
             ImGuiInvoker.PushStyleColor(ImGuiCol.FrameBg, Color.Gray);
             ImGuiInvoker.PushStyleColor(ImGuiCol.FrameBgHovered, Color.Gray);
@@ -149,7 +149,11 @@ internal sealed class ComboBox : Control, IComboBox
             return;
         }
 
-        ImGuiInvoker.PopStyleColor(5);
+        if (!Enabled)
+        {
+            ImGuiInvoker.PopStyleColor(6);
+        }
+
         ImGuiInvoker.PopID();
     }
 
