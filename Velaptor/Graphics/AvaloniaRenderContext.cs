@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System.Drawing;
 using Carbonate.OneWay;
 using Factories;
-using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using ReactableData;
 
 /// <inheritdoc/>

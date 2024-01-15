@@ -43,12 +43,12 @@ public enum ShapeType
     /// <summary>
     /// A rectangle.
     /// </summary>
-    Rectangle = 1,
+    Rectangle = 0,
 
     /// <summary>
     /// A circle.
     /// </summary>
-    Circle = 2,
+    Circle = 1,
 }
 
 /// <summary>

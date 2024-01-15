@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable SeparateLocalFunctionsWithJumpStatement
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
@@ -15,12 +16,11 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
@@ -39,9 +39,9 @@ public class LineGpuBufferTests
     private const uint ViewPortWidth = 100u;
     private const uint ViewPortHeight = 200u;
     private const string BufferName = "Line";
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
@@ -52,11 +52,9 @@ public class LineGpuBufferTests
     /// </summary>
     public LineGpuBufferTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGL.Setup(m => m.GenVertexArray()).Returns(VAO);
-
-        this.mockGL.Setup(m => m.GenBuffer())
-            .Returns(() =>
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.GenVertexArray().Returns(VAO);
+        this.mockGL.GenBuffer().Returns(_ =>
             {
                 if (this.vboGenerated)
                 {
@@ -67,40 +65,37 @@ public class LineGpuBufferTests
                 return VBO;
             });
 
-        this.mockGLService = new Mock<IOpenGLService>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.GLInitializedId)
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
                 {
-                    this.glInitReactor = reactor;
-                }
-            });
+                    reactor.Should().NotBeNull("it is required for unit testing.");
 
-        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
-            .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.viewPortSizeReactor = reactor;
-            });
+                    if (reactor.Id == PushNotifications.GLInitializedId)
+                    {
+                        this.glInitReactor = reactor;
+                    }
+                }));
 
-        var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.batchSizeReactor = reactor;
-            });
+        var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
+        mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
+                {
+                    reactor.Should().NotBeNull("it is required for unit testing.");
+                    this.viewPortSizeReactor = reactor;
+                }));
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
+        var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
+                {
+                    reactor.Should().NotBeNull("it is required for unit testing.");
+                    this.batchSizeReactor = reactor;
+                }));
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockBatchSizeReactable);
+        this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
     }
 
     #region Constructor Tests
@@ -111,8 +106,8 @@ public class LineGpuBufferTests
         var act = () =>
         {
             _ = new LineGpuBuffer(
-                this.mockGL.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockGLService,
                 null);
         };
 
@@ -130,24 +125,17 @@ public class LineGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest(false);
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.UploadVertexData(It.IsAny<LineBatchItem>(), It.IsAny<uint>());
-        }, "The line buffer has not been initialized.");
+        // Act
+        var act = () => sut.UploadVertexData(default, 0);
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The line buffer has not been initialized.");
     }
 
     [Fact]
     public void UploadVertexData_WhenInvoked_BeginsAndEndsGLDebugGroup()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the '{nameof(GpuBufferBase<Line>.UploadVertexData)}()' method.",
-            $"3 times in the private $'{nameof(GpuBufferBase<Line>)}.Init()' method.",
-        };
-        var failMessage = string.Join(Environment.NewLine, executionLocations);
-
         var line = default(LineBatchItem);
 
         var sut = CreateSystemUnderTest();
@@ -156,23 +144,14 @@ public class LineGpuBufferTests
         sut.UploadVertexData(line, 123);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Update Line - BatchItem(123)"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(),
-            Times.Exactly(4),
-            failMessage);
+        this.mockGLService.Received(1).BeginGroup("Update Line - BatchItem(123)");
+        this.mockGLService.Received(4).EndGroup();
     }
 
     [Fact]
     public void UploadVertexData_WhenInvoked_BindsAndUnbindsVBO()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the private '{nameof(GpuBufferBase<Line>)}.Init()' method.",
-            $"1 time in the '{nameof(GpuBufferBase<Line>.UploadVertexData)}()' method.",
-        };
-        var failMessage = string.Join($"{Environment.NewLine}", executionLocations);
-
         var line = default(LineBatchItem);
 
         var sut = CreateSystemUnderTest();
@@ -181,13 +160,8 @@ public class LineGpuBufferTests
         sut.UploadVertexData(line, 0);
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVBO(VBO),
-            Times.AtLeastOnce,
-            failMessage);
-
-        this.mockGLService.Verify(m => m.UnbindVBO(),
-            Times.AtLeastOnce,
-            failMessage);
+        this.mockGLService.Received().BindVBO(VBO);
+        this.mockGLService.Received().UnbindVBO();
     }
 
     [Fact]
@@ -199,21 +173,28 @@ public class LineGpuBufferTests
             // ReSharper disable MultipleSpaces
             // Vertex 1
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
-            -0.923431456f,  1.00828433f,     5f,     6f,     7f,     4f,
+            -0.923431456f, 1.00828433f, 5f, 6f, 7f, 4f,
 
             // Vertex 2
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
-            -1.03656852f,   0.951715708f,     5f,     6f,     7f,     4f,
+            -1.03656852f, 0.951715708f, 5f, 6f, 7f, 4f,
 
             // Vertex 3
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
-            -0.883431435f,  0.98828429f,     5f,     6f,     7f,     4f,
+            -0.883431435f, 0.98828429f, 5f, 6f, 7f, 4f,
 
             // Vertex 4
             // Vertex X     Vert Pos Y       Red,    Green,  Blue,   Alpha
-            -0.996568561f,  0.931715727f,     5f,     6f,     7f,     4f,
+            -0.996568561f, 0.931715727f, 5f, 6f, 7f, 4f,
+
             // ReSharper restore MultipleSpaces
         };
+
+        var actual = Array.Empty<float>();
+
+        this.mockGL.When(x =>
+            x.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
 
         var p1 = new Vector2(1, 2);
         var p2 = new Vector2(3, 4);
@@ -231,8 +212,10 @@ public class LineGpuBufferTests
         sut.UploadVertexData(batchItem, 10);
 
         // Assert
-        this.mockGL.VerifyOnce(m =>
-            m.BufferSubData(GLBufferTarget.ArrayBuffer, 0x3c0, 96, expectedData));
+        this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, 0x3c0, 96, Arg.Any<float[]>());
+        actual.Should().BeEquivalentTo(expectedData);
+        this.mockGLService.Received(2).UnbindVBO();
+        this.mockGLService.Received(4).EndGroup();
     }
 
     [Fact]
@@ -253,20 +236,13 @@ public class LineGpuBufferTests
     public void PrepareForUpload_WhenInitialized_BindsVAO()
     {
         // Arrange
-        var executionLocations = new List<string>
-        {
-            $"1 time in the '{nameof(LineGpuBuffer.PrepareForUpload)}()' method.",
-            $"1 time in the '{nameof(GpuBufferBase<Line>)}.Init()' method.",
-        };
-        var failMessage = string.Join(Environment.NewLine, executionLocations);
-
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.PrepareForUpload();
 
         // Assert
-        this.mockGLService.VerifyExactly(m => m.BindVAO(VAO), 3, failMessage);
+        this.mockGLService.Received(3).BindVAO(VAO);
     }
 
     [Fact]
@@ -290,14 +266,9 @@ public class LineGpuBufferTests
         // Arrange
         var paramData = new (uint index, int size, bool normalized, uint stride, uint offset, string label)[]
         {
-            (0u, 2, false, 24u, 0u, "VertexPosition"),
-            (1u, 4, false, 24u, 8u, "Color"),
+            (0u, 2, false, 24u, 0u, "VertexPosition"), (1u, 4, false, 24u, 8u, "Color"),
         };
-        var enableVertexAttribArrayParamData = new (uint index, string label)[]
-        {
-            (0u, "VertexPosition"),
-            (1u, "Color"),
-        };
+        var enableVertexAttribArrayParamData = new (uint index, string label)[] { (0u, "VertexPosition"), (1u, "Color"), };
 
         var sut = CreateSystemUnderTest(false);
 
@@ -305,24 +276,26 @@ public class LineGpuBufferTests
         sut.SetupVAO();
 
         // Assert
-        Assert.All(paramData, data =>
-        {
-            this.mockGL.Verify(m =>
-                    m.VertexAttribPointer(data.index,
-                        data.size,
-                        GLVertexAttribPointerType.Float,
-                        data.normalized,
-                        data.stride,
-                        data.offset), Times.Once,
-                $"The '{data.label}' vertex attribute pointer layout is incorrect.");
-        });
+        Assert.All(
+            paramData,
+            data =>
+            {
+                this.mockGL.Received(1).VertexAttribPointer(
+                    data.index,
+                    data.size,
+                    GLVertexAttribPointerType.Float,
+                    data.normalized,
+                    data.stride,
+                    data.offset);
+            });
 
-        Assert.All(enableVertexAttribArrayParamData, data =>
-        {
-            var (index, label) = data;
-            this.mockGL.Verify(m => m.EnableVertexAttribArray(index),
-                $"Issue enabling vertex attribute pointer '{label}'.");
-        });
+        Assert.All(
+            enableVertexAttribArrayParamData,
+            data =>
+            {
+                var (index, _) = data;
+                this.mockGL.Received(1).EnableVertexAttribArray(index);
+            });
     }
 
     [Fact]
@@ -346,12 +319,11 @@ public class LineGpuBufferTests
     public void BatchSizeReactable_WhenSubscribing_UsesCorrectReactorName()
     {
         // Arrange
-        var mockReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(Act);
+        var mockReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockReactable.When(x =>
+            x.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(Act)));
 
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable())
-            .Returns(mockReactable.Object);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockReactable);
 
         _ = CreateSystemUnderTest();
 
@@ -402,9 +374,9 @@ public class LineGpuBufferTests
         // Assert
         sut.BatchSize.Should().Be(123);
 
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Vertex Data"), Times.AtLeastOnce);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeast(2));
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Indices Data"), Times.AtLeastOnce);
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
+        this.mockGLService.Received(8).EndGroup();
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Indices Data");
     }
     #endregion
 
@@ -420,15 +392,7 @@ public class LineGpuBufferTests
         {
             var maxIndex = result.Count <= 0 ? 0 : result.Max() + 1;
 
-            result.AddRange(new[]
-            {
-                maxIndex,
-                maxIndex + 1u,
-                maxIndex + 2u,
-                maxIndex + 2u,
-                maxIndex + 1u,
-                maxIndex + 3u,
-            });
+            result.AddRange(new[] { maxIndex, maxIndex + 1u, maxIndex + 2u, maxIndex + 2u, maxIndex + 1u, maxIndex + 3u, });
         }
 
         return result.ToArray();
@@ -441,10 +405,7 @@ public class LineGpuBufferTests
     /// <returns>The instance to test.</returns>
     private LineGpuBuffer CreateSystemUnderTest(bool initialize = true)
     {
-        var result = new LineGpuBuffer(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object);
+        var result = new LineGpuBuffer(this.mockGL, this.mockGLService, this.mockReactableFactory);
 
         if (initialize)
         {

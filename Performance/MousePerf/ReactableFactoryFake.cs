@@ -16,13 +16,16 @@ using Velaptor.ReactableData;
 /// <summary>
 /// Used for the purpose of performance testing.
 /// </summary>
-internal class ReactableFactoryFake : IReactableFactory
+internal sealed class ReactableFactoryFake : IReactableFactory
 {
     /// <inheritdoc/>
     public IPushReactable CreateNoDataPushReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IPushReactable<GL> CreateGLReactable() => throw new NotImplementedException();
+
+    /// <inheritdoc/>
+    public IPushReactable<GLObjectsData> CreateGLObjectsReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => throw new NotImplementedException();

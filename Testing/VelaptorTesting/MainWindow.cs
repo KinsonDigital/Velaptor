@@ -4,7 +4,6 @@
 
 namespace VelaptorTesting;
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -15,23 +14,23 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
+using UI;
 
 /// <summary>
 /// The main window to the testing application.
 /// </summary>
 public class MainWindow : Window
 {
+    private const int WindowPadding = 10;
     private static readonly char[] UpperCaseChars =
-    {
+    [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z',
-    };
+        'U', 'V', 'W', 'X', 'Y', 'Z'
+    ];
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
-    private readonly Button nextButton;
-    private readonly Button previousButton;
-    private readonly Label lblFps;
+    private readonly IControlGroup grpSceneCtrls;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -45,13 +44,22 @@ public class MainWindow : Window
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.nextButton = new Button { Text = "-->" };
-        this.previousButton = new Button { Text = "<--" };
+        this.grpSceneCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpSceneCtrls.Title = "Scene Group";
+        this.grpSceneCtrls.TitleBarVisible = false;
+        this.grpSceneCtrls.AutoSizeToFitContent = true;
+        this.grpSceneCtrls.Initialized += (_, _) =>
+        {
+            this.grpSceneCtrls.Position = new Point(
+                (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
+                (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
+        };
 
-        this.lblFps = new Label("FPS: 0.0");
-        this.lblFps.Color = Color.White;
-        this.lblFps.Left = 75;
-        this.lblFps.Bottom = (int)Height - ((int)this.lblFps.HalfHeight + 20);
+        var nextPrevious = TestingApp.Container.GetInstance<INextPrevious>();
+        nextPrevious.Next += (_, _) => SceneManager.NextScene();
+        nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
+
+        this.grpSceneCtrls.Add(nextPrevious);
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -71,11 +79,6 @@ public class MainWindow : Window
         var mouseScene = new MouseScene
         {
             Name = SplitByUpperCase(nameof(MouseScene)),
-        };
-
-        var textBoxScene = new TextBoxScene
-        {
-            Name = SplitByUpperCase(nameof(TextBoxScene)),
         };
 
         var layeredRenderingScene = new LayeredTextureRenderingScene
@@ -122,7 +125,6 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredTextRenderingScene);
         SceneManager.AddScene(keyboardScene);
         SceneManager.AddScene(mouseScene);
-        SceneManager.AddScene(textBoxScene);
         SceneManager.AddScene(layeredRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
@@ -131,27 +133,6 @@ public class MainWindow : Window
         SceneManager.AddScene(lineScene);
         SceneManager.AddScene(layeredLineScene);
         SceneManager.AddScene(soundScene);
-    }
-
-    /// <inheritdoc cref="Window.OnLoad"/>
-    protected override void OnLoad()
-    {
-        const int buttonSpacing = 15;
-        const int rightMargin = 15;
-
-        this.nextButton.Click += (_, _) => SceneManager.NextScene();
-        this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
-
-        this.nextButton.LoadContent();
-        this.previousButton.LoadContent();
-        this.lblFps.LoadContent();
-
-        var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
-        var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
-        this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
-        this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
-
-        base.OnLoad();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
@@ -171,12 +152,6 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        this.nextButton.Update(frameTime);
-        this.previousButton.Update(frameTime);
-
-        this.lblFps.Text = $"FPS: {Math.Round(Fps, 2)}";
-        this.lblFps.Update(frameTime);
-
         this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
@@ -192,22 +167,9 @@ public class MainWindow : Window
         // the 'Begin()' and 'End()` methods.
         this.batcher.Begin();
 
-        // Render the scene manager UI on top of all other textures
-        this.nextButton.Render();
-        this.previousButton.Render();
-        this.lblFps.Render();
+        this.grpSceneCtrls.Render();
 
         this.batcher.End();
-    }
-
-    /// <inheritdoc cref="Window.OnUnload"/>
-    protected override void OnUnload()
-    {
-        this.previousButton.UnloadContent();
-        this.nextButton.UnloadContent();
-        this.lblFps.UnloadContent();
-
-        base.OnUnload();
     }
 
     /// <summary>

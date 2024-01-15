@@ -5,7 +5,6 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Content.Fonts;
 using Input;
 using UI;
 
@@ -15,20 +14,6 @@ internal class UIControlFactory : IUIControlFactory
 {
     /// <inheritdoc/>
     public Label CreateLabel(string labelText)
-    {
-        var label = new Label(
-            ContentLoaderFactory.CreateFontLoader(),
-            IoC.Container.GetInstance<IAppInput<KeyboardState>>(),
-            IoC.Container.GetInstance<IAppInput<MouseState>>())
-        {
-            Text = labelText,
-        };
-
-        return label;
-    }
-
-    /// <inheritdoc/>
-    public Label CreateLabel(string labelText, IFont font)
     {
         var label = new Label(
             ContentLoaderFactory.CreateFontLoader(),

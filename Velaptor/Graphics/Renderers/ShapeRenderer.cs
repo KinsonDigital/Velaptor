@@ -9,6 +9,7 @@ using Batching;
 using Carbonate.Fluent;
 using Factories;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;

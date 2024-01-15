@@ -6,6 +6,7 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL.Services;
 using OpenGL.Shaders;
 

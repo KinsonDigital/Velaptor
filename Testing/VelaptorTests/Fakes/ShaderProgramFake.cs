@@ -6,6 +6,7 @@ namespace VelaptorTests.Fakes;
 
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
 

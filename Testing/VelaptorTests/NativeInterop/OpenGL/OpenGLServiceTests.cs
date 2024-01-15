@@ -13,6 +13,7 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
 using FluentAssertions;
+using Velaptor.NativeInterop.Services;
 
 /// <summary>
 /// Tests the <see cref="OpenGLService"/> class.

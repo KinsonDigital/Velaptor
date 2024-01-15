@@ -15,6 +15,7 @@ using Factories;
 using GpuData;
 using Graphics;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using ReactableData;
 using Velaptor.Exceptions;
 

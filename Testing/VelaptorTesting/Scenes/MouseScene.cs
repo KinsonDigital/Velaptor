@@ -7,11 +7,11 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.Scene;
-using Velaptor.UI;
 
 /// <summary>
 /// Used to test that the mouse works correctly.
@@ -19,9 +19,10 @@ using Velaptor.UI;
 public class MouseScene : SceneBase
 {
     private IAppInput<MouseState>? mouse;
-    private Label? mouseInfoLabel;
-    private MouseScrollDirection scrollDirection;
+    private IControlGroup? grpControls;
     private BackgroundManager? backgroundManager;
+    private MouseScrollDirection scrollDirection;
+    private string? mouseStateLabelName;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -35,12 +36,20 @@ public class MouseScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.mouse = HardwareFactory.GetMouse();
-        this.mouseInfoLabel = new Label { Color = Color.White };
+        var mouseStateLabel = TestingApp.Container.GetInstance<ILabel>();
+        mouseStateLabel.Name = nameof(mouseStateLabel);
+        this.mouseStateLabelName = nameof(mouseStateLabel);
 
-        this.mouseInfoLabel.LoadContent();
-        this.mouseInfoLabel.Position = new Point(WindowCenter.X, WindowCenter.Y);
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Mouse State";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.TitleBarVisible = false;
+        this.grpControls.Initialized += (_, _) =>
+        {
+            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
+        };
 
-        AddControl(this.mouseInfoLabel);
+        this.grpControls.Add(mouseStateLabel);
 
         base.LoadContent();
     }
@@ -50,19 +59,24 @@ public class MouseScene : SceneBase
     {
         var currentMouseState = this.mouse.GetState();
 
-        var mouseInfo = $"Mouse Position: {currentMouseState.GetX()}, {currentMouseState.GetY()}";
-        mouseInfo += $"{Environment.NewLine}Left Button: {(currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-        mouseInfo += $"{Environment.NewLine}Right Button: {(currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-        mouseInfo += $"{Environment.NewLine}Middle Button: {(currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
+        var mouseState = "Mouse State";
+        mouseState += $"Mouse Position: {currentMouseState.GetX()}, {currentMouseState.GetY()}";
+        mouseState += $"{Environment.NewLine}Left Button: {(currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
+        mouseState += $"{Environment.NewLine}Right Button: {(currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
+        mouseState += $"{Environment.NewLine}Middle Button: {(currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
 
         if (currentMouseState.GetScrollWheelValue() != 0)
         {
             this.scrollDirection = currentMouseState.GetScrollDirection();
         }
 
-        mouseInfo += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
+        mouseState += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
 
-        this.mouseInfoLabel.Text = mouseInfo;
+        var mouseStateLabelCtrl = this.grpControls.GetControl<ILabel>(this.mouseStateLabelName);
+        mouseStateLabelCtrl.Text = mouseState;
+
+        this.grpControls.AutoSizeToFitContent = false;
+        this.grpControls.AutoSizeToFitContent = true;
 
         base.Update(frameTime);
     }
@@ -71,6 +85,8 @@ public class MouseScene : SceneBase
     public override void Render()
     {
         this.backgroundManager?.Render();
+        this.grpControls.Render();
+
         base.Render();
     }
 
@@ -83,10 +99,12 @@ public class MouseScene : SceneBase
         }
 
         this.scrollDirection = MouseScrollDirection.None;
-        this.mouseInfoLabel = null;
         this.mouse = default;
 
         this.backgroundManager?.Unload();
+        this.grpControls.Dispose();
+        this.grpControls = null;
+
         base.UnloadContent();
     }
 }

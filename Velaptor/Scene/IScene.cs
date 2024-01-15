@@ -7,7 +7,6 @@ namespace Velaptor.Scene;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using UI;
 
 /// <summary>
 /// Represents a single scene that can be rendered to the screen.
@@ -46,20 +45,6 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     /// Loads the scene content.
     /// </summary>
     void LoadContent();
-
-    /// <summary>
-    /// Adds a control to the scene to be updated and rendered.
-    /// </summary>
-    /// <param name="control">The control to add to the scene.</param>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
-    void AddControl(IControl control);
-
-    /// <summary>
-    /// Removes the given <paramref name="control"/> from the scene.
-    /// </summary>
-    /// <param name="control">The control to remove.</param>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
-    void RemoveControl(IControl control);
 
     /// <summary>
     /// Unloads the scene's content.
