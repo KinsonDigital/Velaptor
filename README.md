@@ -6,9 +6,9 @@
 
 <h1 style="border:0;font-weight:bold" align="center">Velaptor</h1>
 
+
 <div align="center">
 
-[![RepoRater](https://repo-rater.eddiehub.io/api/badge?owner=KinsonDigital&name=Velaptor)](https://repo-rater.eddiehub.io/rate?owner=KinsonDigital&name=Velaptor)
 [![Build PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/build-status-check.yml?label=%E2%9A%99%EF%B8%8FBuild)](https://github.com/KinsonDigital/Velaptor/actions/workflows/build-status-check.yml)
 [![Unit Test PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/unit-test-status-check.yml?label=%F0%9F%A7%AATests)](https://github.com/KinsonDigital/Velaptor/actions/workflows/unit-test-status-check.yml)
 
@@ -21,6 +21,7 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
 
 [![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/preview)
+[![RepoRater](https://repo-rater.eddiehub.io/api/badge?owner=KinsonDigital&name=Velaptor)](https://repo-rater.eddiehub.io/rate?owner=KinsonDigital&name=Velaptor)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
 [![Nuget Downloads](https://img.shields.io/nuget/dt/KinsonDigital.Velaptor?color=0094FF&label=nuget%20downloads&logo=nuget)](https://www.nuget.org/stats/packages/KinsonDigital.Velaptor?groupby=Version)
@@ -78,17 +79,20 @@ Full API documentation and tutorials can be found at [docs.velaptor.io](https://
 
 Interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via one-time or recurring donation.
 
+
 <h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
 
 ![x-logo-dark-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-dark-mode.svg#gh-dark-mode-only)
 ![x-logo-light-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-light-mode.svg#gh-light-mode-only)
 [Calvin Wilkinson](https://twitter.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
 
+
 ![x-logo-dark-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-dark-mode.svg#gh-dark-mode-only)
 ![x-logo-light-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-light-mode.svg#gh-light-mode-only)
 [Kristen Wilkinson](https://twitter.com/kswilky) (KinsonDigital GitHub Organization - Project Management, Documentation, Tester)
 
 <br/>
+
 
 <h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
 
