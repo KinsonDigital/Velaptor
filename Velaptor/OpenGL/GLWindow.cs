@@ -61,7 +61,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<WindowSizeData> winSizeReactable;
     private readonly ITimerService timerService;
     private MouseStateData mouseStateData;
-    private IInputContext glInputContext = null!;
+    private IInputContext? glInputContext;
     private bool isShuttingDown;
     private bool firstRenderInvoked;
     private bool isDisposed;
@@ -349,6 +349,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void PreInit()
     {
+        if (this.isDisposed)
+        {
+            throw new ObjectDisposedException(nameof(GLWindow));
+        }
+
         this.silkWindow.UpdatesPerSecond = 60;
         this.silkWindow.Load += GLWindow_Load;
         this.silkWindow.Closing += GLWindow_Closing;
@@ -422,7 +427,6 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
         CachedPosition.IsCaching = false;
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
@@ -677,12 +681,15 @@ internal sealed class GLWindow : VelaptorIWindow
 
             this.gl.GLError -= GL_GLError;
 
-            this.glInputContext.Keyboards[0].KeyDown -= GLKeyboardInput_KeyDown;
-            this.glInputContext.Keyboards[0].KeyUp -= GLKeyboardInput_KeyUp;
-            this.glInputContext.Mice[0].MouseDown -= GLMouseInput_MouseDown;
-            this.glInputContext.Mice[0].MouseUp -= GLMouseInput_MouseUp;
-            this.glInputContext.Mice[0].MouseMove -= GLMouseMove_MouseMove;
-            this.glInputContext.Mice[0].Scroll -= GLMouseInput_MouseScroll;
+            if (this.glInputContext is not null)
+            {
+                this.glInputContext.Keyboards[0].KeyDown -= GLKeyboardInput_KeyDown;
+                this.glInputContext.Keyboards[0].KeyUp -= GLKeyboardInput_KeyUp;
+                this.glInputContext.Mice[0].MouseDown -= GLMouseInput_MouseDown;
+                this.glInputContext.Mice[0].MouseUp -= GLMouseInput_MouseUp;
+                this.glInputContext.Mice[0].MouseMove -= GLMouseMove_MouseMove;
+                this.glInputContext.Mice[0].Scroll -= GLMouseInput_MouseScroll;
+            }
 
             this.silkWindow.Load -= GLWindow_Load;
             this.silkWindow.Update -= GLWindow_Update;
@@ -780,10 +787,15 @@ internal sealed class GLWindow : VelaptorIWindow
             nameof(MouseCursorVisible), // key
             new CachedValue<bool>( // value
                 defaultValue: true,
-                getterWhenNotCaching: () => this.glInputContext.Mice.Count > 0 &&
+                getterWhenNotCaching: () => this.glInputContext?.Mice.Count > 0 &&
                                             this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
                 setterWhenNotCaching: value =>
                 {
+                    if (this.glInputContext is null)
+                    {
+                        return;
+                    }
+
                     var cursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
                     this.glInputContext.Mice[0].Cursor.CursorMode = cursorMode;
                 }));
@@ -835,7 +847,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new InvalidEnumArgumentException(
                         argName,
                         (int)this.silkWindow.WindowBorder,
-                        typeof(WindowBorder)),
+                        typeof(SilkWindowBorder)),
                 };
             },
             setterWhenNotCaching: value =>
@@ -848,7 +860,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new InvalidEnumArgumentException(
                         nameof(value),
                         (int)value,
-                        typeof(WindowBorder)),
+                        typeof(SilkWindowBorder)),
                 };
             });
     }
