@@ -6,11 +6,13 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
+using NativeInterop.ImGui;
 using NativeInterop.OpenGL;
 using OpenGL;
 using Scene;
 using Services;
-using UI;
+using VelaptorIWindow = UI.IWindow;
+using SilkIWindow = Silk.NET.Windowing.IWindow;
 
 /// <summary>
 /// Velaptor application specific functionality.
@@ -25,7 +27,7 @@ internal static class WindowFactory
     /// <remarks>
     ///     The window width and height are set by the application settings.
     /// </remarks>
-    public static IWindow CreateWindow()
+    public static VelaptorIWindow CreateWindow()
     {
         var appSettings = IoC.Container.GetInstance<IAppSettingsService>();
 
@@ -39,18 +41,20 @@ internal static class WindowFactory
     /// <param name="height">The height of the window.</param>
     /// <returns>A Velaptor framework window implementation.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
-    public static IWindow CreateWindow(uint width, uint height)
+    public static VelaptorIWindow CreateWindow(uint width, uint height)
         => new GLWindow(
             width,
             height,
             IoC.Container.GetInstance<IAppService>(),
-            IoC.Container.GetInstance<IWindowFactory>(),
+            IoC.Container.GetInstance<SilkIWindow>(),
             IoC.Container.GetInstance<INativeInputFactory>(),
             IoC.Container.GetInstance<IGLInvoker>(),
             IoC.Container.GetInstance<IGlfwInvoker>(),
             IoC.Container.GetInstance<ISystemDisplayService>(),
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
+            IoC.Container.GetInstance<IStatsWindowService>(),
+            IoC.Container.GetInstance<IImGuiFacade>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
             IoC.Container.GetInstance<ITimerService>());

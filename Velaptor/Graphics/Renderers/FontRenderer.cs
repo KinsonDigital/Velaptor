@@ -15,6 +15,7 @@ using Content.Fonts;
 using ExtensionMethods;
 using Factories;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;

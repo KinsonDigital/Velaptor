@@ -8,9 +8,9 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -23,31 +23,26 @@ using Velaptor.Scene;
 /// </summary>
 public class LayeredLineRenderingScene : SceneBase
 {
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
     private const int BackgroundLayer = -50;
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
     private ITexture? background;
-    private IFontRenderer? fontRenderer;
     private ITextureRenderer? textureRenderer;
     private ILineRenderer? lineRenderer;
-    private IFont? font;
     private Line whiteLine;
     private Line orangeLine;
     private Line blueLine;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private Vector2 instructionsPos;
-    private Vector2 lineStateTextPos;
     private Vector2 backgroundPos;
-    private SizeF instructionTextSize;
     private ILoader<ITexture>? textureLoader;
-    private ILoader<IFont>? fontLoader;
+    private IControlGroup? grpInstructions;
+    private IControlGroup? grpLineState;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private string instructions = string.Empty;
-    private string lineStateText = string.Empty;
+    private string? lblLineStateName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
@@ -62,7 +57,6 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
 
@@ -71,22 +65,40 @@ public class LayeredLineRenderingScene : SceneBase
         this.background = this.textureLoader.Load("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
-        this.font.Style = FontStyle.Bold;
-
         var textLines = new[]
         {
             "Use the arrow keys to move the white line.",
             "Use the 'L' key to change the layer where the white line is rendered.",
         };
 
-        this.instructions = string.Join(Environment.NewLine, textLines);
+        var instructions = string.Join(Environment.NewLine, textLines);
 
-        this.instructionTextSize = this.font.Measure(this.instructions);
-        this.instructionsPos = new Vector2(
-            WindowCenter.X,
-            (this.instructionTextSize.Height / 2) + 25);
+        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblInstructions.Name = nameof(lblInstructions);
+        lblInstructions.Text = instructions;
+
+        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions.Title = "Instructions";
+        this.grpInstructions.AutoSizeToFitContent = true;
+        this.grpInstructions.TitleBarVisible = false;
+        this.grpInstructions.Initialized += (_, _) =>
+        {
+            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        };
+        this.grpInstructions.Add(lblInstructions);
+
+        var lblLineState = TestingApp.Container.GetInstance<ILabel>();
+        lblLineState.Name = nameof(lblLineState);
+        this.lblLineStateName = nameof(lblLineState);
+
+        this.grpLineState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpLineState.Title = "Line State";
+        this.grpLineState.AutoSizeToFitContent = true;
+        this.grpLineState.Initialized += (_, _) =>
+        {
+            this.grpLineState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpLineState.HalfHeight);
+        };
+        this.grpLineState.Add(lblLineState);
 
         this.orangeLine = default;
         this.orangeLine.Color = Color.FromArgb(255, 193, 105, 46);
@@ -115,7 +127,18 @@ public class LayeredLineRenderingScene : SceneBase
         this.currentKeyState = this.keyboard.GetState();
 
         UpdateWhiteLineLayer();
-        UpdateRectStateText();
+
+        // Render the current enabled box text
+        var textLines = new[]
+        {
+            $"White Line Layer: {this.whiteLayer}",
+            $"Orange Line Layer: {OrangeLayer}",
+            $"Blue Line Layer: {BlueLayer}",
+        };
+
+        var lblLineStateCtrl = this.grpLineState.GetControl<ILabel>(this.lblLineStateName);
+        lblLineStateCtrl.Text = string.Join(Environment.NewLine, textLines);
+
         MoveWhiteLine(frameTime);
 
         this.prevKeyState = this.currentKeyState;
@@ -133,11 +156,8 @@ public class LayeredLineRenderingScene : SceneBase
         // Render the checkerboard background
         this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
-        // Render the instructions
-        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
-
-        // Render the rectangle state text
-        this.fontRenderer.Render(this.font, this.lineStateText, (int)this.lineStateTextPos.X, (int)this.lineStateTextPos.Y);
+        this.grpInstructions.Render();
+        this.grpLineState.Render();
 
         base.Render();
     }
@@ -151,7 +171,10 @@ public class LayeredLineRenderingScene : SceneBase
         }
 
         this.textureLoader.Unload(this.background);
-        this.fontLoader.Unload(this.font);
+        this.grpInstructions.Dispose();
+        this.grpLineState.Dispose();
+        this.grpInstructions = null;
+        this.grpLineState = null;
 
         base.UnloadContent();
     }
@@ -190,32 +213,6 @@ public class LayeredLineRenderingScene : SceneBase
                 _ => throw new InvalidEnumArgumentException($"this.{nameof(this.whiteLayer)}", (int)this.whiteLayer, typeof(RenderLayer))
             };
         }
-    }
-
-    /// <summary>
-    /// Updates the text for the state of the white rectangle.
-    /// </summary>
-    private void UpdateRectStateText()
-    {
-        // Render the current enabled box text
-        var textLines = new[]
-        {
-            $"White Line Layer: {this.whiteLayer}",
-            $"Orange Line Layer: {OrangeLayer}",
-            $"Blue Line Layer: {BlueLayer}",
-        };
-        this.lineStateText = string.Join(Environment.NewLine, textLines);
-
-        var boxStateTextSize = this.font.Measure(this.lineStateText);
-
-        this.lineStateTextPos = new Vector2
-        {
-            X = (int)(boxStateTextSize.Width / 2) + 25,
-            Y = this.instructionsPos.Y +
-                (int)this.instructionTextSize.Height +
-                (int)(boxStateTextSize.Height / 2) +
-                10,
-        };
     }
 
     private void MoveWhiteLine(FrameTime frameTime)

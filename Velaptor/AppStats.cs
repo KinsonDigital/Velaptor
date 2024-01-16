@@ -50,14 +50,17 @@ public static class AppStats
     /// <returns>The string result of all the loaded fonts.</returns>
     public static string GetLoadedFonts()
     {
-        var result = string.Empty;
+        var result = new StringBuilder();
 
         foreach (var loadedFont in LoadedFonts)
         {
-            result += $"Font File: {loadedFont.fontFileName} | Font Size: {loadedFont.fontSize}{Environment.NewLine}";
+            result.Append("Font File: ");
+            result.Append(loadedFont.fontFileName);
+            result.Append(" | Font Size: ");
+            result.AppendLine(loadedFont.fontSize);
         }
 
-        return result;
+        return result.ToString();
     }
 
     /// <summary>
@@ -144,9 +147,7 @@ public static class AppStats
     /// <param name="textureId">The OpenGL id of the texture.</param>
     internal static void RemoveLoadedTexture(uint textureId)
     {
-        var foundItem = LoadedTextures
-            .ToArray().FirstOrDefault(i => i.textureId == textureId);
-
+        var foundItem = LoadedTextures.Find(i => i.textureId == textureId);
         LoadedTextures.Remove(foundItem);
     }
 

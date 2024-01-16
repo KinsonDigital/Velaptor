@@ -12,6 +12,7 @@ using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Graphics;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL;
 using ReactableData;
 using Velaptor.Factories;

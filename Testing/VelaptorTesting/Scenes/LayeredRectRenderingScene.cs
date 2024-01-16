@@ -8,9 +8,9 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -23,7 +23,7 @@ using Velaptor.Scene;
 /// </summary>
 public class LayeredRectRenderingScene : SceneBase
 {
-    private const string DefaultFont = "TimesNewRoman-Regular.ttf";
+    private const int WindowPadding = 10;
     private const float Speed = 200f;
     private const int BackgroundLayer = -50;
     private const int RectWidth = 200;
@@ -32,25 +32,19 @@ public class LayeredRectRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
     private ITexture? background;
-    private IFont? font;
     private RectShape orangeRect;
     private RectShape whiteRect;
     private RectShape blueRect;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
     private Vector2 backgroundPos;
-    private Vector2 rectStateTextPos;
-    private SizeF instructionTextSize;
     private ITextureRenderer? textureRenderer;
     private IShapeRenderer? shapeRenderer;
-    private IFontRenderer? fontRenderer;
     private ILoader<ITexture>? textureLoader;
-    private ILoader<IFont>? fontLoader;
+    private IControlGroup? grpInstructions;
+    private IControlGroup? grpRectState;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private int instructionsX;
-    private int instructionsY;
-    private string instructions = string.Empty;
-    private string rectStateText = string.Empty;
+    private string? lblRectStateName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
@@ -67,16 +61,11 @@ public class LayeredRectRenderingScene : SceneBase
 
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
 
         this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
 
         this.background = this.textureLoader.Load("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
-
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultFont, 12);
-        this.font.Style = FontStyle.Bold;
 
         var textLines = new[]
         {
@@ -84,11 +73,34 @@ public class LayeredRectRenderingScene : SceneBase
             "Use the 'L' key to change the layer where the white rectangle is rendered.",
         };
 
-        this.instructions = string.Join(Environment.NewLine, textLines);
+        var instructions = string.Join(Environment.NewLine, textLines);
 
-        this.instructionTextSize = this.font.Measure(this.instructions);
-        this.instructionsX = (int)(this.instructionTextSize.Width / 2) + 25;
-        this.instructionsY = (int)(this.instructionTextSize.Height / 2) + 25;
+        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblInstructions.Name = nameof(lblInstructions);
+        lblInstructions.Text = instructions;
+
+        var lblRectState = TestingApp.Container.GetInstance<ILabel>();
+        lblRectState.Name = nameof(lblRectState);
+        this.lblRectStateName = nameof(lblRectState);
+
+        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions.Title = "Instructions";
+        this.grpInstructions.AutoSizeToFitContent = true;
+        this.grpInstructions.TitleBarVisible = false;
+        this.grpInstructions.Initialized += (_, _) =>
+        {
+            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        };
+        this.grpInstructions.Add(lblInstructions);
+
+        this.grpRectState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectState.Title = "Rect State";
+        this.grpRectState.AutoSizeToFitContent = true;
+        this.grpRectState.Initialized += (_, _) =>
+        {
+            this.grpRectState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectState.HalfHeight);
+        };
+        this.grpRectState.Add(lblRectState);
 
         this.orangeRect = this.orangeRect with
         {
@@ -150,11 +162,8 @@ public class LayeredRectRenderingScene : SceneBase
         // Render the checkerboard background
         this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
-        // Render the instructions
-        this.fontRenderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.White);
-
-        // Render the rectangle state text
-        this.fontRenderer.Render(this.font, this.rectStateText, (int)this.rectStateTextPos.X, (int)this.rectStateTextPos.Y);
+        this.grpInstructions.Render();
+        this.grpRectState.Render();
 
         base.Render();
     }
@@ -168,7 +177,10 @@ public class LayeredRectRenderingScene : SceneBase
         }
 
         this.textureLoader.Unload(this.background);
-        this.fontLoader.Unload(this.font);
+        this.grpInstructions.Dispose();
+        this.grpRectState.Dispose();
+        this.grpInstructions = null;
+        this.grpRectState = null;
 
         base.UnloadContent();
     }
@@ -196,18 +208,10 @@ public class LayeredRectRenderingScene : SceneBase
             $"Orange Rectangle Layer: {OrangeLayer}",
             $"Blue Rectangle Layer: {BlueLayer}",
         };
-        this.rectStateText = string.Join(Environment.NewLine, textLines);
+        var rectStateText = string.Join(Environment.NewLine, textLines);
 
-        var boxStateTextSize = this.font.Measure(this.rectStateText);
-
-        this.rectStateTextPos = new Vector2
-        {
-            X = (int)(boxStateTextSize.Width / 2) + 25,
-            Y = this.instructionsY +
-                (int)this.instructionTextSize.Height +
-                (int)(boxStateTextSize.Height / 2) +
-                10,
-        };
+        var lblRectStateCtl = this.grpRectState.GetControl<ILabel>(this.lblRectStateName);
+        lblRectStateCtl.Text = rectStateText;
     }
 
     /// <summary>

@@ -21,7 +21,9 @@ using Graphics.Renderers;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
+using NativeInterop.ImGui;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Services;
@@ -217,6 +219,10 @@ internal static class IoC
         IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
         IoCContainer.Register<IGlfwInvoker, GlfwInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+        IoCContainer.Register<IImGuiInvoker, ImGuiInvoker>(Lifestyle.Singleton);
+        IoCContainer.Register<IImGuiManager, ImGuiManager>(Lifestyle.Singleton);
+        IoCContainer.Register<IImGuiService, ImGuiService>(Lifestyle.Singleton);
+        IoCContainer.Register<IImGuiFacade, ImGuiFacade>(Lifestyle.Singleton);
 
         IoCContainer.Register<GlfwDisplays>(Lifestyle.Singleton);
         IoCContainer.Register<IDisplays, GlfwDisplays>(Lifestyle.Singleton);
@@ -280,6 +286,7 @@ internal static class IoC
         IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
         IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
+        IoCContainer.Register<IStatsWindowService, StatsWindowService>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
@@ -303,7 +310,10 @@ internal static class IoC
     private static void SetupReactables()
     {
         IoCContainer.Register<IReactableFactory, ReactableFactory>(Lifestyle.Singleton);
+
+        // This is used for pushing notifications of events that do not require any data
         IoCContainer.Register<IPushReactable, PushReactable>(Lifestyle.Singleton);
+
         IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
@@ -312,6 +322,8 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+        IoCContainer.Register(() => IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow(), Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<GLObjectsData>, PushReactable<GLObjectsData>>(Lifestyle.Singleton);
 
         IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchPullReactable<FontGlyphBatchItem>, BatchPullReactable<FontGlyphBatchItem>>(Lifestyle.Singleton);

@@ -16,6 +16,15 @@
     <RootNamespace>VelaptorTests</RootNamespace>
     <Configurations>Debug;Release</Configurations>
     <OutputType>Library</OutputType>
+    <!--
+        Warning Suppression Reasons:
+        The NSubstitute warning NS5000 is suppressed because it is a false positive.
+        The line of code that could cause this warning is: this.dep.Received().Init += Arg.Any<Action>();
+        
+        Code like this works fine but with research, it seems that the analyzer is not able to
+        understand this type of verification and thinks that a method is not being invoked.
+    -->
+    <NoWarn>NS5000</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\x64\Debug\</OutputPath>

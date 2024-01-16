@@ -17,6 +17,11 @@ internal static class PushNotifications
     public static Guid GLContextCreatedId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
 
     /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications of various OpenGL objects.
+    /// </summary>
+    public static Guid GLObjectsCreatedId { get; } = new ("930eb1c3-8071-43bc-9dd8-fb7978f4af83");
+
+    /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when OpenGL has been initialized.
     /// </summary>
     public static Guid GLInitializedId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");

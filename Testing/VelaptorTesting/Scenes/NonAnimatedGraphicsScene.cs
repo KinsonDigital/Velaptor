@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -23,20 +23,16 @@ using Velaptor.Scene;
 /// </summary>
 public class NonAnimatedGraphicsScene : SceneBase
 {
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const int WindowPadding = 10;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer? textureRenderer;
-    private readonly IFontRenderer? fontRenderer;
-    private readonly ILoader<IFont> fontLoader;
     private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? mainAtlas;
-    private IFont? font;
+    private IControlGroup? grpControls;
     private AtlasSubTextureData octagonData;
     private KeyboardState prevKeyState;
     private BackgroundManager? backgroundManager;
     private RenderEffects renderEffects = RenderEffects.None;
-    private string instructions = string.Empty;
-    private SizeF textSize;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
@@ -45,8 +41,6 @@ public class NonAnimatedGraphicsScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
     }
 
@@ -61,19 +55,30 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.font = this.fontLoader.Load(DefaultRegularFont, 12u);
-
         var textLines = new List<string>
         {
             "Use arrow keys to flip the texture horizontally and vertically.",
-            $"{Environment.NewLine}Left: Flip Horizontally",
-            "Right: Flip Horizontally",
-            "Up: Flip Vertically",
-            "Down: Flip Vertically",
+            "1. Left to flip horizontally",
+            "2. Right to flip horizontally",
+            "3. Up to flip vertically",
+            "4. Down to flip vertically",
         };
-        this.instructions = string.Join(Environment.NewLine, textLines);
 
-        this.textSize = this.font.Measure(this.instructions);
+        var instructions = string.Join(Environment.NewLine, textLines);
+
+        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblInstructions.Name = nameof(lblInstructions);
+        lblInstructions.Text = instructions;
+
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Instructions";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.TitleBarVisible = false;
+        this.grpControls.Initialized += (_, _) =>
+        {
+            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
+        };
+        this.grpControls.Add(lblInstructions);
 
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.octagonData = this.mainAtlas.GetFrames("octagon-flip")[0];
@@ -90,7 +95,6 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        this.fontLoader.Unload(this.font);
         this.atlasLoader.Unload(this.mainAtlas);
         this.renderEffects = RenderEffects.None;
 
@@ -150,23 +154,18 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        var posX = WindowCenter.X - (this.octagonData.Bounds.Width / 2);
-        var posY = WindowCenter.Y - (this.octagonData.Bounds.Height / 2);
-
-        var instructionsX = (int)(this.textSize.Width / 2) + 25;
-        var instructionsY = (int)(this.textSize.Height / 2) + 25;
-
         this.backgroundManager?.Render();
-        this.fontRenderer.Render(this.font, this.instructions, instructionsX, instructionsY);
 
         this.textureRenderer.Render(
             this.mainAtlas.Texture,
             this.octagonData.Bounds,
-            new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
+            new Rectangle(WindowCenter.X, WindowCenter.Y, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
             1f,
             0f,
             Color.White,
             this.renderEffects);
+
+        this.grpControls.Render();
 
         base.Render();
     }

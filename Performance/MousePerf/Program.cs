@@ -1,4 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// <copyright file="Program.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 // ReSharper disable UnusedVariable
 // ReSharper disable RedundantUsingDirective
