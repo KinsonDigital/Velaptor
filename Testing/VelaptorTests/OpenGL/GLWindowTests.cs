@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -929,6 +929,21 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    public void Show_WhileDisposed_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Dispose();
+
+        // Act
+        var act = () => sut.Show();
+
+        // Assert
+        act.Should().Throw<ObjectDisposedException>()
+            .WithMessage("Cannot access a disposed object.\nObject name: 'GLWindow'.");
+    }
+
+    [Fact]
     public void Show_WhenInvoked_SubscribesToEvents()
     {
         // Arrange
@@ -953,13 +968,25 @@ public class GLWindowTests : TestsBase
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        // Act
-        var act = () => this.mockGL.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
+    [Fact]
+    public async Task ShowAsync_WhileDisposed_ThrowsException()
+    {
+        // Arrange
+        this.mockTaskService.SetAction(Arg.Do<Action>(action => action()));
 
-        act.Should().Throw<Exception>().WithMessage("gl-error");
+        var sut = CreateSystemUnderTest();
+        sut.Dispose();
+
+        // Act
+        var act = async () =>
+        {
+            await sut.ShowAsync();
+            this.mockTaskService.Start();
+        };
 
         // Assert
-        this.mockGL.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
+        await act.Should().ThrowAsync<ObjectDisposedException>()
+            .WithMessage("Cannot access a disposed object.\nObject name: 'GLWindow'.");
     }
 
     [Fact]

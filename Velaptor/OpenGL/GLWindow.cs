@@ -349,6 +349,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void PreInit()
     {
+        if (this.isDisposed)
+        {
+            throw new ObjectDisposedException(nameof(GLWindow));
+        }
+
         this.silkWindow.UpdatesPerSecond = 60;
         this.silkWindow.Load += GLWindow_Load;
         this.silkWindow.Closing += GLWindow_Closing;
