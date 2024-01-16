@@ -847,7 +847,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new InvalidEnumArgumentException(
                         argName,
                         (int)this.silkWindow.WindowBorder,
-                        typeof(WindowBorder)),
+                        typeof(SilkWindowBorder)),
                 };
             },
             setterWhenNotCaching: value =>
@@ -860,7 +860,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new InvalidEnumArgumentException(
                         nameof(value),
                         (int)value,
-                        typeof(WindowBorder)),
+                        typeof(SilkWindowBorder)),
                 };
             });
     }
