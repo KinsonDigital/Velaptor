@@ -20,6 +20,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;

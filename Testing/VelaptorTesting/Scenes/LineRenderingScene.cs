@@ -7,10 +7,9 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -22,21 +21,17 @@ using Velaptor.Scene;
 /// </summary>
 public class LineRenderingScene : SceneBase
 {
+    private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private IAppInput<MouseState>? mouse;
     private IAppInput<KeyboardState>? keyboard;
     private ILineRenderer? lineRenderer;
-    private IFontRenderer? fontRenderer;
-    private IFont? font;
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
     private BackgroundManager? backgroundManager;
-    private string instructions = string.Empty;
-    private Vector2 instructionsPos;
+    private IControlGroup? grpControls;
     private bool mouseEnteredAtLeastOnce;
-    private ILoader<IFont>? fontLoader;
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
@@ -45,12 +40,7 @@ public class LineRenderingScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.lineRenderer = RendererFactory.CreateLineRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
-
         this.keyboard = HardwareFactory.GetKeyboard();
-
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
         this.mouse = HardwareFactory.GetMouse();
 
         this.line = default;
@@ -61,14 +51,27 @@ public class LineRenderingScene : SceneBase
 
         var instructionLines = new[]
         {
-            "Move the mouse to control the end of the line.",
-            "Use the mouse wheel to change the line thickness.",
-            "Use the keyboard arrow keys to move the line.",
+            "1. Move the mouse to control the end of the line.",
+            "2. Use the mouse wheel to change the line thickness.",
+            "3. Use the keyboard arrow keys to move the line.",
         };
 
-        this.instructions = string.Join(Environment.NewLine, instructionLines);
-        var textSize = this.font.Measure(this.instructions);
-        this.instructionsPos = new Vector2(WindowCenter.X, (textSize.Height / 2) + 20);
+        var instructions = string.Join(Environment.NewLine, instructionLines);
+
+        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        lblInstructions.Name = nameof(lblInstructions);
+        lblInstructions.Text = instructions;
+
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Instructions";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.TitleBarVisible = false;
+        this.grpControls.Initialized += (_, _) =>
+        {
+            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
+        };
+
+        this.grpControls.Add(lblInstructions);
 
         base.LoadContent();
     }
@@ -100,7 +103,8 @@ public class LineRenderingScene : SceneBase
     {
         this.backgroundManager?.Render();
         this.lineRenderer.Render(this.line);
-        this.fontRenderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
+
+        this.grpControls.Render();
 
         base.Render();
     }
@@ -114,7 +118,8 @@ public class LineRenderingScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        this.fontLoader.Unload(this.font);
+        this.grpControls.Dispose();
+        this.grpControls = null;
 
         base.UnloadContent();
     }

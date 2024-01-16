@@ -12,9 +12,9 @@ using System.Runtime.InteropServices;
 using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
-using Services;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.Services;
 
 /// <summary>
 /// Invokes OpenGL calls.
@@ -450,6 +450,13 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <inheritdoc/>
+    public void PixelStore(in GLPixelStoreParameter pname, in int param)
+    {
+        AddToGLCallStack(nameof(PixelStore));
+        this.gl.PixelStore((PixelStoreParameter)pname, param);
+    }
+
+    /// <inheritdoc/>
     public void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)
     {
         AddToGLCallStack($"{nameof(TexParameter)}(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)");
@@ -472,7 +479,16 @@ internal sealed class GLInvoker : IGLInvoker
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep same API signature.")]
-    public void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
+    public void TexImage2D<T>(
+        GLTextureTarget target,
+        int level,
+        GLInternalFormat internalformat,
+        uint width,
+        uint height,
+        int border,
+        GLPixelFormat format,
+        GLPixelType type,
+        byte[] pixels)
         where T : unmanaged
     {
         AddToGLCallStack(nameof(TexImage2D));
@@ -504,7 +520,24 @@ internal sealed class GLInvoker : IGLInvoker
 
         this.debugCallback = null;
         this.isDisposed = true;
+        this.gl.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Adds the name of the given function to the call stack of functions that have been invoked.
+    /// </summary>
+    /// <param name="glFunctionName">The name of the function.</param>
+    private static void AddToGLCallStack(string glFunctionName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(glFunctionName);
+
+        OpenGLCallStack.Enqueue(glFunctionName);
+
+        if (OpenGLCallStack.Count >= 200)
+        {
+            OpenGLCallStack.Dequeue();
+        }
     }
 
     /// <summary>
@@ -545,18 +578,6 @@ internal sealed class GLInvoker : IGLInvoker
                 this.loggingService.Error(openGLMessage);
                 this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
             }
-        }
-    }
-
-    private void AddToGLCallStack(string glFunctionName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(glFunctionName);
-
-        OpenGLCallStack.Enqueue(glFunctionName);
-
-        if (OpenGLCallStack.Count >= 200)
-        {
-            OpenGLCallStack.Dequeue();
         }
     }
 }

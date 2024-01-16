@@ -116,12 +116,13 @@ public sealed class Font : IFont
     public ITexture Atlas { get; private set; }
 
     /// <inheritdoc/>
+    /// <remarks>The size of the font has a max size of 100.</remarks>
     public uint Size
     {
         get => this.size;
         set
         {
-            this.size = value;
+            this.size = value > 100 ? 100 : value;
 
             if (this.fontInitialized && this.size > 0u)
             {

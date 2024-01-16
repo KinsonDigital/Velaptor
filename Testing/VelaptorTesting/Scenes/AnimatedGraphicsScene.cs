@@ -6,6 +6,7 @@ namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Numerics;
+using UI;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -13,19 +14,19 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Scene;
-using Velaptor.UI;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.
 /// </summary>
 public class AnimatedGraphicsScene : SceneBase
 {
-    private const int TopMargin = 50;
+    private const int WindowPadding = 10;
     private IAtlasData? mainAtlas;
     private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
     private BackgroundManager? backgroundManager;
     private ILoader<IAtlasData>? atlasLoader;
+    private IControlGroup? grpControls;
     private int elapsedTime;
     private int currentFrame;
 
@@ -46,14 +47,18 @@ public class AnimatedGraphicsScene : SceneBase
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("circle");
 
-        var instructions = new Label();
+        var instructions = TestingApp.Container.GetInstance<ILabel>();
         instructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
-        instructions.Color = Color.White;
 
-        AddControl(instructions);
-
-        instructions.Left = WindowCenter.X - (int)(instructions.Width / 2);
-        instructions.Top = TopMargin;
+        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls.Title = "Instructions";
+        this.grpControls.AutoSizeToFitContent = true;
+        this.grpControls.TitleBarVisible = false;
+        this.grpControls.Initialized += (_, _) =>
+        {
+            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
+        };
+        this.grpControls.Add(instructions);
 
         base.LoadContent();
     }
@@ -68,6 +73,8 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager?.Unload();
         this.atlasLoader.Unload(this.mainAtlas);
+        this.grpControls.Dispose();
+        this.grpControls = null;
 
         base.UnloadContent();
     }
@@ -92,18 +99,18 @@ public class AnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        var posX = WindowCenter.X - (this.frames[this.currentFrame].Bounds.Width / 2);
-        var posY = WindowCenter.Y - (this.frames[this.currentFrame].Bounds.Height / 2);
-
         this.backgroundManager?.Render();
         this.textureRenderer.Render(
             this.mainAtlas.Texture,
             this.frames[this.currentFrame].Bounds,
-            new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
+            new Rectangle(WindowCenter.X, WindowCenter.Y, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
             1f,
             0f,
             Color.White,
             RenderEffects.None);
+
+        this.grpControls.Render();
+
         base.Render();
     }
 

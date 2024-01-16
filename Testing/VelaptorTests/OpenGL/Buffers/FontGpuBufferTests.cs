@@ -12,12 +12,12 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
@@ -25,15 +25,18 @@ using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Xunit;
 
+/// <summary>
+/// Tests the <see cref="FontGpuBuffer"/> class.
+/// </summary>
 public class FontGpuBufferTests
 {
     private const uint VertexArrayId = 111;
     private const uint VertexBufferId = 222;
     private const uint IndexBufferId = 333;
     private const string BufferName = "Font";
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
@@ -45,67 +48,64 @@ public class FontGpuBufferTests
     /// </summary>
     public FontGpuBufferTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
-        this.mockGL.Setup(m => m.GenBuffer()).Returns(() =>
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.GenVertexArray().Returns(VertexArrayId);
+        this.mockGL.GenBuffer().Returns(_ =>
+            {
+                if (!this.vertexBufferCreated)
+                {
+                    this.vertexBufferCreated = true;
+                    return VertexBufferId;
+                }
+
+                if (this.indexBufferCreated)
+                {
+                    return 0;
+                }
+
+                this.indexBufferCreated = true;
+                return IndexBufferId;
+            });
+
+        this.mockGLService = Substitute.For<IOpenGLService>();
+
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
         {
-            if (!this.vertexBufferCreated)
+            reactor.Should().NotBeNull("it is required for unit testing.");
+
+            if (reactor.Id == PushNotifications.GLInitializedId)
             {
-                this.vertexBufferCreated = true;
-                return VertexBufferId;
+                this.glInitReactor = reactor;
             }
-
-            if (this.indexBufferCreated)
+            else if (reactor.Id == PushNotifications.SystemShuttingDownId)
             {
-                return 0;
+                // Do nothing
             }
-
-            this.indexBufferCreated = true;
-            return IndexBufferId;
-        });
-
-        this.mockGLService = new Mock<IOpenGLService>();
-
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
+            else
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
+            }
+        }));
 
-                if (reactor.Id == PushNotifications.GLInitializedId)
-                {
-                    this.glInitReactor = reactor;
-                }
-                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    // Do nothing
-                }
-                else
-                {
-                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                }
-            });
+        var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
+        mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
+        {
+            reactor.Should().NotBeNull("it is required for unit testing.");
+            this.viewPortSizeReactor = reactor;
+        }));
 
-        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
-            .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.viewPortSizeReactor = reactor;
-            });
+        var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
+        {
+            reactor.Should().NotBeNull("it is required for unit testing.");
+            this.batchSizeReactor = reactor;
+        }));
 
-        var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                this.batchSizeReactor = reactor;
-            });
-
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockBatchSizeReactable);
+        this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
     }
 
     #region Constructor Tests
@@ -116,8 +116,8 @@ public class FontGpuBufferTests
         var act = () =>
         {
             _ = new FontGpuBuffer(
-                this.mockGL.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockGLService,
                 null);
         };
 
@@ -135,11 +135,11 @@ public class FontGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.UploadVertexData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>());
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.UploadVertexData(default, 0);
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class FontGpuBufferTests
         sut.UploadVertexData(batchItem, 0u);
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Update Font Quad - BatchItem(0)"), Times.Once);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(5));
+        this.mockGLService.Received(1).BeginGroup("Update Font Quad - BatchItem(0)");
+        this.mockGLService.Received(5).EndGroup();
     }
 
     [Fact]
@@ -179,6 +179,13 @@ public class FontGpuBufferTests
             0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.804163694f, 0.702218235f, 0.571428597f, 0.25f, 147f,
             112f, 219f, 255f,
         };
+        var actual = Array.Empty<float>();
+
+        // Get the actual data for assertion later
+        this.mockGL.When(x =>
+                x.BufferSubData(Arg.Any<GLBufferTarget>(), Arg.Any<nint>(), Arg.Any<nuint>(), Arg.Any<float[]>()))
+            .Do(callInfo => actual = callInfo.Arg<float[]>());
+
         var batchItem = new FontGlyphBatchItem(
             new RectangleF(11, 22, 33, 44),
             new RectangleF(55, 66, 77, 88),
@@ -191,7 +198,7 @@ public class FontGpuBufferTests
 
         var viewPortSizeData = new ViewPortSizeData { Width = 800, Height = 600 };
 
-        var sut = CreateSystemUnderTest();
+        var sut = new FontGpuBuffer(this.mockGL, this.mockGLService, this.mockReactableFactory);
 
         this.glInitReactor.OnReceive();
         this.viewPortSizeReactor.OnReceive(viewPortSizeData);
@@ -200,10 +207,10 @@ public class FontGpuBufferTests
         sut.UploadVertexData(batchItem, 0u);
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.AtLeastOnce);
-        this.mockGL.Verify(m
-            => m.BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, expected));
-        this.mockGLService.Verify(m => m.UnbindVBO(), Times.AtLeastOnce);
+        this.mockGLService.Received().BindVBO(VertexBufferId);
+        this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, Arg.Any<float[]>());
+        actual.Should().BeEquivalentTo(expected);
+        this.mockGLService.Received().UnbindVBO();
     }
 
     [Fact]
@@ -212,11 +219,11 @@ public class FontGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.PrepareForUpload();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.PrepareForUpload();
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -230,7 +237,7 @@ public class FontGpuBufferTests
         sut.PrepareForUpload();
 
         // Assert
-        this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.AtLeastOnce);
+        this.mockGLService.Received().BindVAO(VertexArrayId);
     }
 
     [Fact]
@@ -239,11 +246,11 @@ public class FontGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.GenerateData();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.GenerateData();
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -267,11 +274,11 @@ public class FontGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.SetupVAO();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.SetupVAO();
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -284,24 +291,21 @@ public class FontGpuBufferTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Setup Font Buffer Vertex Attributes"), Times.Once);
+        this.mockGLService.Received(1).BeginGroup("Setup Font Buffer Vertex Attributes");
 
         // Assert Vertex Position Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, 32, 0), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(0));
+        this.mockGL.Received(1).VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, 32, 0);
+        this.mockGL.Received(1).EnableVertexAttribArray(0);
 
         // Assert Texture Coordinate Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, 32, 8), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(1));
+        this.mockGL.Received(1).VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, 32, 8);
+        this.mockGL.Received(1).EnableVertexAttribArray(1);
 
         // Assert Tint Color Attribute
-        this.mockGL.Verify(m
-            => m.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, 32, 16), Times.Once);
-        this.mockGL.Verify(m => m.EnableVertexAttribArray(2));
+        this.mockGL.Received(1).VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, 32, 16);
+        this.mockGL.Received(1).EnableVertexAttribArray(2);
 
-        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(4));
+        this.mockGLService.Received(4).EndGroup();
     }
 
     [Fact]
@@ -310,11 +314,11 @@ public class FontGpuBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
-        {
-            sut.GenerateIndices();
-        }, "The font buffer has not been initialized.");
+        // Act
+        var act = () => sut.GenerateIndices();
+
+        // Assert
+        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
     #endregion
 
@@ -323,12 +327,11 @@ public class FontGpuBufferTests
     public void BatchSizeReactable_WhenSubscribing_UsesCorrectReactorName()
     {
         // Arrange
-        var mockReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(Act);
+        var mockReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        mockReactable.When(x =>
+            x.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(Act)));
 
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable())
-            .Returns(mockReactable.Object);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockReactable);
 
         _ = CreateSystemUnderTest();
 
@@ -379,9 +382,9 @@ public class FontGpuBufferTests
         // Assert
         sut.BatchSize.Should().Be(123);
 
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Vertex Data"), Times.AtLeastOnce);
-        this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeast(2));
-        this.mockGLService.Verify(m => m.BeginGroup($"Set size of {BufferName} Indices Data"), Times.AtLeastOnce);
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
+        this.mockGLService.Received(6).EndGroup();
+        this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Indices Data");
     }
     #endregion
 
@@ -389,8 +392,5 @@ public class FontGpuBufferTests
     /// Creates a new instance of <see cref="FontGpuBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontGpuBuffer CreateSystemUnderTest() => new (
-        this.mockGL.Object,
-        this.mockGLService.Object,
-        this.mockReactableFactory.Object);
+    private FontGpuBuffer CreateSystemUnderTest() => new (this.mockGL, this.mockGLService, this.mockReactableFactory);
 }

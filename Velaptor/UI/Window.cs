@@ -246,7 +246,6 @@ public abstract class Window : IWindow
             return;
         }
 
-        this.batcher.Clear();
         this.batcher.Begin();
 
         SceneManager.Render();

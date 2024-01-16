@@ -7,6 +7,7 @@ namespace VelaptorTests.Fakes;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Graphics;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using Velaptor.Factories;
 
 /// <summary>

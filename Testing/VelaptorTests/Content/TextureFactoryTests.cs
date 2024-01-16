@@ -12,6 +12,7 @@ using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.ReactableData;
 using Xunit;
 

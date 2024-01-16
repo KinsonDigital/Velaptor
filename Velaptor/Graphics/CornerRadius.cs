@@ -49,22 +49,22 @@ public readonly record struct CornerRadius
     /// <summary>
     /// Gets the top left corner radius.
     /// </summary>
-    public float TopLeft { get; }
+    public float TopLeft { get; init; }
 
     /// <summary>
     /// Gets the bottom left corner radius.
     /// </summary>
-    public float BottomLeft { get; }
+    public float BottomLeft { get; init; }
 
     /// <summary>
     /// Gets the bottom right corner radius.
     /// </summary>
-    public float BottomRight { get; }
+    public float BottomRight { get; init; }
 
     /// <summary>
     /// Gets the top right corner radius.
     /// </summary>
-    public float TopRight { get; }
+    public float TopRight { get; init; }
 
     /// <summary>
     /// Returns an empty <see cref="CornerRadius"/> instance.

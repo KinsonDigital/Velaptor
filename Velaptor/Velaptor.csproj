@@ -53,6 +53,7 @@
     <InternalsVisibleTo Include="MeasureTextPerf" />
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
+    <InternalsVisibleTo Include="VelaptorTesting" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,6 +96,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Silk.NET" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.20.0" />
     <PackageReference Include="SimpleInjector" Version="5.4.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">

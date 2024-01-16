@@ -30,6 +30,12 @@ internal interface IReactableFactory
     IPushReactable<GL> CreateGLReactable();
 
     /// <summary>
+    /// Creates an OpenGL objects reactable.
+    /// </summary>
+    /// <returns>The reactable.</returns>
+    IPushReactable<GLObjectsData> CreateGLObjectsReactable();
+
+    /// <summary>
     /// Creates a batch size reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
