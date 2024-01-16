@@ -1,5 +1,3 @@
-[![RepoRater](https://repo-rater.eddiehub.io/api/badge?owner=KinsonDigital&name=Velaptor)](https://repo-rater.eddiehub.io/rate?owner=KinsonDigital&name=Velaptor)
-
 <div align="center">
 
 ![logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png)
@@ -10,6 +8,7 @@
 
 <div align="center">
 
+[![RepoRater](https://repo-rater.eddiehub.io/api/badge?owner=KinsonDigital&name=Velaptor)](https://repo-rater.eddiehub.io/rate?owner=KinsonDigital&name=Velaptor)
 [![Build PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/build-status-check.yml?label=%E2%9A%99%EF%B8%8FBuild)](https://github.com/KinsonDigital/Velaptor/actions/workflows/build-status-check.yml)
 [![Unit Test PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/unit-test-status-check.yml?label=%F0%9F%A7%AATests)](https://github.com/KinsonDigital/Velaptor/actions/workflows/unit-test-status-check.yml)
 
