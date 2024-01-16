@@ -11,7 +11,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">New Features ✨</h2>
 
-1. [#859](https://github.com/KinsonDigital/Velaptor/issues/859) - Changed the following properties of the `CornerRadius` struct to init properties.
+1. [#859](https://github.com/KinsonDigital/Velaptor/issues/859) - Changed the following properties of the `CornerRadius` struct to `init` properties.
    - `TopLeft`
    - `TopRight`
    - `BottomRight`
@@ -19,8 +19,8 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">Performance Improvements 🏎️</h2>
 
-1. [#801](https://github.com/KinsonDigital/Velaptor/issues/801) - Refactored `FontStats` to `readonly record`.
-2. [#481](https://github.com/KinsonDigital/Velaptor/issues/481) - Improved OpenGL buffering.
+1. [#801](https://github.com/KinsonDigital/Velaptor/issues/801) - Refactored the `FontStats` struct to a `readonly record` struct.
+2. [#481](https://github.com/KinsonDigital/Velaptor/issues/481) - Improved performance of OpenGL buffering when uploading GPU data.
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
