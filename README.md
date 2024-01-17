@@ -1,6 +1,6 @@
 <div align="center">
 
-  ![logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png)
+![logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png)
 </div>
 
 
@@ -21,6 +21,7 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
 
 [![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/preview)
+[![RepoRater](https://repo-rater.eddiehub.io/api/badge?owner=KinsonDigital&name=Velaptor)](https://repo-rater.eddiehub.io/rate?owner=KinsonDigital&name=Velaptor)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
 [![Nuget Downloads](https://img.shields.io/nuget/dt/KinsonDigital.Velaptor?color=0094FF&label=nuget%20downloads&logo=nuget)](https://www.nuget.org/stats/packages/KinsonDigital.Velaptor?groupby=Version)
@@ -31,40 +32,45 @@
 
 <h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
 
-This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and provide feedback.  That is what open source is all about. 🥳
+This library is still under development and is not at v1.0.0 yet!! However, all of the major features are available, so we encourage you to use it and provide feedback. That is what open source is all about. 🥳
 
 <br/>
 
 <h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
 
-Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult which is why **Velaptor** was developed.  It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few.  This way you can just concentrate on developing your game or multi-media application.
+Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult which is why **Velaptor** was developed. It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way you can just concentrate on developing your game or multi-media application.
 
 <h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
 
 ### **Cross-Platform**
+
 We strive for **Velaptor** to be a cross platform. We do this by using as many cross platform dependencies as possible. If a cross platform dependency cannot be found, then the appropriate platform specific implementations will be used.
 
 ### **Easy To Use**
-One of the goals of this library is to make it easy to use.  We aim for naming, documentation and usability of the API to be first class.
+
+One of the goals of this library is to make it easy to use. We aim for naming, documentation and usability of the API to be first class.
 
 ### **Flexible Content Loading System**
-**Velaptor** has the ability to load texture atlas data for its rendering as well as single image and sound content.  The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
+
+**Velaptor** has the ability to load texture atlas data for its rendering as well as single image and sound content. The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
 
 ### **Content Caching**
-Loaded content such as images and sounds are cached for better performance.  If the same content is attempting to be loaded from its source after it has already been loaded, it will be used from memory instead of being reloaded. You can also load content by building your own content loader. 
+
+Loaded content such as images and sounds are cached for better performance. If the same content is attempting to be loaded from its source after it has already been loaded, it will be used from memory instead of being reloaded. You can also load content by building your own content loader.
 
 <h2 style="font-weight:bold;" align="center">📽️ Feature Demo 📽️</h2>
 
 <div align="center">
 
 [![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+
 </div>
 
 <br/>
 
 <h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
 
-  Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
+Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
