@@ -15,7 +15,7 @@ on:
 jobs:
   sdk_status_check:
     name: ${{ vars.PROJECT_NAME }} SDK Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/validate-sdk-setup.yml@v13.6.2
+    uses: KinsonDigital/Infrastructure/.github/workflows/validate-sdk-setup.yml@v13.6.3
     with:
       repo-name: "${{ vars.PROJECT_NAME }}"
       checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}

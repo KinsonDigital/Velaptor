@@ -69,7 +69,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h5 align="center">(Changes that do not affect users.  Not breaking changes, new features, or bug fixes.)</h5>
 
 1. [#174](https://github.com/KinsonDigital/Velaptor/issues/174) - Added guards to various methods in the `GLInvoker` class to check if strings are null or empty.
-   > **Note** Thank you [@AndreBonda](https://github.com/AndreBonda)!!
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
 
 ---
 
@@ -77,6 +77,6 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. [#355](https://github.com/KinsonDigital/Velaptor/issues/355), [#354](https://github.com/KinsonDigital/Velaptor/issues/354), [#353](https://github.com/KinsonDigital/Velaptor/issues/353) - Refactored unit test code to use the [FluentAssertions](https://fluentassertions.com/) library.
-   > **Note** Thank you [@AndreBonda](https://github.com/AndreBonda)!!
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
 2. [#612](https://github.com/KinsonDigital/Velaptor/issues/612) - Updated CICD settings to prevent README pre-processing for NuGet packages from being skipped.
 3. [#617](https://github.com/KinsonDigital/Velaptor/issues/617) - Set up renovate dependency management to use KinsonDigital organizational presets/settings.

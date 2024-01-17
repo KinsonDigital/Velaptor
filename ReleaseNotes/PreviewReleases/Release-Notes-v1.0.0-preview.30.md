@@ -39,5 +39,6 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">Other 🪧</h2>
 
-1. [#782](https://github.com/KinsonDigital/Velaptor/issues/782) - Replaced custom guards. (Thanks [@AndreaBonda](https://github.com/AndreBonda)!)
+1. [#782](https://github.com/KinsonDigital/Velaptor/issues/782) - Replaced custom guards.
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
 2. [#776](https://github.com/KinsonDigital/Velaptor/issues/776) - Updated sync workflow.

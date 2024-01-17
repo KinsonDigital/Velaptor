@@ -43,4 +43,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 2. [#359](https://github.com/KinsonDigital/Velaptor/issues/359) - Refactored unit test assertions.
    - Thank you [@thestbar](https://github.com/thestbar) for your contribution!
 3. [#237](https://github.com/KinsonDigital/Velaptor/issues/237) - Refactored switch statements and out of range exceptions.
-   - Thank you [@AndreBonda](https://github.com/AndreBonda) for your contribution!
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
