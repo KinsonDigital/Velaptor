@@ -1,8 +1,8 @@
 <div align="center">
 
 ![logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/velaptor-logo.png)
-
 </div>
+
 
 <h1 style="border:0;font-weight:bold" align="center">Velaptor</h1>
 
@@ -28,7 +28,6 @@
 
 [![Good First GitHub Issues](https://img.shields.io/github/issues/kinsondigital/Velaptor/good%20first%20issue?color=7057ff&label=Good%20First%20Issues)](https://github.com/KinsonDigital/Velaptor/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 [![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=chat%20on%20discord&logo=discord&logoColor=white)](https://discord.gg/qewu6fNgv7)
-
 </div>
 
 <h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
@@ -93,15 +92,15 @@ Interested in contributing? If so, click [here](https://github.com/KinsonDigital
 
 <br/>
 
-
 <h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
+
 
 <div align="center">
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?style=flat)](https://github.com/KinsonDigital/.github/blob/main/docs/code_of_conduct.md)
 [![GitHub](https://img.shields.io/github/license/kinsondigital/Velaptor)](https://github.com/KinsonDigital/Velaptor/blob/preview/LICENSE.md)
-
 </div>
+
 
 This software is distributed under the very permissive MIT license and all dependencies are distributed under MIT-compatible licenses.
 This project has adopted the code of conduct defined by the **Contributor Covenant** to clarify expected behavior in our community.
