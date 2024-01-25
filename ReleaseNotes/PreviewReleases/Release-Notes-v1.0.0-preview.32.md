@@ -20,7 +20,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 align="center" style="font-weight: bold;">Performance Improvements 🏎️</h2>
 
 1. [#801](https://github.com/KinsonDigital/Velaptor/issues/801) - Refactored the `FontStats` struct to a `readonly record` struct.
-2. [#481](https://github.com/KinsonDigital/Velaptor/issues/481) - Improved performance of OpenGL buffering when uploading GPU data.
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
+3. [#481](https://github.com/KinsonDigital/Velaptor/issues/481) - Improved performance of OpenGL buffering when uploading GPU data.
+    > **Thank you [@AndreBonda](https://github.com/AndreBonda)!!**
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
