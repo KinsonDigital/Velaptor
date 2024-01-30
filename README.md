@@ -32,31 +32,32 @@
 
 <h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
 
-This library is still under development and is not at v1.0.0 yet!! However, all of the major features are available, so we encourage you to use it and provide feedback. That is what open source is all about. 🥳
+This library is still under development and is not at v1.0.0 yet!! However, all of the major features are available, so we encourage you to use **Velaptor** and provide feedback. That is what open source is all about. 🥳
 
 <br/>
 
 <h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
+<h4 style="font-weight:bold;" align="left" >⭐ Don't forget to give us a star! ⭐</h4>
 
-Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult which is why **Velaptor** was developed. It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way you can just concentrate on developing your game or multi-media application.
+**Velaptor** is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult which is why **Velaptor** was developed. It takes care of all of the lower level, more complicated things for creating a game like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way you can just concentrate on developing your game or multi-media application.
 
 <h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
 
 ### **Cross-Platform**
 
-We strive for **Velaptor** to be a cross platform. We do this by using as many cross platform dependencies as possible. If a cross platform dependency cannot be found, then the appropriate platform specific implementations will be used.
+We strive for **Velaptor** to be a cross-platform. We do this by using as many cross-platform dependencies as possible. If a cross platform dependency cannot be found, then the appropriate platform-specific implementations will be used.
 
 ### **Easy To Use**
 
-One of the goals of this library is to make it easy to use. We aim for naming, documentation and usability of the API to be first class.
+One of the goals of this library is to make it easy to use. We aim for consistent naming conventions, documentation and usability of the API to be first-class.
 
 ### **Flexible Content Loading System**
 
-**Velaptor** has the ability to load texture atlas data for its rendering as well as single image and sound content. The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
+**Velaptor** can load texture atlas data for its rendering as well as single images and sound content. The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
 
 ### **Content Caching**
 
-Loaded content such as images and sounds are cached for better performance. If the same content is attempting to be loaded from its source after it has already been loaded, it will be used from memory instead of being reloaded. You can also load content by building your own content loader.
+Loaded content such as images and sounds are cached for better performance. If the same content is attempting to be loaded from its source after it has already been loaded, it will be used from memory instead of being reloaded. You can also load content by building your content loader.
 
 <h2 style="font-weight:bold;" align="center">📽️ Feature Demo 📽️</h2>
 
@@ -70,13 +71,13 @@ Loaded content such as images and sounds are cached for better performance. If t
 
 <h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
 
-Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io). Velaptor is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
+Full API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io).**Velaptor**is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
 <h2 style="font-weight:bold;" align="center">🙏🏼 Contributing 🙏🏼</h2>
 
-Interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via one-time or recurring donation.
+Interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via a one-time or recurring donation.
 
 
 <h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
