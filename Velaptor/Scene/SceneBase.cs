@@ -18,6 +18,8 @@ using ReactableData;
 [DebuggerDisplay("Name = {Name}({Id})")]
 public abstract class SceneBase : IScene
 {
+    private IDisposable? unsubscriber;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
@@ -114,11 +116,12 @@ public abstract class SceneBase : IScene
         var winSizeSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.WindowSizeChangedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId)))
+            .WhenUnsubscribing(() => this.unsubscriber?.Dispose())
             .BuildOneWayReceive<WindowSizeData>(data =>
             {
                 WindowSize = new SizeU(data.Width, data.Height);
             });
 
-        winSizeReactable.Subscribe(winSizeSubscription);
+        this.unsubscriber = winSizeReactable.Subscribe(winSizeSubscription);
     }
 }
