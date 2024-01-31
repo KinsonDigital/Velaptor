@@ -1,4 +1,4 @@
-// <copyright file="IReactableFactory.cs" company="KinsonDigital">
+﻿// <copyright file="IReactableFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -46,6 +46,12 @@ internal interface IReactableFactory
     /// </summary>
     /// <returns>The reactable.</returns>
     IPushReactable<WindowSizeData> CreatePushWindowSizeReactable();
+
+    /// <summary>
+    /// Creates a pull window size reactable.
+    /// </summary>
+    /// <returns>The reactable.</returns>
+    IPullReactable<WindowSizeData> CreatePullWindowSizeReactable();
 
     /// <summary>
     /// Creates a viewport reactable.
