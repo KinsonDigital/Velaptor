@@ -12,6 +12,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Carbonate.Fluent;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Exceptions;
@@ -60,6 +61,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
+    private readonly IDisposable pullWinSizeUnsubscriber;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -135,6 +137,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glObjectsReactable = reactableFactory.CreateGLObjectsReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
+        var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
         this.timerService = timerService;
 
         this.mouseStateData = default;
@@ -148,6 +151,14 @@ internal sealed class GLWindow : VelaptorIWindow
                 WindowPadding,
                 (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
         };
+
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PullNotifications.GetWindowSizeId)
+            .WithName($"{nameof(GLWindow)}.Ctor")
+            .WhenUnsubscribing(() => this.pullWinSizeUnsubscriber?.Dispose())
+            .BuildOneWayRespond(() => new WindowSizeData { Width = Width, Height = Height });
+
+        this.pullWinSizeUnsubscriber = pullWinSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
