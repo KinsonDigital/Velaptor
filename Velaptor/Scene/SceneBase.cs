@@ -1,4 +1,4 @@
-// <copyright file="SceneBase.cs" company="KinsonDigital">
+﻿// <copyright file="SceneBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -120,5 +120,11 @@ public abstract class SceneBase : IScene
             });
 
         this.unsubscriber = winSizeReactable.Subscribe(winSizeSubscription);
+
+        // Get the size of the window just in case the scene is being created before
+        // the loading of the window and gl init has completed.
+        var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
+        var winSizeData = pullWinSizeReactable.Pull(PullNotifications.GetWindowSizeId);
+        WindowSize = new SizeU(winSizeData.Width, winSizeData.Height);
     }
 }

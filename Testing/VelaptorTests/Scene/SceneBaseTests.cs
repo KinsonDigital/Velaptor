@@ -1,4 +1,4 @@
-// <copyright file="SceneBaseTests.cs" company="KinsonDigital">
+﻿// <copyright file="SceneBaseTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -68,6 +68,22 @@ public class SceneBaseTests
         sut.Id.Should().NotBe(Guid.Empty);
         sut.IsLoaded.Should().BeFalse();
         sut.WindowSize.Should().BeEquivalentTo(default(SizeU));
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_RequestsWindowSize()
+    {
+        // Act & Arrange
+        var mockPullWinSizeReactable = Substitute.For<IPullReactable<WindowSizeData>>();
+        mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 100, Height = 200 });
+
+        this.mockReactableFactory.CreatePullWindowSizeReactable().Returns(mockPullWinSizeReactable);
+
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        mockPullWinSizeReactable.Received(1).Pull(PullNotifications.GetWindowSizeId);
+        sut.WindowSize.Should().Be(new SizeU(100, 200));
     }
     #endregion
 
