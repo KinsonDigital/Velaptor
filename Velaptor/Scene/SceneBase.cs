@@ -1,4 +1,4 @@
-﻿// <copyright file="SceneBase.cs" company="KinsonDigital">
+// <copyright file="SceneBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -109,7 +109,7 @@ public abstract class SceneBase : IScene
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private void Init(IReactableFactory reactableFactory)
     {
-        var winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        var winSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
 
         var winSizeSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.WindowSizeChangedId)

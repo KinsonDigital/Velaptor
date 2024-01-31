@@ -41,7 +41,7 @@ public class SceneBaseTests
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateWindowSizeReactable())
+        this.mockReactableFactory.Setup(m => m.CreatePushWindowSizeReactable())
             .Returns(mockWinSizeReactable.Object);
     }
 

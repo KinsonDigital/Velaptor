@@ -1,4 +1,4 @@
-﻿// <copyright file="ReactableFactory.cs" company="KinsonDigital">
+// <copyright file="ReactableFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -33,7 +33,7 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();
 
     /// <inheritdoc/>
-    public IPushReactable<WindowSizeData> CreateWindowSizeReactable() => IoC.Container.GetInstance<IPushReactable<WindowSizeData>>();
+    public IPushReactable<WindowSizeData> CreatePushWindowSizeReactable() => IoC.Container.GetInstance<IPushReactable<WindowSizeData>>();
 
     /// <inheritdoc/>
     public IPushReactable<ViewPortSizeData> CreateViewPortReactable() => IoC.Container.GetInstance<IPushReactable<ViewPortSizeData>>();

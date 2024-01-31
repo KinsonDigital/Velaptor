@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -62,7 +62,7 @@ public class GLWindowTests : TestsBase
     private readonly IPushReactable mockPushReactable;
     private readonly IPushReactable<MouseStateData> mockMouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> mockKeyboardReactable;
-    private readonly IPushReactable<WindowSizeData> mockWinSizeReactable;
+    private readonly IPushReactable<WindowSizeData> mockPushWinSizeReactable;
     private readonly IPushReactable<GL> mockGLReactable;
     private readonly GLObjectsReactable mockGLObjectsReactable;
     private readonly SilkIWindow mockSilkWindow;
@@ -113,7 +113,7 @@ public class GLWindowTests : TestsBase
         this.mockGLObjectsReactable = Substitute.For<GLObjectsReactable>();
 
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
-        this.mockWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
+        this.mockPushWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
@@ -122,7 +122,7 @@ public class GLWindowTests : TestsBase
         this.mockReactableFactory.CreateGLReactable().Returns(this.mockGLReactable);
         this.mockReactableFactory.CreateGLObjectsReactable().Returns(this.mockGLObjectsReactable);
         this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
-        this.mockReactableFactory.CreateWindowSizeReactable().Returns(this.mockWinSizeReactable);
+        this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(this.mockPushWinSizeReactable);
 
         this.mockTimerService = Substitute.For<ITimerService>();
     }
@@ -1203,7 +1203,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockGL.Viewport(0, 0, 11, 22);
-        this.mockWinSizeReactable.Received(1)
+        this.mockPushWinSizeReactable.Received(1)
             .Push(new WindowSizeData { Width = 11u, Height = 22u }, PushNotifications.WindowSizeChangedId);
         actualSize.Width.Should().Be(11u);
         actualSize.Height.Should().Be(22u);

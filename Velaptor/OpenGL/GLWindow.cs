@@ -58,7 +58,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<GLObjectsData> glObjectsReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
-    private readonly IPushReactable<WindowSizeData> winSizeReactable;
+    private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
@@ -134,7 +134,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glReactable = reactableFactory.CreateGLReactable();
         this.glObjectsReactable = reactableFactory.CreateGLObjectsReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
-        this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         this.timerService = timerService;
 
         this.mouseStateData = default;
@@ -485,7 +485,7 @@ internal sealed class GLWindow : VelaptorIWindow
         WinResize?.Invoke(size);
 
         this.viewPortReactable.Push(new ViewPortSizeData { Width = width, Height = height }, PushNotifications.ViewPortSizeChangedId);
-        this.winSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
+        this.pushWinSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
     }
 
     /// <summary>
