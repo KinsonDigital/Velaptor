@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -509,6 +509,19 @@ public class GLWindowTests : TestsBase
 
         sut.Width.Should().Be(100);
         sut.Height.Should().Be(200);
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_HasCorrectDefaultPropValues()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.AutoSceneLoading.Should().BeTrue();
+        sut.AutoSceneUnloading.Should().BeTrue();
+        sut.AutoSceneUpdating.Should().BeTrue();
+        sut.AutoSceneRendering.Should().BeTrue();
     }
     #endregion
 
