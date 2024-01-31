@@ -74,9 +74,6 @@ public abstract class SceneBase : IScene
     /// <inheritdoc/>
     public virtual void Update(FrameTime frameTime)
     {
-        if (!IsLoaded)
-        {
-        }
     }
 
     /// <inheritdoc/>
