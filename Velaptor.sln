@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyboardPerf", "Performance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MousePerf", "Performance\MousePerf\MousePerf.csproj", "{6387C428-D725-4C43-B7BB-9FDB65A821D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Testing\PlaygroundApp\Playground.csproj", "{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundApp", "Testing\PlaygroundApp\PlaygroundApp.csproj", "{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
