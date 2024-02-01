@@ -1,5 +1,5 @@
-name: ✅Build Perf Projects Status Check
-run-name: ✅Build Perf Projects Status Check (${{ github.base_ref }} branch)
+name: ✅Build Misc Projects Status Check
+run-name: ✅Build Misc Projects Status Check (${{ github.base_ref }} branch)
 
 
 defaults:
