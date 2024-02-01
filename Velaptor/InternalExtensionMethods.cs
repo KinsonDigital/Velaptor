@@ -136,7 +136,10 @@ internal static class InternalExtensionMethods
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
+    public static void RegisterConditional<TService, TImplementation>(
+        this Container container,
+        Predicate<PredicateContext> predicate,
+        bool suppressDisposal = false)
         where TService : class
         where TImplementation : class, TService
     {
