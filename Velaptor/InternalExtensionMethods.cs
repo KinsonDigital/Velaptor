@@ -104,6 +104,7 @@ internal static class InternalExtensionMethods
     /// <typeparam name="T">The type to suppress against.</typeparam>
     /// <param name="container">The container that the suppression applies to.</param>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Keep public for future development.")]
     public static void SuppressDisposableTransientWarning<T>(this Container container)
     {
         var registration = container.GetRegistration(typeof(T))?.Registration;
