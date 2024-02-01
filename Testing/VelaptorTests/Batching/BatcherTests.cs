@@ -81,8 +81,6 @@ public class BatcherTests
             .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Rect }, PushNotifications.BatchSizeChangedId);
         this.mockBatchSizeReactable.Received(1)
             .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Line }, PushNotifications.BatchSizeChangedId);
-
-        this.mockBatchSizeReactable.Received(1).Unsubscribe(PushNotifications.BatchSizeChangedId);
     }
     #endregion
 

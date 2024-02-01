@@ -284,28 +284,6 @@ public class StatsWindowServiceTests
     }
 
     [Fact]
-    public void Render_WhenNotVisibleAndAfterInitialization_CorrectlySetsWindowFlags()
-    {
-        // Arrange
-        const ImGuiWindowFlags expected = ImGuiWindowFlags.None |
-                                          ImGuiWindowFlags.NoTitleBar |
-                                          ImGuiWindowFlags.NoBackground |
-                                          ImGuiWindowFlags.NoResize;
-        var style = new ImGuiStyle { WindowPadding = new Vector2(5, 10) };
-        MockStyle(style);
-
-        var sut = CreateSystemUnderTest();
-        sut.Render();
-        sut.Render();
-
-        // Act
-        sut.Render();
-
-        // Assert
-        this.mockImGuiInvoker.Received().Begin(Arg.Any<string>(), expected);
-    }
-
-    [Fact]
     public void Render_WhenInvokedBeforeInitializationIsInvoked_RendersWindow()
     {
         // Arrange

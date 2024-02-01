@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyboardPerf", "Performance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MousePerf", "Performance\MousePerf\MousePerf.csproj", "{6387C428-D725-4C43-B7BB-9FDB65A821D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundApp", "Testing\PlaygroundApp\PlaygroundApp.csproj", "{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -115,6 +117,14 @@ Global
 		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release|x64.Build.0 = Release|Any CPU
 		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release-Console|x64.ActiveCfg = Debug|Any CPU
 		{6387C428-D725-4C43-B7BB-9FDB65A821D1}.Release-Console|x64.Build.0 = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Debug|x64.Build.0 = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Debug-Console|x64.ActiveCfg = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Debug-Console|x64.Build.0 = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Release|x64.ActiveCfg = Release|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Release|x64.Build.0 = Release|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Release-Console|x64.ActiveCfg = Debug|Any CPU
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0}.Release-Console|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +137,7 @@ Global
 		{3300D0AE-0E35-4556-8D6C-FCE81CCE7FDC} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{43B4ED10-6225-4F9E-ADFB-474130E71B45} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
 		{6387C428-D725-4C43-B7BB-9FDB65A821D1} = {0F186A14-6114-4CC0-850E-2E062A55CF52}
+		{C2574B32-F9DB-49CD-B8C0-8F30876A7EB0} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

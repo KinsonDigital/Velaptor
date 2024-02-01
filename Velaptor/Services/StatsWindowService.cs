@@ -86,16 +86,12 @@ internal sealed class StatsWindowService : IStatsWindowService
     /// <inheritdoc/>
     public void Render()
     {
-        var flags = ImGuiWindowFlags.None;
-
-        if (!Visible && this.isInitialized)
+        if (!Visible)
         {
-            flags |= ImGuiWindowFlags.NoTitleBar;
-            flags |= ImGuiWindowFlags.NoBackground;
-            flags |= ImGuiWindowFlags.NoResize;
+            return;
         }
 
-        this.imGuiInvoker.Begin(Title, flags);
+        this.imGuiInvoker.Begin(Title, ImGuiWindowFlags.None);
 
         if (Visible || !this.isInitialized)
         {

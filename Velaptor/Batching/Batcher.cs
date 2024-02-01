@@ -62,8 +62,6 @@ internal sealed class Batcher : IBatcher
                         PushNotifications.BatchSizeChangedId);
                 }
 
-                batchSizeReactable.Unsubscribe(PushNotifications.BatchSizeChangedId);
-
                 if (this.cachedClearColor is not null)
                 {
                     this.cachedClearColor.IsCaching = false;

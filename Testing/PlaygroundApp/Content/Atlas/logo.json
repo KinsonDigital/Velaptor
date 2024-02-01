@@ -1,0 +1,8 @@
+﻿[
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "0, 0, 116, 116",
+    "FrameIndex": -1,
+    "Name": "logo"
+  }
+]
