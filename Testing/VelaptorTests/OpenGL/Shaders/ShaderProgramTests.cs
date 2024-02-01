@@ -10,7 +10,7 @@ using Carbonate.NonDirectional;
 using Fakes;
 using FluentAssertions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
@@ -31,12 +31,12 @@ public class ShaderProgramTests
     private const uint VertexShaderId = 1234u;
     private const uint FragShaderId = 5678u;
     private const uint ShaderProgramId = 1928u;
-    private readonly Mock<IShaderLoaderService> mockShaderLoader;
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly IShaderLoaderService mockShaderLoader;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IDisposable mockGLInitUnsubscriber;
+    private readonly IDisposable mockShutDownUnsubscriber;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription? shutDownReactor;
 
@@ -45,55 +45,35 @@ public class ShaderProgramTests
     /// </summary>
     public ShaderProgramTests()
     {
-        this.mockShaderLoader = new Mock<IShaderLoaderService>();
+        this.mockShaderLoader = Substitute.For<IShaderLoaderService>();
 
         // Sets up the vertex sut file mock.
-        this.mockShaderLoader.Setup(m
-                => m.LoadVertSource(ShaderName))
-            .Returns(() => VertShaderSrc);
+        this.mockShaderLoader.LoadVertSource(ShaderName).Returns(VertShaderSrc);
 
         // Sets up the fragment sut file mock.
-        this.mockShaderLoader.Setup(m
-                => m.LoadFragSource(ShaderName))
-            .Returns(() => FragShaderSrc);
+        this.mockShaderLoader.LoadFragSource(ShaderName).Returns(FragShaderSrc);
 
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGLService = new Mock<IOpenGLService>();
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
 
         const int getShaderStatusCode = 1;
         const int getProgramStatusCode = 1;
-        this.mockGL.Setup(m => m.CreateShader(GLShaderType.VertexShader)).Returns(VertexShaderId);
-        this.mockGL.Setup(m => m.CreateShader(GLShaderType.FragmentShader)).Returns(FragShaderId);
-        this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), GLShaderParameter.CompileStatus))
-            .Returns(getShaderStatusCode);
-        this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus))
-            .Returns(getProgramStatusCode);
-        this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
+        this.mockGL.CreateShader(GLShaderType.VertexShader).Returns(VertexShaderId);
+        this.mockGL.CreateShader(GLShaderType.FragmentShader).Returns(FragShaderId);
+        this.mockGL.GetShader(Arg.Any<uint>(), GLShaderParameter.CompileStatus).Returns(getShaderStatusCode);
+        this.mockGL.GetProgram(Arg.Any<uint>(), GLProgramParameterName.LinkStatus).Returns(getProgramStatusCode);
+        this.mockGL.CreateProgram().Returns(ShaderProgramId);
 
-        this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+        this.mockGLInitUnsubscriber = Substitute.For<IDisposable>();
+        this.mockShutDownUnsubscriber = Substitute.For<IDisposable>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor =>
+        var mockPushReactable = Substitute.For<IPushReactable>();
+
+        mockPushReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                var reactor = callInfo.Arg<IReceiveSubscription>();
 
-                if (reactor.Id == PushNotifications.GLInitializedId)
-                {
-                    return this.mockGLInitUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return this.mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
-                return null;
-            })
-            .Callback<IReceiveSubscription>(reactor =>
-            {
                 reactor.Should().NotBeNull("it is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
@@ -110,8 +90,28 @@ public class ShaderProgramTests
                 }
             });
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
+        mockPushReactable.Subscribe(Arg.Any<IReceiveSubscription>())
+            .Returns(callInfo =>
+            {
+                var reactor = callInfo.Arg<IReceiveSubscription>();
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.GLInitializedId)
+                {
+                    return this.mockGLInitUnsubscriber;
+                }
+
+                if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    return this.mockShutDownUnsubscriber;
+                }
+
+                Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
+                return null;
+            });
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
     }
 
     #region Constructor Tests
@@ -123,9 +123,9 @@ public class ShaderProgramTests
         {
             _ = new ShaderProgramFake(
                 null,
-                this.mockGLService.Object,
-                this.mockShaderLoader.Object,
-                this.mockReactableFactory.Object);
+                this.mockGLService,
+                this.mockShaderLoader,
+                this.mockReactableFactory);
         }, "Value cannot be null. (Parameter 'gl')");
     }
 
@@ -136,10 +136,10 @@ public class ShaderProgramTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new ShaderProgramFake(
-                this.mockGL.Object,
+                this.mockGL,
                 null,
-                this.mockShaderLoader.Object,
-                this.mockReactableFactory.Object);
+                this.mockShaderLoader,
+                this.mockReactableFactory);
         }, "Value cannot be null. (Parameter 'openGLService')");
     }
 
@@ -150,10 +150,10 @@ public class ShaderProgramTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new ShaderProgramFake(
-                this.mockGL.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockGLService,
                 null,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory);
         }, "Value cannot be null. (Parameter 'shaderLoaderService')");
     }
 
@@ -164,9 +164,9 @@ public class ShaderProgramTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new ShaderProgramFake(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderLoader.Object,
+                this.mockGL,
+                this.mockGLService,
+                this.mockShaderLoader,
                 null);
         }, "Value cannot be null. (Parameter 'reactableFactory')");
     }
@@ -198,10 +198,8 @@ public class ShaderProgramTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        this.mockShaderLoader.Verify(m
-            => m.LoadVertSource(ShaderName), Times.Once);
-        this.mockShaderLoader.Verify(m
-            => m.LoadFragSource(ShaderName), Times.Once);
+        this.mockShaderLoader.Received(1).LoadVertSource(ShaderName);
+        this.mockShaderLoader.Received(1).LoadFragSource(ShaderName);
     }
 
     [Fact]
@@ -215,16 +213,14 @@ public class ShaderProgramTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        this.mockShaderLoader.Verify(m
-            => m.LoadVertSource(It.IsAny<string>()), Times.Once);
-        this.mockShaderLoader.Verify(m
-            => m.LoadFragSource(It.IsAny<string>()), Times.Once);
-        this.mockGL.Verify(m => m.CreateShader(It.IsAny<GLShaderType>()), Times.Exactly(2));
-        this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
-        this.mockGL.Verify(m => m.AttachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
-        this.mockGL.Verify(m => m.LinkProgram(It.IsAny<uint>()), Times.Once());
-        this.mockGL.Verify(m => m.DetachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
-        this.mockGL.Verify(m => m.DeleteShader(It.IsAny<uint>()), Times.Exactly(2));
+        this.mockShaderLoader.Received(1).LoadVertSource(Arg.Any<string>());
+        this.mockShaderLoader.Received(1).LoadFragSource(Arg.Any<string>());
+        this.mockGL.Received(2).CreateShader(Arg.Any<GLShaderType>());
+        this.mockGL.Received(1).CreateProgram();
+        this.mockGL.Received(2).AttachShader(Arg.Any<uint>(), Arg.Any<uint>());
+        this.mockGL.Received(1).LinkProgram(Arg.Any<uint>());
+        this.mockGL.Received(2).DetachShader(Arg.Any<uint>(), Arg.Any<uint>());
+        this.mockGL.Received(2).DeleteShader(Arg.Any<uint>());
     }
 
     [Fact]
@@ -238,14 +234,14 @@ public class ShaderProgramTests
 
         // Assert
         // Verify the creation of the vertex sut
-        this.mockGL.Verify(m => m.CreateShader(GLShaderType.VertexShader), Times.Once());
-        this.mockGL.Verify(m => m.ShaderSource(VertexShaderId, VertShaderSrc), Times.Once());
-        this.mockGL.Verify(m => m.CompileShader(VertexShaderId), Times.Once());
+        this.mockGL.Received(1).CreateShader(GLShaderType.VertexShader);
+        this.mockGL.Received(1).ShaderSource(VertexShaderId, VertShaderSrc);
+        this.mockGL.Received(1).CompileShader(VertexShaderId);
 
         // Verify the creation of the fragment sut
-        this.mockGL.Verify(m => m.CreateShader(GLShaderType.FragmentShader), Times.Once());
-        this.mockGL.Verify(m => m.ShaderSource(FragShaderId, FragShaderSrc), Times.Once());
-        this.mockGL.Verify(m => m.CompileShader(FragShaderId), Times.Once());
+        this.mockGL.Received(1).CreateShader(GLShaderType.FragmentShader);
+        this.mockGL.Received(1).ShaderSource(FragShaderId, FragShaderSrc);
+        this.mockGL.Received(1).CompileShader(FragShaderId);
     }
 
     [Fact]
@@ -258,10 +254,10 @@ public class ShaderProgramTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
-        this.mockGL.Verify(m => m.AttachShader(ShaderProgramId, VertexShaderId), Times.Once());
-        this.mockGL.Verify(m => m.AttachShader(ShaderProgramId, FragShaderId), Times.Once());
-        this.mockGL.Verify(m => m.LinkProgram(ShaderProgramId), Times.Once());
+        this.mockGL.Received(1).CreateProgram();
+        this.mockGL.Received(1).AttachShader(ShaderProgramId, VertexShaderId);
+        this.mockGL.Received(1).AttachShader(ShaderProgramId, FragShaderId);
+        this.mockGL.Received(1).LinkProgram(ShaderProgramId);
     }
 
     [Fact]
@@ -274,10 +270,10 @@ public class ShaderProgramTests
         this.glInitReactor.OnReceive();
 
         // Assert
-        this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
-        this.mockGL.Verify(m => m.DeleteShader(VertexShaderId), Times.Once());
-        this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, FragShaderId), Times.Once());
-        this.mockGL.Verify(m => m.DeleteShader(FragShaderId), Times.Once());
+        this.mockGL.Received(1).DetachShader(ShaderProgramId, VertexShaderId);
+        this.mockGL.Received(1).DeleteShader(VertexShaderId);
+        this.mockGL.Received(1).DetachShader(ShaderProgramId, FragShaderId);
+        this.mockGL.Received(1).DeleteShader(FragShaderId);
     }
 
     [Fact]
@@ -285,9 +281,8 @@ public class ShaderProgramTests
     {
         // Arrange
         const int statusCode = 0;
-        this.mockGL.Setup(m => m.GetShader(VertexShaderId, GLShaderParameter.CompileStatus))
-            .Returns(statusCode);
-        this.mockGL.Setup(m => m.GetShaderInfoLog(VertexShaderId)).Returns("Vertex Shader Compile Error");
+        this.mockGL.GetShader(VertexShaderId, GLShaderParameter.CompileStatus).Returns(statusCode);
+        this.mockGL.GetShaderInfoLog(VertexShaderId).Returns("Vertex Shader Compile Error");
 
         CreateSystemUnderTest();
 
@@ -303,9 +298,8 @@ public class ShaderProgramTests
     {
         // Arrange
         const int statusCode = 0;
-        this.mockGL.Setup(m => m.GetShader(FragShaderId, GLShaderParameter.CompileStatus))
-            .Returns(statusCode);
-        this.mockGL.Setup(m => m.GetShaderInfoLog(FragShaderId)).Returns("Fragment Shader Compile Error");
+        this.mockGL.GetShader(FragShaderId, GLShaderParameter.CompileStatus).Returns(statusCode);
+        this.mockGL.GetShaderInfoLog(FragShaderId).Returns("Fragment Shader Compile Error");
 
         CreateSystemUnderTest();
 
@@ -321,9 +315,8 @@ public class ShaderProgramTests
     {
         // Arrange
         const int statusCode = 0;
-        this.mockGL.Setup(m => m.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus))
-            .Returns(statusCode);
-        this.mockGL.Setup(m => m.GetProgramInfoLog(ShaderProgramId)).Returns("Program Linking Error");
+        this.mockGL.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus).Returns(statusCode);
+        this.mockGL.GetProgramInfoLog(ShaderProgramId).Returns("Program Linking Error");
 
         CreateSystemUnderTest();
 
@@ -358,7 +351,7 @@ public class ShaderProgramTests
         program.Use();
 
         // Assert
-        this.mockGL.Verify(m => m.UseProgram(ShaderProgramId), Times.Once());
+        this.mockGL.Received(1).UseProgram(ShaderProgramId);
     }
 
     [Fact]
@@ -373,9 +366,9 @@ public class ShaderProgramTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once);
+        this.mockGLInitUnsubscriber.Received(1).Dispose();
+        this.mockShutDownUnsubscriber.Received(1).Dispose();
+        this.mockGL.Received(1).DeleteProgram(ShaderProgramId);
     }
     #endregion
 
@@ -385,8 +378,8 @@ public class ShaderProgramTests
     /// <returns>The instance to test with.</returns>
     private ShaderProgramFake CreateSystemUnderTest()
         => new (
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockShaderLoader.Object,
-            this.mockReactableFactory.Object);
+            this.mockGL,
+            this.mockGLService,
+            this.mockShaderLoader,
+            this.mockReactableFactory);
 }
