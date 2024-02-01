@@ -52,7 +52,7 @@
 		"scope": "markdown",
 		"prefix": "outside-contributor-thank-you",
 		"body": [
-			"   - Thank you [@${1:contributor-name}](https://github.com/${1:contributor-name}) for your contribution!!"
+			"   > **Thank you [@${1:contributor-name}](https://github.com/${1:contributor-name})!!**"
 		],
 		"description": "Outside contributor thank you"
 	},
