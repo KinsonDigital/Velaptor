@@ -436,13 +436,27 @@ internal static class InternalExtensionMethods
     /// </remarks>
     public static int FirstItemIndex<T>(this Memory<T> items, Predicate<T> predicate)
     {
+        var middleIndex = items.Length / 2;
+
         var index = -1;
 
-        foreach (var item in items.Span)
+        for (var i = 0; i <= middleIndex; i++)
         {
             index++;
 
-            if (predicate(item))
+            if (predicate(items.Span[i]))
+            {
+                return index;
+            }
+        }
+
+        index = items.Length - 1;
+
+        for (var i = items.Length - 1; i > middleIndex; i--)
+        {
+            index--;
+
+            if (predicate(items.Span[i]))
             {
                 return index;
             }
