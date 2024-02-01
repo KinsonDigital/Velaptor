@@ -50,11 +50,25 @@ jobs:
       checkout-ref: ${{ github.event.pull_request.head.ref }}
     secrets:
       cicd-pat: ${{ secrets.CICD_TOKEN }}
-      
+
+
+  build_playground_project:
+    name: Build Playground App Project
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v13.6.3
+    with:
+      project-name: "PlaygroundApp"
+      build-config: Debug
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
+      checkout-ref: ${{ github.event.pull_request.head.ref }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
+
 
   build_perf_projects_status_check:
     name: ${{ vars.PROJECT_NAME }} Build Perf Projects Status Check
-    needs: [build_measure_text_perf_project, build_keyboard_perf_project, build_mouse_perf_project]
+    needs: [build_measure_text_perf_project, build_keyboard_perf_project,
+            build_mouse_perf_project, build_playground_project]
     runs-on: ubuntu-latest
     steps:
       - name: Print Status Check Pass Message
