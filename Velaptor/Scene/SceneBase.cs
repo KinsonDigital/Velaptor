@@ -108,7 +108,7 @@ public abstract class SceneBase : IScene
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private void Init(IReactableFactory reactableFactory)
     {
-        var winSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
+        var pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
 
         var winSizeSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.WindowSizeChangedId)
@@ -119,7 +119,7 @@ public abstract class SceneBase : IScene
                 WindowSize = new SizeU(data.Width, data.Height);
             });
 
-        this.unsubscriber = winSizeReactable.Subscribe(winSizeSubscription);
+        this.unsubscriber = pushWinSizeReactable.Subscribe(winSizeSubscription);
 
         // Get the size of the window just in case the scene is being created before
         // the loading of the window and gl init has completed.

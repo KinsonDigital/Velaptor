@@ -30,15 +30,15 @@ public class SceneBaseTests
     /// </summary>
     public SceneBaseTests()
     {
-        var mockWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
-        mockWinSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<WindowSizeData>>()))
+        var mockPushWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
+        mockPushWinSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<WindowSizeData>>()))
             .Do(callInfo =>
             {
                 this.winSizeReactor = callInfo.Arg<IReceiveSubscription<WindowSizeData>>();
             });
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
-        this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(mockWinSizeReactable);
+        this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(mockPushWinSizeReactable);
     }
 
     #region Constructor Tests
