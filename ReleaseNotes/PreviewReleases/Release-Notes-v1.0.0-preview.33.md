@@ -11,25 +11,25 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
-1. [#903](https://github.com/KinsonDigital/Velaptor/issues/903) -  Batch Renderer throws exception when exceeds more than 1000 draw calls
-2. [#902](https://github.com/KinsonDigital/Velaptor/issues/902) -  `WindowCenter` and `WindowSize` do not update for `SceneBase`
-3. [#898](https://github.com/KinsonDigital/Velaptor/issues/898) - Fix rendering text bug
+1. [#903](https://github.com/KinsonDigital/Velaptor/issues/903) - Fixed a bug where the batching system would throw an exception when the draw calls exceed more than 1000.
+   > **Thank you [@softwareantics](https://github.com/softwareantics)** for discovering and reporting this issue!!
+2. [#902](https://github.com/KinsonDigital/Velaptor/issues/902) - Fixed a bug where the `WindowCenter` and `WindowSize` properties for scenes are not set after instantiation but before internal initialization.
+    > **Thank you [@softwareantics](https://github.com/softwareantics)** for discovering and reporting this issue!!
+3. [#902](https://github.com/KinsonDigital/Velaptor/issues/902) - Fixed rendering text bug.
+    > **Thank you [@softwareantics](https://github.com/softwareantics)** for discovering and reporting this issue!!
 
 <h2 align="center" style="font-weight: bold;">Dependency Updates 📦</h2>
 
-1. [#895](https://github.com/KinsonDigital/Velaptor/pull/895) - chore(deps): update dependency system.io.abstractions to v20.0.15
-2. [#894](https://github.com/KinsonDigital/Velaptor/pull/894) - chore(deps): update actions/cache action to v4
-3. [#893](https://github.com/KinsonDigital/Velaptor/pull/893) - chore(deps): update dependency avalonia.themes.fluent to v11.0.7
-4. [#892](https://github.com/KinsonDigital/Velaptor/pull/892) - chore(deps): update dependency avalonia.fonts.inter to v11.0.7
-5. [#891](https://github.com/KinsonDigital/Velaptor/pull/891) - chore(deps): update dependency avalonia.diagnostics to v11.0.7
-6. [#889](https://github.com/KinsonDigital/Velaptor/pull/889) - chore(deps): update dependency avalonia.desktop to v11.0.7
-7. [#888](https://github.com/KinsonDigital/Velaptor/pull/888) - chore(deps): update dependency avalonia to v11.0.7
-8. [#887](https://github.com/KinsonDigital/Velaptor/pull/887) - chore(deps): update kinsondigital/infrastructure action to v13.6.3
+1. [#895](https://github.com/KinsonDigital/Velaptor/pull/895) - Updated _**system.io.abstractions**_ to _**v20.0.15**_
+2. [#894](https://github.com/KinsonDigital/Velaptor/pull/894) - Updated _**actions/cache**_ action to _**v4**_
+3. [#893](https://github.com/KinsonDigital/Velaptor/pull/893) - Updated _**avalonia.themes.fluent**_ to _**v11.0.7**_
+4. [#892](https://github.com/KinsonDigital/Velaptor/pull/892) - Updated _**avalonia.fonts.inter**_ to _**v11.0.7**_
+5. [#891](https://github.com/KinsonDigital/Velaptor/pull/891) - Updated _**avalonia.diagnostics**_ to _**v11.0.7**_
+6. [#889](https://github.com/KinsonDigital/Velaptor/pull/889) - Updated _**avalonia.desktop**_ to _**v11.0.7**_
+7. [#888](https://github.com/KinsonDigital/Velaptor/pull/888) - Updated _**avalonia**_ to _**v11.0.7**_
+8. [#887](https://github.com/KinsonDigital/Velaptor/pull/887) - Updated _**kinsondigital/infrastructure**_ action to _**v13.6.3**_
 
 <h2 align="center" style="font-weight: bold;">Other 🪧</h2>
 
-1. [#897](https://github.com/KinsonDigital/Velaptor/issues/897) - Updated animated logo
-2. [#890](https://github.com/KinsonDigital/Velaptor/issues/890) - Update readme
-3. [#883](https://github.com/KinsonDigital/Velaptor/issues/883) - Refactor moq code to nsubstitute
-4. [#783](https://github.com/KinsonDigital/Velaptor/issues/783) - Replace custom guards
-5. [#103](https://github.com/KinsonDigital/Velaptor/issues/103) - Move the error callback code
+1. [#890](https://github.com/KinsonDigital/Velaptor/issues/890) - Updated readme.
+2. [#883](https://github.com/KinsonDigital/Velaptor/issues/883) - Refactored moq code to nsubstitute code.
