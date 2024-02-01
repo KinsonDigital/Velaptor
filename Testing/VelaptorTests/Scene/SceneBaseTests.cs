@@ -10,7 +10,7 @@ using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using Fakes;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.ReactableData;
@@ -22,7 +22,7 @@ using Xunit;
 /// </summary>
 public class SceneBaseTests
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription<WindowSizeData>? winSizeReactor;
 
     /// <summary>
@@ -30,19 +30,15 @@ public class SceneBaseTests
     /// </summary>
     public SceneBaseTests()
     {
-        var mockWinSizeReactable = new Mock<IPushReactable<WindowSizeData>>();
-        mockWinSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<WindowSizeData>>()))
-            .Callback<IReceiveSubscription<WindowSizeData>>(reactor =>
+        var mockPushWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
+        mockPushWinSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<WindowSizeData>>()))
+            .Do(callInfo =>
             {
-                reactor.Should().NotBeNull("it is required for unit tests.");
-                reactor.Name.Should().Be($"SceneBase.Init - {nameof(PushNotifications.WindowSizeChangedId)}");
-
-                this.winSizeReactor = reactor;
+                this.winSizeReactor = callInfo.Arg<IReceiveSubscription<WindowSizeData>>();
             });
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateWindowSizeReactable())
-            .Returns(mockWinSizeReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(mockPushWinSizeReactable);
     }
 
     #region Constructor Tests
@@ -73,6 +69,22 @@ public class SceneBaseTests
         sut.IsLoaded.Should().BeFalse();
         sut.WindowSize.Should().BeEquivalentTo(default(SizeU));
     }
+
+    [Fact]
+    public void Ctor_WhenInvoked_RequestsWindowSize()
+    {
+        // Act & Arrange
+        var mockPullWinSizeReactable = Substitute.For<IPullReactable<WindowSizeData>>();
+        mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 100, Height = 200 });
+
+        this.mockReactableFactory.CreatePullWindowSizeReactable().Returns(mockPullWinSizeReactable);
+
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        mockPullWinSizeReactable.Received(1).Pull(PullNotifications.GetWindowSizeId);
+        sut.WindowSize.Should().Be(new SizeU(100, 200));
+    }
     #endregion
 
     #region Prop Tests
@@ -80,7 +92,7 @@ public class SceneBaseTests
     public void Name_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act
-        var sut = new SceneBaseFake(this.mockReactableFactory.Object)
+        var sut = new SceneBaseFake(this.mockReactableFactory)
         {
             Name = "test-value",
         };
@@ -135,7 +147,7 @@ public class SceneBaseTests
 
     #region Reactable Tests
     [Fact]
-    public void WinSizeReactable_WithWindowSizeNotification_SetsWindowSize()
+    public void PushWinSizeReactable_WithWindowSizeNotification_SetsWindowSize()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -153,5 +165,5 @@ public class SceneBaseTests
     /// Creates a new instance of <see cref="SceneBaseFake"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SceneBaseFake CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private SceneBaseFake CreateSystemUnderTest() => new (this.mockReactableFactory);
 }

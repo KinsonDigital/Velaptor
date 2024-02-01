@@ -12,6 +12,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Carbonate.Fluent;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Exceptions;
@@ -58,8 +59,9 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<GL> glReactable;
     private readonly IPushReactable<GLObjectsData> glObjectsReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
-    private readonly IPushReactable<WindowSizeData> winSizeReactable;
+    private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
+    private readonly IDisposable pullWinSizeUnsubscriber;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -134,7 +136,8 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glReactable = reactableFactory.CreateGLReactable();
         this.glObjectsReactable = reactableFactory.CreateGLObjectsReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
-        this.winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
+        var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
         this.timerService = timerService;
 
         this.mouseStateData = default;
@@ -148,6 +151,14 @@ internal sealed class GLWindow : VelaptorIWindow
                 WindowPadding,
                 (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
         };
+
+        var subscription = ISubscriptionBuilder.Create()
+            .WithId(PullNotifications.GetWindowSizeId)
+            .WithName($"{nameof(GLWindow)}.Ctor")
+            .WhenUnsubscribing(() => this.pullWinSizeUnsubscriber?.Dispose())
+            .BuildOneWayRespond(() => new WindowSizeData { Width = Width, Height = Height });
+
+        this.pullWinSizeUnsubscriber = pullWinSizeReactable.Subscribe(subscription);
     }
 
     /// <inheritdoc/>
@@ -485,7 +496,7 @@ internal sealed class GLWindow : VelaptorIWindow
         WinResize?.Invoke(size);
 
         this.viewPortReactable.Push(new ViewPortSizeData { Width = width, Height = height }, PushNotifications.ViewPortSizeChangedId);
-        this.winSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
+        this.pushWinSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
     }
 
     /// <summary>

@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
@@ -62,7 +63,8 @@ public class GLWindowTests : TestsBase
     private readonly IPushReactable mockPushReactable;
     private readonly IPushReactable<MouseStateData> mockMouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> mockKeyboardReactable;
-    private readonly IPushReactable<WindowSizeData> mockWinSizeReactable;
+    private readonly IPushReactable<WindowSizeData> mockPushWinSizeReactable;
+    private readonly IPullReactable<WindowSizeData> mockPullWinSizeReactable;
     private readonly IPushReactable<GL> mockGLReactable;
     private readonly GLObjectsReactable mockGLObjectsReactable;
     private readonly SilkIWindow mockSilkWindow;
@@ -113,7 +115,8 @@ public class GLWindowTests : TestsBase
         this.mockGLObjectsReactable = Substitute.For<GLObjectsReactable>();
 
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
-        this.mockWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
+        this.mockPushWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
+        this.mockPullWinSizeReactable = Substitute.For<IPullReactable<WindowSizeData>>();
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
@@ -122,7 +125,8 @@ public class GLWindowTests : TestsBase
         this.mockReactableFactory.CreateGLReactable().Returns(this.mockGLReactable);
         this.mockReactableFactory.CreateGLObjectsReactable().Returns(this.mockGLObjectsReactable);
         this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
-        this.mockReactableFactory.CreateWindowSizeReactable().Returns(this.mockWinSizeReactable);
+        this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(this.mockPushWinSizeReactable);
+        this.mockReactableFactory.CreatePullWindowSizeReactable().Returns(this.mockPullWinSizeReactable);
 
         this.mockTimerService = Substitute.For<ITimerService>();
     }
@@ -477,6 +481,47 @@ public class GLWindowTests : TestsBase
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'timerService')");
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SubscribesToPullWinSizeRequests()
+    {
+        // Arrange & Act
+        var mockUnsubscriber = Substitute.For<IDisposable>();
+        this.mockSilkWindow.Size.Returns(new Vector2D<int>(100, 200));
+        IRespondSubscription<WindowSizeData>? subscription = null;
+        this.mockPullWinSizeReactable.Subscribe(Arg.Any<IRespondSubscription<WindowSizeData>>())
+            .Returns(mockUnsubscriber);
+        this.mockPullWinSizeReactable.When(x => x.Subscribe(Arg.Any<IRespondSubscription<WindowSizeData>>()))
+            .Do(callInfo => subscription = callInfo.Arg<IRespondSubscription<WindowSizeData>>());
+
+        var sut = CreateSystemUnderTest(100, 200);
+        var pulledWinSize = subscription.OnRespond();
+        subscription.OnUnsubscribe();
+
+        // Assert
+        subscription.Should().NotBeNull();
+        subscription.Id.Should().Be(PullNotifications.GetWindowSizeId);
+        subscription.Name.Should().Be($"{nameof(GLWindow)}.Ctor");
+        this.mockPullWinSizeReactable.Received(1).Subscribe(subscription);
+        pulledWinSize.Should().Be(new WindowSizeData { Width = 100, Height = 200 });
+        mockUnsubscriber.Received(1).Dispose();
+
+        sut.Width.Should().Be(100);
+        sut.Height.Should().Be(200);
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_HasCorrectDefaultPropValues()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.AutoSceneLoading.Should().BeTrue();
+        sut.AutoSceneUnloading.Should().BeTrue();
+        sut.AutoSceneUpdating.Should().BeTrue();
+        sut.AutoSceneRendering.Should().BeTrue();
     }
     #endregion
 
@@ -1203,7 +1248,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockGL.Viewport(0, 0, 11, 22);
-        this.mockWinSizeReactable.Received(1)
+        this.mockPushWinSizeReactable.Received(1)
             .Push(new WindowSizeData { Width = 11u, Height = 22u }, PushNotifications.WindowSizeChangedId);
         actualSize.Width.Should().Be(11u);
         actualSize.Height.Should().Be(22u);

@@ -18,6 +18,8 @@ using ReactableData;
 [DebuggerDisplay("Name = {Name}({Id})")]
 public abstract class SceneBase : IScene
 {
+    private IDisposable? unsubscriber;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneBase"/> class.
     /// </summary>
@@ -72,9 +74,6 @@ public abstract class SceneBase : IScene
     /// <inheritdoc/>
     public virtual void Update(FrameTime frameTime)
     {
-        if (!IsLoaded)
-        {
-        }
     }
 
     /// <inheritdoc/>
@@ -109,16 +108,23 @@ public abstract class SceneBase : IScene
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     private void Init(IReactableFactory reactableFactory)
     {
-        var winSizeReactable = reactableFactory.CreateWindowSizeReactable();
+        var pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
 
         var winSizeSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.WindowSizeChangedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId)))
+            .WhenUnsubscribing(() => this.unsubscriber?.Dispose())
             .BuildOneWayReceive<WindowSizeData>(data =>
             {
                 WindowSize = new SizeU(data.Width, data.Height);
             });
 
-        winSizeReactable.Subscribe(winSizeSubscription);
+        this.unsubscriber = pushWinSizeReactable.Subscribe(winSizeSubscription);
+
+        // Get the size of the window just in case the scene is being created before
+        // the loading of the window and gl init has completed.
+        var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
+        var winSizeData = pullWinSizeReactable.Pull(PullNotifications.GetWindowSizeId);
+        WindowSize = new SizeU(winSizeData.Width, winSizeData.Height);
     }
 }

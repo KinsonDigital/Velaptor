@@ -33,7 +33,10 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();
 
     /// <inheritdoc/>
-    public IPushReactable<WindowSizeData> CreateWindowSizeReactable() => IoC.Container.GetInstance<IPushReactable<WindowSizeData>>();
+    public IPushReactable<WindowSizeData> CreatePushWindowSizeReactable() => IoC.Container.GetInstance<IPushReactable<WindowSizeData>>();
+
+    /// <inheritdoc/>
+    public IPullReactable<WindowSizeData> CreatePullWindowSizeReactable() => IoC.Container.GetInstance<IPullReactable<WindowSizeData>>();
 
     /// <inheritdoc/>
     public IPushReactable<ViewPortSizeData> CreateViewPortReactable() => IoC.Container.GetInstance<IPushReactable<ViewPortSizeData>>();

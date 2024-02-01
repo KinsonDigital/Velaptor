@@ -31,7 +31,10 @@ internal sealed class ReactableFactoryFake : IReactableFactory
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
-    public IPushReactable<WindowSizeData> CreateWindowSizeReactable() => throw new NotImplementedException();
+    public IPushReactable<WindowSizeData> CreatePushWindowSizeReactable() => throw new NotImplementedException();
+
+    /// <inheritdoc/>
+    public IPullReactable<WindowSizeData> CreatePullWindowSizeReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IPushReactable<ViewPortSizeData> CreateViewPortReactable() => throw new NotImplementedException();
