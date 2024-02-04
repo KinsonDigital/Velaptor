@@ -1,4 +1,4 @@
-﻿// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
+// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,7 +26,7 @@ public class AnimatedGraphicsScene : SceneBase
     private AtlasSubTextureData[]? frames;
     private BackgroundManager? backgroundManager;
     private ILoader<IAtlasData>? atlasLoader;
-    private IControlGroup? grpControls;
+    private IControlGroup? grpInsructions;
     private int elapsedTime;
     private int currentFrame;
 
@@ -50,15 +50,15 @@ public class AnimatedGraphicsScene : SceneBase
         var instructions = TestingApp.Container.GetInstance<ILabel>();
         instructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpControls.Title = "Instructions";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-        this.grpControls.Initialized += (_, _) =>
+        this.grpInsructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInsructions.Title = "Instructions";
+        this.grpInsructions.AutoSizeToFitContent = true;
+        this.grpInsructions.TitleBarVisible = false;
+        this.grpInsructions.Initialized += (_, _) =>
         {
-            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
+            this.grpInsructions.Position = new Point(WindowCenter.X - this.grpInsructions.HalfWidth, WindowPadding);
         };
-        this.grpControls.Add(instructions);
+        this.grpInsructions.Add(instructions);
 
         base.LoadContent();
     }
@@ -73,8 +73,8 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager?.Unload();
         this.atlasLoader.Unload(this.mainAtlas);
-        this.grpControls.Dispose();
-        this.grpControls = null;
+        this.grpInsructions.Dispose();
+        this.grpInsructions = null;
 
         base.UnloadContent();
     }
@@ -109,7 +109,7 @@ public class AnimatedGraphicsScene : SceneBase
             Color.White,
             RenderEffects.None);
 
-        this.grpControls.Render();
+        this.grpInsructions.Render();
 
         base.Render();
     }
