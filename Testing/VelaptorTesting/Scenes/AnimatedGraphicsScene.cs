@@ -104,7 +104,7 @@ public class AnimatedGraphicsScene : SceneBase
             this.mainAtlas.Texture,
             this.frames[this.currentFrame].Bounds,
             new Rectangle(WindowCenter.X, WindowCenter.Y, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
-            1f,
+            3f,
             0f,
             Color.White,
             RenderEffects.None);

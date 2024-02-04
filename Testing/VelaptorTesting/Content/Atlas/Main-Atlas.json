@@ -1,55 +1,68 @@
 [
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "0, 0, 75, 75",
+
+    "Bounds": "0, 0, 30, 36",
     "FrameIndex": 0,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "76, 0, 75, 75",
+    "Bounds": "31, 0, 30, 36",
     "FrameIndex": 1,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "152, 0, 75, 75",
+    "Bounds": "62, 0, 30, 36",
     "FrameIndex": 2,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "228, 0, 75, 75",
+    "Bounds": "93, 0, 30, 36",
     "FrameIndex": 3,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "304, 0, 75, 75",
+    "Bounds": "124, 0, 30, 36",
     "FrameIndex": 4,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "380, 0, 75, 75",
+    "Bounds": "155, 0, 30, 36",
     "FrameIndex": 5,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "456, 0, 75, 75",
+    "Bounds": "186, 0, 30, 36",
     "FrameIndex": 6,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "532, 0, 75, 75",
+    "Bounds": "217, 0, 30, 36",
     "FrameIndex": 7,
-    "Name": "circle"
+    "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "0, 76, 75, 75",
+    "Bounds": "248, 0, 30, 36",
+    "FrameIndex": 8,
+    "Name": "samus"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "279, 0, 30, 36",
+    "FrameIndex": 9,
+    "Name": "samus"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+
     "FrameIndex": -1,
     "Name": "octagon-flip"
   }
