@@ -58,6 +58,7 @@ public static class TestingApp
         IoCContainer.Register<IUpDown, UpDown>(Lifestyle.Transient, true);
         IoCContainer.Register<IArrowButton, ArrowButton>(Lifestyle.Transient, true);
         IoCContainer.Register<ICheckBox, CheckBox>(Lifestyle.Transient, true);
+        IoCContainer.Register<IRadioButton, RadioButton>(Lifestyle.Transient, true);
         IoCContainer.Register<IComboBox, ComboBox>(Lifestyle.Transient, true);
         IoCContainer.Register<IButton, Button>(Lifestyle.Transient, true);
         IoCContainer.Register<ISlider, Slider>(Lifestyle.Transient, true);

@@ -1,9 +1,10 @@
-// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
+﻿// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTesting.Scenes;
 
+using System;
 using System.Drawing;
 using System.Numerics;
 using UI;
@@ -27,8 +28,11 @@ public class AnimatedGraphicsScene : SceneBase
     private BackgroundManager? backgroundManager;
     private ILoader<IAtlasData>? atlasLoader;
     private IControlGroup? grpInstructions;
+    private IControlGroup? grpAnimation;
     private int elapsedTime;
     private int currentFrame;
+    private float animSpeed = 32;
+    private bool runningForward = true;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -45,10 +49,10 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
-        this.frames = this.mainAtlas.GetFrames("circle");
+        this.frames = this.mainAtlas.GetFrames("samus");
 
         var instructions = TestingApp.Container.GetInstance<ILabel>();
-        instructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
+        instructions.Text = "Verify that the Samus is running.";
 
         this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
         this.grpInstructions.Title = "Instructions";
@@ -59,6 +63,50 @@ public class AnimatedGraphicsScene : SceneBase
             this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
         };
         this.grpInstructions.Add(instructions);
+
+        var optForward = TestingApp.Container.GetInstance<IRadioButton>();
+        optForward.Name = "optForward";
+        optForward.Text = "Forwards";
+        optForward.IsSelected = true;
+
+        var optBackward = TestingApp.Container.GetInstance<IRadioButton>();
+        optBackward.Name = "optBackward";
+        optBackward.Text = "Backwards";
+
+        var sldSpeed = TestingApp.Container.GetInstance<ISlider>();
+        sldSpeed.Name = "sldSpeed";
+        sldSpeed.Text = "Speed:";
+        sldSpeed.Min = 8;
+        sldSpeed.Max = 500;
+        sldSpeed.Value = 32;
+        sldSpeed.ValueChanged += (_, speed) =>
+        {
+            this.animSpeed = speed;
+        };
+
+        optForward.Selected += (_, _) =>
+        {
+            Console.WriteLine("Forward");
+            optBackward.IsSelected = false;
+            this.runningForward = !this.runningForward;
+        };
+
+        optBackward.Selected += (_, _) =>
+        {
+            optForward.IsSelected = false;
+            this.runningForward = !this.runningForward;
+        };
+
+        this.grpAnimation = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpAnimation.Title = "Animation";
+        this.grpAnimation.AutoSizeToFitContent = true;
+        this.grpAnimation.Initialized += (_, _) =>
+        {
+            this.grpAnimation.Position = new Point(WindowPadding, WindowCenter.Y + WindowPadding);
+        };
+        this.grpAnimation.Add(optForward);
+        this.grpAnimation.Add(optBackward);
+        this.grpAnimation.Add(sldSpeed);
 
         base.LoadContent();
     }
@@ -75,6 +123,8 @@ public class AnimatedGraphicsScene : SceneBase
         this.atlasLoader.Unload(this.mainAtlas);
         this.grpInstructions.Dispose();
         this.grpInstructions = null;
+        this.grpAnimation.Dispose();
+        this.grpAnimation = null;
 
         base.UnloadContent();
     }
@@ -82,13 +132,22 @@ public class AnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
-        if (this.elapsedTime >= 124)
+        if (this.elapsedTime >= this.animSpeed)
         {
             this.elapsedTime = 0;
 
-            this.currentFrame = this.currentFrame >= this.frames.Length - 1
-                ? 0
-                : this.currentFrame + 1;
+            if (this.runningForward)
+            {
+                this.currentFrame = this.currentFrame >= this.frames.Length - 1
+                    ? 0
+                    : this.currentFrame + 1;
+            }
+            else
+            {
+                this.currentFrame = this.currentFrame <= 0
+                    ? this.frames.Length - 1
+                    : this.currentFrame - 1;
+            }
         }
         else
         {
@@ -110,6 +169,7 @@ public class AnimatedGraphicsScene : SceneBase
             RenderEffects.None);
 
         this.grpInstructions.Render();
+        this.grpAnimation.Render();
 
         base.Render();
     }
