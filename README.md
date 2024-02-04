@@ -63,7 +63,7 @@ Loaded content such as images and sounds are cached for better performance. If t
 
 <div align="center">
 
-[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/demo-img.jpg)](https://www.youtube.com/watch?v=rcKi-eWeUuo)
+[![FeatureDemoVideo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/preview/Images/demo-img.jpg)](https://www.youtube.com/watch?v=xYUnDgwHs2k)
 
 </div>
 
