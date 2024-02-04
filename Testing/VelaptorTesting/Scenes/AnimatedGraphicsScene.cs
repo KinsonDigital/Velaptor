@@ -26,7 +26,7 @@ public class AnimatedGraphicsScene : SceneBase
     private AtlasSubTextureData[]? frames;
     private BackgroundManager? backgroundManager;
     private ILoader<IAtlasData>? atlasLoader;
-    private IControlGroup? grpInsructions;
+    private IControlGroup? grpInstructions;
     private int elapsedTime;
     private int currentFrame;
 
@@ -50,15 +50,15 @@ public class AnimatedGraphicsScene : SceneBase
         var instructions = TestingApp.Container.GetInstance<ILabel>();
         instructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
 
-        this.grpInsructions = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpInsructions.Title = "Instructions";
-        this.grpInsructions.AutoSizeToFitContent = true;
-        this.grpInsructions.TitleBarVisible = false;
-        this.grpInsructions.Initialized += (_, _) =>
+        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions.Title = "Instructions";
+        this.grpInstructions.AutoSizeToFitContent = true;
+        this.grpInstructions.TitleBarVisible = false;
+        this.grpInstructions.Initialized += (_, _) =>
         {
-            this.grpInsructions.Position = new Point(WindowCenter.X - this.grpInsructions.HalfWidth, WindowPadding);
+            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
         };
-        this.grpInsructions.Add(instructions);
+        this.grpInstructions.Add(instructions);
 
         base.LoadContent();
     }
@@ -73,8 +73,8 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager?.Unload();
         this.atlasLoader.Unload(this.mainAtlas);
-        this.grpInsructions.Dispose();
-        this.grpInsructions = null;
+        this.grpInstructions.Dispose();
+        this.grpInstructions = null;
 
         base.UnloadContent();
     }
@@ -109,7 +109,7 @@ public class AnimatedGraphicsScene : SceneBase
             Color.White,
             RenderEffects.None);
 
-        this.grpInsructions.Render();
+        this.grpInstructions.Render();
 
         base.Render();
     }
