@@ -1,4 +1,4 @@
-﻿// <copyright file="PlaygroundApp.cs" company="KinsonDigital">
+﻿// <copyright file="Playground.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
