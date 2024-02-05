@@ -51,7 +51,7 @@ public class EnsureThatTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            EnsureThat.StringParamIsNotNullOrEmpty(value);
+            ArgumentException.ThrowIfNullOrEmpty(value);
         }, $"The string parameter must not be null or empty. (Parameter '{nameof(value)}')");
     }
 
