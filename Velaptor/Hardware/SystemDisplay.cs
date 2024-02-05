@@ -32,7 +32,7 @@ public readonly record struct SystemDisplay
     /// </exception>
     internal SystemDisplay(IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(platform);
         this.platform = platform;
     }
 

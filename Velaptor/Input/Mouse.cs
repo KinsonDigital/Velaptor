@@ -30,7 +30,7 @@ internal sealed class Mouse : IAppInput<MouseState>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public Mouse(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         var mouseDataReactable = reactableFactory.CreateMouseReactable();
 

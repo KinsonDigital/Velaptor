@@ -23,7 +23,7 @@ internal sealed class SoundPathResolver : ContentPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     public SoundPathResolver(IDirectory directory)
     {
-        EnsureThat.ParamIsNotNull(directory);
+        ArgumentNullException.ThrowIfNull(directory);
         this.directory = directory;
         ContentDirectoryName = "Sounds";
     }

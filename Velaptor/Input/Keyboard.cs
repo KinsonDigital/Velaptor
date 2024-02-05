@@ -21,7 +21,7 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <param name="keyboardDataService">Creates reactables for sending and receiving notifications with or without data.</param>
     public Keyboard(IKeyboardDataService keyboardDataService)
     {
-        EnsureThat.ParamIsNotNull(keyboardDataService);
+        ArgumentNullException.ThrowIfNull(keyboardDataService);
 
         this.keyboardDataService = keyboardDataService;
     }
