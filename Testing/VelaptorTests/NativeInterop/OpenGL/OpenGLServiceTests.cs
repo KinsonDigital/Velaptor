@@ -99,8 +99,6 @@ public class OpenGLServiceTests
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'loggingService')");
     }
-
-    // TODO: add other tests
     #endregion
 
     #region Prop Tests
