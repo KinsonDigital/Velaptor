@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
+// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,17 +22,7 @@ using Velaptor.Services;
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
 internal sealed class GLInvoker : IGLInvoker
 {
-    // ReSharper disable InconsistentNaming
-#pragma warning disable SA1310
-    private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
-    private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
-#pragma warning restore SA1310
-
-    // ReSharper restore InconsistentNaming
     private static readonly Queue<string> OpenGLCallStack = new ();
-    private readonly ILoggingService loggingService;
-    private readonly IDisposable unsubscriber;
-    private DebugProc? debugCallback;
     private bool isDisposed;
 
     // ReSharper disable once MemberInitializerValueIgnored
@@ -42,8 +32,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
     /// <param name="glReactable">Sends and receives push notifications.</param>
-    /// <param name="loggingService">Logs messages to the console and files.</param>
-    public GLInvoker(IPushReactable<GL> glReactable, ILoggingService loggingService)
+    public GLInvoker(IPushReactable<GL> glReactable)
     {
         this.unsubscriber = glReactable.CreateOneWayReceive(
             PushNotifications.GLContextCreatedId,
@@ -56,7 +45,7 @@ internal sealed class GLInvoker : IGLInvoker
             },
             () => this.unsubscriber?.Dispose());
 
-        this.loggingService = loggingService;
+        glReactable.Subscribe(glContextSubscription);
     }
 
     /// <summary>
@@ -64,35 +53,11 @@ internal sealed class GLInvoker : IGLInvoker
     /// </summary>
     ~GLInvoker() => Dispose();
 
-    /// <inheritdoc/>
-    public event EventHandler<GLErrorEventArgs>? GLError;
-
     /// <summary>
     /// Gets the list of OpenGL function calls.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used for future debugging capabilities.")]
     public static string[] GLCallStack => OpenGLCallStack.ToArray();
-
-    /// <inheritdoc/>
-    public void SetupErrorCallback()
-    {
-        if (this.debugCallback is not null)
-        {
-            return;
-        }
-
-        this.debugCallback = DebugCallback;
-
-        /*NOTE:
-             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
-             * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
-             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
-             * method tells the garbage collector to not collect the delegate to prevent this from happening.
-             */
-        GC.KeepAlive(this.debugCallback);
-
-        this.gl.DebugMessageCallback(this.debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
-    }
 
     /// <inheritdoc/>
     public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
@@ -517,7 +482,6 @@ internal sealed class GLInvoker : IGLInvoker
             return;
         }
 
-        this.debugCallback = null;
         this.isDisposed = true;
         this.gl.Dispose();
         GC.SuppressFinalize(this);
@@ -536,47 +500,6 @@ internal sealed class GLInvoker : IGLInvoker
         if (OpenGLCallStack.Count >= 200)
         {
             OpenGLCallStack.Dequeue();
-        }
-    }
-
-    /// <summary>
-    /// Invoked when there is an OpenGL related error.
-    /// </summary>
-    /// <param name="source">The debug source.</param>
-    /// <param name="type">The debug type.</param>
-    /// <param name="id">The ID of the error or message.</param>
-    /// <param name="severity">The severity of the message.</param>
-    /// <param name="length">The length of the message.</param>
-    /// <param name="message">The error message.</param>
-    /// <param name="userParam">The OpenGL parameter related to the error.</param>
-    private void DebugCallback(GLEnum source, GLEnum type, int id, GLEnum severity, int length, nint message, nint userParam)
-    {
-        var openGLMessage = Marshal.PtrToStringAnsi(message);
-
-        openGLMessage += $"{Environment.NewLine}\tSrc: {source}";
-        openGLMessage += $"{Environment.NewLine}\tType: {type}";
-        openGLMessage += $"{Environment.NewLine}\tID: {id}";
-        openGLMessage += $"{Environment.NewLine}\tSeverity: {severity}";
-        openGLMessage += $"{Environment.NewLine}\tLength: {length}";
-        openGLMessage += $"{Environment.NewLine}\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
-
-        // Ignore warnings about shader recompilation
-        if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)
-        {
-            return;
-        }
-
-        if (severity == GLEnum.NoError)
-        {
-            this.loggingService.Warning(openGLMessage);
-        }
-        else
-        {
-            if (severity != GLEnum.DebugSeverityNotification)
-            {
-                this.loggingService.Error(openGLMessage);
-                this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
-            }
         }
     }
 }

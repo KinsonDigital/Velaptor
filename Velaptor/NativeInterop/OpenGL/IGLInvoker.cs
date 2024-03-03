@@ -14,19 +14,6 @@ using Velaptor.OpenGL;
 internal interface IGLInvoker : IDisposable
 {
     /// <summary>
-    /// Invoked when there is an OpenGL related error.
-    /// </summary>
-    event EventHandler<GLErrorEventArgs> GLError;
-
-    /// <summary>
-    /// Sets up the error callback.
-    /// </summary>
-    /// <remarks>
-    ///     This cannot be invoked until the OpenGL context has been created.
-    /// </remarks>
-    void SetupErrorCallback();
-
-    /// <summary>
     /// Push a named debug group into the command stream.
     /// </summary>
     /// <param name="source">The source of the debug message.</param>

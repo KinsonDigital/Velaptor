@@ -1,9 +1,10 @@
-﻿// <copyright file="IOpenGLService.cs" company="KinsonDigital">
+// <copyright file="IOpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.NativeInterop.Services;
 
+using System;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
@@ -16,7 +17,12 @@ internal interface IOpenGLService
     // ReSharper disable CommentTypo
 
     /// <summary>
-    /// Gets a value indicating whether a VBO is bound.
+    /// Invoked when there is an OpenGL related error.
+    /// </summary>
+    event EventHandler<GLErrorEventArgs> GLError;
+
+    /// <summary>
+    /// Gets a value indicating whether or not a VBO is bound.
     /// </summary>
     /// <remarks>
     ///     VBO stands for (V)ertex (B)uffer (O)bject.
@@ -176,4 +182,12 @@ internal interface IOpenGLService
     /// <param name="textureId">The ID of the texture.</param>
     /// <param name="label">The label to give the texture.</param>
     void LabelTexture(uint textureId, string label);
+
+    /// <summary>
+    /// Sets up the error callback.
+    /// </summary>
+    /// <remarks>
+    ///     This cannot be invoked until the OpenGL context has been created.
+    /// </remarks>
+    void SetupErrorCallback();
 }

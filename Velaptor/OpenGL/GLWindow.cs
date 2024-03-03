@@ -425,11 +425,8 @@ internal sealed class GLWindow : VelaptorIWindow
         // OpenGL is ready to take function calls after this Init() call has executed
         Init(Width, Height);
 
-        this.gl.SetupErrorCallback();
         this.gl.Enable(GLEnableCap.DebugOutput);
         this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
-
-        this.gl.GLError += GL_GLError;
 
         CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -685,8 +682,6 @@ internal sealed class GLWindow : VelaptorIWindow
             CachedStringProps.Clear();
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
-
-            this.gl.GLError -= GL_GLError;
 
             if (this.glInputContext is not null)
             {
