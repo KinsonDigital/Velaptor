@@ -1011,20 +1011,6 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Show();
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        // Assert
-        this.mockGL.Received().GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
-    }
-
-    [Fact]
     public async Task ShowAsync_WhileDisposed_ThrowsException()
     {
         // Arrange
@@ -1116,7 +1102,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockPushReactable.Received(1).UnsubscribeAll();
-        this.mockGL.Received().GLError -= Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert unsubscriptions from keyboard and mouse
         this.mockSilkKeyboard.Received().KeyDown -= Arg.Any<Action<IKeyboard, Key, int>>();
@@ -1210,10 +1195,8 @@ public class GLWindowTests : TestsBase
         this.mockSilkWindow.Load += Raise.Event<Action>();
 
         // Assert
-        this.mockGL.Received(1).SetupErrorCallback();
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutput);
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutputSynchronous);
-        this.mockGL.Received().GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert that all prop caching has been disabled
         sut.CachedStringProps.Values.Should().AllSatisfy(prop => prop.IsCaching.Should().BeFalse());

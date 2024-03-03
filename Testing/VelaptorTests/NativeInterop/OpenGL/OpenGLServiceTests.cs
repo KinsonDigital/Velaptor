@@ -8,12 +8,16 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using Carbonate.OneWay;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
 using FluentAssertions;
+using NSubstitute;
+using Silk.NET.OpenGL;
 using Velaptor.NativeInterop.Services;
+using Velaptor.Services;
 
 /// <summary>
 /// Tests the <see cref="OpenGLService"/> class.
@@ -21,6 +25,9 @@ using Velaptor.NativeInterop.Services;
 public class OpenGLServiceTests
 {
     private readonly Mock<IGLInvoker> mockGLInvoker;
+    private readonly IPushReactable<GL> mockPushReactable;
+    private readonly IDotnetService mockDotnetService;
+    private readonly ILoggingService mockLoggingService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenGLServiceTests"/> class.
@@ -28,6 +35,9 @@ public class OpenGLServiceTests
     public OpenGLServiceTests()
     {
         this.mockGLInvoker = new Mock<IGLInvoker>();
+        this.mockPushReactable = Substitute.For<IPushReactable<GL>>();
+        this.mockDotnetService = Substitute.For<IDotnetService>();
+        this.mockLoggingService = Substitute.For<ILoggingService>();
 
         unsafe
         {
@@ -50,12 +60,47 @@ public class OpenGLServiceTests
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new OpenGLService(null);
+        var act = () => new OpenGLService(null, this.mockPushReactable, this.mockDotnetService, this.mockLoggingService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
     }
+
+    [Fact]
+    public void Ctor_WithNullPushReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new OpenGLService(this.mockGLInvoker.Object, null, this.mockDotnetService, this.mockLoggingService);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'glReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullDotnetServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new OpenGLService(this.mockGLInvoker.Object, this.mockPushReactable, null, this.mockLoggingService);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'dotnetService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullLoggingServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new OpenGLService(this.mockGLInvoker.Object, this.mockPushReactable, this.mockDotnetService, null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'loggingService')");
+    }
+
+    // TODO: add other tests
     #endregion
 
     #region Prop Tests
@@ -438,11 +483,40 @@ public class OpenGLServiceTests
             m.ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected));
     }
 
+    [Fact]
+    public void SetupErrorCallback_WhenInvokedTheFirstTime_InvokesGCKeepAliveAndInvokesMarshalStringToHGlobalAnsi()
+    {
+        // Arrange
+        var service = CreateService();
+
+        // Act
+        service.SetupErrorCallback();
+
+        // Assert
+        this.mockDotnetService.Received(1).GCKeepAlive(Arg.Any<DebugProc?>());
+        this.mockDotnetService.Received(1).MarshalStringToHGlobalAnsi(string.Empty);
+    }
+
+    [Fact]
+    public void SetupErrorCallback_WhenInvokedTheSecondTime_DoesNotPerformAnyAction()
+    {
+        // Arrange
+        var service = CreateService();
+
+        // Act
+        service.SetupErrorCallback();
+        service.SetupErrorCallback();
+
+        // Assert
+        this.mockDotnetService.Received(1).GCKeepAlive(Arg.Any<DebugProc?>());
+        this.mockDotnetService.Received(1).MarshalStringToHGlobalAnsi(string.Empty);
+    }
+
     #endregion
 
     /// <summary>
     /// Creates a new instance of <see cref="OpenGLService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private OpenGLService CreateService() => new (this.mockGLInvoker.Object);
+    private OpenGLService CreateService() => new (this.mockGLInvoker.Object, this.mockPushReactable, this.mockDotnetService, this.mockLoggingService);
 }
