@@ -24,6 +24,3 @@ As with all software, there is always a chance for issues and bugs, especially f
 9.  [#914](https://github.com/KinsonDigital/Velaptor/pull/914) - Updated dependency _**avalonia.desktop**_ to _**v11.0.10**_
 10. [#913](https://github.com/KinsonDigital/Velaptor/pull/913) - Updated dependency _**avalonia**_ to _**v11.0.10**_
 11. [#912](https://github.com/KinsonDigital/Velaptor/pull/912) - Updated dependency _**microsoft.net.test.sdk**_ to _**v17.9.0**_
-
-    
-    
