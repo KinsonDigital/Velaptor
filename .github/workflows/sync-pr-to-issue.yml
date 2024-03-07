@@ -18,7 +18,7 @@ jobs:
     name: Start Initial Sync
     if: |
       github.event_name == 'pull_request_target' &&
-      !startsWith(github.head_ref, 'renovate/') &&
+      !startsWith(github.head_ref, 'renovate/') && !startsWith(github.head_ref, 'dependabot/') &&
       github.head_ref != 'prev-release' && github.head_ref != 'prod-release'
     uses: KinsonDigital/Infrastructure/.github/workflows/initial-manual-sync.yml@v13.6.3
     with:
