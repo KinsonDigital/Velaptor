@@ -43,9 +43,9 @@ public abstract class Window : IWindow
     /// <param name="batcher">Controls the batching start and end process.</param>
     private protected Window(IWindow window, ISceneManager sceneManager, IBatcher batcher)
     {
-        EnsureThat.ParamIsNotNull(window);
-        EnsureThat.ParamIsNotNull(sceneManager);
-        EnsureThat.ParamIsNotNull(batcher);
+        ArgumentNullException.ThrowIfNull(window);
+        ArgumentNullException.ThrowIfNull(sceneManager);
+        ArgumentNullException.ThrowIfNull(batcher);
 
         this.nativeWindow = window;
         SceneManager = sceneManager;

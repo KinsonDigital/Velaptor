@@ -26,7 +26,7 @@ public class EnsureThatTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            EnsureThat.ParamIsNotNull(nullObj);
+            ArgumentNullException.ThrowIfNull(nullObj);
         }, "The parameter must not be null. (Parameter 'nullObj')");
     }
 
@@ -39,7 +39,7 @@ public class EnsureThatTests
         // Act & Assert
         AssertExtensions.DoesNotThrow<Exception>(() =>
         {
-            EnsureThat.ParamIsNotNull(nonNullObj);
+            ArgumentNullException.ThrowIfNull(nonNullObj);
         });
     }
 
@@ -51,7 +51,7 @@ public class EnsureThatTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            EnsureThat.StringParamIsNotNullOrEmpty(value);
+            ArgumentException.ThrowIfNullOrEmpty(value);
         }, $"The string parameter must not be null or empty. (Parameter '{nameof(value)}')");
     }
 

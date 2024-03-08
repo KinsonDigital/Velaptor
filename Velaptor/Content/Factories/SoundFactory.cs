@@ -28,7 +28,7 @@ internal sealed class SoundFactory : ISoundFactory
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundFactory(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 

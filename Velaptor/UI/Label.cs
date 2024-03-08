@@ -80,7 +80,7 @@ public class Label : ControlBase
         IAppInput<MouseState> mouse)
             : base(keyboard, mouse)
     {
-        EnsureThat.ParamIsNotNull(fontLoader);
+        ArgumentNullException.ThrowIfNull(fontLoader);
 
         Init(fontLoader, RendererFactory.CreateFontRenderer());
     }
