@@ -6,6 +6,9 @@ namespace Velaptor.NativeInterop.OpenGL;
 
 using System;
 using System.Numerics;
+using Silk.NET.Core.Attributes;
+using Silk.NET.Core.Native;
+using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
 
 /// <summary>
@@ -578,4 +581,15 @@ internal interface IGLInvoker : IDisposable
     /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
     void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
         where T : unmanaged;
+
+    /// <summary>
+    /// TODO: write the doc.
+    /// </summary>
+    /// <param name="callback">TODO: write the doc.</param>
+    /// <param name="userParam">TODO: write the doc.</param>
+    /// <typeparam name="T0">TODO: write the doc.</typeparam>
+    void DebugMessageCallback<T0>(
+        [Flow(FlowDirection.In), PinObject(PinMode.UntilNextCall)] DebugProc callback,
+        [Flow(FlowDirection.In)] in T0 userParam)
+        where T0 : unmanaged;
 }

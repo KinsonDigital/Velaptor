@@ -8,9 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Fluent;
-using Carbonate.OneWay;
-using Exceptions;
 using OpenGL;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
@@ -43,31 +40,15 @@ internal sealed class OpenGLService : IOpenGLService
     /// <param name="glReactable">Sends and receives push notifications.</param>
     /// <param name="dotnetService">Invokes Dotnet functions.</param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
-    public OpenGLService(IGLInvoker glInvoker, IPushReactable<GL> glReactable, IDotnetService dotnetService, ILoggingService loggingService)
+    public OpenGLService(IGLInvoker glInvoker, IDotnetService dotnetService, ILoggingService loggingService)
     {
         ArgumentNullException.ThrowIfNull(glInvoker);
-        ArgumentNullException.ThrowIfNull(glReactable);
         ArgumentNullException.ThrowIfNull(loggingService);
         ArgumentNullException.ThrowIfNull(dotnetService);
 
         this.glInvoker = glInvoker;
         this.dotnetService = dotnetService;
         this.loggingService = loggingService;
-
-        var glContextSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.GLContextCreatedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId)))
-            .BuildOneWayReceive<GL>(glObj =>
-            {
-                this.gl = glObj ??
-                          throw new PushNotificationException(
-                              $"{nameof(GLInvoker)}.Constructor()",
-                              PushNotifications.GLContextCreatedId);
-            });
-
-        Console.WriteLine(this.gl);
-
-        glReactable.Subscribe(glContextSubscription);
     }
 
     /// <inheritdoc/>
@@ -277,8 +258,7 @@ internal sealed class OpenGLService : IOpenGLService
          * method tells the garbage collector to not collect the delegate to prevent this from happening.
          */
         this.dotnetService.GCKeepAlive(this.debugCallback);
-
-        this.gl.DebugMessageCallback(this.debugCallback, this.dotnetService.MarshalStringToHGlobalAnsi(string.Empty));
+        this.glInvoker.DebugMessageCallback(this.debugCallback, this.dotnetService.MarshalStringToHGlobalAnsi(string.Empty));
     }
 
     /// <summary>
