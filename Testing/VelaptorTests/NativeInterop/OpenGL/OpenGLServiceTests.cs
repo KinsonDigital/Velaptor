@@ -8,8 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.OneWay;
-using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
@@ -24,8 +22,7 @@ using Velaptor.Services;
 /// </summary>
 public class OpenGLServiceTests
 {
-    private readonly Mock<IGLInvoker> mockGLInvoker;
-    private readonly IPushReactable<GL> mockPushReactable;
+    private readonly IGLInvoker mockGLInvoker;
     private readonly IDotnetService mockDotnetService;
     private readonly ILoggingService mockLoggingService;
 
@@ -34,25 +31,21 @@ public class OpenGLServiceTests
     /// </summary>
     public OpenGLServiceTests()
     {
-        this.mockGLInvoker = new Mock<IGLInvoker>();
-        this.mockPushReactable = Substitute.For<IPushReactable<GL>>();
+        this.mockGLInvoker = Substitute.For<IGLInvoker>();
         this.mockDotnetService = Substitute.For<IDotnetService>();
         this.mockLoggingService = Substitute.For<ILoggingService>();
 
-        unsafe
-        {
-            this.mockGLInvoker.Setup(m => m.GetInteger(GLGetPName.Viewport, It.IsAny<int[]>()))
-                .Callback<GLGetPName, int[]>((_, data) =>
-                {
-                    fixed (int* dataPtr = data)
-                    {
-                        dataPtr[0] = 11;
-                        dataPtr[1] = 22;
-                        dataPtr[2] = 33;
-                        dataPtr[3] = 44;
-                    }
-                });
-        }
+
+        this.mockGLInvoker
+            .When(x => x.GetInteger(GLGetPName.Viewport, Arg.Any<int[]>()))
+            .Do(callInfo =>
+            {
+                var values = callInfo.ArgAt<int[]>(1);
+                values[0] = 11;
+                values[1] = 22;
+                values[2] = 33;
+                values[3] = 44;
+            });
     }
 
     #region Constructor Tests
@@ -60,7 +53,7 @@ public class OpenGLServiceTests
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new OpenGLService(null, this.mockPushReactable, this.mockDotnetService, this.mockLoggingService);
+        var act = () => new OpenGLService(null, this.mockDotnetService, this.mockLoggingService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -68,21 +61,10 @@ public class OpenGLServiceTests
     }
 
     [Fact]
-    public void Ctor_WithNullPushReactableParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () => new OpenGLService(this.mockGLInvoker.Object, null, this.mockDotnetService, this.mockLoggingService);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glReactable')");
-    }
-
-    [Fact]
     public void Ctor_WithNullDotnetServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new OpenGLService(this.mockGLInvoker.Object, this.mockPushReactable, null, this.mockLoggingService);
+        var act = () => new OpenGLService(this.mockGLInvoker, null, this.mockLoggingService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -93,7 +75,7 @@ public class OpenGLServiceTests
     public void Ctor_WithNullLoggingServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new OpenGLService(this.mockGLInvoker.Object, this.mockPushReactable, this.mockDotnetService, null);
+        var act = () => new OpenGLService(this.mockGLInvoker, this.mockDotnetService, null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -178,7 +160,7 @@ public class OpenGLServiceTests
         service.SetViewPortSize(new Size(55, 66));
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.Viewport(11, 22, 55, 66));
+        this.mockGLInvoker.Received().Viewport(11, 22, 55, 66);
     }
 
     [Fact]
@@ -204,7 +186,7 @@ public class OpenGLServiceTests
         service.BindVBO(123u);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 123u), Times.Once);
+        this.mockGLInvoker.Received(1).BindBuffer(GLBufferTarget.ArrayBuffer, 123u);
     }
 
     [Fact]
@@ -217,7 +199,7 @@ public class OpenGLServiceTests
         service.UnbindVBO();
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 0u), Times.Once);
+        this.mockGLInvoker.Received(1).BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
     }
 
     [Fact]
@@ -230,7 +212,7 @@ public class OpenGLServiceTests
         service.BindEBO(123u);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 123u), Times.Once);
+        this.mockGLInvoker.Received(1).BindBuffer(GLBufferTarget.ElementArrayBuffer, 123u);
     }
 
     [Fact]
@@ -258,7 +240,7 @@ public class OpenGLServiceTests
         service.UnbindEBO();
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0u), Times.Once);
+        this.mockGLInvoker.Received(1).BindBuffer(GLBufferTarget.ElementArrayBuffer, 0u);
     }
 
     [Fact]
@@ -271,7 +253,7 @@ public class OpenGLServiceTests
         service.BindVAO(123u);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindVertexArray(123u), Times.Once);
+        this.mockGLInvoker.Received(1).BindVertexArray(123u);
     }
 
     [Fact]
@@ -284,7 +266,7 @@ public class OpenGLServiceTests
         service.UnbindVAO();
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindVertexArray(0u), Times.Once);
+        this.mockGLInvoker.Received(1).BindVertexArray(0u);
     }
 
     [Fact]
@@ -297,7 +279,7 @@ public class OpenGLServiceTests
         service.BindTexture2D(123u);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 123u), Times.Once);
+        this.mockGLInvoker.Received(1).BindTexture(GLTextureTarget.Texture2D, 123u);
     }
 
     [Fact]
@@ -310,7 +292,7 @@ public class OpenGLServiceTests
         service.UnbindTexture2D();
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 0u), Times.Once);
+        this.mockGLInvoker.Received(1).BindTexture(GLTextureTarget.Texture2D, 0u);
     }
 
     [Theory]
@@ -320,9 +302,7 @@ public class OpenGLServiceTests
     public void ProgramLinkedSuccessfully_WhenSuccessful_ReturnsCorrectResult(int linkStatus, bool expected)
     {
         // Arrange
-        this.mockGLInvoker.Setup(m =>
-                m.GetProgram(123, GLProgramParameterName.LinkStatus))
-            .Returns(linkStatus);
+        this.mockGLInvoker.GetProgram(123, GLProgramParameterName.LinkStatus).Returns(linkStatus);
         var service = CreateService();
 
         // Act
@@ -339,9 +319,7 @@ public class OpenGLServiceTests
     public void ShaderCompiledSuccessfully_WhenInvoked_ReturnsCorrectResult(int compileStatus, bool expected)
     {
         // Arrange
-        this.mockGLInvoker.Setup(m =>
-                m.GetShader(123, GLShaderParameter.CompileStatus))
-            .Returns(compileStatus);
+        this.mockGLInvoker.GetShader(123, GLShaderParameter.CompileStatus).Returns(compileStatus);
         var service = CreateService();
 
         // Act
@@ -362,8 +340,7 @@ public class OpenGLServiceTests
         service.BeginGroup(label);
 
         // Assert
-        this.mockGLInvoker.Verify(m =>
-            m.PushDebugGroup(GLDebugSource.DebugSourceApplication, 100, (uint)label.Length, label), Times.Once);
+        this.mockGLInvoker.Received(1).PushDebugGroup(GLDebugSource.DebugSourceApplication, 100, (uint)label.Length, label);
     }
 
     [Fact]
@@ -376,8 +353,7 @@ public class OpenGLServiceTests
         service.EndGroup();
 
         // Assert
-        this.mockGLInvoker.Verify(m =>
-            m.PopDebugGroup(), Times.Once);
+        this.mockGLInvoker.Received(1).PopDebugGroup();
     }
 
     [Fact]
@@ -391,7 +367,7 @@ public class OpenGLServiceTests
         service.LabelShader(123, label);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label));
+        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label);
     }
 
     [Fact]
@@ -405,7 +381,7 @@ public class OpenGLServiceTests
         service.LabelShaderProgram(123, label);
 
         // Assert
-        this.mockGLInvoker.Verify(m => m.ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label));
+        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label);
     }
 
     [Theory]
@@ -421,8 +397,7 @@ public class OpenGLServiceTests
         service.LabelVertexArray(123, label);
 
         // Assert
-        this.mockGLInvoker.Verify(m =>
-            m.ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected));
+        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected);
     }
 
     [Fact]
@@ -436,7 +411,7 @@ public class OpenGLServiceTests
         var service = CreateService();
 
         // Act
-        var act = () => service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)invalidValue);
+        var act = () => service.LabelBuffer(default, default, (OpenGLBufferType)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -460,8 +435,7 @@ public class OpenGLServiceTests
         service.LabelBuffer(123, label, bufferType);
 
         // Assert
-        this.mockGLInvoker.Verify(m =>
-            m.ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected));
+        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected);
     }
 
     [Theory]
@@ -477,12 +451,11 @@ public class OpenGLServiceTests
         service.LabelTexture(123, label);
 
         // Assert
-        this.mockGLInvoker.Verify(m =>
-            m.ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected));
+        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected);
     }
 
     [Fact]
-    public void SetupErrorCallback_WhenInvokedTheFirstTime_InvokesGCKeepAliveAndInvokesMarshalStringToHGlobalAnsi()
+    public void SetupErrorCallback_WhenInvokedTheFirstTime_InvokesIDotnetServiceAndIGLInvokerMethods()
     {
         // Arrange
         var service = CreateService();
@@ -491,8 +464,9 @@ public class OpenGLServiceTests
         service.SetupErrorCallback();
 
         // Assert
-        this.mockDotnetService.Received(1).GCKeepAlive(Arg.Any<DebugProc?>());
-        this.mockDotnetService.Received(1).MarshalStringToHGlobalAnsi(string.Empty);
+        this.mockDotnetService.Received().GCKeepAlive(Arg.Any<DebugProc?>());
+        this.mockDotnetService.Received().MarshalStringToHGlobalAnsi(string.Empty);
+        this.mockGLInvoker.Received().DebugMessageCallback(Arg.Any<DebugProc?>(), Arg.Any<nint>());
     }
 
     [Fact]
@@ -507,7 +481,6 @@ public class OpenGLServiceTests
 
         // Assert
         this.mockDotnetService.Received(1).GCKeepAlive(Arg.Any<DebugProc?>());
-        this.mockDotnetService.Received(1).MarshalStringToHGlobalAnsi(string.Empty);
     }
 
     #endregion
@@ -516,5 +489,6 @@ public class OpenGLServiceTests
     /// Creates a new instance of <see cref="OpenGLService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private OpenGLService CreateService() => new (this.mockGLInvoker.Object, this.mockPushReactable, this.mockDotnetService, this.mockLoggingService);
+    //private OpenGLService CreateService() => new (this.mockGLInvoker.Object, this.mockDotnetService, this.mockLoggingService);
+    private OpenGLService CreateService() => new (this.mockGLInvoker, this.mockDotnetService, this.mockLoggingService);
 }

@@ -8,13 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using Carbonate;
+using Carbonate.Fluent;
 using Carbonate.OneWay;
 using Exceptions;
 using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
-using Velaptor.Services;
 
 /// <summary>
 /// Invokes OpenGL calls.
@@ -473,6 +471,11 @@ internal sealed class GLInvoker : IGLInvoker
             }
         }
     }
+
+    /// <inheritdoc/>
+    public void DebugMessageCallback<T0>(DebugProc callback, in T0 userParam)
+        where T0 : unmanaged
+        => this.gl.DebugMessageCallback(callback, userParam);
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
