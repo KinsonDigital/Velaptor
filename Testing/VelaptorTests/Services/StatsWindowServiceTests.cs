@@ -296,7 +296,7 @@ public class StatsWindowServiceTests
 
         // Assert
         this.mockImGuiInvoker.Received(5).Begin("Runtime Stats", ImGuiWindowFlags.None);
-        this.mockImGuiInvoker.Received(5).Text("FPS: 123.46");
+        this.mockImGuiInvoker.Received(5).Text("FPS: 123,46");
         this.mockImGuiInvoker.Received(5).SetWindowSize(Vector2.Zero);
         this.mockImGuiInvoker.Received(1).SetWindowPos(Vector2.Zero);
         this.mockImGuiInvoker.Received(5).End();
