@@ -35,7 +35,6 @@ public class OpenGLServiceTests
         this.mockDotnetService = Substitute.For<IDotnetService>();
         this.mockLoggingService = Substitute.For<ILoggingService>();
 
-
         this.mockGLInvoker
             .When(x => x.GetInteger(GLGetPName.Viewport, Arg.Any<int[]>()))
             .Do(callInfo =>
@@ -160,7 +159,7 @@ public class OpenGLServiceTests
         service.SetViewPortSize(new Size(55, 66));
 
         // Assert
-        this.mockGLInvoker.Received().Viewport(11, 22, 55, 66);
+        this.mockGLInvoker.Received(1).Viewport(11, 22, 55, 66);
     }
 
     [Fact]
@@ -367,7 +366,7 @@ public class OpenGLServiceTests
         service.LabelShader(123, label);
 
         // Assert
-        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label);
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label);
     }
 
     [Fact]
@@ -381,7 +380,7 @@ public class OpenGLServiceTests
         service.LabelShaderProgram(123, label);
 
         // Assert
-        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label);
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label);
     }
 
     [Theory]
@@ -489,6 +488,5 @@ public class OpenGLServiceTests
     /// Creates a new instance of <see cref="OpenGLService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    //private OpenGLService CreateService() => new (this.mockGLInvoker.Object, this.mockDotnetService, this.mockLoggingService);
     private OpenGLService CreateService() => new (this.mockGLInvoker, this.mockDotnetService, this.mockLoggingService);
 }

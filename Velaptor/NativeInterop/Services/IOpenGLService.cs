@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.Services;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
@@ -28,6 +29,7 @@ internal interface IOpenGLService
     ///     VBO stands for (V)ertex (B)uffer (O)bject.
     /// </remarks>
     // ReSharper restore CommentTypo
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Plans for future use.")]
     bool IsVBOBound { get; }
 
     // ReSharper disable CommentTypo
@@ -39,6 +41,7 @@ internal interface IOpenGLService
     ///     EBO stands for (E)lement (B)uffer (O)bject.
     /// </remarks>
     // ReSharper restore CommentTypo
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Plans for future use.")]
     bool IsEBOBound { get; }
 
     // ReSharper disable CommentTypo
@@ -50,6 +53,7 @@ internal interface IOpenGLService
     ///     VAO stands for (V)ertex (A)rray (O)object.
     /// </remarks>
     // ReSharper restore CommentTypo
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Plans for future use.")]
     bool IsVAOBound { get; }
 
     /// <summary>
