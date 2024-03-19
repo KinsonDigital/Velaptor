@@ -30,6 +30,7 @@ using Velaptor.Input.Exceptions;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
@@ -73,6 +74,7 @@ public class GLWindowTests : TestsBase
     private readonly IInputContext? mockSilkInputContext;
     private readonly IKeyboard? mockSilkKeyboard;
     private readonly IMouse? mockSilkMouse;
+    private readonly IOpenGLService mockOpenGLService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -107,6 +109,7 @@ public class GLWindowTests : TestsBase
         this.mockTaskService = Substitute.For<ITaskService>();
         this.mockStatsWindowService = Substitute.For<IStatsWindowService>();
         this.mockImGuiFacade = Substitute.For<IImGuiFacade>();
+        this.mockOpenGLService = Substitute.For<IOpenGLService>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
         this.mockMouseReactable = Substitute.For<IPushReactable<MouseStateData>>();
@@ -152,7 +155,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -179,7 +183,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -206,7 +211,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -233,7 +239,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -260,7 +267,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -287,7 +295,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -314,7 +323,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -341,7 +351,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -368,7 +379,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -395,7 +407,8 @@ public class GLWindowTests : TestsBase
             null,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService);
+            this.mockTimerService,
+            this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -422,7 +435,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 null,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -449,7 +463,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 null,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -476,11 +491,40 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                null);
+                null,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'timerService')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
+            100,
+            200,
+            this.mockAppService,
+            this.mockSilkWindow,
+            this.mockNativeInputFactory,
+            this.mockGL,
+            this.mockGlfw,
+            this.mockDisplayService,
+            this.mockPlatform,
+            this.mockTaskService,
+            this.mockStatsWindowService,
+            this.mockImGuiFacade,
+            this.mockSceneManager,
+            this.mockReactableFactory,
+            this.mockTimerService,
+            null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -1011,6 +1055,20 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Show();
+        this.mockSilkWindow.Load += Raise.Event<Action>();
+
+        // Assert
+        this.mockOpenGLService.Received(1).GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
+    }
+
+    [Fact]
     public async Task ShowAsync_WhileDisposed_ThrowsException()
     {
         // Arrange
@@ -1102,6 +1160,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockPushReactable.Received(1).UnsubscribeAll();
+        this.mockOpenGLService.Received(1).GLError -= Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert unsubscriptions from keyboard and mouse
         this.mockSilkKeyboard.Received().KeyDown -= Arg.Any<Action<IKeyboard, Key, int>>();
@@ -1630,5 +1689,6 @@ public class GLWindowTests : TestsBase
             this.mockImGuiFacade,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService);
+            this.mockTimerService,
+            this.mockOpenGLService);
 }

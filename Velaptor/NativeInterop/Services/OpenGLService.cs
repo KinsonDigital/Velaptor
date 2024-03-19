@@ -30,14 +30,10 @@ internal sealed class OpenGLService : IOpenGLService
     private readonly ILoggingService loggingService;
     private DebugProc? debugCallback;
 
-    // ReSharper disable once MemberInitializerValueIgnored
-    private GL gl = null!;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenGLService"/> class.
     /// </summary>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
-    /// <param name="glReactable">Sends and receives push notifications.</param>
     /// <param name="dotnetService">Invokes Dotnet functions.</param>
     /// <param name="loggingService">Logs messages to the console and files.</param>
     public OpenGLService(IGLInvoker glInvoker, IDotnetService dotnetService, ILoggingService loggingService)
