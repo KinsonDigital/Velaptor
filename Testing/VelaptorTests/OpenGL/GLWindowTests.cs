@@ -766,8 +766,7 @@ public class GLWindowTests : TestsBase
         actual.Should().Be(30);
     }
 
-    [FactForWindows]
-    [Trait("Category", Prop)]
+    [Fact]
     public void MouseCursorVisible_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange

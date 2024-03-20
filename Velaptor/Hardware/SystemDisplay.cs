@@ -1,4 +1,4 @@
-﻿// <copyright file="SystemDisplay.cs" company="KinsonDigital">
+// <copyright file="SystemDisplay.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -21,7 +21,10 @@ public readonly record struct SystemDisplay
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Required for testing.")]
-    public SystemDisplay() => this.platform = new Platform();
+    public SystemDisplay() =>
+        this.platform = UnitTestDetector.IsRunningFromUnitTest
+            ? this.platform = new Platform()
+            : IoC.Container.GetInstance<IPlatform>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
