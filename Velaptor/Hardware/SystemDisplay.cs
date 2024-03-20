@@ -21,7 +21,10 @@ public readonly record struct SystemDisplay
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    public SystemDisplay() => this.platform = IoC.Container.GetInstance<IPlatform>();
+    public SystemDisplay() =>
+        this.platform = UnitTestDetector.IsRunningFromUnitTest
+            ? this.platform = new Platform()
+            : IoC.Container.GetInstance<IPlatform>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
