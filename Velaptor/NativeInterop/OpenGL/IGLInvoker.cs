@@ -5,7 +5,11 @@
 namespace Velaptor.NativeInterop.OpenGL;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using Silk.NET.Core.Attributes;
+using Silk.NET.Core.Native;
+using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
 
 /// <summary>
@@ -13,19 +17,6 @@ using Velaptor.OpenGL;
 /// </summary>
 internal interface IGLInvoker : IDisposable
 {
-    /// <summary>
-    /// Invoked when there is an OpenGL related error.
-    /// </summary>
-    event EventHandler<GLErrorEventArgs> GLError;
-
-    /// <summary>
-    /// Sets up the error callback.
-    /// </summary>
-    /// <remarks>
-    ///     This cannot be invoked until the OpenGL context has been created.
-    /// </remarks>
-    void SetupErrorCallback();
-
     /// <summary>
     /// Push a named debug group into the command stream.
     /// </summary>
@@ -589,6 +580,13 @@ internal interface IGLInvoker : IDisposable
     ///     UnsignedInt8888Rev, UnsignedInt1010102, and UnsignedInt2101010Rev.
     /// </param>
     /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
+    [SuppressMessage("csharpsquid", "S107", Justification = "Maintaining param count to match original API.")]
     void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
         where T : unmanaged;
+
+    /// <inheritdoc cref="GL.DebugMessageCallback"/>
+    void DebugMessageCallback<T0>(
+        [Flow(FlowDirection.In), PinObject(PinMode.UntilNextCall)] DebugProc callback,
+        [Flow(FlowDirection.In)] in T0 userParam)
+        where T0 : unmanaged;
 }
