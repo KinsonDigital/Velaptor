@@ -54,7 +54,7 @@ internal abstract class ShaderProgram : IShaderProgram
         var glInitSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.GLInitializedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceive(Init);
+            .BuildNonReceiveOrRespond(Init);
 
         this.glInitReactorUnsubscriber = signalReactable.Subscribe(glInitSubscription);
 
@@ -62,7 +62,7 @@ internal abstract class ShaderProgram : IShaderProgram
         var shutDownSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.SystemShuttingDownId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
+            .BuildNonReceiveOrRespond(ShutDown);
 
         this.shutDownReactorUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
 

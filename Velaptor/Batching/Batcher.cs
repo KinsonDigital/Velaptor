@@ -45,7 +45,7 @@ internal sealed class Batcher : IBatcher
         var glInitSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.GLInitializedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceive(() =>
+            .BuildNonReceiveOrRespond(() =>
             {
                 if (this.isInitialized)
                 {
@@ -58,8 +58,8 @@ internal sealed class Batcher : IBatcher
                 foreach (var batchType in Enum.GetValues<BatchType>())
                 {
                     batchSizeReactable.Push(
-                        new BatchSizeData { BatchSize = InitialBatchSize, TypeOfBatch = batchType },
-                        PushNotifications.BatchSizeChangedId);
+                        PushNotifications.BatchSizeChangedId,
+                        new BatchSizeData { BatchSize = InitialBatchSize, TypeOfBatch = batchType });
                 }
 
                 if (this.cachedClearColor is not null)

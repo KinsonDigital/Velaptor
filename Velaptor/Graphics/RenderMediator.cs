@@ -58,7 +58,7 @@ internal sealed class RenderMediator : IRenderMediator
         var endBatchSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.BatchHasEndedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId)))
-            .BuildNonReceive(CoordinateRenders);
+            .BuildNonReceiveOrRespond(CoordinateRenders);
 
         this.endBatchReactable.Subscribe(endBatchSubscription);
 
@@ -171,8 +171,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var textureLayerStart = textureItems.FirstLayerIndex(currentLayer);
 
                 this.textureRenderBatchReactable.Push(
-                    textureItems.Slice(textureLayerStart, totalTexturesOnCurrentLayer),
-                    PushNotifications.RenderTexturesId);
+                    PushNotifications.RenderTexturesId,
+                    textureItems.Slice(textureLayerStart, totalTexturesOnCurrentLayer));
             }
 
             if (totalFontOnCurrentLayer > 0)
@@ -180,8 +180,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var fontLayerStart = fontItems.FirstLayerIndex(currentLayer);
 
                 this.fontRenderBatchReactable.Push(
-                    fontItems.Slice(fontLayerStart, totalFontOnCurrentLayer),
-                    PushNotifications.RenderFontsId);
+                    PushNotifications.RenderFontsId,
+                    fontItems.Slice(fontLayerStart, totalFontOnCurrentLayer));
             }
 
             if (totalShapesOnCurrentLayer > 0)
@@ -189,8 +189,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var shapeLayerStart = shapeItems.FirstLayerIndex(currentLayer);
 
                 this.shapeRenderBatchReactable.Push(
-                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer),
-                    PushNotifications.RenderShapesId);
+                    PushNotifications.RenderShapesId,
+                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer));
             }
 
             if (totalLinesOnCurrentLayer > 0)
@@ -198,8 +198,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var lineLayerStart = lineItems.FirstLayerIndex(currentLayer);
 
                 this.lineRenderBatchReactable.Push(
-                    lineItems.Slice(lineLayerStart, totalLinesOnCurrentLayer),
-                    PushNotifications.RenderLinesId);
+                    PushNotifications.RenderLinesId,
+                    lineItems.Slice(lineLayerStart, totalLinesOnCurrentLayer));
             }
 
             // Resets the item back to the default value

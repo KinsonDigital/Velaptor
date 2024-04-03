@@ -4,6 +4,7 @@
 
 namespace KeyboardPerf;
 
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
@@ -17,13 +18,18 @@ internal sealed class PushReactableFake : IPushReactable<KeyboardKeyStateData>
     /// <summary>
     /// Gets a value for performance testing.
     /// </summary>
-    public ReadOnlyCollection<IReceiveSubscription<KeyboardKeyStateData>> Subscriptions { get; } =
-        Array.Empty<IReceiveSubscription<KeyboardKeyStateData>>().AsReadOnly();
+    public ImmutableArray<IReceiveSubscription<KeyboardKeyStateData>> Subscriptions { get; } =
+        Array.Empty<IReceiveSubscription<KeyboardKeyStateData>>().ToImmutableArray();
 
     /// <summary>
     /// Gets a value for performance testing.
     /// </summary>
-    public ReadOnlyCollection<Guid> SubscriptionIds { get; } = Array.Empty<Guid>().AsReadOnly();
+    public ImmutableArray<Guid> SubscriptionIds { get; } = Array.Empty<Guid>().ToImmutableArray();
+
+    /// <summary>
+    /// Uses for testing.
+    /// </summary>
+    public ImmutableArray<string> SubscriptionNames { get; }
 
     /// <summary>
     /// Used for performance testing.
@@ -35,9 +41,7 @@ internal sealed class PushReactableFake : IPushReactable<KeyboardKeyStateData>
     /// <summary>
     /// Used for performance testing.
     /// </summary>
-    /// <param name="data">Sample data.</param>
-    /// <param name="eventId">Sample id.</param>
-    public void Push(in KeyboardKeyStateData data, Guid eventId) => throw new NotImplementedException();
+    public void Push(Guid id, in KeyboardKeyStateData data) => throw new NotImplementedException();
 
     /// <summary>
     /// Used for performance testing.

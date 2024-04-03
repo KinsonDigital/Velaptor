@@ -25,7 +25,7 @@ public static class App
     public static IRenderContext UseAvaloniaRenderContext(GL gl, uint renderAreaWidth, uint renderAreaHeight)
     {
         var glReactable = IoC.Container.GetInstance<IPushReactable<GL>>();
-        glReactable.Push(gl, PushNotifications.GLContextCreatedId);
+        glReactable.Push(PushNotifications.GLContextCreatedId, gl);
         glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
 
         var initReactable = IoC.Container.GetInstance<IPushReactable>();
@@ -35,10 +35,11 @@ public static class App
         initReactable.Unsubscribe(PushNotifications.GLInitializedId);
 
         viewPortReactable.Push(
+            PushNotifications.ViewPortSizeChangedId,
             new ViewPortSizeData
             {
                 Width = renderAreaWidth, Height = renderAreaHeight,
-            }, PushNotifications.ViewPortSizeChangedId);
+            });
 
         return IoC.Container.GetInstance<IRenderContext>();
     }

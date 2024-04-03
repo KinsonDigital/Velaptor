@@ -81,7 +81,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         var shutDownSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.SystemShuttingDownId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
+            .BuildNonReceiveOrRespond(ShutDown);
 
         shutDownReactable.Subscribe(shutDownSubscription);
     }
@@ -265,7 +265,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
 #if DEBUG
         AppStats.ClearLoadedFont(cacheKey);
         AppStats.RemoveLoadedTexture(texture.Id);
@@ -284,7 +284,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
         foreach ((_, ITexture? texture) in this.textures)
         {
-            this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
         }
 
         this.textures.Clear();

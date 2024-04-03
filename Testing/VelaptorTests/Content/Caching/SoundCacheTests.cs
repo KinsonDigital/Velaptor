@@ -318,8 +318,8 @@ public class SoundCacheTests
             .Returns(mockSound.Object);
 
         this.mockDisposeReactable.Setup(m =>
-                m.Push(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in DisposeSoundData data, Guid _) =>
+                m.Push(It.IsAny<Guid>(), It.Ref<DisposeSoundData>.IsAny))
+            .Callback((Guid _, in DisposeSoundData data) =>
             {
                 data.Should().NotBeNull("it is required for unit testing.");
                 actual = data;
@@ -336,7 +336,7 @@ public class SoundCacheTests
 
         sut.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable.VerifyOnce(m =>
-            m.Push(It.Ref<DisposeSoundData>.IsAny, PushNotifications.SoundDisposedId));
+            m.Push(PushNotifications.SoundDisposedId, It.Ref<DisposeSoundData>.IsAny));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -356,7 +356,7 @@ public class SoundCacheTests
 
         // Assert
         this.mockDisposeReactable.VerifyNever(m =>
-            m.Push(It.Ref<DisposeSoundData>.IsAny, It.IsAny<Guid>()));
+            m.Push(It.IsAny<Guid>(), It.Ref<DisposeSoundData>.IsAny));
     }
     #endregion
 

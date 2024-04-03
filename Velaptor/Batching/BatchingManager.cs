@@ -68,7 +68,7 @@ internal sealed class BatchingManager : IBatchingManager
         var shutDownSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.SystemShuttingDownId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
+            .BuildNonReceiveOrRespond(ShutDown);
 
         this.shutDownUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
 
@@ -76,7 +76,7 @@ internal sealed class BatchingManager : IBatchingManager
         var emptyBatchSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.EmptyBatchId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.EmptyBatchId)))
-            .BuildNonReceive(EmptyBatch);
+            .BuildNonReceiveOrRespond(EmptyBatch);
 
         this.emptyBatchUnsubscriber = signalReactable.Subscribe(emptyBatchSubscription);
 
@@ -181,8 +181,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Texture);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture });
         }
 
         this.textureItems.Span[emptyItemIndex] = new RenderItem<TextureBatchItem>
@@ -205,8 +205,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Font);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font });
         }
 
         this.fontItems.Span[emptyItemIndex] = new RenderItem<FontGlyphBatchItem>
@@ -229,8 +229,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Rect);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect });
         }
 
         this.shapeItems.Span[emptyItemIndex] = new RenderItem<ShapeBatchItem>
@@ -253,8 +253,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Line);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line });
         }
 
         this.lineItems.Span[emptyItemIndex] = new RenderItem<LineBatchItem>

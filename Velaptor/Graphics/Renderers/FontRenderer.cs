@@ -65,7 +65,7 @@ internal sealed class FontRenderer : IFontRenderer
         var beginBatchSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.BatchHasBegunId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
-            .BuildNonReceive(() => this.hasBegun = true);
+            .BuildNonReceiveOrRespond(() => this.hasBegun = true);
 
         beginBatchReactable.Subscribe(beginBatchSubscription);
 

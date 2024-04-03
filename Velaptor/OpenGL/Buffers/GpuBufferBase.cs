@@ -48,7 +48,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         var initSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.GLInitializedId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceive(Init);
+            .BuildNonReceiveOrRespond(Init);
 
         signalReactable.Subscribe(initSubscription);
 
@@ -56,7 +56,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         var shutDownSubscription = ISubscriptionBuilder.Create()
             .WithId(PushNotifications.SystemShuttingDownId)
             .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
+            .BuildNonReceiveOrRespond(ShutDown);
 
         signalReactable.Subscribe(shutDownSubscription);
 

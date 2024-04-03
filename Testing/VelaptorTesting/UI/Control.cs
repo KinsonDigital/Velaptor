@@ -55,7 +55,7 @@ internal abstract class Control : IControl
             var subscription = ISubscriptionBuilder.Create()
                 .WithId(this.windowOwnerId)
                 .WithName($"{Name}|{this.windowOwnerId}")
-                .BuildNonReceive(Render);
+                .BuildNonReceiveOrRespond(Render);
             this.unsubscriber = this.renderReactable.Subscribe(subscription);
         }
     }
