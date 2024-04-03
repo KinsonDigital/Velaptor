@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Graphics;
 using NativeInterop.OpenGL;
@@ -24,6 +24,7 @@ public sealed class Texture : ITexture
 {
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
+    private IDisposable? unsubscriber;
     private bool isDisposed;
 
     /// <summary>
@@ -154,12 +155,10 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
     {
-        var disposeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.TextureDisposedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.TextureDisposedId)))
-            .BuildOneWayReceive<DisposeTextureData>(Unload);
-
-        disposeReactable.Subscribe(disposeSubscription);
+        this.unsubscriber = disposeReactable.CreateOneWayReceive(
+            PushNotifications.TextureDisposedId,
+            Unload,
+            () => this.unsubscriber?.Dispose());
 
         if (imageData.IsEmpty())
         {

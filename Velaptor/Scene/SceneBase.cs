@@ -8,9 +8,8 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
-using ReactableData;
 
 /// <summary>
 /// A base scene to be used for creating new custom scenes.
@@ -110,16 +109,13 @@ public abstract class SceneBase : IScene
     {
         var pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
 
-        var winSizeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.WindowSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.WindowSizeChangedId)))
-            .WhenUnsubscribing(() => this.unsubscriber?.Dispose())
-            .BuildOneWayReceive<WindowSizeData>(data =>
+        this.unsubscriber = pushWinSizeReactable.CreateOneWayReceive(
+            PushNotifications.WindowSizeChangedId,
+            (data) =>
             {
                 WindowSize = new SizeU(data.Width, data.Height);
-            });
-
-        this.unsubscriber = pushWinSizeReactable.Subscribe(winSizeSubscription);
+            },
+            () => this.unsubscriber?.Dispose());
 
         // Get the size of the window just in case the scene is being created before
         // the loading of the window and gl init has completed.

@@ -8,14 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
 using GpuData;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 
 /// <summary>
 /// Updates data in the line GPU buffer.
@@ -24,6 +23,7 @@ using ReactableData;
 internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
 {
     private const string BufferNotInitMsg = "The line buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
@@ -42,10 +42,9 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.unsubscriber = batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (data.TypeOfBatch != BatchType.Line)
                 {
@@ -58,9 +57,8 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
                 {
                     ResizeBatch();
                 }
-            });
-
-        batchSizeReactable.Subscribe(subscription);
+            },
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

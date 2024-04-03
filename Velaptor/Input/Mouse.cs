@@ -4,9 +4,10 @@
 
 namespace Velaptor.Input;
 
+using System;
 using System.ComponentModel;
 using System.Drawing;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
 using Guards;
 using ReactableData;
@@ -16,6 +17,7 @@ using ReactableData;
 /// </summary>
 internal sealed class Mouse : IAppInput<MouseState>
 {
+    private readonly IDisposable unsubscriber;
     private (MouseButton button, bool isDown) leftMouseButton = (MouseButton.LeftButton, false);
     private (MouseButton button, bool isDown) middleMouseButton = (MouseButton.MiddleButton, false);
     private (MouseButton button, bool isDown) rightMouseButton = (MouseButton.RightButton, false);
@@ -34,12 +36,10 @@ internal sealed class Mouse : IAppInput<MouseState>
 
         var mouseDataReactable = reactableFactory.CreateMouseReactable();
 
-        var mouseChangeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.MouseStateChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.MouseStateChangedId)))
-            .BuildOneWayReceive<MouseStateData>(MouseStateChanged);
-
-        mouseDataReactable.Subscribe(mouseChangeSubscription);
+        this.unsubscriber = mouseDataReactable.CreateOneWayReceive(
+            PushNotifications.MouseStateChangedId,
+            MouseStateChanged,
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <summary>

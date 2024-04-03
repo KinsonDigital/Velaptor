@@ -12,7 +12,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Exceptions;
@@ -152,13 +152,10 @@ internal sealed class GLWindow : VelaptorIWindow
                 (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
         };
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PullNotifications.GetWindowSizeId)
-            .WithName($"{nameof(GLWindow)}.Ctor")
-            .WhenUnsubscribing(() => this.pullWinSizeUnsubscriber?.Dispose())
-            .BuildOneWayRespond(() => new WindowSizeData { Width = Width, Height = Height });
-
-        this.pullWinSizeUnsubscriber = pullWinSizeReactable.Subscribe(subscription);
+        this.pullWinSizeUnsubscriber = pullWinSizeReactable.CreateOneWayRespond(
+            PullNotifications.GetWindowSizeId,
+            () => new WindowSizeData { Width = Width, Height = Height },
+            () => this.pullWinSizeUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

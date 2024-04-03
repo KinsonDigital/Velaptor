@@ -6,7 +6,7 @@ namespace Velaptor.Batching;
 
 using System;
 using System.Drawing;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics.Renderers.Exceptions;
@@ -21,6 +21,7 @@ internal sealed class Batcher : IBatcher
     private const uint InitialBatchSize = 1000;
     private readonly IGLInvoker glInvoker;
     private readonly IPushReactable glInitReactable;
+    private readonly IDisposable unsubscriber;
     private readonly CachedValue<Color> cachedClearColor;
     private bool isInitialized;
 
@@ -42,10 +43,9 @@ internal sealed class Batcher : IBatcher
         this.glInvoker = glInvoker;
         this.glInitReactable = glInitReactable;
 
-        var glInitSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.GLInitializedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceiveOrRespond(() =>
+        this.unsubscriber = this.glInitReactable.CreateNonReceiveOrRespond(
+            PushNotifications.GLInitializedId,
+            () =>
             {
                 if (this.isInitialized)
                 {
@@ -68,9 +68,8 @@ internal sealed class Batcher : IBatcher
                 }
 
                 this.isInitialized = true;
-            });
-
-        glInitReactable.Subscribe(glInitSubscription);
+            },
+            () => this.unsubscriber?.Dispose());
 
         this.cachedClearColor = new CachedValue<Color>(
             Color.FromArgb(255, 16, 29, 36),

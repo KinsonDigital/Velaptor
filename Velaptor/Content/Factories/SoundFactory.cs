@@ -4,11 +4,12 @@
 
 namespace Velaptor.Content.Factories;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Guards;
 using ReactableData;
@@ -21,6 +22,7 @@ internal sealed class SoundFactory : ISoundFactory
 {
     private readonly Dictionary<uint, string> sounds = new ();
     private readonly IPushReactable<DisposeSoundData> disposeReactable;
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundFactory"/> class.
@@ -32,12 +34,10 @@ internal sealed class SoundFactory : ISoundFactory
 
         this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
 
-        var disposeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SoundDisposedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId)))
-            .BuildOneWayReceive<DisposeSoundData>(data => this.sounds.Remove(data.SoundId));
-
-        this.disposeReactable.Subscribe(disposeSubscription);
+        this.unsubscriber = this.disposeReactable.CreateOneWayReceive(
+            PushNotifications.SoundDisposedId,
+            data => this.sounds.Remove(data.SoundId),
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

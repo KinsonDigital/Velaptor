@@ -4,7 +4,6 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System;
 using System.Drawing;
 using System.Numerics;
 using UI;

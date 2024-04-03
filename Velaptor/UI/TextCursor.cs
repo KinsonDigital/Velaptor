@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
@@ -21,6 +21,7 @@ using ReactableData;
 /// </summary>
 internal class TextCursor : ITextCursor
 {
+    private readonly IDisposable unsubscriber;
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
     private RectShape cursor;
@@ -32,12 +33,10 @@ internal class TextCursor : ITextCursor
     /// <param name="textBoxStateReactable">Receives notifications of text box state data.</param>
     public TextCursor(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        var textBoxStateSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.TextBoxStateId)
-            .WithName("TextBoxStateDataUpdate")
-            .BuildOneWayReceive<TextBoxStateData>(UpdateState);
-
-        textBoxStateReactable.Subscribe(textBoxStateSubscription);
+        this.unsubscriber = textBoxStateReactable.CreateOneWayReceive(
+            PushNotifications.TextBoxStateId,
+            UpdateState,
+            () => this.unsubscriber?.Dispose());
 
         Cursor = new RectShape
         {

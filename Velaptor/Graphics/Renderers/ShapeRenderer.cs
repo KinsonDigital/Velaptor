@@ -6,7 +6,7 @@ namespace Velaptor.Graphics.Renderers;
 
 using System;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
@@ -23,6 +23,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<ShapeBatchItem> buffer;
     private readonly IShaderProgram shader;
+    private readonly IDisposable batchBeginUnsubscriber;
+    private readonly IDisposable renderUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -56,21 +58,17 @@ internal sealed class ShapeRenderer : IShapeRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var beginBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchHasBegunId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
-            .BuildNonReceiveOrRespond(() => this.hasBegun = true);
-
-        beginBatchReactable.Subscribe(beginBatchSubscription);
+        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.BatchHasBegunId,
+            () => this.hasBegun = true,
+            () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderShapeReactable();
 
-        var renderSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.RenderShapesId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderShapesId)))
-            .BuildOneWayReceive<Memory<RenderItem<ShapeBatchItem>>>(RenderBatch);
-
-        renderReactable.Subscribe(renderSubscription);
+        this.renderUnsubscriber = renderReactable.CreateOneWayReceive(
+            PushNotifications.RenderShapesId,
+            RenderBatch,
+            () => this.renderUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

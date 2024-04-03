@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System;
 using System.Collections.Generic;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Factories;
 using OpenGL.Batching;
@@ -31,6 +31,7 @@ internal sealed class RenderMediator : IRenderMediator
 
     // The total amount of layers supported
     private readonly Memory<int> allLayers = new (new int[1000]);
+    private readonly IDisposable endBatchUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
@@ -55,12 +56,10 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.endBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var endBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchHasEndedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId)))
-            .BuildNonReceiveOrRespond(CoordinateRenders);
-
-        this.endBatchReactable.Subscribe(endBatchSubscription);
+        this.endBatchUnsubscriber = this.endBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.BatchHasEndedId,
+            CoordinateRenders,
+            () => this.endBatchUnsubscriber?.Dispose());
 
         this.texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
         this.fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
