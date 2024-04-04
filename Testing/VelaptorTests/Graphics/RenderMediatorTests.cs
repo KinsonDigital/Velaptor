@@ -280,6 +280,7 @@ public class RenderMediatorTests : TestsBase
 
     #region Reacteable Tests
     [Fact]
+    [Trait("Category", Subscription)]
     public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Assert
