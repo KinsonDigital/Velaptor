@@ -29,7 +29,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="TextureGpuBuffer"/> class.
 /// </summary>
-public class TextureGpuBufferTests
+public class TextureGpuBufferTests : TestsBase
 {
     private const uint VertexArrayId = 111;
     private const uint VertexBufferId = 222;
@@ -165,6 +165,7 @@ public class TextureGpuBufferTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void UploadVertexData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
@@ -178,6 +179,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void UploadVertexData_WithInvalidRenderEffects_ThrowsException()
     {
         // Arrange
@@ -200,6 +202,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
     {
         // Arrange
@@ -225,6 +228,7 @@ public class TextureGpuBufferTests
     }
 
     [Theory]
+    [Trait("Category", Method)]
     [MemberData(nameof(GetGpuUploadTestData))]
     public void UploadVertexData_WhenInvoked_UploadsData(RenderEffects effects, float[] expected)
     {
@@ -261,6 +265,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void PrepareForUpload_WhenNotInitialized_ThrowsException()
     {
         // Arrange
@@ -274,6 +279,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void PrepareForUpload_WhenInvoked_BindsVertexArrayObject()
     {
         // Arrange
@@ -288,6 +294,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void GenerateData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
@@ -301,6 +308,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void GenerateData_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
@@ -315,6 +323,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void SetupVAO_WhenNotInitialized_ThrowsException()
     {
         // Arrange
@@ -328,6 +337,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void SetupVAO_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
@@ -355,6 +365,7 @@ public class TextureGpuBufferTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void GenerateIndices_WhenNotInitialized_ThrowsException()
     {
         // Arrange
