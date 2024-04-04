@@ -26,7 +26,7 @@ using Xunit;
 /// <summary>
 /// Initializes a new instance of <see cref="GpuBufferBaseTests"/>.
 /// </summary>
-public class GpuBufferBaseTests
+public class GpuBufferBaseTests : TestsBase
 {
     private const string BufferName = "UNKNOWN BUFFER";
     private const uint VertexArrayId = 1256;
@@ -105,6 +105,7 @@ public class GpuBufferBaseTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
         // Arrange & Act & Assert
@@ -118,6 +119,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act & Assert
@@ -131,6 +133,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act & Assert
@@ -146,6 +149,7 @@ public class GpuBufferBaseTests
 
     #region Props Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void BatchSize_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -159,6 +163,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void IsInitialized_AfterGLInitializes_ReturnsTrue()
     {
         // Arrange
@@ -174,6 +179,7 @@ public class GpuBufferBaseTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_CreatesVertexArrayObject()
     {
         // Arrange
@@ -190,6 +196,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_CreatesVertexBufferObject()
     {
         // Arrange
@@ -207,6 +214,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_CreatesElementBufferObject()
     {
         // Arrange
@@ -224,6 +232,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_GeneratesVertexData()
     {
         // Arrange
@@ -238,6 +247,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_GeneratesIndicesData()
     {
         // Arrange
@@ -252,6 +262,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_UploadsVertexData()
     {
         // Arrange
@@ -268,6 +279,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_UploadsIndicesData()
     {
         // Arrange
@@ -284,6 +296,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
@@ -298,6 +311,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OpenGLInit_WhenInvoked_SetsUpProperGLGrouping()
     {
         // Arrange
@@ -348,6 +362,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void UploadData_WhenInvoked_PreparesGpuForDataUpload()
     {
         // Arrange
@@ -363,6 +378,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void UploadData_WhenInvoked_UpdatesGpuData()
     {
         // Arrange
@@ -378,6 +394,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void WithShutDownNotification_ShutsDownBuffer()
     {
         // Arrange
@@ -396,8 +413,9 @@ public class GpuBufferBaseTests
     }
     #endregion
 
-    #region Indirect Tests
+    #region Reactable Tests
     [Fact]
+    [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingSubscriptions_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
@@ -421,6 +439,7 @@ public class GpuBufferBaseTests
     }
 
     [Fact]
+    [Trait("Category", Subscription)]
     public void ViewPortSizeReactable_WhenCreatingSubscriptions_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert

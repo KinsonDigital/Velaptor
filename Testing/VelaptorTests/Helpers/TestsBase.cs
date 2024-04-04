@@ -12,4 +12,5 @@ public abstract class TestsBase
     protected const string Ctor = "Ctor Tests";
     protected const string Subscription = "Reactable Subscription";
     protected const string Method = "Method Tests";
+    protected const string Prop = "Property Tests";
 }
