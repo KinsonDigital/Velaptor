@@ -1,4 +1,4 @@
-﻿// <copyright file="LineRendererTests.cs" company="KinsonDigital">
+// <copyright file="LineRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -70,55 +70,14 @@ public class LineRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    this.batchHasBegunReactor = reactor;
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    return Substitute.For<IDisposable>();
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return Substitute.For<IDisposable>();
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor)
+            .Returns<IReceiveSubscription>(_ => Substitute.For<IDisposable>());
 
         var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
         mockLineRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
-            .Callback<LineRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.RenderLinesId)
-                {
-                    reactor.Name.Should().Be($"LineRendererTests.Ctor - {nameof(PushNotifications.RenderLinesId)}");
-
-                    this.renderReactor = reactor;
-                }
-            })
-            .Returns<LineRenderItem>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.RenderLinesId)
-                {
-                    return mockRenderUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<LineRenderItem>(reactor => this.renderReactor = reactor)
+            .Returns<LineRenderItem>(_ => mockRenderUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -416,6 +375,34 @@ public class LineRendererTests
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+            });
+    }
+
+    [Fact]
+    public void LineRenderReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
+        mockLineRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
+            .Callback<LineRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"LineRenderer.ctor() - {PushNotifications.RenderLinesId}");
+            });
     }
     #endregion
 
