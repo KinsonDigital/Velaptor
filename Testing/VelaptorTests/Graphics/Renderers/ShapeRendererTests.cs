@@ -68,27 +68,12 @@ public class ShapeRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
-                    this.batchHasBegunReactor = reactor;
-                }
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
         var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
         mockShapeRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
-            .Callback<RectRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"ShapeRendererTests.Ctor - {nameof(PushNotifications.RenderShapesId)}");
-
-                this.renderReactor = reactor;
-            });
+            .Callback<RectRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -421,6 +406,33 @@ public class ShapeRendererTests
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
             It.IsAny<nint>()));
+    }
+
+    [Fact]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
+            });
+    }
+
+    [Fact]
+    public void ShapeRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
+        mockShapeRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
+            .Callback<RectRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.RenderShapesId}");
+            });
     }
     #endregion
 
