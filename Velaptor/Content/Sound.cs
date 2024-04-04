@@ -19,7 +19,7 @@ using CASLSound = CASL.Sound;
 [ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASLSound)} implementation changes.")]
 public sealed class Sound : ISound
 {
-    private IDisposable unsubsriber;
+    private IDisposable? unsubscriber;
     private CASLSound sound = null!;
     private bool isDisposed;
 
@@ -174,10 +174,10 @@ public sealed class Sound : ISound
     /// <param name="soundId">The unique ID of the sound.</param>
     private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
-        this.unsubsriber = disposeReactable.CreateOneWayReceive(
+        this.unsubscriber = disposeReactable.CreateOneWayReceive(
             PushNotifications.SoundDisposedId,
             Dispose,
-            () => this.unsubsriber?.Dispose());
+            () => this.unsubscriber?.Dispose());
 
         this.sound = new CASLSound(filePath);
         Id = soundId;

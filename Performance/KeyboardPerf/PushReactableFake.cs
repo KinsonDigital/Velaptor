@@ -2,9 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable UnassignedGetOnlyAutoProperty
 namespace KeyboardPerf;
 
 using System.Collections.Immutable;
+using Carbonate.Core;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using Velaptor.ReactableData;
@@ -25,9 +27,7 @@ internal sealed class PushReactableFake : IPushReactable<KeyboardKeyStateData>
     /// </summary>
     public ImmutableArray<Guid> SubscriptionIds { get; } = Array.Empty<Guid>().ToImmutableArray();
 
-    /// <summary>
-    /// Uses for testing.
-    /// </summary>
+    /// <inheritdoc cref="IReactable{TSubscription}.SubscriptionNames"/>
     public ImmutableArray<string> SubscriptionNames { get; }
 
     /// <summary>
@@ -37,9 +37,7 @@ internal sealed class PushReactableFake : IPushReactable<KeyboardKeyStateData>
     /// <returns>The unsubscriber.</returns>
     public IDisposable Subscribe(IReceiveSubscription<KeyboardKeyStateData> subscription) => new UnsubscriberFake();
 
-    /// <summary>
-    /// Used for performance testing.
-    /// </summary>
+    /// <inheritdoc cref="IPushable{TIn}.Push"/>
     public void Push(Guid id, in KeyboardKeyStateData data) => throw new NotImplementedException();
 
     /// <summary>

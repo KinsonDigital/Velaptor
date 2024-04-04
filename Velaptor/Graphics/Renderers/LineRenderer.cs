@@ -25,9 +25,9 @@ internal sealed class LineRenderer : ILineRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
-    private bool hasBegun;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
+    private bool hasBegun;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineRenderer"/> class.

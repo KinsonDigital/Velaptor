@@ -24,8 +24,8 @@ using Velaptor.Exceptions;
 [GpuBufferName("Texture")]
 internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
 {
-    private readonly IDisposable unsubscriber;
     private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
