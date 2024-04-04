@@ -1,4 +1,4 @@
-// <copyright file="LineRendererTests.cs" company="KinsonDigital">
+﻿// <copyright file="LineRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -35,7 +35,7 @@ using LineRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<
 /// <summary>
 /// Tests the <see cref="LineRenderer"/> class.
 /// </summary>
-public class LineRendererTests
+public class LineRendererTests : TestsBase
 {
     private const uint LineShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
@@ -92,6 +92,7 @@ public class LineRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -113,6 +114,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -134,6 +136,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -155,6 +158,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -178,6 +182,7 @@ public class LineRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
@@ -193,6 +198,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking2ParamMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -218,6 +224,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking3ParamMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -238,6 +245,7 @@ public class LineRendererTests
      }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamWithColorMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -262,6 +270,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamWithThicknessMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -286,6 +295,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvokingOverloadWithAllParams_AddsToBatch()
     {
         // Arrange
@@ -311,6 +321,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNoLineItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -342,6 +353,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_RendersLine()
     {
         // Arrange
@@ -380,6 +392,7 @@ public class LineRendererTests
 
     #region Reactable Tests
     [Fact]
+    [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
@@ -392,6 +405,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Subscription)]
     public void LineRenderReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
