@@ -6,7 +6,6 @@ namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
 using System.Drawing;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
@@ -39,6 +38,8 @@ public class TextureGpuBufferTests
     private readonly IGLInvoker mockGL;
     private readonly IOpenGLService mockGLService;
     private readonly IReactableFactory mockReactableFactory;
+    private readonly IPushReactable mockPushReactable;
+    private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSizeReactor;
@@ -71,11 +72,9 @@ public class TextureGpuBufferTests
 
         this.mockGLService = Substitute.For<IOpenGLService>();
 
-        var mockPushReactable = Substitute.For<IPushReactable>();
-        mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
+        this.mockPushReactable = Substitute.For<IPushReactable>();
+        this.mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
@@ -86,17 +85,17 @@ public class TextureGpuBufferTests
         mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(
                 reactor => this.viewPortSizeReactor = reactor));
 
-        var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
+        this.mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
                 this.batchSizeReactor = reactor;
             }));
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
-        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
         this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
-        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockBatchSizeReactable);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(this.mockBatchSizeReactable);
     }
 
     /// <summary>
@@ -371,22 +370,30 @@ public class TextureGpuBufferTests
 
     #region Reactable Tests
     [Fact]
+    public void PushReactable_WhenSubscribing_UsesCorrectReactorName()
+    {
+        // Arrange & Assert
+        this.mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
+        {
+            reactor.Should().NotBeNull("it is required for unit testing.");
+        }));
+
+        // Act
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
     public void BatchSizeReactable_WhenSubscribing_UsesCorrectReactorName()
     {
-        // Arrange
-        var mockReactable = Substitute.For<IPushReactable<BatchSizeData>>();
-        mockReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(Act));
-
-        this.mockReactableFactory.CreateBatchSizeReactable().Returns(mockReactable);
-
-        _ = CreateSystemUnderTest();
-
-        // Act & Assert
-        void Act(ISubscription reactor)
+        // Arrange & Assert
+        this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("TextureGpuBufferTests.Ctor - BatchSizeChangedId");
-        }
+            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Name.Should().Be($"TextureGpuBuffer.ctor() - {PushNotifications.BatchSizeChangedId}");
+        }));
+
+        // Act
+        _ = CreateSystemUnderTest();
     }
 
     [Fact]
