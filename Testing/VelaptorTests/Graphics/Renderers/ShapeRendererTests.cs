@@ -25,16 +25,21 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using RectRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
-            Velaptor.OpenGL.Batching.ShapeBatchItem
+
+// Type aliases
+using RectRenderItem = Carbonate
+    .Core.OneWay.IReceiveSubscription<
+        System.Memory<
+            Velaptor.OpenGL.Batching.RenderItem<
+                Velaptor.OpenGL.Batching.ShapeBatchItem
+            >
         >
-    >
->;
+    >;
 
 /// <summary>
 /// Tests the <see cref="ShapeRenderer"/> class.
 /// </summary>
-public class ShapeRendererTests
+public class ShapeRendererTests : TestsBase
 {
     private const uint ShapeShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
@@ -88,6 +93,7 @@ public class ShapeRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -109,6 +115,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -130,6 +137,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -151,6 +159,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -174,6 +183,7 @@ public class ShapeRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingShape_AddsShapeToBatch()
     {
         // Arrange
@@ -214,6 +224,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingRect_RendersRectangle()
     {
         // Arrange
@@ -261,6 +272,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingRectAndBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
@@ -277,6 +289,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingCircle_AddsCircleToBatch()
     {
         // Arrange
@@ -315,6 +328,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingCircle_RendersCircle()
     {
         // Arrange
@@ -360,6 +374,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingCircleAndBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
@@ -378,6 +393,7 @@ public class ShapeRendererTests
 
     #region Reactable Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -409,6 +425,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
@@ -422,6 +439,7 @@ public class ShapeRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void ShapeRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
