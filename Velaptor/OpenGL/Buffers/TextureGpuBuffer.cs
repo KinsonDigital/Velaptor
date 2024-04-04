@@ -9,14 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Exceptions;
 using Factories;
 using GpuData;
 using Graphics;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 using Velaptor.Exceptions;
 
 /// <summary>
@@ -26,6 +25,7 @@ using Velaptor.Exceptions;
 internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
 {
     private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
@@ -44,10 +44,9 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.unsubscriber = batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (data.TypeOfBatch != BatchType.Texture)
                 {
@@ -60,9 +59,8 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
                 {
                     ResizeBatch();
                 }
-            });
-
-        batchSizeReactable.Subscribe(subscription);
+            },
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

@@ -123,6 +123,6 @@ internal sealed class SoundCache : IItemCache<string, ISound>
             return;
         }
 
-        this.disposeReactable.Push(new DisposeSoundData { SoundId = sound.Id }, PushNotifications.SoundDisposedId);
+        this.disposeReactable.Push(PushNotifications.SoundDisposedId, new DisposeSoundData { SoundId = sound.Id });
     }
 }

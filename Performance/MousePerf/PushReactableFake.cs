@@ -2,9 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable UnassignedGetOnlyAutoProperty
 namespace MousePerf;
 
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
+using Carbonate.Core;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using Velaptor.ReactableData;
@@ -17,13 +19,16 @@ internal sealed class PushReactableFake : IPushReactable<MouseStateData>
     /// <summary>
     /// Gets a value for performance testing.
     /// </summary>
-    public ReadOnlyCollection<IReceiveSubscription<MouseStateData>> Subscriptions { get; } =
-        Array.Empty<IReceiveSubscription<MouseStateData>>().AsReadOnly();
+    public ImmutableArray<IReceiveSubscription<MouseStateData>> Subscriptions { get; } =
+        Array.Empty<IReceiveSubscription<MouseStateData>>().ToImmutableArray();
 
     /// <summary>
     /// Gets a value for performance testing.
     /// </summary>
-    public ReadOnlyCollection<Guid> SubscriptionIds { get; } = Array.Empty<Guid>().AsReadOnly();
+    public ImmutableArray<Guid> SubscriptionIds { get; } = Array.Empty<Guid>().ToImmutableArray();
+
+    /// <inheritdoc cref="IReactable{TSubscription}.SubscriptionNames"/>
+    public ImmutableArray<string> SubscriptionNames { get; }
 
     /// <summary>
     /// Used for performance testing.
@@ -32,12 +37,8 @@ internal sealed class PushReactableFake : IPushReactable<MouseStateData>
     /// <returns>The unsubscriber.</returns>
     public IDisposable Subscribe(IReceiveSubscription<MouseStateData> subscription) => new UnsubscriberFake();
 
-    /// <summary>
-    /// Used for performance testing.
-    /// </summary>
-    /// <param name="data">Sample data.</param>
-    /// <param name="eventId">Sample id.</param>
-    public void Push(in MouseStateData data, Guid eventId) => throw new NotImplementedException();
+    /// <inheritdoc cref="IPushable{TIn}.Push"/>
+    public void Push(Guid id, in MouseStateData data) => throw new NotImplementedException();
 
     /// <summary>
     /// Used for performance testing.

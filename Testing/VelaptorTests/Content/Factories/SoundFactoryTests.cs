@@ -86,15 +86,15 @@ public class SoundFactoryTests
             });
 
         this.mockDisposeSoundReactable
-            .Setup(m => m.Push(It.IsAny<DisposeSoundData>(), It.IsAny<Guid>()))
-            .Callback((in DisposeSoundData data, Guid eventId) =>
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeSoundData>()))
+            .Callback((Guid eventId, in DisposeSoundData data) =>
             {
                 data.SoundId.Should().Be(1);
                 eventId.Should().Be(PushNotifications.SoundDisposedId);
             });
 
         var sut = CreateSystemUnderTest();
-        this.mockDisposeSoundReactable.Object.Push(new DisposeSoundData { SoundId = 1 }, PushNotifications.SoundDisposedId);
+        this.mockDisposeSoundReactable.Object.Push(PushNotifications.SoundDisposedId, new DisposeSoundData { SoundId = 1 });
 
         // Act
         subscription.OnReceive(new DisposeSoundData { SoundId = 1 });

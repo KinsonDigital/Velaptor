@@ -256,19 +256,19 @@ public class RenderMediatorTests
             .Returns<Guid>(_ => new Memory<RenderItem<LineBatchItem>>(lineItems));
 
         this.mockTextureRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<TextureBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<TextureBatchItem>>>.IsAny))
             .Callback(AssertTextureItems);
 
         this.mockFontRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<FontGlyphBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<FontGlyphBatchItem>>>.IsAny))
             .Callback(AssertFontItems);
 
         this.mockShapeRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny))
             .Callback(AssertShapeItems);
 
         this.mockLineRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<LineBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<LineBatchItem>>>.IsAny))
             .Callback(AssertLineItems);
 
         _ = CreateSystemUnderTest();
@@ -282,25 +282,25 @@ public class RenderMediatorTests
         this.mockShapePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetShapeItemsId));
         this.mockLinePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetLineItemsId));
 
-        void AssertTextureItems(in Memory<RenderItem<TextureBatchItem>> data, Guid eventId)
+        void AssertTextureItems(Guid eventId, in Memory<RenderItem<TextureBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderTexturesId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertFontItems(in Memory<RenderItem<FontGlyphBatchItem>> data, Guid eventId)
+        void AssertFontItems(Guid eventId, in Memory<RenderItem<FontGlyphBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderFontsId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertShapeItems(in Memory<RenderItem<ShapeBatchItem>> data, Guid eventId)
+        void AssertShapeItems(Guid eventId, in Memory<RenderItem<ShapeBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderShapesId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertLineItems(in Memory<RenderItem<LineBatchItem>> data, Guid eventId)
+        void AssertLineItems(Guid eventId, in Memory<RenderItem<LineBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderLinesId);
             data.Span.ToArray().Should().HaveCount(2);

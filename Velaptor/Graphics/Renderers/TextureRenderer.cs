@@ -8,7 +8,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Content;
 using Factories;
 using NativeInterop.OpenGL;
@@ -27,6 +27,8 @@ internal sealed class TextureRenderer : ITextureRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<TextureBatchItem> buffer;
     private readonly IShaderProgram shader;
+    private readonly IDisposable batchBeginUnsubscriber;
+    private readonly IDisposable renderTexturesUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -60,21 +62,17 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var beginBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchHasBegunId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
-            .BuildNonReceive(() => this.hasBegun = true);
-
-        beginBatchReactable.Subscribe(beginBatchSubscription);
+        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.BatchHasBegunId,
+            () => this.hasBegun = true,
+            () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderTextureReactable();
 
-        var renderSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.RenderTexturesId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderTexturesId)))
-            .BuildOneWayReceive<Memory<RenderItem<TextureBatchItem>>>(RenderBatch);
-
-        renderReactable.Subscribe(renderSubscription);
+        this.renderTexturesUnsubscriber = renderReactable.CreateOneWayReceive(
+            PushNotifications.RenderTexturesId,
+            RenderBatch,
+            () => this.renderTexturesUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

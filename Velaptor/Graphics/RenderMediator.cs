@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System;
 using System.Collections.Generic;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Factories;
 using OpenGL.Batching;
@@ -31,6 +31,7 @@ internal sealed class RenderMediator : IRenderMediator
 
     // The total amount of layers supported
     private readonly Memory<int> allLayers = new (new int[1000]);
+    private readonly IDisposable endBatchUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
@@ -55,12 +56,10 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.endBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var endBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchHasEndedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasEndedId)))
-            .BuildNonReceive(CoordinateRenders);
-
-        this.endBatchReactable.Subscribe(endBatchSubscription);
+        this.endBatchUnsubscriber = this.endBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.BatchHasEndedId,
+            CoordinateRenders,
+            () => this.endBatchUnsubscriber?.Dispose());
 
         this.texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
         this.fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
@@ -171,8 +170,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var textureLayerStart = textureItems.FirstLayerIndex(currentLayer);
 
                 this.textureRenderBatchReactable.Push(
-                    textureItems.Slice(textureLayerStart, totalTexturesOnCurrentLayer),
-                    PushNotifications.RenderTexturesId);
+                    PushNotifications.RenderTexturesId,
+                    textureItems.Slice(textureLayerStart, totalTexturesOnCurrentLayer));
             }
 
             if (totalFontOnCurrentLayer > 0)
@@ -180,8 +179,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var fontLayerStart = fontItems.FirstLayerIndex(currentLayer);
 
                 this.fontRenderBatchReactable.Push(
-                    fontItems.Slice(fontLayerStart, totalFontOnCurrentLayer),
-                    PushNotifications.RenderFontsId);
+                    PushNotifications.RenderFontsId,
+                    fontItems.Slice(fontLayerStart, totalFontOnCurrentLayer));
             }
 
             if (totalShapesOnCurrentLayer > 0)
@@ -189,8 +188,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var shapeLayerStart = shapeItems.FirstLayerIndex(currentLayer);
 
                 this.shapeRenderBatchReactable.Push(
-                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer),
-                    PushNotifications.RenderShapesId);
+                    PushNotifications.RenderShapesId,
+                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer));
             }
 
             if (totalLinesOnCurrentLayer > 0)
@@ -198,8 +197,8 @@ internal sealed class RenderMediator : IRenderMediator
                 var lineLayerStart = lineItems.FirstLayerIndex(currentLayer);
 
                 this.lineRenderBatchReactable.Push(
-                    lineItems.Slice(lineLayerStart, totalLinesOnCurrentLayer),
-                    PushNotifications.RenderLinesId);
+                    PushNotifications.RenderLinesId,
+                    lineItems.Slice(lineLayerStart, totalLinesOnCurrentLayer));
             }
 
             // Resets the item back to the default value

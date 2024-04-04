@@ -6,7 +6,7 @@ namespace Velaptor.Batching;
 
 using System;
 using System.ComponentModel;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Factories;
 using OpenGL.Batching;
@@ -17,7 +17,6 @@ internal sealed class BatchingManager : IBatchingManager
 {
     private const float BatchIncreasePercentage = 0.5f;
     private readonly IDisposable batchSizeUnsubscriber;
-    private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable requestTexturesUnsubscriber;
     private readonly IDisposable requestFontsUnsubscriber;
     private readonly IDisposable requestShapesUnsubscriber;
@@ -28,7 +27,6 @@ internal sealed class BatchingManager : IBatchingManager
     private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
     private Memory<RenderItem<ShapeBatchItem>> shapeItems;
     private Memory<RenderItem<LineBatchItem>> lineItems;
-    private bool isShutDown;
     private bool firstTimeSettingBatchSize = true;
     private uint textureBatchSize;
     private uint fontBatchSize;
@@ -45,11 +43,9 @@ internal sealed class BatchingManager : IBatchingManager
 
         // Subscribe to batch size changes
         this.batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
-        var batchSizeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .WhenUnsubscribing(() => this.batchSizeUnsubscriber?.Dispose())
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.batchSizeUnsubscriber = this.batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (this.firstTimeSettingBatchSize)
                 {
@@ -58,91 +54,76 @@ internal sealed class BatchingManager : IBatchingManager
                 }
 
                 SetNewBatchSize(data.BatchSize, data.TypeOfBatch);
-            });
+            },
+            () => this.batchSizeUnsubscriber?.Dispose());
 
-        this.batchSizeUnsubscriber = this.batchSizeReactable.Subscribe(batchSizeSubscription);
-
-        var signalReactable = reactableFactory.CreateNoDataPushReactable();
-
-        // Subscribe to shutdown messages
-        var shutDownSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SystemShuttingDownId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
-
-        this.shutDownUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
+        var reactable = reactableFactory.CreateNoDataPushReactable();
 
         // Subscribe to empty batch messages
-        var emptyBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.EmptyBatchId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.EmptyBatchId)))
-            .BuildNonReceive(EmptyBatch);
-
-        this.emptyBatchUnsubscriber = signalReactable.Subscribe(emptyBatchSubscription);
+        this.emptyBatchUnsubscriber = reactable.CreateNonReceiveOrRespond(
+            PushNotifications.EmptyBatchId,
+            EmptyBatch,
+            () => this.emptyBatchUnsubscriber?.Dispose());
 
         // Subscribe to texture batch requests
         var texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
-        var textureRequestSubscription = ISubscriptionBuilder.Create()
-            .WithId(PullResponses.GetTextureItemsId)
-            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetTextureItemsId)))
-            .BuildOneWayRespond(() =>
+
+        this.requestTexturesUnsubscriber = texturePullReactable.CreateOneWayRespond(
+            PullResponses.GetTextureItemsId,
+            () =>
             {
                 var lastFullItemIndex = this.textureItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.textureItems
                     : this.textureItems[..lastFullItemIndex];
-            });
-
-        this.requestTexturesUnsubscriber = texturePullReactable.Subscribe(textureRequestSubscription);
+            },
+            () => this.requestTexturesUnsubscriber?.Dispose());
 
         // Subscribe to font batch requests
         var fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
-        var fontRequestSubscription = ISubscriptionBuilder.Create()
-            .WithId(PullResponses.GetFontItemsId)
-            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetFontItemsId)))
-            .BuildOneWayRespond(() =>
+
+        this.requestFontsUnsubscriber = fontPullReactable.CreateOneWayRespond(
+            PullResponses.GetFontItemsId,
+            () =>
             {
                 var lastFullItemIndex = this.fontItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.fontItems
                     : this.fontItems[..lastFullItemIndex];
-            });
-
-        this.requestFontsUnsubscriber = fontPullReactable.Subscribe(fontRequestSubscription);
+            },
+            () => this.requestFontsUnsubscriber?.Dispose());
 
         // Subscribe to shape batch requests
         var shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
-        var shapeRequestSubscription = ISubscriptionBuilder.Create()
-            .WithId(PullResponses.GetShapeItemsId)
-            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetShapeItemsId)))
-            .BuildOneWayRespond(() =>
+
+        this.requestShapesUnsubscriber = shapePullReactable.CreateOneWayRespond(
+            PullResponses.GetShapeItemsId,
+            () =>
             {
                 var lastFullItemIndex = this.shapeItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.shapeItems
                     : this.shapeItems[..lastFullItemIndex];
-            });
-
-        this.requestShapesUnsubscriber = shapePullReactable.Subscribe(shapeRequestSubscription);
+            },
+            () => this.requestShapesUnsubscriber?.Dispose());
 
         // Subscribe to line batch requests
         var linePullReactable = reactableFactory.CreateLinePullBatchReactable();
-        var lineRequestSubscription = ISubscriptionBuilder.Create()
-            .WithId(PullResponses.GetLineItemsId)
-            .WithName(this.GetExecutionMemberName(nameof(PullResponses.GetLineItemsId)))
-            .BuildOneWayRespond(() =>
+
+        this.requestLinesUnsubscriber = linePullReactable.CreateOneWayRespond(
+            PullResponses.GetLineItemsId,
+            () =>
             {
                 var lastFullItemIndex = this.lineItems.IndexOf(i => i.IsEmpty());
 
                 return lastFullItemIndex < 0
                     ? this.lineItems
                     : this.lineItems[..lastFullItemIndex];
-            });
-
-        this.requestLinesUnsubscriber = linePullReactable.Subscribe(lineRequestSubscription);
+            },
+            () => this.requestLinesUnsubscriber?.Dispose());
     }
 
     /// <summary>
@@ -181,8 +162,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Texture);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Texture });
         }
 
         this.textureItems.Span[emptyItemIndex] = new RenderItem<TextureBatchItem>
@@ -205,8 +186,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Font);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Font });
         }
 
         this.fontItems.Span[emptyItemIndex] = new RenderItem<FontGlyphBatchItem>
@@ -229,8 +210,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Rect);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Rect });
         }
 
         this.shapeItems.Span[emptyItemIndex] = new RenderItem<ShapeBatchItem>
@@ -253,8 +234,8 @@ internal sealed class BatchingManager : IBatchingManager
 
             var newBatchSize = CalcNewBatchSize(BatchType.Line);
             this.batchSizeReactable.Push(
-                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line },
-                PushNotifications.BatchSizeChangedId);
+                PushNotifications.BatchSizeChangedId,
+                new BatchSizeData { BatchSize = newBatchSize, TypeOfBatch = BatchType.Line });
         }
 
         this.lineItems.Span[emptyItemIndex] = new RenderItem<LineBatchItem>
@@ -408,25 +389,5 @@ internal sealed class BatchingManager : IBatchingManager
 
             this.lineItems.Span[i] = default;
         }
-    }
-
-    /// <summary>
-    /// Shuts down the manager.
-    /// </summary>
-    private void ShutDown()
-    {
-        if (this.isShutDown)
-        {
-            return;
-        }
-
-        this.shutDownUnsubscriber.Dispose();
-        this.emptyBatchUnsubscriber.Dispose();
-        this.requestTexturesUnsubscriber.Dispose();
-        this.requestFontsUnsubscriber.Dispose();
-        this.requestShapesUnsubscriber.Dispose();
-        this.requestLinesUnsubscriber.Dispose();
-
-        this.isShutDown = true;
     }
 }

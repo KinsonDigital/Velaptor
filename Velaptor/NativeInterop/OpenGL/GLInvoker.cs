@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
 using Silk.NET.OpenGL;
@@ -31,6 +31,7 @@ internal sealed class GLInvoker : IGLInvoker
     // ReSharper restore InconsistentNaming
     private static readonly Queue<string> OpenGLCallStack = new ();
     private readonly ILoggingService loggingService;
+    private readonly IDisposable unsubscriber;
     private DebugProc? debugCallback;
     private bool isDisposed;
 
@@ -44,18 +45,16 @@ internal sealed class GLInvoker : IGLInvoker
     /// <param name="loggingService">Logs messages to the console and files.</param>
     public GLInvoker(IPushReactable<GL> glReactable, ILoggingService loggingService)
     {
-        var glContextSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.GLContextCreatedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLContextCreatedId)))
-            .BuildOneWayReceive<GL>(glObj =>
+        this.unsubscriber = glReactable.CreateOneWayReceive(
+            PushNotifications.GLContextCreatedId,
+            glObj =>
             {
                 this.gl = glObj ??
                           throw new PushNotificationException(
                               $"{nameof(GLInvoker)}.Constructor()",
                               PushNotifications.GLContextCreatedId);
-            });
-
-        glReactable.Subscribe(glContextSubscription);
+            },
+            () => this.unsubscriber?.Dispose());
 
         this.loggingService = loggingService;
     }

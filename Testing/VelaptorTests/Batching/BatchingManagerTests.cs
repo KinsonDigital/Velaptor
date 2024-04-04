@@ -483,8 +483,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<TextureBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<TextureBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Texture });
             });
@@ -525,8 +525,8 @@ public class BatchingManagerTests
         var itemB = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(50, 60, 70, 80));
         var itemC = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(90, 100, 110, 120));
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = (BatchType)invalidValue });
             });
@@ -585,8 +585,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<FontGlyphBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<FontGlyphBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Font });
             });
@@ -652,8 +652,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<ShapeBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Rect });
             });
@@ -719,8 +719,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<LineBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<LineBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Line });
             });

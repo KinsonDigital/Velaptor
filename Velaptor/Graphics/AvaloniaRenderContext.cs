@@ -30,9 +30,10 @@ internal sealed class AvaloniaRenderContext : IRenderContext
         this.glService.SetViewPortSize(new Size(width, height));
 
         this.viewPortReactable.Push(
+            PushNotifications.ViewPortSizeChangedId,
             new ViewPortSizeData
             {
                 Width = (uint)width, Height = (uint)height,
-            }, PushNotifications.ViewPortSizeChangedId);
+            });
     }
 }

@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Exceptions;
 using ExtensionMethods;
 using Factories;
@@ -19,7 +19,6 @@ using GpuData;
 using Graphics;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 
 /// <summary>
 /// Updates data in the shape GPU buffer.
@@ -29,6 +28,7 @@ using ReactableData;
 internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
 {
     private const string BufferNotInitMsg = "The shape buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
@@ -47,10 +47,9 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.unsubscriber = batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (data.TypeOfBatch != BatchType.Rect)
                 {
@@ -63,9 +62,8 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
                 {
                     ResizeBatch();
                 }
-            });
-
-        batchSizeReactable.Subscribe(subscription);
+            },
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

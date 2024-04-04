@@ -5,11 +5,10 @@
 namespace Velaptor.OpenGL.Shaders;
 
 using System;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 using Services;
 
 /// <summary>
@@ -18,6 +17,7 @@ using Services;
 [ShaderName("Texture")]
 internal sealed class TextureShader : ShaderProgram
 {
+    private readonly IDisposable unsubscriber;
     private int mainTextureUniformLocation = -1;
 
     /// <summary>
@@ -42,18 +42,16 @@ internal sealed class TextureShader : ShaderProgram
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
         // Subscribe to batch size changes
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.unsubscriber = batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (data.TypeOfBatch == BatchType.Texture)
                 {
                     BatchSize = data.BatchSize;
                 }
-            });
-
-        batchSizeReactable.Subscribe(subscription);
+            },
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

@@ -871,11 +871,11 @@ public sealed class TextBox : ControlBase
         {
             case MutateType.PreMutate:
                 this.preTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
+                this.textBoxDataReactable.Push(PushNotifications.TextBoxStateId, newState);
                 break;
             case MutateType.PostMutate:
                 this.postTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
+                this.textBoxDataReactable.Push(PushNotifications.TextBoxStateId, newState);
                 break;
             default:
                 throw new InvalidEnumArgumentException(nameof(mutateType), (int)mutateType, typeof(MutateType));
