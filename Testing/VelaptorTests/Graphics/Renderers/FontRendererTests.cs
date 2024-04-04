@@ -37,7 +37,7 @@ using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<
 /// <summary>
 /// Tests the <see cref="FontRenderer"/> class.
 /// </summary>
-public class FontRendererTests
+public class FontRendererTests : TestsBase
 {
     private const string GlyphTestDataFileName = "glyph-test-data.json";
     private const string BatchTestDataDirPath = "BatchItemTestData";
@@ -109,6 +109,7 @@ public class FontRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -130,6 +131,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -151,6 +153,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -172,6 +175,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -195,6 +199,7 @@ public class FontRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNullFont_ThrowsException()
     {
         // Arrange
@@ -209,6 +214,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNoFontItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -242,6 +248,7 @@ public class FontRendererTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
+    [Trait("Category", Method)]
     public void Render_WithNullOrEmptyText_DoesNotRenderText(string? renderText)
     {
         // Arrange
@@ -266,6 +273,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithFontSizeSetToZero_DoesNotRenderText()
     {
         // Arrange
@@ -292,6 +300,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenNotCallingBeginFirst_ThrowsException()
     {
         // Arrange
@@ -315,6 +324,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenTextIsOnlyNewLineCharacters_DoesNotRenderText()
     {
         // Arrange
@@ -346,6 +356,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_MeasuresText()
     {
         // Arrange
@@ -370,6 +381,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingMultilineText_ConvertsEachLineToGlyphMetrics()
     {
         // Arrange
@@ -398,6 +410,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_AddsCorrectBatchItems()
     {
         // Arrange
@@ -439,6 +452,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamsWithXAndYOverload_RendersFont()
     {
         // Arrange
@@ -481,6 +495,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking3ParamsWithPositionOverload_RendersFont()
     {
         // Arrange
@@ -522,6 +537,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking6ParamsWithXAndYOverload_RendersFont()
     {
         // Arrange
@@ -567,6 +583,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithPositionOverload_RendersFont()
     {
         // Arrange
@@ -611,6 +628,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithColorOverload_RendersFont()
     {
         // Arrange
@@ -655,6 +673,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont()
     {
         // Arrange
@@ -698,6 +717,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking6ParamsWithColorOverload_RendersFont()
     {
         // Arrange
@@ -742,6 +762,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont()
     {
         // Arrange
@@ -785,6 +806,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_RendersFont()
     {
         // Arrange
@@ -825,6 +847,7 @@ public class FontRendererTests
 
     #region Reactable Tests
     [Fact]
+    [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
@@ -838,6 +861,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Subscription)]
     public void FontRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
