@@ -502,7 +502,7 @@ public class GLWindowTests : TestsBase
         // Assert
         subscription.Should().NotBeNull();
         subscription.Id.Should().Be(PullNotifications.GetWindowSizeId);
-        subscription.Name.Should().Be($"{nameof(GLWindow)}.Ctor");
+        subscription.Name.Should().Be($"{nameof(GLWindow)}.ctor() - {PullNotifications.GetWindowSizeId}");
         this.mockPullWinSizeReactable.Received(1).Subscribe(subscription);
         pulledWinSize.Should().Be(new WindowSizeData { Width = 100, Height = 200 });
         mockUnsubscriber.Received(1).Dispose();
