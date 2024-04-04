@@ -6,7 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using CASL;
 using Factories;
@@ -19,6 +19,7 @@ using CASLSound = CASL.Sound;
 [ExcludeFromCodeCoverage(Justification = $"Waiting for {nameof(CASL)}.{nameof(CASLSound)} implementation changes.")]
 public sealed class Sound : ISound
 {
+    private IDisposable? unsubscriber;
     private CASLSound sound = null!;
     private bool isDisposed;
 
@@ -173,12 +174,10 @@ public sealed class Sound : ISound
     /// <param name="soundId">The unique ID of the sound.</param>
     private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
-        var disposeSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SoundDisposedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SoundDisposedId)))
-            .BuildOneWayReceive<DisposeSoundData>(Dispose);
-
-        disposeReactable.Subscribe(disposeSubscription);
+        this.unsubscriber = disposeReactable.CreateOneWayReceive(
+            PushNotifications.SoundDisposedId,
+            Dispose,
+            () => this.unsubscriber?.Dispose());
 
         this.sound = new CASLSound(filePath);
         Id = soundId;

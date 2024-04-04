@@ -12,7 +12,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Exceptions;
@@ -152,13 +152,10 @@ internal sealed class GLWindow : VelaptorIWindow
                 (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
         };
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PullNotifications.GetWindowSizeId)
-            .WithName($"{nameof(GLWindow)}.Ctor")
-            .WhenUnsubscribing(() => this.pullWinSizeUnsubscriber?.Dispose())
-            .BuildOneWayRespond(() => new WindowSizeData { Width = Width, Height = Height });
-
-        this.pullWinSizeUnsubscriber = pullWinSizeReactable.Subscribe(subscription);
+        this.pullWinSizeUnsubscriber = pullWinSizeReactable.CreateOneWayRespond(
+            PullNotifications.GetWindowSizeId,
+            () => new WindowSizeData { Width = Width, Height = Height },
+            () => this.pullWinSizeUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
@@ -384,7 +381,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private void Init(uint width, uint height)
     {
         var glObj = this.silkWindow.CreateOpenGL();
-        this.glReactable.Push(glObj, PushNotifications.GLContextCreatedId);
+        this.glReactable.Push(PushNotifications.GLContextCreatedId, glObj);
         this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
 
         this.silkWindow.Size = new Vector2D<int>((int)width, (int)height);
@@ -396,7 +393,7 @@ internal sealed class GLWindow : VelaptorIWindow
             Window = this.silkWindow,
             InputContext = this.glInputContext,
         };
-        this.glObjectsReactable.Push(glObjData, PushNotifications.GLObjectsCreatedId);
+        this.glObjectsReactable.Push(PushNotifications.GLObjectsCreatedId, glObjData);
         this.glObjectsReactable.Unsubscribe(PushNotifications.GLObjectsCreatedId);
 
         if (this.glInputContext.Keyboards.Count <= 0)
@@ -495,8 +492,8 @@ internal sealed class GLWindow : VelaptorIWindow
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
-        this.viewPortReactable.Push(new ViewPortSizeData { Width = width, Height = height }, PushNotifications.ViewPortSizeChangedId);
-        this.pushWinSizeReactable.Push(new WindowSizeData { Width = width, Height = height }, PushNotifications.WindowSizeChangedId);
+        this.viewPortReactable.Push(PushNotifications.ViewPortSizeChangedId, new ViewPortSizeData { Width = width, Height = height });
+        this.pushWinSizeReactable.Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = width, Height = height });
     }
 
     /// <summary>
@@ -527,7 +524,7 @@ internal sealed class GLWindow : VelaptorIWindow
             ScrollWheelValue = 0,
         };
 
-        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>
@@ -586,7 +583,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
 
-        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(PushNotifications.KeyboardStateChangedId, keyStateData);
     }
 
     /// <summary>
@@ -599,7 +596,7 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
 
-        this.keyboardReactable.Push(keyStateData, PushNotifications.KeyboardStateChangedId);
+        this.keyboardReactable.Push(PushNotifications.KeyboardStateChangedId, keyStateData);
     }
 
     /// <summary>
@@ -615,7 +612,7 @@ internal sealed class GLWindow : VelaptorIWindow
             ButtonIsDown = true,
         };
 
-        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>
@@ -631,7 +628,7 @@ internal sealed class GLWindow : VelaptorIWindow
             ButtonIsDown = false,
         };
 
-        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>
@@ -652,7 +649,7 @@ internal sealed class GLWindow : VelaptorIWindow
             },
         };
 
-        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>
@@ -668,7 +665,7 @@ internal sealed class GLWindow : VelaptorIWindow
             Y = (int)position.Y,
         };
 
-        this.mouseReactable.Push(this.mouseStateData, PushNotifications.MouseStateChangedId);
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.Fluent;
+using Carbonate;
 using Exceptions;
 using Factories;
 using NativeInterop.OpenGL;
@@ -48,25 +48,21 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService = openGLService;
         this.shaderLoaderService = shaderLoaderService;
 
-        var signalReactable = reactableFactory.CreateNoDataPushReactable();
-
-        // Subscribe to the GL initialized signal
-        var glInitSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.GLInitializedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceive(Init);
-
-        this.glInitReactorUnsubscriber = signalReactable.Subscribe(glInitSubscription);
-
-        // Subscript to the shutdown signal
-        var shutDownSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SystemShuttingDownId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
-
-        this.shutDownReactorUnsubscriber = signalReactable.Subscribe(shutDownSubscription);
+        var reactable = reactableFactory.CreateNoDataPushReactable();
 
         ProcessCustomAttributes();
+
+        this.glInitReactorUnsubscriber = reactable.CreateNonReceiveOrRespond(
+            PushNotifications.GLInitializedId,
+            Init,
+            () => this.glInitReactorUnsubscriber?.Dispose(),
+            callerMemberName: Name);
+
+        this.shutDownReactorUnsubscriber = reactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.shutDownReactorUnsubscriber?.Dispose(),
+            callerMemberName: Name);
     }
 
     /// <summary>
@@ -144,8 +140,6 @@ internal abstract class ShaderProgram : IShaderProgram
             return;
         }
 
-        this.glInitReactorUnsubscriber.Dispose();
-        this.shutDownReactorUnsubscriber.Dispose();
         GL.DeleteProgram(ShaderId);
 
         IsDisposed = true;

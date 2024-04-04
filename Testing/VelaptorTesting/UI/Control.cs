@@ -6,7 +6,7 @@ namespace VelaptorTesting.UI;
 
 using System;
 using System.Drawing;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.NonDirectional;
 using Velaptor.NativeInterop.ImGui;
 
@@ -52,11 +52,11 @@ internal abstract class Control : IControl
 
             this.windowOwnerId = value;
 
-            var subscription = ISubscriptionBuilder.Create()
-                .WithId(this.windowOwnerId)
-                .WithName($"{Name}|{this.windowOwnerId}")
-                .BuildNonReceive(Render);
-            this.unsubscriber = this.renderReactable.Subscribe(subscription);
+            this.unsubscriber = this.renderReactable.CreateNonReceiveOrRespond(
+                this.windowOwnerId,
+                Render,
+                () => this.unsubscriber?.Dispose(),
+                callerMemberName: $"{Name}|{this.windowOwnerId}");
         }
     }
 
@@ -102,11 +102,6 @@ internal abstract class Control : IControl
         if (this.isDisposed)
         {
             return;
-        }
-
-        if (disposing)
-        {
-            this.unsubscriber.Dispose();
         }
 
         this.isDisposed = true;
