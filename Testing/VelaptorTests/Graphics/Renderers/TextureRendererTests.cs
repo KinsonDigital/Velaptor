@@ -62,26 +62,12 @@ public class TextureRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    this.batchHasBegunReactor = reactor;
-                }
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
         var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
         mockTextureRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Callback<TextureRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"TextureRendererTests.Ctor - {nameof(PushNotifications.RenderTexturesId)}");
-
-                this.renderReactor = reactor;
-            });
+            .Callback<TextureRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -741,6 +727,34 @@ public class TextureRendererTests
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+            });
+    }
+
+    [Fact]
+    public void TextureRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
+        mockTextureRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
+            .Callback<TextureRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"TextureRenderer.ctor() - {PushNotifications.RenderTexturesId}");
+            });
     }
     #endregion
 
