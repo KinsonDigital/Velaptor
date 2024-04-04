@@ -5,7 +5,6 @@
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
-using Carbonate.Core;
 using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
@@ -36,6 +35,8 @@ public class GpuBufferBaseTests
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable> mockPushReactable;
+    private readonly Mock<IPushReactable<ViewPortSizeData>> mockViewPortReactable;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
     private IReceiveSubscription? glInitReactor;
@@ -69,8 +70,8 @@ public class GpuBufferBaseTests
 
         this.mockGLService = new Mock<IOpenGLService>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+        this.mockPushReactable = new Mock<IPushReactable>();
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -85,8 +86,8 @@ public class GpuBufferBaseTests
                 }
             });
 
-        var mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
+        this.mockViewPortReactable = new Mock<IPushReactable<ViewPortSizeData>>();
+        this.mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
             .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -98,8 +99,8 @@ public class GpuBufferBaseTests
             });
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(mockViewPortReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable()).Returns(this.mockViewPortReactable.Object);
     }
 
     #region Constructor Tests
@@ -397,78 +398,38 @@ public class GpuBufferBaseTests
 
     #region Indirect Tests
     [Fact]
-    public void PushReactable_WhenSubscribingToGLInitializedNotification_UsesCorrectReactorName()
+    public void PushReactable_WhenCreatingSubscriptions_CreatesSubscriptionCorrectly()
     {
-        // Arrange
-        var mockReactable = new Mock<IPushReactable>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+        // Arrange & Act & Assert
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
+                reactor.Should().NotBeNull("it is required for this unit test.");
+
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
-                    Act(reactor);
+                    reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.GLInitializedId}");
                 }
-            });
-
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
-            .Returns(mockReactable.Object);
-
-        _ = CreateSystemUnderTest();
-
-        // Act & Assert
-        void Act(ISubscription reactor)
-        {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GpuBufferFake.Ctor - GLInitializedId");
-        }
-    }
-
-    [Fact]
-    public void PushReactable_WhenSubscribingToSystemShutDownNotification_UsesCorrectReactorName()
-    {
-        // Arrange
-        var mockReactable = new Mock<IPushReactable>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    Act(reactor);
+                    reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.SystemShuttingDownId}");
                 }
             });
 
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
-            .Returns(mockReactable.Object);
-
+        // Act
         _ = CreateSystemUnderTest();
-
-        // Act & Assert
-        void Act(ISubscription reactor)
-        {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GpuBufferFake.Ctor - SystemShuttingDownId");
-        }
     }
 
     [Fact]
-    public void ViewPortSizeReactable_WhenSubscribing_UsesCorrectReactorName()
+    public void ViewPortSizeReactable_WhenCreatingSubscriptions_CreatesSubscriptionCorrectly()
     {
-        // Arrange
-        var mockReactable = new Mock<IPushReactable<ViewPortSizeData>>();
-        mockReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
-            .Callback<IReceiveSubscription<ViewPortSizeData>>(Act);
-
-        this.mockReactableFactory.Setup(m => m.CreateViewPortReactable())
-            .Returns(mockReactable.Object);
-
-        _ = CreateSystemUnderTest();
-
-        // Act & Assert
-        void Act(ISubscription reactor)
-        {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("GpuBufferFake.Ctor - ViewPortSizeChangedId");
-        }
+        // Arrange & Act & Assert
+        this.mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
+            .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.ViewPortSizeChangedId}");
+            });
     }
 
     [Fact]
