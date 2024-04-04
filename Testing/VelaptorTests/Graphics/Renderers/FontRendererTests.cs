@@ -53,12 +53,12 @@ public class FontRendererTests
     private readonly Mock<IReactableFactory> mockReactableFactory;
 
     private readonly char[] glyphChars =
-    {
+    [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '~', '_', '+',
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-    };
+    ];
     private IReceiveSubscription? batchHasBegunReactor;
     private FontRenderItem? renderReactor;
 
@@ -85,27 +85,12 @@ public class FontRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
-                    this.batchHasBegunReactor = reactor;
-                }
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
         var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
         mockFontRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
-            .Callback<FontRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.RenderFontsId)}");
-
-                this.renderReactor = reactor;
-            });
+            .Callback<FontRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -835,6 +820,35 @@ public class FontRendererTests
         this.mockGpuBuffer
             .VerifyExactly(m =>
                 m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()), renderText.Length);
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
+            });
+    }
+
+    [Fact]
+    public void FontRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
+        mockFontRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
+            .Callback<FontRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.RenderFontsId}");
+            });
     }
     #endregion
 
