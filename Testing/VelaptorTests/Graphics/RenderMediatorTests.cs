@@ -21,7 +21,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="RenderMediator"/> class.
 /// </summary>
-public class RenderMediatorTests
+public class RenderMediatorTests : TestsBase
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IPushReactable> mockPushReactable;
@@ -33,7 +33,6 @@ public class RenderMediatorTests
     private readonly Mock<IRenderBatchReactable<FontGlyphBatchItem>> mockFontRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<ShapeBatchItem>> mockShapeRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<LineBatchItem>> mockLineRenderBatchReactable;
-
     private readonly Mock<IBatchPullReactable<TextureBatchItem>> mockTexturePullReactable;
     private readonly Mock<IBatchPullReactable<FontGlyphBatchItem>> mockFontPullReactable;
     private readonly Mock<IBatchPullReactable<ShapeBatchItem>> mockShapePullReactable;
@@ -47,42 +46,11 @@ public class RenderMediatorTests
     public RenderMediatorTests()
     {
         var mockEndBatchUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockPushReactable = new Mock<IPushReactable>();
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasEndedId)
-                {
-                    reactor.Name.Should().Be($"RenderMediatorTests.Ctor - {nameof(PushNotifications.BatchHasEndedId)}");
-                    this.endBatchReactor = reactor;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    reactor.Name.Should().Be($"RenderMediatorTests.Ctor - {nameof(PushNotifications.SystemShuttingDownId)}");
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasEndedId)
-                {
-                    return mockEndBatchUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<IReceiveSubscription>(reactor => this.endBatchReactor = reactor)
+            .Returns<IReceiveSubscription>(_ => mockEndBatchUnsubscriber.Object);
 
         this.mockTexturePullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
         this.mockFontPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
@@ -307,6 +275,23 @@ public class RenderMediatorTests
         }
 
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.EmptyBatchId));
+    }
+    #endregion
+
+    #region Reacteable Tests
+    [Fact]
+    public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Assert
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
+            });
+
+        // Act
+        _ = CreateSystemUnderTest();
     }
     #endregion
 
