@@ -21,8 +21,8 @@ public class SoundScene : SceneBase
     private IControlGroup? grpInfoCtrls;
     private IControlGroup? grpSoundCtrls;
     private BackgroundManager? backgroundManager;
-    private ILoader<ISound>? soundLoader;
-    private ISound? sound;
+    private ILoader<IAudio>? soundLoader;
+    private IAudio? sound;
     private string? lblCurrentTimeName;
     private string? lblSoundStateName;
     private string? lblSoundRepeatsName;

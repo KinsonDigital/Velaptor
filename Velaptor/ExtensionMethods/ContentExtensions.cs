@@ -76,7 +76,7 @@ public static class ContentExtensions
     /// </summary>
     /// <param name="loader">The loader.</param>
     /// <param name="sound">The content to unload.</param>
-    public static void Unload(this ILoader<ISound> loader, ISound? sound)
+    public static void Unload(this ILoader<IAudio> loader, IAudio? sound)
     {
         if (sound is null)
         {

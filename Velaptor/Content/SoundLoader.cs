@@ -16,11 +16,11 @@ using Velaptor.Factories;
 /// <summary>
 /// Loads sound content.
 /// </summary>
-public sealed class SoundLoader : ILoader<ISound>
+public sealed class SoundLoader : ILoader<IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private readonly IItemCache<string, ISound> soundCache;
+    private readonly IItemCache<string, IAudio> soundCache;
     private readonly IContentPathResolver soundPathResolver;
     private readonly IDirectory directory;
     private readonly IFile file;
@@ -33,7 +33,7 @@ public sealed class SoundLoader : ILoader<ISound>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public SoundLoader()
     {
-        this.soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
+        this.soundCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
         this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
@@ -52,7 +52,7 @@ public sealed class SoundLoader : ILoader<ISound>
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal SoundLoader(
-        IItemCache<string, ISound> soundCache,
+        IItemCache<string, IAudio> soundCache,
         IContentPathResolver soundPathResolver,
         IDirectory directory,
         IFile file,
@@ -86,7 +86,7 @@ public sealed class SoundLoader : ILoader<ISound>
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
-    public ISound Load(string contentPathOrName)
+    public IAudio Load(string contentPathOrName)
     {
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 

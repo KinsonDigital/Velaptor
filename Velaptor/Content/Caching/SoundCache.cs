@@ -17,13 +17,13 @@ using ReactableData;
 using Velaptor.Factories;
 
 /// <summary>
-/// Caches <see cref="ISound"/> objects for retrieval at a later time.
+/// Caches <see cref="IAudio"/> objects for retrieval at a later time.
 /// </summary>
-internal sealed class SoundCache : IItemCache<string, ISound>
+internal sealed class SoundCache : IItemCache<string, IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private readonly ConcurrentDictionary<string, ISound> sounds = new ();
+    private readonly ConcurrentDictionary<string, IAudio> sounds = new ();
     private readonly IAudioFactory audioFactory;
     private readonly IFile file;
     private readonly IPath path;
@@ -32,7 +32,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCache"/> class.
     /// </summary>
-    /// <param name="audioFactory">Creates <see cref="ISound"/> objects.</param>
+    /// <param name="audioFactory">Creates <see cref="IAudio"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
@@ -89,7 +89,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <exception cref="FileNotFoundException">
     ///     Thrown if the file at the given <paramref name="soundFilePath"/> is not found.
     /// </exception>
-    public ISound GetItem(string soundFilePath)
+    public IAudio GetItem(string soundFilePath)
     {
         ArgumentException.ThrowIfNullOrEmpty(soundFilePath);
 

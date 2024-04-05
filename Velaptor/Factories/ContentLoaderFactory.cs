@@ -12,7 +12,6 @@ using Content.Caching;
 using Content.Factories;
 using Content.Fonts;
 using Services;
-using IVelaptorSound = Content.ISound;
 
 /// <summary>
 /// Creates instances of a content loader.
@@ -22,7 +21,7 @@ public static class ContentLoaderFactory
 {
     private static ILoader<ITexture>? textureLoader;
     private static ILoader<IAtlasData>? atlasLoader;
-    private static ILoader<IVelaptorSound>? soundLoader;
+    private static ILoader<IAudio>? soundLoader;
     private static ILoader<IFont>? fontLoader;
 
     /// <summary>
@@ -90,14 +89,14 @@ public static class ContentLoaderFactory
     /// </summary>
     /// <returns>A loader for loading sound data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static ILoader<IVelaptorSound> CreateSoundLoader()
+    public static ILoader<IAudio> CreateSoundLoader()
     {
         if (soundLoader is not null)
         {
             return soundLoader;
         }
 
-        var soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
+        var soundCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
         var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();

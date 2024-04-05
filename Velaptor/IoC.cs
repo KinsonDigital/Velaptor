@@ -245,7 +245,7 @@ internal static class IoC
     private static void SetupCaching()
     {
         IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
-        IoCContainer.Register<IItemCache<string, ISound>, SoundCache>(Lifestyle.Singleton);
+        IoCContainer.Register<IItemCache<string, IAudio>, SoundCache>(Lifestyle.Singleton);
     }
 
     /// <summary>

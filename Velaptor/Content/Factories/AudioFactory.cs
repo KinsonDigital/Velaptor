@@ -58,7 +58,7 @@ internal sealed class AudioFactory : IAudioFactory
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the CASL library.")]
-    public ISound Create(string filePath)
+    public IAudio Create(string filePath)
     {
         var newId = this.sounds.Count <= 0
             ? 1
@@ -66,6 +66,6 @@ internal sealed class AudioFactory : IAudioFactory
 
         this.sounds.Add(newId, filePath);
 
-        return new Sound(this.disposeReactable, filePath, newId);
+        return new Audio(this.disposeReactable, filePath, newId);
     }
 }

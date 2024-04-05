@@ -99,7 +99,7 @@ public class ContentExtensionsTests
     public void Unload_WithNullSound_DoesNotThrowExceptionOrAttemptUnload()
     {
         // Arrange
-        var mockLoader = Substitute.For<ILoader<ISound>>();
+        var mockLoader = Substitute.For<ILoader<IAudio>>();
 
         // Act
         var act = () => mockLoader.Unload(null);
@@ -113,9 +113,9 @@ public class ContentExtensionsTests
     public void Unload_WhenUnloadingSound_UnloadsContent()
     {
         // Arrange
-        var mockSound = Substitute.For<ISound>();
+        var mockSound = Substitute.For<IAudio>();
         mockSound.FilePath.Returns("test-file-path");
-        var mockLoader = Substitute.For<ILoader<ISound>>();
+        var mockLoader = Substitute.For<ILoader<IAudio>>();
 
         // Act
         mockLoader.Unload(mockSound);

@@ -269,12 +269,12 @@ public class SoundCacheTests
     public void GetItem_WhenGettingSound_ReturnsSound()
     {
         // Arrange
-        var mockMp3Sound = new Mock<ISound>();
+        var mockMp3Sound = new Mock<IAudio>();
         mockMp3Sound.Name = nameof(mockMp3Sound);
         mockMp3Sound.SetupGet(p => p.FilePath).Returns(Mp3SoundFilePath);
         mockMp3Sound.SetupGet(p => p.Id).Returns(123u);
 
-        var mockOggSound = new Mock<ISound>();
+        var mockOggSound = new Mock<IAudio>();
         mockOggSound.Name = nameof(mockOggSound);
         mockOggSound.SetupGet(p => p.FilePath).Returns(OggSoundFilePath);
         mockOggSound.SetupGet(p => p.Id).Returns(456u);
@@ -311,7 +311,7 @@ public class SoundCacheTests
 
         DisposeSoundData? actual = null;
 
-        var mockSound = new Mock<ISound>();
+        var mockSound = new Mock<IAudio>();
         mockSound.SetupGet(p => p.Id).Returns(123u);
 
         this.mockAudioFactory.Setup(m => m.Create(OggSoundFilePath))
@@ -345,7 +345,7 @@ public class SoundCacheTests
     public void Unload_WhenSoundToUnloadDoesNotExist_DoesNotAttemptToDispose()
     {
         // Arrange
-        var mockSound = new Mock<ISound>();
+        var mockSound = new Mock<IAudio>();
         mockSound.SetupGet(p => p.Id).Returns(123u);
 
         var sut = CreateSystemUnderTest();

@@ -33,5 +33,5 @@ internal interface IAudioFactory
     /// </summary>
     /// <param name="filePath">The path to the sound file.</param>
     /// <returns>The sound.</returns>
-    ISound Create(string filePath);
+    IAudio Create(string filePath);
 }
