@@ -17,7 +17,7 @@ $branchDescrip = $branchDescrip.TrimStart("-");
 $branchDescrip = $branchDescrip.TrimEnd("-");
 
 $headBranch = "feature/$issueNumber-$branchDescrip";
-$commitMsg = "Start owrk for issue #$issueNumber";
+$commitMsg = "Start work for issue #$issueNumber";
 
 $destBranch = "not-set";
 
