@@ -27,7 +27,7 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
     private readonly IAudioFactory audioFactory;
     private readonly IFile file;
     private readonly IPath path;
-    private readonly IPushReactable<DisposeSoundData> disposeReactable;
+    private readonly IPushReactable<DisposeAudioData> disposeReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCache"/> class.
@@ -123,6 +123,6 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
             return;
         }
 
-        this.disposeReactable.Push(PushNotifications.SoundDisposedId, new DisposeSoundData { SoundId = sound.Id });
+        this.disposeReactable.Push(PushNotifications.SoundDisposedId, new DisposeAudioData { AudioId = sound.Id });
     }
 }

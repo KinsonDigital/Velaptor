@@ -49,7 +49,7 @@ internal sealed class ReactableFactoryFake : IReactableFactory
     public IPushReactable<DisposeTextureData> CreateDisposeTextureReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
-    public IPushReactable<DisposeSoundData> CreateDisposeSoundReactable() => throw new NotImplementedException();
+    public IPushReactable<DisposeAudioData> CreateDisposeSoundReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IBatchPullReactable<TextureBatchItem> CreateTexturePullBatchReactable() => throw new NotImplementedException();

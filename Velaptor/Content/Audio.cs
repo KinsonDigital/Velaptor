@@ -27,7 +27,7 @@ public sealed class Audio : IAudio
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the audio file.</param>
     /// <param name="soundId">The unique ID of the audio.</param>
-    internal Audio(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId) => Init(disposeReactable, filePath, soundId);
+    internal Audio(IPushReactable<DisposeAudioData> disposeReactable, string filePath, uint soundId) => Init(disposeReactable, filePath, soundId);
 
     /// <inheritdoc/>
     public uint Id { get; private set; }
@@ -111,7 +111,7 @@ public sealed class Audio : IAudio
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(new DisposeSoundData { SoundId = Id });
+    public void Dispose() => Dispose(new DisposeAudioData { AudioId = Id });
 
     /// <summary>
     /// Initializes the audio.
@@ -119,7 +119,7 @@ public sealed class Audio : IAudio
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="filePath">The path to the audio file.</param>
     /// <param name="soundId">The unique ID of the audio.</param>
-    private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
+    private void Init(IPushReactable<DisposeAudioData> disposeReactable, string filePath, uint soundId)
     {
         this.unsubscriber = disposeReactable.CreateOneWayReceive(
             PushNotifications.SoundDisposedId,
@@ -136,9 +136,9 @@ public sealed class Audio : IAudio
     /// Disposes of the audio if this audio <see cref="Id"/> matches the audio ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the audio to dispose.</param>
-    private void Dispose(DisposeSoundData data)
+    private void Dispose(DisposeAudioData data)
     {
-        if (this.isDisposed && Id != data.SoundId)
+        if (this.isDisposed && Id != data.AudioId)
         {
             return;
         }

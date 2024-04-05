@@ -21,14 +21,14 @@ using Xunit;
 public class AudioFactoryTests
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeSoundReactable;
+    private readonly Mock<IPushReactable<DisposeAudioData>> mockDisposeSoundReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioFactoryTests"/> class.
     /// </summary>
     public AudioFactoryTests()
     {
-        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
+        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeAudioData>>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable())
@@ -72,11 +72,11 @@ public class AudioFactoryTests
     public void DisposeSoundReactable_WithDisposeNotification_RemovesSoundReference()
     {
         // Arrange
-        IReceiveSubscription<DisposeSoundData>? subscription = null;
+        IReceiveSubscription<DisposeAudioData>? subscription = null;
 
         this.mockDisposeSoundReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
-            .Callback<IReceiveSubscription<DisposeSoundData>>((subscriptionParam) =>
+            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeAudioData>>()))
+            .Callback<IReceiveSubscription<DisposeAudioData>>((subscriptionParam) =>
             {
                 subscriptionParam.Should().NotBeNull();
                 subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
@@ -86,18 +86,18 @@ public class AudioFactoryTests
             });
 
         this.mockDisposeSoundReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeSoundData>()))
-            .Callback((Guid eventId, in DisposeSoundData data) =>
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeAudioData>()))
+            .Callback((Guid eventId, in DisposeAudioData data) =>
             {
-                data.SoundId.Should().Be(1);
+                data.AudioId.Should().Be(1);
                 eventId.Should().Be(PushNotifications.SoundDisposedId);
             });
 
         var sut = CreateSystemUnderTest();
-        this.mockDisposeSoundReactable.Object.Push(PushNotifications.SoundDisposedId, new DisposeSoundData { SoundId = 1 });
+        this.mockDisposeSoundReactable.Object.Push(PushNotifications.SoundDisposedId, new DisposeAudioData { AudioId = 1 });
 
         // Act
-        subscription.OnReceive(new DisposeSoundData { SoundId = 1 });
+        subscription.OnReceive(new DisposeAudioData { AudioId = 1 });
 
         // Assert
         sut.Sounds.Should().BeEmpty();

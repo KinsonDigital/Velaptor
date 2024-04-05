@@ -322,7 +322,7 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeAudioData>, PushReactable<DisposeAudioData>>(Lifestyle.Singleton);
         IoCContainer.Register(() => IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow(), Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<GLObjectsData>, PushReactable<GLObjectsData>>(Lifestyle.Singleton);
 
