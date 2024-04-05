@@ -92,7 +92,7 @@ public class SoundScene : SceneBase
     }
 
     /// <summary>
-    /// Gets the time of the sound as a formatted string.
+    /// Gets the time of the audio as a formatted string.
     /// </summary>
     /// <param name="minutes">The minutes of the time.</param>
     /// <param name="seconds">The seconds of the time.</param>

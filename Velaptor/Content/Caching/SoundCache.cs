@@ -61,26 +61,26 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
     public IReadOnlyCollection<string> CacheKeys => this.sounds.Keys.ToArray().AsReadOnly();
 
     /// <summary>
-    /// Gets a sound using the given <paramref name="soundFilePath"/>.
+    /// Gets the audio using the given <paramref name="soundFilePath"/>.
     /// </summary>
     /// <param name="soundFilePath">
     ///     The full file path to a <c>Sound</c> file.
     /// </param>
-    /// <returns>A sound loaded from either an <c>'.ogg'</c> or <c>'.mp3'</c> file.</returns>
+    /// <returns>Audio loaded from either an <c>'.ogg'</c> or <c>'.mp3'</c> file.</returns>
     /// <remarks>
     /// <para>
     ///     If the item has not been previously created, the <see cref="TextureCache"/> class
     ///     will retrieve it, and then cache it for fast retrieval.
     /// </para>
     /// <para>
-    ///     The only sound files supported are <c>'.ogg'</c> and <c>'.mp3'</c> files.
+    ///     The only audio files supported are <c>'.ogg'</c> and <c>'.mp3'</c> files.
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the <paramref name="soundFilePath"/> is null or empty.
     /// </exception>
     /// <exception cref="LoadSoundException">
-    ///     Thrown if the type of sound file being requested is not any of the supported types below:
+    ///     Thrown if the type of audio file being requested is not any of the supported types below:
     /// <list type="bullet">
     ///     <item><c>'.ogg'</c></item>
     ///     <item><c>'.mp3'</c></item>

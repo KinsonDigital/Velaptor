@@ -11,7 +11,7 @@ using System.Linq;
 using Guards;
 
 /// <summary>
-/// Resolves paths to sound content.
+/// Resolves paths to audio content.
 /// </summary>
 internal sealed class SoundPathResolver : ContentPathResolver
 {
@@ -29,12 +29,12 @@ internal sealed class SoundPathResolver : ContentPathResolver
     }
 
     /// <summary>
-    /// Returns the path to the sound content.
+    /// Returns the path to the audio content.
     /// </summary>
     /// <param name="contentName">The name of the content.</param>
     /// <returns>The path to the content item.</returns>
     /// <remarks>
-    ///     The two types of sound formats supported are '.ogg' and '.mp3'.
+    ///     The two types of audio formats supported are '.ogg' and '.mp3'.
     /// <para>
     ///     Precedence is taken with '.ogg' files over '.mp3'.  What this means is that if
     ///     there are two files <br/> with the same name but with different extensions in the

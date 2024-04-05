@@ -7,12 +7,12 @@ namespace Velaptor.Content;
 using System;
 
 /// <summary>
-/// A single sound that can be played, paused etc.
+/// A single audio that can be played, paused etc.
 /// </summary>
 public interface IAudio : IContent, IDisposable
 {
     /// <summary>
-    /// Gets the unique ID of the sound.
+    /// Gets the unique ID of the audio.
     /// </summary>
     uint Id { get; }
 

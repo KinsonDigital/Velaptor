@@ -16,7 +16,7 @@ using ReactableData;
 using Velaptor.Factories;
 
 /// <summary>
-/// Creates sounds based on the sound file at a location.
+/// Creates audio based on the audio file at a location.
 /// </summary>
 internal sealed class AudioFactory : IAudioFactory
 {

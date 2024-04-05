@@ -85,9 +85,9 @@ public static class ContentLoaderFactory
     }
 
     /// <summary>
-    /// Creates a loader that loads sounds from disk.
+    /// Creates a loader that loads audio from disk.
     /// </summary>
-    /// <returns>A loader for loading sound data.</returns>
+    /// <returns>A loader for loading audio data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     public static ILoader<IAudio> CreateSoundLoader()
     {
@@ -115,7 +115,7 @@ public static class ContentLoaderFactory
     /// <summary>
     /// Creates a loader that loads fonts from disk for rendering test.
     /// </summary>
-    /// <returns>A loader for loading sound data.</returns>
+    /// <returns>A loader for loading audio data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     public static ILoader<IFont> CreateFontLoader()
     {

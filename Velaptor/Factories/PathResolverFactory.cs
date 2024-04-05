@@ -85,9 +85,9 @@ public static class PathResolverFactory
     }
 
     /// <summary>
-    /// Creates a path resolver that resolves paths to sound content.
+    /// Creates a path resolver that resolves paths to audio content.
     /// </summary>
-    /// <returns>The resolver to sound content.</returns>
+    /// <returns>The resolver to audio content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static IContentPathResolver CreateSoundPathResolver() =>
         soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());

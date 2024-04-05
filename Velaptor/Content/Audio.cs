@@ -1,4 +1,4 @@
-﻿// <copyright file="Audio.cs" company="KinsonDigital">
+// <copyright file="Audio.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ using ReactableData;
 // TODO: Look into throwing exceptions for prop setters and methods if invoked while disposed
 
 /// <summary>
-/// A single sound that can be played, paused etc.
+/// A single audio that can be played, paused etc.
 /// </summary>
 public sealed class Audio : IAudio
 {
@@ -25,8 +25,8 @@ public sealed class Audio : IAudio
     /// Initializes a new instance of the <see cref="Audio"/> class.
     /// </summary>
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
-    /// <param name="filePath">The path to the sound file.</param>
-    /// <param name="soundId">The unique ID of the sound.</param>
+    /// <param name="filePath">The path to the audio file.</param>
+    /// <param name="soundId">The unique ID of the audio.</param>
     internal Audio(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId) => Init(disposeReactable, filePath, soundId);
 
     /// <inheritdoc/>
@@ -114,11 +114,11 @@ public sealed class Audio : IAudio
     public void Dispose() => Dispose(new DisposeSoundData { SoundId = Id });
 
     /// <summary>
-    /// Initializes the sound.
+    /// Initializes the audio.
     /// </summary>
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
-    /// <param name="filePath">The path to the sound file.</param>
-    /// <param name="soundId">The unique ID of the sound.</param>
+    /// <param name="filePath">The path to the audio file.</param>
+    /// <param name="soundId">The unique ID of the audio.</param>
     private void Init(IPushReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
     {
         this.unsubscriber = disposeReactable.CreateOneWayReceive(
@@ -133,9 +133,9 @@ public sealed class Audio : IAudio
     }
 
     /// <summary>
-    /// Disposes of the sounds if this sounds <see cref="Id"/> matches the sound ID in the given <paramref name="data"/>.
+    /// Disposes of the audio if this audio <see cref="Id"/> matches the audio ID in the given <paramref name="data"/>.
     /// </summary>
-    /// <param name="data">The data of the sound to dispose.</param>
+    /// <param name="data">The data of the audio to dispose.</param>
     private void Dispose(DisposeSoundData data)
     {
         if (this.isDisposed && Id != data.SoundId)

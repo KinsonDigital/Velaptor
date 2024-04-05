@@ -14,7 +14,7 @@ using Exceptions;
 using Velaptor.Factories;
 
 /// <summary>
-/// Loads sound content.
+/// Loads audio content.
 /// </summary>
 public sealed class SoundLoader : ILoader<IAudio>
 {
@@ -44,7 +44,7 @@ public sealed class SoundLoader : ILoader<IAudio>
     /// Initializes a new instance of the <see cref="SoundLoader"/> class.
     /// </summary>
     /// <param name="soundCache">Caches textures for later use.</param>
-    /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+    /// <param name="soundPathResolver">Resolves the path to the audio content.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
@@ -72,10 +72,10 @@ public sealed class SoundLoader : ILoader<IAudio>
     }
 
     /// <summary>
-    /// Loads a sound with the given name.
+    /// Loads the audio with the given name.
     /// </summary>
-    /// <param name="contentPathOrName">The full file path or name of the sound to load.</param>
-    /// <returns>The loaded sound.</returns>
+    /// <param name="contentPathOrName">The full file path or name of the audio to load.</param>
+    /// <returns>The loaded audio.</returns>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
     /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>

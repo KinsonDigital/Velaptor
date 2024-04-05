@@ -7,7 +7,7 @@ namespace Velaptor.Content.Exceptions;
 using System;
 
 /// <summary>
-/// Thrown when there is an issue loading sounds.
+/// Thrown when there is an issue loading audio.
 /// </summary>
 public sealed class LoadSoundException : Exception
 {

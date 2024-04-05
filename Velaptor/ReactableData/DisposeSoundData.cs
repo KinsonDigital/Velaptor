@@ -5,12 +5,12 @@
 namespace Velaptor.ReactableData;
 
 /// <summary>
-/// Holds data for the disposing of a sound.
+/// Holds data for the disposing of the audio.
 /// </summary>
 internal readonly record struct DisposeSoundData
 {
     /// <summary>
-    /// Gets the sound ID.
+    /// Gets the audio ID.
     /// </summary>
     public uint SoundId { get; init; }
 }
