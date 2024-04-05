@@ -229,7 +229,7 @@ public class SoundCacheTests
         var act = () => sut.GetItem(soundFilePath);
 
         // Assert
-        act.Should().Throw<LoadSoundException>()
+        act.Should().Throw<LoadAudioException>()
             .WithMessage(expected);
     }
 

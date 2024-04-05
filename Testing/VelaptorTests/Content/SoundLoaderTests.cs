@@ -200,7 +200,7 @@ public class SoundLoaderTests
 
         // Assert
         act.Should()
-            .Throw<LoadSoundException>()
+            .Throw<LoadAudioException>()
             .WithMessage(expectedMsg);
     }
 

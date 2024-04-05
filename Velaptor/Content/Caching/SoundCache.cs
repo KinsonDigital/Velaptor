@@ -79,7 +79,7 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the <paramref name="soundFilePath"/> is null or empty.
     /// </exception>
-    /// <exception cref="LoadSoundException">
+    /// <exception cref="LoadAudioException">
     ///     Thrown if the type of audio file being requested is not any of the supported types below:
     /// <list type="bullet">
     ///     <item><c>'.ogg'</c></item>
@@ -100,7 +100,7 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
             var exceptionMsg = $"Sound file type '{extension}' is not supported.";
             exceptionMsg += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
-            throw new LoadSoundException(exceptionMsg);
+            throw new LoadAudioException(exceptionMsg);
         }
 
         var cacheKey = soundFilePath;

@@ -1,4 +1,4 @@
-// <copyright file="LoadSoundException.cs" company="KinsonDigital">
+// <copyright file="LoadAudioException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,33 +9,33 @@ using System;
 /// <summary>
 /// Thrown when there is an issue loading audio.
 /// </summary>
-public sealed class LoadSoundException : Exception
+public sealed class LoadAudioException : Exception
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadSoundException"/> class.
+    /// Initializes a new instance of the <see cref="LoadAudioException"/> class.
     /// </summary>
-    public LoadSoundException()
-        : base("There was an issue loading the sound.")
+    public LoadAudioException()
+        : base("There was an issue loading the audio.")
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadSoundException"/> class.
+    /// Initializes a new instance of the <see cref="LoadAudioException"/> class.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public LoadSoundException(string message)
+    public LoadAudioException(string message)
         : base(message)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadSoundException"/> class.
+    /// Initializes a new instance of the <see cref="LoadAudioException"/> class.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
     /// <param name="innerException">
     ///     The <see cref="Exception"/> instance that caused the current exception.
     /// </param>
-    public LoadSoundException(string message, Exception innerException)
+    public LoadAudioException(string message, Exception innerException)
         : base(message, innerException)
     {
     }

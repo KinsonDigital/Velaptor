@@ -123,7 +123,7 @@ public sealed class SoundLoader : ILoader<IAudio>
         var exceptionMsg = $"The file '{filePath}' must be a sound file with";
         exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
 
-        throw new LoadSoundException(exceptionMsg);
+        throw new LoadAudioException(exceptionMsg);
     }
 
     /// <inheritdoc/>
