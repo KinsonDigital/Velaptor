@@ -37,6 +37,7 @@ public class ShaderProgramTests
     private readonly IReactableFactory mockReactableFactory;
     private readonly IDisposable mockGLInitUnsubscriber;
     private readonly IDisposable mockShutDownUnsubscriber;
+    private readonly IPushReactable mockPushReactable;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription? shutDownReactor;
 
@@ -67,9 +68,8 @@ public class ShaderProgramTests
         this.mockGLInitUnsubscriber = Substitute.For<IDisposable>();
         this.mockShutDownUnsubscriber = Substitute.For<IDisposable>();
 
-        var mockPushReactable = Substitute.For<IPushReactable>();
-
-        mockPushReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+        this.mockPushReactable = Substitute.For<IPushReactable>();
+        this.mockPushReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
@@ -90,7 +90,7 @@ public class ShaderProgramTests
                 }
             });
 
-        mockPushReactable.Subscribe(Arg.Any<IReceiveSubscription>())
+        this.mockPushReactable.Subscribe(Arg.Any<IReceiveSubscription>())
             .Returns(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
@@ -111,7 +111,7 @@ public class ShaderProgramTests
             });
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
-        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
     }
 
     #region Constructor Tests
@@ -366,9 +366,62 @@ public class ShaderProgramTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockGLInitUnsubscriber.Received(1).Dispose();
-        this.mockShutDownUnsubscriber.Received(1).Dispose();
         this.mockGL.Received(1).DeleteProgram(ShaderProgramId);
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        this.mockPushReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo =>
+            {
+                var reactor = callInfo.Arg<IReceiveSubscription>();
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.GLInitializedId)
+                {
+                    reactor.Name.Should().Be($"ShaderProgram.UNKNOWN() - {PushNotifications.GLInitializedId}");
+                }
+                else if (reactor.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    reactor.Name.Should().Be($"ShaderProgram.UNKNOWN() - {PushNotifications.SystemShuttingDownId}");
+                }
+                else
+                {
+                    Assert.Fail($"The event ID '{reactor.Id}' is not recognized or accounted for in the unit test.");
+                }
+            });
+
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
+    public void PushReactable_WhenUnsubscribingGlInit_Unsubscribes()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.glInitReactor.OnUnsubscribe();
+
+        // Assert
+        this.mockGLInitUnsubscriber.Received(1).Dispose();
+    }
+
+    [Fact]
+    public void PushReactable_WhenUnsubscribingShutdown_Unsubscribes()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.shutDownReactor.OnUnsubscribe();
+
+        // Assert
+        this.mockShutDownUnsubscriber.Received(1).Dispose();
     }
     #endregion
 
