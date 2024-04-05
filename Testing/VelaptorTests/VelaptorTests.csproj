@@ -121,11 +121,11 @@
 
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.1">
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.msbuild" Version="6.0.1">
+    <PackageReference Include="coverlet.msbuild" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -147,7 +147,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="20.0.15" />
+    <PackageReference Include="System.IO.Abstractions" Version="21.0.2" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
       <PrivateAssets>all</PrivateAssets>
