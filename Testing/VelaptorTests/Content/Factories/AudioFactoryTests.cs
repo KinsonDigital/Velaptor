@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundFactoryTests.cs" company="KinsonDigital">
+﻿// <copyright file="AudioFactoryTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,17 +16,17 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SoundFactory"/> class.
+/// Tests the <see cref="AudioFactory"/> class.
 /// </summary>
-public class SoundFactoryTests
+public class AudioFactoryTests
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeSoundReactable;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundFactoryTests"/> class.
+    /// Initializes a new instance of the <see cref="AudioFactoryTests"/> class.
     /// </summary>
-    public SoundFactoryTests()
+    public AudioFactoryTests()
     {
         this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
 
@@ -42,7 +42,7 @@ public class SoundFactoryTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundFactory(null);
+            _ = new AudioFactory(null);
         };
 
         // Assert
@@ -80,7 +80,7 @@ public class SoundFactoryTests
             {
                 subscriptionParam.Should().NotBeNull();
                 subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
-                subscriptionParam.Name.Should().Be($"SoundFactory.ctor() - {PushNotifications.SoundDisposedId}");
+                subscriptionParam.Name.Should().Be($"AudioFactory.ctor() - {PushNotifications.SoundDisposedId}");
 
                 subscription = subscriptionParam;
             });
@@ -105,8 +105,8 @@ public class SoundFactoryTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="SoundFactory"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="AudioFactory"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SoundFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private AudioFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ISoundFactory.cs" company="KinsonDigital">
+﻿// <copyright file="IAudioFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 /// <summary>
 /// Creates sounds based on the sound file at a location.
 /// </summary>
-internal interface ISoundFactory
+internal interface IAudioFactory
 {
     /// <summary>
     /// Gets the list of sounds currently loaded.

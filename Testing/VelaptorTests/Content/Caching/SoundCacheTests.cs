@@ -34,7 +34,7 @@ public class SoundCacheTests
     private const string SoundName = "test-sound";
     private const string OggSoundFilePath = $"{SoundDirPath}/{SoundName}{OggFileExtension}";
     private const string Mp3SoundFilePath = $"{SoundDirPath}/{SoundName}{Mp3FileExtension}";
-    private readonly Mock<ISoundFactory> mockSoundFactory;
+    private readonly Mock<IAudioFactory> mockAudioFactory;
     private readonly Mock<IFile> mockFile;
     private readonly Mock<IPath> mockPath;
     private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeReactable;
@@ -45,7 +45,7 @@ public class SoundCacheTests
     /// </summary>
     public SoundCacheTests()
     {
-        this.mockSoundFactory = new Mock<ISoundFactory>();
+        this.mockAudioFactory = new Mock<IAudioFactory>();
         this.mockFile = new Mock<IFile>();
         this.mockFile.Setup(m => m.Exists(OggSoundFilePath)).Returns(true);
         this.mockFile.Setup(m => m.Exists(Mp3SoundFilePath)).Returns(true);
@@ -74,7 +74,7 @@ public class SoundCacheTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullSoundFactoryParam_ThrowsException()
+    public void Ctor_WithNullAudioFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -89,7 +89,7 @@ public class SoundCacheTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'soundFactory')");
+            .WithMessage("Value cannot be null. (Parameter 'audioFactory')");
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class SoundCacheTests
         var act = () =>
         {
             _ = new SoundCache(
-                this.mockSoundFactory.Object,
+                this.mockAudioFactory.Object,
                 null,
                 this.mockPath.Object,
                 this.mockReactableFactory.Object);
@@ -118,7 +118,7 @@ public class SoundCacheTests
         var act = () =>
         {
             _ = new SoundCache(
-                this.mockSoundFactory.Object,
+                this.mockAudioFactory.Object,
                 this.mockFile.Object,
                 null,
                 this.mockReactableFactory.Object);
@@ -137,7 +137,7 @@ public class SoundCacheTests
         var act = () =>
         {
             _ = new SoundCache(
-                this.mockSoundFactory.Object,
+                this.mockAudioFactory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object,
                 null);
@@ -279,9 +279,9 @@ public class SoundCacheTests
         mockOggSound.SetupGet(p => p.FilePath).Returns(OggSoundFilePath);
         mockOggSound.SetupGet(p => p.Id).Returns(456u);
 
-        this.mockSoundFactory.Setup(m => m.Create(Mp3SoundFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(Mp3SoundFilePath))
             .Returns(mockMp3Sound.Object);
-        this.mockSoundFactory.Setup(m => m.Create(OggSoundFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(OggSoundFilePath))
             .Returns(mockOggSound.Object);
 
         var sut = CreateSystemUnderTest();
@@ -314,7 +314,7 @@ public class SoundCacheTests
         var mockSound = new Mock<ISound>();
         mockSound.SetupGet(p => p.Id).Returns(123u);
 
-        this.mockSoundFactory.Setup(m => m.Create(OggSoundFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(OggSoundFilePath))
             .Returns(mockSound.Object);
 
         this.mockDisposeReactable.Setup(m =>
@@ -365,7 +365,7 @@ public class SoundCacheTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private SoundCache CreateSystemUnderTest() =>
-        new (this.mockSoundFactory.Object,
+        new (this.mockAudioFactory.Object,
             this.mockFile.Object,
             this.mockPath.Object,
             this.mockReactableFactory.Object);

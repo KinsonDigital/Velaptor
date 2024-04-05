@@ -255,7 +255,7 @@ internal static class IoC
     {
         IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
         IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);

@@ -24,7 +24,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
     private readonly ConcurrentDictionary<string, ISound> sounds = new ();
-    private readonly ISoundFactory soundFactory;
+    private readonly IAudioFactory audioFactory;
     private readonly IFile file;
     private readonly IPath path;
     private readonly IPushReactable<DisposeSoundData> disposeReactable;
@@ -32,22 +32,22 @@ internal sealed class SoundCache : IItemCache<string, ISound>
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundCache"/> class.
     /// </summary>
-    /// <param name="soundFactory">Creates <see cref="ISound"/> objects.</param>
+    /// <param name="audioFactory">Creates <see cref="ISound"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public SoundCache(
-        ISoundFactory soundFactory,
+        IAudioFactory audioFactory,
         IFile file,
         IPath path,
         IReactableFactory reactableFactory)
     {
-        ArgumentNullException.ThrowIfNull(soundFactory);
+        ArgumentNullException.ThrowIfNull(audioFactory);
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(reactableFactory);
 
-        this.soundFactory = soundFactory;
+        this.audioFactory = audioFactory;
         this.file = file;
         this.path = path;
 
@@ -107,7 +107,7 @@ internal sealed class SoundCache : IItemCache<string, ISound>
 
         if (this.file.Exists(soundFilePath))
         {
-            return this.sounds.GetOrAdd(cacheKey, filePath => this.soundFactory.Create(filePath));
+            return this.sounds.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath));
         }
 
         throw new FileNotFoundException($"The '{extension}' sound file does not exist.", soundFilePath);

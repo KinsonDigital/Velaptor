@@ -1,4 +1,4 @@
-// <copyright file="SoundFactory.cs" company="KinsonDigital">
+// <copyright file="AudioFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,17 +18,17 @@ using Velaptor.Factories;
 /// <summary>
 /// Creates sounds based on the sound file at a location.
 /// </summary>
-internal sealed class SoundFactory : ISoundFactory
+internal sealed class AudioFactory : IAudioFactory
 {
     private readonly Dictionary<uint, string> sounds = new ();
     private readonly IPushReactable<DisposeSoundData> disposeReactable;
     private readonly IDisposable unsubscriber;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundFactory"/> class.
+    /// Initializes a new instance of the <see cref="AudioFactory"/> class.
     /// </summary>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public SoundFactory(IReactableFactory reactableFactory)
+    public AudioFactory(IReactableFactory reactableFactory)
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 

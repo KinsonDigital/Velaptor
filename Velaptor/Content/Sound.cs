@@ -1,4 +1,4 @@
-﻿// <copyright file="Sound.cs" company="KinsonDigital">
+// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -32,10 +32,10 @@ public sealed class Sound : ISound
     {
         ArgumentException.ThrowIfNullOrEmpty(filePath);
 
-        var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+        var audioFactory = IoC.Container.GetInstance<IAudioFactory>();
         var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeSoundData>>();
 
-        Init(disposeReactable, filePath, soundFactory.GetNewId(filePath));
+        Init(disposeReactable, filePath, audioFactory.GetNewId(filePath));
     }
 
     /// <summary>
