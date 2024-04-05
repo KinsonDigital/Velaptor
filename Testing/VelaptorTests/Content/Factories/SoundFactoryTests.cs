@@ -80,7 +80,7 @@ public class SoundFactoryTests
             {
                 subscriptionParam.Should().NotBeNull();
                 subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
-                subscriptionParam.Name.Should().Be("SoundFactoryTests.Ctor - SoundDisposedId");
+                subscriptionParam.Name.Should().Be($"SoundFactory.ctor() - {PushNotifications.SoundDisposedId}");
 
                 subscription = subscriptionParam;
             });

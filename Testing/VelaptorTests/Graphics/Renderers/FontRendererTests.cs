@@ -37,7 +37,7 @@ using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<
 /// <summary>
 /// Tests the <see cref="FontRenderer"/> class.
 /// </summary>
-public class FontRendererTests
+public class FontRendererTests : TestsBase
 {
     private const string GlyphTestDataFileName = "glyph-test-data.json";
     private const string BatchTestDataDirPath = "BatchItemTestData";
@@ -53,12 +53,12 @@ public class FontRendererTests
     private readonly Mock<IReactableFactory> mockReactableFactory;
 
     private readonly char[] glyphChars =
-    {
+    [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '~', '_', '+',
         '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-    };
+    ];
     private IReceiveSubscription? batchHasBegunReactor;
     private FontRenderItem? renderReactor;
 
@@ -85,27 +85,12 @@ public class FontRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.BatchHasBegunId)}");
-                    this.batchHasBegunReactor = reactor;
-                }
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
         var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
         mockFontRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
-            .Callback<FontRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"FontRendererTests.Ctor - {nameof(PushNotifications.RenderFontsId)}");
-
-                this.renderReactor = reactor;
-            });
+            .Callback<FontRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -124,6 +109,7 @@ public class FontRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -145,6 +131,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -166,6 +153,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -187,6 +175,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -210,6 +199,7 @@ public class FontRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNullFont_ThrowsException()
     {
         // Arrange
@@ -224,6 +214,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNoFontItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -257,6 +248,7 @@ public class FontRendererTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
+    [Trait("Category", Method)]
     public void Render_WithNullOrEmptyText_DoesNotRenderText(string? renderText)
     {
         // Arrange
@@ -281,6 +273,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithFontSizeSetToZero_DoesNotRenderText()
     {
         // Arrange
@@ -307,6 +300,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenNotCallingBeginFirst_ThrowsException()
     {
         // Arrange
@@ -330,6 +324,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenTextIsOnlyNewLineCharacters_DoesNotRenderText()
     {
         // Arrange
@@ -361,6 +356,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_MeasuresText()
     {
         // Arrange
@@ -385,6 +381,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenRenderingMultilineText_ConvertsEachLineToGlyphMetrics()
     {
         // Arrange
@@ -413,6 +410,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_AddsCorrectBatchItems()
     {
         // Arrange
@@ -454,6 +452,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamsWithXAndYOverload_RendersFont()
     {
         // Arrange
@@ -496,6 +495,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking3ParamsWithPositionOverload_RendersFont()
     {
         // Arrange
@@ -537,6 +537,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking6ParamsWithXAndYOverload_RendersFont()
     {
         // Arrange
@@ -582,6 +583,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithPositionOverload_RendersFont()
     {
         // Arrange
@@ -626,6 +628,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithColorOverload_RendersFont()
     {
         // Arrange
@@ -670,6 +673,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont()
     {
         // Arrange
@@ -713,6 +717,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking6ParamsWithColorOverload_RendersFont()
     {
         // Arrange
@@ -757,6 +762,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont()
     {
         // Arrange
@@ -800,6 +806,7 @@ public class FontRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_RendersFont()
     {
         // Arrange
@@ -835,6 +842,37 @@ public class FontRendererTests
         this.mockGpuBuffer
             .VerifyExactly(m =>
                 m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()), renderText.Length);
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
+            });
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void FontRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
+        mockFontRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
+            .Callback<FontRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.RenderFontsId}");
+            });
     }
     #endregion
 
