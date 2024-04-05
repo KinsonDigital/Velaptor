@@ -32,6 +32,8 @@ public class FontShaderTests
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IShaderLoaderService> mockShaderLoader;
     private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IDisposable> batchSizeUnsubscriber;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
 
@@ -44,32 +46,22 @@ public class FontShaderTests
         this.mockGLService = new Mock<IOpenGLService>();
         this.mockShaderLoader = new Mock<IShaderLoaderService>();
 
+        this.batchSizeUnsubscriber = new Mock<IDisposable>();
+
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.GLInitializedId || reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return new Mock<IDisposable>().Object;
-                }
-
-                Assert.Fail("Unrecognized event id.");
-                return null;
-            })
+            .Returns<IReceiveSubscription>(reactor => new Mock<IDisposable>().Object)
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
             });
 
-        var mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+        this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Returns(() => this.batchSizeUnsubscriber.Object)
             .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
                 reactor.Should().NotBeNull("it is required for unit testing.");
@@ -78,7 +70,7 @@ public class FontShaderTests
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(mockBatchSizeReactable.Object);
+        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(this.mockBatchSizeReactable.Object);
     }
 
     #region Constructor Tests
@@ -160,6 +152,34 @@ public class FontShaderTests
 
         // Assert
         actual.Should().Be(123u);
+    }
+
+    [Fact]
+    public void BatchSizeReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                this.batchSizeReactor = reactor;
+                reactor.Name.Should().Be($"FontShader.ctor() - {PushNotifications.BatchSizeChangedId}");
+            });
+
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
+    public void BatchSizeReactable_WhenUnsubscribingGlInit_Unsubscribes()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.batchSizeReactor.OnUnsubscribe();
+
+        // Assert
+        this.batchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
     }
     #endregion
 
