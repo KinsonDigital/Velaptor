@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="AudioLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,9 +16,9 @@ using Velaptor.Content.Exceptions;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SoundLoader"/> class.
+/// Tests the <see cref="AudioLoader"/> class.
 /// </summary>
-public class SoundLoaderTests
+public class AudioLoaderTests
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
@@ -33,9 +33,9 @@ public class SoundLoaderTests
     private readonly Mock<IPath> mockPath;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundLoaderTests"/> class.
+    /// Initializes a new instance of the <see cref="AudioLoaderTests"/> class.
     /// </summary>
-    public SoundLoaderTests()
+    public AudioLoaderTests()
     {
         this.oggSoundFilePath = $"{SoundDirPath}{SoundName}{OggFileExtension}";
         this.mp3SoundFilePath = $"{SoundDirPath}{SoundName}{Mp3FileExtension}";
@@ -55,7 +55,7 @@ public class SoundLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundLoader(
+            _ = new AudioLoader(
                 null,
                 this.mockSoundPathResolver.Object,
                 this.mockDirectory.Object,
@@ -74,7 +74,7 @@ public class SoundLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundLoader(
+            _ = new AudioLoader(
                 this.mockSoundCache.Object,
                 null,
                 this.mockDirectory.Object,
@@ -94,7 +94,7 @@ public class SoundLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundLoader(
+            _ = new AudioLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
                 null,
@@ -114,7 +114,7 @@ public class SoundLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundLoader(
+            _ = new AudioLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
                 this.mockDirectory.Object,
@@ -134,7 +134,7 @@ public class SoundLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundLoader(
+            _ = new AudioLoader(
                 this.mockSoundCache.Object,
                 this.mockSoundPathResolver.Object,
                 this.mockDirectory.Object,
@@ -333,10 +333,10 @@ public class SoundLoaderTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of a <see cref="SoundLoader"/> for testing purposes.
+    /// Creates a new instance of a <see cref="AudioLoader"/> for testing purposes.
     /// </summary>
     /// <returns>The mockSound loader instance used for testing.</returns>
-    private SoundLoader CreateSoundLoader() => new (
+    private AudioLoader CreateSoundLoader() => new (
         this.mockSoundCache.Object,
         this.mockSoundPathResolver.Object,
         this.mockDirectory.Object,

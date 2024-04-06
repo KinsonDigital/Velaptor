@@ -1,4 +1,4 @@
-// <copyright file="SoundLoader.cs" company="KinsonDigital">
+// <copyright file="AudioLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Loads audio content.
 /// </summary>
-public sealed class SoundLoader : ILoader<IAudio>
+public sealed class AudioLoader : ILoader<IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
@@ -27,11 +27,11 @@ public sealed class SoundLoader : ILoader<IAudio>
     private readonly IPath path;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundLoader"/> class.
+    /// Initializes a new instance of the <see cref="AudioLoader"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public SoundLoader()
+    public AudioLoader()
     {
         this.soundCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
         this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
@@ -41,7 +41,7 @@ public sealed class SoundLoader : ILoader<IAudio>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundLoader"/> class.
+    /// Initializes a new instance of the <see cref="AudioLoader"/> class.
     /// </summary>
     /// <param name="soundCache">Caches textures for later use.</param>
     /// <param name="soundPathResolver">Resolves the path to the audio content.</param>
@@ -51,7 +51,7 @@ public sealed class SoundLoader : ILoader<IAudio>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal SoundLoader(
+    internal AudioLoader(
         IItemCache<string, IAudio> soundCache,
         IContentPathResolver soundPathResolver,
         IDirectory directory,
