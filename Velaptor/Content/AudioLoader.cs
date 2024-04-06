@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using Caching;
 using Exceptions;
 using Velaptor.Factories;
@@ -20,8 +19,8 @@ public sealed class AudioLoader : ILoader<IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private readonly IItemCache<string, IAudio> soundCache;
-    private readonly IContentPathResolver soundPathResolver;
+    private readonly IItemCache<string, IAudio> audioCache;
+    private readonly IContentPathResolver audioPathResolver;
     private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
@@ -33,8 +32,8 @@ public sealed class AudioLoader : ILoader<IAudio>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public AudioLoader()
     {
-        this.soundCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
-        this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
+        this.audioCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
+        this.audioPathResolver = PathResolverFactory.CreateSoundPathResolver();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
         this.directory = IoC.Container.GetInstance<IDirectory>();
@@ -43,8 +42,8 @@ public sealed class AudioLoader : ILoader<IAudio>
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioLoader"/> class.
     /// </summary>
-    /// <param name="soundCache">Caches textures for later use.</param>
-    /// <param name="soundPathResolver">Resolves the path to the audio content.</param>
+    /// <param name="audioCache">Caches textures for later use.</param>
+    /// <param name="audioPathResolver">Resolves the path to the audio content.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
@@ -52,20 +51,20 @@ public sealed class AudioLoader : ILoader<IAudio>
     ///     Invoked when any of the parameters are null.
     /// </exception>
     internal AudioLoader(
-        IItemCache<string, IAudio> soundCache,
-        IContentPathResolver soundPathResolver,
+        IItemCache<string, IAudio> audioCache,
+        IContentPathResolver audioPathResolver,
         IDirectory directory,
         IFile file,
         IPath path)
     {
-        ArgumentNullException.ThrowIfNull(soundCache);
-        ArgumentNullException.ThrowIfNull(soundPathResolver);
+        ArgumentNullException.ThrowIfNull(audioCache);
+        ArgumentNullException.ThrowIfNull(audioPathResolver);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
 
-        this.soundCache = soundCache;
-        this.soundPathResolver = soundPathResolver;
+        this.audioCache = audioCache;
+        this.audioPathResolver = audioPathResolver;
         this.directory = directory;
         this.file = file;
         this.path = path;
@@ -94,7 +93,7 @@ public sealed class AudioLoader : ILoader<IAudio>
 
         if (!isPathRooted)
         {
-            var contentDirPath = this.soundPathResolver.ResolveDirPath();
+            var contentDirPath = this.audioPathResolver.ResolveDirPath();
 
             if (!this.directory.Exists(contentDirPath))
             {
@@ -104,23 +103,23 @@ public sealed class AudioLoader : ILoader<IAudio>
 
         var filePath = isPathRooted
             ? contentPathOrName
-            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
+            : this.audioPathResolver.ResolveFilePath(contentPathOrName);
 
         if (!this.file.Exists(filePath))
         {
-            throw new FileNotFoundException("The sound file does not exist.", filePath);
+            throw new FileNotFoundException("The audio file does not exist.", filePath);
         }
 
         var fileExtension = this.path.GetExtension(filePath);
         var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
-        var isInvalidExtension = validExtensions.All(e => e != fileExtension);
+        var isInvalidExtension = Array.TrueForAll(validExtensions, e => e != fileExtension);
 
         if (!isInvalidExtension)
         {
-            return this.soundCache.GetItem(filePath);
+            return this.audioCache.GetItem(filePath);
         }
 
-        var exceptionMsg = $"The file '{filePath}' must be a sound file with";
+        var exceptionMsg = $"The file '{filePath}' must be a audio file with";
         exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
 
         throw new LoadAudioException(exceptionMsg);
@@ -132,8 +131,8 @@ public sealed class AudioLoader : ILoader<IAudio>
     {
         var filePath = this.path.IsPathRooted(contentPathOrName)
             ? contentPathOrName
-            : this.soundPathResolver.ResolveFilePath(contentPathOrName);
+            : this.audioPathResolver.ResolveFilePath(contentPathOrName);
 
-        this.soundCache.Unload(filePath);
+        this.audioCache.Unload(filePath);
     }
 }
