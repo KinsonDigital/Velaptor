@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="AudioPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,19 +13,19 @@ using Guards;
 /// <summary>
 /// Resolves paths to audio content.
 /// </summary>
-internal sealed class SoundPathResolver : ContentPathResolver
+internal sealed class AudioPathResolver : ContentPathResolver
 {
     private readonly IDirectory directory;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundPathResolver"/> class.
+    /// Initializes a new instance of the <see cref="AudioPathResolver"/> class.
     /// </summary>
     /// <param name="directory">Performs operations with directories.</param>
-    public SoundPathResolver(IDirectory directory)
+    public AudioPathResolver(IDirectory directory)
     {
         EnsureThat.ParamIsNotNull(directory);
         this.directory = directory;
-        ContentDirectoryName = "Sounds";
+        ContentDirectoryName = "Audio";
     }
 
     /// <summary>
@@ -68,7 +68,9 @@ internal sealed class SoundPathResolver : ContentPathResolver
                 var currentExtension = Path.GetExtension(f);
 
                 return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
-                       && allowedExtensions.Any(e
+                       && Array.Exists(
+                           allowedExtensions,
+                           e
                            => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
             }).ToArray();
 
@@ -90,6 +92,6 @@ internal sealed class SoundPathResolver : ContentPathResolver
             return mp3Files[0];
         }
 
-        throw new FileNotFoundException($"The sound file '{contentDirPath}/{contentName}' does not exist.");
+        throw new FileNotFoundException($"The audio file '{contentDirPath}/{contentName}' does not exist.");
     }
 }

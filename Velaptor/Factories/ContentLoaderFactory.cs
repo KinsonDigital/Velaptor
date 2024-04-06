@@ -97,7 +97,7 @@ public static class ContentLoaderFactory
         }
 
         var soundCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
-        var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+        var soundPathResolver = new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();

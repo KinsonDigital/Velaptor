@@ -90,7 +90,7 @@ public static class PathResolverFactory
     /// <returns>The resolver to audio content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static IContentPathResolver CreateAudioPathResolver() =>
-        soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+        soundPathResolver ??= new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
     /// Creates a path resolver that resolves paths to fonts in the window's font directory.
