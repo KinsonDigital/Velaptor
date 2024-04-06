@@ -49,7 +49,7 @@ internal static class PushNotifications
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the audio is disposed.
     /// </summary>
-    public static Guid SoundDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
+    public static Guid AudioDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the system is shutting down.

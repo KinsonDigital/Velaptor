@@ -23,7 +23,7 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private readonly ConcurrentDictionary<string, IAudio> sounds = new ();
+    private readonly ConcurrentDictionary<string, IAudio> allAudio = new ();
     private readonly IAudioFactory audioFactory;
     private readonly IFile file;
     private readonly IPath path;
@@ -51,19 +51,19 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
         this.file = file;
         this.path = path;
 
-        this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
+        this.disposeReactable = reactableFactory.CreateDisposeAudioReactable();
     }
 
     /// <inheritdoc/>
-    public int TotalCachedItems => this.sounds.Count;
+    public int TotalCachedItems => this.allAudio.Count;
 
     /// <inheritdoc/>
-    public IReadOnlyCollection<string> CacheKeys => this.sounds.Keys.ToArray().AsReadOnly();
+    public IReadOnlyCollection<string> CacheKeys => this.allAudio.Keys.ToArray().AsReadOnly();
 
     /// <summary>
-    /// Gets the audio using the given <paramref name="soundFilePath"/>.
+    /// Gets the audio using the given <paramref name="audioFilePath"/>.
     /// </summary>
-    /// <param name="soundFilePath">
+    /// <param name="audioFilePath">
     ///     The full file path to a <c>Sound</c> file.
     /// </param>
     /// <returns>Audio loaded from either an <c>'.ogg'</c> or <c>'.mp3'</c> file.</returns>
@@ -77,7 +77,7 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">
-    ///     Thrown if the <paramref name="soundFilePath"/> is null or empty.
+    ///     Thrown if the <paramref name="audioFilePath"/> is null or empty.
     /// </exception>
     /// <exception cref="LoadAudioException">
     ///     Thrown if the type of audio file being requested is not any of the supported types below:
@@ -87,42 +87,42 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
     /// </list>
     /// </exception>
     /// <exception cref="FileNotFoundException">
-    ///     Thrown if the file at the given <paramref name="soundFilePath"/> is not found.
+    ///     Thrown if the file at the given <paramref name="audioFilePath"/> is not found.
     /// </exception>
-    public IAudio GetItem(string soundFilePath)
+    public IAudio GetItem(string audioFilePath)
     {
-        ArgumentException.ThrowIfNullOrEmpty(soundFilePath);
+        ArgumentException.ThrowIfNullOrEmpty(audioFilePath);
 
-        var extension = this.path.GetExtension(soundFilePath);
+        var extension = this.path.GetExtension(audioFilePath);
 
         if (extension != OggFileExtension && extension != Mp3FileExtension)
         {
-            var exceptionMsg = $"Sound file type '{extension}' is not supported.";
+            var exceptionMsg = $"Audio file type '{extension}' is not supported.";
             exceptionMsg += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
             throw new LoadAudioException(exceptionMsg);
         }
 
-        var cacheKey = soundFilePath;
+        var cacheKey = audioFilePath;
 
-        if (this.file.Exists(soundFilePath))
+        if (this.file.Exists(audioFilePath))
         {
-            return this.sounds.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath));
+            return this.allAudio.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath));
         }
 
-        throw new FileNotFoundException($"The '{extension}' sound file does not exist.", soundFilePath);
+        throw new FileNotFoundException($"The '{extension}' audio file does not exist.", audioFilePath);
     }
 
     /// <inheritdoc/>
     public void Unload(string cacheKey)
     {
-        this.sounds.TryRemove(cacheKey, out var sound);
+        this.allAudio.TryRemove(cacheKey, out var audio);
 
-        if (sound is null)
+        if (audio is null)
         {
             return;
         }
 
-        this.disposeReactable.Push(PushNotifications.SoundDisposedId, new DisposeAudioData { AudioId = sound.Id });
+        this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
     }
 }

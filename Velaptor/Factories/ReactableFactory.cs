@@ -51,7 +51,7 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable<DisposeTextureData> CreateDisposeTextureReactable() => IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
 
     /// <inheritdoc/>
-    public IPushReactable<DisposeAudioData> CreateDisposeSoundReactable() => IoC.Container.GetInstance<IPushReactable<DisposeAudioData>>();
+    public IPushReactable<DisposeAudioData> CreateDisposeAudioReactable() => IoC.Container.GetInstance<IPushReactable<DisposeAudioData>>();
 
     /// <inheritdoc/>
     public IBatchPullReactable<TextureBatchItem> CreateTexturePullBatchReactable() =>

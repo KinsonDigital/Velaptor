@@ -81,7 +81,7 @@ internal interface IReactableFactory
     /// Creates a dispose texture reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IPushReactable<DisposeAudioData> CreateDisposeSoundReactable();
+    IPushReactable<DisposeAudioData> CreateDisposeAudioReactable();
 
     /// <summary>
     /// Creates a reactable for pulling texture batch data.

@@ -31,7 +31,7 @@ public class AudioFactoryTests
         this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeAudioData>>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable())
+        this.mockReactableFactory.Setup(m => m.CreateDisposeAudioReactable())
             .Returns(this.mockDisposeSoundReactable.Object);
     }
 
@@ -79,8 +79,8 @@ public class AudioFactoryTests
             .Callback<IReceiveSubscription<DisposeAudioData>>((subscriptionParam) =>
             {
                 subscriptionParam.Should().NotBeNull();
-                subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
-                subscriptionParam.Name.Should().Be($"AudioFactory.ctor() - {PushNotifications.SoundDisposedId}");
+                subscriptionParam.Id.Should().Be(PushNotifications.AudioDisposedId);
+                subscriptionParam.Name.Should().Be($"AudioFactory.ctor() - {PushNotifications.AudioDisposedId}");
 
                 subscription = subscriptionParam;
             });
@@ -90,11 +90,11 @@ public class AudioFactoryTests
             .Callback((Guid eventId, in DisposeAudioData data) =>
             {
                 data.AudioId.Should().Be(1);
-                eventId.Should().Be(PushNotifications.SoundDisposedId);
+                eventId.Should().Be(PushNotifications.AudioDisposedId);
             });
 
         var sut = CreateSystemUnderTest();
-        this.mockDisposeSoundReactable.Object.Push(PushNotifications.SoundDisposedId, new DisposeAudioData { AudioId = 1 });
+        this.mockDisposeSoundReactable.Object.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = 1 });
 
         // Act
         subscription.OnReceive(new DisposeAudioData { AudioId = 1 });
