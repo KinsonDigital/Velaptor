@@ -89,7 +89,7 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver to audio content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IContentPathResolver CreateSoundPathResolver() =>
+    public static IContentPathResolver CreateAudioPathResolver() =>
         soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>

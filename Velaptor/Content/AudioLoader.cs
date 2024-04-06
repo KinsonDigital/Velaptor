@@ -33,7 +33,7 @@ public sealed class AudioLoader : ILoader<IAudio>
     public AudioLoader()
     {
         this.audioCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
-        this.audioPathResolver = PathResolverFactory.CreateSoundPathResolver();
+        this.audioPathResolver = PathResolverFactory.CreateAudioPathResolver();
         this.file = IoC.Container.GetInstance<IFile>();
         this.path = IoC.Container.GetInstance<IPath>();
         this.directory = IoC.Container.GetInstance<IDirectory>();
