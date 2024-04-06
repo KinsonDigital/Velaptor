@@ -34,7 +34,7 @@ public class SoundScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.soundLoader = ContentLoaderFactory.CreateSoundLoader();
+        this.soundLoader = ContentLoaderFactory.CreateAudioLoader();
         this.sound = this.soundLoader.Load("test-song");
 
         CreateInfoCtrls();

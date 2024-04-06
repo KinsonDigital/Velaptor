@@ -89,7 +89,7 @@ public static class ContentLoaderFactory
     /// </summary>
     /// <returns>A loader for loading audio data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static ILoader<IAudio> CreateSoundLoader()
+    public static ILoader<IAudio> CreateAudioLoader()
     {
         if (soundLoader is not null)
         {
