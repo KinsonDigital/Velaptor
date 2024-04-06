@@ -17,18 +17,12 @@ using Content.Fonts;
 [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
 public static class PathResolverFactory
 {
-    private static readonly IPlatform Platform;
     private static IContentPathResolver? texturePathResolver;
     private static IContentPathResolver? atlasPathResolver;
-    private static IContentPathResolver? soundPathResolver;
+    private static IContentPathResolver? audioPathResolver;
     private static IContentPathResolver? fontPathResolver;
     private static IContentPathResolver? contentFontPathResolver;
     private static IContentPathResolver? windowsFontPathResolver;
-
-    /// <summary>
-    /// Initializes static members of the <see cref="PathResolverFactory"/> class.
-    /// </summary>
-    static PathResolverFactory() => Platform = IoC.Container.GetInstance<IPlatform>();
 
     /// <summary>
     /// Creates a path resolver that resolves paths to texture content.
@@ -60,7 +54,9 @@ public static class PathResolverFactory
     /// <returns>The resolver instance.</returns>
     public static IContentPathResolver CreateSystemFontPathResolver()
     {
-        if (Platform.CurrentPlatform == OSPlatform.Windows)
+        var platform = IoC.Container.GetInstance<IPlatform>();
+
+        if (platform.CurrentPlatform == OSPlatform.Windows)
         {
             return CreateWindowsFontPathResolver();
         }
@@ -90,7 +86,7 @@ public static class PathResolverFactory
     /// <returns>The resolver to audio content.</returns>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static IContentPathResolver CreateAudioPathResolver() =>
-        soundPathResolver ??= new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
+        audioPathResolver ??= new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
 
     /// <summary>
     /// Creates a path resolver that resolves paths to fonts in the window's font directory.
