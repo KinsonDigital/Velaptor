@@ -19,7 +19,7 @@ internal interface IAudioFactory
     ///     <br/>
     ///     The value is the fully qualified file path to the audio file.
     /// </remarks>
-    ReadOnlyDictionary<uint, string> Sounds { get; }
+    ReadOnlyDictionary<uint, string> LoadedAudio { get; }
 
     /// <summary>
     /// Gets a new unique audio ID.

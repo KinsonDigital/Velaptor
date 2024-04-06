@@ -100,7 +100,7 @@ public class AudioFactoryTests
         subscription.OnReceive(new DisposeAudioData { AudioId = 1 });
 
         // Assert
-        sut.Sounds.Should().BeEmpty();
+        sut.LoadedAudio.Should().BeEmpty();
     }
     #endregion
 

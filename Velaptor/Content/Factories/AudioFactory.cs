@@ -20,8 +20,8 @@ using Velaptor.Factories;
 /// </summary>
 internal sealed class AudioFactory : IAudioFactory
 {
-    private readonly Dictionary<uint, string> sounds = new ();
-    private readonly IPushReactable<DisposeSoundData> disposeReactable;
+    private readonly Dictionary<uint, string> allAudio = new ();
+    private readonly IPushReactable<DisposeAudioData> disposeReactable;
     private readonly IDisposable unsubscriber;
 
     /// <summary>
@@ -32,26 +32,26 @@ internal sealed class AudioFactory : IAudioFactory
     {
         EnsureThat.ParamIsNotNull(reactableFactory);
 
-        this.disposeReactable = reactableFactory.CreateDisposeSoundReactable();
+        this.disposeReactable = reactableFactory.CreateDisposeAudioReactable();
 
         this.unsubscriber = this.disposeReactable.CreateOneWayReceive(
-            PushNotifications.SoundDisposedId,
-            data => this.sounds.Remove(data.SoundId),
+            PushNotifications.AudioDisposedId,
+            data => this.allAudio.Remove(data.AudioId),
             () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage(Justification = "Cannot test this until the Create() method can be tested.  Waiting for CASL improvements.")]
-    public ReadOnlyDictionary<uint, string> Sounds => new (this.sounds);
+    public ReadOnlyDictionary<uint, string> LoadedAudio => new (this.allAudio);
 
     /// <inheritdoc/>
     public uint GetNewId(string filePath)
     {
-        var newId = this.sounds.Count <= 0
+        var newId = this.allAudio.Count <= 0
             ? 1
-            : this.sounds.Keys.Max() + 1;
+            : this.allAudio.Keys.Max() + 1;
 
-        this.sounds.Add(newId, filePath);
+        this.allAudio.Add(newId, filePath);
 
         return newId;
     }
@@ -60,11 +60,11 @@ internal sealed class AudioFactory : IAudioFactory
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the CASL library.")]
     public IAudio Create(string filePath)
     {
-        var newId = this.sounds.Count <= 0
+        var newId = this.allAudio.Count <= 0
             ? 1
-            : this.sounds.Keys.Max() + 1;
+            : this.allAudio.Keys.Max() + 1;
 
-        this.sounds.Add(newId, filePath);
+        this.allAudio.Add(newId, filePath);
 
         return new Audio(this.disposeReactable, filePath, newId);
     }
