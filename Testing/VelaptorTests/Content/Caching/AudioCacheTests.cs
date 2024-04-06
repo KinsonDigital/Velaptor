@@ -1,4 +1,4 @@
-// <copyright file="SoundCacheTests.cs" company="KinsonDigital">
+// <copyright file="AudioCacheTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,9 +24,9 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SoundCache"/> class.
+/// Tests the <see cref="AudioCache"/> class.
 /// </summary>
-public class SoundCacheTests
+public class AudioCacheTests
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
@@ -41,9 +41,9 @@ public class SoundCacheTests
     private readonly Mock<IReactableFactory> mockReactableFactory;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundCacheTests"/> class.
+    /// Initializes a new instance of the <see cref="AudioCacheTests"/> class.
     /// </summary>
-    public SoundCacheTests()
+    public AudioCacheTests()
     {
         this.mockAudioFactory = new Mock<IAudioFactory>();
         this.mockFile = new Mock<IFile>();
@@ -79,7 +79,7 @@ public class SoundCacheTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundCache(
+            _ = new AudioCache(
                 null,
                 this.mockFile.Object,
                 this.mockPath.Object,
@@ -98,7 +98,7 @@ public class SoundCacheTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundCache(
+            _ = new AudioCache(
                 this.mockAudioFactory.Object,
                 null,
                 this.mockPath.Object,
@@ -117,7 +117,7 @@ public class SoundCacheTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundCache(
+            _ = new AudioCache(
                 this.mockAudioFactory.Object,
                 this.mockFile.Object,
                 null,
@@ -136,7 +136,7 @@ public class SoundCacheTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundCache(
+            _ = new AudioCache(
                 this.mockAudioFactory.Object,
                 this.mockFile.Object,
                 this.mockPath.Object,
@@ -361,10 +361,10 @@ public class SoundCacheTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="SoundCache"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="AudioCache"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SoundCache CreateSystemUnderTest() =>
+    private AudioCache CreateSystemUnderTest() =>
         new (this.mockAudioFactory.Object,
             this.mockFile.Object,
             this.mockPath.Object,

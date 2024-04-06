@@ -1,4 +1,4 @@
-// <copyright file="SoundCache.cs" company="KinsonDigital">
+// <copyright file="AudioCache.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,7 +19,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Caches <see cref="IAudio"/> objects for retrieval at a later time.
 /// </summary>
-internal sealed class SoundCache : IItemCache<string, IAudio>
+internal sealed class AudioCache : IItemCache<string, IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
@@ -30,13 +30,13 @@ internal sealed class SoundCache : IItemCache<string, IAudio>
     private readonly IPushReactable<DisposeAudioData> disposeReactable;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundCache"/> class.
+    /// Initializes a new instance of the <see cref="AudioCache"/> class.
     /// </summary>
     /// <param name="audioFactory">Creates <see cref="IAudio"/> objects.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    public SoundCache(
+    public AudioCache(
         IAudioFactory audioFactory,
         IFile file,
         IPath path,
