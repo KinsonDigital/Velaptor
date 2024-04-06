@@ -72,18 +72,18 @@ public static class ContentExtensions
     }
 
     /// <summary>
-    /// Unloads the given <paramref name="sound"/>.
+    /// Unloads the given <paramref name="audio"/>.
     /// </summary>
     /// <param name="loader">The loader.</param>
-    /// <param name="sound">The content to unload.</param>
-    public static void Unload(this ILoader<IAudio> loader, IAudio? sound)
+    /// <param name="audio">The content to unload.</param>
+    public static void Unload(this ILoader<IAudio> loader, IAudio? audio)
     {
-        if (sound is null)
+        if (audio is null)
         {
             return;
         }
 
-        loader.Unload(sound.FilePath);
+        loader.Unload(audio.FilePath);
     }
 
     /// <summary>
