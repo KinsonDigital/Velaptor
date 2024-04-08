@@ -114,8 +114,6 @@ internal static class IoC
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
-        IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
         IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
 
         isInitialized = true;
@@ -302,7 +300,12 @@ internal static class IoC
     /// <summary>
     /// Sets up the container registration related to content.
     /// </summary>
-    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
+    private static void SetupContent()
+    {
+        IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
+        IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
+        IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
+    }
 
     /// <summary>
     /// Sets up the container registration related to reactables.
