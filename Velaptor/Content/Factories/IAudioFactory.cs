@@ -32,6 +32,7 @@ internal interface IAudioFactory
     /// Creates new audio from an audio file at the given <paramref name="filePath"/>.
     /// </summary>
     /// <param name="filePath">The path to the audio file.</param>
+    /// <param name="bufferType">The type of buffering to use.</param>
     /// <returns>The audio.</returns>
-    IAudio Create(string filePath);
+    IAudio Create(string filePath, AudioBuffer bufferType);
 }

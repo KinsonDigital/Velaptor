@@ -58,14 +58,15 @@ internal sealed class AudioFactory : IAudioFactory
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the CASL library.")]
-    public IAudio Create(string filePath)
+    public IAudio Create(string filePath, AudioBuffer bufferType)
+
     {
-        var newId = this.allAudio.Count <= 0
+        var cacheId = this.allAudio.Count <= 0
             ? 1
             : this.allAudio.Keys.Max() + 1;
 
-        this.allAudio.Add(newId, filePath);
+        this.allAudio.Add(cacheId, filePath);
 
-        return new Audio(this.disposeReactable, filePath, newId);
+        return new Audio(this.disposeReactable, filePath, cacheId, bufferType);
     }
 }
