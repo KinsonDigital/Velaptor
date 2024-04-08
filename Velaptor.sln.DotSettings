@@ -4,6 +4,7 @@
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=HeapView_002EObjectAllocation_002EPossible/@EntryIndexedValue">SUGGESTION</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=HeapView_002EObjectAllocation/@EntryIndexedValue">SUGGESTION</s:String>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_LIMIT/@EntryValue">145</s:Int64>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=CASL/@EntryIndexedValue">CASL</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=CCW/@EntryIndexedValue">CCW</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=CW/@EntryIndexedValue">CW</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=DPI/@EntryIndexedValue">DPI</s:String>
