@@ -9,7 +9,7 @@ using System.Numerics;
 using ImGuiNET;
 
 /// <inheritdoc/>
-internal sealed class ImGuiInvoker : IImGuiInvoker
+public sealed class ImGuiInvoker : IImGuiInvoker
 {
     /// <inheritdoc/>
     public ImGuiIOPtr GetIO() => ImGui.GetIO();

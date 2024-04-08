@@ -12,7 +12,7 @@ using ImGuiNET;
 /// <summary>
 /// Invokes <see cref="ImGui"/> functions.
 /// </summary>
-internal interface IImGuiInvoker
+public interface IImGuiInvoker
 {
     /// <summary>
     /// Gets the IO object for system and <see cref="ImGui"/> related settings and information.

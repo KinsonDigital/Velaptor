@@ -53,7 +53,6 @@
     <InternalsVisibleTo Include="MeasureTextPerf" />
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
-    <InternalsVisibleTo Include="VelaptorTesting" />
   </ItemGroup>
 
   <ItemGroup>
