@@ -2,9 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable InvokeAsExtensionMethod
 namespace VelaptorTests.ExtensionMethods;
 
 using FluentAssertions;
+using Helpers;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -17,11 +19,37 @@ using Xunit;
 public class ContentExtensionsTests
 {
     #region Method Tests
+    [Fact]
+    public void Load_WhenLoadingFontWithNullFontName_ThrowsException()
+    {
+        // Arrange
+        var mockFontLoader = Substitute.For<ILoader<IFont>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockFontLoader, null, 12);
+
+        // Assert
+        act.Should().ThrowArgNullException().WithNullParamMsg("fontName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingFontWithEmptyFontName_ThrowsException()
+    {
+        // Arrange
+        var mockFontLoader = Substitute.For<ILoader<IFont>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockFontLoader, string.Empty, 12);
+
+        // Assert
+        act.Should().ThrowArgException().WithEmptyStringParamMsg("fontName");
+    }
+
     [Theory]
     [InlineData("test-font", 12, "test-font.ttf|size:12")]
     [InlineData("test-font.ttf", 14, "test-font.ttf|size:14")]
     [InlineData("test-font.invalid-extension", 16, "test-font.ttf|size:16")]
-    public void Load_WhenInvokingILoaderOfTypeIFont_LoadsFont(string fontName, uint size, string expected)
+    public void Load_WhenLoadingFonts_LoadsFont(string fontName, uint size, string expected)
     {
         // Arrange
         var mockFont = Substitute.For<IFont>();
@@ -33,6 +61,84 @@ public class ContentExtensionsTests
 
         // Assert
         mockFontLoader.Received(1).Load(expected);
+    }
+
+    [Fact]
+    public void Load_WhenLoadingAtlasDataWithNullAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<IAtlasData>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, null);
+
+        // Assert
+        act.Should().ThrowArgNullException().WithNullParamMsg("atlasPathOrName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingAtlasDataWithEmptyAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<IAtlasData>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, string.Empty);
+
+        // Assert
+        act.Should().ThrowArgException().WithEmptyStringParamMsg("atlasPathOrName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingAudioWithNullAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<IAudio>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, null, AudioBuffer.Full);
+
+        // Assert
+        act.Should().ThrowArgNullException().WithNullParamMsg("audioPathOrName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingAudioWithEmptyAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<IAudio>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, string.Empty, AudioBuffer.Full);
+
+        // Assert
+        act.Should().ThrowArgException().WithEmptyStringParamMsg("audioPathOrName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingTexturesWithNullAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<ITexture>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, null);
+
+        // Assert
+        act.Should().ThrowArgNullException().WithNullParamMsg("texturePathOrName");
+    }
+
+    [Fact]
+    public void Load_WhenLoadingTexturesWithEmptyAtlasName_ThrowsException()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<ILoader<ITexture>>();
+
+        // Act
+        var act = () => ContentExtensions.Load(mockLoader, string.Empty);
+
+        // Assert
+        act.Should().ThrowArgException().WithEmptyStringParamMsg("texturePathOrName");
     }
 
     [Fact]

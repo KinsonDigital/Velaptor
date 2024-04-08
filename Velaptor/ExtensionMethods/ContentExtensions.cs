@@ -7,6 +7,7 @@ namespace Velaptor.ExtensionMethods;
 using System;
 using System.IO;
 using Content;
+using Content.Exceptions;
 using Content.Fonts;
 
 /// <summary>
@@ -39,6 +40,92 @@ public static class ContentExtensions
         fontName = $"{fontName}.ttf|size:{size}";
 
         return loader.Load(fontName);
+    }
+
+    /// <summary>
+    /// Loads texture atlas data using the given <paramref name="atlasPathOrName"/>.
+    /// </summary>
+    /// <param name="loader">The loader that loads the atlas data.</param>
+    /// <param name="atlasPathOrName">The content name or file path to the atlas data.</param>
+    /// <returns>The loaded atlas data.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlasPathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
+    /// <remarks>
+    /// Valid Values:
+    /// <list type="bullet">
+    ///     <item>MyAtlas</item>
+    ///     <item>C:/Atlas/MyAtlas.png</item>
+    ///     <item>C:/Atlas/MyAtlas.json</item>
+    /// </list>
+    ///
+    /// Invalid Values:
+    /// <list type="bullet">
+    ///     <item>C:/Atlas/MyAtlas</item>
+    ///     <item>C:/Atlas/MyAtlas.txt</item>
+    /// </list>
+    /// </remarks>
+    public static IAtlasData Load(this ILoader<IAtlasData> loader, string atlasPathOrName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(atlasPathOrName);
+
+        return loader.Load(atlasPathOrName);
+    }
+
+    /// <summary>
+    /// Loads the audio with the given name.
+    /// </summary>
+    /// <param name="loader">The loader that loads the texture.</param>
+    /// <param name="audioPathOrName">The full file path or name of the audio to load.</param>
+    /// <param name="bufferType">The type of buffer to use.</param>
+    /// <returns>The loaded audio.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="audioPathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
+    public static IAudio Load(this ILoader<IAudio> loader, string audioPathOrName, AudioBuffer bufferType)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(audioPathOrName);
+
+        audioPathOrName = $"{audioPathOrName}|{bufferType}";
+
+        return loader.Load(audioPathOrName);
+    }
+
+    /// <summary>
+    /// Loads a texture with the given <paramref name="texturePathOrName"/>.
+    /// </summary>
+    /// <param name="loader">The loader that loads the texture.</param>
+    /// <param name="texturePathOrName">The full file path or name of the texture to load.</param>
+    /// <returns>The loaded texture.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texturePathOrName"/> is null or empty.</exception>
+    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
+    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
+    /// <exception cref="PathTooLongException">
+    ///     The specified path, file name, or both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
+    public static ITexture Load(this ILoader<ITexture> loader, string texturePathOrName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(texturePathOrName);
+
+        return loader.Load(texturePathOrName);
     }
 
     /// <summary>
