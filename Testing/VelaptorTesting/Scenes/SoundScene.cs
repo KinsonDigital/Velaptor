@@ -35,7 +35,7 @@ public class SoundScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.soundLoader = ContentLoaderFactory.CreateAudioLoader();
-        this.sound = this.soundLoader.Load("test-song");
+        this.sound = this.soundLoader.Load("test-song", AudioBuffer.Stream);
 
         CreateInfoCtrls();
         CreateSoundCtrls();
@@ -167,7 +167,7 @@ public class SoundScene : SceneBase
             this.sound.Play();
 
             var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {this.sound.State.ToString()}";
+            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
         };
 
         var btnStop = TestingApp.Container.GetInstance<IButton>();
@@ -178,7 +178,7 @@ public class SoundScene : SceneBase
             this.sound.Stop();
 
             var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {this.sound.State.ToString()}";
+            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
         };
 
         var btnPause = TestingApp.Container.GetInstance<IButton>();
@@ -189,7 +189,7 @@ public class SoundScene : SceneBase
             this.sound.Pause();
 
             var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {this.sound.State.ToString()}";
+            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
         };
 
         var btnFastForward = TestingApp.Container.GetInstance<IButton>();
@@ -236,5 +236,22 @@ public class SoundScene : SceneBase
         this.grpSoundCtrls.Add(btnStop);
         this.grpSoundCtrls.Add(btnPlay);
         this.grpSoundCtrls.Add(chkRepeat);
+
+        return;
+
+        string GetState()
+        {
+            if (this.sound.IsPlaying)
+            {
+                return "Playing";
+            }
+
+            if (this.sound.IsPaused)
+            {
+                return "Stopped";
+            }
+
+            return this.sound.IsStopped ? "Stopped" : "Unknown";
+        }
     }
 }
