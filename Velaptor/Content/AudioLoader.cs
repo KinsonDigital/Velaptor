@@ -87,9 +87,27 @@ public sealed class AudioLoader : ILoader<IAudio>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     public IAudio Load(string contentPathOrName)
     {
+        const char metaDataSignifier = '|';
+
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        var isPathRooted = this.path.IsPathRooted(contentPathOrName);
+        if (contentPathOrName.DoesNotContain(metaDataSignifier))
+        {
+            throw new LoadAudioException("The audio file path must contain metadata.");
+        }
+
+        var wholeSections = contentPathOrName.Split(metaDataSignifier);
+        var contentFilePath = wholeSections[0];
+        var bufferTypeStr = wholeSections[1];
+
+        var parseSuccess = Enum.TryParse(bufferTypeStr, out AudioBuffer bufferType);
+
+        if (!parseSuccess)
+        {
+            throw new LoadAudioException("The audio buffer type could not be determined");
+        }
+
+        var isPathRooted = this.path.IsPathRooted(contentFilePath);
 
         if (!isPathRooted)
         {
@@ -102,8 +120,8 @@ public sealed class AudioLoader : ILoader<IAudio>
         }
 
         var filePath = isPathRooted
-            ? contentPathOrName
-            : this.audioPathResolver.ResolveFilePath(contentPathOrName);
+            ? contentFilePath
+            : this.audioPathResolver.ResolveFilePath(contentFilePath);
 
         if (!this.file.Exists(filePath))
         {
@@ -116,7 +134,7 @@ public sealed class AudioLoader : ILoader<IAudio>
 
         if (!isInvalidExtension)
         {
-            return this.audioCache.GetItem(filePath);
+            return this.audioCache.GetItem($"{filePath}|{bufferType}");
         }
 
         var exceptionMsg = $"The file '{filePath}' must be a audio file with";

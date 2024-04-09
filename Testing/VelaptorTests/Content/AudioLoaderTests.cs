@@ -186,6 +186,7 @@ public class AudioLoaderTests
         // Arrange
         const string invalidExtension = ".txt";
         const string invalidFilePath = $"{AudioDirPath}{AudioName}{invalidExtension}";
+        const string invalidFilePathWithMetaData = $"{invalidFilePath}|Stream";
         this.mockFile.Setup(m => m.Exists(invalidFilePath)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(invalidFilePath)).Returns(invalidExtension);
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
@@ -196,7 +197,7 @@ public class AudioLoaderTests
         var loader = CreateSystemUnderTest();
 
         // Act
-        var act = () => loader.Load(invalidFilePath);
+        var act = () => loader.Load(invalidFilePathWithMetaData);
 
         // Assert
         act.Should()
@@ -215,7 +216,7 @@ public class AudioLoaderTests
         var loader = CreateSystemUnderTest();
 
         // Act
-        var act = () => loader.Load(this.oggFilePath);
+        var act = () => loader.Load($"{this.oggFilePath}|Stream");
 
         // Assert
         act.Should()
@@ -235,7 +236,7 @@ public class AudioLoaderTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.Load("test-content");
+        sut.Load("test-content|Stream");
 
         // Assert
         this.mockAudioPathResolver.VerifyOnce(m => m.ResolveDirPath());
@@ -257,10 +258,10 @@ public class AudioLoaderTests
         var loader = CreateSystemUnderTest();
 
         // Act
-        loader.Load($"{contentName}{extension}");
+        loader.Load($"{contentName}{extension}|Stream");
 
         // Assert
-        this.mockAudioCache.Verify(m => m.GetItem(this.oggFilePath), Times.Once);
+        this.mockAudioCache.Verify(m => m.GetItem($"{this.oggFilePath}|Stream"), Times.Once);
         this.mockPath.VerifyOnce(m => m.IsPathRooted($"{contentName}{extension}"));
         this.mockAudioPathResolver.VerifyOnce(m => m.ResolveFilePath($"{contentName}{extension}"));
         this.mockFile.VerifyOnce(m => m.Exists(this.oggFilePath));
@@ -282,10 +283,10 @@ public class AudioLoaderTests
         var loader = CreateSystemUnderTest();
 
         // Act
-        loader.Load($"{contentName}{extension}");
+        loader.Load($"{contentName}{extension}|Stream");
 
         // Assert
-        this.mockAudioCache.Verify(m => m.GetItem(this.mp3FilePath), Times.Once);
+        this.mockAudioCache.Verify(m => m.GetItem($"{this.mp3FilePath}|Stream"), Times.Once);
         this.mockPath.VerifyOnce(m => m.IsPathRooted($"{contentName}{extension}"));
         this.mockAudioPathResolver.VerifyOnce(m => m.ResolveFilePath($"{contentName}{extension}"));
         this.mockFile.VerifyOnce(m => m.Exists(this.mp3FilePath));
@@ -303,7 +304,7 @@ public class AudioLoaderTests
         this.mockAudioPathResolver.Setup(m => m.ResolveFilePath(AudioName)).Returns(this.oggFilePath);
 
         var loader = CreateSystemUnderTest();
-        loader.Load(AudioName);
+        loader.Load($"{AudioName}|Stream");
 
         // Act
         loader.Unload(AudioName);
@@ -322,7 +323,7 @@ public class AudioLoaderTests
         this.mockAudioPathResolver.Setup(m => m.ResolveFilePath(this.oggFilePath)).Returns(this.oggFilePath);
 
         var loader = CreateSystemUnderTest();
-        loader.Load(this.oggFilePath);
+        loader.Load($"{this.oggFilePath}|Stream");
 
         // Act
         loader.Unload(this.oggFilePath);
