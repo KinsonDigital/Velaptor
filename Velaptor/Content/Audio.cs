@@ -179,10 +179,9 @@ public sealed class Audio : IAudio
     /// <inheritdoc cref="IAudio"/>
     public void Stop()
     {
-        // TODO: This is a temporary fix until the next bug release of CASL is done.
-        if (this.isDisposed || this.caslAudio.State == AudioState.Stopped)
+        if (this.isDisposed)
         {
-            return;
+            throw new ObjectDisposedException("Audio is disposed.");
         }
 
         this.caslAudio.Reset();
