@@ -91,9 +91,27 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
     /// </exception>
     public IAudio GetItem(string audioFilePath)
     {
+        const char metaDataSignifier = '|';
+
         ArgumentException.ThrowIfNullOrEmpty(audioFilePath);
 
-        var extension = this.path.GetExtension(audioFilePath);
+        if (audioFilePath.DoesNotContain(metaDataSignifier))
+        {
+            throw new LoadAudioException("The audio file path must contain metadata.");
+        }
+
+        var wholeSections = audioFilePath.Split(metaDataSignifier);
+        var contentFilePath = wholeSections[0];
+        var bufferTypeStr = wholeSections[1];
+
+        var parseSuccess = Enum.TryParse(bufferTypeStr, out AudioBuffer bufferType);
+
+        if (!parseSuccess)
+        {
+            throw new LoadAudioException("The audio buffer type could not be determined");
+        }
+
+        var extension = this.path.GetExtension(contentFilePath);
 
         if (extension != OggFileExtension && extension != Mp3FileExtension)
         {
@@ -103,14 +121,14 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
             throw new LoadAudioException(exceptionMsg);
         }
 
-        var cacheKey = audioFilePath;
+        var cacheKey = contentFilePath;
 
-        if (this.file.Exists(audioFilePath))
+        if (this.file.Exists(contentFilePath))
         {
-            return this.allAudio.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath));
+            return this.allAudio.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath, bufferType));
         }
 
-        throw new FileNotFoundException($"The '{extension}' audio file does not exist.", audioFilePath);
+        throw new FileNotFoundException($"The '{extension}' audio file does not exist.", contentFilePath);
     }
 
     /// <inheritdoc/>

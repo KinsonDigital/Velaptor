@@ -156,7 +156,7 @@ public class AudioCacheTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.GetItem(OggAudioFilePath);
+        sut.GetItem($"{OggAudioFilePath}|Stream");
 
         // Act
         var actual = sut.TotalCachedItems;
@@ -171,7 +171,7 @@ public class AudioCacheTests
         // Arrange
         var expected = new[] { OggAudioFilePath }.AsReadOnly();
         var sut = CreateSystemUnderTest();
-        sut.GetItem(OggAudioFilePath);
+        sut.GetItem($"{OggAudioFilePath}|Stream");
 
         // Act
         var actual = sut.CacheKeys;
@@ -226,7 +226,7 @@ public class AudioCacheTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetItem(audioFilePath);
+        var act = () => sut.GetItem($"{audioFilePath}|Stream");
 
         // Assert
         act.Should().Throw<LoadAudioException>()
@@ -242,7 +242,7 @@ public class AudioCacheTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetItem(OggAudioFilePath);
+        var act = () => sut.GetItem($"{OggAudioFilePath}|Stream");
 
         // Assert
         act.Should().Throw<FileNotFoundException>()
@@ -258,7 +258,7 @@ public class AudioCacheTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.GetItem(Mp3AudioFilePath);
+        var act = () => sut.GetItem($"{Mp3AudioFilePath}|Stream");
 
         // Assert
         act.Should().Throw<FileNotFoundException>()
@@ -279,16 +279,16 @@ public class AudioCacheTests
         mockOggAudio.SetupGet(p => p.FilePath).Returns(OggAudioFilePath);
         mockOggAudio.SetupGet(p => p.Id).Returns(456u);
 
-        this.mockAudioFactory.Setup(m => m.Create(Mp3AudioFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(Mp3AudioFilePath, AudioBuffer.Stream))
             .Returns(mockMp3Audio.Object);
-        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath, AudioBuffer.Full))
             .Returns(mockOggAudio.Object);
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        var mp3 = sut.GetItem(Mp3AudioFilePath);
-        var ogg = sut.GetItem(OggAudioFilePath);
+        var mp3 = sut.GetItem($"{Mp3AudioFilePath}|Stream");
+        var ogg = sut.GetItem($"{OggAudioFilePath}|Full");
 
         // Assert
         mp3.Should().NotBeNull();
@@ -314,7 +314,7 @@ public class AudioCacheTests
         var mockAudio = new Mock<IAudio>();
         mockAudio.SetupGet(p => p.Id).Returns(123u);
 
-        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath))
+        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath, AudioBuffer.Full))
             .Returns(mockAudio.Object);
 
         this.mockDisposeReactable.Setup(m =>
@@ -326,7 +326,7 @@ public class AudioCacheTests
             });
 
         var sut = CreateSystemUnderTest();
-        _ = sut.GetItem(OggAudioFilePath);
+        _ = sut.GetItem($"{OggAudioFilePath}|Full");
 
         // Act
         var act = () => sut.Unload(OggAudioFilePath);
@@ -349,7 +349,7 @@ public class AudioCacheTests
         mockAudio.SetupGet(p => p.Id).Returns(123u);
 
         var sut = CreateSystemUnderTest();
-        sut.GetItem(OggAudioFilePath);
+        sut.GetItem($"{OggAudioFilePath}|Stream");
 
         // Act
         sut.Unload("non-existing-texture");
