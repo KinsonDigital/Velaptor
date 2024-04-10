@@ -159,6 +159,17 @@ public class AudioScene : SceneBase
 
     private void CreateAudioCtrls()
     {
+        var sldVolume = TestingApp.Container.GetInstance<ISlider>();
+        sldVolume.Name = nameof(sldVolume);
+        sldVolume.Min = 0f;
+        sldVolume.Max = 100f;
+        sldVolume.Value = 100f;
+        sldVolume.Text = "Volume";
+        sldVolume.ValueChanged += (_, value) =>
+        {
+            this.audio.Volume = value;
+        };
+
         var btnPlay = TestingApp.Container.GetInstance<IButton>();
         btnPlay.Name = nameof(btnPlay);
         btnPlay.Text = "Play";
@@ -230,6 +241,8 @@ public class AudioScene : SceneBase
                 WindowCenter.X + WindowPadding,
                 WindowCenter.Y - this.grpAudioCtrls.HalfHeight);
         };
+
+        this.grpAudioCtrls.Add(sldVolume);
         this.grpAudioCtrls.Add(btnRewind);
         this.grpAudioCtrls.Add(btnFastForward);
         this.grpAudioCtrls.Add(btnPause);
