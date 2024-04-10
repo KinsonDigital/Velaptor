@@ -50,7 +50,7 @@ public class FontShaderTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(reactor => new Mock<IDisposable>().Object)
+            .Returns<IReceiveSubscription>(_ => new Mock<IDisposable>().Object)
             .Callback<IReceiveSubscription>(reactor =>
             {
                 if (reactor.Id == PushNotifications.GLInitializedId)
