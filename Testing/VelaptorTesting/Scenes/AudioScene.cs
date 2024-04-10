@@ -23,6 +23,7 @@ public class AudioScene : SceneBase
     private BackgroundManager? backgroundManager;
     private ILoader<IAudio>? loader;
     private IAudio? audio;
+    private ISlider sldPosition;
     private string? lblCurrentTimeName;
     private string? lblStateName;
     private string? lblRepeatsName;
@@ -53,6 +54,8 @@ public class AudioScene : SceneBase
 
         var lblCurrentTimeCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblCurrentTimeName);
         lblCurrentTimeCtrl.Text = $"Current Time: {currentTime}";
+
+        this.sldPosition.Value = (float)this.audio.Position.TotalSeconds;
 
         base.Update(frameTime);
     }
@@ -170,6 +173,16 @@ public class AudioScene : SceneBase
             this.audio.Volume = value;
         };
 
+        this.sldPosition = TestingApp.Container.GetInstance<ISlider>();
+        this.sldPosition.Name = nameof(this.sldPosition);
+        this.sldPosition.Min = 0f;
+        this.sldPosition.Max = (float)this.audio.Length.TotalSeconds;
+        this.sldPosition.Text = "Position";
+        this.sldPosition.ValueChanged += (_, value) =>
+        {
+            this.audio.SetTimePosition(value);
+        };
+
         var btnPlay = TestingApp.Container.GetInstance<IButton>();
         btnPlay.Name = nameof(btnPlay);
         btnPlay.Text = "Play";
@@ -243,6 +256,7 @@ public class AudioScene : SceneBase
         };
 
         this.grpAudioCtrls.Add(sldVolume);
+        this.grpAudioCtrls.Add(this.sldPosition);
         this.grpAudioCtrls.Add(btnRewind);
         this.grpAudioCtrls.Add(btnFastForward);
         this.grpAudioCtrls.Add(btnPause);
