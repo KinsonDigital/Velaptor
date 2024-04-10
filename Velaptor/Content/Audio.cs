@@ -49,141 +49,118 @@ public sealed class Audio : IAudio
     /// <inheritdoc cref="IAudio"/>
     public float Volume
     {
-        get => this.caslAudio.Volume;
+        get => this.isDisposed ? 0 : this.caslAudio.Volume;
         set
         {
-            if (this.isDisposed)
-            {
-                throw new ObjectDisposedException("Audio is disposed.");
-            }
-
+            ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
             this.caslAudio.Volume = value;
         }
     }
 
     /// <inheritdoc cref="IAudio"/>
-    public TimeSpan Position => new (0, 0, 0, 0, (int)this.caslAudio.Position.Milliseconds);
+    public TimeSpan Position =>
+        this.isDisposed ? default : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Position.Milliseconds);
 
     /// <inheritdoc cref="IAudio"/>
-    public TimeSpan Length => new (0, 0, 0, 0, (int)this.caslAudio.Length.Milliseconds);
+    public TimeSpan Length =>
+        this.isDisposed ? default : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Length.Milliseconds);
 
     /// <inheritdoc cref="IAudio"/>
     public bool IsLooping
     {
-        get => this.caslAudio.IsLooping;
+        get => !this.isDisposed && this.caslAudio.IsLooping;
         set
         {
-            if (this.isDisposed)
-            {
-                throw new ObjectDisposedException("Audio is disposed.");
-            }
-
+            ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
             this.caslAudio.IsLooping = value;
         }
     }
 
     /// <inheritdoc cref="IAudio"/>
-    public bool IsPlaying => this.caslAudio.State == AudioState.Playing;
+    public bool IsPlaying => !this.isDisposed && this.caslAudio.State == AudioState.Playing;
 
     /// <inheritdoc cref="IAudio"/>
-    public bool IsPaused => this.caslAudio.State == AudioState.Paused;
+    public bool IsPaused => !this.isDisposed && this.caslAudio.State == AudioState.Paused;
 
     /// <inheritdoc cref="IAudio"/>
-    public bool IsStopped => this.caslAudio.State == AudioState.Stopped;
+    public bool IsStopped => this.isDisposed || this.caslAudio.State == AudioState.Stopped;
 
     /// <inheritdoc cref="IAudio"/>
-#pragma warning disable CS8524 // The switch expression does not handle some values of its input type involving an unnamed enum value.
-    public AudioBuffer BufferType => this.caslAudio.BufferType switch
-#pragma warning restore CS8524 // The switch expression does not handle some values of its input type involving an unnamed enum value.
+    public AudioBuffer BufferType
     {
-        CASL.BufferType.Full => AudioBuffer.Full,
-        CASL.BufferType.Stream => AudioBuffer.Stream,
-    };
+        get
+        {
+            if (this.isDisposed)
+            {
+                return AudioBuffer.Full;
+            }
+
+#pragma warning disable CS8524 // The switch expression does not handle some values of its input type involving an unnamed enum value.
+            return this.caslAudio.BufferType switch
+#pragma warning restore CS8524 // The switch expression does not handle some values of its input type involving an unnamed enum value.
+            {
+                CASL.BufferType.Full => AudioBuffer.Full,
+                CASL.BufferType.Stream => AudioBuffer.Stream,
+            };
+        }
+    }
 
     /// <inheritdoc cref="IAudio"/>
     public float PlaySpeed
     {
-        get => this.caslAudio.PlaySpeed;
+        get => this.isDisposed ? 0 : this.caslAudio.PlaySpeed;
         set
         {
-            if (this.isDisposed)
-            {
-                throw new ObjectDisposedException("Audio is disposed.");
-            }
-
+            ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
             this.caslAudio.PlaySpeed = value;
         }
     }
 
     /// <inheritdoc cref="IAudio"/>
-    public string Name => this.caslAudio.Name;
+    public string Name => this.isDisposed ? string.Empty : this.caslAudio.Name;
 
     /// <inheritdoc cref="IAudio"/>
-    public string FilePath => this.caslAudio.FilePath;
+    public string FilePath => this.isDisposed ? string.Empty : this.caslAudio.FilePath;
 
     /// <inheritdoc cref="IAudio"/>
     public void FastForward(float seconds)
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.FastForward(seconds);
     }
 
     /// <inheritdoc cref="IAudio"/>
     public void Pause()
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.Pause();
     }
 
     /// <inheritdoc cref="IAudio"/>
     public void Play()
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.Play();
     }
 
     /// <inheritdoc cref="IAudio"/>
     public void Rewind(float seconds)
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.Rewind(seconds);
     }
 
     /// <inheritdoc cref="IAudio"/>
     public void SetTimePosition(float seconds)
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.SetTimePosition(seconds);
     }
 
     /// <inheritdoc cref="IAudio"/>
     public void Stop()
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException("Audio is disposed.");
-        }
-
+        ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.Reset();
     }
 
@@ -196,7 +173,7 @@ public sealed class Audio : IAudio
     /// <param name="data">The data of the audio to dispose.</param>
     private void Dispose(DisposeAudioData data)
     {
-        if (this.isDisposed && Id != data.AudioId)
+        if (this.isDisposed || Id != data.AudioId)
         {
             return;
         }
