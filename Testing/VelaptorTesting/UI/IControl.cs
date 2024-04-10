@@ -38,12 +38,12 @@ public interface IControl : IDisposable
     int Height { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control is enabled.
+    /// Gets or sets a value indicating whether the control is enabled.
     /// </summary>
     bool Enabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control is visible.
+    /// Gets or sets a value indicating whether the control is visible.
     /// </summary>
     bool Visible { get; set; }
 }

@@ -91,7 +91,7 @@ internal abstract class ShaderProgram : IShaderProgram
     public uint BatchSize { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the <see cref="ShaderProgram"/> is disposed.
+    /// Gets or sets a value indicating whether the <see cref="ShaderProgram"/> is disposed.
     /// </summary>
     [SuppressMessage(
         "ReSharper",

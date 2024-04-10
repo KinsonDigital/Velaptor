@@ -15,14 +15,14 @@ internal static class KeyCodeExtensions
     private const char InvalidCharacter = '□';
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a letter key.
+    /// Returns a value indicating whether the key is a letter key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a letter key.</returns>
     public static bool IsLetterKey(this KeyCode key) => KeyboardKeyGroups.NoShiftLetterCharacters.ContainsKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a number key.
+    /// Returns a value indicating whether the key is a number key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a number key.</returns>
@@ -31,7 +31,7 @@ internal static class KeyCodeExtensions
         KeyboardKeyGroups.NoShiftStandardNumberCharacters.ContainsKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a symbol key.
+    /// Returns a value indicating whether the key is a symbol key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a symbol key.</returns>
@@ -40,35 +40,35 @@ internal static class KeyCodeExtensions
         KeyboardKeyGroups.WithShiftSymbolCharacters.ContainsKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a visible key.
+    /// Returns a value indicating whether the key is a visible key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a visible key.</returns>
     public static bool IsVisibleKey(this KeyCode key) => IsLetterKey(key) || IsNumberKey(key) || IsSymbolKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is not a visible key.
+    /// Returns a value indicating whether the key is not a visible key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is not a visible key.</returns>
     public static bool IsNotVisibleKey(this KeyCode key) => !IsVisibleKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is the left or right shift modifier key.
+    /// Returns a value indicating whether the key is the left or right shift modifier key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a shift key.</returns>
     public static bool IsShiftKey(this KeyCode key) => key is KeyCode.LeftShift or KeyCode.RightShift;
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is any of the arrow keys.
+    /// Returns a value indicating whether the key is any of the arrow keys.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is an arrow key.</returns>
     public static bool IsArrowKey(this KeyCode key) => key is KeyCode.Left or KeyCode.Right or KeyCode.Up or KeyCode.Down;
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is the left or right control modifier key.
+    /// Returns a value indicating whether the key is the left or right control modifier key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if it is a control key.</returns>
@@ -132,7 +132,7 @@ internal static class KeyCodeExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a move cursor key.
+    /// Returns a value indicating whether the key is a move cursor key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if a move cursor key.</returns>
@@ -151,14 +151,14 @@ internal static class KeyCodeExtensions
         };
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is not move cursor key.
+    /// Returns a value indicating whether the key is not move cursor key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if not a move cursor key.</returns>
     public static bool IsNotMoveCursorKey(this KeyCode key) => !IsMoveCursorKey(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is a deletion key.
+    /// Returns a value indicating whether the key is a deletion key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if a deletion key.</returns>
@@ -166,7 +166,7 @@ internal static class KeyCodeExtensions
     public static bool IsDeletionKey(this KeyCode key) => key is KeyCode.Delete or KeyCode.Backspace;
 
     /// <summary>
-    /// Returns a value indicating whether or not the key is not a deletion key.
+    /// Returns a value indicating whether the key is not a deletion key.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if not a deletion key.</returns>

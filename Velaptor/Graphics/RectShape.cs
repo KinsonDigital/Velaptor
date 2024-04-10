@@ -137,7 +137,7 @@ public record struct RectShape
     public Color Color { get; set; } = Color.White;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the rectangle is solid.
+    /// Gets or sets a value indicating whether the rectangle is solid.
     /// </summary>
     public bool IsSolid { get; set; } = true;
 
@@ -217,7 +217,7 @@ public record struct RectShape
     public Color GradientStop { get; set; } = Color.White;
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <see cref="Vector2"/> is contained within the rectangle shape.
+    /// Returns a value indicating whether the given <see cref="Vector2"/> is contained within the rectangle shape.
     /// </summary>
     /// <param name="vector">The possibly contained <see cref="Vector2"/>.</param>
     /// <returns><c>true</c> if the <paramref name="vector"/> is contained.</returns>
@@ -231,7 +231,7 @@ public record struct RectShape
         vector.Y <= Bottom;
 
     /// <summary>
-    /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
+    /// Returns a value indicating whether the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>

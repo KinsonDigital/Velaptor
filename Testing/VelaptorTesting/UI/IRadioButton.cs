@@ -22,7 +22,7 @@ public interface IRadioButton : IControl
     public string Text { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the radio button is selected.
+    /// Gets or sets a value indicating whether the radio button is selected.
     /// </summary>
     public bool IsSelected { get; set; }
 }

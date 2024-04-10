@@ -84,7 +84,7 @@ internal readonly struct ShapeVertexData
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the shape will be rendered as a solid shape.
+    /// Gets a value indicating whether the shape will be rendered as a solid shape.
     /// </summary>
     public bool IsSolid { get; }
 

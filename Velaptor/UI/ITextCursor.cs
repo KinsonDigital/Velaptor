@@ -39,7 +39,7 @@ internal interface ITextCursor
     Color Color { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the cursor is visible.
+    /// Gets or sets a value indicating whether the cursor is visible.
     /// </summary>
     bool Visible { get; set; }
 

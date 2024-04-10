@@ -37,7 +37,7 @@ public readonly record struct SystemDisplay
     }
 
     /// <summary>
-    /// Gets a value indicating whether or not the display is the primary display in the system.
+    /// Gets a value indicating whether the display is the primary display in the system.
     /// </summary>
     public bool IsMain { get; init; }
 

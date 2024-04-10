@@ -59,7 +59,7 @@ internal sealed class CachedValue<T>
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the value be cached.
+    /// Gets or sets a value indicating whether the value be cached.
     /// </summary>
     public bool IsCaching
     {

@@ -51,17 +51,17 @@ public interface IAudio : IContent, IDisposable
     bool IsLooping { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the audio is playing.
+    /// Gets a value indicating whether the audio is playing.
     /// </summary>
     bool IsPlaying { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the audio is paused.
+    /// Gets a value indicating whether the audio is paused.
     /// </summary>
     bool IsPaused { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the audio is stopped.
+    /// Gets a value indicating whether the audio is stopped.
     /// </summary>
     bool IsStopped { get; }
 

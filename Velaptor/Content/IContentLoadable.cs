@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 public interface IContentLoadable
 {
     /// <summary>
-    /// Gets a value indicating whether or not the content for an object is loaded.
+    /// Gets a value indicating whether the content for an object is loaded.
     /// </summary>
     [SuppressMessage(
         "ReSharper",

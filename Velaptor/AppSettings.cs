@@ -22,7 +22,7 @@ internal sealed record AppSettings
     public uint WindowHeight { get; init; } = 800;
 
     /// <summary>
-    /// Gets a value indicating whether or not all logging is enabled.
+    /// Gets a value indicating whether all logging is enabled.
     /// </summary>
 #if DEBUG || DEBUG_CONSOLE
     public bool LoggingEnabled { get; init; } = true;
@@ -31,12 +31,12 @@ internal sealed record AppSettings
 #endif
 
     /// <summary>
-    /// Gets a value indicating whether or not logging to the console is enabled.
+    /// Gets a value indicating whether logging to the console is enabled.
     /// </summary>
     public bool ConsoleLoggingEnabled { get; init; } = true;
 
     /// <summary>
-    /// Gets a value indicating whether or not logging to a file is enabled.
+    /// Gets a value indicating whether logging to a file is enabled.
     /// </summary>
     public bool FileLoggingEnabled { get; init; } = true;
 #pragma warning restore CA1822

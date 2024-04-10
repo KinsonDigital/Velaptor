@@ -35,7 +35,7 @@ internal static class UnitTestDetector
     }
 
     /// <summary>
-    /// Gets a value indicating whether or not the code is being executed from a unit test.
+    /// Gets a value indicating whether the code is being executed from a unit test.
     /// </summary>
     public static bool IsRunningFromUnitTest { get; }
 }

@@ -57,7 +57,7 @@ internal readonly record struct LineBatchItem
     public float Thickness { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="LineBatchItem"/> is empty.
+    /// Gets a value indicating whether the <see cref="LineBatchItem"/> is empty.
     /// </summary>
     /// <returns><c>true</c> if the item is empty.</returns>
     public bool IsEmpty() =>

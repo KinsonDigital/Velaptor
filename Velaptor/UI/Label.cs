@@ -117,7 +117,7 @@ public class Label : ControlBase
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the size of the <see cref="Label"/> will be
+    /// Gets or sets a value indicating whether the size of the <see cref="Label"/> will be
     /// managed automatically based on the size of the text.
     /// </summary>
     /// <remarks>

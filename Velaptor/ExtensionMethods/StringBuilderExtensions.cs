@@ -69,7 +69,7 @@ internal static class StringBuilderExtensions
     public static int LastCharIndex(this StringBuilder value) => value.Length <= 0 ? -1 : value.Length - 1;
 
     /// <summary>
-    /// Returns a value indicating whether or not the string is empty.
+    /// Returns a value indicating whether the string is empty.
     /// </summary>
     /// <param name="value">The string builder.</param>
     /// <returns><c>true</c> if the string is empty.</returns>

@@ -92,7 +92,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     protected internal uint BatchSize { get; protected set; } = 100;
 
     /// <summary>
-    /// Gets a value indicating whether or not the buffer has been initialized.
+    /// Gets a value indicating whether the buffer has been initialized.
     /// </summary>
     protected internal bool IsInitialized { get; private set; }
 
@@ -128,7 +128,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected uint VBO { get; private set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the buffer has been disposed.
+    /// Gets or sets a value indicating whether the buffer has been disposed.
     /// </summary>
     private bool IsDisposed { get; set; }
 

@@ -39,7 +39,7 @@ public interface IFont : IContent
     VelFontStyle Style { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the font is a default font.
+    /// Gets a value indicating whether the font is a default font.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool IsDefaultFont { get; }
@@ -56,7 +56,7 @@ public interface IFont : IContent
     string FamilyName { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the font has kerning for text rendering layout.
+    /// Gets a value indicating whether the font has kerning for text rendering layout.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool HasKerning { get; }
@@ -67,7 +67,7 @@ public interface IFont : IContent
     float LineSpacing { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not to cache the measurements of the text.
+    /// Gets or sets a value indicating whether to cache the measurements of the text.
     /// </summary>
     bool CacheEnabled { get; set; }
 

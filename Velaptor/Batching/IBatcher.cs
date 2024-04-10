@@ -17,7 +17,7 @@ public interface IBatcher
     Color ClearColor { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the batch process has begun.
+    /// Gets a value indicating whether the batch process has begun.
     /// </summary>
     bool HasBegun { get; }
 

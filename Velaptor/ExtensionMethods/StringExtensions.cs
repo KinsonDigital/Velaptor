@@ -18,7 +18,7 @@ internal static class StringExtensions
     private const char CrossPlatDirSeparatorChar = '/';
 
     /// <summary>
-    /// Determines whether or not this string instance starts with the specified character.
+    /// Determines whether this string instance starts with the specified character.
     /// </summary>
     /// <param name="stringToCheck">The string to check.</param>
     /// <param name="value">The character to compare.</param>
@@ -26,7 +26,7 @@ internal static class StringExtensions
     public static bool DoesNotStartWith(this string stringToCheck, char value) => !stringToCheck.StartsWith(value);
 
     /// <summary>
-    /// Determines whether or not this string instance starts with the specified string.
+    /// Determines whether this string instance starts with the specified string.
     /// </summary>
     /// <param name="stringToCheck">The string to check.</param>
     /// <param name="value">The string to compare.</param>
@@ -34,7 +34,7 @@ internal static class StringExtensions
     public static bool DoesNotStartWith(this string stringToCheck, string value) => !stringToCheck.StartsWith(value);
 
     /// <summary>
-    /// Determines whether or not the end of this string instance matches the specified character.
+    /// Determines whether the end of this string instance matches the specified character.
     /// </summary>
     /// <param name="stringToCheck">The string to check.</param>
     /// <param name="value">The character to compare to the character at the end of this instance.</param>
@@ -42,7 +42,7 @@ internal static class StringExtensions
     public static bool DoesNotEndWith(this string stringToCheck, char value) => !stringToCheck.EndsWith(value);
 
     /// <summary>
-    /// Determines whether or not the end of this string instance matches the specified string.
+    /// Determines whether the end of this string instance matches the specified string.
     /// </summary>
     /// <param name="stringToCheck">The string to check.</param>
     /// <param name="value">The string to compare to the character at the end of this instance.</param>
@@ -95,7 +95,7 @@ internal static class StringExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given file or directory path
+    /// Returns a value indicating whether the given file or directory path
     /// is only a root drive path with no directories or file names.
     /// </summary>
     /// <param name="fileOrDirPath">The path to check.</param>
@@ -167,7 +167,7 @@ internal static class StringExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
+    /// Returns a value indicating whether the given <paramref name="path"/> is a valid drive.
     /// </summary>
     /// <param name="path">Processes directory and file paths.</param>
     /// <returns>True if <paramref name="path"/> contains a valid drive.</returns>
@@ -210,7 +210,7 @@ internal static class StringExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <paramref name="dirPath"/> is valid.
+    /// Returns a value indicating whether the given <paramref name="dirPath"/> is valid.
     /// </summary>
     /// <param name="dirPath">The directory path to check.</param>
     /// <returns>True if the <paramref name="dirPath"/> is valid.</returns>
@@ -247,7 +247,7 @@ internal static class StringExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <paramref name="path"/> is valid.
+    /// Returns a value indicating whether the given <paramref name="path"/> is valid.
     /// </summary>
     /// <param name="path">Processes directory and file paths.</param>
     /// <returns>True if the <paramref name="path"/> is valid.</returns>
