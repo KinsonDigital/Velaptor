@@ -1,4 +1,4 @@
-// <copyright file="SoundScene.cs" company="KinsonDigital">
+// <copyright file="AudioScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,18 +15,18 @@ using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Scene;
 
-public class SoundScene : SceneBase
+public class AudioScene : SceneBase
 {
     private const int WindowPadding = 10;
     private IControlGroup? grpInfoCtrls;
-    private IControlGroup? grpSoundCtrls;
+    private IControlGroup? grpAudioCtrls;
     private BackgroundManager? backgroundManager;
-    private ILoader<IAudio>? soundLoader;
-    private IAudio? sound;
+    private ILoader<IAudio>? loader;
+    private IAudio? audio;
     private string? lblCurrentTimeName;
-    private string? lblSoundStateName;
-    private string? lblSoundRepeatsName;
-    private string? lblSoundLengthName;
+    private string? lblStateName;
+    private string? lblRepeatsName;
+    private string? lblLengthName;
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -34,11 +34,11 @@ public class SoundScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.soundLoader = ContentLoaderFactory.CreateAudioLoader();
-        this.sound = this.soundLoader.Load("test-song", AudioBuffer.Stream);
+        this.loader = ContentLoaderFactory.CreateAudioLoader();
+        this.audio = this.loader.Load("test-song", AudioBuffer.Stream);
 
         CreateInfoCtrls();
-        CreateSoundCtrls();
+        CreateAudioCtrls();
 
         base.LoadContent();
     }
@@ -46,13 +46,13 @@ public class SoundScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
-        var currentSoundTime = GetFormattedSoundTime(this.sound.Position.Minutes, this.sound.Position.Seconds);
+        var currentTime = GetFormattedTime(this.audio.Position.Minutes, this.audio.Position.Seconds);
 
-        var lblSoundLengthCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundLengthName);
-        lblSoundLengthCtrl.Text = $"Sound Length: {GetFormattedSoundTime(this.sound.Length.Minutes, this.sound.Length.Seconds)}";
+        var lblLengthCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblLengthName);
+        lblLengthCtrl.Text = $"Audio Length: {GetFormattedTime(this.audio.Length.Minutes, this.audio.Length.Seconds)}";
 
         var lblCurrentTimeCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblCurrentTimeName);
-        lblCurrentTimeCtrl.Text = $"Current Time: {currentSoundTime}";
+        lblCurrentTimeCtrl.Text = $"Current Time: {currentTime}";
 
         base.Update(frameTime);
     }
@@ -62,7 +62,7 @@ public class SoundScene : SceneBase
         this.backgroundManager?.Render();
 
         this.grpInfoCtrls.Render();
-        this.grpSoundCtrls.Render();
+        this.grpAudioCtrls.Render();
 
         base.Render();
     }
@@ -75,18 +75,18 @@ public class SoundScene : SceneBase
             return;
         }
 
-        if (this.sound is not null)
+        if (this.audio is not null)
         {
-            this.sound.Stop();
-            this.soundLoader.Unload(this.sound);
+            this.audio.Stop();
+            this.loader.Unload(this.audio);
         }
 
         this.backgroundManager?.Unload();
 
         this.grpInfoCtrls.Dispose();
-        this.grpSoundCtrls.Dispose();
+        this.grpAudioCtrls.Dispose();
         this.grpInfoCtrls = null;
-        this.grpSoundCtrls = null;
+        this.grpAudioCtrls = null;
 
         base.UnloadContent();
     }
@@ -97,7 +97,7 @@ public class SoundScene : SceneBase
     /// <param name="minutes">The minutes of the time.</param>
     /// <param name="seconds">The seconds of the time.</param>
     /// <returns>The formatted time.</returns>
-    private static string GetFormattedSoundTime(float minutes, float seconds)
+    private static string GetFormattedTime(float minutes, float seconds)
     {
         var minuteStr = ((int)minutes).ToString(CultureInfo.InvariantCulture);
         var secondStr = Math.Round(seconds, 0).ToString(CultureInfo.InvariantCulture);
@@ -117,30 +117,30 @@ public class SoundScene : SceneBase
     {
         var lblDesc = TestingApp.Container.GetInstance<ILabel>();
         lblDesc.Name = nameof(lblDesc);
-        lblDesc.Text = "Use the sound controls to manipulate the sound.";
+        lblDesc.Text = "Use the audio controls to manipulate the audio.";
 
-        var lblSoundState = TestingApp.Container.GetInstance<ILabel>();
-        lblSoundState.Name = nameof(lblSoundState);
-        this.lblSoundStateName = nameof(lblSoundState);
-        lblSoundState.Text = "Sound State: Stopped";
+        var lblState = TestingApp.Container.GetInstance<ILabel>();
+        lblState.Name = nameof(lblState);
+        this.lblStateName = nameof(lblState);
+        lblState.Text = "Audio State: Stopped";
 
         var lblCurrentTime = TestingApp.Container.GetInstance<ILabel>();
         this.lblCurrentTimeName = nameof(lblCurrentTime);
         lblCurrentTime.Name = nameof(lblCurrentTime);
         lblCurrentTime.Text = "Current Time: 00:00";
 
-        var lblSoundLength = TestingApp.Container.GetInstance<ILabel>();
-        this.lblSoundLengthName = nameof(lblSoundLength);
-        lblSoundLength.Name = nameof(lblSoundLength);
-        lblSoundLength.Text = "Sound Length: 00:00";
+        var lblLength = TestingApp.Container.GetInstance<ILabel>();
+        this.lblLengthName = nameof(lblLength);
+        lblLength.Name = nameof(lblLength);
+        lblLength.Text = "Audio Length: 00:00";
 
-        var lblSoundRepeats = TestingApp.Container.GetInstance<ILabel>();
-        lblSoundRepeats.Name = nameof(lblSoundRepeats);
-        this.lblSoundRepeatsName = nameof(lblSoundRepeats);
-        lblSoundRepeats.Text = "Repeat Enabled: no";
+        var lblRepeats = TestingApp.Container.GetInstance<ILabel>();
+        lblRepeats.Name = nameof(lblRepeats);
+        this.lblRepeatsName = nameof(lblRepeats);
+        lblRepeats.Text = "Repeat Enabled: no";
 
         this.grpInfoCtrls = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpInfoCtrls.Title = "Sound Info";
+        this.grpInfoCtrls.Title = "Audio Info";
         this.grpInfoCtrls.AutoSizeToFitContent = true;
         this.grpInfoCtrls.TitleBarVisible = false;
         this.grpInfoCtrls.Initialized += (_, _) =>
@@ -150,24 +150,24 @@ public class SoundScene : SceneBase
                 WindowCenter.Y - this.grpInfoCtrls.HalfHeight);
         };
 
-        this.grpInfoCtrls.Add(lblSoundRepeats);
-        this.grpInfoCtrls.Add(lblSoundLength);
+        this.grpInfoCtrls.Add(lblRepeats);
+        this.grpInfoCtrls.Add(lblLength);
         this.grpInfoCtrls.Add(lblCurrentTime);
-        this.grpInfoCtrls.Add(lblSoundState);
+        this.grpInfoCtrls.Add(lblState);
         this.grpInfoCtrls.Add(lblDesc);
     }
 
-    private void CreateSoundCtrls()
+    private void CreateAudioCtrls()
     {
         var btnPlay = TestingApp.Container.GetInstance<IButton>();
         btnPlay.Name = nameof(btnPlay);
         btnPlay.Text = "Play";
         btnPlay.Click += (_, _) =>
         {
-            this.sound.Play();
+            this.audio.Play();
 
-            var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
+            var lblStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblStateName);
+            lblStateCtrl.Text = $"Audio State: {GetState()}";
         };
 
         var btnStop = TestingApp.Container.GetInstance<IButton>();
@@ -175,10 +175,10 @@ public class SoundScene : SceneBase
         btnStop.Text = "Stop";
         btnStop.Click += (_, _) =>
         {
-            this.sound.Stop();
+            this.audio.Stop();
 
-            var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
+            var lblStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblStateName);
+            lblStateCtrl.Text = $"Audio State: {GetState()}";
         };
 
         var btnPause = TestingApp.Container.GetInstance<IButton>();
@@ -186,10 +186,10 @@ public class SoundScene : SceneBase
         btnPause.Text = "Pause";
         btnPause.Click += (_, _) =>
         {
-            this.sound.Pause();
+            this.audio.Pause();
 
-            var lblSoundStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundStateName);
-            lblSoundStateCtrl.Text = $"Sound State: {GetState()}";
+            var lblStateCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblStateName);
+            lblStateCtrl.Text = $"Audio State: {GetState()}";
         };
 
         var btnFastForward = TestingApp.Container.GetInstance<IButton>();
@@ -197,7 +197,7 @@ public class SoundScene : SceneBase
         btnFastForward.Text = "Fast Forward 10 Sec";
         btnFastForward.Click += (_, _) =>
         {
-            this.sound.FastForward(10f);
+            this.audio.FastForward(10f);
         };
 
         var btnRewind = TestingApp.Container.GetInstance<IButton>();
@@ -205,7 +205,7 @@ public class SoundScene : SceneBase
         btnRewind.Text = "Rewind 10 Sec";
         btnRewind.Click += (_, _) =>
         {
-            this.sound.Rewind(10f);
+            this.audio.Rewind(10f);
         };
 
         var chkRepeat = TestingApp.Container.GetInstance<ICheckBox>();
@@ -214,44 +214,44 @@ public class SoundScene : SceneBase
         chkRepeat.LabelWhenUnchecked = "Do Not Repeat";
         chkRepeat.CheckedChanged += (_, isChecked) =>
         {
-            this.sound.IsLooping = isChecked;
+            this.audio.IsLooping = isChecked;
 
-            var lblSoundRepeatsCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblSoundRepeatsName);
-            lblSoundRepeatsCtrl.Text = $"Repeat Enabled: {(this.sound.IsLooping ? "yes" : "no")}";
+            var lblRepeatsCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblRepeatsName);
+            lblRepeatsCtrl.Text = $"Repeat Enabled: {(this.audio.IsLooping ? "yes" : "no")}";
         };
 
-        this.grpSoundCtrls = TestingApp.Container.GetInstance<IControlGroup>();
-        this.grpSoundCtrls.Title = "Sound Controls";
-        this.grpSoundCtrls.AutoSizeToFitContent = true;
-        this.grpSoundCtrls.TitleBarVisible = false;
-        this.grpSoundCtrls.Initialized += (_, _) =>
+        this.grpAudioCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpAudioCtrls.Title = "Audio Controls";
+        this.grpAudioCtrls.AutoSizeToFitContent = true;
+        this.grpAudioCtrls.TitleBarVisible = false;
+        this.grpAudioCtrls.Initialized += (_, _) =>
         {
-            this.grpSoundCtrls.Position = new Point(
+            this.grpAudioCtrls.Position = new Point(
                 WindowCenter.X + WindowPadding,
-                WindowCenter.Y - this.grpSoundCtrls.HalfHeight);
+                WindowCenter.Y - this.grpAudioCtrls.HalfHeight);
         };
-        this.grpSoundCtrls.Add(btnRewind);
-        this.grpSoundCtrls.Add(btnFastForward);
-        this.grpSoundCtrls.Add(btnPause);
-        this.grpSoundCtrls.Add(btnStop);
-        this.grpSoundCtrls.Add(btnPlay);
-        this.grpSoundCtrls.Add(chkRepeat);
+        this.grpAudioCtrls.Add(btnRewind);
+        this.grpAudioCtrls.Add(btnFastForward);
+        this.grpAudioCtrls.Add(btnPause);
+        this.grpAudioCtrls.Add(btnStop);
+        this.grpAudioCtrls.Add(btnPlay);
+        this.grpAudioCtrls.Add(chkRepeat);
 
         return;
 
         string GetState()
         {
-            if (this.sound.IsPlaying)
+            if (this.audio.IsPlaying)
             {
                 return "Playing";
             }
 
-            if (this.sound.IsPaused)
+            if (this.audio.IsPaused)
             {
                 return "Stopped";
             }
 
-            return this.sound.IsStopped ? "Stopped" : "Unknown";
+            return this.audio.IsStopped ? "Stopped" : "Unknown";
         }
     }
 }
