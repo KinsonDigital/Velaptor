@@ -61,77 +61,77 @@ public class MainWindow : Window
 
         this.grpSceneCtrls.Add(nextPrevious);
 
-        // var textRenderingScene = new TextRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(TextRenderingScene)),
-        // };
-        //
-        // var layeredTextRenderingScene = new LayeredTextRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
-        // };
-        //
-        // var keyboardScene = new KeyboardScene
-        // {
-        //     Name = SplitByUpperCase(nameof(KeyboardScene)),
-        // };
-        //
-        // var mouseScene = new MouseScene
-        // {
-        //     Name = SplitByUpperCase(nameof(MouseScene)),
-        // };
-        //
-        // var layeredRenderingScene = new LayeredTextureRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
-        // };
-        //
-        // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
-        // {
-        //     Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
-        // };
-        //
-        // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
-        // {
-        //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
-        // };
-        //
-        // var shapeScene = new ShapeScene
-        // {
-        //     Name = SplitByUpperCase(nameof(ShapeScene)),
-        // };
-        //
-        // var layeredRectScene = new LayeredRectRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
-        // };
-        //
-        // var lineScene = new LineRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LineRenderingScene)),
-        // };
-        //
-        // var layeredLineScene = new LayeredLineRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
-        // };
+        var textRenderingScene = new TextRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(TextRenderingScene)),
+        };
+
+        var layeredTextRenderingScene = new LayeredTextRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        };
+
+        var keyboardScene = new KeyboardScene
+        {
+            Name = SplitByUpperCase(nameof(KeyboardScene)),
+        };
+
+        var mouseScene = new MouseScene
+        {
+            Name = SplitByUpperCase(nameof(MouseScene)),
+        };
+
+        var layeredRenderingScene = new LayeredTextureRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
+        };
+
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
+        {
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        };
+
+        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
+        {
+            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
+        };
+
+        var shapeScene = new ShapeScene
+        {
+            Name = SplitByUpperCase(nameof(ShapeScene)),
+        };
+
+        var layeredRectScene = new LayeredRectRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
+        };
+
+        var lineScene = new LineRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LineRenderingScene)),
+        };
+
+        var layeredLineScene = new LayeredLineRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
+        };
 
         var audioScene = new AudioScene
         {
             Name = SplitByUpperCase(nameof(AudioScene)),
         };
 
-        // SceneManager.AddScene(textRenderingScene, true);
-        // SceneManager.AddScene(layeredTextRenderingScene);
-        // SceneManager.AddScene(keyboardScene);
-        // SceneManager.AddScene(mouseScene);
-        // SceneManager.AddScene(layeredRenderingScene);
-        // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
-        // SceneManager.AddScene(renderAnimatedGraphicsScene);
-        // SceneManager.AddScene(shapeScene);
-        // SceneManager.AddScene(layeredRectScene);
-        // SceneManager.AddScene(lineScene);
-        // SceneManager.AddScene(layeredLineScene);
+        SceneManager.AddScene(textRenderingScene, true);
+        SceneManager.AddScene(layeredTextRenderingScene);
+        SceneManager.AddScene(keyboardScene);
+        SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(layeredRenderingScene);
+        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        SceneManager.AddScene(renderAnimatedGraphicsScene);
+        SceneManager.AddScene(shapeScene);
+        SceneManager.AddScene(layeredRectScene);
+        SceneManager.AddScene(lineScene);
+        SceneManager.AddScene(layeredLineScene);
         SceneManager.AddScene(audioScene);
     }
 
