@@ -38,7 +38,7 @@ public sealed class AtlasData : IAtlasData
     ///     Thrown if any of the constructor parameters are null.
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="dirPath"/> does not exist.</exception>
-    public AtlasData(
+    internal AtlasData(
         IItemCache<string, ITexture> textureCache,
         IDirectory directory,
         IPath path,
