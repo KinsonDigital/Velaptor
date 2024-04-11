@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageDataTests.cs" company="KinsonDigital">
+// <copyright file="ImageDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -42,7 +42,7 @@ public class ImageDataTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImageData(new Color[1, 2], 11, 2);
+            _ = new ImageData(null);
         };
 
         // Assert
@@ -70,7 +70,7 @@ public class ImageDataTests
     public void Ctor_WhenInvoked_FlipStatesSetToCorrectValues()
     {
         // Arrange
-        var sut = new ImageData(new Color[2, 2], 2, 2);
+        var sut = new ImageData(new Color[2, 2]);
 
         // Act
         var actualHorizontalFlip = sut.IsFlippedHorizontally;
@@ -87,7 +87,7 @@ public class ImageDataTests
     public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string? filePath)
     {
         // Arrange & Act
-        var sut = new ImageData(null, 1, 1, filePath);
+        var sut = new ImageData(new Color[1, 1], filePath);
 
         // Assert
         sut.FilePath.Should().BeEmpty();
@@ -159,7 +159,7 @@ public class ImageDataTests
     public void FlipHorizontally_WhenInvoked_FlipsImageHorizontally()
     {
         // Arrange
-        var sut = new ImageData(new Color[4, 4], 4, 4);
+        var sut = new ImageData(new Color[4, 4]);
 
         // Set the first 2 columns to blue
         sut = TestHelpers.SetColumnColorTo(sut, 0, Color.Blue);
@@ -188,7 +188,7 @@ public class ImageDataTests
     public void FlipVertically_WhenInvoked_FlipsImageVertically()
     {
         // Arrange
-        var sut = new ImageData(new Color[4, 4], 4, 4);
+        var sut = new ImageData(new Color[4, 4]);
 
         // Set the first 2 rows to blue
         sut = TestHelpers.SetRowColorTo(sut, 0, Color.Blue);
@@ -271,8 +271,8 @@ public class ImageDataTests
     public void Equals_WhenFilePathsAreNotEqual_ReturnsFalse()
     {
         // Arrange
-        var sutA = new ImageData(new Color[2, 2], 2, 2, "itemA");
-        var sutB = new ImageData(new Color[2, 2], 2, 2, "itemB");
+        var sutA = new ImageData(new Color[2, 2], "itemA");
+        var sutB = new ImageData(new Color[2, 2], "itemB");
 
         // Act
         var actual = sutA.Equals(sutB);
@@ -369,8 +369,8 @@ public class ImageDataTests
     public void EqualsOperator_WhenBothPixelLengthsAreNotEqual_ReturnsFalse()
     {
         // Arrange
-        var imageDataA = new ImageData(new Color[2, 2], 2, 2);
-        var imageDataB = new ImageData(new Color[3, 3], 3, 3);
+        var imageDataA = new ImageData(new Color[2, 2]);
+        var imageDataB = new ImageData(new Color[3, 3]);
 
         // Act
         var actual = imageDataA == imageDataB;
@@ -414,7 +414,7 @@ public class ImageDataTests
     public void IsEmpty_WhenEmpty_ReturnsCorrectResult(uint width, uint height, bool expected)
     {
         // Arrange
-        var data = new ImageData(null, width, height);
+        var sut = new ImageData(new Color[width, height]);
 
         // Act
         var actual = data.IsEmpty();
@@ -430,7 +430,7 @@ public class ImageDataTests
     public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string? filePath, string expected)
     {
         // Arrange
-        var sut = new ImageData(new Color[width, height], width, height, filePath);
+        var sut = new ImageData(new Color[width, height], filePath);
 
         // Act
         var actual = sut.ToString();

@@ -71,9 +71,7 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         this.facePtr = this.fontService.CreateFontFace(fontFilePath);
 
-        this.fontService.SetFontSize(
-            this.facePtr,
-            sizeInPoints);
+        this.fontService.SetFontSize(this.facePtr, sizeInPoints);
 
         var glyphIndices = this.fontService.GetGlyphIndices(this.facePtr, this.glyphChars);
 
@@ -83,10 +81,7 @@ internal sealed class FontAtlasService : IFontAtlasService
 
         var atlasMetrics = CalcAtlasMetrics(glyphImages);
 
-        var atlasImage = new ImageData(
-            new NETColor[atlasMetrics.Width, atlasMetrics.Height],
-            atlasMetrics.Width,
-            atlasMetrics.Height);
+        var atlasImage = new ImageData(new NETColor[atlasMetrics.Width, atlasMetrics.Height]);
 
         glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, atlasMetrics.Columns);
 
@@ -206,11 +201,11 @@ internal sealed class FontAtlasService : IFontAtlasService
             }
         }
 
-        return new ImageData(imageData, width, height);
+        return new ImageData(imageData);
     }
 
     /// <summary>
-    /// Creates all of the glyph images for each glyph.
+    /// Creates all the glyph images for each glyph.
     /// </summary>
     /// <param name="glyphIndices">The glyph index for each glyph.</param>
     /// <returns>The glyph image data for each glyph/character.</returns>

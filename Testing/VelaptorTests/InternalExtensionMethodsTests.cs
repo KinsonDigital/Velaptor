@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -35,7 +35,7 @@ public class InternalExtensionMethodsTests
     public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
-        var imageData = new ImageData(new NETColor[2, 3], 2, 3);
+        var imageData = new ImageData(new NETColor[2, 3]);
 
         var expectedPixels = new Rgba32[2, 3];
 

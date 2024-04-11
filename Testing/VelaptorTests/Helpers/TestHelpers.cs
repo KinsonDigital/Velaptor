@@ -52,7 +52,7 @@ public static class TestHelpers
     /// <param name="filePath">The path to the file where the data came from.</param>
     /// <returns>The struct to test.</returns>
     public static ImageData CreateImageData(NETColor color, uint width, uint height, string filePath = "")
-        => new (CreatePixels(color, width, height), width, height, filePath);
+        => new (CreatePixels(color, width, height), filePath);
 
     /// <summary>
     /// Returns all of the pixels from the given <paramref name="image"/>
@@ -279,7 +279,7 @@ public static class TestHelpers
             });
         }
 
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        return new ImageData(pixelData);
     }
 
     /// <summary>

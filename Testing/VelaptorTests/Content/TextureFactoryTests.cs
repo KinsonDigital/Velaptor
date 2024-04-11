@@ -103,7 +103,7 @@ public class TextureFactoryTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create(null, "test-path", new ImageData(null, 1, 2));
+        var act = () => sut.Create(null, "test-path", new ImageData(null));
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -117,7 +117,7 @@ public class TextureFactoryTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create(string.Empty, "test-path", new ImageData(null, 1, 2));
+        var act = () => sut.Create(string.Empty, "test-path", new ImageData(null));
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -131,7 +131,7 @@ public class TextureFactoryTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create("test-name", null, new ImageData(null, 1, 2));
+        var act = () => sut.Create("test-name", null, new ImageData(null));
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -145,7 +145,7 @@ public class TextureFactoryTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Create("test-name", string.Empty, new ImageData(null, 1, 2));
+        var act = () => sut.Create("test-name", string.Empty, new ImageData(null));
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -159,7 +159,7 @@ public class TextureFactoryTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.Create("test-name", "test-path", new ImageData(null, 1, 2));
+        sut.Create("test-name", "test-path", new ImageData(null));
 
         // Assert
         // NOTE: These are only here to prove that the same injected objects are the ones being used.

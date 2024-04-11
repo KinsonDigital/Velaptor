@@ -40,7 +40,7 @@ public class TextureTests
     /// </summary>
     public TextureTests()
     {
-        this.imageData = new ImageData(new Color[2, 3], 2, 3);
+        this.imageData = new ImageData(new Color[2, 3]);
 
         /*NOTE:
          * Create the bytes in the ARGB byte layout.
@@ -132,7 +132,7 @@ public class TextureTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, null));
+            _ = new Texture("test-name", new ImageData(new Color[1, 1], null));
         };
 
         // Assert
@@ -147,7 +147,7 @@ public class TextureTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new Texture("test-name", new ImageData(new Color[1, 1], 1, 1, string.Empty));
+            _ = new Texture("test-name", new ImageData(new Color[1, 1], string.Empty));
         };
 
         // Assert

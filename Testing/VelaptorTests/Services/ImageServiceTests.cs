@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
+// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -144,7 +144,7 @@ public class ImageServiceTests : IDisposable
             }
         }
 
-        var imageData = new ImageData(expectedPixelData, width, height);
+        var imageData = new ImageData(expectedPixelData);
 
         var service = CreateSystemUnderTest();
         var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
