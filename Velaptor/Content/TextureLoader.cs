@@ -27,20 +27,6 @@ internal sealed class TextureLoader : ILoader<ITexture>
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public TextureLoader()
-    {
-        this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
-        this.file = IoC.Container.GetInstance<IFile>();
-        this.path = IoC.Container.GetInstance<IPath>();
-        this.directory = IoC.Container.GetInstance<IDirectory>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextureLoader"/> class.
-    /// </summary>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     /// <param name="directory">Performs operations with directories.</param>
@@ -49,7 +35,7 @@ internal sealed class TextureLoader : ILoader<ITexture>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal TextureLoader(
+    public TextureLoader(
         IItemCache<string, ITexture> textureCache,
         IContentPathResolver texturePathResolver,
         IDirectory directory,

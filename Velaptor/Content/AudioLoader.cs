@@ -28,20 +28,6 @@ internal sealed class AudioLoader : ILoader<IAudio>
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public AudioLoader()
-    {
-        this.audioCache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
-        this.audioPathResolver = PathResolverFactory.CreateAudioPathResolver();
-        this.file = IoC.Container.GetInstance<IFile>();
-        this.path = IoC.Container.GetInstance<IPath>();
-        this.directory = IoC.Container.GetInstance<IDirectory>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AudioLoader"/> class.
-    /// </summary>
     /// <param name="audioCache">Caches textures for later use.</param>
     /// <param name="audioPathResolver">Resolves the path to the audio content.</param>
     /// <param name="directory">Performs operations with directories.</param>
@@ -50,7 +36,7 @@ internal sealed class AudioLoader : ILoader<IAudio>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal AudioLoader(
+    public AudioLoader(
         IItemCache<string, IAudio> audioCache,
         IContentPathResolver audioPathResolver,
         IDirectory directory,
