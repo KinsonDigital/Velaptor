@@ -1,4 +1,4 @@
-// <copyright file="ImageData.cs" company="KinsonDigital">
+﻿// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,7 +14,8 @@ using System.Text;
 /// </summary>
 public readonly record struct ImageData
 {
-    private readonly bool[] flipState = { false, false };
+    private readonly bool[]? flipState = [false, false];
+    private readonly Color[,]? pixels;
 
     /// <summary>
     /// Gets the pixel colors of the image.
@@ -26,7 +27,7 @@ public readonly record struct ImageData
     ///     The 32-bit color component byte layout is ARGB.
     /// </para>
     /// </remarks>
-    public Color[,] Pixels { get; }
+    public Color[,] Pixels => this.pixels ?? new Color[0, 0];
 
     /// <summary>
     /// Gets the width of the image.
@@ -47,12 +48,12 @@ public readonly record struct ImageData
     /// <summary>
     /// Gets a value indicating whether the image is flipped horizontally.
     /// </summary>
-    public bool IsFlippedHorizontally => this.flipState[0];
+    public bool IsFlippedHorizontally => this.flipState?[0] ?? false;
 
     /// <summary>
     /// Gets a value indicating whether the image is flipped vertically.
     /// </summary>
-    public bool IsFlippedVertically => this.flipState[1];
+    public bool IsFlippedVertically => this.flipState?[1] ?? false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageData"/> struct.
@@ -68,24 +69,9 @@ public readonly record struct ImageData
         Justification = "The summary is correct but StyleCop is not recognizing it.")]
     public ImageData(Color[,] pixels, string filePath = "")
     {
-        if (pixels is null)
-        {
-            Pixels = new Color[0, 0];
+        ArgumentNullException.ThrowIfNull(pixels);
 
-            // Makes all the pixels white
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    Pixels[x, y] = Color.White;
-                }
-            }
-        }
-        else
-        {
-
-            Pixels = pixels;
-        }
+        this.pixels = pixels;
 
         Width = (uint)pixels.GetUpperBound(0) + 1;
         Height = (uint)pixels.GetUpperBound(1) + 1;
@@ -156,7 +142,10 @@ public readonly record struct ImageData
             }
         }
 
-        this.flipState[0] = !this.flipState[0];
+        if (this.flipState is not null)
+        {
+            this.flipState[0] = !this.flipState[0];
+        }
     }
 
     /// <summary>
@@ -186,7 +175,10 @@ public readonly record struct ImageData
             }
         }
 
-        this.flipState[1] = !this.flipState[1];
+        if (this.flipState is not null)
+        {
+            this.flipState[1] = !this.flipState[1];
+        }
     }
 
     /// <summary>
