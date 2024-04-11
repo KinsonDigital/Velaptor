@@ -560,7 +560,7 @@ public class KeyboardStateTests
     #endregion
 
     /// <summary>
-    /// Sets all of the keyboard keys to the given <paramref name="state"/>.
+    /// Sets all the keyboard keys to the given <paramref name="state"/>.
     /// </summary>
     /// <param name="state">The state to set.</param>
     private void SetAllStatesTo(bool state)

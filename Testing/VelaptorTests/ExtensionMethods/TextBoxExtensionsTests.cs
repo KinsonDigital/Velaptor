@@ -16,7 +16,7 @@ using Velaptor.UI;
 using Xunit;
 
 /// <summary>
-/// Tests all of the extension methods related to the <see cref="TextBox"/> control.
+/// Tests all the extension methods related to the <see cref="TextBox"/> control.
 /// </summary>
 public class TextBoxExtensionsTests
 {

@@ -46,16 +46,16 @@ public static class TestHelpers
     /// <summary>
     /// Creates a new <see cref="ImageData"/> struct for the purpose of testing.
     /// </summary>
-    /// <param name="color">The color to set all of the <see cref="ImageData.Pixels"/>.</param>
+    /// <param name="color">The color to set all the <see cref="ImageData.Pixels"/>.</param>
     /// <param name="width">The width of the image that the pixels represent.</param>
     /// <param name="height">The height of the image that the pixels represent.</param>
     /// <param name="filePath">The path to the file where the data came from.</param>
     /// <returns>The struct to test.</returns>
     public static ImageData CreateImageData(NETColor color, uint width, uint height, string filePath = "")
-        => new (CreatePixels(color, width, height), width, height, filePath);
+        => new (CreatePixels(color, width, height), filePath);
 
     /// <summary>
-    /// Returns all of the pixels from the given <paramref name="image"/>
+    /// Returns all the pixels from the given <paramref name="image"/>
     /// and returns it as a 2-dimensional array of pixels represented by <see cref="NETColor"/>.
     /// </summary>
     /// <param name="image">The image to convert to pixels.</param>
@@ -139,7 +139,7 @@ public static class TestHelpers
     }
 
     /// <summary>
-    /// Returns the color of all of the pixels in the given <paramref name="row"/>.
+    /// Returns the color of all the pixels in the given <paramref name="row"/>.
     /// </summary>
     /// <param name="image">The image data that contains the row.</param>
     /// <param name="row">The row of pixels to return.</param>
@@ -148,7 +148,7 @@ public static class TestHelpers
     public static IEnumerable<NETColor> GetRow(ImageData image, uint row) => GetRow(image, row, 0, image.Width);
 
     /// <summary>
-    /// Returns the color of all of the pixels in the given <paramref name="row"/>.
+    /// Returns the color of all the pixels in the given <paramref name="row"/>.
     /// </summary>
     /// <param name="image">The image data that contains the row.</param>
     /// <param name="row">The row of pixels to return.</param>
@@ -178,7 +178,7 @@ public static class TestHelpers
     }
 
     /// <summary>
-    /// Returns the color of all of the pixels in the given <paramref name="column"/>.
+    /// Returns the color of all the pixels in the given <paramref name="column"/>.
     /// </summary>
     /// <param name="image">The image data that contains the column.</param>
     /// <param name="column">The column of pixels to return.</param>
@@ -279,17 +279,17 @@ public static class TestHelpers
             });
         }
 
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        return new ImageData(pixelData);
     }
 
     /// <summary>
-    /// Creates a new two dimensional array of pixel colors using the given <paramref name="color"/>
+    /// Creates a new two-dimensional array of pixel colors using the given <paramref name="color"/>
     /// with enough pixels to fill an image that has the given <paramref name="width"/> and <paramref name="height"/>.
     /// </summary>
     /// <param name="color">The color of all the pixels.</param>
     /// <param name="width">The width of the image represented by the <see cref="ImageData.Pixels"/>.</param>
     /// <param name="height">The height of the image represented by the <see cref="ImageData.Pixels"/>.</param>
-    /// <returns>The two dimensional array of pixels to test.</returns>
+    /// <returns>The two-dimensional array of pixels to test.</returns>
     private static NETColor[,] CreatePixels(NETColor color, uint width, uint height)
     {
         var result = new NETColor[width, height];

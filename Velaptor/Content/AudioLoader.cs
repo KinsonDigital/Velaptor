@@ -10,7 +10,6 @@ using System.IO;
 using System.IO.Abstractions;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 
 /// <summary>
 /// Loads audio content.

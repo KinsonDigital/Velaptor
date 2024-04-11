@@ -57,8 +57,8 @@ public class TextureCacheTests
     {
         this.fontFilePathWithMetaData = $"{FontFilePath}|size:{FontSize}";
 
-        this.textureImageData = new ImageData(new Color[1, 2], 1, 2);
-        this.fontImageData = new ImageData(new Color[2, 1], 2, 1);
+        this.textureImageData = new ImageData(new Color[1, 2]);
+        this.fontImageData = new ImageData(new Color[2, 1]);
 
         this.mockImageService = new Mock<IImageService>();
         this.mockImageService.Setup(m => m.Load(TextureFilePath))
@@ -666,7 +666,7 @@ public class TextureCacheTests
     /// </summary>
     private void MockImageData()
     {
-        var imageData = new ImageData(new Color[3, 1], 3, 1);
+        var imageData = new ImageData(new Color[3, 1]);
         this.mockImageService.Setup(m => m.Load(TextureFilePath))
             .Returns(imageData);
     }

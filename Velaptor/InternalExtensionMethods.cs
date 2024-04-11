@@ -307,7 +307,7 @@ internal static class InternalExtensionMethods
             });
         }
 
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        return new ImageData(pixelData);
     }
 
     /// <summary>

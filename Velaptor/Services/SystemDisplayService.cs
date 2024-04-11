@@ -12,7 +12,7 @@ using Hardware;
 using NativeInterop.GLFW;
 
 /// <summary>
-/// Gets information about all of the displays in the system.
+/// Gets information about all the displays in the system.
 /// </summary>
 internal sealed class SystemDisplayService : ISystemDisplayService
 {

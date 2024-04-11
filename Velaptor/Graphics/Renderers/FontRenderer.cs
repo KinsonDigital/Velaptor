@@ -161,7 +161,7 @@ internal sealed class FontRenderer : IFontRenderer
         var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
         var textLinePos = new Vector2(characterX, characterY);
 
-        // Convert all of the glyphs to batch items to be rendered
+        // Convert all the glyphs to batch items to be rendered
         var batchItems = ToFontBatchItems(
             textLinePos,
             glyphItems,
@@ -401,7 +401,7 @@ internal sealed class FontRenderer : IFontRenderer
             var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
             var textLinePos = new Vector2(characterX, characterY);
 
-            // Convert all of the glyphs to batch items to be rendered
+            // Convert all the glyphs to batch items to be rendered
             var batchItems = ToFontBatchItems(
                 textLinePos,
                 glyphLines.ToArray()[i],

@@ -121,9 +121,9 @@ public static class Program
                         WriteLine("\tDisplays information about the application.");
                         WriteLine("Usage:");
                         Write("\t--show glyphs", ConsoleColor.DarkYellow);
-                        WriteLine("\t\tDisplays a list of all of the glyphs being rendered on the most current frame.");
+                        WriteLine("\t\tDisplays a list of all the glyphs being rendered on the most current frame.");
                         Write("\t--show loaded-fonts", ConsoleColor.DarkYellow);
-                        WriteLine("\tDisplays a list of all of the currently loaded fonts.");
+                        WriteLine("\tDisplays a list of all the currently loaded fonts.");
                         Write("\t--show loaded-textures", ConsoleColor.DarkYellow);
                         WriteLine("\tDisplays a list of the loaded textures.", true);
                         break;

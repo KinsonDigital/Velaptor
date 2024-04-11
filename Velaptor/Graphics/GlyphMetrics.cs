@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System.Drawing;
 
 /// <summary>
-/// Holds all of the various metrics of a glyph for rendering purposes.
+/// Holds all the various metrics of a glyph for rendering purposes.
 /// </summary>
 public readonly record struct GlyphMetrics
 {

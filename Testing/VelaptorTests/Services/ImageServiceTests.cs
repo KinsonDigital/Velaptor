@@ -144,7 +144,7 @@ public class ImageServiceTests : IDisposable
             }
         }
 
-        var imageData = new ImageData(expectedPixelData, width, height);
+        var imageData = new ImageData(expectedPixelData);
 
         var service = CreateSystemUnderTest();
         var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
@@ -290,7 +290,7 @@ public class ImageServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Asserts that all of the given <paramref name="pixels"/> with the dimensions given by
+    /// Asserts that all the given <paramref name="pixels"/> with the dimensions given by
     /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="expectedClr"/>
     /// inside of the given <paramref name="assertRect"/>.
     /// </summary>
@@ -300,7 +300,7 @@ public class ImageServiceTests : IDisposable
     /// <param name="assertRect">The rectangle that might contain any pixels to assert against.</param>
     /// <param name="expectedClr">The color that the pixels must be.</param>
     /// <remarks>
-    ///     As long as the pixel is inside of the given <paramref name="assertRect"/>, the pixel
+    ///     As long as the pixel is inside the given <paramref name="assertRect"/>, the pixel
     ///     color will be asserted against the given <paramref name="expectedClr"/>.
     /// </remarks>
     [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]
@@ -326,7 +326,7 @@ public class ImageServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Loads all of the pixel data into a two dimensional array of <see cref="NETColor"/>.
+    /// Loads all the pixel data into a two-dimensional array of <see cref="NETColor"/>.
     /// </summary>
     /// <returns>The pixel data from the test comparison image.</returns>
     [ExcludeFromCodeCoverage(Justification = "Do not need to see coverage for code used for testing.")]

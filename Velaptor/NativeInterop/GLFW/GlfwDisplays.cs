@@ -10,7 +10,7 @@ using System.Numerics;
 using Hardware;
 
 /// <summary>
-/// Gets all of the displays in the system.
+/// Gets all the displays in the system.
 /// </summary>
 internal sealed class GlfwDisplays : IDisplays
 {

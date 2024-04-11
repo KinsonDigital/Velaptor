@@ -78,7 +78,7 @@ public record struct KeyboardState
     public bool IsRightAltKeyDown() => IsKeyDown(KeyCode.RightAlt);
 
     /// <summary>
-    /// Returns all of the keys that are in the down position.
+    /// Returns all the keys that are in the down position.
     /// </summary>
     /// <returns>A list of the keys that are currently in the down position.</returns>
     public Span<KeyCode> GetDownKeys()
@@ -132,7 +132,7 @@ public record struct KeyboardState
         Justification = "Left as foreach for perf.")]
     public bool AnyStandardNumberKeysDown()
     {
-        // Check all of the standard number keys
+        // Check all the standard number keys
         foreach (var key in KeyboardKeyGroups.GetStandardNumberKeys())
         {
             if (IsKeyDown(key))
@@ -155,7 +155,7 @@ public record struct KeyboardState
         Justification = "Left as foreach for perf.")]
     public bool AnyNumpadNumberKeysDown()
     {
-        // Check all of the numpad number keys
+        // Check all the numpad number keys
         foreach (var key in KeyboardKeyGroups.GetNumpadNumberKeys())
         {
             if (IsKeyDown(key))
