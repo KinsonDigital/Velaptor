@@ -38,7 +38,7 @@ public sealed class AtlasData : IAtlasData
     ///     Thrown if any of the constructor parameters are null.
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="dirPath"/> does not exist.</exception>
-    public AtlasData(
+    internal AtlasData(
         IItemCache<string, ITexture> textureCache,
         IDirectory directory,
         IPath path,
@@ -138,11 +138,11 @@ public sealed class AtlasData : IAtlasData
     {
         ArgumentException.ThrowIfNullOrEmpty(subTextureId);
 
-        if (!this.dataGroups.ContainsKey(subTextureId))
+        if (!this.dataGroups.TryGetValue(subTextureId, out AtlasSubTextureData[]? frames))
         {
             throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
         }
 
-        return this.dataGroups[subTextureId];
+        return frames;
     }
 }
