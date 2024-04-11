@@ -19,7 +19,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Loads atlas data.
 /// </summary>
-public sealed class AtlasLoader : ILoader<IAtlasData>
+internal sealed class AtlasLoader : ILoader<IAtlasData>
 {
     private const char CrossPlatDirSeparatorChar = '/';
     private const string TextureExtension = ".png";

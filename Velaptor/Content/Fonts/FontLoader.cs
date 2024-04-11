@@ -19,7 +19,7 @@ using Velaptor.Services;
 /// <summary>
 /// Loads font content for rendering text.
 /// </summary>
-public sealed class FontLoader : ILoader<IFont>
+internal sealed class FontLoader : ILoader<IFont>
 {
     private const string ExpectedMetaDataSyntax = "size:<font-size>";
     private const string FontFileExtension = ".ttf";

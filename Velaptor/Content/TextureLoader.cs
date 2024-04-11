@@ -15,7 +15,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Loads textures.
 /// </summary>
-public sealed class TextureLoader : ILoader<ITexture>
+internal sealed class TextureLoader : ILoader<ITexture>
 {
     private const string TextureFileExtension = ".png";
     private readonly IItemCache<string, ITexture> textureCache;

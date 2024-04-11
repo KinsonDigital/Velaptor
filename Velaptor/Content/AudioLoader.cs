@@ -15,7 +15,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Loads audio content.
 /// </summary>
-public sealed class AudioLoader : ILoader<IAudio>
+internal sealed class AudioLoader : ILoader<IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
