@@ -27,7 +27,7 @@ public interface ICheckBox : IControl
     string LabelWhenUnchecked { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the checkbox is in the check state.
+    /// Gets a value indicating whether the checkbox is in the check state.
     /// </summary>
     bool IsChecked { get; }
 }

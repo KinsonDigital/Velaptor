@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundFactoryTests.cs" company="KinsonDigital">
+﻿// <copyright file="AudioFactoryTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,22 +16,22 @@ using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SoundFactory"/> class.
+/// Tests the <see cref="AudioFactory"/> class.
 /// </summary>
-public class SoundFactoryTests
+public class AudioFactoryTests
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<DisposeSoundData>> mockDisposeSoundReactable;
+    private readonly Mock<IPushReactable<DisposeAudioData>> mockDisposeSoundReactable;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundFactoryTests"/> class.
+    /// Initializes a new instance of the <see cref="AudioFactoryTests"/> class.
     /// </summary>
-    public SoundFactoryTests()
+    public AudioFactoryTests()
     {
-        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeSoundData>>();
+        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeAudioData>>();
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateDisposeSoundReactable())
+        this.mockReactableFactory.Setup(m => m.CreateDisposeAudioReactable())
             .Returns(this.mockDisposeSoundReactable.Object);
     }
 
@@ -42,7 +42,7 @@ public class SoundFactoryTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundFactory(null);
+            _ = new AudioFactory(null);
         };
 
         // Assert
@@ -72,41 +72,41 @@ public class SoundFactoryTests
     public void DisposeSoundReactable_WithDisposeNotification_RemovesSoundReference()
     {
         // Arrange
-        IReceiveSubscription<DisposeSoundData>? subscription = null;
+        IReceiveSubscription<DisposeAudioData>? subscription = null;
 
         this.mockDisposeSoundReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeSoundData>>()))
-            .Callback<IReceiveSubscription<DisposeSoundData>>((subscriptionParam) =>
+            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeAudioData>>()))
+            .Callback<IReceiveSubscription<DisposeAudioData>>((subscriptionParam) =>
             {
                 subscriptionParam.Should().NotBeNull();
-                subscriptionParam.Id.Should().Be(PushNotifications.SoundDisposedId);
-                subscriptionParam.Name.Should().Be($"SoundFactory.ctor() - {PushNotifications.SoundDisposedId}");
+                subscriptionParam.Id.Should().Be(PushNotifications.AudioDisposedId);
+                subscriptionParam.Name.Should().Be($"AudioFactory.ctor() - {PushNotifications.AudioDisposedId}");
 
                 subscription = subscriptionParam;
             });
 
         this.mockDisposeSoundReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeSoundData>()))
-            .Callback((Guid eventId, in DisposeSoundData data) =>
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeAudioData>()))
+            .Callback((Guid eventId, in DisposeAudioData data) =>
             {
-                data.SoundId.Should().Be(1);
-                eventId.Should().Be(PushNotifications.SoundDisposedId);
+                data.AudioId.Should().Be(1);
+                eventId.Should().Be(PushNotifications.AudioDisposedId);
             });
 
         var sut = CreateSystemUnderTest();
-        this.mockDisposeSoundReactable.Object.Push(PushNotifications.SoundDisposedId, new DisposeSoundData { SoundId = 1 });
+        this.mockDisposeSoundReactable.Object.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = 1 });
 
         // Act
-        subscription.OnReceive(new DisposeSoundData { SoundId = 1 });
+        subscription.OnReceive(new DisposeAudioData { AudioId = 1 });
 
         // Assert
-        sut.Sounds.Should().BeEmpty();
+        sut.LoadedAudio.Should().BeEmpty();
     }
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="SoundFactory"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="AudioFactory"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private SoundFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private AudioFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
 }

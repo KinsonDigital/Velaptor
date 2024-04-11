@@ -27,7 +27,7 @@ internal readonly record struct MouseStateData
     public MouseButton Button { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the mouse button is in the down position.
+    /// Gets a value indicating whether the mouse button is in the down position.
     /// </summary>
     public bool ButtonIsDown { get; init; }
 

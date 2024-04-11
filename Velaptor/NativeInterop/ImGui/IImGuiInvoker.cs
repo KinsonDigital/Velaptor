@@ -12,7 +12,7 @@ using ImGuiNET;
 /// <summary>
 /// Invokes <see cref="ImGui"/> functions.
 /// </summary>
-internal interface IImGuiInvoker
+public interface IImGuiInvoker
 {
     /// <summary>
     /// Gets the IO object for system and <see cref="ImGui"/> related settings and information.
@@ -240,27 +240,27 @@ internal interface IImGuiInvoker
     Vector2 CalcTextSize(string text);
 
     /// <summary>
-    /// Returns a value indicating whether or not the mouse is hovering over an item.
+    /// Returns a value indicating whether the mouse is hovering over an item.
     /// </summary>
     /// <returns>True if the mouse is hovering over the item.</returns>
     bool IsItemHovered();
 
     /// <summary>
-    /// Returns a value indicating whether or not the given mouse <paramref name="button"/> is in the down state.
+    /// Returns a value indicating whether the given mouse <paramref name="button"/> is in the down state.
     /// </summary>
     /// <param name="button">The button to check.</param>
     /// <returns>True if the mouse is in the down state.</returns>
     bool IsMouseDown(ImGuiMouseButton button);
 
     /// <summary>
-    /// Returns a value indicating whether or not the given mouse <paramref name="button"/> is in the released state.
+    /// Returns a value indicating whether the given mouse <paramref name="button"/> is in the released state.
     /// </summary>
     /// <param name="button">The button to check.</param>
     /// <returns>True if the mouse is in the up state.</returns>
     bool IsMouseReleased(ImGuiMouseButton button);
 
     /// <summary>
-    /// Returns a value indicating whether or not the given item <paramref name="label"/> is selectable.
+    /// Returns a value indicating whether the given item <paramref name="label"/> is selectable.
     /// </summary>
     /// <param name="label">The text to be displayed for the item in the combo box.</param>
     /// <param name="selected">Determines whether the item is selected when the combo box is first displayed.</param>
@@ -311,13 +311,13 @@ internal interface IImGuiInvoker
     Vector2 GetWindowSize();
 
     /// <summary>
-    /// Gets a value indicating whether or not a window is focused.
+    /// Gets a value indicating whether a window is focused.
     /// </summary>
     /// <returns>True if the window is in focus.</returns>
     bool IsWindowFocused();
 
     /// <summary>
-    /// Gets a value indicating whether or not a window is being dragged by the given mouse <paramref name="button"/>.
+    /// Gets a value indicating whether a window is being dragged by the given mouse <paramref name="button"/>.
     /// </summary>
     /// <param name="button">The mouse button.</param>
     /// <returns>True if the window is being dragged.</returns>

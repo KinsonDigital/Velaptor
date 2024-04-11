@@ -91,19 +91,19 @@ public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable
     int Bottom { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control is visible.
+    /// Gets or sets a value indicating whether the control is visible.
     /// </summary>
     [Obsolete("This property is deprecated and will be removed in a future release.")]
     bool Visible { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control is enabled.
+    /// Gets or sets a value indicating whether the control is enabled.
     /// </summary>
     [Obsolete("This property is deprecated and will be removed in a future release.")]
     bool Enabled { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the mouse is hovering over the button.
+    /// Gets a value indicating whether the mouse is hovering over the button.
     /// </summary>
     [Obsolete("This property is deprecated and will be removed in a future release.")]
     bool IsMouseOver { get; }

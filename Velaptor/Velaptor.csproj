@@ -25,7 +25,7 @@
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
-    <Description>2D game or application development framework that provides 2D rendering, sound, keyboard and mouse input, etc.</Description>
+    <Description>2D game or application development framework that provides 2D rendering, audio, keyboard and mouse input, etc.</Description>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
@@ -53,7 +53,6 @@
     <InternalsVisibleTo Include="MeasureTextPerf" />
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
-    <InternalsVisibleTo Include="VelaptorTesting" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,7 +84,7 @@
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="2.2.0" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
-    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.17" />
+    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.19" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -78,18 +78,18 @@ public interface IControlGroup : IDisposable
     int Bottom { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the title bar is visible.
+    /// Gets or sets a value indicating whether the title bar is visible.
     /// </summary>
     bool TitleBarVisible { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control group should
+    /// Gets or sets a value indicating whether the control group should
     /// automatically fit to the size of its content.
     /// </summary>
     bool AutoSizeToFitContent { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the control group is visible.
+    /// Gets or sets a value indicating whether the control group is visible.
     /// </summary>
     bool Visible { get; set; }
 

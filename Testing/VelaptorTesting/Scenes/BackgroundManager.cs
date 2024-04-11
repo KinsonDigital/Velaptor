@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 

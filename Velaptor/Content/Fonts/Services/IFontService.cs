@@ -55,7 +55,7 @@ internal interface IFontService : IDisposable
     void SetFontSize(nint facePtr, uint sizeInPoints);
 
     /// <summary>
-    /// Returns a value indicating whether or not the face uses kerning between two glyphs of the same face.
+    /// Returns a value indicating whether the face uses kerning between two glyphs of the same face.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <returns><c>true</c> if the face uses kerning.</returns>

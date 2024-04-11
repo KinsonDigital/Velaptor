@@ -17,12 +17,12 @@ public interface IPlatform
     OSPlatform CurrentPlatform { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the system is a 64 bit process.
+    /// Gets a value indicating whether the system is a 64 bit process.
     /// </summary>
     bool Is64BitProcess { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the system is a 32 bit process.
+    /// Gets a value indicating whether the system is a 32 bit process.
     /// </summary>
     public bool Is32BitProcess { get; }
 }

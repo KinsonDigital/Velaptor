@@ -48,7 +48,7 @@ internal readonly struct TextureGpuData : IEquatable<TextureGpuData>
     public TextureVertexData Vertex4 { get; }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
+    /// Returns a value indicating whether the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
     /// operation is equal.
     /// </summary>
     /// <param name="left">The left operand.</param>
@@ -57,7 +57,7 @@ internal readonly struct TextureGpuData : IEquatable<TextureGpuData>
     public static bool operator ==(TextureGpuData left, TextureGpuData right) => left.Equals(right);
 
     /// <summary>
-    /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+    /// Returns a value indicating whether the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
     /// operation is not equal.
     /// </summary>
     /// <param name="left">The left operand.</param>

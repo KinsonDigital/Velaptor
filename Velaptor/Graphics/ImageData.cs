@@ -45,12 +45,12 @@ public readonly record struct ImageData
     public string FilePath { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the image is flipped horizontally.
+    /// Gets a value indicating whether the image is flipped horizontally.
     /// </summary>
     public bool IsFlippedHorizontally => this.flipState[0];
 
     /// <summary>
-    /// Gets a value indicating whether or not the image is flipped vertically.
+    /// Gets a value indicating whether the image is flipped vertically.
     /// </summary>
     public bool IsFlippedVertically => this.flipState[1];
 
@@ -207,7 +207,7 @@ public readonly record struct ImageData
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not this instance is equal to the given <see cref="ImageData"/>.
+    /// Returns a value indicating whether this instance is equal to the given <see cref="ImageData"/>.
     /// </summary>
     /// <param name="other">The other data to compare.</param>
     /// <returns><c>true</c> if equal.</returns>
@@ -249,7 +249,7 @@ public readonly record struct ImageData
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <see cref="ImageData"/> contents are empty.
+    /// Returns a value indicating whether the <see cref="ImageData"/> contents are empty.
     /// </summary>
     /// <returns><c>true</c> if empty.</returns>
     public bool IsEmpty() => Width == 0 && Height == 0;

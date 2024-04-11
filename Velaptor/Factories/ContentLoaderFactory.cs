@@ -12,7 +12,6 @@ using Content.Caching;
 using Content.Factories;
 using Content.Fonts;
 using Services;
-using IVelaptorSound = Content.ISound;
 
 /// <summary>
 /// Creates instances of a content loader.
@@ -22,7 +21,7 @@ public static class ContentLoaderFactory
 {
     private static ILoader<ITexture>? textureLoader;
     private static ILoader<IAtlasData>? atlasLoader;
-    private static ILoader<IVelaptorSound>? soundLoader;
+    private static ILoader<IAudio>? audioLoader;
     private static ILoader<IFont>? fontLoader;
 
     /// <summary>
@@ -37,15 +36,15 @@ public static class ContentLoaderFactory
             return textureLoader;
         }
 
-        var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+        var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+        var pathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         textureLoader = new TextureLoader(
-            textureCache,
-            texturePathResolver,
+            cache,
+            pathResolver,
             directory,
             file,
             path);
@@ -65,18 +64,18 @@ public static class ContentLoaderFactory
             return atlasLoader;
         }
 
-        var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+        var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        var atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
+        var pathResolver = PathResolverFactory.CreateAtlasPathResolver();
         var jsonService = IoC.Container.GetInstance<IJSONService>();
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
         atlasLoader = new AtlasLoader(
-            textureCache,
+            cache,
             atlasDataFactory,
-            atlasDataPathResolver,
+            pathResolver,
             jsonService,
             directory,
             file,
@@ -86,37 +85,37 @@ public static class ContentLoaderFactory
     }
 
     /// <summary>
-    /// Creates a loader that loads sounds from disk.
+    /// Creates a loader that loads audio from disk.
     /// </summary>
-    /// <returns>A loader for loading sound data.</returns>
+    /// <returns>A loader for loading audio data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static ILoader<IVelaptorSound> CreateSoundLoader()
+    public static ILoader<IAudio> CreateAudioLoader()
     {
-        if (soundLoader is not null)
+        if (audioLoader is not null)
         {
-            return soundLoader;
+            return audioLoader;
         }
 
-        var soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
-        var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+        var cache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
+        var pathResolver = new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
 
-        soundLoader = new SoundLoader(
-            soundCache,
-            soundPathResolver,
+        audioLoader = new AudioLoader(
+            cache,
+            pathResolver,
             directory,
             file,
             path);
 
-        return soundLoader;
+        return audioLoader;
     }
 
     /// <summary>
     /// Creates a loader that loads fonts from disk for rendering test.
     /// </summary>
-    /// <returns>A loader for loading sound data.</returns>
+    /// <returns>A loader for loading audio data.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     public static ILoader<IFont> CreateFontLoader()
     {
@@ -126,10 +125,9 @@ public static class ContentLoaderFactory
         }
 
         var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-        var embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
-        var contentPathResolver = PathResolverFactory.CreateContentFontPathResolver();
-        var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-        var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+        var embeddedResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
+        var pathResolver = PathResolverFactory.CreateFontPathResolver();
+        var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var fontFactory = IoC.Container.GetInstance<IFontFactory>();
         var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
         var directory = IoC.Container.GetInstance<IDirectory>();
@@ -139,10 +137,10 @@ public static class ContentLoaderFactory
 
         fontLoader = new FontLoader(
             fontAtlasService,
-            embeddedFontResourceService,
-            contentPathResolver,
-            fontPathResolver,
-            textureCache,
+            embeddedResourceService,
+            pathResolver,
+            pathResolver,
+            cache,
             fontFactory,
             fontMetaDataParser,
             directory,

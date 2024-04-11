@@ -5,6 +5,7 @@
 // ReSharper disable UnusedVariable
 // ReSharper disable RedundantUsingDirective
 #pragma warning disable S1481 // Remove the unused local variable
+#pragma warning disable SA1200
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using MousePerf;

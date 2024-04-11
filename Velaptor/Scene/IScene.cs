@@ -24,7 +24,7 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     Guid Id { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the scene has been loaded.
+    /// Gets a value indicating whether the scene has been loaded.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
     bool IsLoaded { get; }

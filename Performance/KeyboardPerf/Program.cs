@@ -4,6 +4,7 @@
 
 // ReSharper disable RedundantUsingDirective
 // ReSharper disable UnusedVariable
+#pragma warning disable SA1200
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using KeyboardPerf;

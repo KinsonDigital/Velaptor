@@ -29,7 +29,7 @@ internal interface IStatsWindowService : IDisposable, IUpdatable, IDrawable
     Size Size { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the window is visible.
+    /// Gets or sets a value indicating whether the window is visible.
     /// </summary>
     bool Visible { get; set; }
 

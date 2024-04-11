@@ -16,7 +16,7 @@ public interface ILoader<out T>
     /// </summary>
     /// <param name="contentPathOrName">The name of the content of the data to load.</param>
     /// <returns>The data loaded from disk.</returns>
-    T Load(string contentPathOrName);
+    internal T Load(string contentPathOrName);
 
     /// <summary>
     /// Unloads the data with the given <paramref name="contentPathOrName"/>.

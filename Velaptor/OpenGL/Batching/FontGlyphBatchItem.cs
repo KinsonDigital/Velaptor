@@ -91,7 +91,7 @@ internal readonly record struct FontGlyphBatchItem
     public uint TextureId { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the current <see cref="FontGlyphBatchItem"/> is empty.
+    /// Gets a value indicating whether the current <see cref="FontGlyphBatchItem"/> is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>

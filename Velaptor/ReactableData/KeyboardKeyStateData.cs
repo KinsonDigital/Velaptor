@@ -17,7 +17,7 @@ internal readonly record struct KeyboardKeyStateData
     public KeyCode Key { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the current <see cref="Key"/> is in the down position.
+    /// Gets a value indicating whether the current <see cref="Key"/> is in the down position.
     /// </summary>
     public bool IsDown { get; init; }
 }

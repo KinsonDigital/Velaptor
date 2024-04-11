@@ -30,31 +30,31 @@ internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
     }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="SetupVAO"/>() method has been invoked.
+    /// Gets a value indicating whether the <see cref="SetupVAO"/>() method has been invoked.
     /// </summary>
     /// <remarks>Used for unit testing.</remarks>
     public bool SetupVAOInvoked { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="GenerateData"/>() method has been invoked.
+    /// Gets a value indicating whether the <see cref="GenerateData"/>() method has been invoked.
     /// </summary>
     /// <remarks>Used for unit testing.</remarks>
     public bool GenerateDataInvoked { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="PrepareForUpload"/>() method has been invoked.
+    /// Gets a value indicating whether the <see cref="PrepareForUpload"/>() method has been invoked.
     /// </summary>
     /// <remarks>Used for unit testing.</remarks>
     public bool PrepareForUseInvoked { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="GenerateIndices"/>() method has been invoked.
+    /// Gets a value indicating whether the <see cref="GenerateIndices"/>() method has been invoked.
     /// </summary>
     /// <remarks>Used for unit testing.</remarks>
     public bool GenerateIndicesInvoked { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the <see cref="UploadVertexData"/>() method has been invoked.
+    /// Gets a value indicating whether the <see cref="UploadVertexData"/>() method has been invoked.
     /// </summary>
     /// <remarks>Used for unit testing.</remarks>
     public bool UpdateVertexDataInvoked { get; private set; }

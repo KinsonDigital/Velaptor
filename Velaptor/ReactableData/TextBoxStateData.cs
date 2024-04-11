@@ -72,7 +72,7 @@ internal readonly record struct TextBoxStateData
     public int CurrentCharRight { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the text box is in selection mode.
+    /// Gets a value indicating whether the text box is in selection mode.
     /// </summary>
     public bool InSelectionMode { get; init; }
 
@@ -112,7 +112,7 @@ internal readonly record struct TextBoxStateData
     public int SelectionHeight { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the selection is a right side of the last
+    /// Gets a value indicating whether the selection is a right side of the last
     /// character of all the text in the text box.
     /// </summary>
     public bool SelectionAtRightEnd { get; init; }
@@ -124,7 +124,7 @@ internal readonly record struct TextBoxStateData
     public Vector2 Position { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the cursor is at the right side of the
+    /// Gets a value indicating whether the cursor is at the right side of the
     /// last character in all the text of the text box.
     /// </summary>
     public bool CursorAtEnd { get; init; }

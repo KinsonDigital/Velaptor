@@ -114,8 +114,6 @@ internal static class IoC
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
-        IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
         IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
 
         isInitialized = true;
@@ -245,7 +243,7 @@ internal static class IoC
     private static void SetupCaching()
     {
         IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
-        IoCContainer.Register<IItemCache<string, ISound>, SoundCache>(Lifestyle.Singleton);
+        IoCContainer.Register<IItemCache<string, IAudio>, AudioCache>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -255,7 +253,7 @@ internal static class IoC
     {
         IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
         IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
@@ -302,7 +300,12 @@ internal static class IoC
     /// <summary>
     /// Sets up the container registration related to content.
     /// </summary>
-    private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
+    private static void SetupContent()
+    {
+        IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
+        IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
+        IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
+    }
 
     /// <summary>
     /// Sets up the container registration related to reactables.
@@ -322,7 +325,7 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
-        IoCContainer.Register<IPushReactable<DisposeSoundData>, PushReactable<DisposeSoundData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<DisposeAudioData>, PushReactable<DisposeAudioData>>(Lifestyle.Singleton);
         IoCContainer.Register(() => IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow(), Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<GLObjectsData>, PushReactable<GLObjectsData>>(Lifestyle.Singleton);
 

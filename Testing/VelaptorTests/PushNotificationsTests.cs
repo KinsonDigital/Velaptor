@@ -60,7 +60,7 @@ public class PushNotificationsTests
     public void SoundDisposedId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.SoundDisposedId.Should().Be("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
+        PushNotifications.AudioDisposedId.Should().Be("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
     }
 
     [Fact]

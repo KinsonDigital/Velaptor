@@ -31,48 +31,48 @@ public record struct KeyboardState
 
     /*
     /// <summary>
-    /// Gets a value indicating whether or not the caps lock key is on.
+    /// Gets a value indicating whether the caps lock key is on.
     /// </summary>
     public bool CapsLockOn => IsKeyDown(KeyCode.CapsLock);
 
     //// <summary>
-    //// Gets or sets a value indicating whether or not the num lock key is on.
+    //// Gets or sets a value indicating whether the num lock key is on.
     //// </summary>
     public bool NumLockOn => IsKeyDown(KeyCode.NumLock);
     */
 
     /// <summary>
-    /// Gets a value indicating whether or not the right shift key is in the down position.
+    /// Gets a value indicating whether the right shift key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the right shift key is down.</returns>
     public bool IsRightShiftKeyDown() => IsKeyDown(KeyCode.RightShift);
 
     /// <summary>
-    /// Gets a value indicating whether or not the left shift key is in the down position.
+    /// Gets a value indicating whether the left shift key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the left shift key is down.</returns>
     public bool IsLeftShiftKeyDown() => IsKeyDown(KeyCode.LeftShift);
 
     /// <summary>
-    /// Gets a value indicating whether or not the left control key is in the down position.
+    /// Gets a value indicating whether the left control key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the left control key is down.</returns>
     public bool IsLeftCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl);
 
     /// <summary>
-    /// Gets a value indicating whether or not the right control key is in the down position.
+    /// Gets a value indicating whether the right control key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the right control key is down.</returns>
     public bool IsRightCtrlKeyDown() => IsKeyDown(KeyCode.RightControl);
 
     /// <summary>
-    /// Gets a value indicating whether or not the left alt key is in the down position.
+    /// Gets a value indicating whether the left alt key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the left alt key is down.</returns>
     public bool IsLeftAltKeyDown() => IsKeyDown(KeyCode.LeftAlt);
 
     /// <summary>
-    /// Gets a value indicating whether or not the right alt key is in the down position.
+    /// Gets a value indicating whether the right alt key is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the right alt key is down.</returns>
     public bool IsRightAltKeyDown() => IsKeyDown(KeyCode.RightAlt);
@@ -98,7 +98,7 @@ public record struct KeyboardState
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <paramref name="key"/> is in the down position.
+    /// Returns a value indicating whether the given <paramref name="key"/> is in the down position.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if the given <paramref name="key"/> is in the down position.</returns>
@@ -115,14 +115,14 @@ public record struct KeyboardState
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the given <paramref name="key"/> is in the up position.
+    /// Returns a value indicating whether the given <paramref name="key"/> is in the up position.
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if the given <paramref name="key"/> is in the up position.</returns>
     public bool IsKeyUp(KeyCode key) => !IsKeyDown(key);
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the standard number keys,
+    /// Returns a value indicating whether any of the standard number keys,
     /// above the letter keys, are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the standard number keys are in the down position.</returns>
@@ -145,7 +145,7 @@ public record struct KeyboardState
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the numpad number keys
+    /// Returns a value indicating whether any of the numpad number keys
     /// are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the numpad number keys are in the down position.</returns>
@@ -168,19 +168,19 @@ public record struct KeyboardState
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the shift keys are in the down position.
+    /// Returns a value indicating whether any of the shift keys are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the shift keys are down.</returns>
     public bool AnyShiftKeysDown() => IsKeyDown(KeyCode.LeftShift) || IsKeyDown(KeyCode.RightShift);
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the control keys are in the down position.
+    /// Returns a value indicating whether any of the control keys are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the control keys are down.</returns>
     public bool AnyCtrlKeysDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the alt keys are in the down position.
+    /// Returns a value indicating whether any of the alt keys are in the down position.
     /// </summary>
     /// <returns><c>true</c> if any of the control keys are down.</returns>
     public bool AnyAltKeysDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
