@@ -138,11 +138,11 @@ public sealed class AtlasData : IAtlasData
     {
         ArgumentException.ThrowIfNullOrEmpty(subTextureId);
 
-        if (!this.dataGroups.ContainsKey(subTextureId))
+        if (!this.dataGroups.TryGetValue(subTextureId, out AtlasSubTextureData[]? frames))
         {
             throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
         }
 
-        return this.dataGroups[subTextureId];
+        return frames;
     }
 }
