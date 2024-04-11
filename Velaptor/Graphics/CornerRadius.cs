@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// Holds all of the radius values for each corner of a rectangle.
+/// Holds all the radius values for each corner of a rectangle.
 /// </summary>
 public readonly record struct CornerRadius
 {

@@ -10,7 +10,7 @@ namespace Velaptor.Content;
 public enum AudioBuffer
 {
     /// <summary>
-    /// All of the audio data has been loaded into memory.
+    /// All the audio data has been loaded into memory.
     /// </summary>
     /// <remarks>
     /// <br/>

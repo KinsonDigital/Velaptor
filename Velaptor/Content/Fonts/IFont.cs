@@ -24,7 +24,7 @@ public interface IFont : IContent
     FontSource Source { get; }
 
     /// <summary>
-    /// Gets the font atlas texture that contains all of the bitmap data for all available glyphs for the font.
+    /// Gets the font atlas texture that contains all the bitmap data for all available glyphs for the font.
     /// </summary>
     ITexture Atlas { get; }
 
@@ -77,7 +77,7 @@ public interface IFont : IContent
     int MaxCacheSize { get; set; }
 
     /// <summary>
-    /// Gets the list of metrics for all of the glyphs supported by the font.
+    /// Gets the list of metrics for all the glyphs supported by the font.
     /// </summary>
     /// <returns>The glyph metrics.</returns>
     IReadOnlyCollection<GlyphMetrics> Metrics { get; }

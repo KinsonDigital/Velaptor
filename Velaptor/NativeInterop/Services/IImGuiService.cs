@@ -24,7 +24,7 @@ internal interface IImGuiService
     void SetTexID(uint textureId);
 
     /// <summary>
-    /// Clears all of the currently loaded <see cref="ImGui"/> fonts.
+    /// Clears all the currently loaded <see cref="ImGui"/> fonts.
     /// </summary>
     void ClearFonts();
 

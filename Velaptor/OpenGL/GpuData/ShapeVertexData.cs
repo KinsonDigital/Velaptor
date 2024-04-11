@@ -153,9 +153,9 @@ internal readonly struct ShapeVertexData
             0f);
 
     /// <summary>
-    /// Returns all of the vertex data as an array or ordered values.
+    /// Returns all the vertex data as an array or ordered values.
     /// </summary>
-    /// <returns>All of the vertex data values.</returns>
+    /// <returns>All the vertex data values.</returns>
     public IEnumerable<float> ToArray()
     {
         /* NOTE:

@@ -24,7 +24,7 @@ public static class AppStats
     private static readonly List<(string fontFileName, string fontSize)> LoadedFonts = new ();
 
     /// <summary>
-    /// Gets all of the rendered textures for the last two frames in <c>string</c> format.
+    /// Gets all the rendered textures for the last two frames in <c>string</c> format.
     /// </summary>
     /// <returns>The recorded frame information.</returns>
     public static string GetFontGlyphRenderingData()
@@ -45,7 +45,7 @@ public static class AppStats
     }
 
     /// <summary>
-    /// Returns all of the loaded fonts.
+    /// Returns all the loaded fonts.
     /// </summary>
     /// <returns>The string result of all the loaded fonts.</returns>
     public static string GetLoadedFonts()
@@ -64,7 +64,7 @@ public static class AppStats
     }
 
     /// <summary>
-    /// Returns all of the loaded textures.
+    /// Returns all the loaded textures.
     /// </summary>
     /// <returns>The string result of all the loaded textures.</returns>
     public static string GetLoadedTextures()
@@ -99,7 +99,7 @@ public static class AppStats
         var largestFrame = GlyphTextures.Max(i => i.frame);
         var secondLargest = 0u;
 
-        // Collect all of the unique frame numbers that have been rendered
+        // Collect all the unique frame numbers that have been rendered
         var frames = (from texture in GlyphTextures
             orderby texture.frame descending
             select texture.frame).Distinct().ToArray();

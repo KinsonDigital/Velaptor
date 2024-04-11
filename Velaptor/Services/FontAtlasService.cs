@@ -25,12 +25,12 @@ internal sealed class FontAtlasService : IFontAtlasService
     private readonly IImageService imageService;
     private readonly IFile file;
     private readonly char[] glyphChars =
-    {
+    [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
-    };
+        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□'
+    ];
     private nint facePtr;
 
     /// <summary>
@@ -100,7 +100,7 @@ internal sealed class FontAtlasService : IFontAtlasService
     }
 
     /// <summary>
-    /// Calculates all of the font atlas metrics using the given <paramref name="glyphImages"/>.
+    /// Calculates all the font atlas metrics using the given <paramref name="glyphImages"/>.
     /// </summary>
     /// <param name="glyphImages">The glyph images that will eventually be rendered onto the font texture atlas.</param>
     /// <returns>The various metrics of the font atlas.</returns>
@@ -134,13 +134,13 @@ internal sealed class FontAtlasService : IFontAtlasService
     }
 
     /// <summary>
-    /// Sets all of the atlas bounds for each glyph in the given <paramref name="glyphMetrics"/>.
+    /// Sets all the atlas bounds for each glyph in the given <paramref name="glyphMetrics"/>.
     /// </summary>
     /// <param name="glyphImages">The glyph images that will eventually be rendered to the font atlas.</param>
     /// <param name="glyphMetrics">The metrics for each glyph.</param>
     /// <param name="columnCount">The number of columns in the atlas.</param>
     /// <returns>
-    ///     The <paramref name="glyphMetrics"/> is the font atlas texture data that will eventually be returned.
+    ///     The <paramref name="glyphMetrics"/> parameter is the font atlas texture data that will eventually be returned.
     /// </returns>
     private static Dictionary<char, GlyphMetrics> SetGlyphMetricsAtlasBounds(Dictionary<char, ImageData> glyphImages, Dictionary<char, GlyphMetrics> glyphMetrics, uint columnCount)
     {

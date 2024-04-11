@@ -72,7 +72,7 @@ internal static class IoC
     /// </remarks>
     public static void DisposeOfRegisteredTypes()
     {
-        // Get all of the registered types that are capable of being disposed
+        // Get all the registered types that are capable of being disposed
         var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
 
         foreach (var regType in disposableRegistrations)

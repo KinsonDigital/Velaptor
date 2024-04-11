@@ -350,9 +350,9 @@ public class FontStatsServiceTests
     }
 
     /// <summary>
-    /// Mocks all of the font families at the given <paramref name="filePaths"/> with the given font <paramref name="familyName"/>.
+    /// Mocks all the font families at the given <paramref name="filePaths"/> with the given font <paramref name="familyName"/>.
     /// </summary>
-    /// <param name="filePaths">All of the file paths to the fonts.</param>
+    /// <param name="filePaths">All the file paths to the fonts.</param>
     /// <param name="familyName">The family of the font to mock.</param>
     private void MockAllFontFamilies(IEnumerable<string> filePaths, string familyName)
     {

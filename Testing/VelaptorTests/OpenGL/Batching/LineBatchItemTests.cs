@@ -25,7 +25,7 @@ public class LineBatchItemTests
     public LineBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
 
     /// <summary>
-    /// Gets all of the test data related to testing the <see cref="IsEmptyTestData"/> method.
+    /// Gets all the test data related to testing the <see cref="IsEmptyTestData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
     public static TheoryData<Vector2, Vector2, Color, float, string, bool> IsEmptyTestData =>

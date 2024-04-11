@@ -138,7 +138,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.BoundingBox"/> for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.BoundingBox"/> for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="rectangle">The rectangle to apply to all vertex data.</param>
@@ -197,7 +197,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.IsSolid"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.IsSolid"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="isSolid">The setting to apply to all vertex data.</param>
@@ -256,7 +256,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.BorderThickness"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.BorderThickness"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="borderThickness">The setting to apply to all vertex data.</param>
@@ -315,7 +315,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.TopLeftCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.TopLeftCornerRadius"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="topLeftCornerRadius">The setting to apply to all vertex data.</param>
@@ -374,7 +374,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.BottomLeftCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.BottomLeftCornerRadius"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="bottomLeftCornerRadius">The setting to apply to all vertex data.</param>
@@ -433,7 +433,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.BottomRightCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.BottomRightCornerRadius"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="bottomRightCornerRadius">The setting to apply to all vertex data.</param>
@@ -492,7 +492,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.TopRightCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.TopRightCornerRadius"/> setting for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="topRightCornerRadius">The setting to apply to all vertex data.</param>
@@ -551,7 +551,7 @@ internal static class GpuDataTypeExtensions
     }
 
     /// <summary>
-    /// Updates the <see cref="ShapeVertexData.Color"/> for all of the vertex data in the given <paramref name="gpuData"/>.
+    /// Updates the <see cref="ShapeVertexData.Color"/> for all the vertex data in the given <paramref name="gpuData"/>.
     /// </summary>
     /// <param name="gpuData">The GPU data to update.</param>
     /// <param name="color">The color to apply to all vertex data.</param>

@@ -24,7 +24,7 @@ internal interface IFontAtlasService
     ///         <see cref="ImageData"/>: The font atlas texture data.
     ///     </item>
     ///     <item>
-    ///         <see cref="GlyphMetrics"/>: The atlas data for all of the glyphs in the font atlas.
+    ///         <see cref="GlyphMetrics"/>: The atlas data for all the glyphs in the font atlas.
     ///     </item>
     /// </list>
     /// </returns>

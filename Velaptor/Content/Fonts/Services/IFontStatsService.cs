@@ -10,7 +10,7 @@ namespace Velaptor.Content.Fonts.Services;
 internal interface IFontStatsService
 {
     /// <summary>
-    /// Gets the stats for all of the fonts for the given font family in the application's content font directory.
+    /// Gets the stats for all the fonts for the given font family in the application's content font directory.
     /// </summary>
     /// <param name="fontFamilyName">The font family.</param>
     /// <returns>Information about all the different styles of the fonts that match the font family.</returns>
@@ -22,7 +22,7 @@ internal interface IFontStatsService
     FontStats[] GetContentStatsForFontFamily(string fontFamilyName);
 
     /// <summary>
-    /// Gets the stats for all of the fonts for the given font family in the systems font directory.
+    /// Gets the stats for all the fonts for the given font family in the systems font directory.
     /// </summary>
     /// <param name="fontFamilyName">The font family.</param>
     /// <returns>Information about all the different styles of the fonts that match the font family.</returns>

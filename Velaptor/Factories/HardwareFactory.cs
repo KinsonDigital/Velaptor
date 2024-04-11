@@ -29,7 +29,7 @@ public static class HardwareFactory
     public static IAppInput<MouseState> GetMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
 
     /// <summary>
-    /// Gets all of the displays in the system.
+    /// Gets all the displays in the system.
     /// </summary>
     /// <returns>The list of displays.</returns>
     public static ImmutableArray<SystemDisplay> GetDisplays()
