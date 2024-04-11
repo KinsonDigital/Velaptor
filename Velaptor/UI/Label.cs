@@ -166,7 +166,7 @@ public class Label : ControlBase
     /// <summary>
     /// Gets the font family name.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API for library users.")]
     public string FontFamilyName => this.font?.FamilyName ?? string.Empty;
 
     /// <summary>
