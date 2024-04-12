@@ -1,4 +1,4 @@
-// <copyright file="LoadSoundExceptionTests.cs" company="KinsonDigital">
+// <copyright file="LoadAudioExceptionTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,26 +9,26 @@ using Velaptor.Content.Exceptions;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="LoadSoundException"/> class.
+/// Tests the <see cref="LoadAudioException"/> class.
 /// </summary>
-public class LoadSoundExceptionTests
+public class LoadAudioExceptionTests
 {
     #region Constructor Tests
     [Fact]
     public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
     {
         // Act
-        var exception = new LoadSoundException();
+        var exception = new LoadAudioException();
 
         // Assert
-        Assert.Equal("There was an issue loading the sound.", exception.Message);
+        Assert.Equal("There was an issue loading the audio.", exception.Message);
     }
 
     [Fact]
     public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
     {
         // Act
-        var exception = new LoadSoundException("test-message");
+        var exception = new LoadAudioException("test-message");
 
         // Assert
         Assert.Equal("test-message", exception.Message);
@@ -41,7 +41,7 @@ public class LoadSoundExceptionTests
         var innerException = new Exception("inner-exception");
 
         // Act
-        var deviceException = new LoadSoundException("test-exception", innerException);
+        var deviceException = new LoadAudioException("test-exception", innerException);
 
         // Assert
         Assert.Equal("inner-exception", deviceException.InnerException.Message);

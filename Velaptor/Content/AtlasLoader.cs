@@ -5,7 +5,6 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -14,12 +13,11 @@ using Exceptions;
 using Factories;
 using Graphics;
 using Services;
-using Velaptor.Factories;
 
 /// <summary>
 /// Loads atlas data.
 /// </summary>
-public sealed class AtlasLoader : ILoader<IAtlasData>
+internal sealed class AtlasLoader : ILoader<IAtlasData>
 {
     private const char CrossPlatDirSeparatorChar = '/';
     private const string TextureExtension = ".png";
@@ -35,22 +33,6 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public AtlasLoader()
-    {
-        this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        this.atlasDataPathResolver = PathResolverFactory.CreateAtlasPathResolver();
-        this.jsonService = IoC.Container.GetInstance<IJSONService>();
-        this.directory = IoC.Container.GetInstance<IDirectory>();
-        this.file = IoC.Container.GetInstance<IFile>();
-        this.path = IoC.Container.GetInstance<IPath>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
-    /// </summary>
     /// <param name="textureCache">Provides texture caching services.</param>
     /// <param name="atlasDataFactory">Generates <see cref="IAtlasData"/> instances.</param>
     /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
@@ -61,7 +43,7 @@ public sealed class AtlasLoader : ILoader<IAtlasData>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal AtlasLoader(
+    public AtlasLoader(
         IItemCache<string, ITexture> textureCache,
         IAtlasDataFactory atlasDataFactory,
         IContentPathResolver atlasDataPathResolver,

@@ -111,7 +111,7 @@ internal interface IGlfwInvoker : IDisposable
     /// </para>
     /// <para>
     ///     If you have created a full screen window for that monitor,
-    ///     the return value will depend on whether or not that window is iconified.
+    ///     the return value will depend on whether that window is iconified.
     /// </para>
     /// </summary>
     /// <param name="monitor">The monitor to query. </param>

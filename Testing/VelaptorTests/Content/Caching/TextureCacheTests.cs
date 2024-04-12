@@ -57,8 +57,8 @@ public class TextureCacheTests
     {
         this.fontFilePathWithMetaData = $"{FontFilePath}|size:{FontSize}";
 
-        this.textureImageData = new ImageData(new Color[1, 2], 1, 2);
-        this.fontImageData = new ImageData(new Color[2, 1], 2, 1);
+        this.textureImageData = new ImageData(new Color[1, 2]);
+        this.fontImageData = new ImageData(new Color[2, 1]);
 
         this.mockImageService = new Mock<IImageService>();
         this.mockImageService.Setup(m => m.Load(TextureFilePath))
@@ -523,8 +523,8 @@ public class TextureCacheTests
 
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockDisposeReactable.Setup(m =>
-                m.Push(It.Ref<DisposeTextureData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in DisposeTextureData data, Guid _) =>
+                m.Push(It.IsAny<Guid>(), It.Ref<DisposeTextureData>.IsAny))
+            .Callback((Guid _, in DisposeTextureData data) =>
             {
                 data.Should().NotBeNull("it is required for unit testing.");
 
@@ -546,7 +546,7 @@ public class TextureCacheTests
         sut.TotalCachedItems.Should().Be(0);
         this.mockDisposeReactable
             .VerifyOnce(m =>
-                m.Push(It.Ref<DisposeTextureData>.IsAny, PushNotifications.TextureDisposedId));
+                m.Push(PushNotifications.TextureDisposedId, It.Ref<DisposeTextureData>.IsAny));
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -570,7 +570,7 @@ public class TextureCacheTests
         // Assert
         this.mockDisposeReactable
             .Verify(m =>
-                m.Push(It.IsAny<DisposeTextureData>(), PushNotifications.TextureDisposedId), Times.Never);
+                m.Push(PushNotifications.TextureDisposedId, It.IsAny<DisposeTextureData>()), Times.Never);
     }
     #endregion
 
@@ -610,9 +610,9 @@ public class TextureCacheTests
 
         // Assert
         this.mockDisposeReactable
-            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 11u }, PushNotifications.TextureDisposedId));
+            .VerifyOnce(m => m.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 11u }));
         this.mockDisposeReactable
-            .VerifyOnce(m => m.Push(new DisposeTextureData { TextureId = 22u }, PushNotifications.TextureDisposedId));
+            .VerifyOnce(m => m.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 22u }));
         sut.TotalCachedItems.Should().Be(0);
     }
     #endregion
@@ -666,7 +666,7 @@ public class TextureCacheTests
     /// </summary>
     private void MockImageData()
     {
-        var imageData = new ImageData(new Color[3, 1], 3, 1);
+        var imageData = new ImageData(new Color[3, 1]);
         this.mockImageService.Setup(m => m.Load(TextureFilePath))
             .Returns(imageData);
     }

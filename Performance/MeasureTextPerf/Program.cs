@@ -3,6 +3,7 @@
 // </copyright>
 
 // ReSharper disable once RedundantUsingDirective
+#pragma warning disable SA1200
 using BenchmarkDotNet.Running;
 using MeasureTextPerf;
 

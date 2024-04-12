@@ -47,9 +47,9 @@ internal static class PushNotifications
     public static Guid TextureDisposedId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
 
     /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications for when a sound is disposed.
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the audio is disposed.
     /// </summary>
-    public static Guid SoundDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
+    public static Guid AudioDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the system is shutting down.

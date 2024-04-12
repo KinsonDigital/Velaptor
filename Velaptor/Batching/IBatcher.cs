@@ -17,7 +17,7 @@ public interface IBatcher
     Color ClearColor { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the batch process has begun.
+    /// Gets a value indicating whether the batch process has begun.
     /// </summary>
     bool HasBegun { get; }
 
@@ -30,7 +30,7 @@ public interface IBatcher
     /// Clears the buffers.
     /// </summary>
     /// <remarks>
-    ///     It is best to clear the buffer before rendering all of the textures.
+    ///     It is best to clear the buffer before rendering all the textures.
     ///     This is to make sure smearing does not occur during texture movement or animation.
     /// </remarks>
     void Clear();

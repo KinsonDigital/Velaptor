@@ -413,21 +413,21 @@ public static class GameHelpers
     };
 
     /// <summary>
-    /// Returns a value indicating whether or not the character is a letter.
+    /// Returns a value indicating whether the character is a letter.
     /// </summary>
     /// <param name="character">The character to check.</param>
     /// <returns>True if the character is an upper or lower case letter.</returns>
     public static bool IsLetter(this char character) => Letters.Contains(character);
 
     /// <summary>
-    /// Returns a value indicating whether or not the character is not a letter.
+    /// Returns a value indicating whether the character is not a letter.
     /// </summary>
     /// <param name="character">The character to check.</param>
     /// <returns>True if the character is not an upper or lower case letter.</returns>
     public static bool IsNotLetter(this char character) => !Letters.Contains(character);
 
     /// <summary>
-    /// Returns a value indicating whether or not a specified substring occurs within this string.
+    /// Returns a value indicating whether a specified substring occurs within this string.
     /// </summary>
     /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
     /// <param name="value">The string to seek.</param>
@@ -445,7 +445,7 @@ public static class GameHelpers
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not a specified character occurs within this string.
+    /// Returns a value indicating whether a specified character occurs within this string.
     /// </summary>
     /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
     /// <param name="value">The character to seek.</param>
@@ -463,14 +463,14 @@ public static class GameHelpers
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not this string only contains letters.
+    /// Returns a value indicating whether this string only contains letters.
     /// </summary>
     /// <param name="value">The string to check.</param>
     /// <returns><c>true</c> if the string only contains letters.</returns>
     public static bool OnlyContainsLetters(this string value) => value.All(character => !character.IsNotLetter());
 
     /// <summary>
-    /// Returns a value indicating whether or not this string does not only contain letters.
+    /// Returns a value indicating whether this string does not only contain letters.
     /// </summary>
     /// <param name="value">The string to check.</param>
     /// <returns><c>true</c> if the string contains other characters besides letters.</returns>

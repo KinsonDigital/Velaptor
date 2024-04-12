@@ -8,7 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using ExtensionMethods;
 using Graphics;
@@ -18,6 +18,7 @@ using ReactableData;
 /// <inheritdoc/>
 internal class TextSelection : ITextSelection
 {
+    private readonly IDisposable unsubscriber;
     private TextBoxStateData preMutateState;
     private TextBoxStateData postMutateState;
 
@@ -30,12 +31,10 @@ internal class TextSelection : ITextSelection
     /// </exception>
     public TextSelection(IPushReactable<TextBoxStateData> textBoxStateReactable)
     {
-        var textBoxStateSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.TextBoxStateId)
-            .WithName("TextBoxStateDataUpdate")
-            .BuildOneWayReceive<TextBoxStateData>(UpdateState);
-
-        textBoxStateReactable.Subscribe(textBoxStateSubscription);
+        this.unsubscriber = textBoxStateReactable.CreateOneWayReceive(
+            PushNotifications.TextBoxStateId,
+            UpdateState,
+            () => this.unsubscriber?.Dispose());
 
         SelectionRect = SelectionRect with { Color = Color.CornflowerBlue };
     }

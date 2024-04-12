@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using Hardware;
 
 /// <summary>
-/// Gets information about all of the displays in the system.
+/// Gets information about all the displays in the system.
 /// </summary>
 internal interface ISystemDisplayService
 {
     /// <summary>
-    /// Gets a list of all of the displays in the system.
+    /// Gets a list of all the displays in the system.
     /// </summary>
     IReadOnlyCollection<SystemDisplay> Displays { get; }
 

@@ -122,7 +122,7 @@ public record struct CircleShape
     public Color Color { get; set; } = Color.White;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the circle is solid.
+    /// Gets or sets a value indicating whether the circle is solid.
     /// </summary>
     public bool IsSolid { get; set; } = true;
 
@@ -190,7 +190,7 @@ public record struct CircleShape
     public Color GradientStop { get; set; } = Color.White;
 
     /// <summary>
-    /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
+    /// Returns a value indicating whether the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>

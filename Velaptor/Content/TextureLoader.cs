@@ -5,17 +5,15 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 
 /// <summary>
 /// Loads textures.
 /// </summary>
-public sealed class TextureLoader : ILoader<ITexture>
+internal sealed class TextureLoader : ILoader<ITexture>
 {
     private const string TextureFileExtension = ".png";
     private readonly IItemCache<string, ITexture> textureCache;
@@ -23,20 +21,6 @@ public sealed class TextureLoader : ILoader<ITexture>
     private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextureLoader"/> class.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public TextureLoader()
-    {
-        this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
-        this.file = IoC.Container.GetInstance<IFile>();
-        this.path = IoC.Container.GetInstance<IPath>();
-        this.directory = IoC.Container.GetInstance<IDirectory>();
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -49,7 +33,7 @@ public sealed class TextureLoader : ILoader<ITexture>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal TextureLoader(
+    public TextureLoader(
         IItemCache<string, ITexture> textureCache,
         IContentPathResolver texturePathResolver,
         IDirectory directory,

@@ -26,7 +26,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     IReadOnlyCollection<Guid> InActiveScenes { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the scene manager has been loaded.
+    /// Gets a value indicating whether the scene manager has been loaded.
     /// </summary>
     /// <remarks>This does not mean that the content in the individual scenes have been loaded.</remarks>
     bool IsLoaded { get; }
@@ -75,7 +75,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// </summary>
     /// <param name="id">The ID of the scene.</param>
     /// <remarks>
-    ///     This will set all of the other scenes to inactive.
+    ///     This will set all the other scenes to inactive.
     /// </remarks>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     void SetSceneAsActive(Guid id);
@@ -91,7 +91,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     void UnloadContent();
 
     /// <summary>
-    /// Returns a value indicating whether or not a scene exists that matches the given <paramref name="id"/>.
+    /// Returns a value indicating whether a scene exists that matches the given <paramref name="id"/>.
     /// </summary>
     /// <param name="id">The ID of the scene.</param>
     /// <returns>

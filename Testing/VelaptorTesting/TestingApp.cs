@@ -48,7 +48,7 @@ public static class TestingApp
     }
 
     /// <summary>
-    /// Registers all of the ImGui controls.
+    /// Registers all the ImGui controls.
     /// </summary>
     private static void RegisterControls()
     {

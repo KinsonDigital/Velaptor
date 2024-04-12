@@ -21,7 +21,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="RenderMediator"/> class.
 /// </summary>
-public class RenderMediatorTests
+public class RenderMediatorTests : TestsBase
 {
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IPushReactable> mockPushReactable;
@@ -33,7 +33,6 @@ public class RenderMediatorTests
     private readonly Mock<IRenderBatchReactable<FontGlyphBatchItem>> mockFontRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<ShapeBatchItem>> mockShapeRenderBatchReactable;
     private readonly Mock<IRenderBatchReactable<LineBatchItem>> mockLineRenderBatchReactable;
-
     private readonly Mock<IBatchPullReactable<TextureBatchItem>> mockTexturePullReactable;
     private readonly Mock<IBatchPullReactable<FontGlyphBatchItem>> mockFontPullReactable;
     private readonly Mock<IBatchPullReactable<ShapeBatchItem>> mockShapePullReactable;
@@ -47,42 +46,11 @@ public class RenderMediatorTests
     public RenderMediatorTests()
     {
         var mockEndBatchUnsubscriber = new Mock<IDisposable>();
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
 
         this.mockPushReactable = new Mock<IPushReactable>();
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasEndedId)
-                {
-                    reactor.Name.Should().Be($"RenderMediatorTests.Ctor - {nameof(PushNotifications.BatchHasEndedId)}");
-                    this.endBatchReactor = reactor;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    reactor.Name.Should().Be($"RenderMediatorTests.Ctor - {nameof(PushNotifications.SystemShuttingDownId)}");
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasEndedId)
-                {
-                    return mockEndBatchUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<IReceiveSubscription>(reactor => this.endBatchReactor = reactor)
+            .Returns<IReceiveSubscription>(_ => mockEndBatchUnsubscriber.Object);
 
         this.mockTexturePullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
         this.mockFontPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
@@ -256,19 +224,19 @@ public class RenderMediatorTests
             .Returns<Guid>(_ => new Memory<RenderItem<LineBatchItem>>(lineItems));
 
         this.mockTextureRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<TextureBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<TextureBatchItem>>>.IsAny))
             .Callback(AssertTextureItems);
 
         this.mockFontRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<FontGlyphBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<FontGlyphBatchItem>>>.IsAny))
             .Callback(AssertFontItems);
 
         this.mockShapeRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny))
             .Callback(AssertShapeItems);
 
         this.mockLineRenderBatchReactable
-            .Setup(m => m.Push(It.Ref<Memory<RenderItem<LineBatchItem>>>.IsAny, It.IsAny<Guid>()))
+            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<LineBatchItem>>>.IsAny))
             .Callback(AssertLineItems);
 
         _ = CreateSystemUnderTest();
@@ -282,31 +250,49 @@ public class RenderMediatorTests
         this.mockShapePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetShapeItemsId));
         this.mockLinePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetLineItemsId));
 
-        void AssertTextureItems(in Memory<RenderItem<TextureBatchItem>> data, Guid eventId)
+        void AssertTextureItems(Guid eventId, in Memory<RenderItem<TextureBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderTexturesId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertFontItems(in Memory<RenderItem<FontGlyphBatchItem>> data, Guid eventId)
+        void AssertFontItems(Guid eventId, in Memory<RenderItem<FontGlyphBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderFontsId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertShapeItems(in Memory<RenderItem<ShapeBatchItem>> data, Guid eventId)
+        void AssertShapeItems(Guid eventId, in Memory<RenderItem<ShapeBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderShapesId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        void AssertLineItems(in Memory<RenderItem<LineBatchItem>> data, Guid eventId)
+        void AssertLineItems(Guid eventId, in Memory<RenderItem<LineBatchItem>> data)
         {
             eventId.Should().Be(PushNotifications.RenderLinesId);
             data.Span.ToArray().Should().HaveCount(2);
         }
 
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.EmptyBatchId));
+    }
+    #endregion
+
+    #region Reacteable Tests
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Assert
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
+            });
+
+        // Act
+        _ = CreateSystemUnderTest();
     }
     #endregion
 

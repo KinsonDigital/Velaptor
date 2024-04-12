@@ -63,7 +63,7 @@ public readonly struct MouseState
     public int GetY() => this.position.Y;
 
     /// <summary>
-    /// Returns a value indicating whether or not the given mouse <paramref name="button"/>
+    /// Returns a value indicating whether the given mouse <paramref name="button"/>
     /// is in the down position.
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
@@ -81,7 +81,7 @@ public readonly struct MouseState
         };
 
     /// <summary>
-    /// Returns a value indicating whether or not the given mouse <paramref name="button"/>
+    /// Returns a value indicating whether the given mouse <paramref name="button"/>
     /// is in the up position.
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
@@ -102,43 +102,43 @@ public readonly struct MouseState
         };
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the left mouse button is in the down position.
+    /// Gets or sets a value indicating whether the left mouse button is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the button is down.</returns>
     public bool IsLeftButtonDown() => this.isLeftButtonDown;
 
     /// <summary>
-    /// Returns a value indicating whether or not the left mouse button is in the up position.
+    /// Returns a value indicating whether the left mouse button is in the up position.
     /// </summary>
     /// <returns><c>true</c> if the button is up.</returns>
     public bool IsLeftButtonUp() => !IsLeftButtonDown();
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the middle mouse button is in the down position.
+    /// Gets or sets a value indicating whether the middle mouse button is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the button is down.</returns>
     public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
 
     /// <summary>
-    /// Returns a value indicating whether or not the middle mouse button is in the up position.
+    /// Returns a value indicating whether the middle mouse button is in the up position.
     /// </summary>
     /// <returns><c>true</c> if the button is up.</returns>
     public bool IsMiddleButtonUp() => !IsMiddleButtonDown();
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the right mouse button is in the down position.
+    /// Gets or sets a value indicating whether the right mouse button is in the down position.
     /// </summary>
     /// <returns><c>true</c> if the button is down.</returns>
     public bool IsRightButtonDown() => this.isRightButtonDown;
 
     /// <summary>
-    /// Returns a value indicating whether or not the right mouse button is in the up position.
+    /// Returns a value indicating whether the right mouse button is in the up position.
     /// </summary>
     /// <returns><c>true</c> if the button is up.</returns>
     public bool IsRightButtonUp() => !IsRightButtonDown();
 
     /// <summary>
-    /// Returns a value indicating whether or not the state for the given <paramref name="mouseButton"/>
+    /// Returns a value indicating whether the state for the given <paramref name="mouseButton"/>
     /// is in the down or up position.
     /// </summary>
     /// <param name="mouseButton">The button state to retrieve.</param>
@@ -153,7 +153,7 @@ public readonly struct MouseState
         };
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the mouse buttons are in the down position.
+    /// Returns a value indicating whether any of the mouse buttons are in the down position.
     /// </summary>
     /// <returns>True if any buttons are in the down position.</returns>
     public bool AnyButtonsDown() => IsButtonDown(MouseButton.LeftButton) ||

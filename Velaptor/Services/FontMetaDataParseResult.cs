@@ -11,12 +11,12 @@ namespace Velaptor.Services;
 internal readonly record struct FontMetaDataParseResult
 {
     /// <summary>
-    /// Gets a value indicating whether or not a string contains metadata.
+    /// Gets a value indicating whether a string contains metadata.
     /// </summary>
     public bool ContainsMetaData { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the metadata in the string is valid.
+    /// Gets a value indicating whether the metadata in the string is valid.
     /// </summary>
     public bool IsValid { get; init; }
 

@@ -16,7 +16,7 @@ internal interface IOpenGLService
     // ReSharper disable CommentTypo
 
     /// <summary>
-    /// Gets a value indicating whether or not a VBO is bound.
+    /// Gets a value indicating whether a VBO is bound.
     /// </summary>
     /// <remarks>
     ///     VBO stands for (V)ertex (B)uffer (O)bject.
@@ -27,7 +27,7 @@ internal interface IOpenGLService
     // ReSharper disable CommentTypo
 
     /// <summary>
-    /// Gets a value indicating whether or not an EBO is bound.
+    /// Gets a value indicating whether an EBO is bound.
     /// </summary>
     /// <remarks>
     ///     EBO stands for (E)lement (B)uffer (O)bject.
@@ -38,7 +38,7 @@ internal interface IOpenGLService
     // ReSharper disable CommentTypo
 
     /// <summary>
-    /// Gets a value indicating whether or not a VAO is bound.
+    /// Gets a value indicating whether a VAO is bound.
     /// </summary>
     /// <remarks>
     ///     VAO stands for (V)ertex (A)rray (O)object.
@@ -106,25 +106,25 @@ internal interface IOpenGLService
     void UnbindVAO();
 
     /// <summary>
-    /// Binds a two dimensional texture using the given <paramref name="textureId"/>.
+    /// Binds a two-dimensional texture using the given <paramref name="textureId"/>.
     /// </summary>
     /// <param name="textureId">The ID of the texture to bind.</param>
     void BindTexture2D(uint textureId);
 
     /// <summary>
-    /// Binds the currently bound two dimensional texture.
+    /// Binds the currently bound two-dimensional texture.
     /// </summary>
     void UnbindTexture2D();
 
     /// <summary>
-    /// Returns a value indicating whether or not the program linking process was successful.
+    /// Returns a value indicating whether the program linking process was successful.
     /// </summary>
     /// <param name="programId">The ID of the program to check.</param>
     /// <returns><c>true</c> if the linking was successful.</returns>
     bool ProgramLinkedSuccessfully(uint programId);
 
     /// <summary>
-    /// Returns a value indicating whether or not the shader was compiled successfully.
+    /// Returns a value indicating whether the shader was compiled successfully.
     /// </summary>
     /// <param name="shaderId">The ID of the shader to check.</param>
     /// <returns><c>true</c> if the shader compiled successfully.</returns>

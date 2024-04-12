@@ -17,7 +17,7 @@ using Velaptor.Input;
 using Velaptor.Scene;
 
 /// <summary>
-/// Used to test whether or not lines are properly rendered to the screen.
+/// Used to test whether lines are properly rendered to the screen.
 /// </summary>
 public class LineRenderingScene : SceneBase
 {

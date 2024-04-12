@@ -121,7 +121,7 @@ public abstract class ControlBase : IControl
     public virtual bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets a value indicating whether or not the mouse is hovering over the button.
+    /// Gets a value indicating whether the mouse is hovering over the button.
     /// </summary>
     public bool IsMouseOver { get; private set; }
 

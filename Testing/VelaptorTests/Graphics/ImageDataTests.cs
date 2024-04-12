@@ -5,7 +5,7 @@
 namespace VelaptorTests.Graphics;
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using FluentAssertions;
 using Helpers;
@@ -19,58 +19,25 @@ public class ImageDataTests
 {
     #region Constructor Tests
     [Fact]
-    public void Ctor_WhenPixelParamIsNull_ProperlyCreatesDefaultPixelData()
-    {
-        // Act
-        var imageData = new ImageData(null, 3, 2);
-
-        // Assert
-        imageData.Pixels.GetUpperBound(0).Should().Be(2);
-        imageData.Pixels.GetUpperBound(1).Should().Be(1);
-
-        var row0 = GetRow(imageData.Pixels, 0);
-
-        row0.Should().AllSatisfy(pixel =>
-        {
-            pixel.Should().Be(Color.White, $"Actual Pixel Color (Row 0): {pixel}");
-        });
-    }
-
-    [Fact]
-    public void Ctor_WhenWidthAndPixelDimensionDoesNotMatch_ThrowsException()
+    public void Ctor_WithNullPixelsParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImageData(new Color[1, 2], 11, 2);
+            _ = new ImageData(null);
         };
 
         // Assert
         act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The length of the 1st dimension of the 'pixels' parameter must match the 'width' parameter.");
-    }
-
-    [Fact]
-    public void Ctor_WhenHeightAndPixelDimensionDoesNotMatch_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new ImageData(new Color[1, 2], 1, 22);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
+            .Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'pixels')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_FlipStatesSetToCorrectValues()
     {
         // Arrange
-        var sut = new ImageData(new Color[2, 2], 2, 2);
+        var sut = new ImageData(new Color[2, 2]);
 
         // Act
         var actualHorizontalFlip = sut.IsFlippedHorizontally;
@@ -87,10 +54,80 @@ public class ImageDataTests
     public void Ctor_WithNullOrEmptyFilePathParam_SetsFilePathProp(string? filePath)
     {
         // Arrange & Act
-        var sut = new ImageData(null, 1, 1, filePath);
+        var sut = new ImageData(new Color[1, 1], filePath);
 
         // Assert
         sut.FilePath.Should().BeEmpty();
+    }
+    #endregion
+
+    #region Prop Tests
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void IsFlippedHorizontally_WhenCreatedViaDefaultCtor_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = new ImageData();
+
+        // Act
+        var act = () => sut.IsFlippedHorizontally;
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void IsFlippedVertically_WhenCreatedViaDefaultCtor_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = new ImageData();
+
+        // Act
+        var act = () => sut.IsFlippedVertically;
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void IsFlippedHorizontally_WhenCreatedViaDefaultKeyword_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = default(ImageData);
+
+        // Act
+        var act = () => sut.IsFlippedHorizontally;
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void IsFlippedVertically_WhenCreatedViaDefaultKeyword_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = default(ImageData);
+
+        // Act
+        var act = () => sut.IsFlippedVertically;
+
+        // Assert
+        act.Should().NotThrow();
     }
     #endregion
 
@@ -156,10 +193,44 @@ public class ImageDataTests
     }
 
     [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void FlipHorizontally_WhenCreatedViaDefaultCtor_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = new ImageData();
+
+        // Act
+        var act = () => sut.FlipHorizontally();
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void FlipHorizontally_WhenCreatedViaTheDefaultKeyword_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = default(ImageData);
+
+        // Act
+        var act = () => sut.FlipHorizontally();
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void FlipHorizontally_WhenInvoked_FlipsImageHorizontally()
     {
         // Arrange
-        var sut = new ImageData(new Color[4, 4], 4, 4);
+        var sut = new ImageData(new Color[4, 4]);
 
         // Set the first 2 columns to blue
         sut = TestHelpers.SetColumnColorTo(sut, 0, Color.Blue);
@@ -185,10 +256,44 @@ public class ImageDataTests
     }
 
     [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void FlipVertically_WhenCreatedViaDefaultCtor_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = new ImageData();
+
+        // Act
+        var act = () => sut.FlipVertically();
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Need to test default constructor.")]
+    public void FlipVertically_WhenCreatedViaTheDefaultKeyword_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = default(ImageData);
+
+        // Act
+        var act = () => sut.FlipVertically();
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void FlipVertically_WhenInvoked_FlipsImageVertically()
     {
         // Arrange
-        var sut = new ImageData(new Color[4, 4], 4, 4);
+        var sut = new ImageData(new Color[4, 4]);
 
         // Set the first 2 rows to blue
         sut = TestHelpers.SetRowColorTo(sut, 0, Color.Blue);
@@ -271,8 +376,8 @@ public class ImageDataTests
     public void Equals_WhenFilePathsAreNotEqual_ReturnsFalse()
     {
         // Arrange
-        var sutA = new ImageData(new Color[2, 2], 2, 2, "itemA");
-        var sutB = new ImageData(new Color[2, 2], 2, 2, "itemB");
+        var sutA = new ImageData(new Color[2, 2], "itemA");
+        var sutB = new ImageData(new Color[2, 2], "itemB");
 
         // Act
         var actual = sutA.Equals(sutB);
@@ -369,8 +474,8 @@ public class ImageDataTests
     public void EqualsOperator_WhenBothPixelLengthsAreNotEqual_ReturnsFalse()
     {
         // Arrange
-        var imageDataA = new ImageData(new Color[2, 2], 2, 2);
-        var imageDataB = new ImageData(new Color[3, 3], 3, 3);
+        var imageDataA = new ImageData(new Color[2, 2]);
+        var imageDataB = new ImageData(new Color[3, 3]);
 
         // Act
         var actual = imageDataA == imageDataB;
@@ -409,15 +514,15 @@ public class ImageDataTests
 
     [Theory]
     [InlineData(0u, 0u, true)]
-    [InlineData(1u, 0u, false)]
-    [InlineData(0u, 1u, false)]
+    [InlineData(10u, 0u, false)]
+    [InlineData(0u, 10u, false)]
     public void IsEmpty_WhenEmpty_ReturnsCorrectResult(uint width, uint height, bool expected)
     {
         // Arrange
-        var data = new ImageData(null, width, height);
+        var sut = new ImageData(new Color[width, height]);
 
         // Act
-        var actual = data.IsEmpty();
+        var actual = sut.IsEmpty();
 
         // Assert
         actual.Should().Be(expected);
@@ -430,7 +535,7 @@ public class ImageDataTests
     public void ToString_WhenInvoked_ReturnsCorrectResult(uint width, uint height, string? filePath, string expected)
     {
         // Arrange
-        var sut = new ImageData(new Color[width, height], width, height, filePath);
+        var sut = new ImageData(new Color[width, height], filePath);
 
         // Act
         var actual = sut.ToString();
@@ -439,24 +544,6 @@ public class ImageDataTests
         actual.Should().Be(expected);
     }
     #endregion
-
-    /// <summary>
-    /// Gets the given <paramref name="row"/> of pixels from the 2D array of pixels.
-    /// </summary>
-    /// <param name="pixels">The pixel data.</param>
-    /// <param name="row">The row number to retrieve.</param>
-    /// <returns>The data to test.</returns>
-    private static Color[] GetRow(Color[,] pixels, int row)
-    {
-        var result = new List<Color>();
-
-        for (var x = 0; x < pixels.GetUpperBound(1); x++)
-        {
-            result.Add(pixels[x, row]);
-        }
-
-        return result.ToArray();
-    }
 
     /// <summary>
     /// Verifies if colors match.

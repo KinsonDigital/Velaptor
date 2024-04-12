@@ -111,7 +111,7 @@ internal readonly record struct ShapeBatchItem
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the shape is a solid color.
+    /// Gets a value indicating whether the shape is a solid color.
     /// </summary>
     public bool IsSolid { get; }
 
@@ -179,7 +179,7 @@ internal readonly record struct ShapeBatchItem
     public Color GradientStop { get; }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
+    /// Returns a value indicating whether the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>

@@ -84,7 +84,7 @@ internal readonly struct ShapeVertexData
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the shape will be rendered as a solid shape.
+    /// Gets a value indicating whether the shape will be rendered as a solid shape.
     /// </summary>
     public bool IsSolid { get; }
 
@@ -153,9 +153,9 @@ internal readonly struct ShapeVertexData
             0f);
 
     /// <summary>
-    /// Returns all of the vertex data as an array or ordered values.
+    /// Returns all the vertex data as an array or ordered values.
     /// </summary>
-    /// <returns>All of the vertex data values.</returns>
+    /// <returns>All the vertex data values.</returns>
     public IEnumerable<float> ToArray()
     {
         /* NOTE:

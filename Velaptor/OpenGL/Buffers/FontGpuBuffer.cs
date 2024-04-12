@@ -10,13 +10,12 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Exceptions;
 using Factories;
 using GpuData;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 
 /// <summary>
 /// Updates font data in the GPU buffer.
@@ -25,6 +24,7 @@ using ReactableData;
 internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGpuBuffer"/> class.
@@ -43,10 +43,9 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
     {
         var batchSizeReactable = reactableFactory.CreateBatchSizeReactable();
 
-        var subscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchSizeChangedId)))
-            .BuildOneWayReceive<BatchSizeData>(data =>
+        this.unsubscriber = batchSizeReactable.CreateOneWayReceive(
+            PushNotifications.BatchSizeChangedId,
+            (data) =>
             {
                 if (data.TypeOfBatch != BatchType.Font)
                 {
@@ -59,9 +58,8 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
                 {
                     ResizeBatch();
                 }
-            });
-
-        batchSizeReactable.Subscribe(subscription);
+            },
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

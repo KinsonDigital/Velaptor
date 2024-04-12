@@ -27,7 +27,7 @@ public class ShapeBatchItemTests
     public ShapeBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
 
     /// <summary>
-    /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
+    /// Gets all the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
     public static TheoryData<Vector2, (float, float), Color, bool, float, CornerRadius, ColorGradient, (Color, Color), string, bool> IsEmptyData =>

@@ -871,11 +871,11 @@ public sealed class TextBox : ControlBase
         {
             case MutateType.PreMutate:
                 this.preTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
+                this.textBoxDataReactable.Push(PushNotifications.TextBoxStateId, newState);
                 break;
             case MutateType.PostMutate:
                 this.postTextBoxState = newState;
-                this.textBoxDataReactable.Push(newState, PushNotifications.TextBoxStateId);
+                this.textBoxDataReactable.Push(PushNotifications.TextBoxStateId, newState);
                 break;
             default:
                 throw new InvalidEnumArgumentException(nameof(mutateType), (int)mutateType, typeof(MutateType));
@@ -1033,7 +1033,7 @@ public sealed class TextBox : ControlBase
     /// <summary>
     /// Calculates the new text position as a whole as well as the individual character bounds
     /// based on the height of the text before and after it was mutated.
-    /// This helps keep all of the text vertically centered no matter the height of newly added
+    /// This helps keep all the text vertically centered no matter the height of newly added
     /// or removed characters.
     /// </summary>
     /// <param name="prevHeight">The height of the text before it was mutated.</param>
@@ -1045,7 +1045,7 @@ public sealed class TextBox : ControlBase
             ? new Vector2(this.textPos.X, Position.Y - currentHeight.Half() + currentHeight.Half())
             : new Vector2(this.textPos.X, this.textPos.Y + (prevHeight - currentHeight).Half());
 
-        // Update all of the character Y positions to have each character centered vertically
+        // Update all the character Y positions to have each character centered vertically
         // over the same Y position as the text render location
         for (var i = 0; i < this.charBounds.Count; i++)
         {

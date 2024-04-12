@@ -74,13 +74,13 @@ public class BatcherTests
 
         // Testing the sending of batch size notifications for different batch types
         this.mockBatchSizeReactable.Received(1)
-            .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Texture }, PushNotifications.BatchSizeChangedId);
+            .Push(PushNotifications.BatchSizeChangedId, new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Texture });
         this.mockBatchSizeReactable.Received(1)
-            .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Font }, PushNotifications.BatchSizeChangedId);
+            .Push(PushNotifications.BatchSizeChangedId, new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Font });
         this.mockBatchSizeReactable.Received(1)
-            .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Rect }, PushNotifications.BatchSizeChangedId);
+            .Push(PushNotifications.BatchSizeChangedId, new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Rect });
         this.mockBatchSizeReactable.Received(1)
-            .Push(new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Line }, PushNotifications.BatchSizeChangedId);
+            .Push(PushNotifications.BatchSizeChangedId, new BatchSizeData { BatchSize = 1000, TypeOfBatch = BatchType.Line });
     }
     #endregion
 

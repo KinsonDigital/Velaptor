@@ -1,4 +1,5 @@
 import { WorkflowClient } from "clients/WorkflowClient.ts";
+import { Confirm } from "https://deno.land/x/cliffy@v1.0.0-rc.4/prompt/confirm.ts";
 
 // Check that the required number of arguments were provided
 if (Deno.args.length != 5) {
@@ -13,6 +14,20 @@ if (Deno.args.length != 5) {
     errorMsg += "\n5. GitHub PAT: The GitHub Personal Access Token to use for authentication.";
     Deno.exit(1);
 }
+
+const doNotExecuteRelease = !(await Confirm.prompt({
+    message: "Are you sure you want to trigger an API docs release?",
+    validate: (value) => {
+        return value.length === 1 && value[0].toUpperCase() === "Y" || value[0].toUpperCase() === "N";
+    },
+}));
+
+if (doNotExecuteRelease) {
+    console.log("API docs release cancelled.");
+    Deno.exit();
+}
+
+console.log("Executing API docs release...");
 
 const args = Deno.args.map((arg) => arg.trim());
 const repoName = args[0].trim();

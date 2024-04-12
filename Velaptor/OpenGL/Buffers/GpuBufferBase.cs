@@ -6,11 +6,10 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
-using ReactableData;
 
 /// <summary>
 /// Base functionality for managing buffer data in the GPU.
@@ -19,6 +18,9 @@ using ReactableData;
 internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     where TData : struct
 {
+    private readonly IDisposable initUnsubscriber;
+    private readonly IDisposable shutDownUnsubscriber;
+    private readonly IDisposable portSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
 
     /// <summary>
@@ -42,35 +44,30 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         GL = gl;
         OpenGLService = openGLService;
 
-        var signalReactable = reactableFactory.CreateNoDataPushReactable();
+        var reactable = reactableFactory.CreateNoDataPushReactable();
 
         // Subscribe to GL initialized signal
-        var initSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.GLInitializedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.GLInitializedId)))
-            .BuildNonReceive(Init);
-
-        signalReactable.Subscribe(initSubscription);
+        this.initUnsubscriber = reactable.CreateNonReceiveOrRespond(
+            PushNotifications.GLInitializedId,
+            Init,
+            () => this.initUnsubscriber?.Dispose());
 
         // Subscribe to the shut down signal
-        var shutDownSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SystemShuttingDownId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
-
-        signalReactable.Subscribe(shutDownSubscription);
+        this.shutDownUnsubscriber = reactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.shutDownUnsubscriber?.Dispose());
 
         // Subscribe to port size change notifications
         var portSizeReactable = reactableFactory.CreateViewPortReactable();
-        var viewPorSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.ViewPortSizeChangedId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.ViewPortSizeChangedId)))
-            .BuildOneWayReceive<ViewPortSizeData>(data =>
+
+        this.portSizeUnsubscriber = portSizeReactable.CreateOneWayReceive(
+            PushNotifications.ViewPortSizeChangedId,
+            (data) =>
             {
                 ViewPortSize = new SizeU(data.Width, data.Height);
-            });
-
-        portSizeReactable.Subscribe(viewPorSubscription);
+            },
+            () => this.portSizeUnsubscriber?.Dispose());
 
         ProcessCustomAttributes();
     }
@@ -95,7 +92,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     protected internal uint BatchSize { get; protected set; } = 100;
 
     /// <summary>
-    /// Gets a value indicating whether or not the buffer has been initialized.
+    /// Gets a value indicating whether the buffer has been initialized.
     /// </summary>
     protected internal bool IsInitialized { get; private set; }
 
@@ -109,11 +106,6 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// Gets the size of the viewport.
     /// </summary>
     protected SizeU ViewPortSize { get; private set; }
-
-    /// <summary>
-    /// Gets a value indicating whether or not the buffer has been disposed.
-    /// </summary>
-    protected bool IsDisposed { get; private set; }
 
     /// <summary>
     /// Gets the invoker that makes OpenGL calls.
@@ -134,6 +126,11 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// Gets the ID of the vertex buffer object.
     /// </summary>
     private protected uint VBO { get; private set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the buffer has been disposed.
+    /// </summary>
+    private bool IsDisposed { get; set; }
 
     /// <summary>
     /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.

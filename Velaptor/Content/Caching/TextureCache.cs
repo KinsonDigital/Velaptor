@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
 using Factories;
@@ -38,11 +38,12 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     private readonly IFontMetaDataParser fontMetaDataParser;
     private readonly IPath path;
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
+    private readonly IDisposable unsubscriber;
     private readonly string[] defaultFontNames =
-    {
+    [
         DefaultRegularFontName, DefaultBoldFontName,
         DefaultItalicFontName, DefaultBoldItalicFontName,
-    };
+    ];
     private bool isDisposed;
 
     /// <summary>
@@ -78,12 +79,10 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
         this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
         var shutDownReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var shutDownSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.SystemShuttingDownId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.SystemShuttingDownId)))
-            .BuildNonReceive(ShutDown);
-
-        shutDownReactable.Subscribe(shutDownSubscription);
+        this.unsubscriber = shutDownReactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <summary>
@@ -265,7 +264,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             return;
         }
 
-        this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
 #if DEBUG
         AppStats.ClearLoadedFont(cacheKey);
         AppStats.RemoveLoadedTexture(texture.Id);
@@ -284,7 +283,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
         foreach ((_, ITexture? texture) in this.textures)
         {
-            this.disposeReactable.Push(new DisposeTextureData { TextureId = texture.Id }, PushNotifications.TextureDisposedId);
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
         }
 
         this.textures.Clear();

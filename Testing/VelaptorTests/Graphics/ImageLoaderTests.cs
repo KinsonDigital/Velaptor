@@ -87,11 +87,11 @@ public class ImageLoaderTests
     {
         // Arrange
         const string filePath = "test-file-path";
-        var expected = new ImageData(new Color[2, 4], 2, 4, filePath);
+        var expected = new ImageData(new Color[2, 4], filePath);
 
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
         this.mockImageService.Setup(m => m.Load(filePath))
-            .Returns<string>(_ => new ImageData(new Color[2, 4], 2, 4, filePath));
+            .Returns<string>(_ => new ImageData(new Color[2, 4], filePath));
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -107,13 +107,13 @@ public class ImageLoaderTests
     {
         // Arrange
         const string filePath = "test-file-path";
-        var expected = new ImageData(new Color[2, 4], 2, 4, filePath);
+        var expected = new ImageData(new Color[2, 4], filePath);
 
         this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
             .Returns(filePath);
         this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
         this.mockImageService.Setup(m => m.Load(filePath))
-            .Returns<string>(_ => new ImageData(new Color[2, 4], 2, 4, filePath));
+            .Returns<string>(_ => new ImageData(new Color[2, 4], filePath));
         var sut = CreateSystemUnderTest();
 
         // Act

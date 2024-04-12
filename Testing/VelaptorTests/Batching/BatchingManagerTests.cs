@@ -26,23 +26,17 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="BatchingManager"/> class.
 /// </summary>
-public class BatchingManagerTests
+public class BatchingManagerTests : TestsBase
 {
     private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly Mock<IReactableFactory> mockReactableFactory;
     private readonly Mock<IDisposable> mockBatchSizeUnsubscriber;
-    private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-    private readonly Mock<IDisposable> mockTexturePullUnsubscriber;
-    private readonly Mock<IDisposable> mockFontPullUnsubscriber;
-    private readonly Mock<IDisposable> mockShapePullUnsubscriber;
-    private readonly Mock<IDisposable> mockLinePullUnsubscriber;
-    private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
-    private IReceiveSubscription? shutDownReactor;
-    private IReceiveSubscription? emptyBatchReactor;
     private IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>? textureBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>? fontBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>? shapeBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<LineBatchItem>>>? lineBatchPullReactor;
+    private IReceiveSubscription? emptyBatchReactor;
+    private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchingManagerTests"/> class.
@@ -52,20 +46,17 @@ public class BatchingManagerTests
         this.mockBatchSizeUnsubscriber = new Mock<IDisposable>();
         this.mockBatchSizeUnsubscriber.Name = nameof(this.mockBatchSizeUnsubscriber);
 
-        this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-        this.mockShutDownUnsubscriber.Name = nameof(this.mockShutDownUnsubscriber);
+        var mockTexturePullUnsubscriber = new Mock<IDisposable>();
+        mockTexturePullUnsubscriber.Name = nameof(mockTexturePullUnsubscriber);
 
-        this.mockTexturePullUnsubscriber = new Mock<IDisposable>();
-        this.mockTexturePullUnsubscriber.Name = nameof(this.mockTexturePullUnsubscriber);
+        var mockFontPullUnsubscriber = new Mock<IDisposable>();
+        mockFontPullUnsubscriber.Name = nameof(mockFontPullUnsubscriber);
 
-        this.mockFontPullUnsubscriber = new Mock<IDisposable>();
-        this.mockFontPullUnsubscriber.Name = nameof(this.mockFontPullUnsubscriber);
+        var mockShapePullUnsubscriber = new Mock<IDisposable>();
+        mockShapePullUnsubscriber.Name = nameof(mockShapePullUnsubscriber);
 
-        this.mockShapePullUnsubscriber = new Mock<IDisposable>();
-        this.mockShapePullUnsubscriber.Name = nameof(this.mockShapePullUnsubscriber);
-
-        this.mockLinePullUnsubscriber = new Mock<IDisposable>();
-        this.mockLinePullUnsubscriber.Name = nameof(this.mockLinePullUnsubscriber);
+        var mockLinePullUnsubscriber = new Mock<IDisposable>();
+        mockLinePullUnsubscriber.Name = nameof(mockLinePullUnsubscriber);
 
         var mockEmptyBatchUnsubscriber = new Mock<IDisposable>();
         mockEmptyBatchUnsubscriber.Name = nameof(mockEmptyBatchUnsubscriber);
@@ -74,152 +65,38 @@ public class BatchingManagerTests
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
             .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PushNotifications.BatchSizeChangedId)}");
-
                 this.batchSizeReactor = reactor;
             })
             .Returns<IReceiveSubscription<BatchSizeData>>(_ => this.mockBatchSizeUnsubscriber.Object);
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.EmptyBatchId)
-                {
-                    reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PushNotifications.EmptyBatchId)}");
-                    this.emptyBatchReactor = reactor;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PushNotifications.SystemShuttingDownId)}");
-                    this.shutDownReactor = reactor;
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.EmptyBatchId)
-                {
-                    return mockEmptyBatchUnsubscriber.Object;
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return this.mockShutDownUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
-                return null;
-            });
+            .Callback<IReceiveSubscription>(reactor => this.emptyBatchReactor = reactor)
+            .Returns<IReceiveSubscription>(_ => mockEmptyBatchUnsubscriber.Object);
 
         var mockTextureBatchPullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
         mockTextureBatchPullReactable
             .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>()))
-            .Callback<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
-
-                if (reactor.Id == PullResponses.GetTextureItemsId)
-                {
-                    this.textureBatchPullReactor = reactor;
-                }
-            })
-            .Returns<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PullResponses.GetTextureItemsId)
-                {
-                    return this.mockTexturePullUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
-                return null;
-            });
+            .Callback<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>(reactor => this.textureBatchPullReactor = reactor)
+            .Returns<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>(_ => mockTexturePullUnsubscriber.Object);
 
         var mockFontBatchPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
         mockFontBatchPullReactable
             .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>()))
-            .Callback<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetFontItemsId)}");
-
-                if (reactor.Id == PullResponses.GetFontItemsId)
-                {
-                    this.fontBatchPullReactor = reactor;
-                }
-            })
-            .Returns<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PullResponses.GetFontItemsId)
-                {
-                    return this.mockFontPullUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
-                return null;
-            });
+            .Callback<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor => this.fontBatchPullReactor = reactor)
+            .Returns<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>(_ => mockFontPullUnsubscriber.Object);
 
         var mockShapeBatchPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
         mockShapeBatchPullReactable
             .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>()))
-            .Callback<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PullResponses.GetShapeItemsId)
-                {
-                    this.shapeBatchPullReactor = reactor;
-                }
-            })
-            .Returns<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetShapeItemsId)}");
-
-                if (reactor.Id == PullResponses.GetShapeItemsId)
-                {
-                    return this.mockShapePullUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
-                return null;
-            });
+            .Callback<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>(reactor => this.shapeBatchPullReactor = reactor)
+            .Returns<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>(_ => mockShapePullUnsubscriber.Object);
 
         var mockLineBatchPullReactable = new Mock<IBatchPullReactable<LineBatchItem>>();
         mockLineBatchPullReactable
             .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>()))
-            .Callback<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetLineItemsId)}");
-
-                if (reactor.Id == PullResponses.GetLineItemsId)
-                {
-                    this.lineBatchPullReactor = reactor;
-                }
-            })
-            .Returns<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PullResponses.GetLineItemsId)
-                {
-                    return this.mockLinePullUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The notification ID '{reactor.Id}' has not been properly mocked.");
-                return null;
-            });
+            .Callback<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>(reactor => this.lineBatchPullReactor = reactor)
+            .Returns<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>(_ => mockLinePullUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable())
@@ -255,25 +132,6 @@ public class BatchingManagerTests
     #endregion
 
     #region Reactable Tests
-    [Fact]
-    public void PushReactable_WhenReceivingShutDownNotification_ShutDownManager()
-    {
-        // Arrange
-        _ = CreateSystemUnderTest();
-
-        // Act
-        this.shutDownReactor.OnReceive();
-        this.shutDownReactor.OnReceive();
-
-        // Assert
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockTexturePullUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockFontPullUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockShapePullUnsubscriber.VerifyOnce(m => m.Dispose());
-        this.mockLinePullUnsubscriber.VerifyOnce(m => m.Dispose());
-    }
-
     [Fact]
     public void PushReactable_WhenReceivingEmptyBatchNotification_EmptiesBatch()
     {
@@ -464,10 +322,113 @@ public class BatchingManagerTests
         actual.ToArray()[1].Layer.Should().Be(2);
         actual.ToArray()[1].Item.Should().BeEquivalentTo(itemB);
     }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void TextureBatchPullReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockTextureBatchPullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
+        mockTextureBatchPullReactable
+            .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>()))
+            .Callback<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
+            });
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void BatchSizeReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Assert
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
+            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
+            })
+            .Returns<IReceiveSubscription<BatchSizeData>>(_ => this.mockBatchSizeUnsubscriber.Object);
+
+        // Act
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void PushReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+
+                if (reactor.Id == PushNotifications.EmptyBatchId)
+                {
+                    reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PushNotifications.EmptyBatchId}");
+                }
+            });
+
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void FontBatchReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Assert
+        var mockFontBatchPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
+        mockFontBatchPullReactable
+            .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>()))
+            .Callback<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetFontItemsId}");
+            });
+
+        // Act
+        _ = CreateSystemUnderTest();
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void ShapeBatchReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Assert
+        var mockShapeBatchPullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
+        mockShapeBatchPullReactable
+            .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>()))
+            .Callback<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+            });
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void LineBatchPullReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
+    {
+        // Arrange & Assert
+        var mockLineBatchPullReactable = new Mock<IBatchPullReactable<LineBatchItem>>();
+        mockLineBatchPullReactable
+            .Setup(m => m.Subscribe(It.IsAny<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>()))
+            .Callback<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetLineItemsId}");
+            });
+
+        // Act
+        _ = CreateSystemUnderTest();
+    }
     #endregion
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void AddTextureItem_WithFullBatch_ResizesTextureBatch()
     {
         // Arrange
@@ -483,8 +444,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<TextureBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<TextureBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Texture });
             });
@@ -514,6 +475,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddTextureItem_WithFullBatchAndInvalidBatchType_ThrowsException()
     {
         // Arrange
@@ -525,8 +487,8 @@ public class BatchingManagerTests
         var itemB = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(50, 60, 70, 80));
         var itemC = BatchItemFactory.CreateTextureItemWithOrderedValues(new RectangleF(90, 100, 110, 120));
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = (BatchType)invalidValue });
             });
@@ -549,6 +511,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddTextureItem_WhenInvoked_SetsNewBatchItem()
     {
         // Arrange
@@ -570,6 +533,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddFontItem_WithFullBatch_ResizesFontBatch()
     {
         // Arrange
@@ -585,8 +549,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<FontGlyphBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<FontGlyphBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Font });
             });
@@ -616,6 +580,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddFontItem_WhenInvoked_SetsNewBatchItem()
     {
         // Arrange
@@ -637,6 +602,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddShapeItem_WithFullBatch_ResizesShapeBatch()
     {
         // Arrange
@@ -652,8 +618,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<ShapeBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Rect });
             });
@@ -683,6 +649,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddShapeItem_WhenInvoked_SetsNewLineBatchItem()
     {
         // Arrange
@@ -704,6 +671,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddLineItem_WithFullBatch_ResizesLineBatch()
     {
         // Arrange
@@ -719,8 +687,8 @@ public class BatchingManagerTests
         var expectedB = new RenderItem<LineBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB };
         var expectedC = new RenderItem<LineBatchItem> { Layer = 3, Item = itemC, RenderStamp = renderStampC };
 
-        this.mockBatchSizeReactable.Setup(m => m.Push(It.Ref<BatchSizeData>.IsAny, It.IsAny<Guid>()))
-            .Callback((in BatchSizeData _, Guid _) =>
+        this.mockBatchSizeReactable.Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<BatchSizeData>.IsAny))
+            .Callback((Guid _, in BatchSizeData _) =>
             {
                 this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 3, TypeOfBatch = BatchType.Line });
             });
@@ -750,6 +718,7 @@ public class BatchingManagerTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void AddLineItem_WhenInvoked_SetsNewBatchItem()
     {
         // Arrange

@@ -35,7 +35,7 @@ public class InternalExtensionMethodsTests
     public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
     {
         // Arrange
-        var imageData = new ImageData(new NETColor[2, 3], 2, 3);
+        var imageData = new ImageData(new NETColor[2, 3]);
 
         var expectedPixels = new Rgba32[2, 3];
 
@@ -514,7 +514,7 @@ public class InternalExtensionMethodsTests
     /// Gets the <see cref="Rgba32"/> pixels from the given <paramref name="sixLaborsImage"/>.
     /// </summary>
     /// <param name="sixLaborsImage">The six labors image.</param>
-    /// <returns>The two dimensional pixel colors of the image.</returns>
+    /// <returns>The two-dimensional pixel colors of the image.</returns>
     private static Rgba32[,] GetSixLaborPixels(Image<Rgba32> sixLaborsImage)
     {
         var result = new Rgba32[sixLaborsImage.Width, sixLaborsImage.Height];

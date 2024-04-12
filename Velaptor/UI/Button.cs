@@ -197,7 +197,7 @@ public sealed class Button : ControlBase
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the size of the <see cref="Button"/> will be
+    /// Gets or sets a value indicating whether the size of the <see cref="Button"/> will be
     /// managed automatically based on the size of the <see cref="UI.Label"/>.
     /// </summary>
     /// <remarks>
@@ -289,7 +289,7 @@ public sealed class Button : ControlBase
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the border of the <see cref="Button"/> is visible.
+    /// Gets or sets a value indicating whether the border of the <see cref="Button"/> is visible.
     /// </summary>
     [Obsolete("This property is deprecated and will be removed in a future release.")]
     public bool BorderVisible { get; set; } = true;
@@ -339,7 +339,7 @@ public sealed class Button : ControlBase
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the button is enabled.
+    /// Gets or sets a value indicating whether the button is enabled.
     /// </summary>
     public override bool Enabled
     {

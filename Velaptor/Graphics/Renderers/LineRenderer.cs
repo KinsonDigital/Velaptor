@@ -8,7 +8,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
-using Carbonate.Fluent;
+using Carbonate;
 using Factories;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
@@ -25,6 +25,8 @@ internal sealed class LineRenderer : ILineRenderer
     private readonly IOpenGLService openGLService;
     private readonly IGpuBuffer<LineBatchItem> buffer;
     private readonly IShaderProgram shader;
+    private readonly IDisposable batchBeginUnsubscriber;
+    private readonly IDisposable renderUnsubscriber;
     private bool hasBegun;
 
     /// <summary>
@@ -58,21 +60,17 @@ internal sealed class LineRenderer : ILineRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
-        var beginBatchSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.BatchHasBegunId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.BatchHasBegunId)))
-            .BuildNonReceive(() => this.hasBegun = true);
-
-        beginBatchReactable.Subscribe(beginBatchSubscription);
+        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.BatchHasBegunId,
+            () => this.hasBegun = true,
+            () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderLineReactable();
 
-        var renderSubscription = ISubscriptionBuilder.Create()
-            .WithId(PushNotifications.RenderLinesId)
-            .WithName(this.GetExecutionMemberName(nameof(PushNotifications.RenderLinesId)))
-            .BuildOneWayReceive<Memory<RenderItem<LineBatchItem>>>(RenderBatch);
-
-        renderReactable.Subscribe(renderSubscription);
+        this.renderUnsubscriber = renderReactable.CreateOneWayReceive(
+            PushNotifications.RenderLinesId,
+            RenderBatch,
+            () => this.renderUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

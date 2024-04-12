@@ -17,7 +17,7 @@ using Velaptor.Graphics.Renderers;
 using Velaptor.Scene;
 
 /// <summary>
-/// Used to test whether or not text is properly rendered to the screen.
+/// Used to test whether text is properly rendered to the screen.
 /// </summary>
 public class TextRenderingScene : SceneBase
 {

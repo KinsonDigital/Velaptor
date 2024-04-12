@@ -35,7 +35,7 @@ using LineRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<
 /// <summary>
 /// Tests the <see cref="LineRenderer"/> class.
 /// </summary>
-public class LineRendererTests
+public class LineRendererTests : TestsBase
 {
     private const uint LineShaderId = 3333u;
     private readonly Mock<IGLInvoker> mockGL;
@@ -70,55 +70,14 @@ public class LineRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    this.batchHasBegunReactor = reactor;
-                }
-            })
-            .Returns<IReceiveSubscription>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    return Substitute.For<IDisposable>();
-                }
-
-                if (reactor.Id == PushNotifications.SystemShuttingDownId)
-                {
-                    return Substitute.For<IDisposable>();
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor)
+            .Returns<IReceiveSubscription>(_ => Substitute.For<IDisposable>());
 
         var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
         mockLineRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
-            .Callback<LineRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.RenderLinesId)
-                {
-                    reactor.Name.Should().Be($"LineRendererTests.Ctor - {nameof(PushNotifications.RenderLinesId)}");
-
-                    this.renderReactor = reactor;
-                }
-            })
-            .Returns<LineRenderItem>(reactor =>
-            {
-                if (reactor.Id == PushNotifications.RenderLinesId)
-                {
-                    return mockRenderUnsubscriber.Object;
-                }
-
-                Assert.Fail($"The event ID '{reactor.Id}' is not setup for testing.");
-                return null;
-            });
+            .Callback<LineRenderItem>(reactor => this.renderReactor = reactor)
+            .Returns<LineRenderItem>(_ => mockRenderUnsubscriber.Object);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -133,6 +92,7 @@ public class LineRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -154,6 +114,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -175,6 +136,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -196,6 +158,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -219,6 +182,7 @@ public class LineRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenBegunHasNotBeenInvoked_ThrowsException()
     {
         // Arrange
@@ -234,6 +198,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking2ParamMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -259,6 +224,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking3ParamMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -279,6 +245,7 @@ public class LineRendererTests
      }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamWithColorMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -303,6 +270,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoking4ParamWithThicknessMethodOverload_AddsToBatch()
     {
         // Arrange
@@ -327,6 +295,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvokingOverloadWithAllParams_AddsToBatch()
     {
         // Arrange
@@ -352,6 +321,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNoLineItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -383,6 +353,7 @@ public class LineRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenInvoked_RendersLine()
     {
         // Arrange
@@ -416,6 +387,36 @@ public class LineRendererTests
         this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
         this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+            });
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void LineRenderReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
+        mockLineRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
+            .Callback<LineRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"LineRenderer.ctor() - {PushNotifications.RenderLinesId}");
+            });
     }
     #endregion
 

@@ -83,7 +83,7 @@ internal readonly struct LineGpuData
     public static uint GetTotalBytes() => Stride;
 
     /// <summary>
-    /// Returns all of the vertex data in an array of <see cref="float"/> value.
+    /// Returns all the vertex data in an array of <see cref="float"/> value.
     /// </summary>
     /// <returns>The array of vertex data.</returns>
     public float[] ToArray()

@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundPathResolverTests.cs" company="KinsonDigital">
+﻿// <copyright file="AudioPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,9 +15,9 @@ using Velaptor.ExtensionMethods;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="SoundPathResolver"/> class.
+/// Tests the <see cref="AudioPathResolver"/> class.
 /// </summary>
-public class SoundPathResolverTests
+public class AudioPathResolverTests
 {
     private const string ContentName = "test-content";
     private readonly string contentFilePath;
@@ -25,13 +25,13 @@ public class SoundPathResolverTests
     private readonly string atlasContentDir;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundPathResolverTests"/> class.
+    /// Initializes a new instance of the <see cref="AudioPathResolverTests"/> class.
     /// </summary>
-    public SoundPathResolverTests()
+    public AudioPathResolverTests()
     {
         this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
             .ToCrossPlatPath();
-        this.atlasContentDir = $"{this.baseDir}/Content/Sounds";
+        this.atlasContentDir = $"{this.baseDir}/Content/Audio";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}";
     }
 
@@ -42,7 +42,7 @@ public class SoundPathResolverTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new SoundPathResolver(null);
+            _ = new AudioPathResolver(null);
         };
 
         // Assert
@@ -57,11 +57,11 @@ public class SoundPathResolverTests
         var mockDirectory = new Mock<IDirectory>();
 
         // Act
-        var source = new SoundPathResolver(mockDirectory.Object);
+        var source = new AudioPathResolver(mockDirectory.Object);
         var actual = source.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Sounds");
+        actual.Should().Be("Audio");
     }
     #endregion
 
@@ -81,14 +81,14 @@ public class SoundPathResolverTests
                 };
             });
 
-        var resolver = new SoundPathResolver(mockDirectory.Object);
+        var resolver = new AudioPathResolver(mockDirectory.Object);
 
         // Act
         var act = () => resolver.ResolveFilePath(ContentName);
 
         // Assert
         act.Should().Throw<FileNotFoundException>()
-            .WithMessage($"The sound file '{this.contentFilePath}' does not exist.");
+            .WithMessage($"The audio file '{this.contentFilePath}' does not exist.");
     }
 
     [Theory]
@@ -114,7 +114,7 @@ public class SoundPathResolverTests
                 };
             });
 
-        var resolver = new SoundPathResolver(mockDirectory.Object);
+        var resolver = new AudioPathResolver(mockDirectory.Object);
 
         // Act
         var actual = resolver.ResolveFilePath($"{ContentName}{resolvePathExtension}");
@@ -138,7 +138,7 @@ public class SoundPathResolverTests
                 };
             });
 
-        var resolver = new SoundPathResolver(mockDirectory.Object);
+        var resolver = new AudioPathResolver(mockDirectory.Object);
 
         // Act
         var actual = resolver.ResolveFilePath($"{ContentName}.mp3");

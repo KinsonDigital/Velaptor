@@ -55,8 +55,8 @@ public class AssertExtensions : Assert
     }
 
     /// <summary>
-    /// Asserts that all of the items between the <paramref name="expectedItems"/> and <paramref name="actualItems"/>
-    /// arrays are equal for all of the items inclusively between <paramref name="indexStart"/> and <paramref name="indexStop"/>.
+    /// Asserts that all the items between the <paramref name="expectedItems"/> and <paramref name="actualItems"/>
+    /// arrays are equal for all the items inclusively between <paramref name="indexStart"/> and <paramref name="indexStop"/>.
     /// </summary>
     /// <param name="expectedItems">The expected items.</param>
     /// <param name="actualItems">The actual items.</param>
@@ -119,7 +119,7 @@ public class AssertExtensions : Assert
     /// <param name="height">The height of the second dimension.</param>
     /// <param name="action">The action to test each item against.</param>
     /// <remarks>
-    ///     The last two <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> of the <paramref name="action"/>
+    ///     The last two <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> for the <paramref name="action"/> parameter
     ///     is the X and Y location within the <paramref name="collection"/> that failed the assertion.
     /// </remarks>
     public static void All<T>(T[,] collection, uint width, uint height, Action<T, int, int> action)

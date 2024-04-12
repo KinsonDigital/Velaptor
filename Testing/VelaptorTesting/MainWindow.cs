@@ -116,9 +116,9 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
         };
 
-        var soundScene = new SoundScene
+        var audioScene = new AudioScene
         {
-            Name = SplitByUpperCase(nameof(SoundScene)),
+            Name = SplitByUpperCase(nameof(AudioScene)),
         };
 
         SceneManager.AddScene(textRenderingScene, true);
@@ -132,7 +132,7 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredRectScene);
         SceneManager.AddScene(lineScene);
         SceneManager.AddScene(layeredLineScene);
-        SceneManager.AddScene(soundScene);
+        SceneManager.AddScene(audioScene);
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>

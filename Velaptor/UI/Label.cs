@@ -117,7 +117,7 @@ public class Label : ControlBase
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the size of the <see cref="Label"/> will be
+    /// Gets or sets a value indicating whether the size of the <see cref="Label"/> will be
     /// managed automatically based on the size of the text.
     /// </summary>
     /// <remarks>
@@ -166,7 +166,7 @@ public class Label : ControlBase
     /// <summary>
     /// Gets the font family name.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API for library users.")]
     public string FontFamilyName => this.font?.FamilyName ?? string.Empty;
 
     /// <summary>

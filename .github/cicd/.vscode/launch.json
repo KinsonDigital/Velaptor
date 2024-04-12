@@ -22,6 +22,7 @@
         "[api-version,v1.0.0-preview.23]",
         "${env:CICD_TOKEN}",
       ],
+      "console": "integratedTerminal",
       "attachSimplePort": 9229,
       "windows": {
         "runtimeExecutable": "${userHome}\\.deno\\bin\\deno.exe"

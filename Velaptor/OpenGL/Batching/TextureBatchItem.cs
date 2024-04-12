@@ -82,7 +82,7 @@ internal readonly record struct TextureBatchItem
     public uint TextureId { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the current <see cref="TextureBatchItem"/> is empty.
+    /// Gets a value indicating whether the current <see cref="TextureBatchItem"/> is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>

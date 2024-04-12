@@ -32,7 +32,7 @@ internal interface IFontService : IDisposable
     (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, char glyphChar, uint glyphIndex);
 
     /// <summary>
-    /// Creates all of the glyph metrics for each glyph.
+    /// Creates all the glyph metrics for each glyph.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="glyphIndices">The glyph index for each glyph.</param>
@@ -40,7 +40,7 @@ internal interface IFontService : IDisposable
     Dictionary<char, GlyphMetrics> CreateGlyphMetrics(nint facePtr, Dictionary<char, uint> glyphIndices);
 
     /// <summary>
-    /// Gets all of the font indices from the font file for each glyph.
+    /// Gets all the font indices from the font file for each glyph.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="glyphChars">The list of glyphs to get the indices for.</param>
@@ -55,7 +55,7 @@ internal interface IFontService : IDisposable
     void SetFontSize(nint facePtr, uint sizeInPoints);
 
     /// <summary>
-    /// Returns a value indicating whether or not the face uses kerning between two glyphs of the same face.
+    /// Returns a value indicating whether the face uses kerning between two glyphs of the same face.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <returns><c>true</c> if the face uses kerning.</returns>

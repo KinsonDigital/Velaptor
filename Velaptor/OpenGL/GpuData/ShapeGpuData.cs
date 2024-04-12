@@ -89,7 +89,7 @@ internal readonly struct ShapeGpuData
     public static uint GetTotalBytes() => TotalBytes;
 
     /// <summary>
-    /// Returns all of the vertex data in an array of <see cref="float"/> values.
+    /// Returns all the vertex data in an array of <see cref="float"/> values.
     /// </summary>
     /// <returns>The array of vertex data.</returns>
     public float[] ToArray()

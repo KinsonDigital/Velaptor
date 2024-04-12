@@ -24,7 +24,7 @@ public interface IFont : IContent
     FontSource Source { get; }
 
     /// <summary>
-    /// Gets the font atlas texture that contains all of the bitmap data for all available glyphs for the font.
+    /// Gets the font atlas texture that contains all the bitmap data for all available glyphs for the font.
     /// </summary>
     ITexture Atlas { get; }
 
@@ -39,7 +39,7 @@ public interface IFont : IContent
     VelFontStyle Style { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the font is a default font.
+    /// Gets a value indicating whether the font is a default font.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool IsDefaultFont { get; }
@@ -56,7 +56,7 @@ public interface IFont : IContent
     string FamilyName { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the font has kerning for text rendering layout.
+    /// Gets a value indicating whether the font has kerning for text rendering layout.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool HasKerning { get; }
@@ -67,7 +67,7 @@ public interface IFont : IContent
     float LineSpacing { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not to cache the measurements of the text.
+    /// Gets or sets a value indicating whether to cache the measurements of the text.
     /// </summary>
     bool CacheEnabled { get; set; }
 
@@ -77,7 +77,7 @@ public interface IFont : IContent
     int MaxCacheSize { get; set; }
 
     /// <summary>
-    /// Gets the list of metrics for all of the glyphs supported by the font.
+    /// Gets the list of metrics for all the glyphs supported by the font.
     /// </summary>
     /// <returns>The glyph metrics.</returns>
     IReadOnlyCollection<GlyphMetrics> Metrics { get; }

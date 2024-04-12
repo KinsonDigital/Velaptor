@@ -24,21 +24,21 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     Guid Id { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the scene has been loaded.
+    /// Gets a value indicating whether the scene has been loaded.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for library users.")]
     bool IsLoaded { get; }
 
     /// <summary>
     /// Gets the size of the window.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for library users.")]
     SizeU WindowSize { get; }
 
     /// <summary>
     /// Gets the center of the window.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for library users.")]
     Point WindowCenter { get; }
 
     /// <summary>

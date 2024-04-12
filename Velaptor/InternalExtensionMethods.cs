@@ -32,7 +32,7 @@ internal static class InternalExtensionMethods
     private const char CrossPlatDirSeparatorChar = '/';
 
     /// <summary>
-    /// Returns a value indicating whether or not any of the arrow keys are in the down state.
+    /// Returns a value indicating whether any of the arrow keys are in the down state.
     /// </summary>
     /// <param name="keyboardState">The state of the keyboard.</param>
     /// <returns><c>true</c> if any arrow key is pressed down.</returns>
@@ -121,7 +121,7 @@ internal static class InternalExtensionMethods
     /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
     /// <param name="container">The container that the registration applies to.</param>
     /// <param name="predicate">
-    ///     The predicate that determines whether or not the <typeparamref name="TImplementation"/> can be applied for
+    ///     The predicate that determines whether the <typeparamref name="TImplementation"/> can be applied for
     ///     the requested service type. This predicate can be used to build a fallback mechanism
     ///     where multiple registrations for the same service type are made. Note that the
     ///     predicate will be called a finite number of times and its result will be cached
@@ -307,7 +307,7 @@ internal static class InternalExtensionMethods
             });
         }
 
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        return new ImageData(pixelData);
     }
 
     /// <summary>
@@ -429,7 +429,7 @@ internal static class InternalExtensionMethods
     /// Returns the index of the first occurence of an item that matches the given <paramref name="predicate"/> result.
     /// </summary>
     /// <param name="items">The items to check.</param>
-    /// <param name="predicate">Indicates whether or not if the item index should be returned.</param>
+    /// <param name="predicate">Indicates whether if the item index should be returned.</param>
     /// <typeparam name="T">The type of item in the list.</typeparam>
     /// <returns>The index of the item that the <paramref name="predicate"/> returned <c>true</c>.</returns>
     /// <remarks>

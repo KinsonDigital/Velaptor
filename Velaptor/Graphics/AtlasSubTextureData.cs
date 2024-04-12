@@ -26,7 +26,7 @@ public readonly struct AtlasSubTextureData
     /// </summary>
     /// <remarks>
     ///     This is used for frames of animation.  A negative value indicates
-    ///     whether or not the sub texture is part of any animation frames.
+    ///     whether the sub texture is part of any animation frames.
     /// </remarks>
     public int FrameIndex { get; init; }
 }

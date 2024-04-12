@@ -5,7 +5,6 @@
 namespace Velaptor.Content.Fonts;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -13,13 +12,12 @@ using Caching;
 using Exceptions;
 using Factories;
 using Graphics;
-using Velaptor.Factories;
 using Velaptor.Services;
 
 /// <summary>
 /// Loads font content for rendering text.
 /// </summary>
-public sealed class FontLoader : ILoader<IFont>
+internal sealed class FontLoader : ILoader<IFont>
 {
     private const string ExpectedMetaDataSyntax = "size:<font-size>";
     private const string FontFileExtension = ".ttf";
@@ -48,28 +46,6 @@ public sealed class FontLoader : ILoader<IFont>
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public FontLoader()
-    {
-        this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-        this.embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
-        this.contentPathResolver = PathResolverFactory.CreateContentFontPathResolver();
-        this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-        this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
-        this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
-        this.directory = IoC.Container.GetInstance<IDirectory>();
-        this.file = IoC.Container.GetInstance<IFile>();
-        this.fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
-        this.path = IoC.Container.GetInstance<IPath>();
-
-        SetupDefaultFonts();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FontLoader"/> class.
-    /// </summary>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
     /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
@@ -84,7 +60,7 @@ public sealed class FontLoader : ILoader<IFont>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
-    internal FontLoader(
+    public FontLoader(
         IFontAtlasService fontAtlasService,
         IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
         IContentPathResolver contentPathResolver,

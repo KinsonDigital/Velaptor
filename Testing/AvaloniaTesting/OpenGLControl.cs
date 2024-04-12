@@ -14,6 +14,7 @@ using Avalonia.Threading;
 using Silk.NET.OpenGL;
 using Velaptor.Batching;
 using Velaptor.Content;
+using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;

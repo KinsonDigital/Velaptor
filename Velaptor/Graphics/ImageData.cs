@@ -14,7 +14,8 @@ using System.Text;
 /// </summary>
 public readonly record struct ImageData
 {
-    private readonly bool[] flipState = { false, false };
+    private readonly bool[]? flipState = [false, false];
+    private readonly Color[,]? pixels;
 
     /// <summary>
     /// Gets the pixel colors of the image.
@@ -26,7 +27,7 @@ public readonly record struct ImageData
     ///     The 32-bit color component byte layout is ARGB.
     /// </para>
     /// </remarks>
-    public Color[,] Pixels { get; }
+    public Color[,] Pixels => this.pixels ?? new Color[0, 0];
 
     /// <summary>
     /// Gets the width of the image.
@@ -45,21 +46,19 @@ public readonly record struct ImageData
     public string FilePath { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the image is flipped horizontally.
+    /// Gets a value indicating whether the image is flipped horizontally.
     /// </summary>
-    public bool IsFlippedHorizontally => this.flipState[0];
+    public bool IsFlippedHorizontally => this.flipState?[0] ?? false;
 
     /// <summary>
-    /// Gets a value indicating whether or not the image is flipped vertically.
+    /// Gets a value indicating whether the image is flipped vertically.
     /// </summary>
-    public bool IsFlippedVertically => this.flipState[1];
+    public bool IsFlippedVertically => this.flipState?[1] ?? false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageData"/> struct.
     /// </summary>
     /// <param name="pixels">The pixel data of the image.</param>
-    /// <param name="width">The width of the image.</param>
-    /// <param name="height">The height of the image.</param>
     /// <param name="filePath">The file path of where the image exists.</param>
     /// <remarks>
     ///     The <paramref name="filePath"/> is used for reference only.
@@ -68,44 +67,14 @@ public readonly record struct ImageData
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The summary is correct but StyleCop is not recognizing it.")]
-    public ImageData(Color[,]? pixels, uint width, uint height, string filePath = "")
+    public ImageData(Color[,] pixels, string filePath = "")
     {
-        if (pixels is null)
-        {
-            Pixels = new Color[width, height];
+        ArgumentNullException.ThrowIfNull(pixels);
 
-            // Makes all the pixels white
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    Pixels[x, y] = Color.White;
-                }
-            }
-        }
-        else
-        {
-            if (pixels.GetUpperBound(0) != width - 1)
-            {
-                var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
-                exceptionMsg += $" must match the '{nameof(width)}' parameter.";
+        this.pixels = pixels;
 
-                throw new ArgumentException(exceptionMsg);
-            }
-
-            if (pixels.GetUpperBound(1) != height - 1)
-            {
-                var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
-                exceptionMsg += $" must match the '{nameof(height)}' parameter.";
-
-                throw new ArgumentException(exceptionMsg);
-            }
-
-            Pixels = pixels;
-        }
-
-        Width = width;
-        Height = height;
+        Width = (uint)pixels.GetUpperBound(0) + 1;
+        Height = (uint)pixels.GetUpperBound(1) + 1;
         FilePath = string.IsNullOrEmpty(filePath) ? string.Empty : filePath;
     }
 
@@ -173,7 +142,10 @@ public readonly record struct ImageData
             }
         }
 
-        this.flipState[0] = !this.flipState[0];
+        if (this.flipState is not null)
+        {
+            this.flipState[0] = !this.flipState[0];
+        }
     }
 
     /// <summary>
@@ -203,11 +175,14 @@ public readonly record struct ImageData
             }
         }
 
-        this.flipState[1] = !this.flipState[1];
+        if (this.flipState is not null)
+        {
+            this.flipState[1] = !this.flipState[1];
+        }
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not this instance is equal to the given <see cref="ImageData"/>.
+    /// Returns a value indicating whether this instance is equal to the given <see cref="ImageData"/>.
     /// </summary>
     /// <param name="other">The other data to compare.</param>
     /// <returns><c>true</c> if equal.</returns>
@@ -249,7 +224,7 @@ public readonly record struct ImageData
     }
 
     /// <summary>
-    /// Returns a value indicating whether or not the <see cref="ImageData"/> contents are empty.
+    /// Returns a value indicating whether the <see cref="ImageData"/> contents are empty.
     /// </summary>
     /// <returns><c>true</c> if empty.</returns>
     public bool IsEmpty() => Width == 0 && Height == 0;

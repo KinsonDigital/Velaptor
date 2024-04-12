@@ -803,7 +803,7 @@ public class FontLoaderTests
     /// <summary>
     /// Generates fake glyph metric data for testing.
     /// </summary>
-    /// <param name="start">The start value of all of the metric data.</param>
+    /// <param name="start">The start value of all the metric data.</param>
     /// <returns>The glyph metric data to be tested.</returns>
     /// <remarks>
     ///     The start value is a metric value start and incremented for each metric.

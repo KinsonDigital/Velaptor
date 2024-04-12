@@ -104,7 +104,7 @@ internal static class OpenGLExtensionMethods
     public static float[] ToArray(this Vector2 vector) => new[] { vector.X, vector.Y };
 
     /// <summary>
-    /// Returns all of the <see cref="Vector4"/> components as a <see cref="float"/> array.
+    /// Returns all the <see cref="Vector4"/> components as a <see cref="float"/> array.
     /// </summary>
     /// <param name="vector">The vector to convert.</param>
     /// <returns>The components in a <c>X</c> <c>Y</c> <c>Z</c> <c>W</c> order.</returns>

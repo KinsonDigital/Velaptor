@@ -35,7 +35,7 @@ using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memo
 /// <summary>
 /// Tests the <see cref="TextureRenderer"/> class.
 /// </summary>
-public class TextureRendererTests
+public class TextureRendererTests : TestsBase
 {
     private const uint TextureId = 456u;
     private readonly Mock<IGLInvoker> mockGL;
@@ -62,26 +62,12 @@ public class TextureRendererTests
 
         var mockPushReactable = new Mock<IPushReactable>();
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-
-                if (reactor.Id == PushNotifications.BatchHasBegunId)
-                {
-                    this.batchHasBegunReactor = reactor;
-                }
-            });
+            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
         var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
         mockTextureRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Callback<TextureRenderItem>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-                reactor.Name.Should().Be($"TextureRendererTests.Ctor - {nameof(PushNotifications.RenderTexturesId)}");
-
-                this.renderReactor = reactor;
-            });
+            .Callback<TextureRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
@@ -92,6 +78,7 @@ public class TextureRendererTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
     {
         // Arrange & Act
@@ -113,6 +100,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
@@ -134,6 +122,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
@@ -155,6 +144,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
@@ -178,6 +168,7 @@ public class TextureRendererTests
 
     #region Method Tests
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WhenNotCallingBeginFirst_ThrowsException()
     {
         // Arrange
@@ -198,6 +189,7 @@ public class TextureRendererTests
     }
 
     [Theory]
+    [Trait("Category", Method)]
     [InlineData(0, 20)]
     [InlineData(-10, 20)]
     [InlineData(10, 0)]
@@ -223,6 +215,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNullTexture_ThrowsException()
     {
         // Arrange
@@ -244,6 +237,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_WithNoTextureItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
@@ -275,6 +269,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With4ParamAndIntPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -313,6 +308,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndIntPosOverloadWithAngle_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -351,6 +347,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndIntPosOverloadWithEffects_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -390,6 +387,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndIntPosOverloadWithColor_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -429,6 +427,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With6ParamAndIntPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -469,6 +468,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With4ParamAndVectorPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -507,6 +507,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndVectorPosOverloadWithAngle_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -545,6 +546,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndVectorPosOverloadWithEffects_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -584,6 +586,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With5ParamAndVectorPosOverloadWithColor_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -623,6 +626,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With6ParamAndVectorPosOverload_AddsCorrectItemToBatch()
     {
         // Arrange
@@ -663,6 +667,7 @@ public class TextureRendererTests
     }
 
     [Theory]
+    [Trait("Category", Method)]
     [InlineData(0f, 10f)]
     [InlineData(10f, 0f)]
     public void Render_With8ParamOverloadAndSrcRectWidthOrHeightIsZero_ThrowsException(
@@ -689,6 +694,7 @@ public class TextureRendererTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Render_With8ParamOverload_RendersTexture()
     {
         // Arrange
@@ -741,6 +747,36 @@ public class TextureRendererTests
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
+    }
+    #endregion
+
+    #region Reactable Tests
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockPushReactable = new Mock<IPushReactable>();
+        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+            });
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void TextureRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    {
+        // Arrange & Act & Assert
+        var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
+        mockTextureRenderBatchReactable
+            .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
+            .Callback<TextureRenderItem>(reactor =>
+            {
+                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Name.Should().Be($"TextureRenderer.ctor() - {PushNotifications.RenderTexturesId}");
+            });
     }
     #endregion
 

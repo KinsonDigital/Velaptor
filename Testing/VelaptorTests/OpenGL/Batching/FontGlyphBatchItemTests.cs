@@ -26,7 +26,7 @@ public class FontGlyphBatchItemTests
     public FontGlyphBatchItemTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
 
     /// <summary>
-    /// Gets all of the test data related to testing the <see cref="IsEmptyData"/> method.
+    /// Gets all the test data related to testing the <see cref="IsEmptyData"/> method.
     /// </summary>
     /// <returns>The test data.</returns>
     public static TheoryData<RectangleF, RectangleF, char, float, float, Color, RenderEffects, uint, string, bool> IsEmptyData =>

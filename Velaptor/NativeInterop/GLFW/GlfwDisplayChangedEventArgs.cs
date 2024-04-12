@@ -19,7 +19,7 @@ internal sealed class GlfwDisplayChangedEventArgs : EventArgs
     public GlfwDisplayChangedEventArgs(bool isConnected) => IsConnected = isConnected;
 
     /// <summary>
-    /// Gets a value indicating whether or not a display has been connected.
+    /// Gets a value indicating whether a display has been connected.
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]

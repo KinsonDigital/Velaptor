@@ -502,7 +502,7 @@ public class GLWindowTests : TestsBase
         // Assert
         subscription.Should().NotBeNull();
         subscription.Id.Should().Be(PullNotifications.GetWindowSizeId);
-        subscription.Name.Should().Be($"{nameof(GLWindow)}.Ctor");
+        subscription.Name.Should().Be($"{nameof(GLWindow)}.ctor() - {PullNotifications.GetWindowSizeId}");
         this.mockPullWinSizeReactable.Received(1).Subscribe(subscription);
         pulledWinSize.Should().Be(new WindowSizeData { Width = 100, Height = 200 });
         mockUnsubscriber.Received(1).Dispose();
@@ -1165,7 +1165,7 @@ public class GLWindowTests : TestsBase
         GLObjectsData glObjectsData = default;
 
         this.mockGLObjectsReactable
-            .When(x => x.Push(in Arg.Any<GLObjectsData>(), PushNotifications.GLObjectsCreatedId))
+            .When(x => x.Push(PushNotifications.GLObjectsCreatedId, in Arg.Any<GLObjectsData>()))
             .Do(callInfo =>
             {
                 glObjectsData = callInfo.Arg<GLObjectsData>();
@@ -1183,7 +1183,7 @@ public class GLWindowTests : TestsBase
         glObjectsData.Window.Should().BeSameAs(this.mockSilkWindow);
         glObjectsData.InputContext.Should().BeSameAs(this.mockSilkInputContext);
 
-        this.mockGLObjectsReactable.Received(1).Push(glObjectsData, PushNotifications.GLObjectsCreatedId);
+        this.mockGLObjectsReactable.Received(1).Push(PushNotifications.GLObjectsCreatedId, glObjectsData);
         this.mockGLObjectsReactable.Received(1).Unsubscribe(PushNotifications.GLObjectsCreatedId);
 
         this.mockSilkKeyboard.Received().KeyDown += Arg.Any<Action<IKeyboard, Key, int>>();
@@ -1229,7 +1229,7 @@ public class GLWindowTests : TestsBase
         this.mockPushReactable.Received(1).Unsubscribe(PushNotifications.GLInitializedId);
         sut.Initialized.Should().BeTrue();
 
-        this.mockGLReactable.Received(1).Push(in Arg.Any<GL>(), PushNotifications.GLContextCreatedId);
+        this.mockGLReactable.Received(1).Push(PushNotifications.GLContextCreatedId, in Arg.Any<GL>());
         this.mockGLReactable.Received(1).Unsubscribe(PushNotifications.GLContextCreatedId);
         this.mockNativeInputFactory.Received(1).CreateInput();
     }
@@ -1249,7 +1249,7 @@ public class GLWindowTests : TestsBase
         // Assert
         this.mockGL.Viewport(0, 0, 11, 22);
         this.mockPushWinSizeReactable.Received(1)
-            .Push(new WindowSizeData { Width = 11u, Height = 22u }, PushNotifications.WindowSizeChangedId);
+            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 11u, Height = 22u });
         actualSize.Width.Should().Be(11u);
         actualSize.Height.Should().Be(22u);
     }
@@ -1269,7 +1269,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         sutUpdateInvoked.Should().BeFalse($"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
-        this.mockMouseReactable.DidNotReceive().Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.DidNotReceive().Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
     }
 
     [Fact]
@@ -1286,7 +1286,7 @@ public class GLWindowTests : TestsBase
 
         MouseStateData? actual = null;
         this.mockMouseReactable
-            .When(x => x.Push(Arg.Any<MouseStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<MouseStateData>()))
             .Do(callInfo => actual = callInfo.Arg<MouseStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1308,7 +1308,7 @@ public class GLWindowTests : TestsBase
         // Assert
         this.mockTimerService.Received(1).Start();
         sutUpdateInvoked.Should().BeTrue($"{nameof(GLWindow.Update)} was not invoked.");
-        this.mockMouseReactable.Received(1).Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.Received(1).Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1470,7 +1470,7 @@ public class GLWindowTests : TestsBase
 
         KeyboardKeyStateData? actual = null;
         this.mockKeyboardReactable
-            .When(x => x.Push(Arg.Any<KeyboardKeyStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<KeyboardKeyStateData>()))
             .Do(callInfo => actual = callInfo.Arg<KeyboardKeyStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1482,7 +1482,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockKeyboardReactable.Received(1)
-            .Push(Arg.Any<KeyboardKeyStateData>(), PushNotifications.KeyboardStateChangedId);
+            .Push(PushNotifications.KeyboardStateChangedId, Arg.Any<KeyboardKeyStateData>());
         actual.Should().BeEquivalentTo(expected);
     }
 
@@ -1494,7 +1494,7 @@ public class GLWindowTests : TestsBase
 
         KeyboardKeyStateData? actual = null;
         this.mockKeyboardReactable
-            .When(x => x.Push(Arg.Any<KeyboardKeyStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<KeyboardKeyStateData>()))
             .Do(callInfo => actual = callInfo.Arg<KeyboardKeyStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1505,7 +1505,7 @@ public class GLWindowTests : TestsBase
         this.mockSilkKeyboard.KeyUp += Raise.Event<Action<IKeyboard, Key, int>>(null, Key.K, 0);
 
         // Assert
-        this.mockKeyboardReactable.Push(Arg.Any<KeyboardKeyStateData>(), PushNotifications.KeyboardStateChangedId);
+        this.mockKeyboardReactable.Push(PushNotifications.KeyboardStateChangedId, Arg.Any<KeyboardKeyStateData>());
         actual.Should().BeEquivalentTo(expected);
     }
 
@@ -1522,7 +1522,7 @@ public class GLWindowTests : TestsBase
         MouseStateData? actual = null;
 
         this.mockMouseReactable
-            .When(x => x.Push(Arg.Any<MouseStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<MouseStateData>()))
             .Do(callInfo => actual = callInfo.Arg<MouseStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1533,7 +1533,7 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.MouseDown += Raise.Event<Action<IMouse, SilkMouseButton>>(null, SilkMouseButton.Left);
 
         // Assert
-        this.mockMouseReactable.Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1551,7 +1551,7 @@ public class GLWindowTests : TestsBase
 
         MouseStateData? actual = null;
         this.mockMouseReactable
-            .When(x => x.Push(Arg.Any<MouseStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<MouseStateData>()))
             .Do(callInfo => actual = callInfo.Arg<MouseStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1562,7 +1562,7 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.MouseUp += Raise.Event<Action<IMouse, SilkMouseButton>>(null, SilkMouseButton.Right);
 
         // Assert
-        this.mockMouseReactable.Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
@@ -1583,7 +1583,7 @@ public class GLWindowTests : TestsBase
 
         MouseStateData? actual = null;
         this.mockMouseReactable
-            .When(x => x.Push(Arg.Any<MouseStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<MouseStateData>()))
             .Do(callInfo => actual = callInfo.Arg<MouseStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1594,7 +1594,7 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.Scroll += Raise.Event<Action<IMouse, ScrollWheel>>(null, new ScrollWheel(0, wheelValue));
 
         // Assert
-        this.mockMouseReactable.Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expectedStateData);
@@ -1609,7 +1609,7 @@ public class GLWindowTests : TestsBase
         MouseStateData? actual = null;
 
         this.mockMouseReactable
-            .When(x => x.Push(Arg.Any<MouseStateData>(), Arg.Any<Guid>()))
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<MouseStateData>()))
             .Do(callInfo => actual = callInfo.Arg<MouseStateData>());
 
         var sut = CreateSystemUnderTest();
@@ -1620,7 +1620,7 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.MouseMove += Raise.Event<Action<IMouse, SysVector2>>(null, new SysVector2(11f, 22f));
 
         // Assert
-        this.mockMouseReactable.Received(1).Push(Arg.Any<MouseStateData>(), PushNotifications.MouseStateChangedId);
+        this.mockMouseReactable.Received(1).Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
