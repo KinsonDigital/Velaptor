@@ -247,7 +247,7 @@ internal sealed class BatchingManager : IBatchingManager
     }
 
     /// <summary>
-    /// Sets up all of the batches.
+    /// Sets up all the batches.
     /// </summary>
     /// <param name="size">The size of each batch.</param>
     private void InitBatchItems(uint size)
@@ -346,7 +346,7 @@ internal sealed class BatchingManager : IBatchingManager
     }
 
     /// <summary>
-    /// Empties all of the different batch types.
+    /// Empties all the different batch types.
     /// </summary>
     private void EmptyBatch()
     {

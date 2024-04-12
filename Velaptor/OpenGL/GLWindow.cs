@@ -745,7 +745,7 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Setup all of the caching for the properties that need caching.
+    /// Setup all the caching for the properties that need caching.
     /// </summary>
     private void SetupOtherPropCaches()
     {

@@ -53,7 +53,7 @@ internal sealed class KeyboardDataService : IKeyboardDataService
     }
 
     /// <summary>
-    /// Initializes all of the available keys and default states.
+    /// Initializes all the available keys and default states.
     /// </summary>
     private void InitializeKeyStates()
     {

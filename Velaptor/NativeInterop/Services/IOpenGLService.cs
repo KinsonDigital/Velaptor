@@ -106,13 +106,13 @@ internal interface IOpenGLService
     void UnbindVAO();
 
     /// <summary>
-    /// Binds a two dimensional texture using the given <paramref name="textureId"/>.
+    /// Binds a two-dimensional texture using the given <paramref name="textureId"/>.
     /// </summary>
     /// <param name="textureId">The ID of the texture to bind.</param>
     void BindTexture2D(uint textureId);
 
     /// <summary>
-    /// Binds the currently bound two dimensional texture.
+    /// Binds the currently bound two-dimensional texture.
     /// </summary>
     void UnbindTexture2D();
 

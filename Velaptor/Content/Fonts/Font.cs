@@ -47,7 +47,7 @@ public sealed class Font : IFont
     /// <summary>
     /// Initializes a new instance of the <see cref="Font"/> class.
     /// </summary>
-    /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glyphs.</param>
+    /// <param name="texture">The font atlas texture that contains bitmap data for all the available glyphs.</param>
     /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
@@ -179,7 +179,7 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public SizeF Measure(string text)
     {
-        // Trim all of the '\n' and '\r' characters from the end
+        // Trim all the '\n' and '\r' characters from the end
         text = text.TrimNewLineFromEnd();
 
         // Just in case the text was ONLY '\r' and/or '\n' characters, nothing would be left.
@@ -211,7 +211,7 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Returns all of the glyph metrics for the given text.
+    /// Returns all the glyph metrics for the given text.
     /// </summary>
     /// <param name="text">The text to convert to glyph metrics.</param>
     /// <returns>The list of glyph metrics of the given <paramref name="text"/>.</returns>
@@ -335,14 +335,14 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
+    /// Gets all the stats for a font at the given <paramref name="filePath"/>.
     /// </summary>
     /// <param name="filePath">The file path to the font file.</param>
     private void GetFontStatData(string filePath)
     {
         this.fontStyle = this.fontService.GetFontStyle(filePath);
 
-        // First collect all of the data from the content directory
+        // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 
         var allStyles = new[]

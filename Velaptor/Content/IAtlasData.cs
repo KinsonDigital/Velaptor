@@ -47,7 +47,7 @@ public interface IAtlasData : IContent
     AtlasSubTextureData this[int index] { get; }
 
     /// <summary>
-    /// Gets the all of the frames that have the given sub texture id.
+    /// Gets the all the frames that have the given sub texture id.
     /// </summary>
     /// <param name="subTextureId">The sub texture ID of the frames to return.</param>
     /// <returns>The list of frame rectangles.</returns>

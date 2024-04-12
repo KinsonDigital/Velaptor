@@ -76,7 +76,7 @@ internal sealed class RenderMediator : IRenderMediator
         this.shapeItemComparer = shapeItemComparer;
         this.lineItemComparer = lineItemComparer;
 
-        // Sets all of the layers to a default value of the max value of int
+        // Sets all the layers to a default value of the max value of int
         for (var i = 0; i < this.allLayers.Length; i++)
         {
             this.allLayers.Span[i] = int.MaxValue;
@@ -150,7 +150,7 @@ internal sealed class RenderMediator : IRenderMediator
 
         this.allLayers.Span.Sort();
 
-        // Renders all of the items in a coordinated fashion
+        // Renders all the items in a coordinated fashion
         for (var i = 0; i < this.allLayers.Length; i++)
         {
             if (this.allLayers.Span[i] == int.MaxValue)

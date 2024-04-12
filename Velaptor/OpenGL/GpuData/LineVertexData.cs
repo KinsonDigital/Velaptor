@@ -59,9 +59,9 @@ internal readonly struct LineVertexData
     public static uint GetStride() => Stride;
 
     /// <summary>
-    /// Returns all of the vertex data as an array or ordered values.
+    /// Returns all the vertex data as an array or ordered values.
     /// </summary>
-    /// <returns>All of the vertex data values.</returns>
+    /// <returns>All the vertex data values.</returns>
     public IEnumerable<float> ToArray()
     {
         /* NOTE:

@@ -51,7 +51,7 @@ internal sealed class SceneManager : ISceneManager
             throw new SceneAlreadyExistsException(scene.Name, scene.Id);
         }
 
-        // If the scene is to be set to active, set all of the other scenes to false first.
+        // If the scene is to be set to active, set all the other scenes to false first.
         // Only one scene can be active at a time.
         if (setToActive)
         {
@@ -217,7 +217,7 @@ internal sealed class SceneManager : ISceneManager
     }
 
     /// <summary>
-    /// Unloads the content from all of the scenes.
+    /// Unloads the content from all the scenes.
     /// </summary>
     private void UnloadAllSceneContent()
     {

@@ -75,7 +75,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// </summary>
     /// <param name="id">The ID of the scene.</param>
     /// <remarks>
-    ///     This will set all of the other scenes to inactive.
+    ///     This will set all the other scenes to inactive.
     /// </remarks>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     void SetSceneAsActive(Guid id);

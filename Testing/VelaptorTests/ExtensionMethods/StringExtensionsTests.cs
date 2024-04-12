@@ -12,7 +12,7 @@ using Xunit;
 #pragma warning disable SA1514
 
 /// <summary>
-/// Tests all of the <see cref="string"/> extension methods.
+/// Tests all the <see cref="string"/> extension methods.
 /// </summary>
 public class StringExtensionsTests
 {

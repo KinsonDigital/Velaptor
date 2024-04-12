@@ -5,7 +5,6 @@
 namespace Velaptor.Content.Fonts;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -13,7 +12,6 @@ using Caching;
 using Exceptions;
 using Factories;
 using Graphics;
-using Velaptor.Factories;
 using Velaptor.Services;
 
 /// <summary>

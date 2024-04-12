@@ -5,12 +5,10 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using Caching;
 using Exceptions;
-using Velaptor.Factories;
 
 /// <summary>
 /// Loads textures.
