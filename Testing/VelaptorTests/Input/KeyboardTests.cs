@@ -37,7 +37,7 @@ public class KeyboardTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'keyboardDataService')");
+            .WithMessage("Value cannot be null. (Parameter 'keyboardDataService')");
     }
     #endregion
 

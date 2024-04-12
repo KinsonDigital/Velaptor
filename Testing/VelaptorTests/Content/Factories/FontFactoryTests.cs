@@ -54,7 +54,7 @@ public class FontFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontService')");
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class FontFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontStatsService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontStatsService')");
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class FontFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
+            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class FontFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
+            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
     }
     #endregion
 
