@@ -8,12 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
-using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -34,42 +32,32 @@ public class AudioCacheTests
     private const string AudioName = "test-audio";
     private const string OggAudioFilePath = $"{AudioDirPath}/{AudioName}{OggFileExtension}";
     private const string Mp3AudioFilePath = $"{AudioDirPath}/{AudioName}{Mp3FileExtension}";
-    private readonly Mock<IAudioFactory> mockAudioFactory;
-    private readonly Mock<IFile> mockFile;
-    private readonly Mock<IPath> mockPath;
-    private readonly Mock<IPushReactable<DisposeAudioData>> mockDisposeReactable;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IAudioFactory mockAudioFactory;
+    private readonly IFile mockFile;
+    private readonly IPath mockPath;
+    private readonly IPushReactable<DisposeAudioData> mockDisposeReactable;
+    private readonly IReactableFactory mockReactableFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioCacheTests"/> class.
     /// </summary>
     public AudioCacheTests()
     {
-        this.mockAudioFactory = new Mock<IAudioFactory>();
-        this.mockFile = new Mock<IFile>();
-        this.mockFile.Setup(m => m.Exists(OggAudioFilePath)).Returns(true);
-        this.mockFile.Setup(m => m.Exists(Mp3AudioFilePath)).Returns(true);
+        this.mockAudioFactory = Substitute.For<IAudioFactory>();
+        this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(OggAudioFilePath).Returns(true);
+        this.mockFile.Exists(Mp3AudioFilePath).Returns(true);
 
-        this.mockPath = new Mock<IPath>();
-        this.mockPath.Setup(m => m.GetExtension(OggAudioFilePath)).Returns(OggFileExtension);
-        this.mockPath.Setup(m => m.GetExtension(Mp3AudioFilePath)).Returns(Mp3FileExtension);
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.GetExtension(OggAudioFilePath).Returns(OggFileExtension);
+        this.mockPath.GetExtension(Mp3AudioFilePath).Returns(Mp3FileExtension);
 
-        var mockShutDownUnsubscriber = new Mock<IDisposable>();
-        mockShutDownUnsubscriber.Name = nameof(mockShutDownUnsubscriber);
+        var mockPushReactable = Substitute.For<IPushReactable>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Name = nameof(mockPushReactable);
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns(mockShutDownUnsubscriber.Object)
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("it is required for unit testing.");
-            });
-
-        this.mockDisposeReactable = new Mock<IPushReactable<DisposeAudioData>>();
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateDisposeAudioReactable()).Returns(this.mockDisposeReactable.Object);
+        this.mockDisposeReactable = Substitute.For<IPushReactable<DisposeAudioData>>();
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateDisposeAudioReactable().Returns(this.mockDisposeReactable);
     }
 
     #region Constructor Tests
@@ -81,9 +69,9 @@ public class AudioCacheTests
         {
             _ = new AudioCache(
                 null,
-                this.mockFile.Object,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockFile,
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -99,10 +87,10 @@ public class AudioCacheTests
         var act = () =>
         {
             _ = new AudioCache(
-                this.mockAudioFactory.Object,
+                this.mockAudioFactory,
                 null,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -118,10 +106,10 @@ public class AudioCacheTests
         var act = () =>
         {
             _ = new AudioCache(
-                this.mockAudioFactory.Object,
-                this.mockFile.Object,
+                this.mockAudioFactory,
+                this.mockFile,
                 null,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -137,9 +125,9 @@ public class AudioCacheTests
         var act = () =>
         {
             _ = new AudioCache(
-                this.mockAudioFactory.Object,
-                this.mockFile.Object,
-                this.mockPath.Object,
+                this.mockAudioFactory,
+                this.mockFile,
+                this.mockPath,
                 null);
         };
 
@@ -221,7 +209,7 @@ public class AudioCacheTests
         var expected = $"Audio file type '{invalidExtension}' is not supported.";
         expected += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
-        this.mockPath.Setup(m => m.GetExtension(audioFilePath)).Returns(invalidExtension);
+        this.mockPath.GetExtension(audioFilePath).Returns(invalidExtension);
 
         var sut = CreateSystemUnderTest();
 
@@ -237,8 +225,8 @@ public class AudioCacheTests
     public void GetItem_WhenOggFileDoesNotExist_ThrowsException()
     {
         // Arrange
-        this.mockPath.Setup(m => m.GetExtension(OggAudioFilePath)).Returns(OggFileExtension);
-        this.mockFile.Setup(m => m.Exists(OggAudioFilePath)).Returns(false);
+        this.mockPath.GetExtension(OggAudioFilePath).Returns(OggFileExtension);
+        this.mockFile.Exists(OggAudioFilePath).Returns(false);
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -253,8 +241,8 @@ public class AudioCacheTests
     public void GetItem_WhenMp3FileDoesNotExist_ThrowsException()
     {
         // Arrange
-        this.mockPath.Setup(m => m.GetExtension(Mp3AudioFilePath)).Returns(Mp3FileExtension);
-        this.mockFile.Setup(m => m.Exists(Mp3AudioFilePath)).Returns(false);
+        this.mockPath.GetExtension(Mp3AudioFilePath).Returns(Mp3FileExtension);
+        this.mockFile.Exists(Mp3AudioFilePath).Returns(false);
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -269,20 +257,16 @@ public class AudioCacheTests
     public void GetItem_WhenGettingAudio_ReturnsAudio()
     {
         // Arrange
-        var mockMp3Audio = new Mock<IAudio>();
-        mockMp3Audio.Name = nameof(mockMp3Audio);
-        mockMp3Audio.SetupGet(p => p.FilePath).Returns(Mp3AudioFilePath);
-        mockMp3Audio.SetupGet(p => p.Id).Returns(123u);
+        var mockMp3Audio = Substitute.For<IAudio>();
+        mockMp3Audio.FilePath.Returns(Mp3AudioFilePath);
+        mockMp3Audio.Id.Returns(123u);
 
-        var mockOggAudio = new Mock<IAudio>();
-        mockOggAudio.Name = nameof(mockOggAudio);
-        mockOggAudio.SetupGet(p => p.FilePath).Returns(OggAudioFilePath);
-        mockOggAudio.SetupGet(p => p.Id).Returns(456u);
+        var mockOggAudio = Substitute.For<IAudio>();
+        mockOggAudio.FilePath.Returns(OggAudioFilePath);
+        mockOggAudio.Id.Returns(456u);
 
-        this.mockAudioFactory.Setup(m => m.Create(Mp3AudioFilePath, AudioBuffer.Stream))
-            .Returns(mockMp3Audio.Object);
-        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath, AudioBuffer.Full))
-            .Returns(mockOggAudio.Object);
+        this.mockAudioFactory.Create(Mp3AudioFilePath, AudioBuffer.Stream).Returns(mockMp3Audio);
+        this.mockAudioFactory.Create(OggAudioFilePath, AudioBuffer.Full).Returns(mockOggAudio);
 
         var sut = CreateSystemUnderTest();
 
@@ -307,23 +291,10 @@ public class AudioCacheTests
     public void Unload_WhenAudioToUnloadExists_RemovesAndDisposesOfAudio()
     {
         // Arrange
-        var expected = new DisposeAudioData { AudioId = 123u };
+        var mockAudio = Substitute.For<IAudio>();
+        mockAudio.Id.Returns(123u);
 
-        DisposeAudioData? actual = null;
-
-        var mockAudio = new Mock<IAudio>();
-        mockAudio.SetupGet(p => p.Id).Returns(123u);
-
-        this.mockAudioFactory.Setup(m => m.Create(OggAudioFilePath, AudioBuffer.Full))
-            .Returns(mockAudio.Object);
-
-        this.mockDisposeReactable.Setup(m =>
-                m.Push(It.IsAny<Guid>(), It.Ref<DisposeAudioData>.IsAny))
-            .Callback((Guid _, in DisposeAudioData data) =>
-            {
-                data.Should().NotBeNull("it is required for unit testing.");
-                actual = data;
-            });
+        this.mockAudioFactory.Create(OggAudioFilePath, AudioBuffer.Full).Returns(mockAudio);
 
         var sut = CreateSystemUnderTest();
         _ = sut.GetItem($"{OggAudioFilePath}|Full");
@@ -335,18 +306,16 @@ public class AudioCacheTests
         act.Should().NotThrow<NullReferenceException>();
 
         sut.TotalCachedItems.Should().Be(0);
-        this.mockDisposeReactable.VerifyOnce(m =>
-            m.Push(PushNotifications.AudioDisposedId, It.Ref<DisposeAudioData>.IsAny));
-
-        actual.Should().BeEquivalentTo(expected);
+        this.mockDisposeReactable.Received(1)
+            .Push(PushNotifications.AudioDisposedId, Arg.Is<DisposeAudioData>(data => data.AudioId == 123u));
     }
 
     [Fact]
     public void Unload_WhenAudioToUnloadDoesNotExist_DoesNotAttemptToDispose()
     {
         // Arrange
-        var mockAudio = new Mock<IAudio>();
-        mockAudio.SetupGet(p => p.Id).Returns(123u);
+        var mockAudio = Substitute.For<IAudio>();
+        mockAudio.Id.Returns(123u);
 
         var sut = CreateSystemUnderTest();
         sut.GetItem($"{OggAudioFilePath}|Stream");
@@ -355,8 +324,8 @@ public class AudioCacheTests
         sut.Unload("non-existing-texture");
 
         // Assert
-        this.mockDisposeReactable.VerifyNever(m =>
-            m.Push(It.IsAny<Guid>(), It.Ref<DisposeAudioData>.IsAny));
+        this.mockDisposeReactable.DidNotReceive()
+            .Push(Arg.Any<Guid>(), Arg.Is<DisposeAudioData>(data => data.AudioId == 123u));
     }
     #endregion
 
@@ -365,8 +334,8 @@ public class AudioCacheTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private AudioCache CreateSystemUnderTest() =>
-        new (this.mockAudioFactory.Object,
-            this.mockFile.Object,
-            this.mockPath.Object,
-            this.mockReactableFactory.Object);
+        new (this.mockAudioFactory,
+            this.mockFile,
+            this.mockPath,
+            this.mockReactableFactory);
 }
