@@ -12,7 +12,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Carbonate;
 using Carbonate.OneWay;
-using Guards;
 using ReactableData;
 using Velaptor.Factories;
 using CASLAudio = CASL.Audio;
@@ -32,7 +31,7 @@ internal sealed class AudioFactory : IAudioFactory
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public AudioFactory(IReactableFactory reactableFactory)
     {
-        EnsureThat.ParamIsNotNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.disposeReactable = reactableFactory.CreateDisposeAudioReactable();
 
