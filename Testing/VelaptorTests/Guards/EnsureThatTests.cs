@@ -7,7 +7,6 @@ namespace VelaptorTests.Guards;
 
 using System;
 using FluentAssertions;
-using Helpers;
 using Velaptor.Guards;
 using Xunit;
 
@@ -17,44 +16,6 @@ using Xunit;
 public class EnsureThatTests
 {
     #region Method Tests
-    [Fact]
-    public void ParamIsNotNull_WithNullValue_ThrowsException()
-    {
-        // Arrange
-        object? nullObj = null;
-
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            ArgumentNullException.ThrowIfNull(nullObj);
-        }, "The parameter must not be null. (Parameter 'nullObj')");
-    }
-
-    [Fact]
-    public void ParamIsNotNull_WithNonNullValue_DoesNotThrowException()
-    {
-        // Arrange
-        object nonNullObj = "non-null-obj";
-
-        // Act & Assert
-        AssertExtensions.DoesNotThrow<Exception>(() =>
-        {
-            ArgumentNullException.ThrowIfNull(nonNullObj);
-        });
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void StringParamIsNotNullOrEmpty_WhenInvoked_ThrowsException(string? value)
-    {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            ArgumentException.ThrowIfNullOrEmpty(value);
-        }, $"The string parameter must not be null or empty. (Parameter '{nameof(value)}')");
-    }
-
     [Fact]
     public void PointerIsNotNull_WithNonZeroIntPointer_DoesNotThrowException()
     {
