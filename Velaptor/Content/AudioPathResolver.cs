@@ -8,7 +8,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Guards;
 
 /// <summary>
 /// Resolves paths to audio content.
@@ -23,7 +22,7 @@ internal sealed class AudioPathResolver : ContentPathResolver
     /// <param name="directory">Performs operations with directories.</param>
     public AudioPathResolver(IDirectory directory)
     {
-        EnsureThat.ParamIsNotNull(directory);
+        ArgumentNullException.ThrowIfNull(directory);
         this.directory = directory;
         ContentDirectoryName = "Audio";
     }

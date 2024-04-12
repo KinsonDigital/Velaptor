@@ -12,7 +12,6 @@ using Content;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
-using Guards;
 using Input;
 
 /// <summary>
@@ -56,7 +55,7 @@ public sealed class Button : ControlBase
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
     public Button(Label? label)
     {
-        EnsureThat.ParamIsNotNull(label);
+        ArgumentNullException.ThrowIfNull(label);
 
         this.rectRenderer = RendererFactory.CreateShapeRenderer();
 
@@ -164,7 +163,7 @@ public sealed class Button : ControlBase
         IAppInput<MouseState> mouse)
         : base(keyboard, mouse)
     {
-        EnsureThat.ParamIsNotNull(controlFactory);
+        ArgumentNullException.ThrowIfNull(controlFactory);
 
         this.controlFactory = controlFactory;
     }

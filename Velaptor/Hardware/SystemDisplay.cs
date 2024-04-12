@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Guards;
 
 /// <summary>
 /// Holds information about a single display in the system.
@@ -32,7 +31,7 @@ public readonly record struct SystemDisplay
     /// </exception>
     internal SystemDisplay(IPlatform platform)
     {
-        EnsureThat.ParamIsNotNull(platform);
+        ArgumentNullException.ThrowIfNull(platform);
         this.platform = platform;
     }
 

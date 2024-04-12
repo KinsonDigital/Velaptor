@@ -52,7 +52,7 @@ public class SystemDisplayTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new SystemDisplay(null);
-        }, "The parameter must not be null. (Parameter 'platform')");
+        }, "Value cannot be null. (Parameter 'platform')");
     }
     #endregion
 

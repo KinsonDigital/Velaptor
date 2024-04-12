@@ -56,7 +56,7 @@ public class WindowTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'window')");
+            .WithMessage("Value cannot be null. (Parameter 'window')");
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class WindowTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("The parameter must not be null. (Parameter 'sceneManager')");
+            .WithMessage("Value cannot be null. (Parameter 'sceneManager')");
     }
 
     [Fact]

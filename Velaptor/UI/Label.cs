@@ -15,7 +15,6 @@ using Content.Fonts;
 using ExtensionMethods;
 using Factories;
 using Graphics.Renderers;
-using Guards;
 using Input;
 
 /// <summary>
@@ -80,7 +79,7 @@ public class Label : ControlBase
         IAppInput<MouseState> mouse)
             : base(keyboard, mouse)
     {
-        EnsureThat.ParamIsNotNull(fontLoader);
+        ArgumentNullException.ThrowIfNull(fontLoader);
 
         Init(fontLoader, RendererFactory.CreateFontRenderer());
     }

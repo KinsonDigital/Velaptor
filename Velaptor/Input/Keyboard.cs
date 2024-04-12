@@ -5,7 +5,7 @@
 #pragma warning disable SA1129 // Do not use default value type constructor
 namespace Velaptor.Input;
 
-using Guards;
+using System;
 using Services;
 
 /// <summary>
@@ -21,7 +21,7 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <param name="keyboardDataService">Creates reactables for sending and receiving notifications with or without data.</param>
     public Keyboard(IKeyboardDataService keyboardDataService)
     {
-        EnsureThat.ParamIsNotNull(keyboardDataService);
+        ArgumentNullException.ThrowIfNull(keyboardDataService);
 
         this.keyboardDataService = keyboardDataService;
     }

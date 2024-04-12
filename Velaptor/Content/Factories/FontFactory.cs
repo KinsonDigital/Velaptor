@@ -4,11 +4,11 @@
 
 namespace Velaptor.Content.Factories;
 
+using System;
 using Caching;
 using Fonts;
 using Fonts.Services;
 using Graphics;
-using Guards;
 using Services;
 
 /// <summary>
@@ -34,10 +34,10 @@ internal sealed class FontFactory : IFontFactory
         IFontAtlasService fontAtlasService,
         IItemCache<string, ITexture> textureCache)
     {
-        EnsureThat.ParamIsNotNull(fontAtlasService);
-        EnsureThat.ParamIsNotNull(textureCache);
-        EnsureThat.ParamIsNotNull(fontService);
-        EnsureThat.ParamIsNotNull(fontStatsService);
+        ArgumentNullException.ThrowIfNull(fontAtlasService);
+        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(fontStatsService);
 
         this.fontAtlasService = fontAtlasService;
         this.textureCache = textureCache;
