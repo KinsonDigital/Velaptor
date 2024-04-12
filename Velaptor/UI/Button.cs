@@ -12,7 +12,6 @@ using Content;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
-using Guards;
 using Input;
 
 /// <summary>

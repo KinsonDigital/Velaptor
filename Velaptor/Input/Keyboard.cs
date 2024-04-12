@@ -5,7 +5,7 @@
 #pragma warning disable SA1129 // Do not use default value type constructor
 namespace Velaptor.Input;
 
-using Guards;
+using System;
 using Services;
 
 /// <summary>

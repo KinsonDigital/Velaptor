@@ -10,7 +10,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Batching;
 using Factories;
-using Guards;
 using Scene;
 
 /// <summary>

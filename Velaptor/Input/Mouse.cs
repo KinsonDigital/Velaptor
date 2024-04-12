@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Drawing;
 using Carbonate;
 using Factories;
-using Guards;
 using ReactableData;
 
 /// <summary>

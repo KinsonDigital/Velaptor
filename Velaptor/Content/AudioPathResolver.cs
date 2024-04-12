@@ -8,7 +8,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Guards;
 
 /// <summary>
 /// Resolves paths to audio content.

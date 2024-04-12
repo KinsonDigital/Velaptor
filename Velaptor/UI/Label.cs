@@ -15,7 +15,6 @@ using Content.Fonts;
 using ExtensionMethods;
 using Factories;
 using Graphics.Renderers;
-using Guards;
 using Input;
 
 /// <summary>
