@@ -97,6 +97,14 @@ internal interface IFreeTypeService : IDisposable
     string GetFamilyName(string fontFilePath);
 
     /// <summary>
+    /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
+    /// </summary>
+    /// <param name="facePtr">The pointer to the font face.</param>
+    /// <param name="fontFilePath">The path to the font file.</param>
+    /// <returns>The family name of the font.</returns>
+    string GetFamilyName(nint facePtr, string fontFilePath);
+
+    /// <summary>
     /// Returns the line spacing as a scaled value.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>

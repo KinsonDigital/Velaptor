@@ -223,9 +223,21 @@ internal sealed class FreeTypeService : IFreeTypeService
 
         var face = CreateFontFace(fontFilePath);
 
-        var result = face.GetFontFamilyName();
-
+        var result = GetFamilyName(face, fontFilePath);
         this.freeTypeInvoker.FT_Done_Face(face);
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public string GetFamilyName(nint facePtr, string fontFilePath)
+    {
+        if (!File.Exists(fontFilePath))
+        {
+            throw new FileNotFoundException("The font file does not exist", fontFilePath);
+        }
+
+        var result = facePtr.GetFontFamilyName();
 
         return result;
     }
