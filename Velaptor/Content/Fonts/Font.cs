@@ -17,7 +17,6 @@ using Graphics;
 using NativeInterop.Services;
 using Services;
 using Velaptor.Services;
-using VelFontStyle = FontStyle;
 
 /// <summary>
 /// Represents a font with a set size and style that can be used to render text to the screen.
@@ -136,7 +135,7 @@ public sealed class Font : IFont
     }
 
     /// <inheritdoc/>
-    public VelFontStyle Style
+    public FontStyle Style
     {
         get => this.fontStyle;
         set
@@ -156,7 +155,7 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public IEnumerable<FontStyle> AvailableStylesForFamily
         => this.fontStats is null
-            ? Array.Empty<VelFontStyle>().AsReadOnly()
+            ? Array.Empty<FontStyle>().AsReadOnly()
             : this.fontStats.Select(s => s.Style).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
