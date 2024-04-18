@@ -346,7 +346,7 @@ public class FontStatsServiceTests
     /// <param name="familyName">The family of the font to mock.</param>
     private void MockFontFamilyName(string filePath, string familyName)
     {
-        this.mockFreeTypeService.Setup(m => m.GetFamilyName(It.IsAny<nint>(), filePath))
+        this.mockFreeTypeService.Setup(m => m.GetFamilyName(filePath))
             .Returns(familyName);
     }
 
@@ -370,7 +370,7 @@ public class FontStatsServiceTests
     /// <param name="style">The style to mock.</param>
     private void MockFontStyle(string filePath, FontStyle style)
     {
-        this.mockFreeTypeService.Setup(m => m.GetFontStyle(It.IsAny<nint>(), filePath))
+        this.mockFreeTypeService.Setup(m => m.GetFontStyle(filePath))
             .Returns(style);
     }
 }
