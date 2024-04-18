@@ -444,7 +444,7 @@ public class FontTests
         var act = () => sut.Style = FontStyle.Italic;
 
         // Assert
-        act.Should().Throw<LoadFontException>()
+        act.Should().Throw<FontException>()
             .WithMessage("The font style 'Italic' does not exist for the font family 'test-font-family'.");
     }
 

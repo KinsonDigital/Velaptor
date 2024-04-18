@@ -395,7 +395,7 @@ public sealed class Font : IFont
     /// <summary>
     /// Rebuilds the font atlas texture and glyph metrics.
     /// </summary>
-    /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
+    /// <exception cref="FontException">Thrown if the current style that is being attempted does not exist.</exception>
     private void RebuildAtlasTexture()
     {
         var fontFilePath = string.Empty;
@@ -410,7 +410,7 @@ public sealed class Font : IFont
 
         if (string.IsNullOrEmpty(fontFilePath))
         {
-            throw new LoadFontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
+            throw new FontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
         }
 
         var filePathWithMetaData = $"{fontFilePath}|size:{Size}";

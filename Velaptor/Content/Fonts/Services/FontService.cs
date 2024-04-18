@@ -58,7 +58,7 @@ internal sealed class FontService : IFontService
 
         if (result == nint.Zero)
         {
-            throw new LoadFontException("An invalid pointer value of zero was returned when creating a new font face.");
+            throw new FontException("An invalid pointer value of zero was returned when creating a new font face.");
         }
 
         return result;
