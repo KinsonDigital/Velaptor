@@ -90,7 +90,8 @@ public sealed class Font : IFont
         this.size = size;
         Name = name;
         FilePath = fontFilePath;
-        FamilyName = this.freeTypeService.GetFamilyName(fontFilePath);
+        FamilyName = this.freeTypeService.GetFamilyName(this.facePtr, fontFilePath);
+        Style = this.freeTypeService.GetFontStyle(this.facePtr, fontFilePath);
         IsDefaultFont = isDefaultFont;
 
         GetFontStatData(FilePath);
@@ -338,8 +339,6 @@ public sealed class Font : IFont
     /// <param name="filePath">The file path to the font file.</param>
     private void GetFontStatData(string filePath)
     {
-        this.fontStyle = this.freeTypeService.GetFontStyle(filePath);
-
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 

@@ -249,8 +249,8 @@ public class FontTests
     public void Ctor_WhenInvoked_SetsPropertyValues()
     {
         // Arrange
-        this.mockFreeTypeService.GetFontStyle(this.fontFilePath).Returns(FontStyle.Italic);
-        this.mockFreeTypeService.GetFamilyName(this.fontFilePath).Returns("test-font-family");
+        this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(FontStyle.Italic);
+        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns("test-font-family");
 
         // Act
         var sut = CreateSystemUnderTest();
@@ -278,8 +278,8 @@ public class FontTests
             new () { Style = boldItalic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
         };
 
-        this.mockFreeTypeService.GetFamilyName(this.fontFilePath).Returns(familyName);
-        this.mockFreeTypeService.GetFontStyle(this.fontFilePath).Returns(FontStyle.Bold);
+        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns(familyName);
+        this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(FontStyle.Bold);
         this.mockFontStatsService.GetContentStatsForFontFamily(familyName).Returns(contentFontStats);
 
         // Act
@@ -306,8 +306,8 @@ public class FontTests
             new () { Style = boldItalic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
         };
 
-        this.mockFreeTypeService.GetFamilyName(this.fontFilePath).Returns(familyName);
-        this.mockFreeTypeService.GetFontStyle(this.fontFilePath).Returns(boldItalic);
+        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns(familyName);
+        this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(boldItalic);
         this.mockFontStatsService.GetContentStatsForFontFamily(familyName)
             .Returns(contentFontStats);
         this.mockFontStatsService.GetSystemStatsForFontFamily(familyName)
@@ -325,8 +325,8 @@ public class FontTests
     public void Ctor_WithNoFontStyles_SetsFontSourceToUnknown()
     {
         // Arrange
-        this.mockFreeTypeService.GetFamilyName(this.fontFilePath).Returns("test-font-family");
-        this.mockFreeTypeService.GetFontStyle(this.fontFilePath).Returns(FontStyle.Bold);
+        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns("test-font-family");
+        this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(FontStyle.Bold);
         this.mockFontStatsService.GetContentStatsForFontFamily("test-font-family").Returns([]);
 
         // Act
@@ -386,7 +386,7 @@ public class FontTests
     {
         // Arrange
         this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(new FontStats[] { new () { Style = FontStyle.Bold } });
+            .Returns([new () { Style = FontStyle.Bold }]);
 
         var sut = CreateSystemUnderTest();
 
