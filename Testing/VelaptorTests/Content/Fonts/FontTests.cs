@@ -326,8 +326,7 @@ public class FontTests
         // Arrange
         this.mockFontService.GetFamilyName(this.fontFilePath).Returns("test-font-family");
         this.mockFontService.GetFontStyle(this.fontFilePath).Returns(FontStyle.Bold);
-        this.mockFontStatsService.GetContentStatsForFontFamily("test-font-family")
-            .Returns(Array.Empty<FontStats>());
+        this.mockFontStatsService.GetContentStatsForFontFamily("test-font-family").Returns([]);
 
         // Act
         var sut = CreateSystemUnderTest();
@@ -370,8 +369,7 @@ public class FontTests
     public void AvailableStylesForFamily_WhenNoStylesExist_ReturnsEmpty()
     {
         // Arrange
-        this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(Array.Empty<FontStats>());
+        this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>()).Returns([]);
 
         var sut = CreateSystemUnderTest();
 
@@ -575,7 +573,7 @@ public class FontTests
         actual.Width.Should().Be(137);
         actual.Height.Should().Be(33);
 
-        this.mockFontService.Received(executeKerningCount).GetKerning(Arg.Any<IntPtr>(), Arg.Any<uint>(), Arg.Any<uint>());
+        this.mockFontService.Received(executeKerningCount).GetKerning(Arg.Any<nint>(), Arg.Any<uint>(), Arg.Any<uint>());
     }
 
     [Fact]
