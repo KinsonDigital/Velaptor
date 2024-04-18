@@ -320,6 +320,5 @@ internal sealed class FontService : IFontService
     /// <summary>
     /// Occurs when there is a <c>FreeType</c> associated error.
     /// </summary>
-    private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e) =>
-        throw new NotSupportedException($"The {nameof(FontService)}.{nameof(FreeTypeInvoker_OnError)}() method is not supported yet.");
+    private static void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e) => throw new FontException(e.ErrorMessage);
 }
