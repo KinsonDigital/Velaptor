@@ -22,7 +22,7 @@ using Xunit;
 /// </summary>
 public class FontFactoryTests
 {
-    private readonly Mock<IFreeTypeService> mockFontService;
+    private readonly Mock<IFreeTypeService> mockFreeTypeervice;
     private readonly Mock<IFontStatsService> mockFontStatsService;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
@@ -32,7 +32,7 @@ public class FontFactoryTests
     /// </summary>
     public FontFactoryTests()
     {
-        this.mockFontService = new Mock<IFreeTypeService>();
+        this.mockFreeTypeervice = new Mock<IFreeTypeService>();
         this.mockFontStatsService = new Mock<IFontStatsService>();
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
@@ -65,7 +65,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFontService.Object,
+                this.mockFreeTypeervice.Object,
                 null,
                 this.mockFontAtlasService.Object,
                 this.mockTextureCache.Object);
@@ -84,7 +84,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFontService.Object,
+                this.mockFreeTypeervice.Object,
                 this.mockFontStatsService.Object,
                 null,
                 this.mockTextureCache.Object);
@@ -103,7 +103,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFontService.Object,
+                this.mockFreeTypeervice.Object,
                 this.mockFontStatsService.Object,
                 this.mockFontAtlasService.Object,
                 null);
@@ -125,7 +125,7 @@ public class FontFactoryTests
         var mockTexture = new Mock<ITexture>();
 
         var sut = new FontFactory(
-            this.mockFontService.Object,
+            this.mockFreeTypeervice.Object,
             this.mockFontStatsService.Object,
             this.mockFontAtlasService.Object,
             this.mockTextureCache.Object);

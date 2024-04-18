@@ -26,7 +26,7 @@ public class FontStatsServiceTests
     private const string DirNameForSystemPath = "system-fonts";
     private readonly string fullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
     private readonly string fullSystemFontDirPath = $@"{RootSystemDirPath}{DirNameForSystemPath}\";
-    private readonly Mock<IFreeTypeService> mockFontService;
+    private readonly Mock<IFreeTypeService> mockFreeTypeService;
     private readonly Mock<IContentPathResolver> mockSystemFontPathResolver;
     private readonly Mock<IContentPathResolver> mockContentPathResolver;
     private readonly Mock<IDirectory> mockDirectory;
@@ -37,7 +37,7 @@ public class FontStatsServiceTests
     /// </summary>
     public FontStatsServiceTests()
     {
-        this.mockFontService = new Mock<IFreeTypeService>();
+        this.mockFreeTypeService = new Mock<IFreeTypeService>();
 
         this.mockContentPathResolver = new Mock<IContentPathResolver>();
         this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
@@ -85,7 +85,7 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFontService.Object,
+                this.mockFreeTypeService.Object,
                 null,
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object,
@@ -105,7 +105,7 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFontService.Object,
+                this.mockFreeTypeService.Object,
                 this.mockContentPathResolver.Object,
                 null,
                 this.mockDirectory.Object,
@@ -125,7 +125,7 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFontService.Object,
+                this.mockFreeTypeService.Object,
                 this.mockContentPathResolver.Object,
                 this.mockSystemFontPathResolver.Object,
                 null,
@@ -145,7 +145,7 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFontService.Object,
+                this.mockFreeTypeService.Object,
                 this.mockContentPathResolver.Object,
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object,
@@ -319,7 +319,7 @@ public class FontStatsServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private FontStatsService CreateSystemUnderTest() => new (
-        this.mockFontService.Object,
+        this.mockFreeTypeService.Object,
         this.mockContentPathResolver.Object,
         this.mockSystemFontPathResolver.Object,
         this.mockDirectory.Object,
@@ -346,7 +346,7 @@ public class FontStatsServiceTests
     /// <param name="familyName">The family of the font to mock.</param>
     private void MockFontFamilyName(string filePath, string familyName)
     {
-        this.mockFontService.Setup(m => m.GetFamilyName(filePath))
+        this.mockFreeTypeService.Setup(m => m.GetFamilyName(It.IsAny<nint>(), filePath))
             .Returns(familyName);
     }
 
@@ -370,7 +370,7 @@ public class FontStatsServiceTests
     /// <param name="style">The style to mock.</param>
     private void MockFontStyle(string filePath, FontStyle style)
     {
-        this.mockFontService.Setup(m => m.GetFontStyle(filePath))
+        this.mockFreeTypeService.Setup(m => m.GetFontStyle(It.IsAny<nint>(), filePath))
             .Returns(style);
     }
 }

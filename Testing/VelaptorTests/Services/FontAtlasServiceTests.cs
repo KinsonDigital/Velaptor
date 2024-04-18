@@ -25,7 +25,7 @@ using Xunit;
 public class FontAtlasServiceTests
 {
     private const string FontFilePath = @"C:\temp\test-font.ttf";
-    private readonly IFreeTypeService mockFontService;
+    private readonly IFreeTypeService mockFreeTypeervice;
     private readonly IImageService mockImageService;
     private readonly ISystemDisplayService mockDisplayService;
     private readonly IPlatform mockPlatform;
@@ -53,13 +53,13 @@ public class FontAtlasServiceTests
             this.glyphIndices.Add(glyphChar, glyphChar);
         }
 
-        this.mockFontService = Substitute.For<IFreeTypeService>();
-        this.mockFontService.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
+        this.mockFreeTypeervice = Substitute.For<IFreeTypeService>();
+        this.mockFreeTypeervice.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
 
-        this.mockFontService.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
+        this.mockFreeTypeervice.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
             .Returns((_) => this.glyphIndices);
 
-        this.mockFontService.CreateGlyphMetrics(
+        this.mockFreeTypeervice.CreateGlyphMetrics(
             Arg.Any<nint>(),
             Arg.Any<Dictionary<char, uint>>()).Returns((_) =>
             {
@@ -89,7 +89,7 @@ public class FontAtlasServiceTests
                 return result;
             });
 
-        this.mockFontService.CreateGlyphImage(this.facePtr, Arg.Any<uint>())
+        this.mockFreeTypeervice.CreateGlyphImage(this.facePtr, Arg.Any<uint>())
             .Returns<(byte[], uint, uint)>((_) =>
             {
                 return (new byte[]
@@ -136,7 +136,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 null,
                 this.mockDisplayService,
                 this.mockFile);
@@ -150,7 +150,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 this.mockImageService,
                 null,
                 this.mockFile);
@@ -164,7 +164,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 this.mockImageService,
                 this.mockDisplayService,
                 null);
@@ -214,7 +214,7 @@ public class FontAtlasServiceTests
         service.CreateAtlas(FontFilePath, fontSize);
 
         // Assert
-        this.mockFontService.Received(1).SetFontSize(this.facePtr, 12);
+        this.mockFreeTypeervice.Received(1).SetFontSize(this.facePtr, 12);
     }
 
     [Fact]
@@ -246,8 +246,8 @@ public class FontAtlasServiceTests
         TestHelpers.SaveImageForTest(actualImage);
 
         // Assert
-        this.mockFontService.Received(1).CreateFontFace(FontFilePath);
-        this.mockFontService.Received(95).CreateGlyphImage(
+        this.mockFreeTypeervice.Received(1).CreateFontFace(FontFilePath);
+        this.mockFreeTypeervice.Received(95).CreateGlyphImage(
                 Arg.Any<nint>(),
                 Arg.Any<uint>());
     }
@@ -260,7 +260,7 @@ public class FontAtlasServiceTests
     private FontAtlasService CreateService()
     {
         var result = new FontAtlasService(
-            this.mockFontService,
+            this.mockFreeTypeervice,
             this.mockImageService,
             this.mockDisplayService,
             this.mockFile);
