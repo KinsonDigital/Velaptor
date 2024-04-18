@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.InteropServices;
 using Content.Exceptions;
 using Content.Fonts;
 using FreeTypeSharp;
@@ -67,21 +66,9 @@ internal sealed class FreeTypeService : IFreeTypeService
     {
         this.freeTypeInvoker.FT_Load_Glyph(facePtr, glyphIndex, FT_LOAD.FT_LOAD_RENDER);
 
-        uint width;
-        uint height;
-        byte[] glyphBitmapData;
-
-        unsafe
-        {
-            width = ((FT_FaceRec_*)facePtr)->glyph->bitmap.width;
-            height = ((FT_FaceRec_*)facePtr)->glyph->bitmap.rows;
-
-            glyphBitmapData = new byte[width * height];
-
-            var bufferPtr = (nint)((FT_FaceRec_*)facePtr)->glyph->bitmap.buffer;
-
-            Marshal.Copy(bufferPtr, glyphBitmapData, 0, glyphBitmapData.Length);
-        }
+        var glyphBitmapData = facePtr.GetGlyphBitmapData();
+        var width = facePtr.GetGlyphBitmapWidth();
+        var height = facePtr.GetGlyphBitmapHeight();
 
         return (glyphBitmapData, width, height);
     }
@@ -100,49 +87,22 @@ internal sealed class FreeTypeService : IFreeTypeService
                 glyphKeyValue.Value,
                 FT_LOAD.FT_LOAD_BITMAP_METRICS_ONLY);
 
-            unsafe
+            metric = metric with
             {
-                FT_FaceRec_* faceRecPtr = (FT_FaceRec_*)facePtr;
-
-                if (Environment.Is64BitProcess)
-                {
-                    metric = metric with
-                    {
-                        Ascender = faceRecPtr->size->metrics.ascender.ToInt64() >> 6,
-                        Descender = faceRecPtr->size->metrics.descender.ToInt64() >> 6,
-                        Glyph = glyphKeyValue.Key,
-                        CharIndex = glyphKeyValue.Value,
-                        XMin = faceRecPtr->bbox.xMin.ToInt64() >> 6,
-                        XMax = faceRecPtr->bbox.xMax.ToInt64() >> 6,
-                        YMin = faceRecPtr->bbox.yMin.ToInt64() >> 6,
-                        YMax = faceRecPtr->bbox.yMax.ToInt64() >> 6,
-                        GlyphWidth = faceRecPtr->glyph->metrics.width.ToInt64() >> 6,
-                        GlyphHeight = faceRecPtr->glyph->metrics.height.ToInt64() >> 6,
-                        HorizontalAdvance = faceRecPtr->glyph->metrics.horiAdvance.ToInt64() >> 6,
-                        HoriBearingX = faceRecPtr->glyph->metrics.horiBearingX.ToInt64() >> 6,
-                        HoriBearingY = faceRecPtr->glyph->metrics.horiBearingY.ToInt64() >> 6,
-                    };
-                }
-                else
-                {
-                    metric = metric with
-                    {
-                        Ascender = faceRecPtr->size->metrics.ascender.ToInt32() >> 6,
-                        Descender = faceRecPtr->size->metrics.descender.ToInt32() >> 6,
-                        Glyph = glyphKeyValue.Key,
-                        CharIndex = glyphKeyValue.Value,
-                        XMin = faceRecPtr->bbox.xMin.ToInt32() >> 6,
-                        XMax = faceRecPtr->bbox.xMax.ToInt32() >> 6,
-                        YMin = faceRecPtr->bbox.yMin.ToInt32() >> 6,
-                        YMax = faceRecPtr->bbox.yMax.ToInt32() >> 6,
-                        GlyphWidth = faceRecPtr->glyph->metrics.width.ToInt32() >> 6,
-                        GlyphHeight = faceRecPtr->glyph->metrics.height.ToInt32() >> 6,
-                        HorizontalAdvance = faceRecPtr->glyph->metrics.horiAdvance.ToInt32() >> 6,
-                        HoriBearingX = faceRecPtr->glyph->metrics.horiBearingX.ToInt32() >> 6,
-                        HoriBearingY = faceRecPtr->glyph->metrics.horiBearingY.ToInt32() >> 6,
-                    };
-                }
-            }
+                Ascender = facePtr.GetMetricAscender(),
+                Descender = facePtr.GetMetricDescender(),
+                Glyph = glyphKeyValue.Key,
+                CharIndex = glyphKeyValue.Value,
+                XMin = facePtr.GetBBoxXMin(),
+                XMax = facePtr.GetBBoxXMax(),
+                YMin = facePtr.GetBBoxYMin(),
+                YMax = facePtr.GetBBoxYMax(),
+                GlyphWidth = facePtr.GetMetricWidth(),
+                GlyphHeight = facePtr.GetMetricHeight(),
+                HorizontalAdvance = facePtr.GetMetricHoriAdvance(),
+                HoriBearingX = facePtr.GetMetricHoriBearingX(),
+                HoriBearingY = facePtr.GetMetricHoriBearingY(),
+            };
 
             result.Add(glyphKeyValue.Key, metric);
         }
@@ -214,30 +174,22 @@ internal sealed class FreeTypeService : IFreeTypeService
     /// <inheritdoc/>
     public FontStyle GetFontStyle(string fontFilePath)
     {
-        FontStyle result;
-
         if (!File.Exists(fontFilePath))
         {
             throw new FileNotFoundException("The font file does not exist", fontFilePath);
         }
 
-        unsafe
-        {
-            var face = (FT_FaceRec_*)CreateFontFace(fontFilePath);
+        var face = CreateFontFace(fontFilePath);
 
-            /* Style Values
-                0 = regular
-                1 = italic
-                2 = bold
-                3 = bold | italic
-             */
+        /* Style Values
+            0 = regular
+            1 = italic
+            2 = bold
+            3 = bold | italic
+         */
+        var result = face.GetFontStyle();
 
-            result = Environment.Is64BitProcess
-                ? (FontStyle)face->style_flags.ToInt64()
-                : (FontStyle)face->style_flags.ToInt32();
-
-            this.freeTypeInvoker.FT_Done_Face((nint)face);
-        }
+        this.freeTypeInvoker.FT_Done_Face(face);
 
         return result;
     }
@@ -245,23 +197,18 @@ internal sealed class FreeTypeService : IFreeTypeService
     /// <inheritdoc/>
     public string GetFamilyName(string fontFilePath)
     {
-        string? result;
-
         if (!File.Exists(fontFilePath))
         {
             throw new FileNotFoundException("The font file does not exist", fontFilePath);
         }
 
-        unsafe
-        {
-            var face = (FT_FaceRec_*)CreateFontFace(fontFilePath);
+        var face = CreateFontFace(fontFilePath);
 
-            result = Marshal.PtrToStringAnsi((nint)face->family_name);
+        var result = face.GetFontFamilyName();
 
-            this.freeTypeInvoker.FT_Done_Face((nint)face);
-        }
+        this.freeTypeInvoker.FT_Done_Face(face);
 
-        return result ?? string.Empty;
+        return result;
     }
 
     /// <inheritdoc/>
@@ -269,11 +216,7 @@ internal sealed class FreeTypeService : IFreeTypeService
     {
         SetFontSize(facePtr, sizeInPoints);
 
-        unsafe
-        {
-            // TODO: See if this unsafe code can be moved to the invoker somehow
-            return ((FT_FaceRec_*)facePtr)->size->metrics.height.ToInt64() >> 6;
-        }
+        return facePtr.GetFontLineSpacing();
     }
 
     /// <inheritdoc/>
