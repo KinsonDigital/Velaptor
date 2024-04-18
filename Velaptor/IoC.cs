@@ -4,6 +4,7 @@
 
 namespace Velaptor;
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -52,6 +53,11 @@ internal static class IoC
     {
         get
         {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                throw new InvalidOperationException("The unit test is invoking the IoC container.  This is not allowed.");
+            }
+
             if (!isInitialized)
             {
                 SetupContainer();
