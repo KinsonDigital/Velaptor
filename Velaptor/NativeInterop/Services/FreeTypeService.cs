@@ -187,9 +187,28 @@ internal sealed class FreeTypeService : IFreeTypeService
             2 = bold
             3 = bold | italic
          */
-        var result = face.GetFontStyle();
 
+        var result = GetFontStyle(face, fontFilePath);
         this.freeTypeInvoker.FT_Done_Face(face);
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public FontStyle GetFontStyle(nint facePtr, string fontFilePath)
+    {
+        if (!File.Exists(fontFilePath))
+        {
+            throw new FileNotFoundException("The font file does not exist", fontFilePath);
+        }
+
+        /* Style Values
+            0 = regular
+            1 = italic
+            2 = bold
+            3 = bold | italic
+         */
+        var result = facePtr.GetFontStyle();
 
         return result;
     }

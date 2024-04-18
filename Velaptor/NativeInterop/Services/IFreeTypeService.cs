@@ -82,6 +82,14 @@ internal interface IFreeTypeService : IDisposable
     FontStyle GetFontStyle(string fontFilePath);
 
     /// <summary>
+    /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
+    /// </summary>
+    /// <param name="facePtr">The pointer to the font face.</param>
+    /// <param name="fontFilePath">The path to the font file.</param>
+    /// <returns>The style of the font.</returns>
+    FontStyle GetFontStyle(nint facePtr, string fontFilePath);
+
+    /// <summary>
     /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
     /// </summary>
     /// <param name="fontFilePath">The path to the font file.</param>
