@@ -26,7 +26,7 @@ public class FontStatsServiceTests
     private const string DirNameForSystemPath = "system-fonts";
     private readonly string fullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
     private readonly string fullSystemFontDirPath = $@"{RootSystemDirPath}{DirNameForSystemPath}\";
-    private readonly Mock<IFontService> mockFontService;
+    private readonly Mock<IFreeTypeService> mockFontService;
     private readonly Mock<IContentPathResolver> mockSystemFontPathResolver;
     private readonly Mock<IContentPathResolver> mockContentPathResolver;
     private readonly Mock<IDirectory> mockDirectory;
@@ -37,7 +37,7 @@ public class FontStatsServiceTests
     /// </summary>
     public FontStatsServiceTests()
     {
-        this.mockFontService = new Mock<IFontService>();
+        this.mockFontService = new Mock<IFreeTypeService>();
 
         this.mockContentPathResolver = new Mock<IContentPathResolver>();
         this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
@@ -75,7 +75,7 @@ public class FontStatsServiceTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontService')");
+            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]

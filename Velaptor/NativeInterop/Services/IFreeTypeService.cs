@@ -1,4 +1,4 @@
-// <copyright file="IFontService.cs" company="KinsonDigital">
+// <copyright file="IFreeTypeService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ using Graphics;
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
 /// </summary>
-internal interface IFontService : IDisposable
+internal interface IFreeTypeService : IDisposable
 {
     /// <summary>
     /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.

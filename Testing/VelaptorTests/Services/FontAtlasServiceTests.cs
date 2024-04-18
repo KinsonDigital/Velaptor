@@ -25,7 +25,7 @@ using Xunit;
 public class FontAtlasServiceTests
 {
     private const string FontFilePath = @"C:\temp\test-font.ttf";
-    private readonly IFontService mockFontService;
+    private readonly IFreeTypeService mockFontService;
     private readonly IImageService mockImageService;
     private readonly ISystemDisplayService mockDisplayService;
     private readonly IPlatform mockPlatform;
@@ -53,7 +53,7 @@ public class FontAtlasServiceTests
             this.glyphIndices.Add(glyphChar, glyphChar);
         }
 
-        this.mockFontService = Substitute.For<IFontService>();
+        this.mockFontService = Substitute.For<IFreeTypeService>();
         this.mockFontService.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
 
         this.mockFontService.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
@@ -126,7 +126,7 @@ public class FontAtlasServiceTests
                 this.mockImageService,
                 this.mockDisplayService,
                 this.mockFile);
-        }, "Value cannot be null. (Parameter 'fontService')");
+        }, "Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]

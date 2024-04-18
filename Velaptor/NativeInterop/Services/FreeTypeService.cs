@@ -1,4 +1,4 @@
-// <copyright file="FontService.cs" company="KinsonDigital">
+// <copyright file="FreeTypeService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,7 +20,7 @@ using Velaptor.Services;
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Waiting for changes from GitHub issue")]
-internal sealed class FontService : IFontService
+internal sealed class FreeTypeService : IFreeTypeService
 {
     private readonly IFreeTypeInvoker freeTypeInvoker;
     private readonly ISystemDisplayService sysDisplayService;
@@ -28,12 +28,12 @@ internal sealed class FontService : IFontService
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontService"/> class.
+    /// Initializes a new instance of the <see cref="FreeTypeService"/> class.
     /// </summary>
     /// <param name="freeTypeInvoker">Makes calls to the native <c>FreeType</c> library.</param>
     /// <param name="sysDisplayService">Provides information about the system display.</param>
     /// <param name="platform">Provides information about the current platform.</param>
-    public FontService(
+    public FreeTypeService(
         IFreeTypeInvoker freeTypeInvoker,
         ISystemDisplayService sysDisplayService,
         IPlatform platform)

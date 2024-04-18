@@ -287,14 +287,14 @@ internal static class IoC
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
+        IoCContainer.Register<IFreeTypeService, FreeTypeService>(Lifestyle.Singleton);
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
         IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
         IoCContainer.Register<IStatsWindowService, StatsWindowService>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
-                IoCContainer.GetInstance<IFontService>(),
+                IoCContainer.GetInstance<IFreeTypeService>(),
                 PathResolverFactory.CreateFontPathResolver(),
                 PathResolverFactory.CreateSystemFontPathResolver(),
                 IoCContainer.GetInstance<IDirectory>(),

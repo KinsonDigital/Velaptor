@@ -16,7 +16,7 @@ internal sealed class FontStatsService : IFontStatsService
     private const string FontFileExtension = ".ttf";
     private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
     private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
-    private readonly IFontService fontService;
+    private readonly IFreeTypeService freeTypeService;
     private readonly IContentPathResolver sysFontPathResolver;
     private readonly IContentPathResolver contentPathResolver;
     private readonly IDirectory directory;
@@ -25,25 +25,25 @@ internal sealed class FontStatsService : IFontStatsService
     /// <summary>
     /// Initializes a new instance of the <see cref="FontStatsService"/> class.
     /// </summary>
-    /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
+    /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
     /// <param name="sysFontPathResolver">Resolves paths to the systems font directory.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Processes directory and file paths.</param>
     public FontStatsService(
-        IFontService fontService,
+        IFreeTypeService freeTypeService,
         IContentPathResolver contentPathResolver,
         IContentPathResolver sysFontPathResolver,
         IDirectory directory,
         IPath path)
     {
-        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(contentPathResolver);
         ArgumentNullException.ThrowIfNull(sysFontPathResolver);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(path);
 
-        this.fontService = fontService;
+        this.freeTypeService = freeTypeService;
         this.contentPathResolver = contentPathResolver;
         this.sysFontPathResolver = sysFontPathResolver;
         this.directory = directory;
@@ -67,12 +67,12 @@ internal sealed class FontStatsService : IFontStatsService
 
         var results =
             (from filePath in fontFiles
-                where this.fontService.GetFamilyName(filePath) == fontFamilyName
+                where this.freeTypeService.GetFamilyName(filePath) == fontFamilyName
                 select new FontStats
                 {
                     FontFilePath = filePath,
                     FamilyName = fontFamilyName,
-                    Style = this.fontService.GetFontStyle(filePath),
+                    Style = this.freeTypeService.GetFontStyle(filePath),
                     Source = GetFontSource(filePath),
                 }).ToArray();
 
@@ -103,12 +103,12 @@ internal sealed class FontStatsService : IFontStatsService
 
         var results =
             (from filePath in fontFiles
-                where this.fontService.GetFamilyName(filePath) == fontFamilyName
+                where this.freeTypeService.GetFamilyName(filePath) == fontFamilyName
                 select new FontStats
                 {
                     FontFilePath = filePath,
                     FamilyName = fontFamilyName,
-                    Style = this.fontService.GetFontStyle(filePath),
+                    Style = this.freeTypeService.GetFontStyle(filePath),
                     Source = GetFontSource(filePath),
                 }).ToArray();
 

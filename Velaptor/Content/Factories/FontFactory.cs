@@ -17,7 +17,7 @@ using Services;
 /// </summary>
 internal sealed class FontFactory : IFontFactory
 {
-    private readonly IFontService fontService;
+    private readonly IFreeTypeService freeTypeService;
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
@@ -25,24 +25,24 @@ internal sealed class FontFactory : IFontFactory
     /// <summary>
     /// Initializes a new instance of the <see cref="FontFactory"/> class.
     /// </summary>
-    /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
+    /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
     public FontFactory(
-        IFontService fontService,
+        IFreeTypeService freeTypeService,
         IFontStatsService fontStatsService,
         IFontAtlasService fontAtlasService,
         IItemCache<string, ITexture> textureCache)
     {
         ArgumentNullException.ThrowIfNull(fontAtlasService);
         ArgumentNullException.ThrowIfNull(textureCache);
-        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(fontStatsService);
 
         this.fontAtlasService = fontAtlasService;
         this.textureCache = textureCache;
-        this.fontService = fontService;
+        this.freeTypeService = freeTypeService;
         this.fontStatsService = fontStatsService;
     }
 
@@ -56,7 +56,7 @@ internal sealed class FontFactory : IFontFactory
         GlyphMetrics[] glyphMetrics) =>
         new Font(
             atlasTexture,
-            this.fontService,
+            this.freeTypeService,
             this.fontStatsService,
             this.fontAtlasService,
             this.textureCache,

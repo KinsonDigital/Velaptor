@@ -35,7 +35,7 @@ public class FontTests
     private const string FontExtension = ".ttf";
     private readonly string fontFilePath;
     private readonly nint facePtr = new (5678);
-    private readonly IFontService mockFontService;
+    private readonly IFreeTypeService mockFontService;
     private readonly IFontStatsService mockFontStatsService;
     private readonly ITexture mockTexture;
     private readonly IFontAtlasService mockFontAtlasService;
@@ -62,7 +62,7 @@ public class FontTests
             this.glyphMetrics.Add(metric.Glyph, metric);
         }
 
-        this.mockFontService = Substitute.For<IFontService>();
+        this.mockFontService = Substitute.For<IFreeTypeService>();
         this.mockFontService.CreateFontFace(this.fontFilePath).Returns(this.facePtr);
         this.mockFontService.CreateGlyphMetrics(this.facePtr, null)
             .Returns(this.glyphMetrics);
@@ -122,7 +122,7 @@ public class FontTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontService')");
+            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]

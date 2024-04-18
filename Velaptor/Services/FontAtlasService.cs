@@ -21,7 +21,7 @@ using NETRectangle = System.Drawing.Rectangle;
 /// </summary>
 internal sealed class FontAtlasService : IFontAtlasService
 {
-    private readonly IFontService fontService;
+    private readonly IFreeTypeService freeTypeService;
     private readonly IImageService imageService;
     private readonly IFile file;
     private readonly char[] glyphChars =
@@ -36,22 +36,22 @@ internal sealed class FontAtlasService : IFontAtlasService
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
     /// </summary>
-    /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
+    /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="imageService">Provides image related services.</param>
     /// <param name="systemDisplayService">Provides information about the system displays.</param>
     /// <param name="file">Performs operations with files.</param>
     public FontAtlasService(
-        IFontService fontService,
+        IFreeTypeService freeTypeService,
         IImageService imageService,
         ISystemDisplayService systemDisplayService,
         IFile file)
     {
-        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(imageService);
         ArgumentNullException.ThrowIfNull(systemDisplayService);
         ArgumentNullException.ThrowIfNull(file);
 
-        this.fontService = fontService;
+        this.freeTypeService = freeTypeService;
         this.imageService = imageService;
         this.file = file;
     }
@@ -69,15 +69,15 @@ internal sealed class FontAtlasService : IFontAtlasService
             throw new FileNotFoundException($"The file '{fontFilePath}' does not exist.");
         }
 
-        this.facePtr = this.fontService.CreateFontFace(fontFilePath);
+        this.facePtr = this.freeTypeService.CreateFontFace(fontFilePath);
 
-        this.fontService.SetFontSize(this.facePtr, sizeInPoints);
+        this.freeTypeService.SetFontSize(this.facePtr, sizeInPoints);
 
-        var glyphIndices = this.fontService.GetGlyphIndices(this.facePtr, this.glyphChars);
+        var glyphIndices = this.freeTypeService.GetGlyphIndices(this.facePtr, this.glyphChars);
 
         var glyphImages = CreateGlyphImages(glyphIndices);
 
-        var glyphMetrics = this.fontService.CreateGlyphMetrics(this.facePtr, glyphIndices);
+        var glyphMetrics = this.freeTypeService.CreateGlyphMetrics(this.facePtr, glyphIndices);
 
         var atlasMetrics = CalcAtlasMetrics(glyphImages);
 
@@ -220,7 +220,7 @@ internal sealed class FontAtlasService : IFontAtlasService
                 continue;
             }
 
-            var (pixelData, width, height) = this.fontService.CreateGlyphImage(this.facePtr, glyphKeyValue.Value);
+            var (pixelData, width, height) = this.freeTypeService.CreateGlyphImage(this.facePtr, glyphKeyValue.Value);
 
             var glyphImage = ToImageData(pixelData, width, height);
 

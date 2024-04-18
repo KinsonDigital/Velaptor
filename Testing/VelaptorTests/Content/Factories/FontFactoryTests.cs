@@ -22,7 +22,7 @@ using Xunit;
 /// </summary>
 public class FontFactoryTests
 {
-    private readonly Mock<IFontService> mockFontService;
+    private readonly Mock<IFreeTypeService> mockFontService;
     private readonly Mock<IFontStatsService> mockFontStatsService;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
@@ -32,7 +32,7 @@ public class FontFactoryTests
     /// </summary>
     public FontFactoryTests()
     {
-        this.mockFontService = new Mock<IFontService>();
+        this.mockFontService = new Mock<IFreeTypeService>();
         this.mockFontStatsService = new Mock<IFontStatsService>();
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
@@ -55,7 +55,7 @@ public class FontFactoryTests
         // Assert
         act.Should()
             .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontService')");
+            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]
