@@ -417,7 +417,7 @@ public class FontTests
     {
         // Arrange
         this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(new FontStats[] { new () { Style = FontStyle.Italic, FontFilePath = this.fontFilePath } });
+            .Returns([new () { Style = FontStyle.Italic, FontFilePath = this.fontFilePath }]);
 
         var sut = CreateSystemUnderTest();
 
@@ -433,9 +433,9 @@ public class FontTests
     public void Style_WhenUsingStyleThatDoesNotExist_ThrowsException()
     {
         // Arrange
-        this.mockFreeTypeService.GetFamilyName(this.fontFilePath).Returns("test-font-family");
+        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns("test-font-family");
         this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(new FontStats[] { new () { Style = FontStyle.Bold } });
+            .Returns([new () { Style = FontStyle.Bold }]);
 
         var sut = CreateSystemUnderTest();
 
@@ -452,7 +452,7 @@ public class FontTests
     {
         // Arrange
         this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(new FontStats[] { new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath } });
+            .Returns([new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath }]);
 
         var sut = CreateSystemUnderTest();
 
@@ -471,7 +471,7 @@ public class FontTests
         this.mockFreeTypeService.GetFontScaledLineSpacing(this.facePtr, 12)
             .Returns(123u);
         this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns(new FontStats[] { new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath } });
+            .Returns([new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath }]);
 
         var sut = CreateSystemUnderTest();
 

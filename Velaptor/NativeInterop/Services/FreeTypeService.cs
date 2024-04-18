@@ -222,8 +222,6 @@ internal sealed class FreeTypeService : IFreeTypeService
     /// <inheritdoc/>
     public void DisposeFace(nint facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
 
-    // TODO: Verify if the DisposeFace or Dispose() methods are being invoked or used.
-
     /// <inheritdoc/>
     public void Dispose()
     {
