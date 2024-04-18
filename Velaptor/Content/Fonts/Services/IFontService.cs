@@ -23,13 +23,12 @@ internal interface IFontService : IDisposable
     nint CreateFontFace(string fontFilePath);
 
     /// <summary>
-    /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>.
+    /// Pulls the 8-bit grayscale bitmap data for a glyph represented by the the given <paramref name="glyphIndex"/>.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
-    /// <param name="glyphChar">The glyph character to create the image from.</param>
     /// <param name="glyphIndex">The index of the glyph in the font file.</param>
     /// <returns>The 8-bit gray scale image pixel data with the width and height.</returns>
-    (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, char glyphChar, uint glyphIndex);
+    (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, uint glyphIndex);
 
     /// <summary>
     /// Creates all the glyph metrics for each glyph.
