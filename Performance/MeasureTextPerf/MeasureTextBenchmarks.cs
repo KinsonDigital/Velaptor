@@ -16,6 +16,7 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 
 /// <summary>

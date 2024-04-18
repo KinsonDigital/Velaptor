@@ -9,6 +9,7 @@ using Caching;
 using Fonts;
 using Fonts.Services;
 using Graphics;
+using NativeInterop.Services;
 using Services;
 
 /// <summary>

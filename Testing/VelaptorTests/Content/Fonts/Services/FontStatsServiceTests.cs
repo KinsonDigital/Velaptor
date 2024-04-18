@@ -12,6 +12,7 @@ using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
+using Velaptor.NativeInterop.Services;
 using Xunit;
 
 /// <summary>

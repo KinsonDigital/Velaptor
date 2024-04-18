@@ -13,9 +13,9 @@ using System.Runtime.InteropServices;
 using Helpers;
 using NSubstitute;
 using Velaptor;
-using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.Hardware;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 using Xunit;
 

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using NativeInterop.Services;
 
 /// <inheritdoc cref="IFontStatsService"/>
 internal sealed class FontStatsService : IFontStatsService

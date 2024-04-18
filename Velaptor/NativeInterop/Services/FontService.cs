@@ -2,17 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content.Fonts.Services;
+namespace Velaptor.NativeInterop.Services;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using Exceptions;
+using Content.Exceptions;
+using Content.Fonts;
 using FreeTypeSharp;
 using Graphics;
-using NativeInterop.FreeType;
+using FreeType;
 using Velaptor.Services;
 
 /// <summary>

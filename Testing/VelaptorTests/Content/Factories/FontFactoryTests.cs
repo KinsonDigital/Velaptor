@@ -13,6 +13,7 @@ using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 using Xunit;
 
