@@ -38,7 +38,7 @@ public class FontAtlasServiceTests
     ];
     private readonly Dictionary<char, uint> glyphIndices = new ();
     private readonly IFile mockFile;
-    private readonly nint facePtr = new (5678);
+    private readonly nint facePtr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasServiceTests"/> class.
@@ -56,11 +56,11 @@ public class FontAtlasServiceTests
         this.mockFontService = Substitute.For<IFontService>();
         this.mockFontService.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
 
-        this.mockFontService.GetGlyphIndices(Arg.Any<IntPtr>(), Arg.Any<char[]>())
+        this.mockFontService.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
             .Returns((_) => this.glyphIndices);
 
         this.mockFontService.CreateGlyphMetrics(
-            Arg.Any<IntPtr>(),
+            Arg.Any<nint>(),
             Arg.Any<Dictionary<char, uint>>()).Returns((_) =>
             {
                 var result = new Dictionary<char, GlyphMetrics>();
@@ -89,7 +89,7 @@ public class FontAtlasServiceTests
                 return result;
             });
 
-        this.mockFontService.CreateGlyphImage(this.facePtr, Arg.Any<char>(), Arg.Any<uint>())
+        this.mockFontService.CreateGlyphImage(this.facePtr, Arg.Any<uint>())
             .Returns<(byte[], uint, uint)>((_) =>
             {
                 return (new byte[]
@@ -240,7 +240,7 @@ public class FontAtlasServiceTests
         var service = CreateService();
 
         // Act
-        var (actualImage, _) = service.CreateAtlas(FontFilePath, 12);
+        (ImageData actualImage, _) = service.CreateAtlas(FontFilePath, 12);
 
         // Save the results
         TestHelpers.SaveImageForTest(actualImage);
@@ -249,7 +249,6 @@ public class FontAtlasServiceTests
         this.mockFontService.Received(1).CreateFontFace(FontFilePath);
         this.mockFontService.Received(95).CreateGlyphImage(
                 Arg.Any<nint>(),
-                Arg.Any<char>(),
                 Arg.Any<uint>());
     }
     #endregion

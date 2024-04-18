@@ -220,7 +220,7 @@ internal sealed class FontAtlasService : IFontAtlasService
                 continue;
             }
 
-            var (pixelData, width, height) = this.fontService.CreateGlyphImage(this.facePtr, glyphKeyValue.Key, glyphKeyValue.Value);
+            var (pixelData, width, height) = this.fontService.CreateGlyphImage(this.facePtr, glyphKeyValue.Value);
 
             var glyphImage = ToImageData(pixelData, width, height);
 
