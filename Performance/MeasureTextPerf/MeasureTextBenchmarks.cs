@@ -46,7 +46,7 @@ public class MeasureTextBenchmarks
         var mockTexture = new Mock<ITexture>();
 
         var mockFontService = new Mock<IFontService>();
-        mockFontService.Setup(m => m.HasKerning(It.IsAny<IntPtr>())).Returns(false);
+        mockFontService.Setup(m => m.HasKerning(It.IsAny<nint>())).Returns(false);
 
         var mockFontStatsService = new Mock<IFontStatsService>();
         var mockFontAtlasService = new Mock<IFontAtlasService>();

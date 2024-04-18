@@ -32,12 +32,12 @@ public sealed class Font : IFont
     private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
-    {
+    [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-    };
+        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' '
+    ];
     private readonly bool fontInitialized;
     private GlyphMetrics[] metrics;
     private FontStats[]? fontStats;
@@ -318,12 +318,10 @@ public sealed class Font : IFont
     /// <param name="textSize">The size of the text to add.</param>
     private void AddToCache(string text, SizeF textSize)
     {
-        if (!CacheEnabled || this.textSizeCache.ContainsKey(text))
+        if (!CacheEnabled || !this.textSizeCache.TryAdd(text, textSize))
         {
             return;
         }
-
-        this.textSizeCache.Add(text, textSize);
 
         if (this.textSizeCache.Count <= MaxCacheSize)
         {
@@ -400,7 +398,7 @@ public sealed class Font : IFont
     {
         var fontFilePath = string.Empty;
 
-        foreach (var fontStat in this.fontStats ?? Array.Empty<FontStats>())
+        foreach (var fontStat in this.fontStats ?? [])
         {
             if (fontStat.Style == this.fontStyle)
             {
