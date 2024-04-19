@@ -44,7 +44,7 @@ public class TextureTests
 
         /*NOTE:
          * Create the bytes in the ARGB byte layout.
-         * OpenGL expects the layout to be RGBA.  The texture class changes this
+         * OpenGL expects the layout to be RGBA.  The texture class changes
          * this layout to meet OpenGL requirements.
          */
         for (var y = 0; y < this.imageData.Height; y++)
@@ -95,129 +95,6 @@ public class TextureTests
     }
 
     #region Constructor Tests
-    #region Public Constructors
-    [Fact]
-    public void Ctor_WithNullNameAndImageData_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture(null, default(ImageData));
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
-    }
-
-    [Fact]
-    public void Ctor_WithEmptyNameAndImageData_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture(string.Empty, default(ImageData));
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
-    }
-
-    [Fact]
-    public void Ctor_WithNameAndNullImageDataFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture("test-name", new ImageData(new Color[1, 1], null));
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'imageData.FilePath')");
-    }
-
-    [Fact]
-    public void Ctor_WithNameAndEmptyImageDataFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture("test-name", new ImageData(new Color[1, 1], string.Empty));
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'imageData.FilePath')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullNameAndFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture(null, "test-path");
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
-    }
-
-    [Fact]
-    public void Ctor_WithEmptyNameAndFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture(string.Empty, "test-path");
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture("test-name", null);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'filePath')");
-    }
-
-    [Fact]
-    public void Ctor_WithEmptyFilePath_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Texture("test-name", string.Empty);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
-    }
-    #endregion
-
-    #region Internal Constructors
     [Fact]
     public void InternalCtor_WithNullGLParam_ThrowsException()
     {
@@ -354,7 +231,7 @@ public class TextureTests
         // Arrange
         var expectedPixelData = new List<byte>();
 
-        // NOTE: Swap the from ARGB to RGBA byte layout because this is expected by OpenGL
+        // NOTE: Swap from ARGB to RGBA byte layout because this is expected by OpenGL
         for (var y = 0; y < this.imageData.Height; y++)
         {
             var rowBytes = new List<byte>();
@@ -419,7 +296,6 @@ public class TextureTests
         this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
         this.mockGLService.Verify(m => m.UnbindTexture2D(), Times.Once);
     }
-    #endregion
     #endregion
 
     #region Prop Tests

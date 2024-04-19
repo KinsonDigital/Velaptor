@@ -7,7 +7,6 @@ namespace Velaptor.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Carbonate;
 using Carbonate.OneWay;
 using Graphics;
@@ -26,49 +25,6 @@ public sealed class Texture : ITexture
     private readonly IOpenGLService openGLService;
     private IDisposable? unsubscriber;
     private bool isDisposed;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Texture"/> class.
-    /// </summary>
-    /// <param name="name">The name of the texture.</param>
-    /// <param name="imageData">The image data of the texture.</param>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="imageData"/> is empty.</exception>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    public Texture(string name, ImageData imageData)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        ArgumentException.ThrowIfNullOrEmpty(imageData.FilePath);
-
-        this.gl = IoC.Container.GetInstance<IGLInvoker>();
-        this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
-        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
-
-        FilePath = imageData.FilePath;
-        Init(disposeReactable, name, imageData);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Texture"/> class.
-    /// </summary>
-    /// <param name="name">The name of the texture.</param>
-    /// <param name="filePath">The file path to the image file.</param>
-    /// <exception cref="FileNotFoundException">Thrown if the <paramref name="filePath"/> is not found.</exception>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-    public Texture(string name, string filePath)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        ArgumentException.ThrowIfNullOrEmpty(filePath);
-
-        this.gl = IoC.Container.GetInstance<IGLInvoker>();
-        this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
-        var imageLoader = IoC.Container.GetInstance<IImageLoader>();
-        var disposeReactable = IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
-
-        var imageData = imageLoader.LoadImage(filePath);
-        FilePath = filePath;
-        Init(disposeReactable, name, imageData);
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Texture"/> class.
