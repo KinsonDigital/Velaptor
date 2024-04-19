@@ -13,9 +13,9 @@ using System.Runtime.InteropServices;
 using Helpers;
 using NSubstitute;
 using Velaptor;
-using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.Hardware;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 using Xunit;
 
@@ -25,7 +25,7 @@ using Xunit;
 public class FontAtlasServiceTests
 {
     private const string FontFilePath = @"C:\temp\test-font.ttf";
-    private readonly IFontService mockFontService;
+    private readonly IFreeTypeService mockFreeTypeervice;
     private readonly IImageService mockImageService;
     private readonly ISystemDisplayService mockDisplayService;
     private readonly IPlatform mockPlatform;
@@ -38,7 +38,7 @@ public class FontAtlasServiceTests
     ];
     private readonly Dictionary<char, uint> glyphIndices = new ();
     private readonly IFile mockFile;
-    private readonly nint facePtr = new (5678);
+    private readonly nint facePtr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasServiceTests"/> class.
@@ -53,14 +53,14 @@ public class FontAtlasServiceTests
             this.glyphIndices.Add(glyphChar, glyphChar);
         }
 
-        this.mockFontService = Substitute.For<IFontService>();
-        this.mockFontService.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
+        this.mockFreeTypeervice = Substitute.For<IFreeTypeService>();
+        this.mockFreeTypeervice.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
 
-        this.mockFontService.GetGlyphIndices(Arg.Any<IntPtr>(), Arg.Any<char[]>())
+        this.mockFreeTypeervice.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
             .Returns((_) => this.glyphIndices);
 
-        this.mockFontService.CreateGlyphMetrics(
-            Arg.Any<IntPtr>(),
+        this.mockFreeTypeervice.CreateGlyphMetrics(
+            Arg.Any<nint>(),
             Arg.Any<Dictionary<char, uint>>()).Returns((_) =>
             {
                 var result = new Dictionary<char, GlyphMetrics>();
@@ -89,7 +89,7 @@ public class FontAtlasServiceTests
                 return result;
             });
 
-        this.mockFontService.CreateGlyphImage(this.facePtr, Arg.Any<char>(), Arg.Any<uint>())
+        this.mockFreeTypeervice.CreateGlyphImage(this.facePtr, Arg.Any<uint>())
             .Returns<(byte[], uint, uint)>((_) =>
             {
                 return (new byte[]
@@ -126,7 +126,7 @@ public class FontAtlasServiceTests
                 this.mockImageService,
                 this.mockDisplayService,
                 this.mockFile);
-        }, "Value cannot be null. (Parameter 'fontService')");
+        }, "Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 null,
                 this.mockDisplayService,
                 this.mockFile);
@@ -150,7 +150,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 this.mockImageService,
                 null,
                 this.mockFile);
@@ -164,7 +164,7 @@ public class FontAtlasServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new FontAtlasService(
-                this.mockFontService,
+                this.mockFreeTypeervice,
                 this.mockImageService,
                 this.mockDisplayService,
                 null);
@@ -214,7 +214,7 @@ public class FontAtlasServiceTests
         service.CreateAtlas(FontFilePath, fontSize);
 
         // Assert
-        this.mockFontService.Received(1).SetFontSize(this.facePtr, 12);
+        this.mockFreeTypeervice.Received(1).SetFontSize(this.facePtr, 12);
     }
 
     [Fact]
@@ -240,16 +240,15 @@ public class FontAtlasServiceTests
         var service = CreateService();
 
         // Act
-        var (actualImage, _) = service.CreateAtlas(FontFilePath, 12);
+        (ImageData actualImage, _) = service.CreateAtlas(FontFilePath, 12);
 
         // Save the results
         TestHelpers.SaveImageForTest(actualImage);
 
         // Assert
-        this.mockFontService.Received(1).CreateFontFace(FontFilePath);
-        this.mockFontService.Received(95).CreateGlyphImage(
+        this.mockFreeTypeervice.Received(1).CreateFontFace(FontFilePath);
+        this.mockFreeTypeervice.Received(95).CreateGlyphImage(
                 Arg.Any<nint>(),
-                Arg.Any<char>(),
                 Arg.Any<uint>());
     }
     #endregion
@@ -261,7 +260,7 @@ public class FontAtlasServiceTests
     private FontAtlasService CreateService()
     {
         var result = new FontAtlasService(
-            this.mockFontService,
+            this.mockFreeTypeervice,
             this.mockImageService,
             this.mockDisplayService,
             this.mockFile);

@@ -14,9 +14,9 @@ using Caching;
 using Exceptions;
 using ExtensionMethods;
 using Graphics;
+using NativeInterop.Services;
 using Services;
 using Velaptor.Services;
-using VelFontStyle = FontStyle;
 
 /// <summary>
 /// Represents a font with a set size and style that can be used to render text to the screen.
@@ -24,7 +24,7 @@ using VelFontStyle = FontStyle;
 public sealed class Font : IFont
 {
     private const char InvalidCharacter = '□';
-    private readonly IFontService fontService;
+    private readonly IFreeTypeService freeTypeService;
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
@@ -32,12 +32,12 @@ public sealed class Font : IFont
     private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
-    {
+    [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-    };
+        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' '
+    ];
     private readonly bool fontInitialized;
     private GlyphMetrics[] metrics;
     private FontStats[]? fontStats;
@@ -48,7 +48,7 @@ public sealed class Font : IFont
     /// Initializes a new instance of the <see cref="Font"/> class.
     /// </summary>
     /// <param name="texture">The font atlas texture that contains bitmap data for all the available glyphs.</param>
-    /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
+    /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
@@ -59,7 +59,7 @@ public sealed class Font : IFont
     /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
     internal Font(
         ITexture texture,
-        IFontService fontService,
+        IFreeTypeService freeTypeService,
         IFontStatsService fontStatsService,
         IFontAtlasService fontAtlasService,
         IItemCache<string, ITexture> textureCache,
@@ -70,14 +70,14 @@ public sealed class Font : IFont
         GlyphMetrics[] glyphMetrics)
     {
         ArgumentNullException.ThrowIfNull(texture);
-        ArgumentNullException.ThrowIfNull(fontService);
+        ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(fontStatsService);
         ArgumentNullException.ThrowIfNull(fontAtlasService);
         ArgumentNullException.ThrowIfNull(textureCache);
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         Atlas = texture;
-        this.fontService = fontService;
+        this.freeTypeService = freeTypeService;
         this.fontStatsService = fontStatsService;
         this.fontAtlasService = fontAtlasService;
         this.textureCache = textureCache;
@@ -85,18 +85,19 @@ public sealed class Font : IFont
         this.metrics = glyphMetrics;
         this.invalidGlyph = Array.Find(glyphMetrics, m => m.Glyph == InvalidCharacter);
 
-        this.facePtr = this.fontService.CreateFontFace(fontFilePath);
+        this.facePtr = this.freeTypeService.CreateFontFace(fontFilePath);
 
         this.size = size;
         Name = name;
         FilePath = fontFilePath;
-        FamilyName = this.fontService.GetFamilyName(fontFilePath);
+        FamilyName = this.freeTypeService.GetFamilyName(this.facePtr, fontFilePath);
+        Style = this.freeTypeService.GetFontStyle(this.facePtr, fontFilePath);
         IsDefaultFont = isDefaultFont;
 
         GetFontStatData(FilePath);
 
-        HasKerning = this.fontService.HasKerning(this.facePtr);
-        LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
+        HasKerning = this.freeTypeService.HasKerning(this.facePtr);
+        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
 
         this.fontInitialized = true;
     }
@@ -135,7 +136,7 @@ public sealed class Font : IFont
     }
 
     /// <inheritdoc/>
-    public VelFontStyle Style
+    public FontStyle Style
     {
         get => this.fontStyle;
         set
@@ -155,7 +156,7 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public IEnumerable<FontStyle> AvailableStylesForFamily
         => this.fontStats is null
-            ? Array.Empty<VelFontStyle>().AsReadOnly()
+            ? Array.Empty<FontStyle>().AsReadOnly()
             : this.fontStats.Select(s => s.Style).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
@@ -247,7 +248,7 @@ public sealed class Font : IFont
     /// <para>https://freetype.org/freetype2/docs/glyphs/glyphs-4.html#section-1.</para>
     /// </remarks>
     public float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex)
-        => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
+        => this.freeTypeService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
 
     /// <inheritdoc/>
     /// <remarks>
@@ -318,12 +319,10 @@ public sealed class Font : IFont
     /// <param name="textSize">The size of the text to add.</param>
     private void AddToCache(string text, SizeF textSize)
     {
-        if (!CacheEnabled || this.textSizeCache.ContainsKey(text))
+        if (!CacheEnabled || !this.textSizeCache.TryAdd(text, textSize))
         {
             return;
         }
-
-        this.textSizeCache.Add(text, textSize);
 
         if (this.textSizeCache.Count <= MaxCacheSize)
         {
@@ -340,8 +339,6 @@ public sealed class Font : IFont
     /// <param name="filePath">The file path to the font file.</param>
     private void GetFontStatData(string filePath)
     {
-        this.fontStyle = this.fontService.GetFontStyle(filePath);
-
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 
@@ -395,12 +392,12 @@ public sealed class Font : IFont
     /// <summary>
     /// Rebuilds the font atlas texture and glyph metrics.
     /// </summary>
-    /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
+    /// <exception cref="FontException">Thrown if the current style that is being attempted does not exist.</exception>
     private void RebuildAtlasTexture()
     {
         var fontFilePath = string.Empty;
 
-        foreach (var fontStat in this.fontStats ?? Array.Empty<FontStats>())
+        foreach (var fontStat in this.fontStats ?? [])
         {
             if (fontStat.Style == this.fontStyle)
             {
@@ -410,7 +407,7 @@ public sealed class Font : IFont
 
         if (string.IsNullOrEmpty(fontFilePath))
         {
-            throw new LoadFontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
+            throw new FontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
         }
 
         var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
@@ -418,7 +415,7 @@ public sealed class Font : IFont
 
         (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fontFilePath, Size);
 
-        LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
+        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
 
         this.metrics = glyphMetrics;
     }
@@ -441,7 +438,7 @@ public sealed class Font : IFont
                 : this.invalidGlyph;
 
             width += HasKerning
-                ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, charMetric.CharIndex)
+                ? this.freeTypeService.GetKerning(this.facePtr, leftCharacterIndex, charMetric.CharIndex)
                 : 0;
 
             width += charMetric.HorizontalAdvance;

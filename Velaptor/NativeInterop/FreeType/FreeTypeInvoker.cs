@@ -7,8 +7,9 @@ namespace Velaptor.NativeInterop.FreeType;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 using ExtensionMethods;
-using FreeTypeSharp.Native;
+using FreeTypeSharp;
 using Guards;
 
 /// <summary>
@@ -18,27 +19,46 @@ using Guards;
 ///     For more information and documentation, refer to the https://www.freetype.org/ website.
 /// </remarks>
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the FreeType library.")]
+[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Param nameing to match original library.")]
 internal sealed class FreeTypeInvoker : IFreeTypeInvoker
 {
+    private readonly FreeTypeLibrary library = new ();
+    private FreeTypeFaceFacade? facade;
+
     /// <inheritdoc/>
     public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
-    // ReSharper disable IdentifierTypo
-    // ReSharper disable InconsistentNaming
+    /// <inheritdoc/>
+    public bool FT_Has_Kerning(nint face)
+    {
+        unsafe
+        {
+            this.facade ??= new FreeTypeFaceFacade(this.library, (FT_FaceRec_*)face);
+
+            return this.facade.HasKerningFlag;
+        }
+    }
 
     /// <inheritdoc/>
-    public FT_Vector FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, uint kern_mode)
+    // TODO: Change the return type to a standard dotnet vector
+    public FT_Vector_ FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode)
     {
         EnsureThat.PointerIsNotNull(face);
 
-        var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out var akerning);
-
-        if (error == FT_Error.FT_Err_Ok)
+        unsafe
         {
-            return akerning;
+            FT_Vector_ akerning;
+
+            var error = FT.FT_Get_Kerning((FT_FaceRec_*)face, left_glyph, right_glyph, kern_mode, &akerning);
+
+            if (error == FT_Error.FT_Err_Ok)
+            {
+                return akerning;
+            }
+
+            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
         }
 
-        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
         return default;
     }
 
@@ -47,90 +67,93 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     {
         EnsureThat.PointerIsNotNull(face);
 
-        return FT.FT_Get_Char_Index(face, charcode);
+        unsafe
+        {
+            return FT.FT_Get_Char_Index((FT_FaceRec_*)face, charcode);
+        }
     }
 
     /// <inheritdoc/>
-    public FT_Error FT_Load_Glyph(nint face, uint glyph_index, int load_flags)
+    public FT_Error FT_Load_Glyph(nint face, uint glyph_index, FT_LOAD load_flags)
     {
         EnsureThat.PointerIsNotNull(face);
 
-        return FT.FT_Load_Glyph(face, glyph_index, load_flags);
+        unsafe
+        {
+            return FT.FT_Load_Glyph((FT_FaceRec_*)face, glyph_index, load_flags);
+        }
     }
 
     /// <inheritdoc/>
-    public FT_Error FT_Load_Char(nint face, uint char_code, int load_flags)
+    public FT_Error FT_Load_Char(nint face, uint char_code, FT_LOAD load_flags)
     {
         EnsureThat.PointerIsNotNull(face);
 
-        return FT.FT_Load_Char(face, char_code, load_flags);
+        unsafe
+        {
+            return FT.FT_Load_Char((FT_FaceRec_*)face, char_code, load_flags);
+        }
     }
 
     /// <inheritdoc/>
-    public FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode render_mode)
+    public FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode_ render_mode)
     {
         EnsureThat.PointerIsNotNull(slot);
 
-        return FT.FT_Render_Glyph(slot, render_mode);
+        unsafe
+        {
+            return FT.FT_Render_Glyph((FT_GlyphSlotRec_*)slot, render_mode);
+        }
     }
 
     /// <inheritdoc/>
-    public nint FT_Init_FreeType()
+    public nint FT_New_Face(string filepathname, int face_index)
     {
-        var error = FT.FT_Init_FreeType(out var result);
-
-        if (error == FT_Error.FT_Err_Ok)
+        unsafe
         {
-            return result;
+            FT_FaceRec_* facePtr;
+            var error = FT.FT_New_Face(this.library.Native, (byte*)Marshal.StringToHGlobalAnsi(filepathname), face_index, &facePtr);
+
+            if (error != FT_Error.FT_Err_Ok)
+            {
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            }
+
+            return (nint)facePtr;
         }
-
-        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-
-        return 0;
-    }
-
-    /// <inheritdoc/>
-    public nint FT_New_Face(nint library, string filepathname, int face_index)
-    {
-        EnsureThat.PointerIsNotNull(library);
-
-        var error = FT.FT_New_Face(library, filepathname, face_index, out var aface);
-
-        if (error == FT_Error.FT_Err_Ok)
-        {
-            return aface;
-        }
-
-        this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-
-        return 0;
     }
 
     /// <inheritdoc/>
     public void FT_Set_Char_Size(nint face, nint char_width, nint char_height, uint horz_resolution, uint vert_resolution)
     {
-        EnsureThat.PointerIsNotNull(face);
         EnsureThat.PointerIsNotNull(char_width);
         EnsureThat.PointerIsNotNull(char_height);
+        EnsureThat.PointerIsNotNull(face);
 
-        var error = FT.FT_Set_Char_Size(face, char_width, char_height, horz_resolution, vert_resolution);
-
-        if (error != FT_Error.FT_Err_Ok)
+        unsafe
         {
-            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            var error = FT.FT_Set_Char_Size((FT_FaceRec_*)face, char_width, char_height, horz_resolution, vert_resolution);
+
+            if (error != FT_Error.FT_Err_Ok)
+            {
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            }
         }
     }
 
     /// <inheritdoc/>
     public void FT_Done_Face(nint face)
     {
-        EnsureThat.PointerIsNotNull(face);
-
-        var error = FT.FT_Done_Face(face);
-
-        if (error != FT_Error.FT_Err_Ok)
+        unsafe
         {
-            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            EnsureThat.PointerIsNotNull(face);
+
+            var error = FT.FT_Done_Face((FT_FaceRec_*)face);
+
+            if (error != FT_Error.FT_Err_Ok)
+            {
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            }
         }
     }
 
@@ -139,24 +162,25 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     {
         EnsureThat.PointerIsNotNull(glyph);
 
-        FT.FT_Done_Glyph(glyph);
-    }
-
-    /// <inheritdoc/>
-    public void FT_Done_FreeType(nint library)
-    {
-        EnsureThat.PointerIsNotNull(library);
-
-        var error = FT.FT_Done_FreeType(library);
-
-        if (error != FT_Error.FT_Err_Ok)
+        unsafe
         {
-            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            FT.FT_Done_Glyph((FT_GlyphRec_*)glyph);
         }
     }
 
-    // ReSharper restore IdentifierTypo
-    // ReSharper restore InconsistentNaming
+    /// <inheritdoc/>
+    public void FT_Done_FreeType()
+    {
+        unsafe
+        {
+            var error = FT.FT_Done_FreeType(this.library.Native);
+
+            if (error != FT_Error.FT_Err_Ok)
+            {
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            }
+        }
+    }
 
     /// <summary>
     /// Creates an error message from the standard <c>FreeType</c> message.

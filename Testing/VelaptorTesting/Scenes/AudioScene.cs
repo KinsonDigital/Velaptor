@@ -23,7 +23,7 @@ public class AudioScene : SceneBase
     private BackgroundManager? backgroundManager;
     private ILoader<IAudio>? loader;
     private IAudio? audio;
-    private ISlider sldPosition;
+    private ISlider? sldPosition;
     private string? lblCurrentTimeName;
     private string? lblStateName;
     private string? lblRepeatsName;

@@ -1,17 +1,18 @@
-// <copyright file="IFontService.cs" company="KinsonDigital">
+// <copyright file="IFreeTypeService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content.Fonts.Services;
+namespace Velaptor.NativeInterop.Services;
 
 using System;
 using System.Collections.Generic;
+using Content.Fonts;
 using Graphics;
 
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
 /// </summary>
-internal interface IFontService : IDisposable
+internal interface IFreeTypeService : IDisposable
 {
     /// <summary>
     /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.
@@ -23,13 +24,12 @@ internal interface IFontService : IDisposable
     nint CreateFontFace(string fontFilePath);
 
     /// <summary>
-    /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>.
+    /// Pulls the 8-bit grayscale bitmap data for a glyph represented by the the given <paramref name="glyphIndex"/>.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
-    /// <param name="glyphChar">The glyph character to create the image from.</param>
     /// <param name="glyphIndex">The index of the glyph in the font file.</param>
     /// <returns>The 8-bit gray scale image pixel data with the width and height.</returns>
-    (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, char glyphChar, uint glyphIndex);
+    (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, uint glyphIndex);
 
     /// <summary>
     /// Creates all the glyph metrics for each glyph.
@@ -82,11 +82,27 @@ internal interface IFontService : IDisposable
     FontStyle GetFontStyle(string fontFilePath);
 
     /// <summary>
+    /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
+    /// </summary>
+    /// <param name="facePtr">The pointer to the font face.</param>
+    /// <param name="fontFilePath">The path to the font file.</param>
+    /// <returns>The style of the font.</returns>
+    FontStyle GetFontStyle(nint facePtr, string fontFilePath);
+
+    /// <summary>
     /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
     /// </summary>
     /// <param name="fontFilePath">The path to the font file.</param>
     /// <returns>The family name of the font.</returns>
     string GetFamilyName(string fontFilePath);
+
+    /// <summary>
+    /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
+    /// </summary>
+    /// <param name="facePtr">The pointer to the font face.</param>
+    /// <param name="fontFilePath">The path to the font file.</param>
+    /// <returns>The family name of the font.</returns>
+    string GetFamilyName(nint facePtr, string fontFilePath);
 
     /// <summary>
     /// Returns the line spacing as a scaled value.

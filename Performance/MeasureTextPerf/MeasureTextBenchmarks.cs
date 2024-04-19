@@ -16,6 +16,7 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 
 /// <summary>
@@ -45,8 +46,8 @@ public class MeasureTextBenchmarks
 
         var mockTexture = new Mock<ITexture>();
 
-        var mockFontService = new Mock<IFontService>();
-        mockFontService.Setup(m => m.HasKerning(It.IsAny<IntPtr>())).Returns(false);
+        var mockFreeTypeService = new Mock<IFreeTypeService>();
+        mockFreeTypeService.Setup(m => m.HasKerning(It.IsAny<nint>())).Returns(false);
 
         var mockFontStatsService = new Mock<IFontStatsService>();
         var mockFontAtlasService = new Mock<IFontAtlasService>();
@@ -54,7 +55,7 @@ public class MeasureTextBenchmarks
 
         this.font = new Font(
             mockTexture.Object,
-            mockFontService.Object,
+            mockFreeTypeService.Object,
             mockFontStatsService.Object,
             mockFontAtlasService.Object,
             mockTextureCache.Object,

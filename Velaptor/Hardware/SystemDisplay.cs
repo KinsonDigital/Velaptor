@@ -20,7 +20,8 @@ public readonly record struct SystemDisplay
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    public SystemDisplay() => this.platform = IoC.Container.GetInstance<IPlatform>();
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Required for testing.")]
+    public SystemDisplay() => this.platform = new Platform();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
