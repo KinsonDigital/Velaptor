@@ -6,7 +6,6 @@ namespace VelaptorTests.Fakes;
 
 using Velaptor;
 using Velaptor.Batching;
-using Velaptor.Scene;
 using Velaptor.UI;
 
 /// <summary>
@@ -18,11 +17,10 @@ public class WindowFake : Window
     /// Initializes a new instance of the <see cref="WindowFake"/> class.
     /// </summary>
     /// <param name="window">Mocked window.</param>
-    /// <param name="sceneManager">Mocked scene manager.</param>
     /// <param name="batcher">Mocked batcher.</param>
     /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-    internal WindowFake(IWindow window, ISceneManager sceneManager, IBatcher batcher)
-        : base(window, sceneManager, batcher)
+    internal WindowFake(IWindow window, IBatcher batcher)
+        : base(window, batcher)
     {
     }
 

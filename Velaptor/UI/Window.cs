@@ -28,7 +28,6 @@ public abstract class Window : IWindow
     protected Window()
     {
         this.nativeWindow = WindowFactory.CreateWindow();
-        SceneManager = IoC.Container.GetInstance<ISceneManager>();
         this.batcher = IoC.Container.GetInstance<IBatcher>();
 
         Init();
@@ -38,16 +37,13 @@ public abstract class Window : IWindow
     /// Initializes a new instance of the <see cref="Window"/> class.
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
-    /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="batcher">Controls the batching start and end process.</param>
-    private protected Window(IWindow window, ISceneManager sceneManager, IBatcher batcher)
+    private protected Window(IWindow window, IBatcher batcher)
     {
         ArgumentNullException.ThrowIfNull(window);
-        ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(batcher);
 
         this.nativeWindow = window;
-        SceneManager = sceneManager;
         this.batcher = batcher;
         Init();
     }
@@ -151,7 +147,7 @@ public abstract class Window : IWindow
     }
 
     /// <inheritdoc/>
-    public ISceneManager SceneManager { get; }
+    public ISceneManager SceneManager => this.nativeWindow.SceneManager;
 
     /// <inheritdoc/>
     public bool AutoSceneLoading { get; set; } = true;
@@ -215,7 +211,7 @@ public abstract class Window : IWindow
             return;
         }
 
-        SceneManager.LoadContent();
+        this.nativeWindow.SceneManager.LoadContent();
     }
 
     /// <summary>
@@ -230,7 +226,7 @@ public abstract class Window : IWindow
             return;
         }
 
-        SceneManager.Update(frameTime);
+        this.nativeWindow.SceneManager.Update(frameTime);
     }
 
     /// <summary>
@@ -240,14 +236,14 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        if (!AutoSceneRendering || SceneManager.TotalScenes <= 0)
+        if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
         {
             return;
         }
 
         this.batcher.Begin();
 
-        SceneManager.Render();
+        this.nativeWindow.SceneManager.Render();
 
         this.batcher.End();
     }
@@ -262,7 +258,7 @@ public abstract class Window : IWindow
             return;
         }
 
-        SceneManager.UnloadContent();
+        this.nativeWindow.SceneManager.UnloadContent();
     }
 
     /// <summary>
