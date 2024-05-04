@@ -367,6 +367,30 @@ public class WindowTests
     }
 
     [Fact]
+    public void SceneManager_WhenGettingValue_IsExpectedObject()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager.Object);
+    }
+
+    [Fact]
+    public void Fps_WhenGettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        this.mockWindow.SetupGet(p => p.Fps).Returns(123);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actual = sut.Fps;
+
+        // Assert
+        actual.Should().Be(123);
+    }
+
+    [Fact]
     public void Initialized_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -473,6 +497,34 @@ public class WindowTests
         this.mockBatcher.VerifyNever(m => m.Begin());
         this.mockSceneManager.VerifyNever(m => m.Render());
         this.mockBatcher.VerifyNever(m => m.End());
+    }
+
+    [Fact]
+    public void OnUnload_WithAutoSceneUnloadingDisabled_DoesNotInvokeManagerUnloadContent()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneUnloading = false;
+
+        // Act
+        sut.OnUnload();
+
+        // Assert
+        this.mockSceneManager.VerifyNever(m => m.UnloadContent());
+    }
+
+    [Fact]
+    public void OnUnload_WithAutoSceneUnloadingEnabled_InvokesManagerUnloadContent()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneUnloading = true;
+
+        // Act
+        sut.OnUnload();
+
+        // Assert
+        this.mockSceneManager.VerifyOnce(m => m.UnloadContent());
     }
 
     [Fact]

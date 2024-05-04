@@ -293,14 +293,15 @@ public abstract class Window : IWindow
 
         this.isDisposed = true;
 
-        if (UnitTestDetector.IsRunningFromUnitTest)
-        {
-            return;
-        }
-
         // Only when not running unit tests, dispose of all Carbonate types
-        IoC.DisposeOfRegisteredTypes();
+        DisposeOfRegisteredTypes();
     }
+
+    /// <summary>
+    /// Dipoeses of all registered types in the IoC container.
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
+    private void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();
 
     /// <summary>
     /// Initializes the window.

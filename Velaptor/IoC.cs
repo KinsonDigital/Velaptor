@@ -78,6 +78,11 @@ internal static class IoC
     /// </remarks>
     public static void DisposeOfRegisteredTypes()
     {
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+
         // Get all the registered types that are capable of being disposed
         var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
 

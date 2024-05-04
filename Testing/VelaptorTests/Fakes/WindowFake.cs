@@ -24,7 +24,10 @@ public class WindowFake : Window
     {
     }
 
-#pragma warning disable CS0108, CS0114
+// CS0114 - A declaration in a class conflicts with a declaration in a base class such that the base class member will be hidden.
+#pragma warning disable CS0114
     public void OnDraw(FrameTime frameTime) => base.OnDraw(frameTime);
-#pragma warning restore CS0108, CS0114
+
+    public void OnUnload() => base.OnUnload();
+#pragma warning restore CS0114
 }
