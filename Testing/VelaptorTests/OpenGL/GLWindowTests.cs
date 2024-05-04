@@ -31,6 +31,7 @@ using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
@@ -484,6 +485,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_SubscribesToPullWinSizeRequests()
     {
         // Arrange & Act
@@ -512,6 +514,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_HasCorrectDefaultPropValues()
     {
         // Arrange & Act
@@ -527,6 +530,7 @@ public class GLWindowTests : TestsBase
 
     #region Prop Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -540,6 +544,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -557,6 +562,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -570,6 +576,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -587,6 +594,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -600,6 +608,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -617,6 +626,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnOSXPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -640,6 +650,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnWindowsPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -663,6 +674,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -680,6 +692,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -693,6 +706,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -710,6 +724,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -723,6 +738,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -740,6 +756,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -762,6 +779,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -783,6 +801,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -796,6 +815,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
@@ -818,6 +838,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -832,6 +853,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -846,6 +868,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialized_WhenWindowIsInitialized_ReturnsTrue()
     {
         // Arrange
@@ -860,6 +883,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -882,6 +906,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -904,6 +929,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -917,6 +943,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
@@ -936,6 +963,72 @@ public class GLWindowTests : TestsBase
 
         // Assert
         actual.Should().Be(sutBorder);
+    }
+
+    [Fact]
+    public void SceneManager_WhenGettingValue_IsExpectedObject()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager);
+    }
+
+    [Fact]
+    public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneLoading;
+
+        // Act
+        sut.AutoSceneLoading = !sut.AutoSceneLoading;
+
+        // Assert
+        sut.AutoSceneLoading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUnloading;
+
+        // Act
+        sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
+
+        // Assert
+        sut.AutoSceneUnloading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUpdating;
+
+        // Act
+        sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
+
+        // Assert
+        sut.AutoSceneUpdating.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneRendering;
+
+        // Act
+        sut.AutoSceneRendering = !sut.AutoSceneRendering;
+
+        // Assert
+        sut.AutoSceneRendering.Should().Be(expected);
     }
     #endregion
 
@@ -1458,7 +1551,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         uninitializeInvoked.Should().BeTrue();
-        this.mockSceneManager.Received(1).UnloadContent();
         this.mockPushReactable.Received(1).Push(PushNotifications.SystemShuttingDownId);
     }
 
@@ -1624,6 +1716,26 @@ public class GLWindowTests : TestsBase
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void GLError_WhenErrorOccurs_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+
+        // Make sure that the load process is invoked
+        this.mockSilkWindow.Load += Raise.Event<Action>();
+
+        // Act
+        var act = () =>
+        {
+            this.mockGL.GLError += Raise.EventWith(sut, new GLErrorEventArgs("test-error"));
+        };
+
+        // Assert
+        act.Should().Throw<GLException>().WithMessage("test-error");
     }
     #endregion
 
