@@ -38,7 +38,7 @@ using VelaptorMouseButton = Input.MouseButton;
 using VelaptorWindowBorder = WindowBorder;
 
 /// <summary>
-/// An OpenGL window implementation to be used inside of the <see cref="Velaptor.UI.Window"/> class.
+/// An OpenGL window implementation to be used inside the <see cref="Velaptor.UI.Window"/> class.
 /// </summary>
 internal sealed class GLWindow : VelaptorIWindow
 {
@@ -462,9 +462,9 @@ internal sealed class GLWindow : VelaptorIWindow
         Uninitialize?.Invoke();
 
         /* NOTE:
-         * Pushing this notification is very very important.  The reason is because
+         * Pushing this notification is very important.  The reason is that
          * currently in this method, the GL context still exists.  After leaving this method,
-         * the GL context will be destroyed.  Any further disposal attempts to textures
+         * the GL context will be destroyed.  Any further disposal attempts to the texture
          * will fail due to the GL context being destroyed.  Sending this push notification
          * will trigger subscriptions in the texture cache which in turn will send
          * disposal notifications to all textures.
@@ -486,7 +486,7 @@ internal sealed class GLWindow : VelaptorIWindow
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
 
-        // Updates the viewport so it is the same size as the window
+        // Updates the viewport to the same size as the window
         this.gl.Viewport(0, 0, width, height);
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
