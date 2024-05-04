@@ -459,7 +459,6 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         this.isShuttingDown = true;
 
-        SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
         /* NOTE:
