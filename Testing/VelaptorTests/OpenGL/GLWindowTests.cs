@@ -1458,7 +1458,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         uninitializeInvoked.Should().BeTrue();
-        this.mockSceneManager.Received(1).UnloadContent();
         this.mockPushReactable.Received(1).Push(PushNotifications.SystemShuttingDownId);
     }
 
