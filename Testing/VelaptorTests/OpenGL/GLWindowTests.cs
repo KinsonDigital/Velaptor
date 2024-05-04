@@ -31,6 +31,7 @@ using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
@@ -963,6 +964,72 @@ public class GLWindowTests : TestsBase
         // Assert
         actual.Should().Be(sutBorder);
     }
+
+    [Fact]
+    public void SceneManager_WhenGettingValue_IsExpectedObject()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager);
+    }
+
+    [Fact]
+    public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneLoading;
+
+        // Act
+        sut.AutoSceneLoading = !sut.AutoSceneLoading;
+
+        // Assert
+        sut.AutoSceneLoading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUnloading;
+
+        // Act
+        sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
+
+        // Assert
+        sut.AutoSceneUnloading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUpdating;
+
+        // Act
+        sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
+
+        // Assert
+        sut.AutoSceneUpdating.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneRendering;
+
+        // Act
+        sut.AutoSceneRendering = !sut.AutoSceneRendering;
+
+        // Assert
+        sut.AutoSceneRendering.Should().Be(expected);
+    }
     #endregion
 
     #region Method Tests
@@ -1649,6 +1716,26 @@ public class GLWindowTests : TestsBase
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void GLError_WhenErrorOccurs_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+
+        // Make sure that the load process is invoked
+        this.mockSilkWindow.Load += Raise.Event<Action>();
+
+        // Act
+        var act = () =>
+        {
+            this.mockGL.GLError += Raise.EventWith(sut, new GLErrorEventArgs("test-error"));
+        };
+
+        // Assert
+        act.Should().Throw<GLException>().WithMessage("test-error");
     }
     #endregion
 
