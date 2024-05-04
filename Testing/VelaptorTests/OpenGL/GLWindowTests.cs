@@ -484,6 +484,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_SubscribesToPullWinSizeRequests()
     {
         // Arrange & Act
@@ -512,6 +513,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_HasCorrectDefaultPropValues()
     {
         // Arrange & Act
