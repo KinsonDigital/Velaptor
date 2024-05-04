@@ -21,7 +21,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="Window"/> class.
 /// </summary>
-public class WindowTests
+public class WindowTests : TestsBase
 {
     private readonly Mock<IWindow> mockWindow;
     private readonly Mock<ISceneManager> mockSceneManager;
@@ -46,6 +46,7 @@ public class WindowTests
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullWindowParam_ThrowsException()
     {
         // Arrange & Act
@@ -61,6 +62,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_AutoPropsAreDefaultTrue()
     {
         // Arrange & Act
@@ -76,6 +78,7 @@ public class WindowTests
 
     #region Prop Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -96,6 +99,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Update_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -116,6 +120,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Draw_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -136,6 +141,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WinResize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -156,6 +162,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -176,6 +183,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -191,6 +199,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -206,6 +215,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -221,6 +231,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -236,6 +247,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -251,6 +263,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -265,6 +278,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -279,6 +293,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -293,6 +308,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -307,6 +323,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -322,6 +339,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -337,6 +355,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -352,6 +371,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -367,6 +387,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void SceneManager_WhenGettingValue_IsExpectedObject()
     {
         // Arrange & Act
@@ -377,6 +398,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Fps_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -391,6 +413,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialized_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -407,6 +430,7 @@ public class WindowTests
 
     #region Method tests
     [Fact]
+    [Trait("Category", Method)]
     public void Show_WhenInvoked_ShowsWindow()
     {
         // Arrange
@@ -420,6 +444,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Close_WhenInvoked_ClosesWindow()
     {
         // Arrange
@@ -433,6 +458,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public async Task ShowAsync_WhenInvoked_ShowsInternalWindow()
     {
         // Arrange
@@ -448,6 +474,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsEnabled_RenderScenesAndManipulatesBatch()
     {
         // Arrange
@@ -466,6 +493,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsDisabled_DoesNotRenderScenes()
     {
         // Arrange
@@ -483,6 +511,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsNotDisabledWithNoScenes_ShouldNotRenderScenesOrManipulateBatches()
     {
         // Arrange
@@ -500,6 +529,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnUnload_WithAutoSceneUnloadingDisabled_DoesNotInvokeManagerUnloadContent()
     {
         // Arrange
@@ -514,6 +544,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnUnload_WithAutoSceneUnloadingEnabled_InvokesManagerUnloadContent()
     {
         // Arrange
@@ -528,6 +559,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Method)]
     [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfMangedResources()
     {
