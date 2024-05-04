@@ -527,6 +527,7 @@ public class GLWindowTests : TestsBase
 
     #region Prop Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -540,6 +541,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -557,6 +559,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -570,6 +573,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -587,6 +591,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -600,6 +605,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -617,6 +623,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnOSXPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -640,6 +647,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnWindowsPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -663,6 +671,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -680,6 +689,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -693,6 +703,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -710,6 +721,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -723,6 +735,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -740,6 +753,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -762,6 +776,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -783,6 +798,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -796,6 +812,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
@@ -818,6 +835,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -832,6 +850,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -846,6 +865,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialized_WhenWindowIsInitialized_ReturnsTrue()
     {
         // Arrange
@@ -860,6 +880,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -882,6 +903,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -904,6 +926,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -917,6 +940,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
