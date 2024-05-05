@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,7 +30,9 @@ using Velaptor.Input.Exceptions;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
+using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
@@ -73,6 +75,7 @@ public class GLWindowTests : TestsBase
     private readonly IInputContext? mockSilkInputContext;
     private readonly IKeyboard? mockSilkKeyboard;
     private readonly IMouse? mockSilkMouse;
+    private readonly IOpenGLService mockOpenGLService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -107,6 +110,7 @@ public class GLWindowTests : TestsBase
         this.mockTaskService = Substitute.For<ITaskService>();
         this.mockStatsWindowService = Substitute.For<IStatsWindowService>();
         this.mockImGuiFacade = Substitute.For<IImGuiFacade>();
+        this.mockOpenGLService = Substitute.For<IOpenGLService>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
         this.mockMouseReactable = Substitute.For<IPushReactable<MouseStateData>>();
@@ -152,7 +156,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -179,7 +184,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -206,7 +212,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -233,7 +240,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -260,7 +268,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -287,7 +296,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -314,7 +324,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -341,7 +352,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -368,7 +380,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -395,7 +408,8 @@ public class GLWindowTests : TestsBase
             null,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService);
+            this.mockTimerService,
+            this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -422,7 +436,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 null,
                 this.mockReactableFactory,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -449,7 +464,8 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 null,
-                this.mockTimerService);
+                this.mockTimerService,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -476,11 +492,40 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                null);
+                null,
+                this.mockOpenGLService);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'timerService')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
+            100,
+            200,
+            this.mockAppService,
+            this.mockSilkWindow,
+            this.mockNativeInputFactory,
+            this.mockGL,
+            this.mockGlfw,
+            this.mockDisplayService,
+            this.mockPlatform,
+            this.mockTaskService,
+            this.mockStatsWindowService,
+            this.mockImGuiFacade,
+            this.mockSceneManager,
+            this.mockReactableFactory,
+            this.mockTimerService,
+            null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -512,6 +557,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_HasCorrectDefaultPropValues()
     {
         // Arrange & Act
@@ -527,6 +573,7 @@ public class GLWindowTests : TestsBase
 
     #region Prop Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -540,6 +587,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -557,6 +605,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -570,6 +619,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -587,6 +637,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -600,6 +651,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -617,6 +669,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnOSXPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -640,6 +693,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenCachingValueOnWindowsPlatform_ReturnsCorrectResult()
     {
         // Arrange
@@ -663,6 +717,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -680,6 +735,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -693,6 +749,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -723,6 +780,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
     {
         // Arrange
@@ -740,6 +798,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -762,6 +821,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -783,6 +843,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -796,6 +857,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
@@ -818,6 +880,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -832,6 +895,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -846,6 +910,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialized_WhenWindowIsInitialized_ReturnsTrue()
     {
         // Arrange
@@ -860,6 +925,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenGettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -882,6 +948,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenSettingInvalidValue_ThrowsException()
     {
         // Arrange
@@ -904,6 +971,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -917,6 +985,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Theory]
+    [Trait("Category", Prop)]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
@@ -936,6 +1005,72 @@ public class GLWindowTests : TestsBase
 
         // Assert
         actual.Should().Be(sutBorder);
+    }
+
+    [Fact]
+    public void SceneManager_WhenGettingValue_IsExpectedObject()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager);
+    }
+
+    [Fact]
+    public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneLoading;
+
+        // Act
+        sut.AutoSceneLoading = !sut.AutoSceneLoading;
+
+        // Assert
+        sut.AutoSceneLoading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUnloading;
+
+        // Act
+        sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
+
+        // Assert
+        sut.AutoSceneUnloading.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneUpdating;
+
+        // Act
+        sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
+
+        // Assert
+        sut.AutoSceneUpdating.Should().Be(expected);
+    }
+
+    [Fact]
+    public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectValue()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var expected = !sut.AutoSceneRendering;
+
+        // Act
+        sut.AutoSceneRendering = !sut.AutoSceneRendering;
+
+        // Assert
+        sut.AutoSceneRendering.Should().Be(expected);
     }
     #endregion
 
@@ -1020,8 +1155,10 @@ public class GLWindowTests : TestsBase
         sut.Show();
         this.mockSilkWindow.Load += Raise.Event<Action>();
 
+        var act = () => this.mockOpenGLService.Received(1).GLError += Raise.EventWith(new GLErrorEventArgs("test-msg"));
+
         // Assert
-        this.mockGL.Received().GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
+        act.Should().Throw<GLException>().WithMessage("test-msg");
     }
 
     [Fact]
@@ -1116,7 +1253,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockPushReactable.Received(1).UnsubscribeAll();
-        this.mockGL.Received().GLError -= Arg.Any<EventHandler<GLErrorEventArgs>>();
+        this.mockOpenGLService.Received(1).GLError -= Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert unsubscriptions from keyboard and mouse
         this.mockSilkKeyboard.Received().KeyDown -= Arg.Any<Action<IKeyboard, Key, int>>();
@@ -1210,10 +1347,8 @@ public class GLWindowTests : TestsBase
         this.mockSilkWindow.Load += Raise.Event<Action>();
 
         // Assert
-        this.mockGL.Received(1).SetupErrorCallback();
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutput);
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutputSynchronous);
-        this.mockGL.Received().GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert that all prop caching has been disabled
         sut.CachedStringProps.Values.Should().AllSatisfy(prop => prop.IsCaching.Should().BeFalse());
@@ -1458,7 +1593,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         uninitializeInvoked.Should().BeTrue();
-        this.mockSceneManager.Received(1).UnloadContent();
         this.mockPushReactable.Received(1).Push(PushNotifications.SystemShuttingDownId);
     }
 
@@ -1647,5 +1781,6 @@ public class GLWindowTests : TestsBase
             this.mockImGuiFacade,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService);
+            this.mockTimerService,
+            this.mockOpenGLService);
 }

@@ -6,6 +6,7 @@ namespace Velaptor.Services;
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Numerics;
 using ImGuiNET;
 using Input;
@@ -95,7 +96,7 @@ internal sealed class StatsWindowService : IStatsWindowService
 
         if (Visible || !this.isInitialized)
         {
-            this.imGuiInvoker.Text($"FPS: {this.fps}");
+            this.imGuiInvoker.Text($"FPS: {this.fps.ToString(new CultureInfo("en-US"))}");
         }
 
         if (this.invokeCount < PreRenderCount)
