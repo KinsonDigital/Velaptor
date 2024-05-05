@@ -1155,8 +1155,10 @@ public class GLWindowTests : TestsBase
         sut.Show();
         this.mockSilkWindow.Load += Raise.Event<Action>();
 
+        var act = () => this.mockOpenGLService.Received(1).GLError += Raise.EventWith(new GLErrorEventArgs("test-msg"));
+
         // Assert
-        this.mockOpenGLService.Received(1).GLError += Arg.Any<EventHandler<GLErrorEventArgs>>();
+        act.Should().Throw<GLException>().WithMessage("test-msg");
     }
 
     [Fact]
@@ -1756,26 +1758,6 @@ public class GLWindowTests : TestsBase
 
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public void GLError_WhenErrorOccurs_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.Show();
-
-        // Make sure that the load process is invoked
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        // Act
-        var act = () =>
-        {
-            this.mockGL.GLError += Raise.EventWith(sut, new GLErrorEventArgs("test-error"));
-        };
-
-        // Assert
-        act.Should().Throw<GLException>().WithMessage("test-error");
     }
     #endregion
 

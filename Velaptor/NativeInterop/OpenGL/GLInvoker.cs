@@ -1,4 +1,4 @@
-// <copyright file="GLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using Carbonate.Fluent;
+using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
 using Silk.NET.OpenGL;
@@ -21,17 +21,15 @@ using Velaptor.OpenGL;
 internal sealed class GLInvoker : IGLInvoker
 {
     private static readonly Queue<string> OpenGLCallStack = new ();
+    private readonly IDisposable unsubscriber;
     private bool isDisposed;
-
-    // ReSharper disable once MemberInitializerValueIgnored
     private GL gl = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GLInvoker"/> class.
     /// </summary>
     /// <param name="glReactable">Sends and receives push notifications.</param>
-    public GLInvoker(IPushReactable<GL> glReactable)
-    {
+    public GLInvoker(IPushReactable<GL> glReactable) =>
         this.unsubscriber = glReactable.CreateOneWayReceive(
             PushNotifications.GLContextCreatedId,
             glObj =>
@@ -42,9 +40,6 @@ internal sealed class GLInvoker : IGLInvoker
                               PushNotifications.GLContextCreatedId);
             },
             () => this.unsubscriber?.Dispose());
-
-        glReactable.Subscribe(glContextSubscription);
-    }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="GLInvoker"/> class.
@@ -486,6 +481,7 @@ internal sealed class GLInvoker : IGLInvoker
         }
 
         this.isDisposed = true;
+        this.unsubscriber.Dispose();
         this.gl.Dispose();
         GC.SuppressFinalize(this);
     }
