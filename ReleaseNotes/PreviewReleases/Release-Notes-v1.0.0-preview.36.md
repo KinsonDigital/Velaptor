@@ -11,7 +11,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
-1. [#959](https://github.com/KinsonDigital/Velaptor/issues/959) - Fixed an issue where unload content would be invoked more than once.
+1. [#959](https://github.com/KinsonDigital/Velaptor/issues/959) - Fixed an issue where unloading content would be invoked more than once.
 
 <h2 align="center" style="font-weight: bold;">Dependency Updates 📦</h2>
 
