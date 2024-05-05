@@ -396,7 +396,7 @@ public class OpenGLServiceTests
         service.LabelVertexArray(123, label);
 
         // Assert
-        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected);
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected);
     }
 
     [Fact]
@@ -434,7 +434,7 @@ public class OpenGLServiceTests
         service.LabelBuffer(123, label, bufferType);
 
         // Assert
-        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected);
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected);
     }
 
     [Theory]
@@ -450,7 +450,7 @@ public class OpenGLServiceTests
         service.LabelTexture(123, label);
 
         // Assert
-        this.mockGLInvoker.Received().ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected);
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected);
     }
 
     [Fact]
@@ -463,9 +463,9 @@ public class OpenGLServiceTests
         service.SetupErrorCallback();
 
         // Assert
-        this.mockDotnetService.Received().GCKeepAlive(Arg.Any<DebugProc?>());
-        this.mockDotnetService.Received().MarshalStringToHGlobalAnsi(string.Empty);
-        this.mockGLInvoker.Received().DebugMessageCallback(Arg.Any<DebugProc?>(), Arg.Any<nint>());
+        this.mockDotnetService.Received(1).GcKeepAlive(Arg.Any<DebugProc?>());
+        this.mockDotnetService.Received(1).MarshalStringToHGlobalAnsi(string.Empty);
+        this.mockGLInvoker.Received(1).DebugMessageCallback(Arg.Any<DebugProc?>(), Arg.Any<nint>());
     }
 
     [Fact]
@@ -479,7 +479,7 @@ public class OpenGLServiceTests
         service.SetupErrorCallback();
 
         // Assert
-        this.mockDotnetService.Received(1).GCKeepAlive(Arg.Any<DebugProc?>());
+        this.mockDotnetService.Received(1).GcKeepAlive(Arg.Any<DebugProc?>());
     }
 
     #endregion

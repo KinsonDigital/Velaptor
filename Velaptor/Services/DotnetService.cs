@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 internal sealed class DotnetService : IDotnetService
 {
     /// <inheritdoc />
-    public void GCKeepAlive(object? obj) => GC.KeepAlive(obj);
+    public void GcKeepAlive(object? obj) => GC.KeepAlive(obj);
 
     /// <inheritdoc />
     public nint MarshalStringToHGlobalAnsi(string? s) => Marshal.StringToHGlobalAnsi(s);

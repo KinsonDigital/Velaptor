@@ -253,7 +253,7 @@ internal sealed class OpenGLService : IOpenGLService
          * without the native system knowing about it which causes this exception. The GC.KeepAlive()
          * method tells the garbage collector to not collect the delegate to prevent this from happening.
          */
-        this.dotnetService.GCKeepAlive(this.debugCallback);
+        this.dotnetService.GcKeepAlive(this.debugCallback);
         this.glInvoker.DebugMessageCallback(this.debugCallback, this.dotnetService.MarshalStringToHGlobalAnsi(string.Empty));
     }
 
