@@ -23,6 +23,7 @@ using Input.Exceptions;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using ReactableData;
 using Scene;
 using Silk.NET.Input;
@@ -62,6 +63,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
     private readonly IDisposable pullWinSizeUnsubscriber;
+    private readonly IOpenGLService openGLService;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -87,6 +89,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="timerService">Measures the time it takes to process the game loop.</param>
+    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -102,7 +105,8 @@ internal sealed class GLWindow : VelaptorIWindow
         IImGuiFacade imGuiFacade,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
-        ITimerService timerService)
+        ITimerService timerService,
+        IOpenGLService openGLService)
     {
         ArgumentNullException.ThrowIfNull(appService);
         ArgumentNullException.ThrowIfNull(silkWindow);
@@ -117,6 +121,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(timerService);
+        ArgumentNullException.ThrowIfNull(openGLService);
 
         this.appService = appService;
         this.silkWindow = silkWindow;
@@ -139,6 +144,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
         this.timerService = timerService;
+        this.openGLService = openGLService;
 
         this.mouseStateData = default;
 
@@ -425,11 +431,11 @@ internal sealed class GLWindow : VelaptorIWindow
         // OpenGL is ready to take function calls after this Init() call has executed
         Init(Width, Height);
 
-        this.gl.SetupErrorCallback();
+        this.openGLService.SetupErrorCallback();
         this.gl.Enable(GLEnableCap.DebugOutput);
         this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
 
-        this.gl.GLError += GL_GLError;
+        this.openGLService.GLError += GL_GLError;
 
         CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -686,7 +692,7 @@ internal sealed class GLWindow : VelaptorIWindow
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
 
-            this.gl.GLError -= GL_GLError;
+            this.openGLService.GLError -= GL_GLError;
 
             if (this.glInputContext is not null)
             {

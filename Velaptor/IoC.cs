@@ -296,6 +296,7 @@ internal static class IoC
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
         IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
         IoCContainer.Register<IStatsWindowService, StatsWindowService>(Lifestyle.Singleton);
+        IoCContainer.Register<IDotnetService, DotnetService>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
