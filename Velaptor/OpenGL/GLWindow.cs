@@ -23,6 +23,7 @@ using Input.Exceptions;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
 using NativeInterop.OpenGL;
+using NativeInterop.Services;
 using ReactableData;
 using Scene;
 using Silk.NET.Input;
@@ -38,7 +39,7 @@ using VelaptorMouseButton = Input.MouseButton;
 using VelaptorWindowBorder = WindowBorder;
 
 /// <summary>
-/// An OpenGL window implementation to be used inside of the <see cref="Velaptor.UI.Window"/> class.
+/// An OpenGL window implementation to be used inside the <see cref="Velaptor.UI.Window"/> class.
 /// </summary>
 internal sealed class GLWindow : VelaptorIWindow
 {
@@ -62,6 +63,7 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
     private readonly IDisposable pullWinSizeUnsubscriber;
+    private readonly IOpenGLService openGLService;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -87,6 +89,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="timerService">Measures the time it takes to process the game loop.</param>
+    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -102,7 +105,8 @@ internal sealed class GLWindow : VelaptorIWindow
         IImGuiFacade imGuiFacade,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
-        ITimerService timerService)
+        ITimerService timerService,
+        IOpenGLService openGLService)
     {
         ArgumentNullException.ThrowIfNull(appService);
         ArgumentNullException.ThrowIfNull(silkWindow);
@@ -117,6 +121,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(timerService);
+        ArgumentNullException.ThrowIfNull(openGLService);
 
         this.appService = appService;
         this.silkWindow = silkWindow;
@@ -139,6 +144,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
         this.timerService = timerService;
+        this.openGLService = openGLService;
 
         this.mouseStateData = default;
 
@@ -425,11 +431,11 @@ internal sealed class GLWindow : VelaptorIWindow
         // OpenGL is ready to take function calls after this Init() call has executed
         Init(Width, Height);
 
-        this.gl.SetupErrorCallback();
+        this.openGLService.SetupErrorCallback();
         this.gl.Enable(GLEnableCap.DebugOutput);
         this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
 
-        this.gl.GLError += GL_GLError;
+        this.openGLService.GLError += GL_GLError;
 
         CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -459,13 +465,12 @@ internal sealed class GLWindow : VelaptorIWindow
     {
         this.isShuttingDown = true;
 
-        SceneManager.UnloadContent();
         Uninitialize?.Invoke();
 
         /* NOTE:
-         * Pushing this notification is very very important.  The reason is because
+         * Pushing this notification is very important.  The reason is that
          * currently in this method, the GL context still exists.  After leaving this method,
-         * the GL context will be destroyed.  Any further disposal attempts to textures
+         * the GL context will be destroyed.  Any further disposal attempts to the texture
          * will fail due to the GL context being destroyed.  Sending this push notification
          * will trigger subscriptions in the texture cache which in turn will send
          * disposal notifications to all textures.
@@ -487,7 +492,7 @@ internal sealed class GLWindow : VelaptorIWindow
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
 
-        // Updates the viewport so it is the same size as the window
+        // Updates the viewport to the same size as the window
         this.gl.Viewport(0, 0, width, height);
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
@@ -687,7 +692,7 @@ internal sealed class GLWindow : VelaptorIWindow
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
 
-            this.gl.GLError -= GL_GLError;
+            this.openGLService.GLError -= GL_GLError;
 
             if (this.glInputContext is not null)
             {

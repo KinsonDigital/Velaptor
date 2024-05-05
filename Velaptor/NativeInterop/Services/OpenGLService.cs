@@ -9,24 +9,46 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using OpenGL;
+using Silk.NET.OpenGL;
 using Velaptor.OpenGL;
+using Velaptor.Services;
 
 /// <summary>
 /// Provides OpenGL helper methods to improve OpenGL related operations.
 /// </summary>
 internal sealed class OpenGLService : IOpenGLService
 {
+    // ReSharper disable InconsistentNaming
+#pragma warning disable SA1310
+    private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
+    private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
+#pragma warning restore SA1310
+
+    // ReSharper restore InconsistentNaming
     private readonly IGLInvoker glInvoker;
+    private readonly IDotnetService dotnetService;
+    private readonly ILoggingService loggingService;
+    private DebugProc? debugCallback;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenGLService"/> class.
     /// </summary>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
-    public OpenGLService(IGLInvoker glInvoker)
+    /// <param name="dotnetService">Invokes Dotnet functions.</param>
+    /// <param name="loggingService">Logs messages to the console and files.</param>
+    public OpenGLService(IGLInvoker glInvoker, IDotnetService dotnetService, ILoggingService loggingService)
     {
         ArgumentNullException.ThrowIfNull(glInvoker);
+        ArgumentNullException.ThrowIfNull(loggingService);
+        ArgumentNullException.ThrowIfNull(dotnetService);
+
         this.glInvoker = glInvoker;
+        this.dotnetService = dotnetService;
+        this.loggingService = loggingService;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<GLErrorEventArgs>? GLError;
 
     /// <inheritdoc/>
     public bool IsVBOBound { get; private set; }
@@ -213,5 +235,66 @@ internal sealed class OpenGLService : IOpenGLService
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+    }
+
+    /// <inheritdoc/>
+    public void SetupErrorCallback()
+    {
+        if (this.debugCallback is not null)
+        {
+            return;
+        }
+
+        this.debugCallback = DebugCallback;
+
+        /*NOTE:
+         * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
+         * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
+         * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+         * method tells the garbage collector to not collect the delegate to prevent this from happening.
+         */
+        this.dotnetService.GcKeepAlive(this.debugCallback);
+        this.glInvoker.DebugMessageCallback(this.debugCallback, this.dotnetService.MarshalStringToHGlobalAnsi(string.Empty));
+    }
+
+    /// <summary>
+    /// Invoked when there is an OpenGL related error.
+    /// </summary>
+    /// <param name="source">The debug source.</param>
+    /// <param name="type">The debug type.</param>
+    /// <param name="id">The ID of the error or message.</param>
+    /// <param name="severity">The severity of the message.</param>
+    /// <param name="length">The length of the message.</param>
+    /// <param name="message">The error message.</param>
+    /// <param name="userParam">The OpenGL parameter related to the error.</param>
+    private void DebugCallback(GLEnum source, GLEnum type, int id, GLEnum severity, int length, nint message, nint userParam)
+    {
+        var openGLMessage = this.dotnetService.MarshalPtrToStringAnsi(message);
+
+        openGLMessage += $"{Environment.NewLine}\tSrc: {source}";
+        openGLMessage += $"{Environment.NewLine}\tType: {type}";
+        openGLMessage += $"{Environment.NewLine}\tID: {id}";
+        openGLMessage += $"{Environment.NewLine}\tSeverity: {severity}";
+        openGLMessage += $"{Environment.NewLine}\tLength: {length}";
+        openGLMessage += $"{Environment.NewLine}\tUser Param: {this.dotnetService.MarshalPtrToStringAnsi(userParam)}";
+
+        // Ignore warnings about shader recompilation
+        if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)
+        {
+            return;
+        }
+
+        if (severity == GLEnum.NoError)
+        {
+            this.loggingService.Warning(openGLMessage);
+        }
+        else
+        {
+            if (severity != GLEnum.DebugSeverityNotification)
+            {
+                this.loggingService.Error(openGLMessage);
+                this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
+            }
+        }
     }
 }

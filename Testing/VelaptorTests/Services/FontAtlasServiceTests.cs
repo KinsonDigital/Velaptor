@@ -38,7 +38,7 @@ public class FontAtlasServiceTests
     ];
     private readonly Dictionary<char, uint> glyphIndices = new ();
     private readonly IFile mockFile;
-    private readonly nint facePtr;
+    private readonly nint facePtr = 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasServiceTests"/> class.
