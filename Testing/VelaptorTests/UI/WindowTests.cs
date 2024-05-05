@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Fakes;
 using FluentAssertions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Scene;
@@ -21,36 +21,33 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="Window"/> class.
 /// </summary>
-public class WindowTests
+public class WindowTests : TestsBase
 {
-    private readonly Mock<IWindow> mockWindow;
-    private readonly Mock<ISceneManager> mockSceneManager;
-    private readonly Mock<IBatcher> mockBatcher;
+    private readonly IWindow mockWindow;
+    private readonly ISceneManager mockSceneManager;
+    private readonly IBatcher mockBatcher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowTests"/> class.
     /// </summary>
     public WindowTests()
     {
-        this.mockSceneManager = new Mock<ISceneManager>();
-        this.mockBatcher = new Mock<IBatcher>();
+        this.mockSceneManager = Substitute.For<ISceneManager>();
+        this.mockBatcher = Substitute.For<IBatcher>();
 
-        this.mockWindow = new Mock<IWindow>();
-        this.mockWindow.SetupProperty(m => m.Initialize);
-        this.mockWindow.SetupProperty(m => m.Update);
-        this.mockWindow.SetupProperty(m => m.Draw);
-        this.mockWindow.SetupProperty(m => m.WinResize);
-        this.mockWindow.SetupProperty(m => m.Uninitialize);
+        this.mockWindow = Substitute.For<IWindow>();
+        this.mockWindow.SceneManager.Returns(this.mockSceneManager);
     }
 
     #region Constructor Tests
     [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullWindowParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new WindowFake(null, this.mockSceneManager.Object, this.mockBatcher.Object);
+            _ = new WindowFake(null, this.mockBatcher);
         };
 
         // Assert
@@ -60,31 +57,7 @@ public class WindowTests
     }
 
     [Fact]
-    public void Ctor_WithNullSceneManagerParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new WindowFake(this.mockWindow.Object, null, this.mockBatcher.Object);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'sceneManager')");
-    }
-
-    [Fact]
-    public void Ctor_WhenInvoked_SetsSceneManagerProp()
-    {
-        // Arrange & Act
-        var sut = CreateSystemUnderTest();
-
-        // Assert
-        sut.SceneManager.Should().BeSameAs(this.mockSceneManager.Object);
-    }
-
-    [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WhenInvoked_AutoPropsAreDefaultTrue()
     {
         // Arrange & Act
@@ -100,6 +73,7 @@ public class WindowTests
 
     #region Prop Tests
     [Fact]
+    [Trait("Category", Prop)]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -120,6 +94,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Update_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -140,6 +115,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Draw_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -160,6 +136,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WinResize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -180,6 +157,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -200,6 +178,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Title_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -210,11 +189,12 @@ public class WindowTests
         _ = sut.Title;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.Title = "test-title", Times.Once());
-        this.mockWindow.VerifyGet(p => p.Title, Times.Once());
+        this.mockWindow.Received(1).Title = "test-title";
+        _ = this.mockWindow.Received(1).Title;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Position_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -225,11 +205,12 @@ public class WindowTests
         _ = sut.Position;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.Position = new Vector2(11, 22), Times.Once());
-        this.mockWindow.VerifyGet(p => p.Position, Times.Once());
+        this.mockWindow.Received(1).Position = new Vector2(11, 22);
+        _ = this.mockWindow.Received(1).Position;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Width_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -240,11 +221,12 @@ public class WindowTests
         _ = sut.Width;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.Width = 1234, Times.Once());
-        this.mockWindow.VerifyGet(p => p.Width, Times.Once());
+        this.mockWindow.Received(1).Width = 1234;
+        _ = this.mockWindow.Received(1).Width;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void Height_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -255,11 +237,12 @@ public class WindowTests
         _ = sut.Height;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.Height = 1234, Times.Once());
-        this.mockWindow.VerifyGet(p => p.Height, Times.Once());
+        this.mockWindow.Received(1).Height = 1234;
+        this.mockWindow.Received(1).Height = 1234;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -270,11 +253,12 @@ public class WindowTests
         _ = sut.AutoClearBuffer;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.AutoClearBuffer = true, Times.Once());
-        this.mockWindow.VerifyGet(p => p.AutoClearBuffer, Times.Once());
+        this.mockWindow.Received(1).AutoClearBuffer = true;
+        _ = this.mockWindow.Received(1).AutoClearBuffer;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -289,6 +273,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneUnloading_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -303,6 +288,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneUpdating_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -317,6 +303,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void AutoSceneRendering_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -331,6 +318,7 @@ public class WindowTests
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -341,11 +329,12 @@ public class WindowTests
         _ = sut.MouseCursorVisible;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.MouseCursorVisible = true, Times.Once());
-        this.mockWindow.VerifyGet(p => p.MouseCursorVisible, Times.Once());
+        this.mockWindow.Received(1).MouseCursorVisible = true;
+        _ = this.mockWindow.Received(1).MouseCursorVisible;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void UpdateFrequency_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -356,11 +345,12 @@ public class WindowTests
         _ = sut.UpdateFrequency;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.UpdateFrequency = 1234, Times.Once());
-        this.mockWindow.VerifyGet(p => p.UpdateFrequency, Times.Once());
+        this.mockWindow.Received(1).UpdateFrequency = 1234;
+        _ = this.mockWindow.Received(1).UpdateFrequency;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void WindowState_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -371,11 +361,12 @@ public class WindowTests
         _ = sut.WindowState;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.WindowState = StateOfWindow.FullScreen, Times.Once());
-        this.mockWindow.VerifyGet(p => p.WindowState, Times.Once());
+        this.mockWindow.Received(1).WindowState = StateOfWindow.FullScreen;
+        _ = this.mockWindow.Received(1).WindowState;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
     public void TypeOfBorder_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -386,15 +377,42 @@ public class WindowTests
         _ = sut.TypeOfBorder;
 
         // Assert
-        this.mockWindow.VerifySet(p => p.TypeOfBorder = WindowBorder.Resizable, Times.Once());
-        this.mockWindow.VerifyGet(p => p.TypeOfBorder, Times.Once());
+        this.mockWindow.Received(1).TypeOfBorder = WindowBorder.Resizable;
+        _ = this.mockWindow.Received(1).TypeOfBorder;
     }
 
     [Fact]
+    [Trait("Category", Prop)]
+    public void SceneManager_WhenGettingValue_IsExpectedObject()
+    {
+        // Arrange & Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        sut.SceneManager.Should().BeSameAs(this.mockSceneManager);
+    }
+
+    [Fact]
+    [Trait("Category", Prop)]
+    public void Fps_WhenGettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        this.mockWindow.Fps.Returns(123);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actual = sut.Fps;
+
+        // Assert
+        actual.Should().Be(123);
+    }
+
+    [Fact]
+    [Trait("Category", Prop)]
     public void Initialized_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        this.mockWindow.SetupGet(p => p.Initialized).Returns(true);
+        this.mockWindow.Initialized.Returns(true);
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -407,6 +425,7 @@ public class WindowTests
 
     #region Method tests
     [Fact]
+    [Trait("Category", Method)]
     public void Show_WhenInvoked_ShowsWindow()
     {
         // Arrange
@@ -416,10 +435,11 @@ public class WindowTests
         sut.Show();
 
         // Assert
-        this.mockWindow.Verify(m => m.Show(), Times.Once());
+        this.mockWindow.Received(1).Show();
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void Close_WhenInvoked_ClosesWindow()
     {
         // Arrange
@@ -429,29 +449,30 @@ public class WindowTests
         sut.Close();
 
         // Assert
-        this.mockWindow.VerifyOnce(m => m.Close());
+        this.mockWindow.Received(1).Close();
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public async Task ShowAsync_WhenInvoked_ShowsInternalWindow()
     {
         // Arrange
-        this.mockWindow.Setup(m => m.ShowAsync(null, null))
-            .Returns(Task.Run(() => { }));
+        this.mockWindow.ShowAsync().Returns(Task.Run(() => { }));
         var sut = CreateSystemUnderTest();
 
         // Act
         await sut.ShowAsync();
 
         // Assert
-        this.mockWindow.Verify(m => m.ShowAsync(null, null), Times.Once);
+        await this.mockWindow.Received(1).ShowAsync();
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsEnabled_RenderScenesAndManipulatesBatch()
     {
         // Arrange
-        this.mockSceneManager.SetupGet(p => p.TotalScenes).Returns(1);
+        this.mockSceneManager.TotalScenes.Returns(1);
 
         var sut = CreateSystemUnderTest();
         sut.AutoSceneRendering = true;
@@ -460,12 +481,13 @@ public class WindowTests
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.VerifyOnce(m => m.Begin());
-        this.mockSceneManager.VerifyOnce(m => m.Render());
-        this.mockBatcher.VerifyOnce(m => m.End());
+        this.mockBatcher.Received(1).Begin();
+        this.mockSceneManager.Received(1).Render();
+        this.mockBatcher.Received(1).End();
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsDisabled_DoesNotRenderScenes()
     {
         // Arrange
@@ -476,13 +498,14 @@ public class WindowTests
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.VerifyNever(m => m.Clear());
-        this.mockBatcher.VerifyNever(m => m.Begin());
-        this.mockSceneManager.VerifyNever(m => m.Render());
-        this.mockBatcher.VerifyNever(m => m.End());
+        this.mockBatcher.DidNotReceive().Clear();
+        this.mockBatcher.DidNotReceive().Begin();
+        this.mockSceneManager.DidNotReceive().Render();
+        this.mockBatcher.DidNotReceive().End();
     }
 
     [Fact]
+    [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsNotDisabledWithNoScenes_ShouldNotRenderScenesOrManipulateBatches()
     {
         // Arrange
@@ -493,13 +516,44 @@ public class WindowTests
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.VerifyNever(m => m.Clear());
-        this.mockBatcher.VerifyNever(m => m.Begin());
-        this.mockSceneManager.VerifyNever(m => m.Render());
-        this.mockBatcher.VerifyNever(m => m.End());
+        this.mockBatcher.DidNotReceive().Clear();
+        this.mockBatcher.DidNotReceive().Begin();
+        this.mockSceneManager.DidNotReceive().Render();
+        this.mockBatcher.DidNotReceive().End();
     }
 
     [Fact]
+    [Trait("Category", Method)]
+    public void OnUnload_WithAutoSceneUnloadingDisabled_DoesNotInvokeManagerUnloadContent()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneUnloading = false;
+
+        // Act
+        sut.OnUnload();
+
+        // Assert
+        this.mockSceneManager.DidNotReceive().UnloadContent();
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void OnUnload_WithAutoSceneUnloadingEnabled_InvokesManagerUnloadContent()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.AutoSceneUnloading = true;
+
+        // Act
+        sut.OnUnload();
+
+        // Assert
+        this.mockSceneManager.Received(1).UnloadContent();
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
     [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvoked_DisposesOfMangedResources()
     {
@@ -511,7 +565,7 @@ public class WindowTests
         sut.Dispose();
 
         // Assert
-        this.mockWindow.Verify(m => m.Dispose(), Times.Once());
+        this.mockWindow.Received(1).Dispose();
     }
     #endregion
 
@@ -520,5 +574,5 @@ public class WindowTests
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object, this.mockSceneManager.Object, this.mockBatcher.Object);
+    private WindowFake CreateSystemUnderTest() => new (this.mockWindow, this.mockBatcher);
 }
