@@ -94,7 +94,7 @@ public sealed class Font : IFont
         Style = this.freeTypeService.GetFontStyle(this.facePtr, fontFilePath);
         IsDefaultFont = isDefaultFont;
 
-        GetFontStatData(FilePath);
+        GetFontStatData();
 
         HasKerning = this.freeTypeService.HasKerning(this.facePtr);
         LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
@@ -334,10 +334,9 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Gets all the stats for a font at the given <paramref name="filePath"/>.
+    /// Gets all the stats for the font.
     /// </summary>
-    /// <param name="filePath">The file path to the font file.</param>
-    private void GetFontStatData(string filePath)
+    private void GetFontStatData()
     {
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
