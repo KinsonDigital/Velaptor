@@ -267,9 +267,7 @@ public abstract class Window : IWindow
     /// <param name="size">The new size.</param>
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
-    protected virtual void OnResize(SizeU size)
-    {
-    }
+    protected virtual void OnResize(SizeU size) => this.nativeWindow.SceneManager.Resize(size);
 
     /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
