@@ -50,4 +50,10 @@ public interface IScene : IUpdatable, IDrawable, IDisposable
     /// Unloads the scene's content.
     /// </summary>
     void UnloadContent();
+
+    /// <summary>
+    /// Updates the <see cref="WindowSize"/>.
+    /// </summary>
+    /// <param name="size">The new size.</param>
+    void Resize(SizeU size);
 }

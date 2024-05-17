@@ -143,6 +143,19 @@ public class SceneBaseTests
         // Assert
         sut.IsLoaded.Should().BeFalse();
     }
+
+    [Fact]
+    public void Resize_WhenInvoked_UpdatesWindowSize()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Resize(new SizeU(10u, 10u));
+
+        // Assert
+        sut.WindowSize.Should().Be(new SizeU(10u, 10u));
+    }
     #endregion
 
     #region Reactable Tests
