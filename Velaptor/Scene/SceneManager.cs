@@ -202,6 +202,15 @@ internal sealed class SceneManager : ISceneManager
     /// <returns>True if the scene exists.</returns>
     public bool SceneExists(Guid id) => this.scenes.Exists(s => s.scene?.Id == id);
 
+    /// <inheritdoc />
+    public void Resize(SizeU size)
+    {
+        foreach ((IScene? scene, _) in this.scenes)
+        {
+            scene?.Resize(size);
+        }
+    }
+
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
     {

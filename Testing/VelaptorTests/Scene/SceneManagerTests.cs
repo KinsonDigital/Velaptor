@@ -712,6 +712,26 @@ public class SceneManagerTests
     }
 
     [Fact]
+    public void Resize_WhenInvoked_UpdatesWindowSizeForEachScene()
+    {
+        // Arrange
+        var mockSceneA = Substitute.For<IScene>();
+        mockSceneA.Id.Returns(Guid.NewGuid());
+        var mockSceneB = Substitute.For<IScene>();
+        mockSceneB.Id.Returns(Guid.NewGuid());
+        var sut = new SceneManager();
+        sut.AddScene(mockSceneA);
+        sut.AddScene(mockSceneB);
+
+        // Act
+        sut.Resize(new SizeU(15u, 15u));
+
+        // Assert
+        mockSceneA.Received(1).Resize(new SizeU(15u, 15u));
+        mockSceneB.Received(1).Resize(new SizeU(15u, 15u));
+    }
+
+    [Fact]
     [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
     public void Dispose_WhenInvokedS_DisposesOfScenes()
     {
