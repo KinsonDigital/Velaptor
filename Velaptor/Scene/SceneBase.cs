@@ -70,6 +70,9 @@ public abstract class SceneBase : IScene
         IsLoaded = false;
     }
 
+    /// <inheritdoc />
+    public virtual void Resize(SizeU size) => WindowSize = size;
+
     /// <inheritdoc/>
     public virtual void Update(FrameTime frameTime)
     {

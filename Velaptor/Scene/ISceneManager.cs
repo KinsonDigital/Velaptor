@@ -99,4 +99,10 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// </returns>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
     bool SceneExists(Guid id);
+
+    /// <summary>
+    /// Updates the size of the window for each scene.
+    /// </summary>
+    /// <param name="size">The new size.</param>
+    void Resize(SizeU size);
 }
