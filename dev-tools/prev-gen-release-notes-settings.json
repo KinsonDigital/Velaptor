@@ -4,7 +4,7 @@
     "repoName": "Velaptor",
     "githubTokenEnvVarName": "CICD_TOKEN",
     "milestoneName": "${VERSION}",
-    "headerText": "${REPONAME} ${ENVIRONMENT} Release Notes - ${VERSION}",
+    "headerText": "${REPONAME} ${RELEASETYPE} Release Notes - ${VERSION}",
     "releaseType": "Preview",
     "extraInfo": {
         "title": "Quick Reminder",
