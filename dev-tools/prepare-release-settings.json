@@ -23,7 +23,7 @@
             "reviewer": "KinsonDigitalAdmin",
             "assignee": "CalvinWilkinson",
             "headBranch": "prod-release",
-            "baseBranch": "preview",
+            "baseBranch": "main",
             "genReleaseSettingsFilePath": "./dev-tools/prod-gen-release-notes-settings.json",
             "releaseNotesDirPath": "./release-notes",
             "releasePrTemplateFilePath": "./templates/prod-prepare-release-template.md",
