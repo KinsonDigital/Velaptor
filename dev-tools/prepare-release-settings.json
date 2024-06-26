@@ -1,0 +1,38 @@
+{
+    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/preview/schemas/prepare-release-schema.json",
+    "ownerName": "KinsonDigital",
+    "repoName": "Velaptor",
+    "orgProjectName": "KD-Team",
+    "releaseTypes": [
+        {
+            "name": "Preview",
+            "reviewer": "KinsonDigitalAdmin",
+            "assignee": "CalvinWilkinson",
+            "headBranch": "prev-release",
+            "baseBranch": "preview",
+            "genReleaseSettingsFilePath": "./dev-tools/prev-gen-release-notes-settings.json",
+            "releaseNotesDirPath": "./ReleaseNotes/PreviewReleases",
+            "releasePrTemplateFilePath": "./templates/prev-prepare-release-template.md",
+            "releaseLabels": [
+                "🚀preview-release"
+            ],
+            "prTitle": "🚀Preview Release (${VERSION})"
+        },
+        {
+            "name": "Production",
+            "reviewer": "KinsonDigitalAdmin",
+            "assignee": "CalvinWilkinson",
+            "headBranch": "prod-release",
+            "baseBranch": "main",
+            "genReleaseSettingsFilePath": "./dev-tools/prod-gen-release-notes-settings.json",
+            "releaseNotesDirPath": "./ReleaseNotes/ProductionReleases",
+            "releasePrTemplateFilePath": "./templates/prod-prepare-release-template.md",
+            "releaseLabels": [
+                "🚀production-release"
+            ],
+            "prTitle": "🚀Production Release (${VERSION})"
+        }
+    ],
+    "githubTokenEnvVarName": "CICD_TOKEN",
+    "versionFilePath": "./Velaptor/Velaptor.csproj"
+}
