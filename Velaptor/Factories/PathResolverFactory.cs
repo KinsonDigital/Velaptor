@@ -22,7 +22,7 @@ public static class PathResolverFactory
     private static IContentPathResolver? audioPathResolver;
     private static IContentPathResolver? fontPathResolver;
     private static IContentPathResolver? contentFontPathResolver;
-    private static IContentPathResolver? windowsFontPathResolver;
+    private static IContentPathResolver? systemFontPathResolver;
 
     /// <summary>
     /// Creates a path resolver that resolves paths to texture content.
@@ -56,12 +56,16 @@ public static class PathResolverFactory
     {
         var platform = IoC.Container.GetInstance<IPlatform>();
 
-        if (platform.CurrentPlatform == OSPlatform.Windows)
+        if (platform.CurrentPlatform == OSPlatform.Windows ||
+            platform.CurrentPlatform == OSPlatform.Linux ||
+            platform.CurrentPlatform == OSPlatform.OSX)
         {
-            return CreateWindowsFontPathResolver();
+            return CreateSysFontPathResolver();
         }
-
-        throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
+        else
+        {
+            throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
+        }
     }
 
     /// <summary>
@@ -93,8 +97,8 @@ public static class PathResolverFactory
     /// </summary>
     /// <returns>The resolver instance.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left internal for future access")]
-    internal static IContentPathResolver CreateWindowsFontPathResolver() =>
-        windowsFontPathResolver ??= new WindowsFontPathResolver(
+    internal static IContentPathResolver CreateSysFontPathResolver() =>
+        systemFontPathResolver ??= new SystemFontPathResolver(
             IoC.Container.GetInstance<IDirectory>(),
             IoC.Container.GetInstance<IPlatform>());
 }

@@ -18,13 +18,12 @@ using System.Runtime.InteropServices;
 ///     operating system font location.
 /// <para/>
 /// <para>
-///     NOTE: Only Windows system fonts are currently supported.
-///     Other systems will be supported in a future releases.
+///     NOTE: Only Windows/Linux/OSX system fonts are currently supported.
 /// </para>
 /// </remarks>
 internal sealed class FontPathResolver : IContentPathResolver
 {
-    private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
+    private const string UnSupportedMessage = "Currently loading system fonts is only supported on Windows/Linux/OSX.";
     private readonly IPlatform platform;
     private readonly IContentPathResolver windowsFontPathResolver;
     private readonly IContentPathResolver contentFontPathResolver;
@@ -38,7 +37,7 @@ internal sealed class FontPathResolver : IContentPathResolver
     /// Resolves paths to the application's content directory.
     /// </param>
     /// <param name="windowsFontPathResolver">
-    /// Resolves the path to the Windows system fonts directory.
+    /// Resolves the path to the system fonts directory.
     /// </param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="directory">Performs operations with directories.</param>
@@ -70,7 +69,7 @@ internal sealed class FontPathResolver : IContentPathResolver
     ///     Will return the application's font content directory if it exists.  If it does not exist, it returns
     ///     the current system's font content directory.
     /// </remarks>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
+    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows/Linux/OSX.</exception>
     public string RootDirectoryPath
     {
         get
@@ -80,9 +79,11 @@ internal sealed class FontPathResolver : IContentPathResolver
                 return this.contentFontPathResolver.RootDirectoryPath;
             }
 
-            if (this.platform.CurrentPlatform != OSPlatform.Windows)
+            if (this.platform.CurrentPlatform != OSPlatform.Windows &&
+                this.platform.CurrentPlatform != OSPlatform.Linux &&
+                this.platform.CurrentPlatform != OSPlatform.OSX)
             {
-                throw new NotSupportedException(OnlyWindowsSupportMessage);
+                throw new NotSupportedException(UnSupportedMessage);
             }
 
             return this.windowsFontPathResolver.RootDirectoryPath;
@@ -96,7 +97,7 @@ internal sealed class FontPathResolver : IContentPathResolver
     ///     Will return the application's font content directory name if it exists.  If it does not exist, it
     ///     returns the current system's font content directory name.
     /// </remarks>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
+    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows/Linux/OSX.</exception>
     public string ContentDirectoryName
     {
         get
@@ -105,12 +106,12 @@ internal sealed class FontPathResolver : IContentPathResolver
             {
                 return this.contentFontPathResolver.ContentDirectoryName;
             }
-
-            if (this.platform.CurrentPlatform != OSPlatform.Windows)
+            if (this.platform.CurrentPlatform != OSPlatform.Windows &&
+                this.platform.CurrentPlatform != OSPlatform.Linux &&
+                this.platform.CurrentPlatform != OSPlatform.OSX)
             {
-                throw new NotSupportedException(OnlyWindowsSupportMessage);
+                throw new NotSupportedException(UnSupportedMessage);
             }
-
             return this.windowsFontPathResolver.ContentDirectoryName;
         }
     }
@@ -122,14 +123,15 @@ internal sealed class FontPathResolver : IContentPathResolver
     /// <returns>
     ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
     /// </returns>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
+    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows/Linux/OSX.</exception>
     public string ResolveFilePath(string contentName)
     {
-        if (this.platform.CurrentPlatform != OSPlatform.Windows)
+        if (this.platform.CurrentPlatform != OSPlatform.Windows &&
+        this.platform.CurrentPlatform != OSPlatform.Linux &&
+        this.platform.CurrentPlatform != OSPlatform.OSX)
         {
-            throw new NotSupportedException(OnlyWindowsSupportMessage);
+            throw new NotSupportedException(UnSupportedMessage);
         }
-
         var contentFilePath = this.contentFontPathResolver.ResolveFilePath(contentName);
 
         return this.file.Exists(contentFilePath)
@@ -141,14 +143,15 @@ internal sealed class FontPathResolver : IContentPathResolver
     /// Resolves the full directory path to font content.
     /// </summary>
     /// <returns>The directory only path to font content.</returns>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
+    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows/Linux/OSX.</exception>
     public string ResolveDirPath()
     {
-        if (this.platform.CurrentPlatform != OSPlatform.Windows)
+        if (this.platform.CurrentPlatform != OSPlatform.Windows &&
+            this.platform.CurrentPlatform != OSPlatform.Linux &&
+            this.platform.CurrentPlatform != OSPlatform.OSX)
         {
-            throw new NotSupportedException(OnlyWindowsSupportMessage);
+            throw new NotSupportedException(UnSupportedMessage);
         }
-
         var contentDirPath = this.contentFontPathResolver.ResolveDirPath();
 
         return this.directory.Exists(contentDirPath)
