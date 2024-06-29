@@ -93,7 +93,7 @@ internal sealed class SystemFontPathResolver : IContentPathResolver
             }
             else if (this.platform.CurrentPlatform == OSPlatform.OSX)
             {
-                return "Font";
+                return "Fonts";
             }
             else
             {

@@ -64,7 +64,7 @@ public static class PathResolverFactory
         }
         else
         {
-            throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
+            throw new NotSupportedException("Currently loading system fonts is only supported on Windows/Linux/OSX.");
         }
     }
 
