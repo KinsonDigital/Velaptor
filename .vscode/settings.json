@@ -58,16 +58,6 @@
 		"Vorbis",
 		"xunit"
 	],
-	"files.exclude": {
-		"**/.github/cicd/": true,
-		"**/*.vs": true,
-		"**/*.idea": true,
-		"**/*.run": true,
-		"**/bin": true,
-		"**/*.sln.DotSettings*": true,
-		"**/*.code-workspace*": true,
-		"*.lock": true,
-	},
 	"dotnet.defaultSolution": "Velaptor.sln",
 	"[csharp]": {
 		"editor.insertSpaces": false,
