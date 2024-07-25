@@ -1,4 +1,4 @@
-﻿// <copyright file="GraphicsContentSourceTests.cs" company="KinsonDigital">
+// <copyright file="GraphicsContentSourceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Xunit;
 
@@ -20,10 +20,10 @@ public class GraphicsContentSourceTests
     public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
+        var mockDirectory = Substitute.For<IDirectory>();
 
         // Act
-        var source = new TexturePathResolver(mockDirectory.Object);
+        var source = new TexturePathResolver(mockDirectory);
         var actual = source.ContentDirectoryName;
 
         // Assert

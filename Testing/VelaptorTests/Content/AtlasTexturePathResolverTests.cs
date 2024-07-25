@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasTexturePathResolverTests.cs" company="KinsonDigital">
+// <copyright file="AtlasTexturePathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Xunit;
 
@@ -20,10 +20,10 @@ public class AtlasTexturePathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
+        var mockDirectory = Substitute.For<IDirectory>();
 
         // Act
-        var sut = new AtlasTexturePathResolver(mockDirectory.Object);
+        var sut = new AtlasTexturePathResolver(mockDirectory);
         var actual = sut.ContentDirectoryName;
 
         // Assert

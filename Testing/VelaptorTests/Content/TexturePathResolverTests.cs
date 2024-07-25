@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
 using Xunit;
@@ -23,6 +23,7 @@ public class TexturePathResolverTests
     private readonly string contentFilePath;
     private readonly string baseDir;
     private readonly string atlasContentDir;
+    private readonly IPath mockPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TexturePathResolverTests"/> class.
@@ -33,6 +34,8 @@ public class TexturePathResolverTests
             .ToCrossPlatPath();
         this.atlasContentDir = $"{this.baseDir}/Content/Graphics";
         this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.png";
+
+        this.mockPath = Substitute.For<IPath>();
     }
 
     #region Constructor Tests
@@ -51,8 +54,8 @@ public class TexturePathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        var resolver = new TexturePathResolver(mockDirectory.Object);
+        var mockDirectory = Substitute.For<IDirectory>();
+        var resolver = new TexturePathResolver(mockDirectory);
 
         // Act
         var actual = resolver.ContentDirectoryName;
@@ -67,15 +70,15 @@ public class TexturePathResolverTests
     public void ResolveFilePath_WhenContentItemDoesNotExist_ThrowsException()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(new[]
-                {
-                    $"{this.baseDir}/other-file-A.png",
-                    $"{this.baseDir}/other-file-B.txt",
-                });
+        var mockDirectory = Substitute.For<IDirectory>();
+        mockDirectory.GetFiles(this.atlasContentDir, "*.png")
+            .Returns(
+            [
+                $"{this.baseDir}/other-file-A.png",
+                    $"{this.baseDir}/other-file-B.txt"
+            ]);
 
-        var resolver = new TexturePathResolver(mockDirectory.Object);
+        var resolver = new TexturePathResolver(mockDirectory);
 
         // Act
         var act = () => _ = resolver.ResolveFilePath(ContentName);
@@ -92,15 +95,15 @@ public class TexturePathResolverTests
     public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
-            .Returns(new[]
-                {
-                    $"{this.atlasContentDir}/other-file.png",
-                    this.contentFilePath,
-                });
+        var mockDirectory = Substitute.For<IDirectory>();
+        mockDirectory.GetFiles(this.atlasContentDir, "*.png")
+            .Returns(
+            [
+                $"{this.atlasContentDir}/other-file.png",
+                    this.contentFilePath
+            ]);
 
-        var resolver = new TexturePathResolver(mockDirectory.Object);
+        var resolver = new TexturePathResolver(mockDirectory);
 
         // Act
         var actual = resolver.ResolveFilePath(contentName);
