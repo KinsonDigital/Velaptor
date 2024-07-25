@@ -575,11 +575,4 @@ internal static class InternalExtensionMethods
             circle.GradientType,
             circle.GradientStart,
             circle.GradientStop);
-
-    /// <summary>
-    /// Returns the inverse of the color.
-    /// </summary>
-    /// <param name="value">The color value to invert.</param>
-    /// <returns>The invert color of the original color.</returns>
-    public static NETColor Inverse(this NETColor value) => NETColor.FromArgb(255, 255 - value.R, 255 - value.G, 255 - value.B);
 }
