@@ -120,7 +120,7 @@ public class WindowsFontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class WindowsFontPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentName')");
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]

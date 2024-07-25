@@ -116,25 +116,25 @@ internal sealed class FontPathResolver : IContentPathResolver
     }
 
     /// <summary>
-    /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
+    /// Resolves the full file path to a content item that matches the given <paramref name="contentPathOrName"/>.
     /// </summary>
-    /// <param name="contentName">The name of the content item with or without the file extension.</param>
+    /// <param name="contentPathOrName">The name of the content item with or without the file extension.</param>
     /// <returns>
     ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
     /// </returns>
     /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
-    public string ResolveFilePath(string contentName)
+    public string ResolveFilePath(string contentPathOrName)
     {
         if (this.platform.CurrentPlatform != OSPlatform.Windows)
         {
             throw new NotSupportedException(OnlyWindowsSupportMessage);
         }
 
-        var contentFilePath = this.contentFontPathResolver.ResolveFilePath(contentName);
+        var contentFilePath = this.contentFontPathResolver.ResolveFilePath(contentPathOrName);
 
         return this.file.Exists(contentFilePath)
             ? contentFilePath
-            : this.windowsFontPathResolver.ResolveFilePath(contentName);
+            : this.windowsFontPathResolver.ResolveFilePath(contentPathOrName);
     }
 
     /// <summary>

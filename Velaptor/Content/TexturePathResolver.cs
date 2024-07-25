@@ -1,4 +1,4 @@
-﻿// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
+// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -32,16 +32,16 @@ internal class TexturePathResolver : ContentPathResolver
     /// <summary>
     /// Returns the path to the texture image content.
     /// </summary>
-    /// <param name="contentName">The name of the content.</param>
+    /// <param name="contentPathOrName">The name of the content.</param>
     /// <returns>The path to the content item.</returns>
-    public override string ResolveFilePath(string contentName)
+    public override string ResolveFilePath(string contentPathOrName)
     {
         // Performs other checks on the content name
-        contentName = base.ResolveFilePath(contentName);
+        contentPathOrName = base.ResolveFilePath(contentPathOrName);
 
-        contentName = Path.HasExtension(contentName)
-            ? Path.GetFileNameWithoutExtension(contentName)
-            : contentName;
+        contentPathOrName = Path.HasExtension(contentPathOrName)
+            ? Path.GetFileNameWithoutExtension(contentPathOrName)
+            : contentPathOrName;
 
         var contentDirPath = GetContentDirPath();
 
@@ -52,13 +52,13 @@ internal class TexturePathResolver : ContentPathResolver
         var files = (from f in possibleFiles
             where string.Compare(
                 f,
-                $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
+                $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentPathOrName}{FileExtension}",
                 StringComparison.OrdinalIgnoreCase) == 0
             select f).ToArray();
 
         if (files.Length <= 0)
         {
-            throw new FileNotFoundException($"The texture image file '{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}' does not exist.");
+            throw new FileNotFoundException($"The texture image file '{contentDirPath}{CrossPlatDirSeparatorChar}{contentPathOrName}{FileExtension}' does not exist.");
         }
 
         return files[0];

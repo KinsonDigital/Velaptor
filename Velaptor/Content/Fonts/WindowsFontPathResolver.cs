@@ -45,17 +45,17 @@ internal sealed class WindowsFontPathResolver : IContentPathResolver
     public string ContentDirectoryName => "Fonts";
 
     /// <inheritdoc/>
-    public string ResolveFilePath(string contentName)
+    public string ResolveFilePath(string contentPathOrName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(contentName);
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        if (contentName.EndsWith(CrossPlatDirSeparatorChar))
+        if (contentPathOrName.EndsWith(CrossPlatDirSeparatorChar))
         {
-            throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
+            throw new ArgumentException($"The '{contentPathOrName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentPathOrName));
         }
 
         var contentDirPath = $"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
-        var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}";
+        var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentPathOrName}{FileExtension}";
 
         var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
             .NormalizePaths();

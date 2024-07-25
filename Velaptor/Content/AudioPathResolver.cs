@@ -30,7 +30,7 @@ internal sealed class AudioPathResolver : ContentPathResolver
     /// <summary>
     /// Returns the path to the audio content.
     /// </summary>
-    /// <param name="contentName">The name of the content.</param>
+    /// <param name="contentPathOrName">The name of the content.</param>
     /// <returns>The path to the content item.</returns>
     /// <remarks>
     ///     The two types of audio formats supported are '.ogg' and '.mp3'.
@@ -44,14 +44,14 @@ internal sealed class AudioPathResolver : ContentPathResolver
     ///     If no <c>.ogg</c> file exists but an <c>.mp3</c> file does, then the <c>.mp3</c> file will be loaded.
     /// </para>
     /// </remarks>
-    public override string ResolveFilePath(string contentName)
+    public override string ResolveFilePath(string contentPathOrName)
     {
         // Performs other checks on the content name
-        contentName = base.ResolveFilePath(contentName);
+        contentPathOrName = base.ResolveFilePath(contentPathOrName);
 
-        contentName = Path.HasExtension(contentName)
-            ? Path.GetFileNameWithoutExtension(contentName)
-            : contentName;
+        contentPathOrName = Path.HasExtension(contentPathOrName)
+            ? Path.GetFileNameWithoutExtension(contentPathOrName)
+            : contentPathOrName;
 
         var contentDirPath = GetContentDirPath();
 
@@ -66,7 +66,7 @@ internal sealed class AudioPathResolver : ContentPathResolver
                 var allowedExtensions = new[] { ".ogg", ".mp3" };
                 var currentExtension = Path.GetExtension(f);
 
-                return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
+                return string.Compare(fileNameNoExt, contentPathOrName, StringComparison.OrdinalIgnoreCase) == 0
                        && Array.Exists(
                            allowedExtensions,
                            e
@@ -91,6 +91,6 @@ internal sealed class AudioPathResolver : ContentPathResolver
             return mp3Files[0];
         }
 
-        throw new FileNotFoundException($"The audio file '{contentDirPath}/{contentName}' does not exist.");
+        throw new FileNotFoundException($"The audio file '{contentDirPath}/{contentPathOrName}' does not exist.");
     }
 }

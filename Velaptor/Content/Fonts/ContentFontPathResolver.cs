@@ -30,13 +30,13 @@ internal sealed class ContentFontPathResolver : ContentPathResolver
     }
 
     /// <inheritdoc/>
-    public override string ResolveFilePath(string contentName)
+    public override string ResolveFilePath(string contentPathOrName)
     {
-        contentName = base.ResolveFilePath(contentName);
+        contentPathOrName = base.ResolveFilePath(contentPathOrName);
 
-        contentName = Path.HasExtension(contentName)
-            ? Path.GetFileNameWithoutExtension(contentName)
-            : contentName;
+        contentPathOrName = Path.HasExtension(contentPathOrName)
+            ? Path.GetFileNameWithoutExtension(contentPathOrName)
+            : contentPathOrName;
 
         var contentDirPath = GetContentDirPath();
 
@@ -47,7 +47,7 @@ internal sealed class ContentFontPathResolver : ContentPathResolver
         var files = (from f in possibleFiles
             where string.Compare(
                 f,
-                $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
+                $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentPathOrName}{FileExtension}",
                 StringComparison.OrdinalIgnoreCase) == 0
             select f).ToArray();
 

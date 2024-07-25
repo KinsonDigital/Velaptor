@@ -53,19 +53,19 @@ internal abstract class ContentPathResolver : IContentPathResolver
     }
 
     /// <inheritdoc/>
-    public virtual string ResolveFilePath(string contentName)
+    public virtual string ResolveFilePath(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentName))
+        if (string.IsNullOrEmpty(contentPathOrName))
         {
-            throw new ArgumentNullException(nameof(contentName), "The string parameter must not be null or empty.");
+            throw new ArgumentNullException(nameof(contentPathOrName), "The string parameter must not be null or empty.");
         }
 
-        if (contentName.EndsWith(WinDirSeparatorChar) || contentName.EndsWith(CrossPlatDirSeparatorChar))
+        if (contentPathOrName.EndsWith(WinDirSeparatorChar) || contentPathOrName.EndsWith(CrossPlatDirSeparatorChar))
         {
-            throw new ArgumentException($"The '{contentName}' cannot end with a folder. It must end with a file name with or without the extension.", nameof(contentName));
+            throw new ArgumentException($"The '{contentPathOrName}' cannot end with a folder. It must end with a file name with or without the extension.", nameof(contentPathOrName));
         }
 
-        return contentName;
+        return contentPathOrName;
     }
 
     /// <inheritdoc/>
