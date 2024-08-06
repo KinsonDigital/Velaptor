@@ -43,7 +43,7 @@ internal sealed class SystemDisplayService : ISystemDisplayService
 
     /// <inheritdoc/>
     public SystemDisplay MainDisplay =>
-        Array.Find(this.displays?.SystemDisplays ?? Array.Empty<SystemDisplay>(), m => m.IsMain);
+        Array.Find(this.displays?.SystemDisplays ?? [], m => m.IsMain);
 
     /// <inheritdoc/>
     public void Refresh() => this.displays?.Refresh();

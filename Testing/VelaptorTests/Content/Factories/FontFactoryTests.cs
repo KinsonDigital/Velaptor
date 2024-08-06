@@ -12,7 +12,6 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
-using Velaptor.Graphics;
 using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 using Xunit;
@@ -22,7 +21,7 @@ using Xunit;
 /// </summary>
 public class FontFactoryTests
 {
-    private readonly Mock<IFreeTypeService> mockFreeTypeervice;
+    private readonly Mock<IFreeTypeService> mockFreeTypeService;
     private readonly Mock<IFontStatsService> mockFontStatsService;
     private readonly Mock<IFontAtlasService> mockFontAtlasService;
     private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
@@ -32,7 +31,7 @@ public class FontFactoryTests
     /// </summary>
     public FontFactoryTests()
     {
-        this.mockFreeTypeervice = new Mock<IFreeTypeService>();
+        this.mockFreeTypeService = new Mock<IFreeTypeService>();
         this.mockFontStatsService = new Mock<IFontStatsService>();
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
@@ -65,7 +64,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeervice.Object,
+                this.mockFreeTypeService.Object,
                 null,
                 this.mockFontAtlasService.Object,
                 this.mockTextureCache.Object);
@@ -84,7 +83,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeervice.Object,
+                this.mockFreeTypeService.Object,
                 this.mockFontStatsService.Object,
                 null,
                 this.mockTextureCache.Object);
@@ -103,7 +102,7 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeervice.Object,
+                this.mockFreeTypeService.Object,
                 this.mockFontStatsService.Object,
                 this.mockFontAtlasService.Object,
                 null);
@@ -125,7 +124,7 @@ public class FontFactoryTests
         var mockTexture = new Mock<ITexture>();
 
         var sut = new FontFactory(
-            this.mockFreeTypeervice.Object,
+            this.mockFreeTypeService.Object,
             this.mockFontStatsService.Object,
             this.mockFontAtlasService.Object,
             this.mockTextureCache.Object);
@@ -141,7 +140,7 @@ public class FontFactoryTests
                 "test-path",
                 123u,
                 true,
-                Array.Empty<GlyphMetrics>());
+                []);
         };
 
         // Assert

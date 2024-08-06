@@ -69,7 +69,7 @@ public class TextureCacheTests
         this.mockFontAtlasService = new Mock<IFontAtlasService>();
         this.mockFontAtlasService.Setup(m =>
                 m.CreateAtlas(FontFilePath, FontSize))
-            .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
+            .Returns((this.fontImageData, []));
 
         var mockRegularTexture = new Mock<ITexture>();
         var mockFontAtlasTexture = new Mock<ITexture>();

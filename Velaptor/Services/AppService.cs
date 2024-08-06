@@ -5,6 +5,7 @@
 namespace Velaptor.Services;
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Reflection;
 
 /// <inheritdoc/>
@@ -15,9 +16,13 @@ internal class AppService : IAppService
     private bool alreadyInitialized;
 
     /// <inheritdoc/>
-    public string AppDirectory => string.IsNullOrEmpty(this.appDirectory) ? Assembly.GetExecutingAssembly().Location : this.appDirectory;
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "No tests written for this.")]
+    public string AppDirectory => string.IsNullOrEmpty(this.appDirectory)
+        ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty
+        : this.appDirectory;
 
     /// <inheritdoc/>
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "No tests written for this.")]
     public void Init()
     {
         if (this.alreadyInitialized)

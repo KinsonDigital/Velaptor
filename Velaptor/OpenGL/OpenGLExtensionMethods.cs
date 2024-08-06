@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -101,14 +101,14 @@ internal static class OpenGLExtensionMethods
     ///     <item><see cref="Vector"/>.<see cref="Vector2.Y"/></item>
     /// </list>
     /// </remarks>
-    public static float[] ToArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+    public static float[] ToArray(this Vector2 vector) => [vector.X, vector.Y];
 
     /// <summary>
     /// Returns all the <see cref="Vector4"/> components as a <see cref="float"/> array.
     /// </summary>
     /// <param name="vector">The vector to convert.</param>
     /// <returns>The components in a <c>X</c> <c>Y</c> <c>Z</c> <c>W</c> order.</returns>
-    public static float[] ToArray(this Vector4 vector) => new[] { vector.X, vector.Y, vector.Z, vector.W };
+    public static float[] ToArray(this Vector4 vector) => [vector.X, vector.Y, vector.Z, vector.W];
 
     /// <summary>
     /// Converts the given <paramref name="color"/> to an array of <see cref="float"/>[] values.
@@ -126,7 +126,7 @@ internal static class OpenGLExtensionMethods
     /// </list>
     /// </remarks>
     public static float[] ToArray(this Color color)
-        => new float[] { color.R, color.G, color.B, color.A };
+        => [color.R, color.G, color.B, color.A];
 
     /// <summary>
     /// Converts the given <paramref name="vertexData"/> components to an array of floats.
