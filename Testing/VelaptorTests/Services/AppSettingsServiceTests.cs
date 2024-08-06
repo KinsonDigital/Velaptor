@@ -19,7 +19,7 @@ public class AppSettingsServiceTests
     private const string AppSettingsFileName = "app-settings.json";
     private const string BaseDirPath = "C:/velaptor";
     private const string SettingsFilePath = $"{BaseDirPath}/{AppSettingsFileName}";
-    private readonly Mock<IJSONService> mockJsonService;
+    private readonly Mock<IJsonService> mockJsonService;
     private readonly Mock<IDirectory> mockDirService;
     private readonly Mock<IFile> mockFileService;
 
@@ -28,7 +28,7 @@ public class AppSettingsServiceTests
     /// </summary>
     public AppSettingsServiceTests()
     {
-        this.mockJsonService = new Mock<IJSONService>();
+        this.mockJsonService = new Mock<IJsonService>();
 
         this.mockDirService = new Mock<IDirectory>();
         this.mockDirService.Setup(m => m.GetCurrentDirectory()).Returns(BaseDirPath);

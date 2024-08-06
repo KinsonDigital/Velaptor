@@ -290,7 +290,7 @@ internal static class IoC
         IoCContainer.Register<IShaderLoaderService, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
         IoCContainer.Register<ISystemDisplayService, SystemDisplayService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
-        IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
+        IoCContainer.Register<IJsonService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeService, FreeTypeService>(Lifestyle.Singleton);
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);

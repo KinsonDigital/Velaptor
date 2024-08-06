@@ -68,7 +68,7 @@ public static class ContentLoaderFactory
         var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
         var pathResolver = PathResolverFactory.CreateAtlasPathResolver();
-        var jsonService = IoC.Container.GetInstance<IJSONService>();
+        var jsonService = IoC.Container.GetInstance<IJsonService>();
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();

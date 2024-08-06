@@ -1,4 +1,4 @@
-// <copyright file="IJSONService.cs" company="KinsonDigital">
+// <copyright file="IJsonService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace Velaptor.Services;
 /// <summary>
 /// Performs JSON services.
 /// </summary>
-internal interface IJSONService
+internal interface IJsonService
 {
     /// <summary>
     /// Serializes the specified object to a JSON string.
