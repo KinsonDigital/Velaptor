@@ -22,8 +22,7 @@ public class FontStatsServiceTests
 {
     private const string RootContentDirPath = @"C:\content-dir\";
     private const string DirNameForContentPath = "content-fonts";
-    private const string RootSystemDirPath = @"C:\system-dir\";
-    private const string DirNameForSystemPath = "system-fonts";
+    private const string FullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
     private readonly Mock<IFreeTypeService> mockFreeTypeService;
     private readonly Mock<IContentPathResolver> mockFontPathResolver;
     private readonly Mock<IDirectory> mockDirectory;
@@ -137,10 +136,10 @@ public class FontStatsServiceTests
         var fontTimesItalic = BuildContentFontPath("TimesNewRoman-Italic.ttf");
         var fontTimesBoldItalic = BuildContentFontPath("TimesNewRoman-BoldItalic.ttf");
 
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(this.fullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(this.fullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(this.fullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(this.fullContentFontDirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(FullContentFontDirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(FullContentFontDirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(FullContentFontDirPath);
+        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(FullContentFontDirPath);
 
         var fontFiles = new[]
         {
@@ -157,7 +156,7 @@ public class FontStatsServiceTests
         MockFontStyle(fontTimesItalic, FontStyle.Italic);
         MockFontStyle(fontTimesBoldItalic, FontStyle.Bold | FontStyle.Italic);
 
-        this.mockDirectory.Setup(m => m.GetFiles(this.fullContentFontDirPath, "*.ttf"))
+        this.mockDirectory.Setup(m => m.GetFiles(FullContentFontDirPath, "*.ttf"))
             .Returns(() => fontFiles);
 
         var expected = new[]
@@ -180,6 +179,13 @@ public class FontStatsServiceTests
     #endregion
 
     /// <summary>
+    /// Builds a path to an application font directory location.
+    /// </summary>
+    /// <param name="fileName">The file name to include in the path.</param>
+    /// <returns>The application file path.</returns>
+    private static string BuildContentFontPath(string fileName) => $"{FullContentFontDirPath}{fileName}";
+
+    /// <summary>
     /// Creates a new service for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
@@ -188,13 +194,6 @@ public class FontStatsServiceTests
         this.mockFontPathResolver.Object,
         this.mockDirectory.Object,
         this.mockPath.Object);
-
-    /// <summary>
-    /// Builds a path to a application font directory location.
-    /// </summary>
-    /// <param name="fileName">The file name to include in the path.</param>
-    /// <returns>The application file path.</returns>
-    private string BuildContentFontPath(string fileName) => $"{this.fullContentFontDirPath}{fileName}";
 
     /// <summary>
     /// Mocks the font at the given <paramref name="filePath"/> with the given font <paramref name="familyName"/>.
