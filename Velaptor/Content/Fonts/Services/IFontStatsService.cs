@@ -20,16 +20,4 @@ internal interface IFontStatsService
     /// </para>
     /// </remarks>
     FontStats[] GetContentStatsForFontFamily(string fontFamilyName);
-
-    /// <summary>
-    /// Gets the stats for all the fonts for the given font family in the systems font directory.
-    /// </summary>
-    /// <param name="fontFamilyName">The font family.</param>
-    /// <returns>Information about all the different styles of the fonts that match the font family.</returns>
-    /// <remarks>
-    /// <para>
-    ///     Windows Font Dir Path: C:\Windows\Fonts\.
-    /// </para>
-    /// </remarks>
-    FontStats[] GetSystemStatsForFontFamily(string fontFamilyName);
 }

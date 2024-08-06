@@ -81,7 +81,7 @@ internal static class ShapeGpuDataGenerator
     /// <remarks>
     ///     Example:
     ///     <para>
-    ///         If the given <paramref name="start"/> value is four, then the the vector components would be the values below:
+    ///         If the given <paramref name="start"/> value is four, then the vector components would be the values below:
     ///         <list type="number">
     ///             <item>
     ///                 <see cref="Vector2"/>.<see cref="Vector2.X"/> = 4
@@ -108,7 +108,7 @@ internal static class ShapeGpuDataGenerator
     /// <remarks>
     ///     Example:
     ///     <para>
-    ///         If the given <paramref name="start"/> value is four, then the the vector components would be the values below:
+    ///         If the given <paramref name="start"/> value is four, then the vector components would be the values below:
     ///         <list type="number">
     ///             <item>
     ///                 <see cref="Vector4"/>.<see cref="Vector4.X"/> = 4
@@ -141,7 +141,7 @@ internal static class ShapeGpuDataGenerator
     /// <remarks>
     ///     Example:
     ///     <para>
-    ///         If the given <paramref name="start"/> value is four, than the the color components would be the values below:
+    ///         If the given <paramref name="start"/> value is four, than the color components would be the values below:
     ///         <list type="number">
     ///             <item>
     ///                 <see cref="Color"/>.<see cref="Color.A"/> = 4

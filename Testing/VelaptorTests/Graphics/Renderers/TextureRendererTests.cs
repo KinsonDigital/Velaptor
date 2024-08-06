@@ -760,7 +760,7 @@ public class TextureRendererTests : TestsBase
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
             });
     }
 
@@ -774,7 +774,7 @@ public class TextureRendererTests : TestsBase
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
             .Callback<TextureRenderItem>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"TextureRenderer.ctor() - {PushNotifications.RenderTexturesId}");
             });
     }
@@ -794,7 +794,7 @@ public class TextureRendererTests : TestsBase
     }
 
     /// <summary>
-    /// Creates a mock of the <see cref="ITexture"/> interface.
+    /// Mocks the <see cref="ITexture"/> interface.
     /// </summary>
     /// <param name="textureId">The texture ID to mock.</param>
     /// <param name="expectedWidth">The texture width to mock.</param>

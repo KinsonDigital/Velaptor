@@ -74,7 +74,7 @@ public class ShaderProgramTests
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
 
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -94,7 +94,7 @@ public class ShaderProgramTests
             .Returns(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -379,7 +379,7 @@ public class ShaderProgramTests
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {

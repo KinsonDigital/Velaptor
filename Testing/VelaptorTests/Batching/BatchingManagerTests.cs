@@ -341,7 +341,7 @@ public class BatchingManagerTests : TestsBase
                 // TODO: Maybe create an alias for this type?
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>();
 
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
             });
     }
@@ -355,7 +355,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
             });
 
@@ -376,7 +376,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.EmptyBatchId)
                 {
@@ -397,7 +397,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetFontItemsId}");
             });
 
@@ -415,7 +415,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
             });
     }
 
@@ -429,7 +429,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>();
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetLineItemsId}");
             });
 
@@ -474,16 +474,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddTextureItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.TextureItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
+        sut.TextureItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
 
         sut.TextureItems.ToArray().Should().Contain(expectedA);
-        sut.TextureItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
+        sut.TextureItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
         sut.TextureItems.ToArray().Should().Contain(expectedB);
-        sut.TextureItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
+        sut.TextureItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
         sut.TextureItems.ToArray().Should().Contain(expectedC);
-        sut.TextureItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
+        sut.TextureItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -579,16 +579,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddFontItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.FontItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
+        sut.FontItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
 
         sut.FontItems.ToArray().Should().Contain(expectedA);
-        sut.FontItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
+        sut.FontItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
         sut.FontItems.ToArray().Should().Contain(expectedB);
-        sut.FontItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
+        sut.FontItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
         sut.FontItems.ToArray().Should().Contain(expectedC);
-        sut.FontItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
+        sut.FontItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -648,16 +648,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddShapeItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.ShapeItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
+        sut.ShapeItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
 
         sut.ShapeItems.ToArray().Should().Contain(expectedA);
-        sut.ShapeItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
+        sut.ShapeItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
         sut.ShapeItems.ToArray().Should().Contain(expectedB);
-        sut.ShapeItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
+        sut.ShapeItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
         sut.ShapeItems.ToArray().Should().Contain(expectedC);
-        sut.ShapeItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
+        sut.ShapeItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -717,16 +717,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddLineItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.LineItems.ToArray().Should().HaveCount(3, "the total number of items should of increased.");
+        sut.LineItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
 
         sut.LineItems.ToArray().Should().Contain(expectedA);
-        sut.LineItems[0].Should().BeEquivalentTo(expectedA, "the previously added items should be in the same order.");
+        sut.LineItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
         sut.LineItems.ToArray().Should().Contain(expectedB);
-        sut.LineItems[1].Should().BeEquivalentTo(expectedB, "the previously added items should be in the same order.");
+        sut.LineItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
         sut.LineItems.ToArray().Should().Contain(expectedC);
-        sut.LineItems[2].Should().BeEquivalentTo(expectedC, "the previously added items should be in the same order.");
+        sut.LineItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]

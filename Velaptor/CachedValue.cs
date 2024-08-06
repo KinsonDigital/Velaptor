@@ -32,11 +32,11 @@ internal sealed class CachedValue<T>
     /// <param name="isCaching"><c>true</c> to turn on caching by default.</param>
     /// <remarks>
     ///     <para>
-    ///         If caching is turned on, then getting a value will return the cached value.  Otherwise it will return the value
+    ///         If caching is turned on, then getting a value will return the cached value.  Otherwise, it will return the value
     ///         of <paramref name="getterWhenNotCaching"/> delegate.
     ///     </para>
     ///     <para>
-    ///         If caching is turned on, the value being will be cached.  Otherwise the
+    ///         If caching is turned on, the value being will be cached.  Otherwise, the
     ///         <paramref name="getterWhenNotCaching"/> delegate will be used to set the value.
     ///     </para>
     /// </remarks>
@@ -77,7 +77,7 @@ internal sealed class CachedValue<T>
              *      likely is not the same value as the last value that was set while caching was on.
              *
              *      Because of this, the external system when turning caching off needs to be updated
-             *      to match the value of the internal system so they are in sync.
+             *      to match the value of the internal system, so they are in sync.
              *
              * When turning caching on:
              *      When caching is turned on, the user could have set the value at any time before turning
@@ -87,7 +87,7 @@ internal sealed class CachedValue<T>
              *      likely is not the same value as the last value that was set while caching was off.
              *
              *      Because of this, the internal system when turning the caching on needs to be updated
-             *      to match the value of the external system so they are in sync.
+             *      to match the value of the external system, so they are in sync.
              */
                 case false when value:
                     this.cachedValue = this.getterWhenNotCaching();

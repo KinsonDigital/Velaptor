@@ -74,7 +74,7 @@ public class GpuBufferBaseTests : TestsBase
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -90,7 +90,7 @@ public class GpuBufferBaseTests : TestsBase
         this.mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
             .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.ViewPortSizeChangedId)
                 {
@@ -446,7 +446,7 @@ public class GpuBufferBaseTests : TestsBase
         this.mockViewPortReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<ViewPortSizeData>>()))
             .Callback<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.ViewPortSizeChangedId}");
             });
     }

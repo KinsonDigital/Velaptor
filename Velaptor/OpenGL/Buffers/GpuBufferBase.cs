@@ -52,7 +52,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
             Init,
             () => this.initUnsubscriber?.Dispose());
 
-        // Subscribe to the shut down signal
+        // Subscribe to the shut-down signal
         this.shutDownUnsubscriber = reactable.CreateNonReceiveOrRespond(
             PushNotifications.SystemShuttingDownId,
             ShutDown,
