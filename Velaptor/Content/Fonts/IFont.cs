@@ -109,7 +109,7 @@ public interface IFont : IContent
     /// Returns the bounds of each character in the given <paramref name="text"/> based on the
     /// given <paramref name="textPos"/>.
     /// </summary>
-    /// <param name="text">The text to get the bounds data.</param>
+    /// <param name="text">The text to get the bounds' data.</param>
     /// <param name="textPos">The position of the text as a whole.</param>
     /// <returns>The bounds for each character.</returns>
     IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos);
@@ -118,7 +118,7 @@ public interface IFont : IContent
     /// Returns the bounds of each character in the given <paramref name="text"/> based on the
     /// given <paramref name="textPos"/>.
     /// </summary>
-    /// <param name="text">The text to get the bounds data.</param>
+    /// <param name="text">The text to get the bounds' data.</param>
     /// <param name="textPos">The position of the text as a whole.</param>
     /// <returns>The bounds for each character.</returns>
     IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos);

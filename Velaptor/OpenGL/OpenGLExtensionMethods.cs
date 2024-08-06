@@ -1,4 +1,4 @@
-// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,7 +22,7 @@ internal static class OpenGLExtensionMethods
     /// <param name="pixelScreenWidth">The width of the screen in pixel units.</param>
     /// <param name="pixelScreenHeight">The height of the screen in pixel units.</param>
     /// <returns>The pixel vector in NDC units.</returns>
-    /// <remarks>NDC is an acronym for (N)ormal (D)evice (C)oordinates.</remarks>
+    /// <remarks>NDC is an acronym for Normal Device Coordinates.</remarks>
     public static Vector2 ToNDC(this Vector2 pixelVector, float pixelScreenWidth, float pixelScreenHeight)
     {
         var ndcX = pixelVector.X.MapValue(0, pixelScreenWidth, -1f, 1f);
@@ -44,7 +44,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static float ToNDCTextureCoordX(this float x, float textureWidth)
@@ -63,7 +63,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static float ToNDCTextureCoordY(this float y, float textureHeight)
@@ -83,7 +83,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static Vector2 ToNDCTextureCoords(this Vector2 coord, float textureWidth, float textureHeight)

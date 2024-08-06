@@ -15,7 +15,7 @@ internal enum VelaptorBufferType
     Texture = 1,
 
     /// <summary>
-    /// A font glpyh GPU buffer.
+    /// A font glyph GPU buffer.
     /// </summary>
     Font = 2,
 

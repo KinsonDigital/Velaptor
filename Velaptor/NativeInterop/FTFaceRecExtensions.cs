@@ -13,7 +13,7 @@ using Content.Fonts;
 using FreeTypeSharp;
 
 /// <summary>
-/// Provides helper methoeds for the <see cref="FT_FaceRec_"/> struct via a pointer.
+/// Provides helper methods for the <see cref="FT_FaceRec_"/> struct via a pointer.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "This is a helper class that is not needed to be tested.")]
 internal static class FTFaceRecExtensions

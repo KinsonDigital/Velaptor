@@ -106,7 +106,7 @@ public class TextureCacheTests
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 this.shutDownReactor = reactor;
             });
 
@@ -526,7 +526,7 @@ public class TextureCacheTests
                 m.Push(It.IsAny<Guid>(), It.Ref<DisposeTextureData>.IsAny))
             .Callback((Guid _, in DisposeTextureData data) =>
             {
-                data.Should().NotBeNull("it is required for unit testing.");
+                data.Should().NotBeNull("It is required for unit testing.");
 
                 actual = data;
             });

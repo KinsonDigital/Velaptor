@@ -72,7 +72,7 @@ public class FontGpuBufferTests
         var mockPushReactable = Substitute.For<IPushReactable>();
         mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Should().NotBeNull("It is required for unit testing.");
 
             if (reactor.Id == PushNotifications.GLInitializedId)
             {
@@ -91,14 +91,14 @@ public class FontGpuBufferTests
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Should().NotBeNull("It is required for unit testing.");
             this.viewPortSizeReactor = reactor;
         }));
 
         var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Should().NotBeNull("It is required for unit testing.");
             this.batchSizeReactor = reactor;
         }));
 

@@ -25,7 +25,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -67,7 +67,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -109,7 +109,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -151,7 +151,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -194,7 +194,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -234,7 +234,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///         The <paramref name="pos"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -275,7 +275,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///         The <paramref name="pos"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -316,7 +316,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///         The <paramref name="pos"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -357,7 +357,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///         The <paramref name="pos"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -399,7 +399,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="pos"/> position are based on the center of the texture.
+    ///         The <paramref name="pos"/> position are based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
@@ -444,7 +444,7 @@ public interface ITextureRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position in the <paramref name="destRect"/> is based on the center of the texture.
+    ///         The position in the <paramref name="destRect"/> is based in the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.

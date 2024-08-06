@@ -855,7 +855,7 @@ public class FontRendererTests : TestsBase
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
             });
     }
@@ -870,7 +870,7 @@ public class FontRendererTests : TestsBase
             .Setup(m => m.Subscribe(It.IsAny<FontRenderItem>()))
             .Callback<FontRenderItem>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.RenderFontsId}");
             });
     }

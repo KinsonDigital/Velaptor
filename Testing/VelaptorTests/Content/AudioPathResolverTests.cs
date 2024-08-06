@@ -88,9 +88,9 @@ public class AudioPathResolverTests
 
     [Theory]
     [InlineData("WINDOWS", "")]
-    [InlineData("LINUX", "\nNote: Linux and MacOS are case-sensitive.")]
-    [InlineData("OSX", "\nNote: Linux and MacOS are case-sensitive.")]
-    [InlineData("FREEBSD", "\nNote: Linux and MacOS are case-sensitive.")]
+    [InlineData("LINUX", "\nNote: Linux and macOS are case-sensitive.")]
+    [InlineData("OSX", "\nNote: Linux and macOS are case-sensitive.")]
+    [InlineData("FREEBSD", "\nNote: Linux and macOS are case-sensitive.")]
     public void ResolveFilePath_WithUnsupportedExtension_ThrowsException(string platformValue, string expectedNote)
     {
         // Arrange

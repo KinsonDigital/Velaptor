@@ -131,7 +131,7 @@ internal static class InternalExtensionMethods
     /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
     /// <remarks>
     ///     This method uses the container's LifestyleSelectionBehavior to select the exact
-    ///     lifestyle for the specified type. By default this will be transient.
+    ///     lifestyle for the specified type. By default, this will be transient.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
@@ -163,7 +163,7 @@ internal static class InternalExtensionMethods
     /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
     /// <remarks>
     ///     This method uses the container's LifestyleSelectionBehavior to select the exact
-    ///     lifestyle for the specified type. By default this will be Transient.
+    ///     lifestyle for the specified type. By default, this will be Transient.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
@@ -189,7 +189,7 @@ internal static class InternalExtensionMethods
     /// <remarks>
     /// This method uses the container's
     /// <see cref="P:SimpleInjector.ContainerOptions.LifestyleSelectionBehavior">LifestyleSelectionBehavior</see> to select
-    /// the exact lifestyle for the specified type. By default this will be
+    /// the exact lifestyle for the specified type. By default, this will be
     /// <see cref="F:SimpleInjector.Lifestyle.Transient">Transient</see>.
     /// </remarks>
     /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
@@ -225,10 +225,12 @@ internal static class InternalExtensionMethods
     {
         TypeFilter disposableFilter = (type, _) => type.GetInterface(nameof(IDisposable)) is not null;
 
-        return container.GetCurrentRegistrations()
-            .Where(r => r.ServiceType.FindInterfaces(disposableFilter, null).Length > 0)
-            .Select(r => r.ServiceType)
-            .ToImmutableArray();
+        return
+        [
+            ..container.GetCurrentRegistrations()
+                .Where(r => r.ServiceType.FindInterfaces(disposableFilter, null).Length > 0)
+                .Select(r => r.ServiceType)
+        ];
     }
 
     /// <summary>
@@ -527,7 +529,7 @@ internal static class InternalExtensionMethods
     /// <summary>
     /// Increases the total amount of the given <paramref name="items"/> by the given <paramref name="amount"/>.
     /// </summary>
-    /// <param name="items">The items to increase its total by the given <paramref name="amount"/>.</param>
+    /// <param name="items">The items to increase it's total by the given <paramref name="amount"/>.</param>
     /// <param name="amount">The amount to add to the given <paramref name="items"/>.</param>
     /// <typeparam name="T">The arbitrary data referenced by the <paramref name="items"/> of type <see cref="Memory{T}"/>.</typeparam>
     public static void IncreaseBy<T>(ref this Memory<T> items, uint amount)

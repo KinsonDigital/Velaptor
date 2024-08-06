@@ -1235,7 +1235,7 @@ public class GLWindowTests : TestsBase
         sut.Close();
 
         // Assert
-        afterUnloadExecuted.Should().BeTrue("the 'afterUnload` parameter must be executed after the sut unloads.");
+        afterUnloadExecuted.Should().BeTrue("the 'afterUnload' parameter must be executed after the sut unloads.");
     }
 
     [Fact]

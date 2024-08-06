@@ -70,7 +70,7 @@ internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
     public new uint BatchSize => base.BatchSize;
 
     /// <summary>
-    /// Sets the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
+    /// Sets the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been set up.
     /// </summary>
     protected internal override void SetupVAO() => SetupVAOInvoked = true;
 

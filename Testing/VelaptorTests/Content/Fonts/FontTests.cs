@@ -525,7 +525,8 @@ public class FontTests
          * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
          */
         // Arrange
-        var text = "hello\r\nworld";
+        // ReSharper disable once GrammarMistakeInStringLiteral
+        const string text = "hello\r\nworld";
 
         this.mockFreeTypeService.GetFontScaledLineSpacing(this.facePtr, 12).Returns(2f);
         this.mockFreeTypeService.HasKerning(this.facePtr).Returns(true);

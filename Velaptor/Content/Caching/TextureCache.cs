@@ -163,7 +163,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
                     fullFilePath = parseResult.MetaDataPrefix;
 
-                    // If the font file is a default font, tag it so it does not get unloaded
+                    // If the font file is a default font, tag it, so it does not get unloaded
                     var defaultPrefix = this.defaultFontNames.Contains($"{fileNameWithoutExtension}{FontFileExtension}")
                         ? DefaultTag
                         : string.Empty;
