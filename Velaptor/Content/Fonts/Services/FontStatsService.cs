@@ -17,7 +17,6 @@ internal sealed class FontStatsService : IFontStatsService
     private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
     private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
     private readonly IFreeTypeService freeTypeService;
-    private readonly IContentPathResolver sysFontPathResolver;
     private readonly IContentPathResolver contentPathResolver;
     private readonly IDirectory directory;
     private readonly IPath path;
@@ -33,19 +32,16 @@ internal sealed class FontStatsService : IFontStatsService
     public FontStatsService(
         IFreeTypeService freeTypeService,
         IContentPathResolver contentPathResolver,
-        IContentPathResolver sysFontPathResolver,
         IDirectory directory,
         IPath path)
     {
         ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(contentPathResolver);
-        ArgumentNullException.ThrowIfNull(sysFontPathResolver);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(path);
 
         this.freeTypeService = freeTypeService;
         this.contentPathResolver = contentPathResolver;
-        this.sysFontPathResolver = sysFontPathResolver;
         this.directory = directory;
         this.path = path;
     }
@@ -86,42 +82,6 @@ internal sealed class FontStatsService : IFontStatsService
             select s).ToArray();
     }
 
-    /// <inheritdoc/>
-    public FontStats[] GetSystemStatsForFontFamily(string fontFamilyName)
-    {
-        // If any items already exist with the give font family, then it has already been added
-        var foundFamilyItems = (from s in this.systemFontStatsCache.Values
-            where s.FamilyName == fontFamilyName
-            select s).ToArray();
-
-        if (foundFamilyItems.Length > 0)
-        {
-            return foundFamilyItems;
-        }
-
-        var fontFiles = this.directory.GetFiles(this.sysFontPathResolver.ResolveDirPath(), $"*{FontFileExtension}");
-
-        var results =
-            (from filePath in fontFiles
-                where this.freeTypeService.GetFamilyName(filePath) == fontFamilyName
-                select new FontStats
-                {
-                    FontFilePath = filePath,
-                    FamilyName = fontFamilyName,
-                    Style = this.freeTypeService.GetFontStyle(filePath),
-                    Source = GetFontSource(filePath),
-                }).ToArray();
-
-        foreach (var result in results)
-        {
-            this.systemFontStatsCache.Add(result.FontFilePath, result);
-        }
-
-        return (from s in this.systemFontStatsCache.Values
-            where s.FamilyName == fontFamilyName
-            select s).ToArray();
-    }
-
     /// <summary>
     /// Returns the source of the font using the given <paramref name="fileOrDirPath"/>.
     /// </summary>
@@ -130,11 +90,10 @@ internal sealed class FontStatsService : IFontStatsService
     private FontSource GetFontSource(string fileOrDirPath)
     {
         var contentFontDirPath = this.contentPathResolver.ResolveDirPath().ToLower();
-        var sysFontDirPath = this.sysFontPathResolver.ResolveDirPath().ToLower();
 
         fileOrDirPath = (this.path.GetDirectoryName(fileOrDirPath) ?? string.Empty).ToLower();
 
-        if (fileOrDirPath != contentFontDirPath && fileOrDirPath != sysFontDirPath)
+        if (fileOrDirPath != contentFontDirPath)
         {
             return FontSource.Unknown;
         }

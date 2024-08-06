@@ -1,4 +1,4 @@
-﻿// <copyright file="PathResolverFactory.cs" company="KinsonDigital">
+// <copyright file="PathResolverFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -21,8 +21,6 @@ public static class PathResolverFactory
     private static IContentPathResolver? atlasPathResolver;
     private static IContentPathResolver? audioPathResolver;
     private static IContentPathResolver? fontPathResolver;
-    private static IContentPathResolver? contentFontPathResolver;
-    private static IContentPathResolver? windowsFontPathResolver;
 
     /// <summary>
     /// Creates a path resolver that resolves paths to texture content.
@@ -39,30 +37,10 @@ public static class PathResolverFactory
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static IContentPathResolver CreateAtlasPathResolver() =>
         atlasPathResolver ??= new AtlasTexturePathResolver(IoC.Container.GetInstance<IDirectory>());
-
-    /// <summary>
-    /// Creates a path resolver that resolves paths to fonts in the application's content directory.
-    /// </summary>
-    /// <returns>The resolver instance.</returns>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IContentPathResolver CreateContentFontPathResolver() =>
-        contentFontPathResolver ??= new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
-
-    /// <summary>
-    /// Creates a path resolver that resolves paths to fonts in the system's font directory.
-    /// </summary>
-    /// <returns>The resolver instance.</returns>
-    public static IContentPathResolver CreateSystemFontPathResolver()
-    {
-        var platform = IoC.Container.GetInstance<IPlatform>();
-
-        if (platform.CurrentPlatform == OSPlatform.Windows)
-        {
-            return CreateWindowsFontPathResolver();
-        }
-
-        throw new NotSupportedException("Currently loading system fonts is only supported on Windows.");
-    }
+            IoC.Container.GetInstance<IAppService>(),
+            IoC.Container.GetInstance<IFile>(),
+            IoC.Container.GetInstance<IPath>(),
+            IoC.Container.GetInstance<IPlatform>());
 
     /// <summary>
     /// Creates a path resolver that resolves paths to font content.
@@ -87,14 +65,8 @@ public static class PathResolverFactory
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
     public static IContentPathResolver CreateAudioPathResolver() =>
         audioPathResolver ??= new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
-
-    /// <summary>
-    /// Creates a path resolver that resolves paths to fonts in the window's font directory.
-    /// </summary>
-    /// <returns>The resolver instance.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left internal for future access")]
-    internal static IContentPathResolver CreateWindowsFontPathResolver() =>
-        windowsFontPathResolver ??= new WindowsFontPathResolver(
-            IoC.Container.GetInstance<IDirectory>(),
+            IoC.Container.GetInstance<IAppService>(),
+            IoC.Container.GetInstance<IFile>(),
+            IoC.Container.GetInstance<IPath>(),
             IoC.Container.GetInstance<IPlatform>());
 }

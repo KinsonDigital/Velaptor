@@ -372,18 +372,7 @@ public sealed class Font : IFont
             }
         }
 
-        // Try to find each missing style in the system fonts
-        var systemFontStats = this.fontStatsService.GetSystemStatsForFontFamily(FamilyName);
-
-        var missingFontStats = new List<FontStats>();
-
-        foreach (var missingStat in systemFontStats.Where(s => missingStyles.Contains(s.Style)))
-        {
-            missingFontStats.Add(missingStat);
-        }
-
         var newList = new List<FontStats>();
-        newList.AddRange(missingFontStats);
         newList.AddRange(this.fontStats);
         this.fontStats = newList.ToArray();
     }

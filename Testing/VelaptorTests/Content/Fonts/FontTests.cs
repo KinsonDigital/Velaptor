@@ -301,17 +301,11 @@ public class FontTests
             new () { Style = FontStyle.Bold, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
             new () { Style = FontStyle.Italic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
         };
-        var systemFontStats = new FontStats[]
-        {
-            new () { Style = boldItalic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
-        };
 
         this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns(familyName);
         this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(boldItalic);
         this.mockFontStatsService.GetContentStatsForFontFamily(familyName)
             .Returns(contentFontStats);
-        this.mockFontStatsService.GetSystemStatsForFontFamily(familyName)
-            .Returns(systemFontStats);
 
         // Act
         var sut = CreateSystemUnderTest();
