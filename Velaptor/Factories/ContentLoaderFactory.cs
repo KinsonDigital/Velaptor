@@ -37,16 +37,17 @@ public static class ContentLoaderFactory
         }
 
         var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
-        var pathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
-        var directory = IoC.Container.GetInstance<IDirectory>();
+        var appService = IoC.Container.GetInstance<IAppService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
+        var platform = IoC.Container.GetInstance<IPlatform>();
+        var pathResolver = new TexturePathResolver(appService, file, path, platform);
 
+        var directory = IoC.Container.GetInstance<IDirectory>();
         textureLoader = new TextureLoader(
             cache,
             pathResolver,
             directory,
-            file,
             path);
 
         return textureLoader;
@@ -97,11 +98,13 @@ public static class ContentLoaderFactory
         }
 
         var cache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
-        var pathResolver = new AudioPathResolver(IoC.Container.GetInstance<IDirectory>());
-        var directory = IoC.Container.GetInstance<IDirectory>();
+        var appService = IoC.Container.GetInstance<IAppService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
+        var platform = IoC.Container.GetInstance<IPlatform>();
+        var pathResolver = new AudioPathResolver(appService, file, path, platform);
 
+        var directory = IoC.Container.GetInstance<IDirectory>();
         audioLoader = new AudioLoader(
             cache,
             pathResolver,

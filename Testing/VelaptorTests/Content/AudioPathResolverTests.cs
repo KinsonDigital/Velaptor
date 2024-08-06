@@ -7,11 +7,12 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
+using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -19,46 +20,38 @@ using Xunit;
 /// </summary>
 public class AudioPathResolverTests
 {
-    private const string ContentName = "test-content";
-    private readonly string contentFilePath;
-    private readonly string baseDir;
-    private readonly string atlasContentDir;
+    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
+    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\" : "/";
+    private readonly IAppService mockAppService;
+    private readonly IFile mockFile;
+    private readonly IPath mockPath;
+    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioPathResolverTests"/> class.
     /// </summary>
     public AudioPathResolverTests()
     {
-        this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .ToCrossPlatPath();
-        this.atlasContentDir = $"{this.baseDir}/Content/Audio";
-        this.contentFilePath = $"{this.atlasContentDir}/{ContentName}";
+        this.mockAppService = Substitute.For<IAppService>();
+        this.mockAppService.AppDirectory.Returns($"{Root}app");
+
+        this.mockFile = Substitute.For<IFile>();
+
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
+        this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
+
+        this.mockPlatform = Substitute.For<IPlatform>();
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullDirectoryParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new AudioPathResolver(null);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
-    }
-
-    [Fact]
     public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-
         // Act
-        var source = new AudioPathResolver(mockDirectory.Object);
-        var actual = source.ContentDirectoryName;
+        var sut = CreateSystemUnderTest();
+        var actual = sut.ContentDirectoryName;
 
         // Assert
         actual.Should().Be("Audio");
@@ -67,84 +60,81 @@ public class AudioPathResolverTests
 
     #region Method Tests
     [Fact]
-    public void ResolveFilePath_WhenContentItemDoesNotExist_ThrowsException()
+    public void ResolveFilePath_WithNullParam_ThrowsException()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir))
-            .Returns(() =>
-            {
-                return new[]
-                {
-                    $"{this.baseDir}/other-file-A.png",
-                    $"{this.baseDir}/other-file-B.txt",
-                };
-            });
-
-        var resolver = new AudioPathResolver(mockDirectory.Object);
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => resolver.ResolveFilePath(ContentName);
+        var act = () => sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage($"The audio file '{this.contentFilePath}' does not exist.");
-    }
-
-    [Theory]
-    [InlineData(".ogg", ".OGG")]
-    [InlineData(".ogg", ".ogg")]
-    [InlineData(".OGG", ".ogg")]
-    [InlineData(".mp3", ".ogg")]
-    [InlineData(".mp3", ".OGG")]
-    [InlineData(".MP3", ".ogg")]
-    [InlineData(".MP3", ".OGG")]
-    public void ResolveFilePath_WhenBothOggAndMp3FilesExist_ResolvesToOggFile(string resolvePathExtension, string actualFileExtension)
-    {
-        // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir))
-            .Returns(() =>
-            {
-                return new[]
-                {
-                    $"{this.atlasContentDir}/other-file.txt",
-                    $"{this.contentFilePath}{actualFileExtension}",
-                    $"{this.contentFilePath}.mp3",
-                };
-            });
-
-        var resolver = new AudioPathResolver(mockDirectory.Object);
-
-        // Act
-        var actual = resolver.ResolveFilePath($"{ContentName}{resolvePathExtension}");
-
-        // Assert
-        actual.Should().Be($"{this.contentFilePath}{actualFileExtension}");
+        act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
-    public void ResolveFilePath_WhenOnlyMp3FilesExist_ResolvesToMp3File()
+    public void ResolveFilePath_WithEmptyParam_ThrowsException()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir))
-            .Returns(() =>
-            {
-                return new[]
-                {
-                    $"{this.atlasContentDir}other-file.txt",
-                    $"{this.contentFilePath}.mp3",
-                };
-            });
-
-        var resolver = new AudioPathResolver(mockDirectory.Object);
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveFilePath($"{ContentName}.mp3");
+        var act = () => sut.ResolveFilePath(string.Empty);
 
         // Assert
-        actual.Should().Be($"{this.contentFilePath}.mp3");
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+    }
+
+    [Theory]
+    [InlineData("WINDOWS", "")]
+    [InlineData("LINUX", "\nNote: Linux and MacOS are case-sensitive.")]
+    [InlineData("OSX", "\nNote: Linux and MacOS are case-sensitive.")]
+    [InlineData("FREEBSD", "\nNote: Linux and MacOS are case-sensitive.")]
+    public void ResolveFilePath_WithUnsupportedExtension_ThrowsException(string platformValue, string expectedNote)
+    {
+        // Arrange
+        var platform = OSPlatform.Create(platformValue);
+        var expected = "The file extension '.other' is not supported.  Supported audio formats are '.ogg' and '.mp3'." +
+                       expectedNote;
+
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(".other");
+        this.mockPlatform.CurrentPlatform.Returns(platform);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.ResolveFilePath("test-content.other");
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage(expected);
+    }
+
+    [Theory]
+    [InlineData(".ogg")]
+    [InlineData(".mp3")]
+    public void ResolveFilePath_WhenInvoked_ResolvesFilePath(string extension)
+    {
+        // Arrange
+        var contentDir = $"{this.mockAppService.AppDirectory}{DirSepChar}Content{DirSepChar}Audio";
+        var expected = $"{contentDir}{DirSepChar}test-content.ogg";
+
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(extension);
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actual = sut.ResolveFilePath("test-content.ogg");
+
+        // Assert
+        actual.Should().Be(expected);
     }
     #endregion
+
+    /// <summary>
+    /// Creates a new instance of <see cref="AudioPathResolver"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private AudioPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
 }

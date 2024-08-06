@@ -4,14 +4,15 @@
 
 namespace VelaptorTests.Content;
 
-using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using FluentAssertions;
-using Moq;
+using Helpers;
+using NSubstitute;
+using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -19,47 +20,61 @@ using Xunit;
 /// </summary>
 public class AtlasJSONDataPathResolverTests
 {
-    private const string ContentName = "test-content";
-    private readonly string contentFilePath;
-    private readonly string baseDir;
-    private readonly string atlasContentDir;
+    private const string Extension = ".json";
+    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
+    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
+    private readonly IAppService mockAppService;
+    private readonly IFile mockFile;
+    private readonly IPath mockPath;
+    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolverTests"/> class.
     /// </summary>
     public AtlasJSONDataPathResolverTests()
     {
-        this.baseDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .ToCrossPlatPath();
-        this.atlasContentDir = $"{this.baseDir}/Content/Atlas";
-        this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.json";
+        this.mockAppService = Substitute.For<IAppService>();
+        this.mockAppService.AppDirectory.Returns($"{Root}app");
+
+        this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
+        this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
+
+        this.mockPlatform = Substitute.For<IPlatform>();
     }
+
+#pragma warning disable SA1514
+    #region Test Data
+    /// <summary>
+    /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesFilePath"/> test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static TheoryData<string, string, string> ResolveFilePath_WhenContentNameDoesNotExist_Data()
+    {
+        return new TheoryData<string, string, string>
+        {
+            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Atlas{DirSepChar}test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Atlas{DirSepChar}test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Atlas{DirSepChar}TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $"{Root}app{DirSepChar}Content{DirSepChar}Atlas{DirSepChar}test-content{Extension}" },
+            { $"sub-dir{DirSepChar}", $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Atlas{DirSepChar}sub-dir{DirSepChar}test-content{Extension}" },
+        };
+    }
+    #endregion
+#pragma warning restore SA1514
 
     #region Constructor Tests
-    [Fact]
-    public void Ctor_WithNullDirectoryParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new AtlasJSONDataPathResolver(null);
-        };
-
-        // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
-    }
-
     [Fact]
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
+        var resolver = new AtlasJSONDataPathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
 
         // Act
-        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
-        var actual = sut.ContentDirectoryName;
+        var actual = resolver.ContentDirectoryName;
 
         // Assert
         actual.Should().Be("Atlas");
@@ -68,55 +83,58 @@ public class AtlasJSONDataPathResolverTests
 
     #region Method Tests
     [Fact]
-    public void ResolveFilePath_WhenContentItemDoesNotExist_ThrowsException()
+    public void ResolveFilePath_WithNullParam_ThrowsException()
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.json"))
-            .Returns(() =>
-            {
-                return new[]
-                {
-                    $"{this.baseDir}/other-file-A.json",
-                    $"{this.baseDir}/other-file-B.txt",
-                };
-            });
-
-        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.ResolveFilePath(ContentName);
+        var act = () => _ = sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage($"The texture atlas data file '{this.contentFilePath}' does not exist.");
+        act.Should().ThrowArgNullException()
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+    }
+
+    [Fact]
+    public void ResolveFilePath_WithEmptyParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => _ = sut.ResolveFilePath(string.Empty);
+
+        // Assert
+        act.Should().ThrowArgException()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
-    [InlineData("test-content")]
-    [InlineData("test-content.json")]
-    [InlineData("TEST-CONTENT.json")]
-    public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
+    [MemberData(nameof(ResolveFilePath_WhenContentNameDoesNotExist_Data))]
+    public void ResolveFilePath_WhenInvoked_ResolvesFilePath(
+        string dirPath,
+        string contentName,
+        string expected)
     {
         // Arrange
-        var mockDirectory = new Mock<IDirectory>();
-        mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.json"))
-            .Returns(() =>
-            {
-                return new[]
-                {
-                    $"{this.atlasContentDir}/other-file.json",
-                    this.contentFilePath,
-                };
-            });
-
-        var sut = new AtlasJSONDataPathResolver(mockDirectory.Object);
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
+        var contentFilePath = $"{Root}app{DirSepChar}Content{DirSepChar}Atlas" +
+                              $"{DirSepChar}{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(contentName);
+        var actual = sut.ResolveFilePath($"{dirPath}{contentName}");
 
         // Assert
-        actual.Should().Be(this.contentFilePath);
+        actual.Should().Be(expected);
+        this.mockFile.Received(1).Exists(contentFilePath);
     }
     #endregion
+
+    /// <summary>
+    /// Creates a new instance of <see cref="AtlasJSONDataPathResolver"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private AtlasJSONDataPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
 }

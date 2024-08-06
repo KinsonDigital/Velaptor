@@ -302,7 +302,6 @@ internal static class IoC
             () => new FontStatsService(
                 IoCContainer.GetInstance<IFreeTypeService>(),
                 PathResolverFactory.CreateFontPathResolver(),
-                PathResolverFactory.CreateSystemFontPathResolver(),
                 IoCContainer.GetInstance<IDirectory>(),
                 IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 

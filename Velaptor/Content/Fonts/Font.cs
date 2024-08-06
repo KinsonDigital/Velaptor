@@ -341,11 +341,6 @@ public sealed class Font : IFont
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 
-        var allStyles = new[]
-        {
-            FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold | FontStyle.Italic,
-        };
-
         bool AllStylesFound()
         {
             const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
@@ -359,17 +354,6 @@ public sealed class Font : IFont
         if (AllStylesFound())
         {
             return;
-        }
-
-        var missingStyles = new List<FontStyle>();
-        var currentStyles = this.fontStats.Select(s => s.Style).ToArray();
-
-        foreach (var style in allStyles)
-        {
-            if (Array.IndexOf(currentStyles, style) == -1)
-            {
-                missingStyles.Add(style);
-            }
         }
 
         var newList = new List<FontStats>();

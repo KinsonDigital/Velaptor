@@ -290,32 +290,6 @@ public class FontTests
     }
 
     [Fact]
-    public void Ctor_WithMissingStylesInContentButExistsInSystem_SetsFontSource()
-    {
-        // Arrange
-        const string familyName = "test-font-family";
-        const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
-        var contentFontStats = new FontStats[]
-        {
-            new () { Style = FontStyle.Regular, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
-            new () { Style = FontStyle.Bold, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
-            new () { Style = FontStyle.Italic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
-        };
-
-        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns(familyName);
-        this.mockFreeTypeService.GetFontStyle(this.facePtr, this.fontFilePath).Returns(boldItalic);
-        this.mockFontStatsService.GetContentStatsForFontFamily(familyName)
-            .Returns(contentFontStats);
-
-        // Act
-        var sut = CreateSystemUnderTest();
-
-        // Assert
-        sut.Source.Should().Be(FontSource.AppContent);
-        sut.Style.Should().Be(boldItalic);
-    }
-
-    [Fact]
     public void Ctor_WithNoFontStyles_SetsFontSourceToUnknown()
     {
         // Arrange

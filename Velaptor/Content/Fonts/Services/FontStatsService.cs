@@ -26,7 +26,6 @@ internal sealed class FontStatsService : IFontStatsService
     /// </summary>
     /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
-    /// <param name="sysFontPathResolver">Resolves paths to the systems font directory.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Processes directory and file paths.</param>
     public FontStatsService(
