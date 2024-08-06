@@ -189,15 +189,15 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
-        {
-            return measure;
-        }
-
         // Normalize the line endings
         if (text.Contains("\r\n"))
         {
             text = text.Replace("\r\n", "\n");
+        }
+
+        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
+        {
+            return measure;
         }
 
         var lines = text.Split("\n");
