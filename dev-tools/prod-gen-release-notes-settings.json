@@ -28,7 +28,20 @@
         "🚀production-release"
     ],
     "wordReplacements": {
-        "chore(deps): ": ""
+        "chore(deps): ": "",
+        "benchmarkdotnet": "_**benchmarkdotnet**_",
+        "system.io.abstractions": "_**system.io.abstractions**_",
+        "sixlabors.imagesharp": "_**sixlabors.imagesharp**_",
+        "avalonia.themes.fluent": "_**avalonia.themes.fluent**_",
+        "avalonia.fonts.inter": "_**avalonia.fonts.inter**_",
+        "avalonia.diagnostics": "_**avalonia.diagnostics**_",
+        "avalonia.desktop": "_**avalonia.desktop**_",
+        "avalonia": "_**avalonia**_",
+        "serilog.sinks.console": "_**serilog.sinks.console**_",
+        "serilog": "_**serilog**_",
+        "xunit": "_**xunit**_",
+        "xunit.runner.visualstudio": "_**xunit.runner.visualstudio**_",
+        "simpleinjector": "_**simpleinjector**_"
     },
     "firstWordReplacements": {
         "Add": "Added",
