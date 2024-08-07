@@ -287,7 +287,7 @@ public class RenderMediatorTests : TestsBase
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
             });
 

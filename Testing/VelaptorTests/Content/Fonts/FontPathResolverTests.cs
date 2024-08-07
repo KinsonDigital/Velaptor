@@ -4,14 +4,15 @@
 
 namespace VelaptorTests.Content.Fonts;
 
-using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using FluentAssertions;
-using Moq;
+using Helpers;
+using NSubstitute;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Content.Fonts;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -19,330 +20,118 @@ using Xunit;
 /// </summary>
 public class FontPathResolverTests
 {
-    private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
-    private const string RootDirInContentLocation = @"C:\app-dir\Content\";
-    private const string ContentDirNameInContentLocation = "ContentFonts";
-    private const string RootDirInWindowsLocation = @"C:\Windows\";
-    private const string ContentDirNameInWindowsLocation = "WinFonts";
-    private readonly Mock<IContentPathResolver> mockContentPathResolver;
-    private readonly Mock<IContentPathResolver> mockWindowsPathResolver;
-    private readonly Mock<IFile> mockFile;
-    private readonly Mock<IDirectory> mockDirectory;
-    private readonly Mock<IPlatform> mockPlatform;
+    private const string Extension = ".ttf";
+    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
+    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
+    private readonly IAppService mockAppService;
+    private readonly IFile mockFile;
+    private readonly IPath mockPath;
+    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPathResolverTests"/> class.
     /// </summary>
     public FontPathResolverTests()
     {
-        this.mockContentPathResolver = new Mock<IContentPathResolver>();
-        this.mockContentPathResolver.Setup(p => p.RootDirectoryPath).Returns(RootDirInContentLocation);
-        this.mockContentPathResolver.Setup(p => p.ContentDirectoryName).Returns(ContentDirNameInContentLocation);
+        this.mockAppService = Substitute.For<IAppService>();
+        this.mockAppService.AppDirectory.Returns($"{Root}app");
 
-        this.mockWindowsPathResolver = new Mock<IContentPathResolver>();
-        this.mockWindowsPathResolver.Setup(p => p.RootDirectoryPath).Returns(RootDirInWindowsLocation);
-        this.mockWindowsPathResolver.Setup(p => p.ContentDirectoryName).Returns(ContentDirNameInWindowsLocation);
+        this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
 
-        this.mockFile = new Mock<IFile>();
-        this.mockDirectory = new Mock<IDirectory>();
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
+        this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
 
-        this.mockPlatform = new Mock<IPlatform>();
-        this.mockPlatform.SetupGet(p => p.CurrentPlatform)
-            .Returns(() => throw new Exception("Platform mock not setup for test."));
+        this.mockPlatform = Substitute.For<IPlatform>();
     }
+
+#pragma warning disable SA1514
+    #region Test Data
+    /// <summary>
+    /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesFilePath"/> test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static TheoryData<string, string, string> ResolveFilePath_WhenContentNameDoesNotExist_Data()
+    {
+        return new TheoryData<string, string, string>
+        {
+            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}TEST-CONTENT{Extension}" },
+            {
+                $"sub-dir{DirSepChar}",
+                $"test-content{Extension}",
+                $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}sub-dir{DirSepChar}test-content{Extension}"
+            },
+        };
+    }
+    #endregion
+#pragma warning restore SA1514
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullContentFontPathResolverParam_ThrowsException()
+    public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
-        // Act & Assert
-        var act = () =>
-        {
-            _ = new FontPathResolver(
-                null,
-                this.mockWindowsPathResolver.Object,
-                this.mockFile.Object,
-                this.mockDirectory.Object,
-                this.mockPlatform.Object);
-        };
+        // Arrange
+        var resolver = new FontPathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
 
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentFontPathResolver')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullWindowsFontPathResolverParam_ThrowsException()
-    {
         // Act
-        var act = () =>
-        {
-            _ = new FontPathResolver(
-                this.mockContentPathResolver.Object,
-                null,
-                this.mockFile.Object,
-                this.mockDirectory.Object,
-                this.mockPlatform.Object);
-        };
+        var actual = resolver.ContentDirectoryName;
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'windowsFontPathResolver')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullFileParam_ThrowsException()
-    {
-        // Act
-        var act = () =>
-        {
-            _ = new FontPathResolver(
-                this.mockContentPathResolver.Object,
-                this.mockWindowsPathResolver.Object,
-                null,
-                this.mockDirectory.Object,
-                this.mockPlatform.Object);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullDirectoryParam_ThrowsException()
-    {
-        // Act
-        var act = () =>
-        {
-            _ = new FontPathResolver(
-                this.mockContentPathResolver.Object,
-                this.mockWindowsPathResolver.Object,
-                this.mockFile.Object,
-                null,
-                this.mockPlatform.Object);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullPlatformParam_ThrowsException()
-    {
-        // Act
-        var act = () =>
-        {
-            _ = new FontPathResolver(
-                this.mockContentPathResolver.Object,
-                this.mockWindowsPathResolver.Object,
-                this.mockFile.Object,
-                this.mockDirectory.Object,
-                null);
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'platform')");
+        actual.Should().Be("Fonts");
     }
     #endregion
 
-    #region Prop Tests
+    #region Methods Tests
     [Fact]
-    public void RootDirectory_WhenFontExistsInContentDirectory_ReturnsContentRootDirectoryForContentLocation()
+    public void ResolveFilePath_WithNullParam_ThrowsException()
     {
         // Arrange
-        MockWindowsPlatform();
-        this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(true);
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.RootDirectoryPath;
+        var act = () => _ = sut.ResolveFilePath(null);
 
         // Assert
-        actual.Should().Be(RootDirInContentLocation);
+        act.Should().ThrowArgNullException()
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
-    public void RootDirectory_WhenFontDoesNotExistInContentDirectory_ReturnsWindowsRootDirectoryForWindowsLocation()
+    public void ResolveFilePath_WithEmptyParam_ThrowsException()
     {
         // Arrange
-        MockWindowsPlatform();
-        this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(false);
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.RootDirectoryPath;
+        var act = () => _ = sut.ResolveFilePath(string.Empty);
 
         // Assert
-        actual.Should().Be(RootDirInWindowsLocation);
+        act.Should().ThrowArgException()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
-    [Fact]
-    public void RootDirectory_WhenNotOnWindowsAndFontDoesNotExistInContentDirectory_ThrowsException()
+    [Theory]
+    [MemberData(nameof(ResolveFilePath_WhenContentNameDoesNotExist_Data))]
+    public void ResolveFilePath_WhenInvoked_ResolvesFilePath(
+        string dirPath,
+        string contentName,
+        string expected)
     {
         // Arrange
-        MockOSXPlatform();
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
+        var contentFilePath = $"{Root}app{DirSepChar}Content{DirSepChar}Fonts" +
+                              $"{DirSepChar}{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.RootDirectoryPath;
-
-        // Assert
-        act.Should().Throw<NotSupportedException>()
-            .WithMessage(OnlyWindowsSupportMessage);
-    }
-
-    [Fact]
-    public void ContentDirectoryName_WhenFontExistsInContentDirectory_ReturnsContentDirectoryNameForContentLocation()
-    {
-        // Arrange
-        MockWindowsPlatform();
-        this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(true);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ContentDirectoryName;
-
-        // Assert
-        actual.Should().Be(ContentDirNameInContentLocation);
-    }
-
-    [Fact]
-    public void ContentDirectoryName_WhenFontDoesNotExistInContentDirectory_ReturnsWindowsDirectoryNameForContentLocation()
-    {
-        // Arrange
-        MockWindowsPlatform();
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ContentDirectoryName;
-
-        // Assert
-        actual.Should().Be(ContentDirNameInWindowsLocation);
-    }
-
-    [Fact]
-    public void ContentDirectoryName_WhenNotOnWindowsAndFontDoesNotExistInContentDirectory_ThrowsException()
-    {
-        // Arrange
-        MockOSXPlatform();
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.ContentDirectoryName;
-
-        // Assert
-        act.Should().Throw<NotSupportedException>()
-            .WithMessage(OnlyWindowsSupportMessage);
-    }
-    #endregion
-
-    #region Public Methods
-    [Fact]
-    public void ResolveFilePath_IfNotWindows_ThrowsException()
-    {
-        // Arrange
-        MockOSXPlatform();
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () =>
-        {
-            sut.ResolveFilePath("test-content");
-        };
-
-        // Assert
-        act.Should().Throw<NotSupportedException>()
-            .WithMessage(OnlyWindowsSupportMessage);
-    }
-
-    [Fact]
-    public void ResolveFilePath_WhenFontExistsInContentDirectory_ReturnsCorrectResult()
-    {
-        // Arrange
-        const string expected = @"C:\app-dir\test-content.ttf";
-        MockWindowsPlatform();
-        this.mockFile.Setup(m => m.Exists(expected)).Returns(true);
-        this.mockContentPathResolver.Setup(m => m.ResolveFilePath("test-content"))
-            .Returns(expected);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ResolveFilePath("test-content");
+        var actual = sut.ResolveFilePath($"{dirPath}{contentName}");
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void ResolveFilePath_WhenFontDoesNotExistInContentDirectory_ReturnsCorrectResult()
-    {
-        // Arrange
-        const string expected = @"C:\Windows\Fonts\test-content.ttf";
-        MockWindowsPlatform();
-        this.mockFile.Setup(m => m.Exists(expected)).Returns(false);
-        this.mockWindowsPathResolver.Setup(m => m.ResolveFilePath("test-content"))
-            .Returns(expected);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ResolveFilePath("test-content");
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void ResolveDirPath_IfNotWindows_ThrowsException()
-    {
-        // Arrange
-        MockOSXPlatform();
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.ResolveDirPath();
-
-        // Assert
-        act.Should().Throw<NotSupportedException>()
-            .WithMessage(OnlyWindowsSupportMessage);
-    }
-
-    [Fact]
-    public void ResolveDirPath_WhenFontExistsInContentDirectory_ReturnsCorrectResult()
-    {
-        // Arrange
-        const string expected = @"C:\app-dir\";
-        MockWindowsPlatform();
-        this.mockDirectory.Setup(m => m.Exists(expected)).Returns(true);
-        this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
-            .Returns(expected);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ResolveDirPath();
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void ResolveDirPath_WhenFontDoesNotExistInContentDirectory_ReturnsCorrectResult()
-    {
-        // Arrange
-        const string expected = @"C:\Windows\Fonts\";
-        MockWindowsPlatform();
-        this.mockDirectory.Setup(m => m.Exists(expected)).Returns(false);
-        this.mockWindowsPathResolver.Setup(m => m.ResolveDirPath())
-            .Returns(expected);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.ResolveDirPath();
-
-        // Assert
-        actual.Should().Be(expected);
+        this.mockFile.Received(1).Exists(contentFilePath);
     }
     #endregion
 
@@ -350,25 +139,5 @@ public class FontPathResolverTests
     /// Creates a new instance of <see cref="FontPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontPathResolver CreateSystemUnderTest()
-    {
-        return new FontPathResolver(
-            this.mockContentPathResolver.Object,
-            this.mockWindowsPathResolver.Object,
-            this.mockFile.Object,
-            this.mockDirectory.Object,
-            this.mockPlatform.Object);
-    }
-
-    /// <summary>
-    /// Mocks the platform to be Windows.
-    /// </summary>
-    private void MockWindowsPlatform() =>
-        this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
-
-    /// <summary>
-    /// Mocks the platform to be Mac OSX.
-    /// </summary>
-    private void MockOSXPlatform() =>
-        this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.OSX);
+    private FontPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
 }

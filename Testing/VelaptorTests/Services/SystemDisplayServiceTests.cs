@@ -43,7 +43,7 @@ public class SystemDisplayServiceTests
         // Arrange
         var mockDisplays = new Mock<IDisplays>();
         mockDisplays.SetupGet(m => m.SystemDisplays)
-            .Returns(Array.Empty<SystemDisplay>());
+            .Returns([]);
 
         var service = new SystemDisplayService(mockDisplays.Object);
 

@@ -88,7 +88,7 @@ public readonly record struct ImageData
     ///     References the top left corner of the given <paramref name="image"/>.
     /// </param>
     /// <remarks>
-    /// If a pixel of the given <paramref name="image"/> is out side of the bounds of this
+    /// If a pixel of the given <paramref name="image"/> is outside of the bounds of this
     /// image, it will be skipped.
     /// </remarks>
     /// <returns>This current image with the given <paramref name="image"/> painted onto it.</returns>

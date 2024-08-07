@@ -43,7 +43,7 @@ public enum StateOfWindow
     /// <summary>
     /// The window is minimized to the taskbar.
     /// </summary>
-    /// <remarks>This is also known as .iconified'.</remarks>
+    /// <remarks>This is also known as .iconified.</remarks>
     Minimized = 1,
 
     /// <summary>

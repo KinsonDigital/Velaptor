@@ -38,10 +38,10 @@ internal sealed class FontLoader : ILoader<IFont>
     private readonly IFile file;
     private readonly IPath path;
     private readonly string[] defaultFontNames =
-    {
+    [
         DefaultRegularFontName, DefaultBoldFontName,
-        DefaultItalicFontName, DefaultBoldItalicFontName,
-    };
+        DefaultItalicFontName, DefaultBoldItalicFontName
+    ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.

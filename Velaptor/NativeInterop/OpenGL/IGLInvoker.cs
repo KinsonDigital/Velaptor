@@ -91,7 +91,7 @@ internal interface IGLInvoker : IDisposable
     /// </summary>
     /// <param name="texture">
     ///     Specifies which texture unit to make active.The number of texture units is implementation
-    ///     dependent, but must be at least 80. texture must be one of Texturei, where i
+    ///     dependent, but must be at least 80. Texture must be one of Texturei, where 'i'
     ///     ranges from zero to the value of MaxCombinedTextureImageUnits minus one. The
     ///     initial value is Texture0.
     /// </param>
@@ -107,6 +107,8 @@ internal interface IGLInvoker : IDisposable
     /// </param>
     /// <returns>The location/ID of the uniform.</returns>
     int GetUniformLocation(uint program, string name);
+
+    // ReSharper disable once CommentTypo
 
     /// <summary>
     /// [requires: v1.1] Bind a named texture to a texturing target.
@@ -417,7 +419,7 @@ internal interface IGLInvoker : IDisposable
     /// <param name="type">
     ///     Specifies the data type of each component in the array. The symbolic constants
     ///     Byte, UnsignedByte, Short, UnsignedShort, Int, and UnsignedInt are accepted by
-    ///     glVertexAttribPointer and glVertexAttribIPointer. Additionally HalfFloat, Float,
+    ///     glVertexAttribPointer and glVertexAttribIPointer. Additionally, HalfFloat, Float,
     ///     Double, Fixed, Int2101010Rev, UnsignedInt2101010Rev and UnsignedInt10F11F11FRev
     ///     are accepted by glVertexAttribPointer. Double is also accepted by glVertexAttribLPointer
     ///     and is the only token accepted by the type parameter for that function. The initial
@@ -490,7 +492,7 @@ internal interface IGLInvoker : IDisposable
     ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
     /// </param>
     /// <param name="pname">
-    ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+    ///     Specifies the symbolic name of a single-valued texture parameter. The pname parameter can be
     ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
     ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
     ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,
@@ -508,7 +510,7 @@ internal interface IGLInvoker : IDisposable
     ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
     /// </param>
     /// <param name="pname">
-    ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+    ///     Specifies the symbolic name of a single-valued texture parameter. The pname parameter can be
     ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
     ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
     ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,
@@ -526,7 +528,7 @@ internal interface IGLInvoker : IDisposable
     ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
     /// </param>
     /// <param name="pname">
-    ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+    ///     Specifies the symbolic name of a single-valued texture parameter. The pname parameter can be
     ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
     ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
     ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,

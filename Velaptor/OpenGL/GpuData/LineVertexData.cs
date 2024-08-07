@@ -24,7 +24,7 @@ internal readonly struct LineVertexData
     /// <summary>
     /// Initializes a new instance of the <see cref="LineVertexData"/> struct.
     /// </summary>
-    /// <param name="vertexPos">The position of a the vertice for the render quad area.</param>
+    /// <param name="vertexPos">The position of the vertice for the render quad area.</param>
     /// <param name="color">The fill or border color.</param>
     public LineVertexData(
         Vector2 vertexPos,

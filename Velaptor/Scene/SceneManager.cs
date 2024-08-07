@@ -42,7 +42,7 @@ internal sealed class SceneManager : ISceneManager
     ///     This is because there has to be one active scene at all times.
     /// </remarks>
     /// <exception cref="Exception">
-    ///     Thrown if a scene with with the given <paramref name="scene"/>'s ID already exists.
+    ///     Thrown if a scene with the given <paramref name="scene"/>'s ID already exists.
     /// </exception>
     public void AddScene(IScene scene, bool setToActive)
     {
@@ -61,7 +61,7 @@ internal sealed class SceneManager : ISceneManager
             }
         }
 
-        // If no scenes exists, set the scene as active regardless of the setToActive value
+        // If no scene exists, set the scene as active regardless of the setToActive value
         // There has to be a single active scene.
         this.scenes.Add((scene, this.scenes.Count <= 0 || setToActive));
     }

@@ -15,7 +15,7 @@ using FreeTypeSharp;
 ///     For more information and documentation, refer to the https://www.freetype.org/ website.
 /// </remarks>
 // [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Maintains code style.")]
-[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Param nameing to match original library.")]
+[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Param naming to match original library.")]
 internal interface IFreeTypeInvoker
 {
     /// <summary>
@@ -32,7 +32,7 @@ internal interface IFreeTypeInvoker
     uint FT_Get_Char_Index(nint face, uint charcode);
 
     /// <summary>
-    /// Returns a value indicating whether the font representer by the given face uses kerning.
+    /// Returns a value indicating whether the font represented by the given face uses kerning.
     /// </summary>
     /// <param name="face">The pointer to the font face.</param>
     /// <returns>True if kerning is used.</returns>
@@ -62,7 +62,7 @@ internal interface IFreeTypeInvoker
     /// <param name="load_flags">
     ///     A flag indicating what to load for this glyph. The FT_LOAD_XXX constants can be used to control
     ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
-    ///     or not, whether to hint the outline, etc).
+    ///     or not, whether to hint the outline, etc.).
     /// </param>
     /// <returns><c>FreeType</c> error code. 0 means success.</returns>
     FT_Error FT_Load_Glyph(nint face, uint glyph_index, FT_LOAD load_flags);
@@ -75,7 +75,7 @@ internal interface IFreeTypeInvoker
     /// <param name="load_flags">
     ///     A flag indicating what to load for this glyph. The FT_LOAD_XXX constants can be used to control
     ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
-    ///     or not, whether to hint the outline, etc).
+    ///     or not, whether to hint the outline, etc.).
     /// </param>
     /// <returns><c>FreeType</c> error code. 0 means success.</returns>
     FT_Error FT_Load_Char(nint face, uint char_code, FT_LOAD load_flags);

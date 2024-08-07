@@ -27,7 +27,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -70,7 +70,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The <paramref name="position"/> is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -116,7 +116,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -165,7 +165,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The <paramref name="position"/> is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -215,7 +215,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -263,7 +263,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The <paramref name="position"/> is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -308,7 +308,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The <paramref name="position"/> is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -354,7 +354,7 @@ public interface IFontRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -402,7 +402,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>
@@ -453,7 +453,7 @@ public interface IFontRenderer
     /// <exception cref="Exception">Thrown if the <see cref="IBatcher.Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based in the center of the text.
     ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
     ///     </para>
     ///     <para>

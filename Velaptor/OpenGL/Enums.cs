@@ -392,7 +392,7 @@ internal enum GLClearBufferMask
 }
 
 /// <summary>
-/// Defines behavior of how to render textures that are outside of
+/// Defines behavior of how to render textures that are outside
 /// the NDC (Normalized Device Coordinates) of 0 to 1.
 /// </summary>
 internal enum GLTextureWrapMode

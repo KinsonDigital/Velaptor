@@ -238,7 +238,7 @@ internal static class StringExtensions
 
         dirPath = dirPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-        if (!dirPath.Any(c => c == Path.AltDirectorySeparatorChar))
+        if (dirPath.All(c => c != Path.AltDirectorySeparatorChar))
         {
             return false;
         }
@@ -326,10 +326,10 @@ internal static class StringExtensions
     }
 
     /// <summary>
-    /// Converts the given <paramref name="path"/> to a cross platform path.
+    /// Converts the given <paramref name="path"/> to a cross-platform path.
     /// </summary>
     /// <param name="path">Processes directory and file paths.</param>
-    /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
+    /// <returns>The cross-platform version of the <paramref name="path"/>.</returns>
     /// <returns>
     ///     This changes all '\' characters to '/' characters.
     ///     The '/' directory separator is valid on Windows and Linux systems.

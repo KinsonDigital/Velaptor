@@ -16,12 +16,12 @@ using System.Runtime.InteropServices;
 public sealed class Platform : IPlatform
 {
     private static readonly OSPlatform[] Platforms =
-    {
+    [
         OSPlatform.Windows,
         OSPlatform.OSX,
         OSPlatform.Linux,
-        OSPlatform.FreeBSD,
-    };
+        OSPlatform.FreeBSD
+    ];
 
     /// <inheritdoc/>
     public bool Is64BitProcess => Environment.Is64BitProcess;

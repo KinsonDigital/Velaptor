@@ -106,6 +106,8 @@ public enum KeyCode
     /// </summary>
     Equal = 61,
 
+    // ReSharper disable once GrammarMistakeInComment
+
     /// <summary>
     /// The A key.
     /// </summary>
@@ -145,6 +147,8 @@ public enum KeyCode
     /// The H key.
     /// </summary>
     H = 72,
+
+    // ReSharper disable once GrammarMistakeInComment
 
     /// <summary>
     /// The I key.
