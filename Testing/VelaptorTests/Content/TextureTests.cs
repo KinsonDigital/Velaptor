@@ -86,7 +86,7 @@ public class TextureTests
             .Returns(this.mockDisposeUnsubscriber.Object)
             .Callback<IReceiveSubscription<DisposeTextureData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 this.disposeReactor = reactor;
             });
 
@@ -141,7 +141,7 @@ public class TextureTests
             TexturePath,
             this.imageData);
 
-        // Assrt
+        // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
     }

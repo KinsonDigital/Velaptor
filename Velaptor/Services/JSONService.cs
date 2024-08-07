@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 [ExcludeFromCodeCoverage(
     Justification =
         $"Cannot test due to direct interaction with the '{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}.{nameof(JsonConvert)}' API")]
-internal sealed class JSONService : IJSONService
+internal sealed class JSONService : IJsonService
 {
     /// <inheritdoc/>
     public string Serialize(object? value) => JsonConvert.SerializeObject(value, Formatting.Indented);

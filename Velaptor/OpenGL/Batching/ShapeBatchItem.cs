@@ -14,9 +14,6 @@ using Graphics;
 /// </summary>
 internal readonly record struct ShapeBatchItem
 {
-    private readonly float halfWidth;
-    private readonly float halfHeight;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeBatchItem"/> struct.
     /// </summary>
@@ -56,9 +53,9 @@ internal readonly record struct ShapeBatchItem
     {
         Position = position;
         Width = width;
-        this.halfWidth = Width / 2f;
+        this.HalfWidth = Width / 2f;
         Height = height;
-        this.halfHeight = Height / 2f;
+        this.HalfHeight = Height / 2f;
         Color = color;
         IsSolid = isSolid;
         BorderThickness = borderThickness;
@@ -95,12 +92,12 @@ internal readonly record struct ShapeBatchItem
     /// <summary>
     /// Gets the half width of the shape.
     /// </summary>
-    public float HalfWidth => this.halfWidth;
+    public float HalfWidth { get; }
 
     /// <summary>
     /// Gets the half height of the shape.
     /// </summary>
-    public float HalfHeight => this.halfHeight;
+    public float HalfHeight { get; }
 
     /// <summary>
     /// Gets the color of the shape.

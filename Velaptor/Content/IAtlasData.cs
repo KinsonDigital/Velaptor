@@ -20,7 +20,7 @@ public interface IAtlasData : IContent
     IReadOnlyCollection<string> SubTextureNames { get; }
 
     /// <summary>
-    /// Gets the the texture of the atlas.
+    /// Gets the texture of the atlas.
     /// </summary>
     ITexture Texture { get; }
 

@@ -433,7 +433,7 @@ public class ShapeRendererTests : TestsBase
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
             });
     }
@@ -448,7 +448,7 @@ public class ShapeRendererTests : TestsBase
             .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
             .Callback<RectRenderItem>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.RenderShapesId}");
             });
     }

@@ -55,6 +55,7 @@ internal sealed class TaskService : ITaskService
     }
 
     /// <inheritdoc/>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left as 'public' for future use.")]
     public void Cancel()
     {
         if (this.internalTask is null)

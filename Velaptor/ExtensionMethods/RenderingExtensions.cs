@@ -19,7 +19,7 @@ internal static class RenderingExtensions
     /// <summary>
     /// Scales the length of the given <paramref name="line"/> by the given <paramref name="scale"/> amount.
     /// </summary>
-    /// <param name="line">The line to to scale.</param>
+    /// <param name="line">The line to scale.</param>
     /// <param name="scale">The amount to scale the line as a percentage. 1 is 100% normal size.</param>
     /// <returns>The scaled line.</returns>
     public static LineBatchItem Scale(this LineBatchItem line, float scale)

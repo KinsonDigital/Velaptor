@@ -16,14 +16,14 @@ using Graphics;
 public static class GameHelpers
 {
     private static readonly char[] Letters =
-    {
+    [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
         'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
         'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
         'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
-        'y', 'z',
-    };
+        'y', 'z'
+    ];
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> value into degrees.
@@ -58,10 +58,10 @@ public static class GameHelpers
     /// Maps the given <paramref name="value"/> from one range to another.
     /// </summary>
     /// <param name="value">The value to map.</param>
-    /// <param name="fromStart">The from starting range value.</param>
-    /// <param name="fromStop">The from ending range value.</param>
-    /// <param name="toStart">The to starting range value.</param>
-    /// <param name="toStop">The to ending range value.</param>
+    /// <param name="fromStart">The starting value of the start range.</param>
+    /// <param name="fromStop">The ending value of the start range.</param>
+    /// <param name="toStart">The starting value of the end range.</param>
+    /// <param name="toStop">The ending value of the end range.</param>
     /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
     public static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
         => MapValue((float)value, fromStart, fromStop, toStart, toStop);
@@ -70,10 +70,10 @@ public static class GameHelpers
     /// Maps the given <paramref name="value"/> from one range to another.
     /// </summary>
     /// <param name="value">The value to map.</param>
-    /// <param name="fromStart">The from starting range value.</param>
-    /// <param name="fromStop">The from ending range value.</param>
-    /// <param name="toStart">The to starting range value.</param>
-    /// <param name="toStop">The to ending range value.</param>
+    /// <param name="fromStart">The starting value of the start range.</param>
+    /// <param name="fromStop">The ending value of the start range.</param>
+    /// <param name="toStart">The starting value of the end range.</param>
+    /// <param name="toStop">The ending value of the end range.</param>
     /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
     public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
         => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
@@ -82,10 +82,10 @@ public static class GameHelpers
     /// Maps the given <paramref name="value"/> from one range to another.
     /// </summary>
     /// <param name="value">The value to map.</param>
-    /// <param name="fromStart">The from starting range value.</param>
-    /// <param name="fromStop">The from ending range value.</param>
-    /// <param name="toStart">The to starting range value.</param>
-    /// <param name="toStop">The to ending range value.</param>
+    /// <param name="fromStart">The starting value of the start range.</param>
+    /// <param name="fromStop">The ending value of the start range.</param>
+    /// <param name="toStart">The starting value of the end range.</param>
+    /// <param name="toStop">The ending value of the end range.</param>
     /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
     /// <remarks>
     ///     Be careful when restricting the 'to' values to a value between 0 and 1.  This will always return a value
@@ -102,10 +102,10 @@ public static class GameHelpers
     /// Maps the given <paramref name="value"/> from one range to another.
     /// </summary>
     /// <param name="value">The value to map.</param>
-    /// <param name="fromStart">The from starting range value.</param>
-    /// <param name="fromStop">The from ending range value.</param>
-    /// <param name="toStart">The to starting range value.</param>
-    /// <param name="toStop">The to ending range value.</param>
+    /// <param name="fromStart">The starting value of the start range.</param>
+    /// <param name="fromStop">The ending value of the start range.</param>
+    /// <param name="toStart">The starting value of the end range.</param>
+    /// <param name="toStop">The ending value of the end range.</param>
     /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
     public static float MapValue(this byte value, float fromStart, float fromStop, float toStart, float toStop)
         => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
@@ -150,6 +150,8 @@ public static class GameHelpers
     ///     W = alpha.
     /// </returns>
     public static Vector4 ToVector4(this Color clr) => new (clr.R, clr.G, clr.B, clr.A);
+
+    // ReSharper disable once GrammarMistakeInComment
 
     /// <summary>
     /// Increases the brightness of the color using the given <paramref name="brightness"/> value.
@@ -222,6 +224,8 @@ public static class GameHelpers
 
         return clr;
     }
+
+    // ReSharper disable once GrammarMistakeInComment
 
     /// <summary>
     /// Decreases the brightness of the color using the given <paramref name="brightness"/> value.
