@@ -23,7 +23,7 @@ internal interface IOpenGLService
     event EventHandler<GLErrorEventArgs> GLError;
 
     /// <summary>
-    /// Gets a value indicating whether or not a VBO is bound.
+    /// Gets a value indicating whether a VBO is bound.
     /// </summary>
     /// <remarks>
     ///     VBO stands for (V)ertex (B)uffer (O)bject.
@@ -99,7 +99,7 @@ internal interface IOpenGLService
     /// </summary>
     /// <remarks>
     /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
-    /// inside of the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
+    /// inside the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
     /// you are telling OpenGL that you don't want your VAO to use the EBO.
     /// </remarks>
     void UnbindEBO();

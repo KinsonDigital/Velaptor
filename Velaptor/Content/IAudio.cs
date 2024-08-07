@@ -111,6 +111,6 @@ public interface IAudio : IContent, IDisposable
     /// <summary>
     /// Fast forwards the audio by the given amount of <paramref name="seconds"/>.
     /// </summary>
-    /// <param name="seconds">The amount of seconds to fast forward the song.</param>
+    /// <param name="seconds">The amount of seconds to fast-forward the song.</param>
     void FastForward(float seconds);
 }

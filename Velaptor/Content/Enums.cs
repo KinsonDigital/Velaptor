@@ -25,7 +25,7 @@ public enum AudioBuffer
     ///         <item>Large audio files take longer when loading as content.</item>
     ///     </list>
     /// <br/>
-    /// It is recommend to use <see cref="Full"/> for very short audio effects such as lasers, weapons, etc. and
+    /// It is recommended to use <see cref="Full"/> for very short audio effects such as lasers, weapons, etc. and
     /// to use <see cref="Stream"/> for large files such as game music.
     /// </remarks>
     Full,
@@ -45,7 +45,7 @@ public enum AudioBuffer
     ///         <item>Sounds that need to be played in quick succession such as audio effects.</item>
     ///     </list>
     /// <br/>
-    /// It is recommend to use <see cref="Stream"/> for large files such as game music and to use <see cref="Full"/>
+    /// It is recommended to use <see cref="Stream"/> for large files such as game music and to use <see cref="Full"/>
     /// for very short audio effects such as lasers, weapons, etc.
     /// </remarks>
     Stream,

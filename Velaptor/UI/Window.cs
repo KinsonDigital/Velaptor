@@ -296,7 +296,7 @@ public abstract class Window : IWindow
     }
 
     /// <summary>
-    /// Dipoeses of all registered types in the IoC container.
+    /// Disposes of all registered types in the IoC container.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
     private void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();

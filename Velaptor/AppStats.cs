@@ -164,7 +164,7 @@ public static class AppStats
 
         var sections = fontInfo.Split('|');
 
-        // If there are not two sections and it does not contain any font metadata
+        // If there are not two sections, and it does not contain any font metadata
         if (sections.Length != 2 || !sections[1].Contains(':'))
         {
             return;

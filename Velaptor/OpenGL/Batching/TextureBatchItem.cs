@@ -16,7 +16,7 @@ internal readonly record struct TextureBatchItem
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchItem"/> struct.
     /// </summary>
-    /// <param name="srcRect">The rectangular section inside of a texture to render.</param>
+    /// <param name="srcRect">The rectangular section inside a texture to render.</param>
     /// <param name="destRect">The destination rectangular area of where to render the texture on the screen.</param>
     /// <param name="size">The size of the rendered texture.</param>
     /// <param name="angle">The angle of the texture in degrees.</param>
@@ -47,7 +47,7 @@ internal readonly record struct TextureBatchItem
     }
 
     /// <summary>
-    /// Gets the rectangular section inside of a texture to render.
+    /// Gets the rectangular section inside a texture to render.
     /// </summary>
     public RectangleF SrcRect { get; }
 

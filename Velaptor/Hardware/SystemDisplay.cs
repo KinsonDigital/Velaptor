@@ -57,21 +57,25 @@ public readonly record struct SystemDisplay
     /// <summary>
     /// Gets the bit depth of the red color channel in the current video mode.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users.")]
     public int RedBitDepth { get; init; }
 
     /// <summary>
     /// Gets the bit depth of the green color channel in the current video mode.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users.")]
     public int GreenBitDepth { get; init; }
 
     /// <summary>
     /// Gets the bit depth of the blue color channel in the current video mode.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users.")]
     public int BlueBitDepth { get; init; }
 
     /// <summary>
     /// Gets the refresh rate in Hz in the current video mode.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users.")]
     public int RefreshRate { get; init; }
 
     /// <summary>

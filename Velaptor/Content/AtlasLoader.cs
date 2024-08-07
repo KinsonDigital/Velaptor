@@ -25,7 +25,7 @@ internal sealed class AtlasLoader : ILoader<IAtlasData>
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IAtlasDataFactory atlasDataFactory;
     private readonly IContentPathResolver atlasDataPathResolver;
-    private readonly IJSONService jsonService;
+    private readonly IJsonService jsonService;
     private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
@@ -47,7 +47,7 @@ internal sealed class AtlasLoader : ILoader<IAtlasData>
         IItemCache<string, ITexture> textureCache,
         IAtlasDataFactory atlasDataFactory,
         IContentPathResolver atlasDataPathResolver,
-        IJSONService jsonService,
+        IJsonService jsonService,
         IDirectory directory,
         IFile file,
         IPath path)

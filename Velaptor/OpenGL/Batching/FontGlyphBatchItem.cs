@@ -16,7 +16,7 @@ internal readonly record struct FontGlyphBatchItem
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchItem"/> struct.
     /// </summary>
-    /// <param name="srcRect">The rectangular section inside of a texture to render.</param>
+    /// <param name="srcRect">The rectangular section inside a texture to render.</param>
     /// <param name="destRect">The destination rectangular area of where to render the glyph on the screen.</param>
     /// <param name="glyph">The font glyph.</param>
     /// <param name="size">The size of the glyph texture to be rendered.</param>
@@ -49,7 +49,7 @@ internal readonly record struct FontGlyphBatchItem
     }
 
     /// <summary>
-    /// Gets the rectangular section inside of a texture to render.
+    /// Gets the rectangular section inside a texture to render.
     /// </summary>
     public RectangleF SrcRect { get; }
 

@@ -96,7 +96,7 @@ internal sealed class ShapeRenderer : IShapeRenderer
     }
 
     /// <summary>
-    /// Invoked every time a batch of shapes are ready to be rendered.
+    /// Invoked every time a batch of shapes is ready to be rendered.
     /// </summary>
     private void RenderBatch(Memory<RenderItem<ShapeBatchItem>> itemsToRender)
     {
