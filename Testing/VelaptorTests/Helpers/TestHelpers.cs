@@ -112,7 +112,7 @@ public static class TestHelpers
         if ((location.X < 0 && location.X > dest.Width) ||
             (location.Y < 0 && location.Y > dest.Height))
         {
-            var exMsg = "The location to draw is outside of the bounds of the destination image.";
+            var exMsg = "The location to draw is outside the bounds of the destination image.";
             exMsg += $"{Environment.NewLine}\tDestination Size: W:{dest.Width}, H: {dest.Height}";
             exMsg += $"{Environment.NewLine}\tDestination Location: X:{location.X}, Y: {location.Y}";
 

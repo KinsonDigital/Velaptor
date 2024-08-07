@@ -5,32 +5,48 @@
 namespace Velaptor.Content;
 
 using System;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
+using System.Runtime.InteropServices;
+using Services;
 
 /// <summary>
 /// Resolves paths to audio content.
 /// </summary>
 internal sealed class AudioPathResolver : ContentPathResolver
 {
-    private readonly IDirectory directory;
+    private const string OggExtension = ".ogg";
+    private const string Mp3Extension = ".mp3";
+    private readonly IPath path;
+    private readonly IPlatform platform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioPathResolver"/> class.
     /// </summary>
-    /// <param name="directory">Performs operations with directories.</param>
-    public AudioPathResolver(IDirectory directory)
+    /// <param name="appService">Provides application services.</param>
+    /// <param name="file">Performs operations with files.</param>
+    /// <param name="path">Processes directory and file paths.</param>
+    /// <param name="platform">Provides information about the current platform.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if the following parameters are null:
+    /// <list type="bullet">
+    ///     <item><paramref name="appService"/></item>
+    ///     <item><paramref name="file"/></item>
+    ///     <item><paramref name="path"/></item>
+    ///     <item><paramref name="platform"/></item>
+    /// </list>
+    /// </exception>
+    public AudioPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
+        : base(appService, file, path, platform)
     {
-        ArgumentNullException.ThrowIfNull(directory);
-        this.directory = directory;
+        this.path = path;
+        this.platform = platform;
         ContentDirectoryName = "Audio";
     }
 
     /// <summary>
     /// Returns the path to the audio content.
     /// </summary>
-    /// <param name="contentName">The name of the content.</param>
+    /// <param name="contentPathOrName">The name of the content.</param>
     /// <returns>The path to the content item.</returns>
     /// <remarks>
     ///     The two types of audio formats supported are '.ogg' and '.mp3'.
@@ -44,53 +60,29 @@ internal sealed class AudioPathResolver : ContentPathResolver
     ///     If no <c>.ogg</c> file exists but an <c>.mp3</c> file does, then the <c>.mp3</c> file will be loaded.
     /// </para>
     /// </remarks>
-    public override string ResolveFilePath(string contentName)
+    public override string ResolveFilePath(string contentPathOrName)
     {
-        // Performs other checks on the content name
-        contentName = base.ResolveFilePath(contentName);
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        contentName = Path.HasExtension(contentName)
-            ? Path.GetFileNameWithoutExtension(contentName)
-            : contentName;
+        contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{OggExtension}";
 
-        var contentDirPath = GetContentDirPath();
+        var comparisonType = this.platform.CurrentPlatform == OSPlatform.Windows
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
 
-        var possibleFiles = this.directory.GetFiles(contentDirPath)
-            .NormalizePaths();
+        var extension = this.path.GetExtension(contentPathOrName);
 
-        // Check if there are any files that match the name
-        var files = possibleFiles
-            .Where(f =>
-            {
-                var fileNameNoExt = Path.GetFileNameWithoutExtension(f);
-                var allowedExtensions = new[] { ".ogg", ".mp3" };
-                var currentExtension = Path.GetExtension(f);
-
-                return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
-                       && Array.Exists(
-                           allowedExtensions,
-                           e
-                           => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
-            }).ToArray();
-
-        var oggFiles = files.Where(f
-                => string.Compare(Path.GetExtension(f), ".ogg", StringComparison.OrdinalIgnoreCase) == 0)
-            .ToArray();
-
-        // If there are any ogg files, choose this first
-        if (oggFiles.Length > 0)
+        // Check if the file extension is supported
+        if (string.Compare(extension, OggExtension, comparisonType) != 0 && string.Compare(extension, Mp3Extension, comparisonType) != 0)
         {
-            return oggFiles[0];
+            var msg = $"The file extension '{extension}' is not supported.  Supported audio formats are '{OggExtension}' and '{Mp3Extension}'.";
+            msg += this.platform.CurrentPlatform == OSPlatform.Windows
+                ? string.Empty
+                : "\nNote: Linux and MacOS are case-sensitive.";
+
+            throw new ArgumentException(msg);
         }
 
-        var mp3Files = files.Where(f => Path.GetExtension(f) == ".mp3").ToArray();
-
-        // If there are any ogg files, choose this first
-        if (mp3Files.Length > 0)
-        {
-            return mp3Files[0];
-        }
-
-        throw new FileNotFoundException($"The audio file '{contentDirPath}/{contentName}' does not exist.");
+        return base.ResolveFilePath(contentPathOrName);
     }
 }

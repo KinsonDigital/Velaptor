@@ -30,13 +30,13 @@ public interface IContentPathResolver
     string ContentDirectoryName { get; }
 
     /// <summary>
-    /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
+    /// Resolves the full file path to a content item that matches the given <paramref name="contentPathOrName"/>.
     /// </summary>
-    /// <param name="contentName">The name of the content item with or without the file extension.</param>
+    /// <param name="contentPathOrName">The name of the content item with or without the file extension.</param>
     /// <returns>
     ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
     /// </returns>
-    string ResolveFilePath(string contentName);
+    string ResolveFilePath(string contentPathOrName);
 
     /// <summary>
     /// Resolves the full directory path to some content.

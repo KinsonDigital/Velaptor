@@ -36,7 +36,7 @@ public static class HardwareFactory
     {
         var displayService = IoC.Container.GetInstance<ISystemDisplayService>();
 
-        return displayService.Displays.ToImmutableArray();
+        return [..displayService.Displays];
     }
 
     /// <summary>

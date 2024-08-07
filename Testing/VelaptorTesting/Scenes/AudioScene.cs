@@ -235,7 +235,7 @@ public class AudioScene : SceneBase
         var chkRepeat = TestingApp.Container.GetInstance<ICheckBox>();
         chkRepeat.Name = nameof(chkRepeat);
         chkRepeat.LabelWhenChecked = "Does Repeat";
-        chkRepeat.LabelWhenUnchecked = "Do Not Repeat";
+        chkRepeat.LabelWhenUnchecked = "Does Not Repeat";
         chkRepeat.CheckedChanged += (_, isChecked) =>
         {
             this.audio.IsLooping = isChecked;

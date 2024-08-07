@@ -400,7 +400,7 @@ public class LineRendererTests : TestsBase
         mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
             });
     }
 
@@ -414,7 +414,7 @@ public class LineRendererTests : TestsBase
             .Setup(m => m.Subscribe(It.IsAny<LineRenderItem>()))
             .Callback<LineRenderItem>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"LineRenderer.ctor() - {PushNotifications.RenderLinesId}");
             });
     }

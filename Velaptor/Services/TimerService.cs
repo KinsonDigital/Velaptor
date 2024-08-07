@@ -71,13 +71,15 @@ internal sealed class TimerService : ITimerService
         var sum = 0.0;
         var count = 0;
 
-        for (var i = 0; i < this.timeSamples.Length; i++)
+        foreach (var t in this.timeSamples)
         {
-            if (this.timeSamples[i] != 0)
+            if (t == 0)
             {
-                sum += this.timeSamples[i];
-                count += 1;
+                continue;
             }
+
+            sum += t;
+            count += 1;
         }
 
         return count == 0 ? 0 : (float)sum / count;
