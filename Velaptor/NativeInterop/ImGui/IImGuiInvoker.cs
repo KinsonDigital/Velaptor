@@ -48,7 +48,7 @@ public interface IImGuiInvoker
     ///             Numerical Formatting
     ///             <para/>
     ///             You can control how numeric values are displayed, including the number of decimal places,
-    ///             whether to use scientific notation, whether to include a thousands separator, and more.
+    ///             whether to use scientific notation, whether to include a thousand separator, and more.
     ///             For example, {0:F2} formats the number with two decimal places.
     ///             <para/>
     ///         </item>

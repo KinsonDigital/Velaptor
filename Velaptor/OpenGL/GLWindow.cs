@@ -76,7 +76,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
-    /// <param name="appService">Provides application relates services.</param>
+    /// <param name="appService">Provides application services.</param>
     /// <param name="silkWindow">The <see cref="Silk"/> specific <see cref="Silk.NET.Windowing.IWindow"/> object.</param>
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>

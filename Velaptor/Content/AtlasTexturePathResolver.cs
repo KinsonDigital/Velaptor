@@ -5,6 +5,7 @@
 namespace Velaptor.Content;
 
 using System.IO.Abstractions;
+using Services;
 
 /// <summary>
 /// Resolves paths to atlas texture content.
@@ -14,7 +15,10 @@ internal sealed class AtlasTexturePathResolver : TexturePathResolver
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasTexturePathResolver"/> class.
     /// </summary>
-    /// <param name="directory">Performs operations with directories.</param>
-    public AtlasTexturePathResolver(IDirectory directory)
-        : base(directory) => ContentDirectoryName = "Atlas";
+    /// <param name="appService">Provides application services.</param>
+    /// <param name="file">Performs operations with files.</param>
+    /// <param name="path">Processes directory and file paths.</param>
+    /// <param name="platform">Provides information about the current platform.</param>
+    public AtlasTexturePathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
+        : base(appService, file, path, platform) => ContentDirectoryName = "Atlas";
 }

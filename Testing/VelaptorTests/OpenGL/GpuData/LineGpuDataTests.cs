@@ -86,7 +86,7 @@ public class LineGpuDataTests
     /// Creates a new vertex data object with all values set to the given <paramref name="allValues"/>.
     /// </summary>
     /// <param name="allValues">The value to set.</param>
-    /// <returns>The data with all of vertex data components set to the same value.</returns>
+    /// <returns>The data with all vertex data components set to the same value.</returns>
     private LineVertexData CreateVertexData(int allValues) =>
         new (new Vector2(allValues, allValues),
             Color.FromArgb(allValues, allValues, allValues, allValues));

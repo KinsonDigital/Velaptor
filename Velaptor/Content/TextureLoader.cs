@@ -15,11 +15,9 @@ using Exceptions;
 /// </summary>
 internal sealed class TextureLoader : ILoader<ITexture>
 {
-    private const string TextureFileExtension = ".png";
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IContentPathResolver texturePathResolver;
     private readonly IDirectory directory;
-    private readonly IFile file;
     private readonly IPath path;
 
     /// <summary>
@@ -28,8 +26,7 @@ internal sealed class TextureLoader : ILoader<ITexture>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     /// <param name="directory">Performs operations with directories.</param>
-    /// <param name="file">Performs operations with files.</param>
-    /// <param name="path">Processes directory and fle paths.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
@@ -37,20 +34,17 @@ internal sealed class TextureLoader : ILoader<ITexture>
         IItemCache<string, ITexture> textureCache,
         IContentPathResolver texturePathResolver,
         IDirectory directory,
-        IFile file,
         IPath path)
     {
         ArgumentNullException.ThrowIfNull(textureCache);
         ArgumentNullException.ThrowIfNull(texturePathResolver);
         ArgumentNullException.ThrowIfNull(directory);
-        ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
 
         this.textureCache = textureCache;
         this.texturePathResolver = texturePathResolver;
-        this.file = file;
-        this.path = path;
         this.directory = directory;
+        this.path = path;
     }
 
     /// <summary>
@@ -72,34 +66,13 @@ internal sealed class TextureLoader : ILoader<ITexture>
     {
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        var isPathRooted = this.path.IsPathRooted(contentPathOrName);
-
-        if (!isPathRooted)
+        var contentDirPath = $"{this.texturePathResolver.RootDirectoryPath}{this.path.AltDirectorySeparatorChar}{this.texturePathResolver.ContentDirectoryName}";
+        if (!this.directory.Exists(contentDirPath))
         {
-            var contentDirPath = this.texturePathResolver.ResolveDirPath();
-
-            if (!this.directory.Exists(contentDirPath))
-            {
-                this.directory.CreateDirectory(contentDirPath);
-            }
+            this.directory.CreateDirectory(contentDirPath);
         }
 
-        var filePath = isPathRooted
-            ? contentPathOrName
-            : this.texturePathResolver.ResolveFilePath(contentPathOrName);
-
-        if (this.file.Exists(filePath))
-        {
-            if (this.path.GetExtension(filePath) is not TextureFileExtension)
-            {
-                throw new LoadTextureException(
-                    $"The file '{filePath}' must be a texture file with the extension '{TextureFileExtension}'.");
-            }
-        }
-        else
-        {
-            throw new FileNotFoundException($"The texture file '{filePath}' does not exist.", filePath);
-        }
+        var filePath = this.texturePathResolver.ResolveFilePath(contentPathOrName);
 
         return this.textureCache.GetItem(filePath);
     }

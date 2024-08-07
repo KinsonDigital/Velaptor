@@ -88,7 +88,7 @@ public class TextureGpuBufferTests : TestsBase
         this.mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
             }));
 
@@ -386,7 +386,7 @@ public class TextureGpuBufferTests : TestsBase
         // Arrange & Assert
         this.mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Should().NotBeNull("It is required for unit testing.");
         }));
 
         // Act
@@ -399,7 +399,7 @@ public class TextureGpuBufferTests : TestsBase
         // Arrange & Assert
         this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("it is required for unit testing.");
+            reactor.Should().NotBeNull("It is required for unit testing.");
             reactor.Name.Should().Be($"TextureGpuBuffer.ctor() - {PushNotifications.BatchSizeChangedId}");
         }));
 

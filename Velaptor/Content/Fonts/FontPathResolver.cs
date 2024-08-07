@@ -6,7 +6,7 @@ namespace Velaptor.Content.Fonts;
 
 using System;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
+using Velaptor.Services;
 
 /// <summary>
 /// Resolves paths to font content to be used for rendering text.
@@ -22,137 +22,47 @@ using System.Runtime.InteropServices;
 ///     Other systems will be supported in a future releases.
 /// </para>
 /// </remarks>
-internal sealed class FontPathResolver : IContentPathResolver
+internal sealed class FontPathResolver : ContentPathResolver
 {
-    private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
-    private readonly IPlatform platform;
-    private readonly IContentPathResolver windowsFontPathResolver;
-    private readonly IContentPathResolver contentFontPathResolver;
-    private readonly IDirectory directory;
-    private readonly IFile file;
+    private const string FileExtension = ".ttf";
+    private readonly IPath path;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPathResolver"/> class.
     /// </summary>
-    /// <param name="contentFontPathResolver">
-    /// Resolves paths to the application's content directory.
-    /// </param>
-    /// <param name="windowsFontPathResolver">
-    /// Resolves the path to the Windows system fonts directory.
-    /// </param>
+    /// <param name="appService">Provides application services.</param>
     /// <param name="file">Performs operations with files.</param>
-    /// <param name="directory">Performs operations with directories.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <param name="platform">Provides information about the current platform.</param>
-    public FontPathResolver(
-        IContentPathResolver contentFontPathResolver,
-        IContentPathResolver windowsFontPathResolver,
-        IFile file,
-        IDirectory directory,
-        IPlatform platform)
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if the following parameters are null:
+    /// <list type="bullet">
+    ///     <item><paramref name="appService"/></item>
+    ///     <item><paramref name="file"/></item>
+    ///     <item><paramref name="path"/></item>
+    ///     <item><paramref name="platform"/></item>
+    /// </list>
+    /// </exception>
+    public FontPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
+        : base(appService, file, path, platform)
     {
-        ArgumentNullException.ThrowIfNull(contentFontPathResolver);
-        ArgumentNullException.ThrowIfNull(windowsFontPathResolver);
-        ArgumentNullException.ThrowIfNull(file);
-        ArgumentNullException.ThrowIfNull(directory);
-        ArgumentNullException.ThrowIfNull(platform);
-
-        this.contentFontPathResolver = contentFontPathResolver;
-        this.windowsFontPathResolver = windowsFontPathResolver;
-        this.file = file;
-        this.directory = directory;
-        this.platform = platform;
+        this.path = path;
+        ContentDirectoryName = "Fonts";
     }
 
     /// <summary>
-    /// Gets the root directory of the content.
+    /// Resolves the full file path to a content item that matches the given <paramref name="contentPathOrName"/>.
     /// </summary>
-    /// <remarks>
-    ///     Will return the application's font content directory if it exists.  If it does not exist, it returns
-    ///     the current system's font content directory.
-    /// </remarks>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
-    public string RootDirectoryPath
+    /// <param name="contentPathOrName">The name of the content item with or without the file extension.</param>
+    /// <returns>The fully qualified file path.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the parameter is null.</exception>
+    /// <exception cref="ArgumentException">Thrown if the parameter is empty.</exception>
+    public override string ResolveFilePath(string contentPathOrName)
     {
-        get
-        {
-            if (this.directory.Exists(this.contentFontPathResolver.RootDirectoryPath))
-            {
-                return this.contentFontPathResolver.RootDirectoryPath;
-            }
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-            if (this.platform.CurrentPlatform != OSPlatform.Windows)
-            {
-                throw new NotSupportedException(OnlyWindowsSupportMessage);
-            }
+        contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{FileExtension}";
 
-            return this.windowsFontPathResolver.RootDirectoryPath;
-        }
-    }
-
-    /// <summary>
-    /// Gets the name of the directory that contains the content that is located in the <see cref="RootDirectoryPath"/>.
-    /// </summary>
-    /// <remarks>
-    ///     Will return the application's font content directory name if it exists.  If it does not exist, it
-    ///     returns the current system's font content directory name.
-    /// </remarks>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
-    public string ContentDirectoryName
-    {
-        get
-        {
-            if (this.directory.Exists(this.contentFontPathResolver.RootDirectoryPath))
-            {
-                return this.contentFontPathResolver.ContentDirectoryName;
-            }
-
-            if (this.platform.CurrentPlatform != OSPlatform.Windows)
-            {
-                throw new NotSupportedException(OnlyWindowsSupportMessage);
-            }
-
-            return this.windowsFontPathResolver.ContentDirectoryName;
-        }
-    }
-
-    /// <summary>
-    /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
-    /// </summary>
-    /// <param name="contentName">The name of the content item with or without the file extension.</param>
-    /// <returns>
-    ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
-    /// </returns>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
-    public string ResolveFilePath(string contentName)
-    {
-        if (this.platform.CurrentPlatform != OSPlatform.Windows)
-        {
-            throw new NotSupportedException(OnlyWindowsSupportMessage);
-        }
-
-        var contentFilePath = this.contentFontPathResolver.ResolveFilePath(contentName);
-
-        return this.file.Exists(contentFilePath)
-            ? contentFilePath
-            : this.windowsFontPathResolver.ResolveFilePath(contentName);
-    }
-
-    /// <summary>
-    /// Resolves the full directory path to font content.
-    /// </summary>
-    /// <returns>The directory only path to font content.</returns>
-    /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
-    public string ResolveDirPath()
-    {
-        if (this.platform.CurrentPlatform != OSPlatform.Windows)
-        {
-            throw new NotSupportedException(OnlyWindowsSupportMessage);
-        }
-
-        var contentDirPath = this.contentFontPathResolver.ResolveDirPath();
-
-        return this.directory.Exists(contentDirPath)
-            ? contentDirPath
-            : this.windowsFontPathResolver.ResolveDirPath();
+        return base.ResolveFilePath(contentPathOrName);
     }
 }

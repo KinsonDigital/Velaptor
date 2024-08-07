@@ -10,6 +10,11 @@ namespace Velaptor.Services;
 internal interface IAppService
 {
     /// <summary>
+    /// Gets the directory of the application.
+    /// </summary>
+    string AppDirectory { get; }
+
+    /// <summary>
     /// Starts the application initialization process.
     /// </summary>
     void Init();

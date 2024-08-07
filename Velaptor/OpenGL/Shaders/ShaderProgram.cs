@@ -226,7 +226,7 @@ internal abstract class ShaderProgram : IShaderProgram
         GL.AttachShader(ShaderId, vertShaderId);
         GL.AttachShader(ShaderId, fragShaderId);
 
-        // Link and check for for errors.
+        // Link and check for errors.
         GL.LinkProgram(ShaderId);
         var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
         if (status == 0)

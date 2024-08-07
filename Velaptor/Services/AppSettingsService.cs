@@ -14,7 +14,7 @@ using ExtensionMethods;
 internal sealed class AppSettingsService : IAppSettingsService
 {
     private const string AppSettingsFileName = "app-settings.json";
-    private readonly IJSONService jsonService;
+    private readonly IJsonService jsonService;
     private readonly IFile file;
     private readonly string appSettingsFilePath;
 
@@ -25,7 +25,7 @@ internal sealed class AppSettingsService : IAppSettingsService
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <exception cref="AppSettingsException">Occurs if there are issues with loading the application settings file.</exception>
-    public AppSettingsService(IJSONService jsonService, IDirectory directory, IFile file)
+    public AppSettingsService(IJsonService jsonService, IDirectory directory, IFile file)
     {
         ArgumentNullException.ThrowIfNull(jsonService);
         ArgumentNullException.ThrowIfNull(directory);

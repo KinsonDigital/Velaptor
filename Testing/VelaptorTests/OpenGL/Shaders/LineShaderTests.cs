@@ -51,7 +51,7 @@ public class LineShaderTests
             .Returns(() => this.batchSizeUnsubscriber.Object)
             .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
             });
 
@@ -122,7 +122,7 @@ public class LineShaderTests
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
             .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("it is required for unit testing.");
+                reactor.Should().NotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
                 reactor.Name.Should().Be($"LineShader.ctor() - {PushNotifications.BatchSizeChangedId}");
             });

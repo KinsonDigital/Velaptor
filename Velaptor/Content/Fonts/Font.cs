@@ -189,15 +189,15 @@ public sealed class Font : IFont
             return SizeF.Empty;
         }
 
-        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
-        {
-            return measure;
-        }
-
         // Normalize the line endings
         if (text.Contains("\r\n"))
         {
             text = text.Replace("\r\n", "\n");
+        }
+
+        if (CacheEnabled && this.textSizeCache.TryGetValue(text, out SizeF measure))
+        {
+            return measure;
         }
 
         var lines = text.Split("\n");
@@ -341,11 +341,6 @@ public sealed class Font : IFont
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 
-        var allStyles = new[]
-        {
-            FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold | FontStyle.Italic,
-        };
-
         bool AllStylesFound()
         {
             const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
@@ -361,29 +356,7 @@ public sealed class Font : IFont
             return;
         }
 
-        var missingStyles = new List<FontStyle>();
-        var currentStyles = this.fontStats.Select(s => s.Style).ToArray();
-
-        foreach (var style in allStyles)
-        {
-            if (Array.IndexOf(currentStyles, style) == -1)
-            {
-                missingStyles.Add(style);
-            }
-        }
-
-        // Try to find each missing style in the system fonts
-        var systemFontStats = this.fontStatsService.GetSystemStatsForFontFamily(FamilyName);
-
-        var missingFontStats = new List<FontStats>();
-
-        foreach (var missingStat in systemFontStats.Where(s => missingStyles.Contains(s.Style)))
-        {
-            missingFontStats.Add(missingStat);
-        }
-
         var newList = new List<FontStats>();
-        newList.AddRange(missingFontStats);
         newList.AddRange(this.fontStats);
         this.fontStats = newList.ToArray();
     }

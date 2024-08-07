@@ -24,7 +24,7 @@ internal interface IFreeTypeService : IDisposable
     nint CreateFontFace(string fontFilePath);
 
     /// <summary>
-    /// Pulls the 8-bit grayscale bitmap data for a glyph represented by the the given <paramref name="glyphIndex"/>.
+    /// Pulls the 8-bit grayscale bitmap data for a glyph represented by the given <paramref name="glyphIndex"/>.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="glyphIndex">The index of the glyph in the font file.</param>

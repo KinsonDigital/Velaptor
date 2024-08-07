@@ -49,7 +49,6 @@ internal readonly struct TextureGpuData : IEquatable<TextureGpuData>
 
     /// <summary>
     /// Returns a value indicating whether the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
-    /// operation is equal.
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
@@ -58,7 +57,6 @@ internal readonly struct TextureGpuData : IEquatable<TextureGpuData>
 
     /// <summary>
     /// Returns a value indicating whether the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
-    /// operation is not equal.
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>

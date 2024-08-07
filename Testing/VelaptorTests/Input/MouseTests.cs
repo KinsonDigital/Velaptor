@@ -157,7 +157,7 @@ public class MouseTests
         this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
             .Callback<ReceiveMouseDataReactor>(reactorObj =>
             {
-                reactorObj.Should().NotBeNull("it is required for unit testing.");
+                reactorObj.Should().NotBeNull("It is required for unit testing.");
                 reactor = reactorObj;
             });
 

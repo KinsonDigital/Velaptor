@@ -122,10 +122,10 @@ public class ImGuiFacadeTests
         sut.Update(0.5);
 
         // Assert
-        // Assert that the texture data was retrieved
+        // Was the texture data was retrieved
         this.mockImGuiService.Received(1).GetTexDataAsRGBA32();
 
-        // Assert that the texture data was uploaded to the GPU
+        // Was the texture data was uploaded to the GPU
         this.mockGlInvoker.Received(1).GenTexture();
         this.mockGlInvoker.Received(1).PixelStore(GLPixelStoreParameter.UnpackAlignment, 1);
         this.mockGlInvoker.Received(1).BindTexture(GLTextureTarget.Texture2D, textureId);

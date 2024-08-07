@@ -131,7 +131,7 @@ internal readonly record struct KeyboardKeyGroups
     }.ToFrozenDictionary();
 
     /// <summary>
-    /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by by
+    /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by
     /// the keyboard when no shift modifier keys are in the down position.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Not worth testing")]

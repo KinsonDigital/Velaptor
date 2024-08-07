@@ -22,7 +22,7 @@ internal static class OpenGLExtensionMethods
     /// <param name="pixelScreenWidth">The width of the screen in pixel units.</param>
     /// <param name="pixelScreenHeight">The height of the screen in pixel units.</param>
     /// <returns>The pixel vector in NDC units.</returns>
-    /// <remarks>NDC is an acronym for (N)ormal (D)evice (C)oordinates.</remarks>
+    /// <remarks>NDC is an acronym for Normal Device Coordinates.</remarks>
     public static Vector2 ToNDC(this Vector2 pixelVector, float pixelScreenWidth, float pixelScreenHeight)
     {
         var ndcX = pixelVector.X.MapValue(0, pixelScreenWidth, -1f, 1f);
@@ -44,7 +44,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static float ToNDCTextureCoordX(this float x, float textureWidth)
@@ -63,7 +63,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static float ToNDCTextureCoordY(this float y, float textureHeight)
@@ -83,7 +83,7 @@ internal static class OpenGLExtensionMethods
     /// </para>
     ///
     /// <para>
-    /// NDC is an acronym for (N)ormal (D)evice (C)oordinates.
+    /// NDC is an acronym for Normal Device Coordinates.
     /// </para>
     /// </remarks>
     public static Vector2 ToNDCTextureCoords(this Vector2 coord, float textureWidth, float textureHeight)
@@ -101,14 +101,14 @@ internal static class OpenGLExtensionMethods
     ///     <item><see cref="Vector"/>.<see cref="Vector2.Y"/></item>
     /// </list>
     /// </remarks>
-    public static float[] ToArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+    public static float[] ToArray(this Vector2 vector) => [vector.X, vector.Y];
 
     /// <summary>
     /// Returns all the <see cref="Vector4"/> components as a <see cref="float"/> array.
     /// </summary>
     /// <param name="vector">The vector to convert.</param>
     /// <returns>The components in a <c>X</c> <c>Y</c> <c>Z</c> <c>W</c> order.</returns>
-    public static float[] ToArray(this Vector4 vector) => new[] { vector.X, vector.Y, vector.Z, vector.W };
+    public static float[] ToArray(this Vector4 vector) => [vector.X, vector.Y, vector.Z, vector.W];
 
     /// <summary>
     /// Converts the given <paramref name="color"/> to an array of <see cref="float"/>[] values.
@@ -126,7 +126,7 @@ internal static class OpenGLExtensionMethods
     /// </list>
     /// </remarks>
     public static float[] ToArray(this Color color)
-        => new float[] { color.R, color.G, color.B, color.A };
+        => [color.R, color.G, color.B, color.A];
 
     /// <summary>
     /// Converts the given <paramref name="vertexData"/> components to an array of floats.
