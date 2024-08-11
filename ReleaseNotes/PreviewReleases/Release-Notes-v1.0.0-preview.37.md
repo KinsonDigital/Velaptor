@@ -32,11 +32,11 @@ As with all software, there is always a chance for issues and bugs, especially f
 2. [#988](https://github.com/KinsonDigital/Velaptor/pull/988) - Updated dependency _**system.io.abstractions**_ to _**v21.0.29**_
 3. [#984](https://github.com/KinsonDigital/Velaptor/pull/984) - Updated dependency _**sixlabors.imagesharp**_ to _**v3.1.5**_
    - This update was a fix for [CVE-2024-41131](https://github.com/SixLabors/ImageSharp/security/advisories/GHSA-63p8-c4ww-9cg7)
-4. [#979](https://github.com/KinsonDigital/Velaptor/pull/979) - Updated dependency _**avalonia.themes.fluent**_ to _**v11.1.1**_
-5. [#978](https://github.com/KinsonDigital/Velaptor/pull/978) - Updated dependency _**avalonia.fonts.inter**_ to _**v11.1.1**_
-6. [#977](https://github.com/KinsonDigital/Velaptor/pull/977) - Updated dependency _**avalonia.diagnostics**_ to _**v11.1.1**_
-7. [#976](https://github.com/KinsonDigital/Velaptor/pull/976) - Updated dependency _**avalonia.desktop**_ to _**v11.1.1**_
-8. [#975](https://github.com/KinsonDigital/Velaptor/pull/975) - Updated dependency _**avalonia**_ to _**v11.1.1**_
+4. [#996](https://github.com/KinsonDigital/Velaptor/pull/996) - Updated dependency _**avalonia.themes.fluent**_ to _**v11.1.2**_
+5. [#995](https://github.com/KinsonDigital/Velaptor/pull/995) - Updated dependency _**avalonia.fonts.inter**_ to _**v11.1.2**_
+6. [#994](https://github.com/KinsonDigital/Velaptor/pull/994) - Updated dependency _**avalonia.diagnostics**_ to _**v11.1.2**_
+7. [#993](https://github.com/KinsonDigital/Velaptor/pull/993) - Updated dependency _**avalonia.desktop**_ to _**v11.1.2**_
+8. [#992](https://github.com/KinsonDigital/Velaptor/pull/992) - Updated dependency _**avalonia**_ to _**v11.1.2**_
 9.  [#974](https://github.com/KinsonDigital/Velaptor/pull/974) - Updated dependency _**serilog.sinks.console**_ to _**v6**_
 10. [#973](https://github.com/KinsonDigital/Velaptor/pull/973) - Updated dependency _**serilog**_ to _**v4**_
 11. [#972](https://github.com/KinsonDigital/Velaptor/pull/972) - Updated dependency _**xunit**_ to _**v2.9.0**_

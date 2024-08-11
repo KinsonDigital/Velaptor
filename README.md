@@ -35,7 +35,7 @@ This library is still under development and is not at v1.0.0 yet!! However, all 
 
 <br/>
 
-<h2 style="font-weight:bold;" align="center">📖 About **Velaptor** 📖</h2>
+<h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
 <h4 style="font-weight:bold;" align="left" >⭐ Don't forget to give us a star! ⭐</h4>
 
 **Velaptor** is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult, which is one reason why **Velaptor** was developed. It takes care of all of the lower-level, more complicated things for creating a game, like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way, you can concentrate on developing your game or multi-media application.
