@@ -11,6 +11,7 @@ using FluentAssertions;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Scene;
+using Velaptor.Scene.Exceptions;
 using Xunit;
 
 /// <summary>
@@ -419,13 +420,12 @@ public class SceneManagerTests
     }
 
     [Fact]
-    public void SetSceneAsActive_WhenSceneDoesNotExist_DoesNotChangeAnyActiveStatusForAnyScenes()
+    public void SetSceneAsActive_WhenSceneDoesNotExist_ThrowsException()
     {
         // Arrange
         var sceneAId = Guid.NewGuid();
         var sceneBId = Guid.NewGuid();
-
-        var expected = new[] { sceneAId }.AsReadOnly();
+        var id = Guid.NewGuid();
 
         var mockSceneA = Substitute.For<IScene>();
         mockSceneA.Id.Returns(sceneAId);
@@ -440,10 +440,11 @@ public class SceneManagerTests
         sut.AddScene(mockSceneB, setToActive: true);
 
         // Act
-        sut.SetSceneAsActive(Guid.NewGuid());
+        var act = () => sut.SetSceneAsActive(id);
 
         // Assert
-        sut.InActiveScenes.Should().BeEquivalentTo(expected);
+        act.Should().Throw<SceneDoesNotExistException>()
+            .WithMessage($"The scene with the ID '{id.ToString()}' does not exist.");
     }
 
     [Fact]

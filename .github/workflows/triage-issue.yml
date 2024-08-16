@@ -15,7 +15,7 @@ jobs:
       - name: Label issues
         uses: andymckay/labeler@1.0.4
         with:
-          add-labels: "⚕️NEEDS TRIAGE"
+          add-labels: "⚕️NEEDS-TRIAGE"
           ignore-if-assigned: true
           ignore-if-labeled: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}

@@ -14,16 +14,24 @@ using Exceptions;
 /// </summary>
 internal sealed class SceneManager : ISceneManager
 {
-    private readonly List<(IScene? scene, bool isActive)> scenes = new ();
+    private readonly List<(IScene scene, bool isActive)> scenes = [];
     private bool isDisposed;
 
     /// <inheritdoc/>
-    public IScene? CurrentScene => this.scenes.Find(s => s.isActive).scene;
+    public IScene? CurrentScene
+    {
+        get
+        {
+            var foundScene = this.scenes.IndexOf(s => s.isActive);
+
+            return foundScene == -1 ? null : this.scenes[foundScene].scene;
+        }
+    }
 
     /// <inheritdoc/>
     public IReadOnlyCollection<Guid> InActiveScenes =>
-        this.scenes.Where(s => s.scene is not null && !s.isActive)
-            .Select(s => s.scene?.Id ?? Guid.Empty).ToArray().AsReadOnly();
+        this.scenes.Where(s => !s.isActive)
+            .Select(s => s.scene.Id).ToArray().AsReadOnly();
 
     /// <inheritdoc/>
     public bool IsLoaded { get; private set; }
@@ -74,14 +82,13 @@ internal sealed class SceneManager : ISceneManager
             return;
         }
 
-        var sceneToRemove = this.scenes.Find(s => s.scene?.Id == sceneId);
+        var sceneToRemove = this.scenes.Find(s => s.scene.Id == sceneId);
+        var sceneBeingRemovedIndex = this.scenes.IndexOf(sceneToRemove);
 
-        if (sceneToRemove.scene is null)
+        if (sceneBeingRemovedIndex < 0)
         {
             return;
         }
-
-        var sceneBeingRemovedIndex = this.scenes.IndexOf(sceneToRemove);
 
         if (sceneToRemove.isActive)
         {
@@ -95,7 +102,7 @@ internal sealed class SceneManager : ISceneManager
             this.scenes[sceneToActivateIndex] = (this.scenes[sceneToActivateIndex].scene, true);
         }
 
-        this.scenes[sceneBeingRemovedIndex].scene?.UnloadContent();
+        this.scenes[sceneBeingRemovedIndex].scene.UnloadContent();
         this.scenes.Remove(sceneToRemove);
     }
 
@@ -113,10 +120,10 @@ internal sealed class SceneManager : ISceneManager
             : sceneToDeactivateIndex + 1;
 
         this.scenes[sceneToDeactivateIndex] = (this.scenes[sceneToDeactivateIndex].scene, false);
-        this.scenes[sceneToDeactivateIndex].scene?.UnloadContent();
+        this.scenes[sceneToDeactivateIndex].scene.UnloadContent();
 
         this.scenes[sceneToActivateIndex] = (this.scenes[sceneToActivateIndex].scene, true);
-        this.scenes[sceneToActivateIndex].scene?.LoadContent();
+        this.scenes[sceneToActivateIndex].scene.LoadContent();
     }
 
     /// <inheritdoc/>
@@ -133,20 +140,20 @@ internal sealed class SceneManager : ISceneManager
             : sceneToDeactivateIndex - 1;
 
         this.scenes[sceneToDeactivateIndex] = (this.scenes[sceneToDeactivateIndex].scene, false);
-        this.scenes[sceneToDeactivateIndex].scene?.UnloadContent();
+        this.scenes[sceneToDeactivateIndex].scene.UnloadContent();
 
         this.scenes[sceneToActivateIndex] = (this.scenes[sceneToActivateIndex].scene, true);
-        this.scenes[sceneToActivateIndex].scene?.LoadContent();
+        this.scenes[sceneToActivateIndex].scene.LoadContent();
     }
 
     /// <inheritdoc/>
     public void SetSceneAsActive(Guid id)
     {
-        var sceneToSetIndex = this.scenes.IndexOf(s => s.scene?.Id == id);
+        var sceneToSetIndex = this.scenes.IndexOf(s => s.scene.Id == id);
 
         if (sceneToSetIndex == -1)
         {
-            return;
+            throw new SceneDoesNotExistException(id);
         }
 
         for (var i = 0; i < this.scenes.Count; i++)
@@ -200,14 +207,14 @@ internal sealed class SceneManager : ISceneManager
     /// </summary>
     /// <param name="id">The ID of the scene to check for.</param>
     /// <returns>True if the scene exists.</returns>
-    public bool SceneExists(Guid id) => this.scenes.Exists(s => s.scene?.Id == id);
+    public bool SceneExists(Guid id) => this.scenes.Exists(s => s.scene.Id == id);
 
     /// <inheritdoc />
     public void Resize(SizeU size)
     {
         foreach ((IScene? scene, _) in this.scenes)
         {
-            scene?.Resize(size);
+            scene.Resize(size);
         }
     }
 
@@ -230,9 +237,9 @@ internal sealed class SceneManager : ISceneManager
     /// </summary>
     private void UnloadAllSceneContent()
     {
-        foreach ((IScene? scene, _) in this.scenes)
+        foreach ((IScene scene, _) in this.scenes)
         {
-            scene?.UnloadContent();
+            scene.UnloadContent();
         }
     }
 }

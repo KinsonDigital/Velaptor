@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Exceptions;
+namespace VelaptorTests.Scene.Exceptions;
 
 using System;
 using FluentAssertions;
-using Velaptor.Exceptions;
+using Velaptor.Scene.Exceptions;
 using Xunit;
 
 /// <summary>

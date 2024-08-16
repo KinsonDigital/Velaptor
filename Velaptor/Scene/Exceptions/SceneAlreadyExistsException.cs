@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Exceptions;
+namespace Velaptor.Scene.Exceptions;
 
 using System;
 
