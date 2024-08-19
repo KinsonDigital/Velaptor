@@ -7,7 +7,8 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -36,18 +37,16 @@ public class MouseScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.mouse = HardwareFactory.GetMouse();
-        var mouseStateLabel = TestingApp.Container.GetInstance<ILabel>();
+
+        var ctrlFactory = new ControlFactory();
+        var mouseStateLabel = ctrlFactory.CreateLabel();
         mouseStateLabel.Name = nameof(mouseStateLabel);
         this.mouseStateLabelName = nameof(mouseStateLabel);
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls = ctrlFactory.CreateControlGroup();
         this.grpControls.Title = "Mouse State";
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.TitleBarVisible = false;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
-        };
 
         this.grpControls.Add(mouseStateLabel);
 
@@ -77,6 +76,8 @@ public class MouseScene : SceneBase
 
         this.grpControls.AutoSizeToFitContent = false;
         this.grpControls.AutoSizeToFitContent = true;
+
+        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
 
         base.Update(frameTime);
     }

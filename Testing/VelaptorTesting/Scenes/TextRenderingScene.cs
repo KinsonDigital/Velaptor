@@ -7,7 +7,8 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -51,8 +52,10 @@ public class TextRenderingScene : SceneBase
         this.fontLoader = ContentLoaderFactory.CreateFontLoader();
         this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);
 
+        var ctrlFactory = new ControlFactory();
+
         // Rotate Button
-        var sldRotate = TestingApp.Container.GetInstance<ISlider>();
+        var sldRotate = ctrlFactory.CreateSlider();
         sldRotate.Name = nameof(sldRotate);
         sldRotate.Text = "Rotate:";
         sldRotate.Value = 0;
@@ -61,7 +64,7 @@ public class TextRenderingScene : SceneBase
         sldRotate.ValueChanged += (_, newValue) => this.angle = newValue;
 
         // Increase Render Size Button
-        var sldRenderSize = TestingApp.Container.GetInstance<ISlider>();
+        var sldRenderSize = ctrlFactory.CreateSlider();
         sldRenderSize.Name = nameof(sldRenderSize);
         sldRenderSize.Text = "Render Size:";
         sldRenderSize.Value = 1;
@@ -70,21 +73,21 @@ public class TextRenderingScene : SceneBase
         sldRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
 
         // Set Multi-Line
-        var chkSetMultiLine = TestingApp.Container.GetInstance<ICheckBox>();
+        var chkSetMultiLine = ctrlFactory.CreateCheckbox();
         chkSetMultiLine.Name = nameof(chkSetMultiLine);
         chkSetMultiLine.LabelWhenChecked = "Multi-Line";
         chkSetMultiLine.LabelWhenUnchecked = "Single-Line";
         chkSetMultiLine.CheckedChanged += (_, isChecked) => this.text = isChecked ? this.multiLineText : SingleLineText;
 
         // Set Color
-        var chkSetColor = TestingApp.Container.GetInstance<ICheckBox>();
+        var chkSetColor = ctrlFactory.CreateCheckbox();
         chkSetColor.Name = nameof(chkSetColor);
         chkSetColor.LabelWhenChecked = "Color On";
         chkSetColor.LabelWhenUnchecked = "Color Off";
         chkSetColor.CheckedChanged += (_, isChecked) => this.isBlue = isChecked;
 
         // Font size
-        var sldFontSize = TestingApp.Container.GetInstance<ISlider>();
+        var sldFontSize = ctrlFactory.CreateSlider();
         sldFontSize.Name = nameof(sldFontSize);
         sldFontSize.Text = "Font Size:";
         sldFontSize.Value = 12;
@@ -99,7 +102,7 @@ public class TextRenderingScene : SceneBase
         };
 
         // Set the font style to bold
-        var cmbSetStyle = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbSetStyle = ctrlFactory.CreateComboBox();
         cmbSetStyle.Name = nameof(cmbSetStyle);
         cmbSetStyle.Label = "Style:";
         cmbSetStyle.Width = 150;
@@ -115,7 +118,7 @@ public class TextRenderingScene : SceneBase
             this.textFont.Style = (FontStyle)selectedIndex;
         };
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls = ctrlFactory.CreateControlGroup();
         this.grpControls.Title = "Font Properties";
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.Initialized += (_, _) =>

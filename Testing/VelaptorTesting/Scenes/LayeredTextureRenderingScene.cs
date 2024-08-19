@@ -8,7 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -90,16 +91,18 @@ public class LayeredTextureRenderingScene : SceneBase
             "Use the 'L' key to change the layer that the white box is rendered on.",
         };
 
-        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+
+        var lblInstructions = ctrlFactory.CreateLabel();
         lblInstructions.Name = nameof(lblInstructions);
         lblInstructions.Position = WindowCenter with { Y = 50 };
         lblInstructions.Text = string.Join(Environment.NewLine, textLines);
 
-        var lblBoxState = TestingApp.Container.GetInstance<ILabel>();
+        var lblBoxState = ctrlFactory.CreateLabel();
         lblBoxState.Name = nameof(lblBoxState);
         this.lblBoxStateName = nameof(lblBoxState);
 
-        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions = ctrlFactory.CreateControlGroup();
         this.grpInstructions.Title = "Instructions";
         this.grpInstructions.AutoSizeToFitContent = true;
         this.grpInstructions.TitleBarVisible = false;
@@ -109,7 +112,7 @@ public class LayeredTextureRenderingScene : SceneBase
         };
         this.grpInstructions.Add(lblInstructions);
 
-        this.grpTextureState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpTextureState = ctrlFactory.CreateControlGroup();
         this.grpTextureState.Title = "Texture State";
         this.grpTextureState.AutoSizeToFitContent = true;
         this.grpTextureState.Add(lblBoxState);

@@ -6,7 +6,8 @@ namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -50,29 +51,26 @@ public class AnimatedGraphicsScene : SceneBase
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
-        var instructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+        var instructions = ctrlFactory.CreateLabel();
         instructions.Text = "Verify that the Samus is running.";
 
-        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions = ctrlFactory.CreateControlGroup();
         this.grpInstructions.Title = "Instructions";
         this.grpInstructions.AutoSizeToFitContent = true;
         this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Initialized += (_, _) =>
-        {
-            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-        };
         this.grpInstructions.Add(instructions);
 
-        var optForward = TestingApp.Container.GetInstance<IRadioButton>();
+        var optForward = ctrlFactory.CreateRadioButton();
         optForward.Name = "optForward";
         optForward.Text = "Forwards";
         optForward.IsSelected = true;
 
-        var optBackward = TestingApp.Container.GetInstance<IRadioButton>();
+        var optBackward = ctrlFactory.CreateRadioButton();
         optBackward.Name = "optBackward";
         optBackward.Text = "Backwards";
 
-        var sldSpeed = TestingApp.Container.GetInstance<ISlider>();
+        var sldSpeed = ctrlFactory.CreateSlider();
         sldSpeed.Name = "sldSpeed";
         sldSpeed.Text = "Speed:";
         sldSpeed.Min = 8;
@@ -95,7 +93,7 @@ public class AnimatedGraphicsScene : SceneBase
             this.runningForward = !this.runningForward;
         };
 
-        this.grpAnimation = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpAnimation = ctrlFactory.CreateControlGroup();
         this.grpAnimation.Title = "Animation";
         this.grpAnimation.AutoSizeToFitContent = true;
         this.grpAnimation.Initialized += (_, _) =>
@@ -151,6 +149,8 @@ public class AnimatedGraphicsScene : SceneBase
         {
             this.elapsedTime += frameTime.ElapsedTime.Milliseconds;
         }
+
+        this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
