@@ -14,12 +14,12 @@ internal sealed record AppSettings
     /// <summary>
     /// Gets the width of the application window.
     /// </summary>
-    public uint WindowWidth { get; init; } = 1500;
+    public uint WindowWidth { get; init; } = 1280;
 
     /// <summary>
     /// Gets the height of the application window.
     /// </summary>
-    public uint WindowHeight { get; init; } = 800;
+    public uint WindowHeight { get; init; } = 720;
 
     /// <summary>
     /// Gets a value indicating whether all logging is enabled.

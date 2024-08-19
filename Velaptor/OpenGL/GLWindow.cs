@@ -420,6 +420,12 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
 
+        // Manually invoke the resize to set the viewport
+        // This will make sure that no strange issues occur during initialization.
+        // One strange issue was without this line and a window size of exactly 1280 x 720,
+        // all rendering would not occur.  This prevents this issue from occurring.
+        GLWindow_Resize(new Vector2D<int>(1280, 720));
+
         this.appService.Init();
     }
 

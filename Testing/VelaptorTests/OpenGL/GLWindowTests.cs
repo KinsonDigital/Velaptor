@@ -1332,6 +1332,11 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.Received().Scroll += Arg.Any<Action<IMouse, ScrollWheel>>();
 
         this.mockAppService.Received(1).Init();
+
+        // Assert that the window has been set to the correct size
+        this.mockGL.Viewport(0, 0, 1280, 720);
+        this.mockPushWinSizeReactable.Received(1)
+            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 1280u, Height = 720u });
     }
 
     [Fact]
