@@ -9,7 +9,8 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -33,6 +34,7 @@ public class ShapeScene : SceneBase
     private const float DefaultRectHeight = 250;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
+    private readonly ControlFactory ctrlFactory;
 
     private readonly Color[] clrList =
     [
@@ -68,7 +70,11 @@ public class ShapeScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
     /// </summary>
-    public ShapeScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public ShapeScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.ctrlFactory = new ControlFactory();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -134,6 +140,8 @@ public class ShapeScene : SceneBase
         MoveShape(frameTime);
         ChangeShapeSize(frameTime);
 
+        this.grpCircleInstructions.Position = new Point(WindowCenter.X - this.grpCircleInstructions.HalfWidth, WindowPadding);
+
         base.Update(frameTime);
     }
 
@@ -177,18 +185,14 @@ public class ShapeScene : SceneBase
             "   - Decrease Diameter: Shift + Down Or Left Arrow",
         };
         var circleInstructions = string.Join(Environment.NewLine, textLines);
-        var lblCircleInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var lblCircleInstructions = this.ctrlFactory.CreateLabel();
         lblCircleInstructions.Name = nameof(lblCircleInstructions);
         lblCircleInstructions.Text = circleInstructions;
 
-        this.grpCircleInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleInstructions = this.ctrlFactory.CreateControlGroup();
         this.grpCircleInstructions.Title = "Circle Instructions";
         this.grpCircleInstructions.AutoSizeToFitContent = true;
         this.grpCircleInstructions.TitleBarVisible = false;
-        this.grpCircleInstructions.Initialized += (_, _) =>
-        {
-            this.grpCircleInstructions.Position = new Point(WindowCenter.X - this.grpCircleInstructions.HalfWidth, WindowPadding);
-        };
         this.grpCircleInstructions.Add(lblCircleInstructions);
     }
 
@@ -201,11 +205,11 @@ public class ShapeScene : SceneBase
         };
 
         var rectInstructions = string.Join(Environment.NewLine, textLines);
-        var lblRectInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var lblRectInstructions = this.ctrlFactory.CreateLabel();
         lblRectInstructions.Name = nameof(lblRectInstructions);
         lblRectInstructions.Text = rectInstructions;
 
-        this.grpRectInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectInstructions = this.ctrlFactory.CreateControlGroup();
         this.grpRectInstructions.Title = "Rect Instructions";
         this.grpRectInstructions.AutoSizeToFitContent = true;
         this.grpRectInstructions.TitleBarVisible = false;
@@ -219,7 +223,7 @@ public class ShapeScene : SceneBase
 
     private void CreateShapeTypeCtrls()
     {
-        var cmbShapeType = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbShapeType = this.ctrlFactory.CreateComboBox();
         cmbShapeType.Name = nameof(cmbShapeType);
         cmbShapeType.Label = "Shape Type:";
         cmbShapeType.Width = 125;
@@ -243,7 +247,7 @@ public class ShapeScene : SceneBase
             this.grpRectCornerRadiusCtrls.Visible = this.shapeType == ShapeType.Rectangle;
         };
 
-        this.grpShapeType = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpShapeType = this.ctrlFactory.CreateControlGroup();
         this.grpShapeType.Title = "Shape Type:";
         this.grpShapeType.TitleBarVisible = false;
         this.grpShapeType.AutoSizeToFitContent = true;
@@ -256,7 +260,7 @@ public class ShapeScene : SceneBase
 
     private void CreateCircleCtrls()
     {
-        var sldCircleBorderThickness = TestingApp.Container.GetInstance<ISlider>();
+        var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
         sldCircleBorderThickness.Name = nameof(sldCircleBorderThickness);
         sldCircleBorderThickness.Text = "Border Thickness:";
         sldCircleBorderThickness.Value = DefaultBorderThickness;
@@ -267,7 +271,7 @@ public class ShapeScene : SceneBase
             this.circle.BorderThickness = newValue;
         };
 
-        var sldCircleDiameter = TestingApp.Container.GetInstance<ISlider>();
+        var sldCircleDiameter = this.ctrlFactory.CreateSlider();
         this.sldCircleDiameterName = nameof(sldCircleDiameter);
         sldCircleDiameter.Name = nameof(sldCircleDiameter);
         sldCircleDiameter.Text = "Diameter:";
@@ -281,7 +285,7 @@ public class ShapeScene : SceneBase
             this.circle.Diameter = newValue;
         };
 
-        var cmbCircleSolidColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbCircleSolidColor = this.ctrlFactory.CreateComboBox();
         cmbCircleSolidColor.Name = nameof(cmbCircleSolidColor);
         this.cmbCircleSolidColorName = nameof(cmbCircleSolidColor);
         cmbCircleSolidColor.Label = "Solid Color:";
@@ -298,7 +302,7 @@ public class ShapeScene : SceneBase
         };
         cmbCircleSolidColor.SelectedItemIndex = 2;
 
-        var chkCircleIsSolid = TestingApp.Container.GetInstance<ICheckBox>();
+        var chkCircleIsSolid = this.ctrlFactory.CreateCheckbox();
         chkCircleIsSolid.Name = nameof(chkCircleIsSolid);
         chkCircleIsSolid.LabelWhenChecked = "Solid";
         chkCircleIsSolid.LabelWhenUnchecked = "Not Solid";
@@ -307,7 +311,7 @@ public class ShapeScene : SceneBase
             this.circle.IsSolid = isChecked;
         };
 
-        this.grpCircleCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpCircleCtrls.Title = "Circle Props";
         this.grpCircleCtrls.AutoSizeToFitContent = true;
         this.grpCircleCtrls.Initialized += (_, _) =>
@@ -322,7 +326,7 @@ public class ShapeScene : SceneBase
 
     private void CreateCircleGradCtrls()
     {
-        var cmbCircleGradType = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbCircleGradType = this.ctrlFactory.CreateComboBox();
         cmbCircleGradType.Name = nameof(cmbCircleGradType);
         cmbCircleGradType.Label = "Gradient Type:";
         cmbCircleGradType.Width = 125;
@@ -345,7 +349,7 @@ public class ShapeScene : SceneBase
             this.circle.GradientType = selectedGradType;
         };
 
-        var cmbCircleGradStartColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbCircleGradStartColor = this.ctrlFactory.CreateComboBox();
         cmbCircleGradStartColor.Name = nameof(cmbCircleGradStartColor);
         cmbCircleGradStartColor.Label = "Grad Start Color:";
         cmbCircleGradStartColor.Width = 100;
@@ -360,7 +364,7 @@ public class ShapeScene : SceneBase
             this.circle.GradientStart = this.clrList[selectedIndex];
         };
 
-        var cmbCircleGradStopColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbCircleGradStopColor = this.ctrlFactory.CreateComboBox();
         cmbCircleGradStopColor.Name = nameof(cmbCircleGradStopColor);
         cmbCircleGradStopColor.Label = "Grad Stop Color:";
         cmbCircleGradStopColor.Width = 100;
@@ -376,7 +380,7 @@ public class ShapeScene : SceneBase
         };
         cmbCircleGradStopColor.SelectedItemIndex = 1;
 
-        this.grpCircleClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpCircleClrGradCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpCircleClrGradCtrls.Title = "Circle Color Gradient Props";
         this.grpCircleClrGradCtrls.AutoSizeToFitContent = true;
         this.grpCircleClrGradCtrls.Initialized += (_, _) =>
@@ -390,7 +394,7 @@ public class ShapeScene : SceneBase
 
     private void CreateRectGradCtrls()
     {
-        var cmbRectGradType = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbRectGradType = this.ctrlFactory.CreateComboBox();
         cmbRectGradType.Name = nameof(cmbRectGradType);
         cmbRectGradType.Label = "Gradient Type:";
         cmbRectGradType.Width = 125;
@@ -413,7 +417,7 @@ public class ShapeScene : SceneBase
             this.rectangle.GradientType = selectedGradType;
         };
 
-        var cmbRectGradStartColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbRectGradStartColor = this.ctrlFactory.CreateComboBox();
         cmbRectGradStartColor.Name = nameof(cmbRectGradStartColor);
         cmbRectGradStartColor.Label = "Grad Start Color:";
         cmbRectGradStartColor.Width = 100;
@@ -428,7 +432,7 @@ public class ShapeScene : SceneBase
             this.rectangle.GradientStart = this.clrList[selectedIndex];
         };
 
-        var cmbRectGradStopColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbRectGradStopColor = this.ctrlFactory.CreateComboBox();
         cmbRectGradStopColor.Name = nameof(cmbRectGradStopColor);
         cmbRectGradStopColor.Label = "Grad Stop Color:";
         cmbRectGradStopColor.Width = 100;
@@ -444,7 +448,7 @@ public class ShapeScene : SceneBase
         };
         cmbRectGradStopColor.SelectedItemIndex = 1;
 
-        this.grpRectClrGradCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectClrGradCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpRectClrGradCtrls.Title = "Rect Color Gradient Props";
         this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
         this.grpRectClrGradCtrls.Visible = false;
@@ -459,7 +463,7 @@ public class ShapeScene : SceneBase
 
     private void CreateRectCtrls()
     {
-        var sldRectBorderThickness = TestingApp.Container.GetInstance<ISlider>();
+        var sldRectBorderThickness = this.ctrlFactory.CreateSlider();
         sldRectBorderThickness.Name = nameof(sldRectBorderThickness);
         sldRectBorderThickness.Text = "Border Thickness:";
         sldRectBorderThickness.Value = DefaultBorderThickness;
@@ -470,7 +474,7 @@ public class ShapeScene : SceneBase
             this.rectangle.BorderThickness = newValue;
         };
 
-        var sldRectWidth = TestingApp.Container.GetInstance<ISlider>();
+        var sldRectWidth = this.ctrlFactory.CreateSlider();
         sldRectWidth.Name = nameof(sldRectWidth);
         this.sldRectWidthName = nameof(sldRectWidth);
         sldRectWidth.Text = "Width:";
@@ -497,7 +501,7 @@ public class ShapeScene : SceneBase
             sldBottomLeftRadiusCtrl.Max = newValue;
         };
 
-        var sldRectHeight = TestingApp.Container.GetInstance<ISlider>();
+        var sldRectHeight = this.ctrlFactory.CreateSlider();
         sldRectHeight.Name = nameof(sldRectHeight);
         this.sldRectHeightName = nameof(sldRectHeight);
         sldRectHeight.Text = "Height:";
@@ -524,7 +528,7 @@ public class ShapeScene : SceneBase
             sldBottomLeftRadiusCtrl.Max = newValue;
         };
 
-        var cmbRectSolidColor = TestingApp.Container.GetInstance<IComboBox>();
+        var cmbRectSolidColor = this.ctrlFactory.CreateComboBox();
         cmbRectSolidColor.Name = nameof(cmbRectSolidColor);
         this.cmbRectSolidColorName = nameof(cmbRectSolidColor);
         cmbRectSolidColor.Label = "Solid Color:";
@@ -541,7 +545,7 @@ public class ShapeScene : SceneBase
         };
         cmbRectSolidColor.SelectedItemIndex = 2;
 
-        var chkRectIsSolid = TestingApp.Container.GetInstance<ICheckBox>();
+        var chkRectIsSolid = this.ctrlFactory.CreateCheckbox();
         chkRectIsSolid.Name = nameof(chkRectIsSolid);
         chkRectIsSolid.LabelWhenChecked = "Solid";
         chkRectIsSolid.LabelWhenUnchecked = "Not Solid";
@@ -550,7 +554,7 @@ public class ShapeScene : SceneBase
             this.rectangle.IsSolid = isChecked;
         };
 
-        this.grpRectCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpRectCtrls.Title = "Rectangle Props";
         this.grpRectCtrls.AutoSizeToFitContent = true;
         this.grpRectCtrls.Visible = false;
@@ -572,7 +576,7 @@ public class ShapeScene : SceneBase
         // ReSharper disable once HeuristicUnreachableCode
         const float defaultRadius = (DefaultRectWidth < DefaultRectHeight ? DefaultRectWidth : DefaultRectHeight) / 2;
 
-        var sldTopLeftRadius = TestingApp.Container.GetInstance<ISlider>();
+        var sldTopLeftRadius = this.ctrlFactory.CreateSlider();
         sldTopLeftRadius.Name = nameof(sldTopLeftRadius);
         this.sldTopLeftRadiusName = nameof(sldTopLeftRadius);
         sldTopLeftRadius.Text = "Top Left Radius:";
@@ -586,7 +590,7 @@ public class ShapeScene : SceneBase
             this.rectangle.CornerRadius = this.rectangle.CornerRadius with { TopLeft = newValue, };
         };
 
-        var sldTopRightRadius = TestingApp.Container.GetInstance<ISlider>();
+        var sldTopRightRadius = this.ctrlFactory.CreateSlider();
         sldTopRightRadius.Name = nameof(sldTopRightRadius);
         this.sldTopRightRadiusName = nameof(sldTopRightRadius);
         sldTopRightRadius.Text = "Top Right:";
@@ -600,7 +604,7 @@ public class ShapeScene : SceneBase
             this.rectangle.CornerRadius = this.rectangle.CornerRadius with { TopRight = newValue, };
         };
 
-        var sldBottomRightRadius = TestingApp.Container.GetInstance<ISlider>();
+        var sldBottomRightRadius = this.ctrlFactory.CreateSlider();
         sldBottomRightRadius.Name = nameof(sldBottomRightRadius);
         this.sldBottomRightRadiusName = nameof(sldBottomRightRadius);
         sldBottomRightRadius.Text = "Bottom Right:";
@@ -614,7 +618,7 @@ public class ShapeScene : SceneBase
             this.rectangle.CornerRadius = this.rectangle.CornerRadius with { BottomRight = newValue, };
         };
 
-        var sldBottomLeftRadius = TestingApp.Container.GetInstance<ISlider>();
+        var sldBottomLeftRadius = this.ctrlFactory.CreateSlider();
         sldBottomLeftRadius.Name = nameof(sldBottomLeftRadius);
         this.sldBottomLeftRadiusName = nameof(sldBottomLeftRadius);
         sldBottomLeftRadius.Text = "Bottom Left:";
@@ -628,7 +632,7 @@ public class ShapeScene : SceneBase
             this.rectangle.CornerRadius = this.rectangle.CornerRadius with { BottomLeft = newValue, };
         };
 
-        this.grpRectCornerRadiusCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectCornerRadiusCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpRectCornerRadiusCtrls.Title = "Rect Radius Props";
         this.grpRectCornerRadiusCtrls.AutoSizeToFitContent = true;
         this.grpRectCornerRadiusCtrls.Visible = false;

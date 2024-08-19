@@ -8,7 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -66,18 +67,17 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, textLines);
 
-        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+
+        var lblInstructions = ctrlFactory.CreateLabel();
         lblInstructions.Name = nameof(lblInstructions);
         lblInstructions.Text = instructions;
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls = ctrlFactory.CreateControlGroup();
         this.grpControls.Title = "Instructions";
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.TitleBarVisible = false;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
-        };
+
         this.grpControls.Add(lblInstructions);
 
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
@@ -147,6 +147,8 @@ public class NonAnimatedGraphicsScene : SceneBase
                 _ => this.renderEffects
             };
         }
+
+        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
 
         this.prevKeyState = currentKeyState;
     }

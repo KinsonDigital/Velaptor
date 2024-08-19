@@ -8,7 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -75,31 +76,28 @@ public class LayeredRectRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, textLines);
 
-        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+
+        var lblInstructions = ctrlFactory.CreateLabel();
         lblInstructions.Name = nameof(lblInstructions);
         lblInstructions.Text = instructions;
 
-        var lblRectState = TestingApp.Container.GetInstance<ILabel>();
+        var lblRectState = ctrlFactory.CreateLabel();
         lblRectState.Name = nameof(lblRectState);
         this.lblRectStateName = nameof(lblRectState);
 
-        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions = ctrlFactory.CreateControlGroup();
         this.grpInstructions.Title = "Instructions";
         this.grpInstructions.AutoSizeToFitContent = true;
         this.grpInstructions.TitleBarVisible = false;
         this.grpInstructions.Initialized += (_, _) =>
-        {
-            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-        };
         this.grpInstructions.Add(lblInstructions);
 
-        this.grpRectState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpRectState = ctrlFactory.CreateControlGroup();
         this.grpRectState.Title = "Rect State";
         this.grpRectState.AutoSizeToFitContent = true;
         this.grpRectState.Initialized += (_, _) =>
-        {
-            this.grpRectState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectState.HalfHeight);
-        };
+
         this.grpRectState.Add(lblRectState);
 
         this.orangeRect = this.orangeRect with
@@ -147,6 +145,9 @@ public class LayeredRectRenderingScene : SceneBase
         UpdateWhiteRectLayer();
         UpdateRectStateText();
         MoveWhiteRect(frameTime);
+
+        this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        this.grpRectState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectState.HalfHeight);
 
         this.prevKeyState = this.currentKeyState;
         base.Update(frameTime);

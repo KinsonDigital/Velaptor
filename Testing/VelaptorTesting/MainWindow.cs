@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using KdGui;
+using KdGui.Factories;
 using Scenes;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using UI;
 
 /// <summary>
 /// The main window to the testing application.
@@ -44,7 +45,9 @@ public class MainWindow : Window
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        this.grpSceneCtrls = TestingApp.Container.GetInstance<IControlGroup>();
+        var ctrlFactory = new ControlFactory();
+
+        this.grpSceneCtrls = ctrlFactory.CreateControlGroup();
         this.grpSceneCtrls.Title = "Scene Group";
         this.grpSceneCtrls.TitleBarVisible = false;
         this.grpSceneCtrls.AutoSizeToFitContent = true;
@@ -55,7 +58,7 @@ public class MainWindow : Window
                 (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
         };
 
-        var nextPrevious = TestingApp.Container.GetInstance<INextPrevious>();
+        var nextPrevious = ctrlFactory.CreateNextPrevious();
         nextPrevious.Next += (_, _) => SceneManager.NextScene();
         nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
 

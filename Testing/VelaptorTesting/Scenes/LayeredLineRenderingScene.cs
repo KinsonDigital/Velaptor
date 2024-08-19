@@ -8,7 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ExtensionMethods;
@@ -73,11 +74,13 @@ public class LayeredLineRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, textLines);
 
-        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+
+        var lblInstructions = ctrlFactory.CreateLabel();
         lblInstructions.Name = nameof(lblInstructions);
         lblInstructions.Text = instructions;
 
-        this.grpInstructions = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpInstructions = ctrlFactory.CreateControlGroup();
         this.grpInstructions.Title = "Instructions";
         this.grpInstructions.AutoSizeToFitContent = true;
         this.grpInstructions.TitleBarVisible = false;
@@ -87,11 +90,11 @@ public class LayeredLineRenderingScene : SceneBase
         };
         this.grpInstructions.Add(lblInstructions);
 
-        var lblLineState = TestingApp.Container.GetInstance<ILabel>();
+        var lblLineState = ctrlFactory.CreateLabel();
         lblLineState.Name = nameof(lblLineState);
         this.lblLineStateName = nameof(lblLineState);
 
-        this.grpLineState = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpLineState = ctrlFactory.CreateControlGroup();
         this.grpLineState.Title = "Line State";
         this.grpLineState.AutoSizeToFitContent = true;
         this.grpLineState.Initialized += (_, _) =>

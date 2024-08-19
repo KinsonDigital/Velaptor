@@ -7,7 +7,8 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -58,18 +59,16 @@ public class LineRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, instructionLines);
 
-        var lblInstructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+
+        var lblInstructions = ctrlFactory.CreateLabel();
         lblInstructions.Name = nameof(lblInstructions);
         lblInstructions.Text = instructions;
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls = ctrlFactory.CreateControlGroup();
         this.grpControls.Title = "Instructions";
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.TitleBarVisible = false;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
-        };
 
         this.grpControls.Add(lblInstructions);
 
@@ -94,6 +93,8 @@ public class LineRenderingScene : SceneBase
 
         UpdateLine(frameTime);
         MoveLine(frameTime);
+
+        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
 
         base.Update(frameTime);
     }

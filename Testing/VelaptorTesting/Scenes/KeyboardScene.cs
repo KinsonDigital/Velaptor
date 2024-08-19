@@ -7,7 +7,8 @@ namespace VelaptorTesting.Scenes;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
-using UI;
+using KdGui;
+using KdGui.Factories;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -39,23 +40,20 @@ public class KeyboardScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var instructions = TestingApp.Container.GetInstance<ILabel>();
+        var ctrlFactory = new ControlFactory();
+        var instructions = ctrlFactory.CreateLabel();
         instructions.Name = nameof(instructions);
 
         instructions.Text = "Hit a key on the keyboard to see if it is correct.";
 
-        var downKeys = TestingApp.Container.GetInstance<ILabel>();
+        var downKeys = ctrlFactory.CreateLabel();
         downKeys.Name = nameof(downKeys);
         this.downKeysName = nameof(downKeys);
 
-        this.grpControls = TestingApp.Container.GetInstance<IControlGroup>();
+        this.grpControls = ctrlFactory.CreateControlGroup();
         this.grpControls.Title = "Keyboard Info";
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.TitleBarVisible = false;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
-        };
 
         this.grpControls.Add(downKeys);
         this.grpControls.Add(instructions);
@@ -101,6 +99,8 @@ public class KeyboardScene : SceneBase
         {
             downKeysCtrl.Text = "No Keys Pressed";
         }
+
+        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
 
         base.Update(frameTime);
     }
