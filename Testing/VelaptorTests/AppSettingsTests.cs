@@ -48,7 +48,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.WindowWidth.Should().Be(1500);
+        settings.WindowWidth.Should().Be(1280);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.WindowHeight.Should().Be(800);
+        settings.WindowHeight.Should().Be(720);
     }
 
     [FactForDebug]
