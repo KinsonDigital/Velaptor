@@ -49,7 +49,8 @@ internal sealed class ImageService : IImageService
         for (var y = 0; y < rgba32Image.Height; y++)
         {
             var row = y;
-            rgba32Image.ProcessPixelRows(accessor =>
+            rgba32Image.ProcessPixelRows(
+                accessor =>
             {
                 var pixelRowSpan = accessor.GetRowSpan(row);
                 for (var x = 0; x < rgba32Image.Width; x++)

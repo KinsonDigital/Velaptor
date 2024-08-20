@@ -9,8 +9,8 @@ namespace MeasureTextPerf;
 using System.Reflection;
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using Moq;
 using Newtonsoft.Json;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Fonts;
@@ -44,21 +44,21 @@ public class MeasureTextBenchmarks
             throw new Exception("Failed to load glyph metrics data");
         }
 
-        var mockTexture = new Mock<ITexture>();
+        var mockTexture = Substitute.For<ITexture>();
 
-        var mockFreeTypeService = new Mock<IFreeTypeService>();
-        mockFreeTypeService.Setup(m => m.HasKerning(It.IsAny<nint>())).Returns(false);
+        var mockFreeTypeService = Substitute.For<IFreeTypeService>();
+        mockFreeTypeService.HasKerning(Arg.Any<nint>()).Returns(false);
 
-        var mockFontStatsService = new Mock<IFontStatsService>();
-        var mockFontAtlasService = new Mock<IFontAtlasService>();
-        var mockTextureCache = new Mock<IItemCache<string, ITexture>>();
+        var mockFontStatsService = Substitute.For<IFontStatsService>();
+        var mockFontAtlasService = Substitute.For<IFontAtlasService>();
+        var mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
 
         this.font = new Font(
-            mockTexture.Object,
-            mockFreeTypeService.Object,
-            mockFontStatsService.Object,
-            mockFontAtlasService.Object,
-            mockTextureCache.Object,
+            mockTexture,
+            mockFreeTypeService,
+            mockFontStatsService,
+            mockFontAtlasService,
+            mockTextureCache,
             "test-font",
             "test-font-path",
             12u,

@@ -218,13 +218,15 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             }
         }
 
-        return this.textures.GetOrAdd(cacheKey, value =>
+        return this.textures.GetOrAdd(
+            cacheKey,
+            value =>
         {
             ImageData imageData;
 
             if (isFontFile)
             {
-                var (atlasImageData, _) = this.fontAtlasService.CreateAtlas(fullFilePath, parseResult.FontSize);
+                (ImageData atlasImageData, _) = this.fontAtlasService.CreateAtlas(fullFilePath, parseResult.FontSize);
 
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;
