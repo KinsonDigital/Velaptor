@@ -7,7 +7,6 @@ namespace VelaptorTests;
 
 using System;
 using FluentAssertions;
-using Moq;
 using Velaptor;
 using Xunit;
 
@@ -133,7 +132,7 @@ public class CachedValueTests
         // Arrange
         var cachedValue = new CachedValue<int>(
             1234,
-            It.IsAny<int>,
+            () => 5678,
             _ => { });
 
         // Act

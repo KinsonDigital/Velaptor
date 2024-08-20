@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
@@ -23,27 +23,24 @@ public class FontStatsServiceTests
     private const string RootContentDirPath = @"C:\content-dir\";
     private const string DirNameForContentPath = "content-fonts";
     private const string FullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
-    private readonly Mock<IFreeTypeService> mockFreeTypeService;
-    private readonly Mock<IContentPathResolver> mockFontPathResolver;
-    private readonly Mock<IDirectory> mockDirectory;
-    private readonly Mock<IPath> mockPath;
+    private readonly IFreeTypeService mockFreeTypeService;
+    private readonly IContentPathResolver mockFontPathResolver;
+    private readonly IDirectory mockDirectory;
+    private readonly IPath mockPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontStatsServiceTests"/> class.
     /// </summary>
     public FontStatsServiceTests()
     {
-        this.mockFreeTypeService = new Mock<IFreeTypeService>();
-
-        this.mockFontPathResolver = new Mock<IContentPathResolver>();
-        this.mockFontPathResolver.Setup(m => m.ResolveDirPath())
+        this.mockFreeTypeService = Substitute.For<IFreeTypeService>();
+        this.mockFontPathResolver = Substitute.For<IContentPathResolver>();
+        this.mockFontPathResolver.ResolveDirPath()
             .Returns(FullContentFontDirPath);
-        this.mockFontPathResolver.SetupGet(p => p.ContentDirectoryName)
-            .Returns(DirNameForContentPath);
+        this.mockFontPathResolver.ContentDirectoryName.Returns(DirNameForContentPath);
 
-        this.mockDirectory = new Mock<IDirectory>();
-
-        this.mockPath = new Mock<IPath>();
+        this.mockDirectory = Substitute.For<IDirectory>();
+        this.mockPath = Substitute.For<IPath>();
     }
 
     #region Constructor Tests
@@ -56,9 +53,9 @@ public class FontStatsServiceTests
         {
             _ = new FontStatsService(
                 null,
-                this.mockFontPathResolver.Object,
-                this.mockDirectory.Object,
-                this.mockPath.Object);
+                this.mockFontPathResolver,
+                this.mockDirectory,
+                this.mockPath);
         };
 
         // Assert
@@ -74,10 +71,10 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFreeTypeService.Object,
+                this.mockFreeTypeService,
                 null,
-                this.mockDirectory.Object,
-                this.mockPath.Object);
+                this.mockDirectory,
+                this.mockPath);
         };
 
         // Assert
@@ -93,10 +90,10 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFreeTypeService.Object,
-                this.mockFontPathResolver.Object,
+                this.mockFreeTypeService,
+                this.mockFontPathResolver,
                 null,
-                this.mockPath.Object);
+                this.mockPath);
         };
 
         // Assert
@@ -112,9 +109,9 @@ public class FontStatsServiceTests
         var act = () =>
         {
             _ = new FontStatsService(
-                this.mockFreeTypeService.Object,
-                this.mockFontPathResolver.Object,
-                this.mockDirectory.Object,
+                this.mockFreeTypeService,
+                this.mockFontPathResolver,
+                this.mockDirectory,
                 null);
         };
 
@@ -136,17 +133,14 @@ public class FontStatsServiceTests
         var fontTimesItalic = BuildContentFontPath("TimesNewRoman-Italic.ttf");
         var fontTimesBoldItalic = BuildContentFontPath("TimesNewRoman-BoldItalic.ttf");
 
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(FullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(FullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(FullContentFontDirPath);
-        this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(FullContentFontDirPath);
+        this.mockPath.GetDirectoryName(fontTimesRegular).Returns(FullContentFontDirPath);
+        this.mockPath.GetDirectoryName(fontTimesBold).Returns(FullContentFontDirPath);
+        this.mockPath.GetDirectoryName(fontTimesItalic).Returns(FullContentFontDirPath);
+        this.mockPath.GetDirectoryName(fontTimesBoldItalic).Returns(FullContentFontDirPath);
 
         var fontFiles = new[]
         {
-            fontTimesRegular,
-            fontTimesBold,
-            fontTimesItalic,
-            fontTimesBoldItalic,
+            fontTimesRegular, fontTimesBold, fontTimesItalic, fontTimesBoldItalic,
         };
 
         MockAllFontFamilies(fontFiles, fontFamily);
@@ -156,15 +150,26 @@ public class FontStatsServiceTests
         MockFontStyle(fontTimesItalic, FontStyle.Italic);
         MockFontStyle(fontTimesBoldItalic, FontStyle.Bold | FontStyle.Italic);
 
-        this.mockDirectory.Setup(m => m.GetFiles(FullContentFontDirPath, "*.ttf"))
-            .Returns(() => fontFiles);
+        this.mockDirectory.GetFiles(FullContentFontDirPath, "*.ttf").Returns(fontFiles);
 
         var expected = new[]
         {
-            new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular, Source = FontSource.AppContent },
-            new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold, Source = FontSource.AppContent },
-            new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic, Source = FontSource.AppContent },
-            new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.AppContent },
+            new FontStats
+            {
+                FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular, Source = FontSource.AppContent,
+            },
+            new FontStats
+            {
+                FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold, Source = FontSource.AppContent,
+            },
+            new FontStats
+            {
+                FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic, Source = FontSource.AppContent,
+            },
+            new FontStats
+            {
+                FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.AppContent,
+            },
         };
 
         var sut = CreateSystemUnderTest();
@@ -190,10 +195,10 @@ public class FontStatsServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private FontStatsService CreateSystemUnderTest() => new (
-        this.mockFreeTypeService.Object,
-        this.mockFontPathResolver.Object,
-        this.mockDirectory.Object,
-        this.mockPath.Object);
+        this.mockFreeTypeService,
+        this.mockFontPathResolver,
+        this.mockDirectory,
+        this.mockPath);
 
     /// <summary>
     /// Mocks the font at the given <paramref name="filePath"/> with the given font <paramref name="familyName"/>.
@@ -202,8 +207,7 @@ public class FontStatsServiceTests
     /// <param name="familyName">The family of the font to mock.</param>
     private void MockFontFamilyName(string filePath, string familyName)
     {
-        this.mockFreeTypeService.Setup(m => m.GetFamilyName(filePath))
-            .Returns(familyName);
+        this.mockFreeTypeService.GetFamilyName(filePath).Returns(familyName);
     }
 
     /// <summary>
@@ -226,7 +230,6 @@ public class FontStatsServiceTests
     /// <param name="style">The style to mock.</param>
     private void MockFontStyle(string filePath, FontStyle style)
     {
-        this.mockFreeTypeService.Setup(m => m.GetFontStyle(filePath))
-            .Returns(style);
+        this.mockFreeTypeService.GetFontStyle(filePath).Returns(style);
     }
 }

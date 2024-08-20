@@ -6,7 +6,7 @@ namespace VelaptorTests.Services;
 
 using System;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Serilog;
 using Velaptor;
 using Velaptor.Services;
@@ -17,31 +17,31 @@ using Xunit;
 /// </summary>
 public class LoggingServiceTests
 {
-    private readonly Mock<IAppSettingsService> mockAppSettingsService;
-    private readonly Mock<IConsoleLoggerService> mockConsoleLoggerService;
-    private readonly Mock<IFileLoggerService> mockFileLoggerService;
-    private readonly Mock<IEventLoggerService> mockEventLoggerService;
-    private readonly Mock<ILogger> mockConsoleLogger;
-    private readonly Mock<ILogger> mockFileLogger;
+    private readonly IAppSettingsService mockAppSettingsService;
+    private readonly IConsoleLoggerService mockConsoleLoggerService;
+    private readonly IFileLoggerService mockFileLoggerService;
+    private readonly IEventLoggerService mockEventLoggerService;
+    private readonly ILogger mockConsoleLogger;
+    private readonly ILogger mockFileLogger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingServiceTests"/> class.
     /// </summary>
     public LoggingServiceTests()
     {
-        this.mockAppSettingsService = new Mock<IAppSettingsService>();
+        this.mockAppSettingsService = Substitute.For<IAppSettingsService>();
 
-        this.mockConsoleLogger = new Mock<ILogger>();
+        this.mockConsoleLogger = Substitute.For<ILogger>();
 
-        this.mockConsoleLoggerService = new Mock<IConsoleLoggerService>();
-        this.mockConsoleLoggerService.SetupGet(p => p.Logger).Returns(this.mockConsoleLogger.Object);
+        this.mockConsoleLoggerService = Substitute.For<IConsoleLoggerService>();
+        this.mockConsoleLoggerService.Logger.Returns(this.mockConsoleLogger);
 
-        this.mockFileLogger = new Mock<ILogger>();
+        this.mockFileLogger = Substitute.For<ILogger>();
 
-        this.mockFileLoggerService = new Mock<IFileLoggerService>();
-        this.mockFileLoggerService.SetupGet(p => p.Logger).Returns(this.mockFileLogger.Object);
+        this.mockFileLoggerService = Substitute.For<IFileLoggerService>();
+        this.mockFileLoggerService.Logger.Returns(this.mockFileLogger);
 
-        this.mockEventLoggerService = new Mock<IEventLoggerService>();
+        this.mockEventLoggerService = Substitute.For<IEventLoggerService>();
     }
 
     #region Constructor Tests
@@ -54,9 +54,9 @@ public class LoggingServiceTests
         {
             _ = new LoggingService(
                 null,
-                this.mockConsoleLoggerService.Object,
-                this.mockFileLoggerService.Object,
-                this.mockEventLoggerService.Object);
+                this.mockConsoleLoggerService,
+                this.mockFileLoggerService,
+                this.mockEventLoggerService);
         };
 
         // Assert
@@ -72,10 +72,10 @@ public class LoggingServiceTests
         var act = () =>
         {
             _ = new LoggingService(
-                this.mockAppSettingsService.Object,
+                this.mockAppSettingsService,
                 null,
-                this.mockFileLoggerService.Object,
-                this.mockEventLoggerService.Object);
+                this.mockFileLoggerService,
+                this.mockEventLoggerService);
         };
 
         // Assert
@@ -91,10 +91,10 @@ public class LoggingServiceTests
         var act = () =>
         {
             _ = new LoggingService(
-                this.mockAppSettingsService.Object,
-                this.mockConsoleLoggerService.Object,
+                this.mockAppSettingsService,
+                this.mockConsoleLoggerService,
                 null,
-                this.mockEventLoggerService.Object);
+                this.mockEventLoggerService);
         };
 
         // Assert
@@ -110,9 +110,9 @@ public class LoggingServiceTests
         var act = () =>
         {
             _ = new LoggingService(
-                this.mockAppSettingsService.Object,
-                this.mockConsoleLoggerService.Object,
-                this.mockFileLoggerService.Object,
+                this.mockAppSettingsService,
+                this.mockConsoleLoggerService,
+                this.mockFileLoggerService,
                 null);
         };
 
@@ -135,16 +135,16 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
         // Act
-        sut.Info(It.IsAny<string>());
+        sut.Info(string.Empty);
 
         // Assert
-        VerifyConsoleLogs(Times.Never());
-        VerifyFileLogs(Times.Never());
+        VerifyConsoleLogs(0);
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = false,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -166,11 +166,11 @@ public class LoggingServiceTests
         sut.Info("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyFileLogs(Times.Never());
+        this.mockConsoleLogger.Received(1).Information("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -192,11 +192,11 @@ public class LoggingServiceTests
         sut.Info("test-info-msg");
 
         // Assert
-        this.mockFileLogger.Verify(m => m.Information("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyConsoleLogs(Times.Never());
+        this.mockFileLogger.Received(1).Information("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyConsoleLogs(0);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -218,14 +218,14 @@ public class LoggingServiceTests
         sut.Info("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Information("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
+        this.mockConsoleLogger.Received(1).Information("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Information("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
     }
 
     [Fact]
@@ -239,16 +239,16 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
         // Act
-        sut.Warning(It.IsAny<string>());
+        sut.Warning(string.Empty);
 
         // Assert
-        VerifyConsoleLogs(Times.Never());
-        VerifyFileLogs(Times.Never());
+        VerifyConsoleLogs(0);
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = false,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -270,11 +270,11 @@ public class LoggingServiceTests
         sut.Warning("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Warning("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyFileLogs(Times.Never());
+        this.mockConsoleLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockConsoleLogger.Received(1).Warning("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -296,11 +296,11 @@ public class LoggingServiceTests
         sut.Warning("test-info-msg");
 
         // Assert
-        this.mockFileLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Warning("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyConsoleLogs(Times.Never());
+        this.mockFileLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Warning("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyConsoleLogs(0);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -322,14 +322,14 @@ public class LoggingServiceTests
         sut.Warning("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Warning("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Warning("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Error(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
+        this.mockConsoleLogger.Received(1).Warning("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Warning("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Error(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
     }
 
     [Fact]
@@ -343,16 +343,16 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
         // Act
-        sut.Error(It.IsAny<string>());
+        sut.Error(string.Empty);
 
         // Assert
-        VerifyConsoleLogs(Times.Never());
-        VerifyFileLogs(Times.Never());
+        VerifyConsoleLogs(0);
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -366,7 +366,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = false,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -374,11 +374,11 @@ public class LoggingServiceTests
         sut.Error("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Error("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyFileLogs(Times.Never());
+        this.mockConsoleLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockConsoleLogger.Received(1).Error("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyFileLogs(0);
     }
 
     [Fact]
@@ -392,7 +392,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -400,11 +400,11 @@ public class LoggingServiceTests
         sut.Error("test-info-msg");
 
         // Assert
-        this.mockFileLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Error("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        VerifyConsoleLogs(Times.Never());
+        this.mockFileLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Error("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        VerifyConsoleLogs(0);
     }
 
     [Fact]
@@ -418,7 +418,7 @@ public class LoggingServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingsService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingsService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -426,14 +426,14 @@ public class LoggingServiceTests
         sut.Error("test-info-msg");
 
         // Assert
-        this.mockConsoleLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockConsoleLogger.Verify(m => m.Error("test-info-msg"), Times.Once);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Information(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Warning(It.IsAny<string>()), Times.Never);
-        this.mockFileLogger.Verify(m => m.Error("test-info-msg"), Times.Once);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), Times.Never);
+        this.mockConsoleLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockConsoleLogger.Received(1).Error("test-info-msg");
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Error("test-info-msg");
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
     }
 
     [Fact]
@@ -446,7 +446,7 @@ public class LoggingServiceTests
         sut.Event("test-event", "test msg");
 
         // Assert
-        this.mockEventLoggerService.Verify(m => m.Event("test-event", "test msg"), Times.Once);
+        this.mockEventLoggerService.Received(1).Event("test-event", "test msg");
     }
     #endregion
 
@@ -455,30 +455,30 @@ public class LoggingServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private LoggingService CreateService()
-        => new (this.mockAppSettingsService.Object,
-            this.mockConsoleLoggerService.Object,
-            this.mockFileLoggerService.Object,
-            this.mockEventLoggerService.Object);
+        => new (this.mockAppSettingsService,
+            this.mockConsoleLoggerService,
+            this.mockFileLoggerService,
+            this.mockEventLoggerService);
 
     /// <summary>
     /// Verifies that logging methods for the file logger were not invoked.
     /// </summary>
-    private void VerifyFileLogs(Times times)
+    private void VerifyFileLogs(int times)
     {
-        this.mockFileLogger.Verify(m => m.Information(It.IsAny<string>()), times);
-        this.mockFileLogger.Verify(m => m.Warning(It.IsAny<string>()), times);
-        this.mockFileLogger.Verify(m => m.Error(It.IsAny<string>()), times);
-        this.mockFileLogger.Verify(m => m.Fatal(It.IsAny<string>()), times);
+        this.mockFileLogger.Received(times).Information(Arg.Any<string>());
+        this.mockFileLogger.Received(times).Warning(Arg.Any<string>());
+        this.mockFileLogger.Received(times).Error(Arg.Any<string>());
+        this.mockFileLogger.Received(times).Fatal(Arg.Any<string>());
     }
 
     /// <summary>
     /// Verifies that logging methods for the console logger were not invoked.
     /// </summary>
-    private void VerifyConsoleLogs(Times times)
+    private void VerifyConsoleLogs(int times)
     {
-        this.mockConsoleLogger.Verify(m => m.Information(It.IsAny<string>()), times);
-        this.mockConsoleLogger.Verify(m => m.Warning(It.IsAny<string>()), times);
-        this.mockConsoleLogger.Verify(m => m.Error(It.IsAny<string>()), times);
-        this.mockConsoleLogger.Verify(m => m.Fatal(It.IsAny<string>()), times);
+        this.mockConsoleLogger.Received(times).Information(Arg.Any<string>());
+        this.mockConsoleLogger.Received(times).Warning(Arg.Any<string>());
+        this.mockConsoleLogger.Received(times).Error(Arg.Any<string>());
+        this.mockConsoleLogger.Received(times).Fatal(Arg.Any<string>());
     }
 }

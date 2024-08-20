@@ -6,7 +6,7 @@ namespace VelaptorTests.Content.Factories;
 
 using System;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Factories;
@@ -21,20 +21,20 @@ using Xunit;
 /// </summary>
 public class FontFactoryTests
 {
-    private readonly Mock<IFreeTypeService> mockFreeTypeService;
-    private readonly Mock<IFontStatsService> mockFontStatsService;
-    private readonly Mock<IFontAtlasService> mockFontAtlasService;
-    private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
+    private readonly IFreeTypeService mockFreeTypeService;
+    private readonly IFontStatsService mockFontStatsService;
+    private readonly IFontAtlasService mockFontAtlasService;
+    private readonly IItemCache<string, ITexture> mockTextureCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontFactoryTests"/> class.
     /// </summary>
     public FontFactoryTests()
     {
-        this.mockFreeTypeService = new Mock<IFreeTypeService>();
-        this.mockFontStatsService = new Mock<IFontStatsService>();
-        this.mockFontAtlasService = new Mock<IFontAtlasService>();
-        this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
+        this.mockFreeTypeService = Substitute.For<IFreeTypeService>();
+        this.mockFontStatsService = Substitute.For<IFontStatsService>();
+        this.mockFontAtlasService = Substitute.For<IFontAtlasService>();
+        this.mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
     }
 
     #region Constructor Tests
@@ -46,9 +46,9 @@ public class FontFactoryTests
         {
             _ = new FontFactory(
                 null,
-                this.mockFontStatsService.Object,
-                this.mockFontAtlasService.Object,
-                this.mockTextureCache.Object);
+                this.mockFontStatsService,
+                this.mockFontAtlasService,
+                this.mockTextureCache);
         };
 
         // Assert
@@ -64,10 +64,10 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeService.Object,
+                this.mockFreeTypeService,
                 null,
-                this.mockFontAtlasService.Object,
-                this.mockTextureCache.Object);
+                this.mockFontAtlasService,
+                this.mockTextureCache);
         };
 
         // Assert
@@ -83,10 +83,10 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeService.Object,
-                this.mockFontStatsService.Object,
+                this.mockFreeTypeService,
+                this.mockFontStatsService,
                 null,
-                this.mockTextureCache.Object);
+                this.mockTextureCache);
         };
 
         // Assert
@@ -102,9 +102,9 @@ public class FontFactoryTests
         var act = () =>
         {
             _ = new FontFactory(
-                this.mockFreeTypeService.Object,
-                this.mockFontStatsService.Object,
-                this.mockFontAtlasService.Object,
+                this.mockFreeTypeService,
+                this.mockFontStatsService,
+                this.mockFontAtlasService,
                 null);
         };
 
@@ -121,13 +121,13 @@ public class FontFactoryTests
     public void Create_WhenInvoked_ReturnsCorrectResultWithoutThrowingException()
     {
         // Arrange
-        var mockTexture = new Mock<ITexture>();
+        var mockTexture = Substitute.For<ITexture>();
 
         var sut = new FontFactory(
-            this.mockFreeTypeService.Object,
-            this.mockFontStatsService.Object,
-            this.mockFontAtlasService.Object,
-            this.mockTextureCache.Object);
+            this.mockFreeTypeService,
+            this.mockFontStatsService,
+            this.mockFontAtlasService,
+            this.mockTextureCache);
 
         IFont? actual = null;
 
@@ -135,7 +135,7 @@ public class FontFactoryTests
         var act = () =>
         {
             actual = sut.Create(
-                mockTexture.Object,
+                mockTexture,
                 "test-name",
                 "test-path",
                 123u,

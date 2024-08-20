@@ -8,7 +8,7 @@ using System;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
@@ -20,19 +20,18 @@ using Xunit;
 /// </summary>
 public class AudioFactoryTests
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<DisposeAudioData>> mockDisposeSoundReactable;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IPushReactable<DisposeAudioData> mockDisposeSoundReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioFactoryTests"/> class.
     /// </summary>
     public AudioFactoryTests()
     {
-        this.mockDisposeSoundReactable = new Mock<IPushReactable<DisposeAudioData>>();
+        this.mockDisposeSoundReactable = Substitute.For<IPushReactable<DisposeAudioData>>();
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateDisposeAudioReactable())
-            .Returns(this.mockDisposeSoundReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateDisposeAudioReactable().Returns(this.mockDisposeSoundReactable);
     }
 
     #region Constructor Tests
@@ -74,30 +73,27 @@ public class AudioFactoryTests
         // Arrange
         IReceiveSubscription<DisposeAudioData>? subscription = null;
 
-        this.mockDisposeSoundReactable
-            .Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeAudioData>>()))
-            .Callback<IReceiveSubscription<DisposeAudioData>>((subscriptionParam) =>
+        this.mockDisposeSoundReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
+            .Do(callInfo =>
             {
-                subscriptionParam.Should().NotBeNull();
-                subscriptionParam.Id.Should().Be(PushNotifications.AudioDisposedId);
-                subscriptionParam.Name.Should().Be($"AudioFactory.ctor() - {PushNotifications.AudioDisposedId}");
-
-                subscription = subscriptionParam;
+                subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
             });
 
-        this.mockDisposeSoundReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.IsAny<DisposeAudioData>()))
-            .Callback((Guid eventId, in DisposeAudioData data) =>
+        this.mockDisposeSoundReactable.When(x => x.Push(Arg.Any<Guid>(), Arg.Any<DisposeAudioData>()))
+            .Do(callInfo =>
             {
-                data.AudioId.Should().Be(1);
-                eventId.Should().Be(PushNotifications.AudioDisposedId);
+                var notificationId = callInfo.Arg<Guid>();
+                var data = callInfo.Arg<DisposeAudioData>();
+
+                notificationId.Should().Be(PushNotifications.AudioDisposedId);
+                data.AudioId.Should().Be(1u);
             });
 
         var sut = CreateSystemUnderTest();
-        this.mockDisposeSoundReactable.Object.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = 1 });
+        this.mockDisposeSoundReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = 1u });
 
         // Act
-        subscription.OnReceive(new DisposeAudioData { AudioId = 1 });
+        subscription.OnReceive(new DisposeAudioData { AudioId = 1u });
 
         // Assert
         sut.LoadedAudio.Should().BeEmpty();
@@ -108,5 +104,5 @@ public class AudioFactoryTests
     /// Creates a new instance of <see cref="AudioFactory"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private AudioFactory CreateSystemUnderTest() => new (this.mockReactableFactory.Object);
+    private AudioFactory CreateSystemUnderTest() => new (this.mockReactableFactory);
 }

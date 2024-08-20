@@ -15,7 +15,6 @@ internal sealed class FontStatsService : IFontStatsService
 {
     private const string FontFileExtension = ".ttf";
     private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
-    private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
     private readonly IFreeTypeService freeTypeService;
     private readonly IContentPathResolver contentPathResolver;
     private readonly IDirectory directory;

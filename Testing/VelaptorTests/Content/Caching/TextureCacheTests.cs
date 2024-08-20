@@ -12,8 +12,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -39,15 +38,15 @@ public class TextureCacheTests
     private const string FontFilePath = $"{FontDirPath}/{FontName}{FontExtension}";
     private readonly string fontAtlasTextureName = $"{FontAtlasPrefix}|{FontName}|size:{FontSize}";
     private readonly string fontFilePathWithMetaData;
-    private readonly Mock<IImageService> mockImageService;
-    private readonly Mock<ITextureFactory> mockTextureFactory;
-    private readonly Mock<IFontAtlasService> mockFontAtlasService;
-    private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
-    private readonly Mock<IPath> mockPath;
+    private readonly IImageService mockImageService;
+    private readonly ITextureFactory mockTextureFactory;
+    private readonly IFontAtlasService mockFontAtlasService;
+    private readonly IFontMetaDataParser mockFontMetaDataParser;
+    private readonly IPath mockPath;
     private readonly ImageData textureImageData;
     private readonly ImageData fontImageData;
-    private readonly Mock<IPushReactable<DisposeTextureData>> mockDisposeReactable;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IPushReactable<DisposeTextureData> mockDisposeReactable;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription? shutDownReactor;
 
     /// <summary>
@@ -60,60 +59,51 @@ public class TextureCacheTests
         this.textureImageData = new ImageData(new Color[1, 2]);
         this.fontImageData = new ImageData(new Color[2, 1]);
 
-        this.mockImageService = new Mock<IImageService>();
-        this.mockImageService.Setup(m => m.Load(TextureFilePath))
+        this.mockImageService = Substitute.For<IImageService>();
+        this.mockImageService.Load(TextureFilePath)
             .Returns(this.textureImageData);
-        this.mockImageService.Setup(m => m.FlipVertically(this.fontImageData))
+        this.mockImageService.FlipVertically(this.fontImageData)
             .Returns(this.fontImageData);
 
-        this.mockFontAtlasService = new Mock<IFontAtlasService>();
-        this.mockFontAtlasService.Setup(m =>
-                m.CreateAtlas(FontFilePath, FontSize))
+        this.mockFontAtlasService = Substitute.For<IFontAtlasService>();
+        this.mockFontAtlasService.CreateAtlas(FontFilePath, FontSize)
             .Returns((this.fontImageData, []));
 
-        var mockRegularTexture = new Mock<ITexture>();
-        var mockFontAtlasTexture = new Mock<ITexture>();
+        var mockRegularTexture = Substitute.For<ITexture>();
+        var mockFontAtlasTexture = Substitute.For<ITexture>();
 
-        this.mockTextureFactory = new Mock<ITextureFactory>();
+        this.mockTextureFactory = Substitute.For<ITextureFactory>();
 
         // Mock the return of a regular texture if the texture content was a texture file
-        this.mockTextureFactory.Setup(m =>
-                m.Create(TextureName, TextureFilePath, this.textureImageData))
-            .Returns(mockRegularTexture.Object);
+        this.mockTextureFactory.Create(TextureName, TextureFilePath, this.textureImageData)
+            .Returns(mockRegularTexture);
 
         // Mock the return of a font texture atlas if the texture content was a font file
-        this.mockTextureFactory.Setup(m =>
-                m.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData))
-            .Returns(mockFontAtlasTexture.Object);
+        this.mockTextureFactory.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData)
+            .Returns(mockFontAtlasTexture);
 
-        this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
+        this.mockFontMetaDataParser = Substitute.For<IFontMetaDataParser>();
 
-        this.mockPath = new Mock<IPath>();
+        this.mockPath = Substitute.For<IPath>();
         // Mock getting extension for full texture file path
-        this.mockPath.Setup(m => m.GetExtension(TextureFilePath)).Returns(TextureExtension);
+        this.mockPath.GetExtension(TextureFilePath).Returns(TextureExtension);
         // Mock getting extension for full font file path
-        this.mockPath.Setup(m => m.GetExtension(FontFilePath)).Returns(FontExtension);
+        this.mockPath.GetExtension(FontFilePath).Returns(FontExtension);
 
         // Mock the process of getting the texture name
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(TextureFilePath))
-            .Returns(TextureName);
+        this.mockPath.GetFileNameWithoutExtension(TextureFilePath).Returns(TextureName);
 
         // Mock the process of getting the font name
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
-            .Returns(FontName);
+        this.mockPath.GetFileNameWithoutExtension(FontFilePath).Returns(FontName);
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
-            {
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                this.shutDownReactor = reactor;
-            });
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo => this.shutDownReactor = callInfo.Arg<IReceiveSubscription>());
 
-        this.mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateDisposeTextureReactable()).Returns(this.mockDisposeReactable.Object);
+        this.mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateDisposeTextureReactable().Returns(this.mockDisposeReactable);
     }
 
     #region Constructor Tests
@@ -125,11 +115,11 @@ public class TextureCacheTests
         {
             _ = new TextureCache(
                 null,
-                this.mockTextureFactory.Object,
-                this.mockFontAtlasService.Object,
-                this.mockFontMetaDataParser.Object,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockTextureFactory,
+                this.mockFontAtlasService,
+                this.mockFontMetaDataParser,
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -145,12 +135,12 @@ public class TextureCacheTests
         var act = () =>
         {
             _ = new TextureCache(
-                this.mockImageService.Object,
+                this.mockImageService,
                 null,
-                this.mockFontAtlasService.Object,
-                this.mockFontMetaDataParser.Object,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockFontAtlasService,
+                this.mockFontMetaDataParser,
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -166,12 +156,12 @@ public class TextureCacheTests
         var act = () =>
         {
             _ = new TextureCache(
-                this.mockImageService.Object,
-                this.mockTextureFactory.Object,
+                this.mockImageService,
+                this.mockTextureFactory,
                 null,
-                this.mockFontMetaDataParser.Object,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockFontMetaDataParser,
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -187,12 +177,12 @@ public class TextureCacheTests
         var act = () =>
         {
             _ = new TextureCache(
-                this.mockImageService.Object,
-                this.mockTextureFactory.Object,
-                this.mockFontAtlasService.Object,
+                this.mockImageService,
+                this.mockTextureFactory,
+                this.mockFontAtlasService,
                 null,
-                this.mockPath.Object,
-                this.mockReactableFactory.Object);
+                this.mockPath,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -208,12 +198,12 @@ public class TextureCacheTests
         var act = () =>
         {
             _ = new TextureCache(
-                this.mockImageService.Object,
-                this.mockTextureFactory.Object,
-                this.mockFontAtlasService.Object,
-                this.mockFontMetaDataParser.Object,
+                this.mockImageService,
+                this.mockTextureFactory,
+                this.mockFontAtlasService,
+                this.mockFontMetaDataParser,
                 null,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -229,11 +219,11 @@ public class TextureCacheTests
         var act = () =>
         {
             _ = new TextureCache(
-                this.mockImageService.Object,
-                this.mockTextureFactory.Object,
-                this.mockFontAtlasService.Object,
-                this.mockFontMetaDataParser.Object,
-                this.mockPath.Object,
+                this.mockImageService,
+                this.mockTextureFactory,
+                this.mockFontAtlasService,
+                this.mockFontMetaDataParser,
+                this.mockPath,
                 null);
         };
 
@@ -249,7 +239,7 @@ public class TextureCacheTests
     public void TotalCachedItems_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
 
@@ -264,7 +254,7 @@ public class TextureCacheTests
     public void CacheKeys_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
         var expected = new[] { TextureFilePath }.AsReadOnly();
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
@@ -311,10 +301,10 @@ public class TextureCacheTests
     {
         // Arrange
         const string invalidFileType = $"{TextureDirPath}/{TextureName}.txt";
-        this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockPath.GetExtension(invalidFileType).Returns(".txt");
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
+        this.mockFontMetaDataParser.Parse(invalidFileType)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = false,
                 IsValid = false,
@@ -341,10 +331,10 @@ public class TextureCacheTests
         const string nonFontFilePath = $"{FontDirPath}/{FontName}{extension}";
         const string nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
 
-        this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockFontMetaDataParser.Setup(m => m.Parse(nonFontFilePathWithMetaData))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockPath.GetExtension(nonFontFilePath).Returns(extension);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
+        this.mockFontMetaDataParser.Parse(nonFontFilePathWithMetaData)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = true,
                 IsValid = true,
@@ -368,9 +358,9 @@ public class TextureCacheTests
         // Arrange
         const string metaData = "|size:12";
         const string nonFullFilePath = $"{FontName}{FontExtension}{metaData}";
-        this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(FontExtension);
-        this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockPath.GetExtension(nonFullFilePath).Returns(FontExtension);
+        this.mockFontMetaDataParser.Parse(nonFullFilePath)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = true,
                 IsValid = true,
@@ -394,9 +384,9 @@ public class TextureCacheTests
         // Arrange
         const string metaData = "|size12";
         const string fullFilePath = $"{FontDirPath}/{FontName}{FontExtension}{metaData}";
-        this.mockPath.Setup(m => m.GetExtension(fullFilePath)).Returns(FontExtension);
-        this.mockFontMetaDataParser.Setup(m => m.Parse(fullFilePath))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockPath.GetExtension(fullFilePath).Returns(FontExtension);
+        this.mockFontMetaDataParser.Parse(fullFilePath)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = true,
                 IsValid = false,
@@ -419,9 +409,9 @@ public class TextureCacheTests
     {
         // Arrange
         const string nonFullFilePath = $"{TextureName}{TextureExtension}";
-        this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(TextureExtension);
-        this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockPath.GetExtension(nonFullFilePath).Returns(TextureExtension);
+        this.mockFontMetaDataParser.Parse(nonFullFilePath)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = false,
                 IsValid = false,
@@ -443,7 +433,7 @@ public class TextureCacheTests
     public void GetItem_WhenGettingTexture_CachesAndReturnsSameTexture()
     {
         // Arrange
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
         MockTextureParseResult();
         var sut = CreateSystemUnderTest();
 
@@ -452,12 +442,11 @@ public class TextureCacheTests
         var actualB = sut.GetItem(TextureFilePath);
 
         // Assert
-        this.mockFontMetaDataParser.Verify(m => m.Parse(TextureFilePath), Times.Exactly(2));
-        this.mockPath.Verify(m => m.GetExtension(TextureFilePath), Times.Exactly(2));
-        this.mockImageService.Verify(m => m.Load(TextureFilePath), Times.Once);
-        this.mockPath.Verify(m => m.GetFileNameWithoutExtension(TextureFilePath), Times.Exactly(2));
-        this.mockTextureFactory.Verify(m =>
-            m.Create(TextureName, TextureFilePath, this.textureImageData), Times.Once);
+        this.mockFontMetaDataParser.Received(2).Parse(TextureFilePath);
+        this.mockPath.Received(2).GetExtension(TextureFilePath);
+        this.mockImageService.Received(1).Load(TextureFilePath);
+        this.mockPath.Received(2).GetFileNameWithoutExtension(TextureFilePath);
+        this.mockTextureFactory.Received(1).Create(TextureName, TextureFilePath, this.textureImageData);
 
         actualB.Should().BeSameAs(actualA);
     }
@@ -466,7 +455,7 @@ public class TextureCacheTests
     public void GetItem_WhenGettingFontAtlasTexture_CachesAndReturnsSameAtlasTexture()
     {
         // Arrange
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
         MockFontParseResult();
         var sut = CreateSystemUnderTest();
 
@@ -475,17 +464,15 @@ public class TextureCacheTests
         var actualB = sut.GetItem(this.fontFilePathWithMetaData);
 
         // Assert
-        this.mockFontMetaDataParser.Verify(m => m.Parse(this.fontFilePathWithMetaData), Times.Exactly(2));
-        this.mockPath.Verify(m => m.GetExtension(FontFilePath), Times.Exactly(2));
+        this.mockFontMetaDataParser.Received(2).Parse(this.fontFilePathWithMetaData);
+        this.mockPath.Received(2).GetExtension(FontFilePath);
 
-        this.mockFontAtlasService.Verify(m =>
-            m.CreateAtlas(FontFilePath, FontSize), Times.Once);
+        this.mockFontAtlasService.Received(1).CreateAtlas(FontFilePath, FontSize);
 
-        this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
-        this.mockPath.Verify(m => m.GetFileNameWithoutExtension(FontFilePath), Times.Exactly(2));
+        this.mockImageService.Received(1).FlipVertically(this.fontImageData);
+        this.mockPath.Received(2).GetFileNameWithoutExtension(FontFilePath);
 
-        this.mockTextureFactory.Verify(m =>
-            m.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData), Times.Once);
+        this.mockTextureFactory.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData);
 
         actualB.Should().BeSameAs(actualA);
     }
@@ -498,7 +485,7 @@ public class TextureCacheTests
         expected += $"{Environment.NewLine}Font Content Path MetaData Syntax: <file-path>|size:<font-size>";
         expected += $"{Environment.NewLine}Example: C:/Windows/Fonts/my-font.ttf|size:12";
 
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
         MockTextureParseResult();
 
         var sut = CreateSystemUnderTest();
@@ -518,21 +505,15 @@ public class TextureCacheTests
         var expected = new DisposeTextureData { TextureId = 123u };
         DisposeTextureData? actual = null;
 
-        var mockTexture = new Mock<ITexture>();
-        mockTexture.SetupGet(p => p.Id).Returns(123u);
+        var mockTexture = Substitute.For<ITexture>();
+        mockTexture.Id.Returns(123u);
 
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockDisposeReactable.Setup(m =>
-                m.Push(It.IsAny<Guid>(), It.Ref<DisposeTextureData>.IsAny))
-            .Callback((Guid _, in DisposeTextureData data) =>
-            {
-                data.Should().NotBeNull("It is required for unit testing.");
-
-                actual = data;
-            });
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
+        this.mockDisposeReactable.When(x => x.Push(Arg.Any<Guid>(), Arg.Any<DisposeTextureData>()))
+            .Do(callInfo => actual = callInfo.Arg<DisposeTextureData>());
 
         MockImageData();
-        MockTextureCreation(mockTexture.Object);
+        MockTextureCreation(mockTexture);
 
         var sut = CreateSystemUnderTest();
         _ = sut.GetItem(TextureFilePath);
@@ -544,9 +525,7 @@ public class TextureCacheTests
         act.Should().NotThrow<NullReferenceException>();
 
         sut.TotalCachedItems.Should().Be(0);
-        this.mockDisposeReactable
-            .VerifyOnce(m =>
-                m.Push(PushNotifications.TextureDisposedId, It.Ref<DisposeTextureData>.IsAny));
+        this.mockDisposeReactable.Received(1).Push(PushNotifications.TextureDisposedId, Arg.Any<DisposeTextureData>());
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -555,11 +534,11 @@ public class TextureCacheTests
     public void Unload_WhenTextureToUnloadDoesNotExist_DoesNotAttemptToDispose()
     {
         // Arrange
-        var mockTexture = new Mock<ITexture>();
-        mockTexture.SetupGet(p => p.Id).Returns(123u);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        var mockTexture = Substitute.For<ITexture>();
+        mockTexture.Id.Returns(123u);
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
         MockImageData();
-        MockTextureCreation(mockTexture.Object);
+        MockTextureCreation(mockTexture);
 
         var sut = CreateSystemUnderTest();
         sut.GetItem(TextureFilePath);
@@ -568,9 +547,7 @@ public class TextureCacheTests
         sut.Unload("non-existing-texture");
 
         // Assert
-        this.mockDisposeReactable
-            .Verify(m =>
-                m.Push(PushNotifications.TextureDisposedId, It.IsAny<DisposeTextureData>()), Times.Never);
+        this.mockDisposeReactable.DidNotReceive().Push(PushNotifications.TextureDisposedId, Arg.Any<DisposeTextureData>());
     }
     #endregion
 
@@ -582,23 +559,21 @@ public class TextureCacheTests
         const string texturePathA = $"{TextureDirPath}/textureA{TextureExtension}";
         const string texturePathB = $"{TextureDirPath}/textureB{TextureExtension}";
 
-        var mockTextureA = new Mock<ITexture>();
-        mockTextureA.SetupGet(p => p.Id).Returns(11u);
-        mockTextureA.Name = nameof(mockTextureA);
+        var mockTextureA = Substitute.For<ITexture>();
+        mockTextureA.Id.Returns(11u);
 
-        var mockTextureB = new Mock<ITexture>();
-        mockTextureB.SetupGet(p => p.Id).Returns(22u);
-        mockTextureB.Name = nameof(mockTextureB);
+        var mockTextureB = Substitute.For<ITexture>();
+        mockTextureB.Id.Returns(22u);
 
-        this.mockPath.Setup(m => m.GetExtension(texturePathA)).Returns(TextureExtension);
-        this.mockPath.Setup(m => m.GetExtension(texturePathB)).Returns(TextureExtension);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(texturePathA)).Returns("textureA");
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(texturePathB)).Returns("textureB");
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
+        this.mockPath.GetExtension(texturePathA).Returns(TextureExtension);
+        this.mockPath.GetExtension(texturePathB).Returns(TextureExtension);
+        this.mockPath.GetFileNameWithoutExtension(texturePathA).Returns("textureA");
+        this.mockPath.GetFileNameWithoutExtension(texturePathB).Returns("textureB");
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
 
         MockImageData();
-        MockTextureCreation(mockTextureA.Object, "textureA", texturePathA);
-        MockTextureCreation(mockTextureB.Object, "textureB", texturePathB);
+        MockTextureCreation(mockTextureA, "textureA", texturePathA);
+        MockTextureCreation(mockTextureB, "textureB", texturePathB);
 
         var sut = CreateSystemUnderTest();
         sut.GetItem(texturePathA);
@@ -609,10 +584,8 @@ public class TextureCacheTests
         this.shutDownReactor?.OnReceive();
 
         // Assert
-        this.mockDisposeReactable
-            .VerifyOnce(m => m.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 11u }));
-        this.mockDisposeReactable
-            .VerifyOnce(m => m.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 22u }));
+        this.mockDisposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 11u });
+        this.mockDisposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 22u });
         sut.TotalCachedItems.Should().Be(0);
     }
     #endregion
@@ -622,20 +595,20 @@ public class TextureCacheTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private TextureCache CreateSystemUnderTest() =>
-        new (this.mockImageService.Object,
-            this.mockTextureFactory.Object,
-            this.mockFontAtlasService.Object,
-            this.mockFontMetaDataParser.Object,
-            this.mockPath.Object,
-            this.mockReactableFactory.Object);
+        new (this.mockImageService,
+            this.mockTextureFactory,
+            this.mockFontAtlasService,
+            this.mockFontMetaDataParser,
+            this.mockPath,
+            this.mockReactableFactory);
 
     /// <summary>
     /// Mocks parse result when caching texture file paths.
     /// </summary>
     private void MockTextureParseResult()
     {
-        this.mockFontMetaDataParser.Setup(m => m.Parse(TextureFilePath))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockFontMetaDataParser.Parse(TextureFilePath)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = false,
                 IsValid = true,
@@ -650,8 +623,8 @@ public class TextureCacheTests
     /// </summary>
     private void MockFontParseResult()
     {
-        this.mockFontMetaDataParser.Setup(m => m.Parse(this.fontFilePathWithMetaData))
-            .Returns(() => new FontMetaDataParseResult
+        this.mockFontMetaDataParser.Parse(this.fontFilePathWithMetaData)
+            .Returns(new FontMetaDataParseResult
             {
                 ContainsMetaData = true,
                 IsValid = true,
@@ -667,7 +640,7 @@ public class TextureCacheTests
     private void MockImageData()
     {
         var imageData = new ImageData(new Color[3, 1]);
-        this.mockImageService.Setup(m => m.Load(TextureFilePath))
+        this.mockImageService.Load(TextureFilePath)
             .Returns(imageData);
     }
 
@@ -682,7 +655,6 @@ public class TextureCacheTests
         var name = textureName ?? TextureName;
         var path = filePath ?? TextureFilePath;
 
-        this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>()))
-            .Returns(texture);
+        this.mockTextureFactory.Create(name, path, Arg.Any<ImageData>()).Returns(texture);
     }
 }

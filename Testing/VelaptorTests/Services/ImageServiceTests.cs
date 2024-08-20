@@ -11,7 +11,7 @@ using System.IO.Abstractions;
 using System.Reflection;
 using FluentAssertions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -33,7 +33,7 @@ public class ImageServiceTests : IDisposable
     private readonly string basePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath();
     private readonly string testAssetFilePath;
-    private readonly Mock<IFile> mockFile;
+    private readonly IFile mockFile;
     private Image<Rgba32> testCompareImage;
 
     /// <summary>
@@ -47,8 +47,8 @@ public class ImageServiceTests : IDisposable
 
         this.testCompareImage = Image.Load<Rgba32>(this.testAssetFilePath);
         this.testCompareImage.Mutate(context => context.Flip(FlipMode.Vertical));
-        this.mockFile = new Mock<IFile>();
-        this.mockFile.Setup(m => m.Exists(this.testAssetFilePath)).Returns(true);
+        this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(this.testAssetFilePath).Returns(true);
     }
 
     #region Constructor Tests
@@ -366,5 +366,5 @@ public class ImageServiceTests : IDisposable
     /// Creates a new instance of <see cref="ImageService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ImageService CreateSystemUnderTest() => new (this.mockFile.Object);
+    private ImageService CreateSystemUnderTest() => new (this.mockFile);
 }

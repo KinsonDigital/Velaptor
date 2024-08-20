@@ -8,8 +8,7 @@ using System;
 using System.ComponentModel;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.ReactableData;
@@ -23,18 +22,18 @@ using ReceiveMouseDataReactor = Carbonate.Core.OneWay.IReceiveSubscription<
 /// </summary>
 public class MouseTests
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<MouseStateData>> mockMouseReactable;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IPushReactable<MouseStateData> mockMouseReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseTests"/> class.
     /// </summary>
     public MouseTests()
     {
-        this.mockMouseReactable = new Mock<IPushReactable<MouseStateData>>();
+        this.mockMouseReactable = Substitute.For<IPushReactable<MouseStateData>>();
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateMouseReactable()).Returns(this.mockMouseReactable.Object);
+        this.mockReactableFactory.CreateMouseReactable().Returns(this.mockMouseReactable);
     }
 
     #region Method Tests
@@ -60,7 +59,7 @@ public class MouseTests
         _ = CreateSystemUnderTest();
 
         // Assert
-        this.mockMouseReactable.VerifyOnce(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()));
+        this.mockMouseReactable.Received(1).Subscribe(Arg.Any<ReceiveMouseDataReactor>());
     }
 
     [Fact]
@@ -69,10 +68,10 @@ public class MouseTests
         // Arrange
         ReceiveMouseDataReactor? reactor = null;
 
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
-            .Callback<ReceiveMouseDataReactor>(reactorObj =>
+        this.mockMouseReactable.When(x => x.Subscribe(Arg.Any<ReceiveMouseDataReactor>()))
+            .Do(callInfo =>
             {
-                reactor = reactorObj;
+                reactor = callInfo.Arg<ReceiveMouseDataReactor>();
             });
 
         var sut = CreateSystemUnderTest();
@@ -99,10 +98,10 @@ public class MouseTests
         var mouseButton = (MouseButton)mouseButtonValue;
         ReceiveMouseDataReactor? reactor = null;
 
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
-            .Callback<ReceiveMouseDataReactor>(reactorObj =>
+        this.mockMouseReactable.When(x => x.Subscribe(Arg.Any<ReceiveMouseDataReactor>()))
+            .Do(callInfo =>
             {
-                reactor = reactorObj;
+                reactor = callInfo.Arg<ReceiveMouseDataReactor>();
             });
 
         var sut = CreateSystemUnderTest();
@@ -124,10 +123,10 @@ public class MouseTests
         // Arrange
         ReceiveMouseDataReactor? reactor = null;
 
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
-            .Callback<ReceiveMouseDataReactor>(reactorObj =>
+        this.mockMouseReactable.When(x => x.Subscribe(Arg.Any<ReceiveMouseDataReactor>()))
+            .Do(callInfo =>
             {
-                reactor = reactorObj;
+                reactor = callInfo.Arg<ReceiveMouseDataReactor>();
             });
 
         var sut = CreateSystemUnderTest();
@@ -154,11 +153,10 @@ public class MouseTests
 
         ReceiveMouseDataReactor? reactor = null;
 
-        this.mockMouseReactable.Setup(m => m.Subscribe(It.IsAny<ReceiveMouseDataReactor>()))
-            .Callback<ReceiveMouseDataReactor>(reactorObj =>
+        this.mockMouseReactable.When(x => x.Subscribe(Arg.Any<ReceiveMouseDataReactor>()))
+            .Do(callInfo =>
             {
-                reactorObj.Should().NotBeNull("It is required for unit testing.");
-                reactor = reactorObj;
+                reactor = callInfo.Arg<ReceiveMouseDataReactor>();
             });
 
         var mouseStateData = new MouseStateData { Button = (MouseButton)invalidMouseButton };
@@ -179,5 +177,5 @@ public class MouseTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private Mouse CreateSystemUnderTest()
-        => new (this.mockReactableFactory.Object);
+        => new (this.mockReactableFactory);
 }
