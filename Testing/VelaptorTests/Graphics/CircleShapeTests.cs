@@ -187,6 +187,30 @@ public class CircleShapeTests
 
     #region Method Tests
     [Theory]
+    [InlineData(100f, 100f, 100f, 100f, true)]
+    [InlineData(100f, 100f, 200f, 200f, false)]
+    public void Contains_WhenInvoked_ReturnsCorrectResult(
+        float circlePosX,
+        float circlePosY,
+        float pointX,
+        float pointY,
+        bool expected)
+    {
+        // Arrange
+        var sut = new CircleShape
+        {
+            Position = new Vector2(circlePosX, circlePosY),
+            Radius = 50,
+        };
+
+        // Act
+        var actual = sut.Contains(new Vector2(pointX, pointY));
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
     [MemberData(nameof(IsEmptyTestData))]
     [SuppressMessage("csharpsquid|Methods should not have too many parameters", "S107", Justification = "Intentional")]
     public void IsEmpty_WhenInvoked_ReturnsCorrectResult(

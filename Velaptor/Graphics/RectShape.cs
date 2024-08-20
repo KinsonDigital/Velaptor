@@ -217,7 +217,7 @@ public record struct RectShape
     public Color GradientStop { get; set; } = Color.White;
 
     /// <summary>
-    /// Returns a value indicating whether the given <see cref="Vector2"/> is contained within the rectangle shape.
+    /// Returns a value indicating whether the rectangle contains the given <see cref="Vector2"/>.
     /// </summary>
     /// <param name="vector">The possibly contained <see cref="Vector2"/>.</param>
     /// <returns><c>true</c> if the <paramref name="vector"/> is contained.</returns>
