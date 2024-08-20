@@ -17,7 +17,7 @@ public interface IContent
     [SuppressMessage(
         "ReSharper",
         "UnusedMemberInSuper.Global",
-        Justification = "Used by library users.")]
+        Justification = "Public API for users.")]
     string Name { get; }
 
     /// <summary>

@@ -266,7 +266,7 @@ public abstract class Window : IWindow
     /// </summary>
     /// <param name="size">The new size.</param>
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
-    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Public API for users.")]
     protected virtual void OnResize(SizeU size) => this.nativeWindow.SceneManager.Resize(size);
 
     /// <summary>

@@ -28,7 +28,7 @@ public static class ContentLoaderFactory
     /// Creates a loader that loads textures from disk.
     /// </summary>
     /// <returns>A loader for loading textures.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
     public static ILoader<ITexture> CreateTextureLoader()
     {
         if (textureLoader is not null)
@@ -89,7 +89,7 @@ public static class ContentLoaderFactory
     /// Creates a loader that loads audio from disk.
     /// </summary>
     /// <returns>A loader for loading audio data.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
     public static ILoader<IAudio> CreateAudioLoader()
     {
         if (audioLoader is not null)
@@ -119,7 +119,7 @@ public static class ContentLoaderFactory
     /// Creates a loader that loads fonts from disk for rendering test.
     /// </summary>
     /// <returns>A loader for loading audio data.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
     public static ILoader<IFont> CreateFontLoader()
     {
         if (fontLoader is not null)
