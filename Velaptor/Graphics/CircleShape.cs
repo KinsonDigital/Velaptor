@@ -4,6 +4,7 @@
 
 namespace Velaptor.Graphics;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
@@ -188,6 +189,21 @@ public record struct CircleShape
     ///     This property is ignored if the <see cref="GradientType"/> is set to a value of <see cref="ColorGradient.None"/>.
     /// </remarks>
     public Color GradientStop { get; set; } = Color.White;
+
+    /// <summary>
+    /// Returns a value indicating whether the circle contains the given <paramref name="vector"/>.
+    /// </summary>
+    /// <param name="vector">The possibly contained <see cref="Vector2"/>.</param>
+    /// <returns><c>true</c> if the <paramref name="vector"/> is contained.</returns>
+    public bool Contains(Vector2 vector)
+    {
+        var powX = Math.Pow(vector.X - Position.X, 2);
+        var powY = Math.Pow(vector.Y - Position.Y, 2);
+
+        var distance = Math.Sqrt(powX + powY);
+
+        return distance <= Radius;
+    }
 
     /// <summary>
     /// Returns a value indicating whether the <see cref="RectShape"/> struct is empty.
