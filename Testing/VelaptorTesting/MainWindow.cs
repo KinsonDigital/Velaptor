@@ -155,6 +155,10 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
+        this.grpSceneCtrls.Position = new Point(
+            (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
+            (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
+
         this.prevKeyState = currentKeyState;
 
         base.OnUpdate(frameTime);
