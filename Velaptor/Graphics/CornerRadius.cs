@@ -22,7 +22,7 @@ public readonly record struct CornerRadius
         "StyleCop.CSharp.DocumentationRules",
         "SA1642:Constructor summary documentation should begin with standard text",
         Justification = "The standard text is incorrect and says class instead of struct.")]
-    public CornerRadius(float topLeft, float bottomLeft, float bottomRight, float topRight)
+    public CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft)
     {
         TopLeft = topLeft;
         TopRight = topRight;
@@ -79,7 +79,7 @@ public readonly record struct CornerRadius
     /// <param name="value">The value to set.</param>
     /// <returns>The corner radius with the updated value.</returns>
     public static CornerRadius SetTopLeft(CornerRadius cornerRadius, float value)
-        => new (value, cornerRadius.BottomLeft, cornerRadius.BottomRight, cornerRadius.TopRight);
+        => new (value, cornerRadius.TopRight, cornerRadius.BottomRight, cornerRadius.BottomLeft);
 
     /// <summary>
     /// Sets the bottom left corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
@@ -88,7 +88,7 @@ public readonly record struct CornerRadius
     /// <param name="value">The value to set.</param>
     /// <returns>The corner radius with the updated value.</returns>
     public static CornerRadius SetBottomLeft(CornerRadius cornerRadius, float value)
-        => new (cornerRadius.TopLeft, value, cornerRadius.BottomRight, cornerRadius.TopRight);
+        => new (cornerRadius.TopLeft, cornerRadius.TopRight, cornerRadius.BottomRight, value);
 
     /// <summary>
     /// Sets the bottom right corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
@@ -97,7 +97,7 @@ public readonly record struct CornerRadius
     /// <param name="value">The value to set.</param>
     /// <returns>The corner radius with the updated value.</returns>
     public static CornerRadius SetBottomRight(CornerRadius cornerRadius, float value)
-        => new (cornerRadius.TopLeft, cornerRadius.BottomLeft, value, cornerRadius.TopRight);
+        => new (cornerRadius.TopLeft, cornerRadius.TopRight, value, cornerRadius.BottomLeft);
 
     /// <summary>
     /// Sets the top right corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
@@ -106,7 +106,7 @@ public readonly record struct CornerRadius
     /// <param name="value">The value to set.</param>
     /// <returns>The corner radius with the updated value.</returns>
     public static CornerRadius SetTopRight(CornerRadius cornerRadius, float value)
-        => new (cornerRadius.TopLeft, cornerRadius.BottomLeft, cornerRadius.BottomRight, value);
+        => new (cornerRadius.TopLeft, value, cornerRadius.BottomRight, cornerRadius.BottomLeft);
 
     /// <summary>
     /// Returns a value indicating if the <see cref="CornerRadius"/> is empty.

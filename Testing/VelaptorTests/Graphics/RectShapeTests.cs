@@ -177,9 +177,9 @@ public class RectShapeTests
 
         // Assert
         actual.TopLeft.Should().Be(11f, "The top left value is incorrect.");
-        actual.BottomLeft.Should().Be(22f, "The bottom left value is incorrect.");
+        actual.TopRight.Should().Be(22f, "The top right value is incorrect.");
         actual.BottomRight.Should().Be(33f, "The bottom right value is incorrect.");
-        actual.TopRight.Should().Be(44f, "The top right value is incorrect.");
+        actual.BottomLeft.Should().Be(44f, "The bottom left value is incorrect.");
     }
 
     [Fact]
