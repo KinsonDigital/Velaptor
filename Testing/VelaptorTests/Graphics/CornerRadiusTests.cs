@@ -22,9 +22,9 @@ public class CornerRadiusTests
 
         // Assert
         corners.TopLeft.Should().Be(11u);
-        corners.BottomLeft.Should().Be(22u);
+        corners.TopRight.Should().Be(22u);
         corners.BottomRight.Should().Be(33u);
-        corners.TopRight.Should().Be(44u);
+        corners.BottomLeft.Should().Be(44u);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class CornerRadiusTests
     public void SetBottomLeft_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new CornerRadius(11, 55, 33, 44);
+        var expected = new CornerRadius(11, 22, 33, 55);
         var sut = new CornerRadius(11, 22, 33, 44);
 
         // Act
@@ -88,7 +88,7 @@ public class CornerRadiusTests
     public void SetTopRight_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new CornerRadius(11, 22, 33, 55);
+        var expected = new CornerRadius(11, 55, 33, 44);
         var sut = new CornerRadius(11, 22, 33, 44);
 
         // Act

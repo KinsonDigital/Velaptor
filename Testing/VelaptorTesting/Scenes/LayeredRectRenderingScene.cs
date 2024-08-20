@@ -212,7 +212,11 @@ public class LayeredRectRenderingScene : SceneBase
         var rectStateText = string.Join(Environment.NewLine, textLines);
 
         var lblRectStateCtl = this.grpRectState.GetControl<ILabel>(this.lblRectStateName);
-        lblRectStateCtl.Text = rectStateText;
+
+        if (lblRectStateCtl is not null)
+        {
+            lblRectStateCtl.Text = rectStateText;
+        }
     }
 
     /// <summary>
