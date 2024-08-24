@@ -17,7 +17,7 @@ public interface IItemCache<in TCacheKey, out TCacheType>
     /// <summary>
     /// Gets the total number of cached items.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     int TotalCachedItems { get; }
 
     /// <summary>

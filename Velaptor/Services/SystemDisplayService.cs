@@ -22,7 +22,7 @@ internal sealed class SystemDisplayService : ISystemDisplayService
     /// Initializes a new instance of the <see cref="SystemDisplayService"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API for users.")]
     public SystemDisplayService() => this.displays = IoC.Container.GetInstance<GlfwDisplays>();
 
     /// <summary>

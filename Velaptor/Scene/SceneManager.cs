@@ -40,6 +40,12 @@ internal sealed class SceneManager : ISceneManager
     public int TotalScenes => this.scenes.Count;
 
     /// <inheritdoc/>
+    public int CurrentSceneIndex { get; private set; }
+
+    /// <inheritdoc/>
+    public bool UsesNavigationWrapping { get; set; } = true;
+
+    /// <inheritdoc/>
     public void AddScene(IScene scene) => AddScene(scene, false);
 
     /// <inheritdoc/>
@@ -72,6 +78,11 @@ internal sealed class SceneManager : ISceneManager
         // If no scene exists, set the scene as active regardless of the setToActive value
         // There has to be a single active scene.
         this.scenes.Add((scene, this.scenes.Count <= 0 || setToActive));
+
+        if (this.scenes.Count <= 0 || setToActive)
+        {
+            CurrentSceneIndex = this.scenes.Count - 1;
+        }
     }
 
     /// <inheritdoc/>
@@ -114,10 +125,24 @@ internal sealed class SceneManager : ISceneManager
             return;
         }
 
+        var isAtLastScene = CurrentSceneIndex == this.scenes.Count - 1;
+
+        var nextSceneIndex = UsesNavigationWrapping ? 0 : CurrentSceneIndex;
+        var incrementAmount = UsesNavigationWrapping && isAtLastScene ? 0 : 1;
+
         var sceneToDeactivateIndex = this.scenes.IndexOf(s => s.isActive);
-        var sceneToActivateIndex = sceneToDeactivateIndex >= this.scenes.Count - 1
-            ? 0
-            : sceneToDeactivateIndex + 1;
+        var sceneToDeactivateIsLastItem = sceneToDeactivateIndex >= this.scenes.Count - 1;
+
+        var sceneToActivateIndex = sceneToDeactivateIsLastItem
+            ? nextSceneIndex
+            : sceneToDeactivateIndex + incrementAmount;
+
+        CurrentSceneIndex = sceneToActivateIndex;
+
+        if (!UsesNavigationWrapping && isAtLastScene)
+        {
+            return;
+        }
 
         this.scenes[sceneToDeactivateIndex] = (this.scenes[sceneToDeactivateIndex].scene, false);
         this.scenes[sceneToDeactivateIndex].scene.UnloadContent();
@@ -134,10 +159,23 @@ internal sealed class SceneManager : ISceneManager
             return;
         }
 
+        var isAtFirstScene = CurrentSceneIndex == 0;
+        var nextSceneIndex = UsesNavigationWrapping ? this.scenes.Count - 1 : CurrentSceneIndex;
+        var decrementAmount = !UsesNavigationWrapping && isAtFirstScene ? 0 : 1;
+
         var sceneToDeactivateIndex = this.scenes.IndexOf(s => s.isActive);
-        var sceneToActivateIndex = sceneToDeactivateIndex <= 0
-            ? this.scenes.Count - 1
-            : sceneToDeactivateIndex - 1;
+        var sceneToDeactivateIsFirstItem = sceneToDeactivateIndex <= 0;
+
+        var sceneToActivateIndex = sceneToDeactivateIsFirstItem
+            ? nextSceneIndex
+            : sceneToDeactivateIndex - decrementAmount;
+
+        CurrentSceneIndex = sceneToActivateIndex;
+
+        if (!UsesNavigationWrapping && isAtFirstScene)
+        {
+            return;
+        }
 
         this.scenes[sceneToDeactivateIndex] = (this.scenes[sceneToDeactivateIndex].scene, false);
         this.scenes[sceneToDeactivateIndex].scene.UnloadContent();

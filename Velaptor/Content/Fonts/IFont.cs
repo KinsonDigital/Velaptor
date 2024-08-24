@@ -20,7 +20,7 @@ public interface IFont : IContent
     /// <summary>
     /// Gets the source of where the font was loaded.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     FontSource Source { get; }
 
     /// <summary>
@@ -41,7 +41,7 @@ public interface IFont : IContent
     /// <summary>
     /// Gets a value indicating whether the font is a default font.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     bool IsDefaultFont { get; }
 
     /// <summary>
@@ -52,13 +52,13 @@ public interface IFont : IContent
     /// <summary>
     /// Gets the name of the font family.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     string FamilyName { get; }
 
     /// <summary>
     /// Gets a value indicating whether the font has kerning for text rendering layout.
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     bool HasKerning { get; }
 
     /// <summary>

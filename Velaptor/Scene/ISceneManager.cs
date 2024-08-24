@@ -22,19 +22,30 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// Gets a list of all the <see cref="Guid"/>'s for the scenes that are inactive.
     /// </summary>
     [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global", Justification = "Intended to be readonly.")]
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     IReadOnlyCollection<Guid> InActiveScenes { get; }
 
     /// <summary>
     /// Gets a value indicating whether the scene manager has been loaded.
     /// </summary>
     /// <remarks>This does not mean that the content in the individual scenes have been loaded.</remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users")]
     bool IsLoaded { get; }
 
     /// <summary>
     /// Gets the total number of scenes.
     /// </summary>
     int TotalScenes { get; }
+
+    /// <summary>
+    /// Gets the index of the current scene.
+    /// </summary>
+    int CurrentSceneIndex { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether navigation wrapping is used when navigating past the first or list scenes.
+    /// </summary>
+    bool UsesNavigationWrapping { get; set; }
 
     /// <summary>
     /// Adds the given scene.
@@ -57,7 +68,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// Removes the scene that matches the given <paramref name="sceneId"/>.
     /// </summary>
     /// <param name="sceneId">The ID of the scene to remove.</param>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used for library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void RemoveScene(Guid sceneId);
 
     /// <summary>
@@ -77,7 +88,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// <remarks>
     ///     This will set all the other scenes to inactive.
     /// </remarks>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void SetSceneAsActive(Guid id);
 
     /// <summary>
@@ -97,7 +108,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     /// <returns>
     ///     <c>true</c> if a scene exists with the given ID.
     /// </returns>
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     bool SceneExists(Guid id);
 
     /// <summary>

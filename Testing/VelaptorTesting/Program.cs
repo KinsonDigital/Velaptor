@@ -87,7 +87,8 @@ public static class Program
                         Console.ForegroundColor = prevClr;
                     }
                 }
-            }, () =>
+            },
+            () =>
             {
                 gameWindow.Dispose();
                 Environment.Exit(0);
@@ -140,7 +141,7 @@ public static class Program
         WriteLine("\t\tClears the screen.");
         Write("\t--show\t\t\t", ConsoleColor.DarkYellow);
         WriteLine("Displays data about the application", true);
-        WriteLine("Run '--help' [command]' for more information on a command.", true);
+        WriteLine("Run '--help' [command] for more information on a command.", true);
     }
 
     /// <summary>
