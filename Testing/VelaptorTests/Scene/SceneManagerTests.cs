@@ -111,6 +111,32 @@ public class SceneManagerTests
         // Assert
         actual.Should().Be(2);
     }
+
+    [Fact]
+    public void CurrentSceneIndex_WhenGettingDefaultValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new SceneManager();
+
+        // Act
+        var actual = sut.CurrentSceneIndex;
+
+        // Assert
+        actual.Should().Be(0);
+    }
+
+    [Fact]
+    public void UsesNavigationWrapping_WhenGettingDefaultValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new SceneManager();
+
+        // Act
+        var actual = sut.UsesNavigationWrapping;
+
+        // Assert
+        actual.Should().BeTrue();
+    }
     #endregion
 
     #region Method Tests
@@ -137,15 +163,34 @@ public class SceneManagerTests
             .WithMessage($"The scene 'test-name' with the ID '{sceneId}' already exists.");
     }
 
-    [Fact]
-    public void AddScene_SceneIsSetToBeActive_SetsAllOtherScenesToInactive()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void AddScene_With2ParamsWhenNoScenesExistWithActiveAsFalse_CorrectlyAddsScene(bool setToActive)
     {
         // Arrange
         var mockSceneA = Substitute.For<IScene>();
-        mockSceneA.Id.Returns(Guid.NewGuid());
+        mockSceneA.Id.Returns(new Guid("3d5415ff-2ede-4b75-b42a-6c511e1a2bb8"));
+
+        var sut = new SceneManager();
+
+        // Act
+        sut.AddScene(mockSceneA, setToActive);
+
+        // Assert
+        sut.CurrentScene.Should().BeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.Should().Be(0);
+    }
+
+    [Fact]
+    public void AddScene_With2ParamsWhenAddingSecondSceneWithActiveAsTrue_CorrectlyAddsScene()
+    {
+        // Arrange
+        var mockSceneA = Substitute.For<IScene>();
+        mockSceneA.Id.Returns(new Guid("3d5415ff-2ede-4b75-b42a-6c511e1a2bb8"));
 
         var mockSceneB = Substitute.For<IScene>();
-        mockSceneB.Id.Returns(Guid.NewGuid());
+        mockSceneB.Id.Returns(new Guid("68110c4a-c588-4475-b3ae-90444811a39c"));
 
         var sut = new SceneManager();
         sut.AddScene(mockSceneA);
@@ -155,21 +200,28 @@ public class SceneManagerTests
 
         // Assert
         sut.CurrentScene.Should().BeSameAs(mockSceneB);
+        sut.CurrentSceneIndex.Should().Be(1);
     }
 
     [Fact]
-    public void AddScene_WhenNoScenesExist_SetsSceneAsActive()
+    public void AddScene_With2ParamsWhenAddingSecondSceneWithActiveAsFalse_CorrectlyAddsScene()
     {
         // Arrange
-        var mockScene = Substitute.For<IScene>();
+        var mockSceneA = Substitute.For<IScene>();
+        mockSceneA.Id.Returns(new Guid("649e0a11-3842-4eaf-aa70-558bd119a452"));
+
+        var mockSceneB = Substitute.For<IScene>();
+        mockSceneB.Id.Returns(new Guid("5bd043a9-3ef3-4b90-b680-4a01f9bea02e"));
 
         var sut = new SceneManager();
+        sut.AddScene(mockSceneA);
 
         // Act
-        sut.AddScene(mockScene, setToActive: false);
+        sut.AddScene(mockSceneB, setToActive: false);
 
         // Assert
-        sut.CurrentScene.Should().BeSameAs(mockScene);
+        sut.CurrentScene.Should().BeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.Should().Be(0);
     }
 
     [Fact]
@@ -297,57 +349,127 @@ public class SceneManagerTests
     }
 
     [Fact]
-    public void NextScene_WithMoreThanASingleSceneAndCurrentSceneIsNotTheLastScene_MovesToTheNextScene()
+    public void NextScene_WithNavigationWrappingAndFirstSceneIsActiveAndLastSceneIsInactive_MovesToLastScene()
     {
         // Arrange
-        var mockSceneA = Substitute.For<IScene>();
-        mockSceneA.Id.Returns(Guid.NewGuid());
-        mockSceneA.Name.Returns(nameof(mockSceneA));
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
 
-        var mockSceneB = Substitute.For<IScene>();
-        mockSceneB.Name.Returns(nameof(mockSceneB));
-        mockSceneB.Id.Returns(Guid.NewGuid());
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
 
         var sut = new SceneManager();
-        sut.AddScene(mockSceneA, setToActive: true);
-        sut.AddScene(mockSceneB);
+        sut.UsesNavigationWrapping = true;
+
+        sut.AddScene(mockFirstScene, true);
+        sut.AddScene(mockLastScene, false);
 
         // Act
         sut.NextScene();
 
         // Assert
-        mockSceneA.Received(1).UnloadContent();
-        sut.CurrentScene.Should().NotBeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.Should().Be(1);
 
-        mockSceneB.Received(1).LoadContent();
-        sut.CurrentScene.Should().BeSameAs(mockSceneB);
+        mockFirstScene.Received(1).UnloadContent();
+        mockLastScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
+        sut.CurrentScene.Should().BeSameAs(mockLastScene);
     }
 
     [Fact]
-    public void NextScene_WithMoreThanASingleSceneAndIsTheLastScene_MovesToTheFirstScene()
+    public void NextScene_WithNavigationWrappingAndFirstSceneIsInactiveAndLastSceneIsActive_MovesToFirstScene()
     {
         // Arrange
-        var mockSceneA = Substitute.For<IScene>();
-        mockSceneA.Id.Returns(Guid.NewGuid());
-        mockSceneA.Name.Returns(nameof(mockSceneA));
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
 
-        var mockSceneB = Substitute.For<IScene>();
-        mockSceneB.Id.Returns(Guid.NewGuid());
-        mockSceneB.Name.Returns(nameof(mockSceneB));
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
 
         var sut = new SceneManager();
-        sut.AddScene(mockSceneA);
-        sut.AddScene(mockSceneB, setToActive: true);
+        sut.UsesNavigationWrapping = true;
+
+        sut.AddScene(mockFirstScene, false);
+        sut.AddScene(mockLastScene, true);
 
         // Act
         sut.NextScene();
 
         // Assert
-        mockSceneA.Received(1).LoadContent();
-        sut.CurrentScene.Should().BeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.Should().Be(0);
 
-        mockSceneB.Received(1).UnloadContent();
-        sut.CurrentScene.Should().NotBeSameAs(mockSceneB);
+        mockLastScene.Received(1).UnloadContent();
+        mockFirstScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+    }
+
+    [Fact]
+    public void NextScene_WithoutNavigationWrappingAndFirstSceneIsActiveAndLastSceneIsInactive_MovesToLastScene()
+    {
+        // Arrange
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
+
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
+
+        var sut = new SceneManager();
+        sut.UsesNavigationWrapping = false;
+
+        sut.AddScene(mockFirstScene, true);
+        sut.AddScene(mockLastScene, false);
+
+        // Act
+        sut.NextScene();
+
+        // Assert
+        sut.CurrentSceneIndex.Should().Be(1);
+
+        mockFirstScene.Received(1).UnloadContent();
+        mockLastScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockLastScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
+    }
+
+    [Fact]
+    public void NextScene_WithoutNavigationWrappingAndFirstSceneIsInactiveAndLastSceneIsActive_DoesNotMoveToFirstScene()
+    {
+        // Arrange
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
+
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
+
+        var sut = new SceneManager();
+        sut.UsesNavigationWrapping = false;
+
+        sut.AddScene(mockFirstScene, false);
+        sut.AddScene(mockLastScene, true);
+
+        // Act
+        sut.NextScene();
+
+        // Assert
+        sut.CurrentSceneIndex.Should().Be(1);
+
+        mockFirstScene.DidNotReceive().UnloadContent();
+        mockLastScene.DidNotReceive().LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockLastScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
     }
 
     [Fact]
@@ -368,55 +490,127 @@ public class SceneManagerTests
     }
 
     [Fact]
-    public void PreviousScene_WithMoreThanASingleSceneAndCurrentSceneIsNotTheFirstScene_MovesToThePreviousScene()
+    public void PreviousScene_WithNavigationWrappingAndFirstSceneIsActiveAndLastSceneIsInactive_MovesToLastScene()
     {
         // Arrange
-        var mockSceneA = Substitute.For<IScene>();
-        mockSceneA.Id.Returns(Guid.NewGuid());
-        mockSceneA.Name.Returns(nameof(mockSceneA));
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
 
-        var mockSceneB = Substitute.For<IScene>();
-        mockSceneB.Id.Returns(Guid.NewGuid());
-        mockSceneB.Name.Returns(nameof(mockSceneB));
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
 
         var sut = new SceneManager();
-        sut.AddScene(mockSceneA);
-        sut.AddScene(mockSceneB, setToActive: true);
+        sut.UsesNavigationWrapping = true;
+
+        sut.AddScene(mockFirstScene, true);
+        sut.AddScene(mockLastScene, false);
 
         // Act
         sut.PreviousScene();
 
         // Assert
-        mockSceneB.Received(1).UnloadContent();
-        sut.CurrentScene.Should().NotBeSameAs(mockSceneB);
+        sut.CurrentSceneIndex.Should().Be(1);
 
-        mockSceneA.Received(1).LoadContent();
-        sut.CurrentScene.Should().BeSameAs(mockSceneA);
+        mockFirstScene.Received(1).UnloadContent();
+        mockLastScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockLastScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
     }
 
     [Fact]
-    public void PreviousScene_WithMoreThanASingleSceneAndCurrentSceneIsTheFirstScene_MovesToTheLastScene()
+    public void PreviousScene_WithNavigationWrappingAndFirstSceneIsInactiveAndLastSceneIsActive_MovesToFirstScene()
     {
         // Arrange
-        var mockSceneA = Substitute.For<IScene>();
-        mockSceneA.Id.Returns(Guid.NewGuid());
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
 
-        var mockSceneB = Substitute.For<IScene>();
-        mockSceneB.Id.Returns(Guid.NewGuid());
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
 
         var sut = new SceneManager();
-        sut.AddScene(mockSceneA, setToActive: true);
-        sut.AddScene(mockSceneB);
+        sut.UsesNavigationWrapping = true;
+
+        sut.AddScene(mockFirstScene, false);
+        sut.AddScene(mockLastScene, true);
 
         // Act
         sut.PreviousScene();
 
         // Assert
-        mockSceneB.Received(1).LoadContent();
-        sut.CurrentScene.Should().BeSameAs(mockSceneB);
+        sut.CurrentSceneIndex.Should().Be(0);
 
-        mockSceneA.Received(1).UnloadContent();
-        sut.CurrentScene.Should().NotBeSameAs(mockSceneA);
+        mockLastScene.Received(1).UnloadContent();
+        mockFirstScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+    }
+
+    [Fact]
+    public void PreviousScene_WithoutNavigationWrappingAndFirstSceneIsActiveAndLastSceneIsInactive_DoesNotMoveToLastScene()
+    {
+        // Arrange
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
+
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
+
+        var sut = new SceneManager();
+        sut.UsesNavigationWrapping = false;
+
+        sut.AddScene(mockFirstScene, true);
+        sut.AddScene(mockLastScene, false);
+
+        // Act
+        sut.PreviousScene();
+
+        // Assert
+        sut.CurrentSceneIndex.Should().Be(0);
+
+        mockFirstScene.DidNotReceive().UnloadContent();
+        mockLastScene.DidNotReceive().LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+    }
+
+    [Fact]
+    public void PreviousScene_WithoutNavigationWrappingAndFirstSceneIsInactiveAndLastSceneIsActive_MovesToFirstScene()
+    {
+        // Arrange
+        var mockFirstScene = Substitute.For<IScene>();
+        mockFirstScene.Id.Returns(new Guid("eb3092e0-9132-4b17-9f98-a67828af595d"));
+        mockFirstScene.Name.Returns(nameof(mockFirstScene));
+
+        var mockLastScene = Substitute.For<IScene>();
+        mockLastScene.Name.Returns(nameof(mockLastScene));
+        mockLastScene.Id.Returns(new Guid("24809195-ac65-4b45-9b16-50c30bc0355d"));
+
+        var sut = new SceneManager();
+        sut.UsesNavigationWrapping = false;
+
+        sut.AddScene(mockFirstScene, false);
+        sut.AddScene(mockLastScene, true);
+
+        // Act
+        sut.PreviousScene();
+
+        // Assert
+        sut.CurrentSceneIndex.Should().Be(0);
+
+        mockLastScene.Received(1).UnloadContent();
+        mockFirstScene.Received(1).LoadContent();
+
+        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
+        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
     }
 
     [Fact]

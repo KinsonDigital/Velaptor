@@ -38,6 +38,16 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     int TotalScenes { get; }
 
     /// <summary>
+    /// Gets the index of the current scene.
+    /// </summary>
+    int CurrentSceneIndex { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether navigation wrapping is used when navigating past the first or list scenes.
+    /// </summary>
+    bool UsesNavigationWrapping { get; set; }
+
+    /// <summary>
     /// Adds the given scene.
     /// </summary>
     /// <param name="scene">The scene to add.</param>
