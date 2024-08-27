@@ -18,6 +18,8 @@ internal sealed class AudioLoader : ILoader<IAudio>
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
+    private const char MetaDataSignifier = '|';
+    private const char WinDirSepChar = '\\';
     private readonly IItemCache<string, IAudio> audioCache;
     private readonly IContentPathResolver audioPathResolver;
     private readonly IDirectory directory;
@@ -72,16 +74,14 @@ internal sealed class AudioLoader : ILoader<IAudio>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
     public IAudio Load(string contentPathOrName)
     {
-        const char metaDataSignifier = '|';
-
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        if (contentPathOrName.DoesNotContain(metaDataSignifier))
+        if (contentPathOrName.DoesNotContain(MetaDataSignifier))
         {
             throw new LoadAudioException("The audio file path must contain metadata.");
         }
 
-        var wholeSections = contentPathOrName.Split(metaDataSignifier);
+        var wholeSections = contentPathOrName.Split(MetaDataSignifier);
         var contentFilePath = wholeSections[0];
         var bufferTypeStr = wholeSections[1];
 
