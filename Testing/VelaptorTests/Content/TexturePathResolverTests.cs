@@ -21,8 +21,6 @@ using Xunit;
 public class TexturePathResolverTests
 {
     private const string Extension = ".png";
-    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
-    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -33,8 +31,11 @@ public class TexturePathResolverTests
     /// </summary>
     public TexturePathResolverTests()
     {
+        this.mockPlatform = Substitute.For<IPlatform>();
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
+
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns($"{Root}app");
+        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
@@ -43,7 +44,6 @@ public class TexturePathResolverTests
         this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
 
-        this.mockPlatform = Substitute.For<IPlatform>();
         this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Create("WINDOWS"));
     }
 
@@ -57,11 +57,11 @@ public class TexturePathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}test-content{Extension}" },
-            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}test-content{Extension}" },
-            { string.Empty, $"TEST-CONTENT{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}TEST-CONTENT{Extension}" },
-            { string.Empty, "test-content", $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}test-content{Extension}" },
-            { $"sub-dir{DirSepChar}", $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}sub-dir{DirSepChar}test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Graphics\test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Graphics\test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $@"C:\app\Content\Graphics\TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $@"C:\app\Content\Graphics\test-content{Extension}" },
+            { @"sub-dir\", $@"test-content{Extension}", $@"C:\app\Content\Graphics\sub-dir\test-content{Extension}" },
         };
     }
     #endregion
@@ -120,8 +120,8 @@ public class TexturePathResolverTests
     {
         // Arrange
         this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
-        var contentFilePath = $"{Root}app{DirSepChar}Content{DirSepChar}Graphics" +
-                              $"{DirSepChar}{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
+        var contentFilePath = $@"C:\app\Content\Graphics" +
+                              $@"\{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
         var sut = CreateSystemUnderTest();
 
         // Act

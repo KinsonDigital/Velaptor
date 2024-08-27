@@ -20,8 +20,6 @@ using Xunit;
 /// </summary>
 public class AudioPathResolverTests
 {
-    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
-    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\" : "/";
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -32,16 +30,17 @@ public class AudioPathResolverTests
     /// </summary>
     public AudioPathResolverTests()
     {
+        this.mockPlatform = Substitute.For<IPlatform>();
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
+
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns($"{Root}app");
+        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
 
         this.mockFile = Substitute.For<IFile>();
 
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
-
-        this.mockPlatform = Substitute.For<IPlatform>();
     }
 
     #region Constructor Tests
@@ -116,8 +115,8 @@ public class AudioPathResolverTests
     public void ResolveFilePath_WhenInvoked_ResolvesFilePath(string extension)
     {
         // Arrange
-        var contentDir = $"{this.mockAppService.AppDirectory}{DirSepChar}Content{DirSepChar}Audio";
-        var expected = $"{contentDir}{DirSepChar}test-content.ogg";
+        var contentDir = $@"{this.mockAppService.AppDirectory}\Content\Audio";
+        var expected = $@"{contentDir}\test-content.ogg";
 
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(extension);
