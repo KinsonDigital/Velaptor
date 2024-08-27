@@ -84,7 +84,7 @@
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="3.0.0" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
-    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.19" />
+    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.20" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -96,7 +96,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Silk.NET" Version="2.21.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.21.0" />
-    <PackageReference Include="SimpleInjector" Version="5.4.6" />
+    <PackageReference Include="SimpleInjector" Version="5.5.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
