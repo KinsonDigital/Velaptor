@@ -66,14 +66,11 @@ internal sealed class AudioPathResolver : ContentPathResolver
 
         contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{OggExtension}";
 
-        var comparisonType = this.platform.CurrentPlatform == OSPlatform.Windows
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
-
         var extension = this.path.GetExtension(contentPathOrName);
 
         // Check if the file extension is supported
-        if (string.Compare(extension, OggExtension, comparisonType) == 0 || string.Compare(extension, Mp3Extension, comparisonType) == 0)
+        if (string.Compare(extension, OggExtension, StringComparison.OrdinalIgnoreCase) == 0 ||
+            string.Compare(extension, Mp3Extension, StringComparison.OrdinalIgnoreCase) == 0)
         {
             return base.ResolveFilePath(contentPathOrName);
         }
