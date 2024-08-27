@@ -89,7 +89,7 @@ internal sealed class AudioLoader : ILoader<IAudio>
 
         if (!parseSuccess)
         {
-            throw new LoadAudioException("The audio buffer type could not be determined");
+            throw new LoadAudioException("The audio buffer type could not be determined.");
         }
 
         var isPathRooted = this.path.IsPathRooted(contentFilePath);
