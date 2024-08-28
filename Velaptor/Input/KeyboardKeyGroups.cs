@@ -27,29 +27,29 @@ internal readonly record struct KeyboardKeyGroups
     /// <summary>
     /// Gets a list of the cursor movement keys.
     /// </summary>
-    public static IReadOnlyList<KeyCode> CursorMovementKeys { get; } = new[]
-    {
+    public static IReadOnlyList<KeyCode> CursorMovementKeys { get; } =
+    [
         KeyCode.Left, KeyCode.Right, KeyCode.Up, KeyCode.Down, KeyCode.Home,
-        KeyCode.End, KeyCode.Tab, KeyCode.PageUp, KeyCode.PageDown,
-    };
+        KeyCode.End, KeyCode.Tab, KeyCode.PageUp, KeyCode.PageDown
+    ];
 
     /// <summary>
     /// Gets a list of the function keys.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Kept for future use.")]
-    public static IReadOnlyList<KeyCode> FunctionKeys { get; } = new[]
-    {
+    public static IReadOnlyList<KeyCode> FunctionKeys { get; } =
+    [
         KeyCode.F1, KeyCode.F2, KeyCode.F3, KeyCode.F4, KeyCode.F5,
         KeyCode.F6, KeyCode.F7, KeyCode.F8, KeyCode.F9, KeyCode.F10,
         KeyCode.F11, KeyCode.F12, KeyCode.F13, KeyCode.F14, KeyCode.F15,
         KeyCode.F16, KeyCode.F17, KeyCode.F18, KeyCode.F19, KeyCode.F20,
-        KeyCode.F21, KeyCode.F22, KeyCode.F23, KeyCode.F24,
-    };
+        KeyCode.F21, KeyCode.F22, KeyCode.F23, KeyCode.F24
+    ];
 
     /// <summary>
     /// Gets the list of keyboard keys used for deletion.
     /// </summary>
-    public static readonly IReadOnlyList<KeyCode> DeletionKeys = new[] { KeyCode.Delete, KeyCode.Backspace, };
+    public static readonly IReadOnlyList<KeyCode> DeletionKeys = [KeyCode.Delete, KeyCode.Backspace];
 
     /// <summary>
     /// Gets the characters associated with the correct <see cref="KeyCode"/> produced by the

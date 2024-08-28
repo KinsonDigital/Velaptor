@@ -190,15 +190,15 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
         {
             var maxIndex = result.Count <= 0 ? 0 : result.Max() + 1;
 
-            result.AddRange(new[]
-            {
+            result.AddRange(
+            [
                 maxIndex,
                 maxIndex + 1u,
                 maxIndex + 2u,
                 maxIndex + 2u,
                 maxIndex + 1u,
-                maxIndex + 3u,
-            });
+                maxIndex + 3u
+            ]);
         }
 
         return result.ToArray();
@@ -209,13 +209,13 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     /// up a rectangular rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>
-    private static ShapeVertexData[] GenerateVertexData() => new[]
-        {
-            ShapeVertexData.New(-1.0f, 1.0f),
+    private static ShapeVertexData[] GenerateVertexData() =>
+    [
+        ShapeVertexData.New(-1.0f, 1.0f),
             ShapeVertexData.New(-1.0f, -1.0f),
             ShapeVertexData.New(1.0f, 1.0f),
-            ShapeVertexData.New(1.0f, 1.0f),
-        };
+            ShapeVertexData.New(1.0f, 1.0f)
+    ];
 
     /// <summary>
     /// Applies the color of the given <paramref name="shape"/> shape to the shape

@@ -55,7 +55,7 @@ public class RectShapeTests
         sut.Color.Should().Be(Color.White);
         sut.IsSolid.Should().BeTrue();
         sut.BorderThickness.Should().Be(1f);
-        sut.CornerRadius.Should().Be(new CornerRadius(1f, 1f, 1f, 1f));
+        sut.CornerRadius.Should().Be(new CornerRadius(0f, 0f, 0f, 0f));
         sut.GradientType.Should().Be(ColorGradient.None);
         sut.GradientStart.Should().Be(Color.White);
         sut.GradientStop.Should().Be(Color.White);
