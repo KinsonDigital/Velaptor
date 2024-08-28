@@ -6,9 +6,9 @@
 */
 
 const uint TOP_LEFT_CORNER = 1;
-const uint BOTTOM_LEFT_CORNER = 4;
-const uint BOTTOM_RIGHT_CORNER = 3;
 const uint TOP_RIGHT_CORNER = 2;
+const uint BOTTOM_RIGHT_CORNER = 3;
+const uint BOTTOM_LEFT_CORNER = 4;
 
 /*
     pass_shape can represent either a rectangle or an circle.
@@ -31,9 +31,9 @@ in vec4 pass_color;
 in float pass_isFilled;
 in float pass_borderThickness;
 in float pass_topLeftCornerRadius;
-in float pass_bottomLeftCornerRadius;
-in float pass_bottomRightCornerRadius;
 in float pass_topRightCornerRadius;
+in float pass_bottomRightCornerRadius;
+in float pass_bottomLeftCornerRadius;
 
 // NOTE: The fragment coordinate is in pixel units.
 // The line below sets the fragment coordinate to be relative
@@ -91,9 +91,9 @@ Circle createCornerCircle(Rectangle rect, uint cornerType)
     float halfWidth = rect.Width / 2.0;
     float halfHeight = rect.Height / 2.0;
     float topLeftRadius = clamp(pass_topLeftCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
-    float bottomLeftRadius = clamp(pass_bottomLeftCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
-    float bottomRightRadius = clamp(pass_bottomRightCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
     float topRightRadius = clamp(pass_topRightCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
+    float bottomRightRadius = clamp(pass_bottomRightCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
+    float bottomLeftRadius = clamp(pass_bottomLeftCornerRadius, 0.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
 
     Circle result;
 
@@ -104,20 +104,20 @@ Circle createCornerCircle(Rectangle rect, uint cornerType)
             result.Position.x = (rect.Position.x - halfWidth) + topLeftRadius;
             result.Position.y = (rect.Position.y - halfHeight) + topLeftRadius;
             break;
-        case BOTTOM_LEFT_CORNER:
-            result.Radius = bottomLeftRadius;
-            result.Position.x = (rect.Position.x - halfWidth) + bottomLeftRadius;
-            result.Position.y = (rect.Position.y + halfHeight) - bottomLeftRadius;
+        case TOP_RIGHT_CORNER:
+            result.Radius = topRightRadius;
+            result.Position.x = (rect.Position.x + halfWidth) - topRightRadius;
+            result.Position.y = (rect.Position.y - halfHeight) + topRightRadius;
             break;
         case BOTTOM_RIGHT_CORNER:
             result.Radius = bottomRightRadius;
             result.Position.x = (rect.Position.x + halfWidth) - bottomRightRadius;
             result.Position.y = (rect.Position.y + halfHeight) - bottomRightRadius;
             break;
-        case TOP_RIGHT_CORNER:
-            result.Radius = topRightRadius;
-            result.Position.x = (rect.Position.x + halfWidth) - topRightRadius;
-            result.Position.y = (rect.Position.y - halfHeight) + topRightRadius;
+        case BOTTOM_LEFT_CORNER:
+            result.Radius = bottomLeftRadius;
+            result.Position.x = (rect.Position.x - halfWidth) + bottomLeftRadius;
+            result.Position.y = (rect.Position.y + halfHeight) - bottomLeftRadius;
             break;
     }
 
@@ -146,8 +146,8 @@ bool containedByCircle(Circle circle, uint cornerType)
                 return true;
             }
             break;
-        case BOTTOM_LEFT_CORNER:
-            if (pass_bottomLeftCornerRadius < 0.0)
+        case TOP_RIGHT_CORNER:
+            if (pass_topRightCornerRadius < 0.0)
             {
                 return true;
             }
@@ -158,12 +158,12 @@ bool containedByCircle(Circle circle, uint cornerType)
                 return true;
             }
             break;
-        case TOP_RIGHT_CORNER:
-            if (pass_topRightCornerRadius < 0.0)
+        case BOTTOM_LEFT_CORNER:
+            if (pass_bottomLeftCornerRadius < 0.0)
             {
                 return true;
             }
-        break;
+            break;
     }
 
     // Refer to link below for more information
@@ -198,17 +198,17 @@ bool inCorrectCircleQuadrant(Circle cornerCircle, uint cornerType)
             result = pass_topLeftCornerRadius < 0.0 ||
                 gl_FragCoord.x < cornerCircle.Position.x && gl_FragCoord.y < cornerCircle.Position.y;
             break;
-        case BOTTOM_LEFT_CORNER:
-            result = pass_bottomLeftCornerRadius < 0.0 ||
-                gl_FragCoord.x < cornerCircle.Position.x && gl_FragCoord.y > cornerCircle.Position.y;
+        case TOP_RIGHT_CORNER:
+            result = pass_topRightCornerRadius < 0.0 ||
+                gl_FragCoord.x > cornerCircle.Position.x && gl_FragCoord.y < cornerCircle.Position.y;
             break;
         case BOTTOM_RIGHT_CORNER:
             result = pass_bottomRightCornerRadius < 0.0 ||
                 gl_FragCoord.x > cornerCircle.Position.x && gl_FragCoord.y > cornerCircle.Position.y;
             break;
-        case TOP_RIGHT_CORNER:
-            result = pass_topRightCornerRadius < 0.0 ||
-                gl_FragCoord.x > cornerCircle.Position.x && gl_FragCoord.y < cornerCircle.Position.y;
+        case BOTTOM_LEFT_CORNER:
+            result = pass_bottomLeftCornerRadius < 0.0 ||
+                gl_FragCoord.x < cornerCircle.Position.x && gl_FragCoord.y > cornerCircle.Position.y;
             break;
     }
 
@@ -259,40 +259,40 @@ bool inRectCornerTip(Circle cornerCircle, uint cornerType)
 bool containedByRect(Rectangle rect)
 {
     bool inTopLeftCorner;
-    bool inBottomLeftCorner;
-    bool inBottomRightCorner;
     bool inTopRightCorner;
+    bool inBottomRightCorner;
+    bool inBottomLeftCorner;
 
     bool inTopLeftRectTip;
-    bool inBottomLeftRectTip;
-    bool inBottomRightRectTip;
     bool inTopRightRectTip;
+    bool inBottomRightRectTip;
+    bool inBottomLeftRectTip;
 
     bool inAnyCorners;
     bool notInAnyCornerTips;
 
     Circle topLeftCircle = createCornerCircle(rect, TOP_LEFT_CORNER);
-    Circle bottomLeftCircle = createCornerCircle(rect, BOTTOM_LEFT_CORNER);
-    Circle bottomRightCircle = createCornerCircle(rect, BOTTOM_RIGHT_CORNER);
     Circle topRightCircle = createCornerCircle(rect, TOP_RIGHT_CORNER);
+    Circle bottomRightCircle = createCornerCircle(rect, BOTTOM_RIGHT_CORNER);
+    Circle bottomLeftCircle = createCornerCircle(rect, BOTTOM_LEFT_CORNER);
 
     inTopLeftCorner = inRectCorner(topLeftCircle, TOP_LEFT_CORNER);
-    inBottomLeftCorner = inRectCorner(bottomLeftCircle, BOTTOM_LEFT_CORNER);
-    inBottomRightCorner = inRectCorner(bottomRightCircle, BOTTOM_RIGHT_CORNER);
     inTopRightCorner = inRectCorner(topRightCircle, TOP_RIGHT_CORNER);
+    inBottomRightCorner = inRectCorner(bottomRightCircle, BOTTOM_RIGHT_CORNER);
+    inBottomLeftCorner = inRectCorner(bottomLeftCircle, BOTTOM_LEFT_CORNER);
 
     inTopLeftRectTip = inRectCornerTip(topLeftCircle, TOP_LEFT_CORNER);
-    inBottomLeftRectTip = inRectCornerTip(bottomLeftCircle, BOTTOM_LEFT_CORNER);
-    inBottomRightRectTip = inRectCornerTip(bottomRightCircle, BOTTOM_RIGHT_CORNER);
     inTopRightRectTip = inRectCornerTip(topRightCircle, TOP_RIGHT_CORNER);
+    inBottomRightRectTip = inRectCornerTip(bottomRightCircle, BOTTOM_RIGHT_CORNER);
+    inBottomLeftRectTip = inRectCornerTip(bottomLeftCircle, BOTTOM_LEFT_CORNER);
 
-    inAnyCorners = inTopLeftCorner || inBottomLeftCorner || inBottomRightCorner || inTopRightCorner;
-    notInAnyCornerTips = !inTopLeftRectTip && !inBottomLeftRectTip && !inBottomRightRectTip && !inTopRightRectTip;
+    inAnyCorners = inTopLeftCorner || inTopRightCorner || inBottomRightCorner || inBottomLeftCorner;
+    notInAnyCornerTips = !inTopLeftRectTip && !inTopRightRectTip && !inBottomRightRectTip && !inBottomLeftRectTip;
 
     bool inTopLeft = inTopLeftCorner && !inTopLeftRectTip;
-    bool inBottomLeft = inBottomLeftCorner && !inBottomLeftRectTip;
-    bool inBottomRight = inBottomRightCorner && !inBottomRightRectTip;
     bool inTopRight = inTopRightCorner && !inTopRightRectTip;
+    bool inBottomRight = inBottomRightCorner && !inBottomRightRectTip;
+    bool inBottomLeft = inBottomLeftCorner && !inBottomLeftRectTip;
 
     float halfWidth = rect.Width / 2.0;
     float halfHeight = rect.Height / 2.0;
