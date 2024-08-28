@@ -6,9 +6,9 @@
 */
 
 const uint TOP_LEFT_CORNER = 1;
-const uint BOTTOM_LEFT_CORNER = 2;
+const uint BOTTOM_LEFT_CORNER = 4;
 const uint BOTTOM_RIGHT_CORNER = 3;
-const uint TOP_RIGHT_CORNER = 4;
+const uint TOP_RIGHT_CORNER = 2;
 
 /*
     pass_shape can represent either a rectangle or an circle.

@@ -14,9 +14,9 @@ layout(location = 2) in vec4 a_color;
 layout(location = 3) in float a_isFilled;
 layout(location = 4) in float a_borderThickness;
 layout(location = 5) in float a_topLeftCornerRadius;
-layout(location = 6) in float a_bottomLeftCornerRadius;
+layout(location = 8) in float a_bottomLeftCornerRadius;
 layout(location = 7) in float a_bottomRightCornerRadius;
-layout(location = 8) in float a_topRightCornerRadius;
+layout(location = 6) in float a_topRightCornerRadius;
 
 out vec4 pass_shape;
 out vec4 pass_color;
