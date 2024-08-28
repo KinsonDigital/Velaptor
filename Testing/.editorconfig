@@ -69,5 +69,3 @@ dotnet_diagnostic.CS8625.severity = none
 
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.CS8604.severity = none
-
-dotnet_diagnostic.SA1113.severity = none

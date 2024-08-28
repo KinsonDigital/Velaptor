@@ -214,3 +214,9 @@ resharper_bad_list_line_breaks_highlighting = none
 resharper_bad_parens_line_breaks_highlighting = none
 
 # inspection EditorConfigKeyCorrectness
+
+# SA1113: Comma must be on same line as previous parameter
+dotnet_diagnostic.SA1113.severity = none
+
+# SA1116: Split parameters should start on line after declaration
+dotnet_diagnostic.SA1116.severity = none
