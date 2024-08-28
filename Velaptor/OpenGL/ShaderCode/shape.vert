@@ -14,18 +14,18 @@ layout(location = 2) in vec4 a_color;
 layout(location = 3) in float a_isFilled;
 layout(location = 4) in float a_borderThickness;
 layout(location = 5) in float a_topLeftCornerRadius;
-layout(location = 6) in float a_bottomLeftCornerRadius;
+layout(location = 6) in float a_topRightCornerRadius;
 layout(location = 7) in float a_bottomRightCornerRadius;
-layout(location = 8) in float a_topRightCornerRadius;
+layout(location = 8) in float a_bottomLeftCornerRadius;
 
 out vec4 pass_shape;
 out vec4 pass_color;
 out float pass_isFilled; // This is treated as a boolean. <= 0 is false and >= 1 is true.
 out float pass_borderThickness;
 out float pass_topLeftCornerRadius;
-out float pass_bottomLeftCornerRadius;
-out float pass_bottomRightCornerRadius;
 out float pass_topRightCornerRadius;
+out float pass_bottomRightCornerRadius;
+out float pass_bottomLeftCornerRadius;
 
 void main()
 {
@@ -35,9 +35,9 @@ void main()
     pass_isFilled = a_isFilled;
     pass_borderThickness = a_borderThickness;
     pass_topLeftCornerRadius = a_topLeftCornerRadius;
-    pass_bottomLeftCornerRadius = a_bottomLeftCornerRadius;
-    pass_bottomRightCornerRadius = a_bottomRightCornerRadius;
     pass_topRightCornerRadius = a_topRightCornerRadius;
+    pass_bottomRightCornerRadius = a_bottomRightCornerRadius;
+    pass_bottomLeftCornerRadius = a_bottomLeftCornerRadius;
 
     gl_Position = vec4(a_vertexPos, 1.0, 1.0);
 }
