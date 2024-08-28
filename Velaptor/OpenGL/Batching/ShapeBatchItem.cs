@@ -53,9 +53,9 @@ internal readonly record struct ShapeBatchItem
     {
         Position = position;
         Width = width;
-        this.HalfWidth = Width / 2f;
+        HalfWidth = Width / 2f;
         Height = height;
-        this.HalfHeight = Height / 2f;
+        HalfHeight = Height / 2f;
         Color = color;
         IsSolid = isSolid;
         BorderThickness = borderThickness;
