@@ -21,8 +21,6 @@ using Xunit;
 public class FontPathResolverTests
 {
     private const string Extension = ".ttf";
-    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
-    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -33,8 +31,11 @@ public class FontPathResolverTests
     /// </summary>
     public FontPathResolverTests()
     {
+        this.mockPlatform = Substitute.For<IPlatform>();
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
+
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns($"{Root}app");
+        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
@@ -42,8 +43,6 @@ public class FontPathResolverTests
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
-
-        this.mockPlatform = Substitute.For<IPlatform>();
     }
 
 #pragma warning disable SA1514
@@ -56,13 +55,13 @@ public class FontPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}test-content{Extension}" },
-            { string.Empty, $"test-content{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}test-content{Extension}" },
-            { string.Empty, $"TEST-CONTENT{Extension}", $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}TEST-CONTENT{Extension}" },
+            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Fonts\test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Fonts\test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $@"C:\app\Content\Fonts\TEST-CONTENT{Extension}" },
             {
-                $"sub-dir{DirSepChar}",
+                $@"sub-dir\",
                 $"test-content{Extension}",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Fonts{DirSepChar}sub-dir{DirSepChar}test-content{Extension}"
+                $@"C:\app\Content\Fonts\sub-dir\test-content{Extension}"
             },
         };
     }
@@ -122,8 +121,8 @@ public class FontPathResolverTests
     {
         // Arrange
         this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
-        var contentFilePath = $"{Root}app{DirSepChar}Content{DirSepChar}Fonts" +
-                              $"{DirSepChar}{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
+        var contentFilePath = $@"C:\app\Content\Fonts" +
+                              $@"\{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
         var sut = CreateSystemUnderTest();
 
         // Act

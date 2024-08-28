@@ -66,23 +66,20 @@ internal sealed class AudioPathResolver : ContentPathResolver
 
         contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{OggExtension}";
 
-        var comparisonType = this.platform.CurrentPlatform == OSPlatform.Windows
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
-
         var extension = this.path.GetExtension(contentPathOrName);
 
         // Check if the file extension is supported
-        if (string.Compare(extension, OggExtension, comparisonType) != 0 && string.Compare(extension, Mp3Extension, comparisonType) != 0)
+        if (string.Compare(extension, OggExtension, StringComparison.OrdinalIgnoreCase) == 0 ||
+            string.Compare(extension, Mp3Extension, StringComparison.OrdinalIgnoreCase) == 0)
         {
-            var msg = $"The file extension '{extension}' is not supported.  Supported audio formats are '{OggExtension}' and '{Mp3Extension}'.";
-            msg += this.platform.CurrentPlatform == OSPlatform.Windows
-                ? string.Empty
-                : "\nNote: Linux and MacOS are case-sensitive.";
-
-            throw new ArgumentException(msg);
+            return base.ResolveFilePath(contentPathOrName);
         }
 
-        return base.ResolveFilePath(contentPathOrName);
+        var msg = $"The file extension '{extension}' is not supported.  Supported audio formats are '{OggExtension}' and '{Mp3Extension}'.";
+        msg += this.platform.CurrentPlatform == OSPlatform.Windows
+            ? string.Empty
+            : "\nNote: Linux and macOS are case-sensitive.";
+
+        throw new ArgumentException(msg);
     }
 }

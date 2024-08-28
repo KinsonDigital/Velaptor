@@ -16,6 +16,7 @@ using Services;
 /// </summary>
 internal abstract class ContentPathResolver : IContentPathResolver
 {
+    private const char WinDirSepChar = '\\';
     private readonly IFile file;
     private readonly IPath path;
     private readonly IPlatform platform;
@@ -48,7 +49,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
         this.file = file;
         this.path = path;
         this.platform = platform;
-        this.rootDirPath = $"{appService.AppDirectory}{path.AltDirectorySeparatorChar}Content";
+        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content";
     }
 
     /// <inheritdoc/>
@@ -65,7 +66,14 @@ internal abstract class ContentPathResolver : IContentPathResolver
                 return;
             }
 
-            value = value.Replace(this.path.DirectorySeparatorChar, this.path.AltDirectorySeparatorChar);
+            value = this.platform.CurrentPlatform == OSPlatform.Windows
+                ? value.Replace(this.path.AltDirectorySeparatorChar, this.path.DirectorySeparatorChar)
+                : value.Replace(WinDirSepChar, this.path.AltDirectorySeparatorChar);
+
+            value = value.EndsWith(this.path.DirectorySeparatorChar) ||
+                    value.EndsWith(this.path.AltDirectorySeparatorChar)
+                ? value[..^1]
+                : value;
 
             this.rootDirPath = value;
         }
@@ -92,10 +100,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
     /// <exception cref="FileNotFoundException">Thrown if the content file does not exist.</exception>
     public virtual string ResolveFilePath(string contentPathOrName)
     {
-        if (string.IsNullOrEmpty(contentPathOrName))
-        {
-            throw new ArgumentNullException(nameof(contentPathOrName), "The string parameter must not be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
         if (contentPathOrName.EndsWith(this.path.DirectorySeparatorChar) || contentPathOrName.EndsWith(this.path.AltDirectorySeparatorChar))
         {
@@ -103,12 +108,12 @@ internal abstract class ContentPathResolver : IContentPathResolver
             throw new ArgumentException(exMsg, nameof(contentPathOrName));
         }
 
-        if (this.platform.CurrentPlatform == OSPlatform.Windows)
-        {
-            contentPathOrName = contentPathOrName.Replace(this.path.DirectorySeparatorChar, this.path.AltDirectorySeparatorChar);
-        }
+        contentPathOrName = this.platform.CurrentPlatform == OSPlatform.Windows
+            ? contentPathOrName.Replace(this.path.AltDirectorySeparatorChar, this.path.DirectorySeparatorChar)
+            : contentPathOrName.Replace(WinDirSepChar, this.path.AltDirectorySeparatorChar);
 
-        contentPathOrName = contentPathOrName.StartsWith($".{this.path.AltDirectorySeparatorChar}")
+        contentPathOrName = contentPathOrName.StartsWith($".{WinDirSepChar}") ||
+                            contentPathOrName.StartsWith($".{this.path.AltDirectorySeparatorChar}")
             ? contentPathOrName[2..]
             : contentPathOrName;
 
@@ -121,7 +126,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
 
         var fullContentFilePath = this.path.IsPathRooted(contentPathOrName)
             ? contentPathOrName
-            : $"{contentDirPath}{this.path.AltDirectorySeparatorChar}{contentPathOrName}";
+            : $"{contentDirPath}{this.path.DirectorySeparatorChar}{contentPathOrName}";
 
         if (!this.file.Exists(fullContentFilePath))
         {
@@ -132,15 +137,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
     }
 
     /// <inheritdoc/>
-    public string ResolveDirPath()
-    {
-        var rootPath = this.rootDirPath.EndsWith(this.path.DirectorySeparatorChar) ||
-                       this.rootDirPath.EndsWith(this.path.AltDirectorySeparatorChar)
-            ? this.rootDirPath[..^1]
-            : this.rootDirPath;
-
-        return $"{rootPath}{this.path.AltDirectorySeparatorChar}{this.contentDirName}";
-    }
+    public string ResolveDirPath() => $"{this.rootDirPath}{this.path.DirectorySeparatorChar}{this.contentDirName}";
 
     /// <summary>
     /// Gets the directory path of the content.
@@ -153,6 +150,6 @@ internal abstract class ContentPathResolver : IContentPathResolver
             ? this.rootDirPath[..^1]
             : this.rootDirPath;
 
-        return $"{rootPath}{this.path.AltDirectorySeparatorChar}{this.contentDirName}";
+        return $"{rootPath}{this.path.DirectorySeparatorChar}{this.contentDirName}";
     }
 }

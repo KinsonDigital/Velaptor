@@ -4,6 +4,7 @@
 
 namespace Velaptor;
 
+using System.Diagnostics.CodeAnalysis;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics;
@@ -13,6 +14,7 @@ using Silk.NET.OpenGL;
 /// <summary>
 /// Represents a Velaptor application.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "This is a static class that doesn't need to be tested.")]
 public static class App
 {
     /// <summary>

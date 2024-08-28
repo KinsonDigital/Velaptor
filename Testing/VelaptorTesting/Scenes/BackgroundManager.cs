@@ -46,5 +46,5 @@ public class BackgroundManager : IDrawable
     /// <summary>
     /// Unloads the background texture.
     /// </summary>
-    public void Unload() => this.loader.Unload(BackgroundTextureName);
+    public void Unload() => this.loader.Unload(this.background.FilePath);
 }

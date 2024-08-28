@@ -21,8 +21,8 @@ using Xunit;
 /// </summary>
 public class ContentPathResolverTests
 {
-    private static readonly char DirSepChar = Path.AltDirectorySeparatorChar;
-    private static readonly string Root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
+    private const bool IsWindows = true;
+    private const bool IsLinux = false;
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -33,17 +33,18 @@ public class ContentPathResolverTests
     /// </summary>
     public ContentPathResolverTests()
     {
+        this.mockPlatform = Substitute.For<IPlatform>();
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
+
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns($"{Root}app");
+        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
 
         this.mockPath = Substitute.For<IPath>();
-        this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
+        this.mockPath.DirectorySeparatorChar.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? '\\' : '/');
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
-
-        this.mockPlatform = Substitute.For<IPlatform>();
     }
 
 #pragma warning disable SA1514
@@ -52,47 +53,47 @@ public class ContentPathResolverTests
     /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesContentFilePath"/> test.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static TheoryData<string, bool, string, string> ResolveFilePath_WhenInvoked_ResolvesContentFilePath_Data()
+    public static TheoryData<string, bool, bool, string> ResolveFilePath_WhenInvoked_ResolvesContentFilePath_Data()
     {
         const string contentName = "test-content.png";
 
-        return new TheoryData<string, bool, string, string>
+        return new TheoryData<string, bool, bool, string>
         {
             {
-                $"{Root}root-dir{DirSepChar}{contentName}",
-                true,
-                "WINDOWS",
-                $"{Root}root-dir{DirSepChar}{contentName}"
+                $@"C:\root-dir\{contentName}", // contentPathOrName
+                true, // isPathRooted
+                IsWindows, // isWindows
+                $@"C:\root-dir\{contentName}" // expected
             },
             {
                 "test-content.png",
                 false,
-                "WINDOWS",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}{contentName}"
+                IsWindows,
+                $@"C:\app\Content\Graphics\{contentName}"
+            },
+            {
+                @"sub-dir\test-content.png",
+                false,
+                IsWindows,
+                $@"C:\app\Content\Graphics\sub-dir\{contentName}"
             },
             {
                 "test-content.png",
                 false,
-                "OSX",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}{contentName}"
+                IsLinux,
+                $"/app/Content/Graphics/{contentName}"
             },
             {
                 "test-content.png",
                 false,
-                "LINUX",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}{contentName}"
+                IsLinux,
+                $"/app/Content/Graphics/{contentName}"
             },
             {
                 "test-content.png",
                 false,
-                "FREEBSD",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}{contentName}"
-            },
-            {
-                $"sub-dir{DirSepChar}test-content.png",
-                false,
-                "WINDOWS",
-                $"{Root}app{DirSepChar}Content{DirSepChar}Graphics{DirSepChar}sub-dir{DirSepChar}{contentName}"
+                IsLinux,
+                $"/app/Content/Graphics/{contentName}"
             },
         };
     }
@@ -163,13 +164,18 @@ public class ContentPathResolverTests
 
     #region Prop Tests
     [Theory]
-    [InlineData(null, "C:/app/Content")]
-    [InlineData("", "C:/app/Content")]
-    [InlineData(@"C:\base-content\", "C:/base-content/")]
-    [InlineData(@"C:\base-content", @"C:/base-content")]
-    public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string? rootDirectory, string expected)
+    [InlineData(null, @"C:\app\Content", IsWindows)]
+    [InlineData("", @"C:\app\Content", IsWindows)]
+    [InlineData(null, "/app/Content", IsLinux)]
+    [InlineData("", "/app/Content", IsLinux)]
+    [InlineData(@"C:\base-content\", @"C:\base-content", IsWindows)]
+    [InlineData("C:/base-content/", @"C:\base-content", IsWindows)]
+    [InlineData(@"\base-content\", "/base-content", IsLinux)]
+    [InlineData(@"/base-content/", "/base-content", IsLinux)]
+    public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string? rootDirectory, string expected, bool isWindows)
     {
         // Arrange
+        this.mockPlatform.CurrentPlatform.Returns(isWindows ? OSPlatform.Windows : OSPlatform.Linux);
         var resolver = CreateSystemUnderTest();
 
         // Act
@@ -200,21 +206,20 @@ public class ContentPathResolverTests
     #endregion
 
     #region Method Tests
-    [Theory]
-    [InlineData(@"C:\temp\my-content\")]
-    [InlineData(@"C:\temp\my-content/")]
-    public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath(string rootDirPath)
+    [Fact]
+    public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath()
     {
         // Arrange
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
         var sut = CreateSystemUnderTest();
-        sut.RootDirectoryPath = rootDirPath;
+        sut.RootDirectoryPath = @"C:\temp\my-content\";
         sut.ContentDirectoryName = "test-content";
 
         // Act
         var actual = sut.ResolveDirPath();
 
         // Assert
-        actual.Should().Be(@"C:/temp/my-content/test-content");
+        actual.Should().Be(@"C:\temp\my-content\test-content");
     }
 
     [Fact]
@@ -228,7 +233,7 @@ public class ContentPathResolverTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -241,8 +246,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("The string parameter must not be null or empty. (Parameter 'contentPathOrName')");
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -283,7 +288,7 @@ public class ContentPathResolverTests
     public void ResolveFilePath_WhenContentFileDoesNotExist_ThrowsException()
     {
         // Arrange
-        var expectedContentFilePath = $"{Root}app{DirSepChar}test-content.png";
+        const string expectedContentFilePath = @"C\:app\test-content.png";
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockFile.Exists(Arg.Any<string>()).Returns(false);
@@ -303,14 +308,14 @@ public class ContentPathResolverTests
     public void ResolveFilePath_WhenInvoked_ResolvesContentFilePath(
         string contentPathOrName,
         bool isPathRooted,
-        string platform,
+        bool isWindows,
         string expected)
     {
         // Arrange
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(isPathRooted);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Create(platform));
+        this.mockPlatform.CurrentPlatform.Returns(isWindows ? OSPlatform.Windows : OSPlatform.Linux);
 
         var sut = CreateSystemUnderTest();
         sut.ContentDirectoryName = "Graphics";

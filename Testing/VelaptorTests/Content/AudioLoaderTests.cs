@@ -1,4 +1,4 @@
-﻿// <copyright file="AudioLoaderTests.cs" company="KinsonDigital">
+// <copyright file="AudioLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using NSubstitute;
 using Velaptor.Content;
@@ -177,6 +178,34 @@ public class AudioLoaderTests
         act.Should()
             .Throw<ArgumentException>()
             .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+    }
+
+    [Fact]
+    public void Load_WithMissingDataSignifier_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load("test-content");
+
+        // Assert
+        act.Should().Throw<LoadAudioException>()
+            .WithMessage("The audio file path must contain metadata.");
+    }
+
+    [Fact]
+    public void Load_WithInvalidMetaData_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load("test-content|Invalid");
+
+        // Assert
+        act.Should().Throw<LoadAudioException>()
+            .WithMessage("The audio buffer type could not be determined.");
     }
 
     [Fact]

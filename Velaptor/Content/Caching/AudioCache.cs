@@ -121,11 +121,9 @@ internal sealed class AudioCache : IItemCache<string, IAudio>
             throw new LoadAudioException(exceptionMsg);
         }
 
-        var cacheKey = contentFilePath;
-
         if (this.file.Exists(contentFilePath))
         {
-            return this.allAudio.GetOrAdd(cacheKey, filePath => this.audioFactory.Create(filePath, bufferType));
+            return this.allAudio.GetOrAdd(contentFilePath, filePath => this.audioFactory.Create(filePath, bufferType));
         }
 
         throw new FileNotFoundException($"The '{extension}' audio file does not exist.", contentFilePath);
