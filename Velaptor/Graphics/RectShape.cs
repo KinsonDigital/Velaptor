@@ -173,7 +173,7 @@ public record struct RectShape
     /// <remarks>
     ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </remarks>
-    public CornerRadius CornerRadius { get; set; } = new (1f, 1f, 1f, 1f);
+    public CornerRadius CornerRadius { get; set; } = new (0f, 0f, 0f, 0f);
 
     /// <summary>
     /// Gets or sets the type of color gradient that will be applied to the rectangle.
