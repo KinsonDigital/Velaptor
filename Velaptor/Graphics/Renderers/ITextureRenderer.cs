@@ -5,6 +5,7 @@
 namespace Velaptor.Graphics.Renderers;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Batching;
@@ -96,6 +97,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, float angle, int layer = 0);
 
     /// <summary>
@@ -140,6 +142,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, float angle, float size, int layer = 0);
 
     /// <summary>
@@ -185,6 +188,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, float angle, float size, Color color, int layer = 0);
 
     /// <summary>
@@ -227,6 +231,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0);
 
     /// <summary>
@@ -269,6 +274,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, Color color, int layer = 0);
 
     /// <summary>
@@ -312,6 +318,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0);
 
     /// <summary>
@@ -393,6 +400,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, float angle, int layer = 0);
 
     /// <summary>
@@ -436,6 +444,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, float angle, float size, int layer = 0);
 
     /// <summary>
@@ -480,6 +489,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, float angle, float size, Color color, int layer = 0);
 
     /// <summary>
@@ -521,6 +531,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, RenderEffects effects, int layer = 0);
 
     /// <summary>
@@ -562,6 +573,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, Color color, int layer = 0);
 
     /// <summary>
@@ -604,6 +616,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(ITexture texture, Vector2 pos, Color color, RenderEffects effects, int layer = 0);
 
     /// <summary>
@@ -728,6 +741,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(IAtlasData atlas, string subTextureName, Vector2 pos, Color color, int frameNumber = 0, int layer = 0);
 
     /// <summary>
@@ -768,6 +782,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, int frameNumber = 0, int layer = 0);
 
     /// <summary>
@@ -850,6 +865,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, Color color, int frameNumber = 0, int layer = 0);
 
     /// <summary>
@@ -892,6 +908,7 @@ public interface ITextureRenderer
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
     void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, float size, Color color, int frameNumber = 0, int layer = 0);
 
     /// <summary>
