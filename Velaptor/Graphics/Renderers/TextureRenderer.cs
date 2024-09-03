@@ -102,7 +102,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -123,7 +123,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), size, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -144,7 +144,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), size, angle, color, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -181,7 +181,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -210,7 +210,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -231,7 +231,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), size, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -252,7 +252,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), size, angle, color, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -289,7 +289,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -315,7 +315,7 @@ internal sealed class TextureRenderer : ITextureRenderer
             throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
         }
 
-        RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -345,8 +345,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            1f,
             0f,
+            1f,
             Color.White,
             RenderEffects.None,
             layer);
@@ -379,8 +379,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            1f,
             0f,
+            1f,
             color,
             RenderEffects.None,
             layer);
@@ -413,8 +413,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            1f,
             angle,
+            1f,
             Color.White,
             RenderEffects.None,
             layer);
@@ -447,8 +447,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            size,
             angle,
+            size,
             Color.White,
             RenderEffects.None,
             layer);
@@ -481,8 +481,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            1f,
             angle,
+            1f,
             color,
             RenderEffects.None,
             layer);
@@ -523,8 +523,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            size,
             angle,
+            size,
             color,
             RenderEffects.None,
             layer);
@@ -566,8 +566,8 @@ internal sealed class TextureRenderer : ITextureRenderer
         RenderBase(
             atlas.Texture,
             (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
-            size,
             angle,
+            size,
             color,
             effects,
             layer);
@@ -584,8 +584,8 @@ internal sealed class TextureRenderer : ITextureRenderer
     private void RenderBase(
         ITexture texture,
         (NETRect srcRect, NETRect destRect) rects,
-        float size,
         float angle,
+        float size,
         Color color,
         RenderEffects effects,
         int layer = 0)
