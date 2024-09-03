@@ -43,7 +43,7 @@ public class AudioScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.loader = ContentLoaderFactory.CreateAudioLoader();
-        this.audio = this.loader.Load("test-song", AudioBuffer.Stream);
+        this.audio = this.loader.Load("ridley-draygon-theme.ogg", AudioBuffer.Stream);
 
         CreateInfoCtrls();
         CreateAudioCtrls();
@@ -165,6 +165,29 @@ public class AudioScene : SceneBase
 
     private void CreateAudioCtrls()
     {
+        var audioList = this.ctrlFactory.CreateComboBox();
+        audioList.Label = "Audio File";
+
+        audioList.Items.Add("Ridley Draygon Theme (OGG)");
+        audioList.Items.Add("Ridleys Hideout (MP3)");
+        audioList.Items.Add("Mother Brain Final Battle (OGG)");
+        audioList.SelectedItemIndexChanged += (_, i) =>
+        {
+            this.audio.Stop();
+            this.loader.Unload(this.audio);
+
+            var chosenItem = audioList.Items[i];
+            var audioName = chosenItem switch
+            {
+                "Ridley Draygon Theme (OGG)" => "ridley-draygon-theme.ogg",
+                "Ridleys Hideout (MP3)" => "ridleys-hideout.mp3",
+                "Mother Brain Final Battle (OGG)" => "mother-brain-final-battle.ogg",
+                _ => throw new ArgumentException($"The audio item '{chosenItem}' is not supported."),
+            };
+
+            this.audio = this.loader.Load(audioName, AudioBuffer.Stream);
+        };
+
         var sldVolume = this.ctrlFactory.CreateSlider();
         sldVolume.Name = nameof(sldVolume);
         sldVolume.Min = 0f;
@@ -252,6 +275,7 @@ public class AudioScene : SceneBase
         this.grpAudioCtrls.AutoSizeToFitContent = true;
         this.grpAudioCtrls.TitleBarVisible = false;
 
+        this.grpAudioCtrls.Add(audioList);
         this.grpAudioCtrls.Add(sldVolume);
         this.grpAudioCtrls.Add(this.sldPosition);
         this.grpAudioCtrls.Add(btnRewind);
