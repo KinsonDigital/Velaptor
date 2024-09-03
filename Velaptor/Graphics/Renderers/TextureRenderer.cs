@@ -10,6 +10,7 @@ using System.Numerics;
 using Batching;
 using Carbonate;
 using Content;
+using Exceptions;
 using Factories;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
@@ -101,7 +102,49 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, int x, int y, float angle, float size, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, int x, int y, float angle, float size, Color color, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -138,7 +181,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -167,7 +210,49 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, angle, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, float angle, float size, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    public void Render(ITexture texture, Vector2 pos, float angle, float size, Color color, int layer = 0)
+    {
+        // Render the entire texture
+        var srcRect = new NETRect
+        {
+            X = 0,
+            Y = 0,
+            Width = (int)texture.Width,
+            Height = (int)texture.Height,
+        };
+
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+
+        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -204,7 +289,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
 
-        RenderBase(texture, (srcRect, destRect), 1, 0, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -230,7 +315,283 @@ internal sealed class TextureRenderer : ITextureRenderer
             throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
         }
 
-        RenderBase(texture, (srcRect, destRect), size, angle, color, effects, layer);
+        RenderBase(texture, (srcRect, destRect), angle, size, color, effects, layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, int frameNumber = 0, int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            0f,
+            1f,
+            Color.White,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, Color color, int frameNumber = 0, int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            0f,
+            1f,
+            color,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, int frameNumber = 0, int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            angle,
+            1f,
+            Color.White,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, float size, int frameNumber = 0, int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            angle,
+            size,
+            Color.White,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, Color color, int frameNumber = 0, int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            angle,
+            1f,
+            color,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(
+        IAtlasData atlas,
+        string subTextureName,
+        Vector2 pos,
+        float angle,
+        float size,
+        Color color,
+        int frameNumber = 0,
+        int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            angle,
+            size,
+            color,
+            RenderEffects.None,
+            layer);
+    }
+
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="atlas"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the <see cref="IBatcher.Begin"/> has not been invoked before rendering.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
+    public void Render(
+        IAtlasData atlas,
+        string subTextureName,
+        Vector2 pos,
+        float angle,
+        float size,
+        Color color,
+        RenderEffects effects,
+        int frameNumber = 0,
+        int layer = 0)
+    {
+        ArgumentNullException.ThrowIfNull(atlas);
+
+        var frames = atlas.GetFrames(subTextureName);
+
+        if (frameNumber < 0 || frameNumber >= frames.Length)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
+
+        var subTextureData = frames[frameNumber];
+
+        RenderBase(
+            atlas.Texture,
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            angle,
+            size,
+            color,
+            effects,
+            layer);
     }
 
     /// <inheritdoc cref="ITextureRenderer.Render(Velaptor.Content.ITexture,Rectangle,Rectangle,float,float,Color,RenderEffects,int)"/>
@@ -244,8 +605,8 @@ internal sealed class TextureRenderer : ITextureRenderer
     private void RenderBase(
         ITexture texture,
         (NETRect srcRect, NETRect destRect) rects,
-        float size,
         float angle,
+        float size,
         Color color,
         RenderEffects effects,
         int layer = 0)
@@ -260,7 +621,7 @@ internal sealed class TextureRenderer : ITextureRenderer
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
-        (Rectangle srcRect, Rectangle destRect) = rects;
+        (NETRect srcRect, NETRect destRect) = rects;
 
         if (srcRect.Width <= 0 || srcRect.Height <= 0)
         {

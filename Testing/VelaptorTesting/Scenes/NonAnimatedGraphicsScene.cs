@@ -26,11 +26,10 @@ public class NonAnimatedGraphicsScene : SceneBase
 {
     private const int WindowPadding = 10;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly ITextureRenderer? textureRenderer;
+    private readonly ITextureRenderer textureRenderer;
     private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? mainAtlas;
     private IControlGroup? grpControls;
-    private AtlasSubTextureData octagonData;
     private KeyboardState prevKeyState;
     private BackgroundManager? backgroundManager;
     private RenderEffects renderEffects = RenderEffects.None;
@@ -81,7 +80,6 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.grpControls.Add(lblInstructions);
 
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
-        this.octagonData = this.mainAtlas.GetFrames("octagon-flip")[0];
 
         base.LoadContent();
     }
@@ -159,11 +157,11 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.backgroundManager?.Render();
 
         this.textureRenderer.Render(
-            this.mainAtlas.Texture,
-            this.octagonData.Bounds,
-            new Rectangle(WindowCenter.X, WindowCenter.Y, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
+            this.mainAtlas,
+            "octagon-flip",
+            new Vector2(WindowCenter.X, WindowCenter.Y),
+            0F,
             1f,
-            0f,
             Color.White,
             this.renderEffects);
 

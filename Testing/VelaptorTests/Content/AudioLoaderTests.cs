@@ -7,7 +7,6 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using NSubstitute;
 using Velaptor.Content;
