@@ -31,14 +31,13 @@ public class LayeredTextureRenderingScene : SceneBase
     private readonly IAppInput<KeyboardState> keyboard;
     private ITextureRenderer? textureRenderer;
     private IAtlasData? atlas;
-    private AtlasSubTextureData whiteBoxData;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
     private Vector2 blueBoxPos;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
+    private AtlasSubTextureData whiteBoxData;
     private AtlasSubTextureData orangeBoxData;
-    private AtlasSubTextureData blueBoxData;
     private BackgroundManager? backgroundManager;
     private ILoader<IAtlasData>? atlasLoader;
     private IControlGroup? grpInstructions;
@@ -71,7 +70,6 @@ public class LayeredTextureRenderingScene : SceneBase
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
-        this.blueBoxData = this.atlas.GetFrames("blue-box")[0];
 
         // Set the default white box position
         this.orangeBoxPos.X = WindowCenter.X - 100;
@@ -137,15 +135,16 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        // BLUE
-        this.textureRenderer.Render(this.atlas, "blue-box", this.blueBoxPos, (int)BlueLayer);
-
-        // ORANGE
-        this.textureRenderer.Render(this.atlas, "orange-box", this.orangeBoxPos, (int)OrangeLayer);
         this.backgroundManager.Render();
 
+        // BLUE
+        this.textureRenderer.Render(this.atlas, "blue-box", this.blueBoxPos, 0, (int)BlueLayer);
+
+        // ORANGE
+        this.textureRenderer.Render(this.atlas, "orange-box", this.orangeBoxPos, 0, (int)OrangeLayer);
+
         // WHITE
-        this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, (int)this.whiteLayer);
+        this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, 0, (int)this.whiteLayer);
 
         this.grpInstructions.Render();
         this.grpTextureState.Render();
@@ -199,9 +198,9 @@ public class LayeredTextureRenderingScene : SceneBase
         // Render the current enabled box text
         var textLines = new[]
         {
-            $"2. White Box Layer: {this.whiteLayer}",
-            $"3. Orange Box Layer: {OrangeLayer}",
-            $"4. Blue Box Layer: {BlueLayer}",
+            $"1. White Box Layer: {this.whiteLayer}",
+            $"2. Orange Box Layer: {OrangeLayer}",
+            $"3. Blue Box Layer: {BlueLayer}",
         };
 
         var lblBoxStateCtrl = this.grpTextureState.GetControl<ILabel>(this.lblBoxStateName);

@@ -157,14 +157,14 @@ public class AnimatedGraphicsScene : SceneBase
     public override void Render()
     {
         this.backgroundManager?.Render();
+
         this.textureRenderer.Render(
-            this.mainAtlas.Texture,
-            this.frames[this.currentFrame].Bounds,
-            new Rectangle(WindowCenter.X, WindowCenter.Y, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
+            this.mainAtlas,
+            "samus",
+            new Vector2(WindowCenter.X, WindowCenter.Y),
+            0,
             3f,
-            0f,
-            Color.White,
-            RenderEffects.None);
+            this.currentFrame);
 
         this.grpInstructions.Render();
         this.grpAnimation.Render();
