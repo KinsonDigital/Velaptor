@@ -138,39 +138,14 @@ public class LayeredTextureRenderingScene : SceneBase
     public override void Render()
     {
         // BLUE
-        this.textureRenderer.Render(
-            this.atlas.Texture,
-            this.blueBoxData.Bounds,
-            new Rectangle((int)this.blueBoxPos.X, (int)this.blueBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
-            1f,
-            0f,
-            Color.White,
-            RenderEffects.None,
-            (int)BlueLayer);
+        this.textureRenderer.Render(this.atlas, "blue-box", this.blueBoxPos, (int)BlueLayer);
 
         // ORANGE
-        this.textureRenderer.Render(
-            this.atlas.Texture,
-            this.orangeBoxData.Bounds,
-            new Rectangle((int)this.orangeBoxPos.X, (int)this.orangeBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
-            1f,
-            0f,
-            Color.White,
-            RenderEffects.None,
-            (int)OrangeLayer); // Neutral layer
-
+        this.textureRenderer.Render(this.atlas, "orange-box", this.orangeBoxPos, (int)OrangeLayer);
         this.backgroundManager.Render();
 
         // WHITE
-        this.textureRenderer.Render(
-            this.atlas.Texture,
-            this.whiteBoxData.Bounds,
-            new Rectangle((int)this.whiteBoxPos.X, (int)this.whiteBoxPos.Y, (int)this.atlas.Width, (int)this.atlas.Height),
-            1f,
-            0f,
-            Color.White,
-            RenderEffects.None,
-            (int)this.whiteLayer);
+        this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, (int)this.whiteLayer);
 
         this.grpInstructions.Render();
         this.grpTextureState.Render();
