@@ -22,17 +22,27 @@ using Velaptor.Scene;
 public class AnimatedGraphicsScene : SceneBase
 {
     private const int WindowPadding = 10;
+    private readonly ITextureRenderer textureRenderer;
+    private readonly BackgroundManager backgroundManager;
+    private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? mainAtlas;
-    private ITextureRenderer? textureRenderer;
     private AtlasSubTextureData[]? frames;
-    private BackgroundManager? backgroundManager;
-    private ILoader<IAtlasData>? atlasLoader;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpAnimation;
     private int elapsedTime;
     private int currentFrame;
     private float animSpeed = 32;
     private bool runningForward = true;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
+    /// </summary>
+    public AnimatedGraphicsScene()
+    {
+        this.backgroundManager = new BackgroundManager();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -42,12 +52,8 @@ public class AnimatedGraphicsScene : SceneBase
             return;
         }
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
-
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
@@ -115,7 +121,7 @@ public class AnimatedGraphicsScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
+        this.backgroundManager.Unload();
         this.atlasLoader.Unload(this.mainAtlas);
         this.grpInstructions.Dispose();
         this.grpInstructions = null;
@@ -156,7 +162,7 @@ public class AnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
 
         this.textureRenderer.Render(
             this.mainAtlas,

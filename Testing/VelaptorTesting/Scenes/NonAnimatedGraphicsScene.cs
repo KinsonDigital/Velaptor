@@ -26,7 +26,7 @@ public class NonAnimatedGraphicsScene : SceneBase
 {
     private const int WindowPadding = 10;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly ITextureRenderer? textureRenderer;
+    private readonly ITextureRenderer textureRenderer;
     private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? mainAtlas;
     private IControlGroup? grpControls;

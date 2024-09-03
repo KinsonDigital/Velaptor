@@ -29,7 +29,9 @@ public class LayeredTextureRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
-    private ITextureRenderer? textureRenderer;
+    private readonly ITextureRenderer textureRenderer;
+    private readonly BackgroundManager backgroundManager;
+    private readonly ILoader<IAtlasData> atlasLoader;
     private IAtlasData? atlas;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
@@ -38,8 +40,6 @@ public class LayeredTextureRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private AtlasSubTextureData whiteBoxData;
     private AtlasSubTextureData orangeBoxData;
-    private BackgroundManager? backgroundManager;
-    private ILoader<IAtlasData>? atlasLoader;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpTextureState;
     private RenderLayer whiteLayer = RenderLayer.One;
@@ -49,7 +49,13 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
     /// </summary>
-    public LayeredTextureRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public LayeredTextureRenderingScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.backgroundManager = new BackgroundManager();
+        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -60,12 +66,8 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.isFirstRender = true;
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
-
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
         this.atlas = this.atlasLoader.Load("layered-rendering-atlas");
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
