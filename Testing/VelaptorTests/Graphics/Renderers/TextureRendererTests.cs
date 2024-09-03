@@ -6,6 +6,7 @@ namespace VelaptorTests.Graphics.Renderers;
 
 using System;
 using System.Drawing;
+using System.IO.Abstractions;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
@@ -13,12 +14,12 @@ using FluentAssertions;
 using Helpers;
 using Moq;
 using Moq.Language.Flow;
-using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Graphics.Renderers.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
@@ -44,6 +45,8 @@ public class TextureRendererTests : TestsBase
     private readonly Mock<IShaderProgram> mockShader;
     private readonly Mock<IBatchingManager> mockBatchingManager;
     private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly Mock<IPushReactable> mockPushReactable;
+    private readonly Mock<IRenderBatchReactable<TextureBatchItem>> mockTextureRenderBatchReactable;
     private IReceiveSubscription? batchHasBegunReactor;
     private TextureRenderItem? renderReactor;
 
@@ -60,20 +63,21 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager = new Mock<IBatchingManager>();
         this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+        this.mockPushReactable = new Mock<IPushReactable>();
+        this.mockPushReactable.Name = "NoADataPushReactable";
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
 
-        var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
-        mockTextureRenderBatchReactable
+        this.mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
+        this.mockTextureRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
             .Callback<TextureRenderItem>(reactor => this.renderReactor = reactor);
 
         this.mockReactableFactory = new Mock<IReactableFactory>();
         this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
-            .Returns(mockPushReactable.Object);
+            .Returns(this.mockPushReactable.Object);
         this.mockReactableFactory.Setup(m => m.CreateRenderTextureReactable())
-            .Returns(mockTextureRenderBatchReactable.Object);
+            .Returns(this.mockTextureRenderBatchReactable.Object);
     }
 
     #region Constructor Tests
@@ -237,6 +241,29 @@ public class TextureRendererTests : TestsBase
     }
 
     [Fact]
+    public void Render_WithZeroWidthOrHeightTexture_ThrowsException()
+    {
+        // Arrange
+        var mockTexture = new Mock<ITexture>();
+        mockTexture.SetupGet(p => p.Width).Returns(0);
+        mockTexture.SetupGet(p => p.Height).Returns(0);
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+        {
+            sut.Render(
+                mockTexture.Object,
+                10,
+                20,
+                It.IsAny<Color>(),
+                It.IsAny<RenderEffects>());
+        }, "The source rectangle must have a width and height greater than zero. (Parameter 'rects')");
+    }
+
+    [Fact]
     [Trait("Category", Method)]
     public void Render_WithNoTextureItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
@@ -339,6 +366,84 @@ public class TextureRendererTests : TestsBase
 
         // Act
         sut.Render(mockTexture.Object, 10, 20, 180, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamAndIntPosOverloadWithSize_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1.5f,
+            180f,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, 10, 20, 180, 1.5f, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamAndVectorPosOverloadWithSizeAndColor_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1.5f,
+            180f,
+            Color.FromArgb(11, 22, 33, 44),
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, 10, 20, 180, 1.5f, Color.FromArgb(11, 22, 33, 44), 123);
 
         // Assert
         this.mockBatchingManager
@@ -538,6 +643,84 @@ public class TextureRendererTests : TestsBase
 
         // Act
         sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With5ParamAndVectorPosOverloadWithAngleAndSize_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1.5f,
+            180f,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 1.5f, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamAndVectorPosOverloadWithAngleAndSizeAndColor_AddsCorrectItemToBatch()
+    {
+        // Arrange
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects();
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1.5f,
+            180f,
+            Color.FromArgb(30, 40, 50, 60),
+            RenderEffects.None,
+            TextureId);
+
+        var mockTexture = CreateTextureMock(TextureId, expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 1.5f, Color.FromArgb(30, 40, 50, 60), 123);
 
         // Assert
         this.mockBatchingManager
@@ -748,35 +931,601 @@ public class TextureRendererTests : TestsBase
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
         this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
     }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With5ParamOverloadWithNullAtlasData_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20));
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithNullAtlasData_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), Color.CornflowerBlue);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithNullAtlasDataAndAngle_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 25f);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithNullAtlasDataAndAngleAndSize_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 35f, 1.4f);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamOverloadWithNullAtlasDataAndAngleAndColor_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 45f, Color.IndianRed);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With8ParamOverloadWithNullAtlasDataAndAngleAndSizeAndColor_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 15f, 1.2f, Color.IndianRed);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With9ParamOverloadWithNullAtlasDataAndAngleAndSizeAndColorAndEffects_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(
+            null,
+            "test-texture",
+            new Vector2(10, 20),
+            15f,
+            1.2f,
+            Color.IndianRed,
+            RenderEffects.FlipVertically);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With5ParamOverloadWithInvalidFrameNumber_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = "The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () => sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithInvalidFrameNumber_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () =>
+            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), Color.CornflowerBlue, 1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithInvalidFrameNumberAndAngle_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () => sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 25f, 1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamOverloadWithInvalidFrameNumberAndAngleAndSize_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () =>
+            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 35f, 1.4f, 1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamOverloadWithInvalidFrameNumberAndAngleAndColor_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () =>
+            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 45f, Color.IndianRed, 1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With9ParamOverloadWithInvalidFrameNumberAndAngleAndSizeAndColor_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () =>
+            sut.Render(
+                mockAtlas.Object,
+                "test-sub-texture",
+                new Vector2(10, 20),
+                15f,
+                1.2f,
+                Color.IndianRed,
+                1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With9ParamOverloadWithInvalidFrameNumberAndAngleAndSizeAndColorAndEffects_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The frame number '1234' is invalid for atlas 'test-atlas-texture' and sub-texture 'test-sub-texture'." +
+                                   "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+        var sut = CreateSystemUnderTest();
+        var mockAtlas = CreateAtlasDataMock(10, 20);
+
+        // Act
+        var act = () =>
+            sut.Render(
+                mockAtlas.Object,
+                "test-sub-texture",
+                new Vector2(10, 20),
+                15f,
+                1.2f,
+                Color.IndianRed,
+                RenderEffects.FlipHorizontally,
+                1234);
+
+        // Assert
+        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With5ParamOverloadWithPos_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithPosAndColor_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        var color = Color.FromArgb(20, 30, 40, 50);
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            0f,
+            color,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, color, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With6ParamOverloadWithPosAndAngle_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const float angle = 45f;
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            angle,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamOverloadWithPosAndAngleAndSize_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const float angle = 45f;
+        const float size = 1.5f;
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            size,
+            angle,
+            Color.White,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With7ParamOverloadWithPosAndAngleAndColor_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const float angle = 45f;
+        var color = Color.FromArgb(30, 40, 50, 60);
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            1f,
+            angle,
+            color,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, color, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With8ParamOverloadWithPosAndAngleAndSizeAndColor_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const float size = 1.4f;
+        const float angle = 45f;
+        var color = Color.FromArgb(30, 40, 50, 60);
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            size,
+            angle,
+            color,
+            RenderEffects.None,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, color, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void Render_With8ParamOverloadWithPosAndAngleAndSizeAndColorAndEffects_AddsItemToBatch()
+    {
+        // Arrange
+        var pos = new Vector2(10, 20);
+        const float size = 1.4f;
+        const float angle = 45f;
+        var color = Color.FromArgb(30, 40, 50, 60);
+        const RenderEffects effects = RenderEffects.FlipBothDirections;
+        const int expectedWidth = 111;
+        const int expectedHeight = 222;
+        (RectangleF expectedSrcRect, RectangleF expectedDestRect) = CreateExpectedRects(pos, expectedWidth, expectedHeight);
+
+        var expectedBatchItem = BatchItemFactory.CreateTextureItem(
+            expectedSrcRect,
+            expectedDestRect,
+            size,
+            angle,
+            color,
+            effects,
+            TextureId);
+
+        var mockAtlasData = CreateAtlasDataMock(expectedWidth, expectedHeight);
+
+        TextureBatchItem actualBatchItem = default;
+
+        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
+        {
+            actualBatchItem = item;
+        });
+
+        var sut = CreateSystemUnderTest();
+        this.batchHasBegunReactor.OnReceive();
+
+        // Act
+        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, color, effects, 0, 123);
+
+        // Assert
+        this.mockBatchingManager
+            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+    }
     #endregion
 
     #region Reactable Tests
     [Fact]
     [Trait("Category", Subscription)]
-    public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
+    public void PushReactable_WhenCreatingAndDisposingOfSubscription_CreatesAndDisposesOfSubscriptionCorrectly()
     {
-        // Arrange & Act & Assert
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
+        // Arrange
+        IReceiveSubscription? reactor = null;
+        Mock<IDisposable> mockUnsubscriber = new Mock<IDisposable>();
+
+        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
+            .Callback<IReceiveSubscription>(reactorParam =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
-            });
+                reactorParam.Should().NotBeNull("It is required for unit testing.");
+
+                reactor = reactorParam;
+            }).Returns(mockUnsubscriber.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        reactor.OnUnsubscribe();
+
+        // Assert
+        mockUnsubscriber.VerifyOnce(m => m.Dispose());
     }
 
     [Fact]
     [Trait("Category", Subscription)]
     public void TextureRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
-        // Arrange & Act & Assert
-        var mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
-        mockTextureRenderBatchReactable
+        // Arrange
+        TextureRenderItem? reactor = null;
+        Mock<IDisposable> mockUnsubscriber = new Mock<IDisposable>();
+
+        this.mockTextureRenderBatchReactable
             .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Callback<TextureRenderItem>(reactor =>
+            .Callback<TextureRenderItem>(reactorParam =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"TextureRenderer.ctor() - {PushNotifications.RenderTexturesId}");
-            });
+                reactorParam.Should().NotBeNull("It is required for unit testing.");
+                reactor = reactorParam;
+            }).Returns(mockUnsubscriber.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        reactor.OnUnsubscribe();
+
+        // Assert
+        mockUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
@@ -823,6 +1572,52 @@ public class TextureRendererTests : TestsBase
         var destRect = new RectangleF(10, 20, 111, 222);
 
         return (srcRect, destRect);
+    }
+
+    /// <summary>
+    /// Creates two <see cref="RectangleF"/>s that are expected to be used in the tests.
+    /// </summary>
+    /// <param name="pos">The position to render.</param>
+    /// <param name="width">The width of the src and des rects.</param>
+    /// <param name="height">The height of the src and des rects.</param>
+    /// <returns>The expected rectangles.</returns>
+    private static (RectangleF, RectangleF) CreateExpectedRects(Vector2 pos, int width, int height)
+    {
+        var srcRect = new RectangleF(0f, 0f, width, height);
+        var destRect = new RectangleF(pos.X, pos.Y, width, height);
+
+        return (srcRect, destRect);
+    }
+
+    /// <summary>
+    /// Creates a mock object of the <see cref="IAtlasData"/> interface.
+    /// </summary>
+    /// <param name="width">The width of the bounds.</param>
+    /// <param name="height">The height of the bounds.</param>
+    /// <returns>The mocked object.</returns>
+    private static Mock<IAtlasData> CreateAtlasDataMock(int width, int height)
+    {
+        var mockTexture = new Mock<ITexture>();
+        mockTexture.SetupGet(p => p.Id).Returns(TextureId);
+        var mockPath = new Mock<IPath>();
+        mockPath.Setup(m => m.GetFileNameWithoutExtension(It.IsAny<string>())).Returns("test-atlas");
+
+        var subTextureData = new AtlasSubTextureData
+        {
+            Name = "test-sub-texture",
+            Bounds = new Rectangle(0, 0, width, height),
+            FrameIndex = 0,
+        };
+        var subTextureDataItems = new[] { subTextureData  };
+
+        var mock = new Mock<IAtlasData>();
+        mock.SetupGet(p => p.Name).Returns("test-atlas-texture");
+        mock.SetupGet(p => p.Width).Returns((uint)width);
+        mock.SetupGet(p => p.Height).Returns((uint)height);
+        mock.SetupGet(p => p.Texture).Returns(mockTexture.Object);
+        mock.Setup(m => m.GetFrames(It.IsAny<string>())).Returns(subTextureDataItems);
+
+        return mock;
     }
 
     /// <summary>
