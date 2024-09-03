@@ -388,8 +388,8 @@ public class ShapeScene : SceneBase
             this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpCircleClrGradCtrls.HalfHeight);
         };
         this.grpCircleClrGradCtrls.Add(cmbCircleGradType);
-        this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
         this.grpCircleClrGradCtrls.Add(cmbCircleGradStartColor);
+        this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
     }
 
     private void CreateRectGradCtrls()
