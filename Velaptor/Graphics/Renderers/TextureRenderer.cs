@@ -326,6 +326,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
     /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, int frameNumber = 0, int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
@@ -359,6 +362,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
     /// </exception>
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, Color color, int frameNumber = 0, int layer = 0)
     {
@@ -394,6 +400,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
     /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, int frameNumber = 0, int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
@@ -427,6 +436,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
     /// </exception>
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, float size, int frameNumber = 0, int layer = 0)
     {
@@ -462,6 +474,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
     /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
+    /// </exception>
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, Color color, int frameNumber = 0, int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
@@ -495,6 +510,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
     /// </exception>
     public void Render(
         IAtlasData atlas,
@@ -537,6 +555,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     Thrown if the source rectangle width or height is less than or equal to 0.
+    /// </exception>
+    /// <exception cref="RendererException">
+    ///     Thrown if the <paramref name="frameNumber"/> refers to a frame that does not exist for a sub-texture in an atlas.
     /// </exception>
     public void Render(
         IAtlasData atlas,
