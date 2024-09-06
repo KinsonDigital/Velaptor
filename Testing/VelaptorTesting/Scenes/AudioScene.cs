@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Numerics;
 using KdGui;
 using KdGui.Factories;
@@ -26,10 +27,12 @@ public class AudioScene : SceneBase
     private ILoader<IAudio>? loader;
     private IAudio? audio;
     private ISlider? sldPosition;
-    private string? lblCurrentTimeName;
-    private string? lblStateName;
     private string? lblRepeatsName;
     private string? lblLengthName;
+    private string? lblCurrentTimeName;
+    private string? lblStateName;
+    private string? lblAudioTypeName;
+    private string? currentAudioType = "OGG";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioScene"/> class.
@@ -56,6 +59,9 @@ public class AudioScene : SceneBase
     {
         var currentTime = GetFormattedTime(this.audio.Position.Minutes, this.audio.Position.Seconds);
 
+        var lblAudioType = this.grpInfoCtrls.GetControl<ILabel>(this.lblAudioTypeName);
+        lblAudioType.Text = $"Audio Type: {this.currentAudioType}";
+
         var lblLengthCtrl = this.grpInfoCtrls.GetControl<ILabel>(this.lblLengthName);
         lblLengthCtrl.Text = $"Audio Length: {GetFormattedTime(this.audio.Length.Minutes, this.audio.Length.Seconds)}";
 
@@ -69,6 +75,9 @@ public class AudioScene : SceneBase
         base.Update(frameTime);
     }
 
+    /// <summary>
+    /// <inheritdoc cref="IDrawable.Render"/>
+    /// </summary>
     public override void Render()
     {
         this.backgroundManager?.Render();
@@ -130,37 +139,44 @@ public class AudioScene : SceneBase
         var lblDesc = this.ctrlFactory.CreateLabel();
         lblDesc.Name = nameof(lblDesc);
         lblDesc.Text = "Use the audio controls to manipulate the audio.";
-
-        var lblState = this.ctrlFactory.CreateLabel();
-        lblState.Name = nameof(lblState);
-        this.lblStateName = nameof(lblState);
-        lblState.Text = "Audio State: Stopped";
-
-        var lblCurrentTime = this.ctrlFactory.CreateLabel();
-        this.lblCurrentTimeName = nameof(lblCurrentTime);
-        lblCurrentTime.Name = nameof(lblCurrentTime);
-        lblCurrentTime.Text = "Current Time: 00:00";
-
-        var lblLength = this.ctrlFactory.CreateLabel();
-        this.lblLengthName = nameof(lblLength);
-        lblLength.Name = nameof(lblLength);
-        lblLength.Text = "Audio Length: 00:00";
+        lblDesc.Text += $"\n---------------------------------------------------------";
 
         var lblRepeats = this.ctrlFactory.CreateLabel();
         lblRepeats.Name = nameof(lblRepeats);
         this.lblRepeatsName = nameof(lblRepeats);
         lblRepeats.Text = "Repeat Enabled: no";
 
+        var lblAudioType = this.ctrlFactory.CreateLabel();
+        lblAudioType.Name = nameof(lblAudioType);
+        this.lblAudioTypeName = nameof(lblAudioType);
+        lblAudioType.Text = $"Audio Type: {this.currentAudioType ?? string.Empty}";
+
+        var lblLength = this.ctrlFactory.CreateLabel();
+        this.lblLengthName = nameof(lblLength);
+        lblLength.Name = nameof(lblLength);
+        lblLength.Text = "Audio Length: 00:00";
+
+        var lblCurrentTime = this.ctrlFactory.CreateLabel();
+        this.lblCurrentTimeName = nameof(lblCurrentTime);
+        lblCurrentTime.Name = nameof(lblCurrentTime);
+        lblCurrentTime.Text = "Current Time: 00:00";
+
+        var lblState = this.ctrlFactory.CreateLabel();
+        lblState.Name = nameof(lblState);
+        this.lblStateName = nameof(lblState);
+        lblState.Text = "Audio State: Stopped";
+
         this.grpInfoCtrls = this.ctrlFactory.CreateControlGroup();
         this.grpInfoCtrls.Title = "Audio Info";
         this.grpInfoCtrls.AutoSizeToFitContent = true;
         this.grpInfoCtrls.TitleBarVisible = false;
 
+        this.grpInfoCtrls.Add(lblDesc);
         this.grpInfoCtrls.Add(lblRepeats);
+        this.grpInfoCtrls.Add(lblAudioType);
         this.grpInfoCtrls.Add(lblLength);
         this.grpInfoCtrls.Add(lblCurrentTime);
         this.grpInfoCtrls.Add(lblState);
-        this.grpInfoCtrls.Add(lblDesc);
     }
 
     private void CreateAudioCtrls()
@@ -186,6 +202,8 @@ public class AudioScene : SceneBase
             };
 
             this.audio = this.loader.Load(audioName, AudioBuffer.Stream);
+
+            this.currentAudioType = Path.GetExtension(this.audio.FilePath).ToUpper().TrimStart('.');
         };
 
         var sldVolume = this.ctrlFactory.CreateSlider();
