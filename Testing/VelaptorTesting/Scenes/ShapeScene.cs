@@ -288,7 +288,7 @@ public class ShapeScene : SceneBase
         var cmbCircleSolidColor = this.ctrlFactory.CreateComboBox();
         cmbCircleSolidColor.Name = nameof(cmbCircleSolidColor);
         this.cmbCircleSolidColorName = nameof(cmbCircleSolidColor);
-        cmbCircleSolidColor.Label = "Solid Color:";
+        cmbCircleSolidColor.Label = "Color:";
         cmbCircleSolidColor.Width = 100;
         cmbCircleSolidColor.Items =
         [
@@ -457,8 +457,8 @@ public class ShapeScene : SceneBase
             this.grpRectClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectClrGradCtrls.HalfHeight);
         };
         this.grpRectClrGradCtrls.Add(cmbRectGradType);
-        this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
         this.grpRectClrGradCtrls.Add(cmbRectGradStartColor);
+        this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
     }
 
     private void CreateRectCtrls()
@@ -531,7 +531,7 @@ public class ShapeScene : SceneBase
         var cmbRectSolidColor = this.ctrlFactory.CreateComboBox();
         cmbRectSolidColor.Name = nameof(cmbRectSolidColor);
         this.cmbRectSolidColorName = nameof(cmbRectSolidColor);
-        cmbRectSolidColor.Label = "Solid Color:";
+        cmbRectSolidColor.Label = "Color:";
         cmbRectSolidColor.Width = 100;
         cmbRectSolidColor.Items =
         [
