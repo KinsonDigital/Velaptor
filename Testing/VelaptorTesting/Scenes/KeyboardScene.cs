@@ -55,8 +55,8 @@ public class KeyboardScene : SceneBase
         this.grpControls.AutoSizeToFitContent = true;
         this.grpControls.TitleBarVisible = false;
 
-        this.grpControls.Add(downKeys);
         this.grpControls.Add(instructions);
+        this.grpControls.Add(downKeys);
 
         base.LoadContent();
     }
