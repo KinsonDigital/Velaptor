@@ -158,10 +158,10 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.textureRenderer.Render(
             this.mainAtlas,
-            "octagon-flip",
+            "logo-flip",
             new Vector2(WindowCenter.X, WindowCenter.Y),
             0F,
-            1f,
+            2f,
             Color.White,
             this.renderEffects);
 
