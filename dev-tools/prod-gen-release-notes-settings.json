@@ -41,7 +41,12 @@
         "serilog": "_**serilog**_",
         "xunit": "_**xunit**_",
         "xunit.runner.visualstudio": "_**xunit.runner.visualstudio**_",
-        "simpleinjector": "_**simpleinjector**_"
+        "simpleinjector": "_**simpleinjector**_",
+        "communitytoolkit.mvvm": "_**communitytoolkit.mvvm**_",
+        "kinsondigital.kdgui": "_**kinsondigital.kdgui**_",
+        "kinsondigital.casl": "_**kinsondigital.casl**_",
+        "fluentassertions": "_**fluentassertions**_",
+        "microsoft.net.test.sdk": "_**microsoft.net.test.sdk**_"
     },
     "firstWordReplacements": {
         "Add": "Added",
