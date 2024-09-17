@@ -39,8 +39,10 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
-        this.batcher = RendererFactory.CreateBatcher();
+        Width = 1920;
+        Height = 1080;
 
+        this.batcher = RendererFactory.CreateBatcher();
         this.keyboard = HardwareFactory.GetKeyboard();
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);

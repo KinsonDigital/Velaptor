@@ -1,4 +1,4 @@
-﻿// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
+// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -78,13 +78,13 @@ public class AnimatedGraphicsScene : SceneBase
 
         var sldSpeed = ctrlFactory.CreateSlider();
         sldSpeed.Name = "sldSpeed";
-        sldSpeed.Text = "Speed:";
-        sldSpeed.Min = 8;
-        sldSpeed.Max = 500;
-        sldSpeed.Value = 32;
+        sldSpeed.Text = "Speed(fps):";
+        sldSpeed.Min = 0;
+        sldSpeed.Max = 60;
+        sldSpeed.Value = 60;
         sldSpeed.ValueChanged += (_, speed) =>
         {
-            this.animSpeed = speed;
+            this.animSpeed = 1000f / speed;
         };
 
         optForward.Selected += (_, _) =>

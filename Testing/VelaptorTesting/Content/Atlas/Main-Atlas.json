@@ -2,68 +2,68 @@
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
 
-    "Bounds": "0, 0, 30, 36",
+    "Bounds": "0, 0, 30, 38",
     "FrameIndex": 0,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "31, 0, 30, 36",
+    "Bounds": "31, 0, 30, 38",
     "FrameIndex": 1,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "62, 0, 30, 36",
+    "Bounds": "62, 0, 30, 38",
     "FrameIndex": 2,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "93, 0, 30, 36",
+    "Bounds": "93, 0, 30, 38",
     "FrameIndex": 3,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "124, 0, 30, 36",
+    "Bounds": "124, 0, 30, 38",
     "FrameIndex": 4,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "155, 0, 30, 36",
+    "Bounds": "155, 0, 30, 38",
     "FrameIndex": 5,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "186, 0, 30, 36",
+    "Bounds": "186, 0, 30, 38",
     "FrameIndex": 6,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "217, 0, 30, 36",
+    "Bounds": "217, 0, 30, 38",
     "FrameIndex": 7,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "248, 0, 30, 36",
+    "Bounds": "248, 0, 30, 38",
     "FrameIndex": 8,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "279, 0, 30, 36",
+    "Bounds": "279, 0, 30, 38",
     "FrameIndex": 9,
     "Name": "samus"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "3, 39, 75, 75",
+    "Bounds": "0, 39, 100, 100",
     "FrameIndex": -1,
-    "Name": "octagon-flip"
+    "Name": "logo-flip"
   }
 ]
