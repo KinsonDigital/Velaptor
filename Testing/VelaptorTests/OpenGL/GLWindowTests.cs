@@ -1334,9 +1334,9 @@ public class GLWindowTests : TestsBase
         this.mockAppService.Received(1).Init();
 
         // Assert that the window has been set to the correct size
-        this.mockGL.Viewport(0, 0, 1280, 720);
+        this.mockGL.Received(1).Viewport(0, 0, 123, 456);
         this.mockPushWinSizeReactable.Received(1)
-            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 1280u, Height = 720u });
+            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 123u, Height = 456u });
     }
 
     [Fact]

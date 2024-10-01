@@ -26,7 +26,7 @@ mono_crash.*
 bld/
 
 # Disabled so we can commit the dev-tools/bin installation dir
-# [Bb]in/
+Testing/**/[Bb]in/
 
 [Oo]bj/
 [Ll]og/

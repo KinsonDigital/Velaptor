@@ -34,5 +34,6 @@
         }
     ],
     "githubTokenEnvVarName": "CICD_TOKEN",
-    "versionFilePath": "./Velaptor/Velaptor.csproj"
+    "versionFilePath": "./Velaptor/Velaptor.csproj",
+    "releaseNotesFilePrefix": "Release-Notes-"
 }
