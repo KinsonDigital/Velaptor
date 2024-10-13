@@ -15,10 +15,8 @@ on:
 jobs:
   sdk_status_check:
     name: ${{ vars.PROJECT_NAME }} SDK Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/validate-sdk-setup.yml@v14.0.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/validate-sdk-versions.yml@v14.0.0
     with:
       repo-name: "${{ vars.PROJECT_NAME }}"
       checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
       checkout-ref: ${{ github.event.pull_request.head.ref }}
-    secrets:
-      cicd-pat: ${{ secrets.CICD_TOKEN }}
