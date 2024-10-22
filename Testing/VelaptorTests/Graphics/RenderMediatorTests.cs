@@ -6,11 +6,13 @@ namespace VelaptorTests.Graphics;
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
 using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
@@ -23,20 +25,20 @@ using Xunit;
 /// </summary>
 public class RenderMediatorTests : TestsBase
 {
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IReactableFactory mockReactableFactory;
     private readonly Mock<IPushReactable> mockPushReactable;
-    private readonly Mock<IComparer<RenderItem<TextureBatchItem>>> mockTextureComparer;
-    private readonly Mock<IComparer<RenderItem<FontGlyphBatchItem>>> mockFontComparer;
-    private readonly Mock<IComparer<RenderItem<ShapeBatchItem>>> mockShapeComparer;
-    private readonly Mock<IComparer<RenderItem<LineBatchItem>>> mockLineComparer;
-    private readonly Mock<IRenderBatchReactable<TextureBatchItem>> mockTextureRenderBatchReactable;
-    private readonly Mock<IRenderBatchReactable<FontGlyphBatchItem>> mockFontRenderBatchReactable;
-    private readonly Mock<IRenderBatchReactable<ShapeBatchItem>> mockShapeRenderBatchReactable;
-    private readonly Mock<IRenderBatchReactable<LineBatchItem>> mockLineRenderBatchReactable;
-    private readonly Mock<IBatchPullReactable<TextureBatchItem>> mockTexturePullReactable;
-    private readonly Mock<IBatchPullReactable<FontGlyphBatchItem>> mockFontPullReactable;
-    private readonly Mock<IBatchPullReactable<ShapeBatchItem>> mockShapePullReactable;
-    private readonly Mock<IBatchPullReactable<LineBatchItem>> mockLinePullReactable;
+    private readonly IComparer<RenderItem<TextureBatchItem>> mockTextureComparer;
+    private readonly IComparer<RenderItem<FontGlyphBatchItem>> mockFontComparer;
+    private readonly IComparer<RenderItem<ShapeBatchItem>> mockShapeComparer;
+    private readonly IComparer<RenderItem<LineBatchItem>> mockLineComparer;
+    private readonly IRenderBatchReactable<TextureBatchItem> mockTextureRenderBatchReactable;
+    private readonly IRenderBatchReactable<FontGlyphBatchItem> mockFontRenderBatchReactable;
+    private readonly IRenderBatchReactable<ShapeBatchItem> mockShapeRenderBatchReactable;
+    private readonly IRenderBatchReactable<LineBatchItem> mockLineRenderBatchReactable;
+    private readonly IBatchPullReactable<TextureBatchItem> mockTexturePullReactable;
+    private readonly IBatchPullReactable<FontGlyphBatchItem> mockFontPullReactable;
+    private readonly IBatchPullReactable<ShapeBatchItem> mockShapePullReactable;
+    private readonly IBatchPullReactable<LineBatchItem> mockLinePullReactable;
 
     private IReceiveSubscription? endBatchReactor;
 
@@ -45,51 +47,51 @@ public class RenderMediatorTests : TestsBase
     /// </summary>
     public RenderMediatorTests()
     {
-        var mockEndBatchUnsubscriber = new Mock<IDisposable>();
+        var mockEndBatchUnsubscriber = Substitute.For<IDisposable>();
 
         this.mockPushReactable = new Mock<IPushReactable>();
         this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
             .Callback<IReceiveSubscription>(reactor => this.endBatchReactor = reactor)
-            .Returns<IReceiveSubscription>(_ => mockEndBatchUnsubscriber.Object);
+            .Returns<IReceiveSubscription>(_ => mockEndBatchUnsubscriber);
 
-        this.mockTexturePullReactable = new Mock<IBatchPullReactable<TextureBatchItem>>();
-        this.mockFontPullReactable = new Mock<IBatchPullReactable<FontGlyphBatchItem>>();
-        this.mockShapePullReactable = new Mock<IBatchPullReactable<ShapeBatchItem>>();
-        this.mockLinePullReactable = new Mock<IBatchPullReactable<LineBatchItem>>();
+        this.mockTexturePullReactable = Substitute.For<IBatchPullReactable<TextureBatchItem>>();
+        this.mockFontPullReactable = Substitute.For<IBatchPullReactable<FontGlyphBatchItem>>();
+        this.mockShapePullReactable = Substitute.For<IBatchPullReactable<ShapeBatchItem>>();
+        this.mockLinePullReactable = Substitute.For<IBatchPullReactable<LineBatchItem>>();
 
-        this.mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
-        this.mockFontRenderBatchReactable = new Mock<IRenderBatchReactable<FontGlyphBatchItem>>();
-        this.mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
-        this.mockLineRenderBatchReactable = new Mock<IRenderBatchReactable<LineBatchItem>>();
+        this.mockTextureRenderBatchReactable = Substitute.For<IRenderBatchReactable<TextureBatchItem>>();
+        this.mockFontRenderBatchReactable = Substitute.For<IRenderBatchReactable<FontGlyphBatchItem>>();
+        this.mockShapeRenderBatchReactable = Substitute.For<IRenderBatchReactable<ShapeBatchItem>>();
+        this.mockLineRenderBatchReactable = Substitute.For<IRenderBatchReactable<LineBatchItem>>();
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable.Object);
 
-        this.mockReactableFactory.Setup(m => m.CreateTexturePullBatchReactable())
-            .Returns(this.mockTexturePullReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateFontPullBatchReactable()).
-            Returns(this.mockFontPullReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateShapePullBatchReactable()).
-            Returns(this.mockShapePullReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateLinePullBatchReactable()).
-            Returns(this.mockLinePullReactable.Object);
+        this.mockReactableFactory.CreateTexturePullBatchReactable()
+            .Returns(this.mockTexturePullReactable);
+        this.mockReactableFactory.CreateFontPullBatchReactable()
+            .Returns(this.mockFontPullReactable);
+        this.mockReactableFactory.CreateShapePullBatchReactable()
+            .Returns(this.mockShapePullReactable);
+        this.mockReactableFactory.CreateLinePullBatchReactable()
+            .Returns(this.mockLinePullReactable);
+        this.mockReactableFactory.CreateRenderTextureReactable()
+            .Returns(this.mockTextureRenderBatchReactable);
+        this.mockReactableFactory.CreateRenderFontReactable()
+            .Returns(this.mockFontRenderBatchReactable);
+        this.mockReactableFactory.CreateRenderShapeReactable()
+            .Returns(this.mockShapeRenderBatchReactable);
+        this.mockReactableFactory.CreateRenderLineReactable()
+            .Returns(this.mockLineRenderBatchReactable);
 
-        this.mockReactableFactory.Setup(m => m.CreateRenderTextureReactable())
-            .Returns(this.mockTextureRenderBatchReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderFontReactable())
-            .Returns(this.mockFontRenderBatchReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderShapeReactable())
-            .Returns(this.mockShapeRenderBatchReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderLineReactable())
-            .Returns(this.mockLineRenderBatchReactable.Object);
-
-        this.mockTextureComparer = new Mock<IComparer<RenderItem<TextureBatchItem>>>();
-        this.mockFontComparer = new Mock<IComparer<RenderItem<FontGlyphBatchItem>>>();
-        this.mockShapeComparer = new Mock<IComparer<RenderItem<ShapeBatchItem>>>();
-        this.mockLineComparer = new Mock<IComparer<RenderItem<LineBatchItem>>>();
+        this.mockTextureComparer = Substitute.For<IComparer<RenderItem<TextureBatchItem>>>();
+        this.mockFontComparer = Substitute.For<IComparer<RenderItem<FontGlyphBatchItem>>>();
+        this.mockShapeComparer = Substitute.For<IComparer<RenderItem<ShapeBatchItem>>>();
+        this.mockLineComparer = Substitute.For<IComparer<RenderItem<LineBatchItem>>>();
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
@@ -98,10 +100,10 @@ public class RenderMediatorTests : TestsBase
         {
             _ = new RenderMediator(
                 null,
-                this.mockTextureComparer.Object,
-                this.mockFontComparer.Object,
-                this.mockShapeComparer.Object,
-                this.mockLineComparer.Object);
+                this.mockTextureComparer,
+                this.mockFontComparer,
+                this.mockShapeComparer,
+                this.mockLineComparer);
         };
 
         // Assert
@@ -117,11 +119,11 @@ public class RenderMediatorTests : TestsBase
         var act = () =>
         {
             _ = new RenderMediator(
-                this.mockReactableFactory.Object,
+                this.mockReactableFactory,
                 null,
-                this.mockFontComparer.Object,
-                this.mockShapeComparer.Object,
-                this.mockLineComparer.Object);
+                this.mockFontComparer,
+                this.mockShapeComparer,
+                this.mockLineComparer);
         };
 
         // Assert
@@ -137,11 +139,11 @@ public class RenderMediatorTests : TestsBase
         var act = () =>
         {
             _ = new RenderMediator(
-                this.mockReactableFactory.Object,
-                this.mockTextureComparer.Object,
+                this.mockReactableFactory,
+                this.mockTextureComparer,
                 null,
-                this.mockShapeComparer.Object,
-                this.mockLineComparer.Object);
+                this.mockShapeComparer,
+                this.mockLineComparer);
         };
 
         // Assert
@@ -157,11 +159,11 @@ public class RenderMediatorTests : TestsBase
         var act = () =>
         {
             _ = new RenderMediator(
-                this.mockReactableFactory.Object,
-                this.mockTextureComparer.Object,
-                this.mockFontComparer.Object,
+                this.mockReactableFactory,
+                this.mockTextureComparer,
+                this.mockFontComparer,
                 null,
-                this.mockLineComparer.Object);
+                this.mockLineComparer);
         };
 
         // Assert
@@ -177,10 +179,10 @@ public class RenderMediatorTests : TestsBase
         var act = () =>
         {
             _ = new RenderMediator(
-                this.mockReactableFactory.Object,
-                this.mockTextureComparer.Object,
-                this.mockFontComparer.Object,
-                this.mockShapeComparer.Object,
+                this.mockReactableFactory,
+                this.mockTextureComparer,
+                this.mockFontComparer,
+                this.mockShapeComparer,
                 null);
         };
 
@@ -189,9 +191,11 @@ public class RenderMediatorTests : TestsBase
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'lineItemComparer')");
     }
+
     #endregion
 
     #region Indirect Tests
+
     [Fact]
     public void PushReactable_WithBatchEndNotification_CoordinatesRenderCalls()
     {
@@ -211,33 +215,37 @@ public class RenderMediatorTests : TestsBase
         var shapeItems = new[] { shapeItemA, shapeItemB };
         var lineItems = new[] { lineItemA, lineItemB };
 
-        this.mockTexturePullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
-            .Returns<Guid>(_ => new Memory<RenderItem<TextureBatchItem>>(textureItems));
+        this.mockTexturePullReactable
+            .Pull(Arg.Any<Guid>())
+            .Returns(_ => new Memory<RenderItem<TextureBatchItem>>(textureItems));
 
-        this.mockFontPullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
-            .Returns<Guid>(_ => new Memory<RenderItem<FontGlyphBatchItem>>(fontItems));
+        this.mockFontPullReactable
+            .Pull(Arg.Any<Guid>())
+            .Returns(_ => new Memory<RenderItem<FontGlyphBatchItem>>(fontItems));
 
-        this.mockShapePullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
-            .Returns<Guid>(_ => new Memory<RenderItem<ShapeBatchItem>>(shapeItems));
+        this.mockShapePullReactable
+            .Pull(Arg.Any<Guid>())
+            .Returns(_ => new Memory<RenderItem<ShapeBatchItem>>(shapeItems));
 
-        this.mockLinePullReactable.Setup(m => m.Pull(It.IsAny<Guid>()))
-            .Returns<Guid>(_ => new Memory<RenderItem<LineBatchItem>>(lineItems));
+        this.mockLinePullReactable
+            .Pull(Arg.Any<Guid>())
+            .Returns(_ => new Memory<RenderItem<LineBatchItem>>(lineItems));
 
         this.mockTextureRenderBatchReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<TextureBatchItem>>>.IsAny))
-            .Callback(AssertTextureItems);
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<Memory<RenderItem<TextureBatchItem>>>()))
+            .Do(ci => AssertTextureItems(ci.Arg<Guid>(), ci.Arg<Memory<RenderItem<TextureBatchItem>>>()));
 
         this.mockFontRenderBatchReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<FontGlyphBatchItem>>>.IsAny))
-            .Callback(AssertFontItems);
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<Memory<RenderItem<FontGlyphBatchItem>>>()))
+            .Do(ci => AssertFontItems(ci.Arg<Guid>(), ci.Arg<Memory<RenderItem<FontGlyphBatchItem>>>()));
 
         this.mockShapeRenderBatchReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<ShapeBatchItem>>>.IsAny))
-            .Callback(AssertShapeItems);
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<Memory<RenderItem<ShapeBatchItem>>>()))
+            .Do(ci => AssertShapeItems(ci.Arg<Guid>(), ci.Arg<Memory<RenderItem<ShapeBatchItem>>>()));
 
         this.mockLineRenderBatchReactable
-            .Setup(m => m.Push(It.IsAny<Guid>(), It.Ref<Memory<RenderItem<LineBatchItem>>>.IsAny))
-            .Callback(AssertLineItems);
+            .When(x => x.Push(Arg.Any<Guid>(), Arg.Any<Memory<RenderItem<LineBatchItem>>>()))
+            .Do(ci => AssertLineItems(ci.Arg<Guid>(), ci.Arg<Memory<RenderItem<LineBatchItem>>>()));
 
         _ = CreateSystemUnderTest();
 
@@ -245,10 +253,10 @@ public class RenderMediatorTests : TestsBase
         this.endBatchReactor.OnReceive();
 
         // Assert
-        this.mockTexturePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetTextureItemsId));
-        this.mockFontPullReactable.VerifyOnce(m => m.Pull(PullResponses.GetFontItemsId));
-        this.mockShapePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetShapeItemsId));
-        this.mockLinePullReactable.VerifyOnce(m => m.Pull(PullResponses.GetLineItemsId));
+        this.mockTexturePullReactable.Received(1).Pull(PullResponses.GetTextureItemsId);
+        this.mockFontPullReactable.Received(1).Pull(PullResponses.GetFontItemsId);
+        this.mockShapePullReactable.Received(1).Pull(PullResponses.GetShapeItemsId);
+        this.mockLinePullReactable.Received(1).Pull(PullResponses.GetLineItemsId);
 
         void AssertTextureItems(Guid eventId, in Memory<RenderItem<TextureBatchItem>> data)
         {
@@ -276,9 +284,11 @@ public class RenderMediatorTests : TestsBase
 
         this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.EmptyBatchId));
     }
+
     #endregion
 
     #region Reacteable Tests
+
     [Fact]
     [Trait("Category", Subscription)]
     public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
@@ -294,6 +304,7 @@ public class RenderMediatorTests : TestsBase
         // Act
         _ = CreateSystemUnderTest();
     }
+
     #endregion
 
     private static RenderItem<T> CreateRenderItem<T>(T item, int layer) => new () { Layer = layer, Item = item };
@@ -303,9 +314,9 @@ public class RenderMediatorTests : TestsBase
     /// </summary>
     /// <returns>The instance to test.</returns>
     private RenderMediator CreateSystemUnderTest()
-        => new (this.mockReactableFactory.Object,
-            this.mockTextureComparer.Object,
-            this.mockFontComparer.Object,
-            this.mockShapeComparer.Object,
-            this.mockLineComparer.Object);
+        => new (this.mockReactableFactory,
+            this.mockTextureComparer,
+            this.mockFontComparer,
+            this.mockShapeComparer,
+            this.mockLineComparer);
 }
