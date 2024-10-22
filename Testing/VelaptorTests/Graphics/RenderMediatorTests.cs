@@ -6,12 +6,10 @@ namespace VelaptorTests.Graphics;
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
-using Moq;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Batching;
@@ -26,7 +24,7 @@ using Xunit;
 public class RenderMediatorTests : TestsBase
 {
     private readonly IReactableFactory mockReactableFactory;
-    private readonly Mock<IPushReactable> mockPushReactable;
+    private readonly IPushReactable mockPushReactable;
     private readonly IComparer<RenderItem<TextureBatchItem>> mockTextureComparer;
     private readonly IComparer<RenderItem<FontGlyphBatchItem>> mockFontComparer;
     private readonly IComparer<RenderItem<ShapeBatchItem>> mockShapeComparer;
@@ -48,11 +46,14 @@ public class RenderMediatorTests : TestsBase
     public RenderMediatorTests()
     {
         var mockEndBatchUnsubscriber = Substitute.For<IDisposable>();
-
-        this.mockPushReactable = new Mock<IPushReactable>();
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor => this.endBatchReactor = reactor)
-            .Returns<IReceiveSubscription>(_ => mockEndBatchUnsubscriber);
+        this.mockPushReactable = Substitute.For<IPushReactable>();
+        this.mockPushReactable
+            .Subscribe(Arg.Any<IReceiveSubscription>())
+            .Returns(_ => mockEndBatchUnsubscriber)
+            .AndDoes(ci =>
+            {
+                this.endBatchReactor = ci.Arg<IReceiveSubscription>();
+            });
 
         this.mockTexturePullReactable = Substitute.For<IBatchPullReactable<TextureBatchItem>>();
         this.mockFontPullReactable = Substitute.For<IBatchPullReactable<FontGlyphBatchItem>>();
@@ -65,7 +66,7 @@ public class RenderMediatorTests : TestsBase
         this.mockLineRenderBatchReactable = Substitute.For<IRenderBatchReactable<LineBatchItem>>();
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
-        this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable.Object);
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
 
         this.mockReactableFactory.CreateTexturePullBatchReactable()
             .Returns(this.mockTexturePullReactable);
@@ -282,7 +283,7 @@ public class RenderMediatorTests : TestsBase
             data.Span.ToArray().Should().HaveCount(2);
         }
 
-        this.mockPushReactable.VerifyOnce(m => m.Push(PushNotifications.EmptyBatchId));
+        this.mockPushReactable.Received(1).Push(PushNotifications.EmptyBatchId);
     }
 
     #endregion
@@ -294,9 +295,11 @@ public class RenderMediatorTests : TestsBase
     public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Assert
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
+        this.mockPushReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(ci =>
             {
+                var reactor = ci.Arg<IReceiveSubscription>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
             });
