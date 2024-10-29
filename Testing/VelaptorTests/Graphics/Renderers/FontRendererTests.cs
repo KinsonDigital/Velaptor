@@ -93,7 +93,7 @@ public class FontRendererTests : TestsBase
                 this.batchHasBegunReactor = reactor;
             });
 
-        var mockFontRenderBatchReactable = Substitute.For<RenderBatchReactable<FontGlyphBatchItem>>();
+        var mockFontRenderBatchReactable = Substitute.For<IRenderBatchReactable<FontGlyphBatchItem>>();
         mockFontRenderBatchReactable
             .When(x => x.Subscribe(Arg.Any<FontRenderItem>()))
             .Do(ci =>
