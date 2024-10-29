@@ -11,7 +11,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Content;
@@ -42,12 +42,12 @@ using RectRenderItem = Carbonate
 public class ShapeRendererTests : TestsBase
 {
     private const uint ShapeShaderId = 3333u;
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IGpuBuffer<ShapeBatchItem>> mockGpuBuffer;
-    private readonly Mock<IBatchingManager> mockBatchingManager;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IShaderProgram mockShader;
+    private readonly IGpuBuffer<ShapeBatchItem> mockGpuBuffer;
+    private readonly IBatchingManager mockBatchingManager;
+    private readonly IReactableFactory mockReactableFactory;
     private IReceiveSubscription? batchHasBegunReactor;
     private RectRenderItem? renderReactor;
 
@@ -56,42 +56,56 @@ public class ShapeRendererTests : TestsBase
     /// </summary>
     public ShapeRendererTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
+        this.mockGL = Substitute.For<IGLInvoker>();
 
-        this.mockGLService = new Mock<IOpenGLService>();
-        this.mockGLService.Setup(m => m.ProgramLinkedSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.ShaderCompiledSuccessfully(It.IsAny<uint>())).Returns(true);
-        this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
+        this.mockGLService = Substitute.For<IOpenGLService>();
+        this.mockGLService.ProgramLinkedSuccessfully(Arg.Any<uint>()).Returns(true);
+        this.mockGLService.ShaderCompiledSuccessfully(Arg.Any<uint>()).Returns(true);
+        this.mockGLService.GetViewPortSize().Returns(new Size(800, 600));
 
-        this.mockShader = new Mock<IShaderProgram>();
-        this.mockShader.SetupGet(p => p.ShaderId).Returns(ShapeShaderId);
 
-        this.mockGpuBuffer = new Mock<IGpuBuffer<ShapeBatchItem>>();
+        this.mockShader = Substitute.For<IShaderProgram>();
+        this.mockShader.ShaderId.Returns(ShapeShaderId);
 
-        this.mockBatchingManager = new Mock<IBatchingManager>();
-        this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
+        this.mockGpuBuffer = Substitute.For<IGpuBuffer<ShapeBatchItem>>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
+        this.mockBatchingManager = Substitute.For<IBatchingManager>();
 
-        var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable
+            .When(m => m.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(ci =>
+            {
+                var reactor = ci.Arg<IReceiveSubscription>();
+                this.batchHasBegunReactor = reactor;
+            });
+
+        var mockShapeRenderBatchReactable = Substitute.For<IRenderBatchReactable<ShapeBatchItem>>();
         mockShapeRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
-            .Callback<RectRenderItem>(reactor => this.renderReactor = reactor);
+            .When(m => m.Subscribe(Arg.Any<RectRenderItem>()))
+            .Do(ci =>
+            {
+                var reactor = ci.Arg<RectRenderItem>();
+                this.renderReactor = reactor;
+            });
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
-            .Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderShapeReactable())
-            .Returns(mockShapeRenderBatchReactable.Object);
 
-        var mockFontTextureAtlas = new Mock<ITexture>();
-        mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
-        mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory
+            .CreateNoDataPushReactable()
+            .Returns(mockPushReactable);
+        this.mockReactableFactory
+            .CreateRenderShapeReactable()
+            .Returns(mockShapeRenderBatchReactable);
+
+
+        var mockFontTextureAtlas = Substitute.For<ITexture>();
+        mockFontTextureAtlas.Width.Returns(200u);
+        mockFontTextureAtlas.Height.Returns(100u);
     }
 
     #region Constructor Tests
+
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
@@ -100,12 +114,12 @@ public class ShapeRendererTests : TestsBase
         var act = () =>
         {
             _ = new ShapeRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
+                this.mockGL,
+                this.mockReactableFactory,
                 null,
-                this.mockGpuBuffer.Object,
-                this.mockShader.Object,
-                this.mockBatchingManager.Object);
+                this.mockGpuBuffer,
+                this.mockShader,
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -122,12 +136,12 @@ public class ShapeRendererTests : TestsBase
         var act = () =>
         {
             _ = new ShapeRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
                 null,
-                this.mockShader.Object,
-                this.mockBatchingManager.Object);
+                this.mockShader,
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -144,12 +158,12 @@ public class ShapeRendererTests : TestsBase
         var act = () =>
         {
             _ = new ShapeRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
-                this.mockGpuBuffer.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
+                this.mockGpuBuffer,
                 null,
-                this.mockBatchingManager.Object);
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -166,11 +180,11 @@ public class ShapeRendererTests : TestsBase
         var act = () =>
         {
             _ = new ShapeRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
-                this.mockGpuBuffer.Object,
-                this.mockShader.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
+                this.mockGpuBuffer,
+                this.mockShader,
                 null);
         };
 
@@ -179,9 +193,11 @@ public class ShapeRendererTests : TestsBase
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'batchManager')");
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     [Trait("Category", Method)]
     public void Render_WhenRenderingShape_AddsShapeToBatch()
@@ -220,7 +236,7 @@ public class ShapeRendererTests : TestsBase
         sut.Render(rectShape, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddShapeItem(expected, 123, It.IsAny<DateTime>()));
+        this.mockBatchingManager.Received(1).AddShapeItem(expected, 123, Arg.Any<DateTime>());
     }
 
     [Fact]
@@ -265,10 +281,13 @@ public class ShapeRendererTests : TestsBase
         this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
-        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
-        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+        this.mockGLService.Received(1).BeginGroup("Render 6 Shape Elements");
+        this.mockGLService.Received(3).EndGroup();
+
+        this.mockGL
+            .Received(1)
+            .DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.mockGpuBuffer.Received(1).UploadData(batchItem, batchIndex);
     }
 
     [Fact]
@@ -324,7 +343,7 @@ public class ShapeRendererTests : TestsBase
         sut.Render(circle, 123);
 
         // Assert
-        this.mockBatchingManager.VerifyOnce(m => m.AddShapeItem(expected, 123, It.IsAny<DateTime>()));
+        this.mockBatchingManager.Received(1).AddShapeItem(expected, 123, Arg.Any<DateTime>());
     }
 
     [Fact]
@@ -367,10 +386,12 @@ public class ShapeRendererTests : TestsBase
         this.renderReactor.OnReceive(renderItems);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Shape Elements"));
-        this.mockGLService.VerifyExactly(m => m.EndGroup(), 3);
-        this.mockGL.VerifyOnce(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItem, batchIndex));
+        this.mockGLService.Received(1).BeginGroup("Render 6 Shape Elements");
+        this.mockGLService.Received(3).EndGroup();
+        this.mockGL
+            .Received(1)
+            .DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.mockGpuBuffer.Received(1).UploadData(batchItem, batchIndex);
     }
 
     [Fact]
@@ -389,39 +410,46 @@ public class ShapeRendererTests : TestsBase
         act.Should().Throw<InvalidOperationException>()
             .WithMessage(expected);
     }
+
     #endregion
 
     #region Reactable Tests
+
     [Fact]
     [Trait("Category", Ctor)]
     public void Render_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
     {
         // Arrange
         const string shaderName = "TestShapeShader";
-        this.mockShader.SetupGet(p => p.Name).Returns(shaderName);
+        this.mockShader.Name.Returns(shaderName);
         _ = CreateSystemUnderTest();
 
         // Act
         this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Shape Process - Nothing To Render"));
-        this.mockGLService.VerifyOnce(m => m.EndGroup());
-        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Shape Process With {shaderName} Shader"));
-        this.mockShader.VerifyNever(m => m.Use());
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
-        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
-        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGpuBuffer.VerifyNever(m =>
-            m.UploadData(It.IsAny<ShapeBatchItem>(), It.IsAny<uint>()));
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
-        this.mockGL.VerifyNever(m => m.DrawElements(
-            It.IsAny<GLPrimitiveType>(),
-            It.IsAny<uint>(),
-            It.IsAny<GLDrawElementsType>(),
-            It.IsAny<nint>()));
+        this.mockGLService.Received(1).BeginGroup("Render Shape Process - Nothing To Render");
+        this.mockGLService.Received(1).EndGroup();
+        this.mockGLService.DidNotReceive().BeginGroup($"Render Shape Process With {shaderName} Shader");
+        this.mockShader.DidNotReceive().Use();
+        this.mockGLService
+            .DidNotReceive()
+            .BeginGroup(Arg.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID")));
+        this.mockGL.DidNotReceive().ActiveTexture(Arg.Any<GLTextureUnit>());
+        this.mockGLService.DidNotReceive().BindTexture2D(Arg.Any<uint>());
+        this.mockGpuBuffer
+            .DidNotReceive()
+            .UploadData(Arg.Any<ShapeBatchItem>(), Arg.Any<uint>());
+        this.mockGLService
+            .DidNotReceive()
+            .BeginGroup(Arg.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements")));
+        this.mockGL
+            .DidNotReceive()
+            .DrawElements(
+                Arg.Any<GLPrimitiveType>(),
+                Arg.Any<uint>(),
+                Arg.Any<GLDrawElementsType>(),
+                Arg.Any<nint>());
     }
 
     [Fact]
@@ -429,10 +457,12 @@ public class ShapeRendererTests : TestsBase
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor =>
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable
+            .When(m => m.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(ci =>
             {
+                var reactor = ci.Arg<IReceiveSubscription>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
             });
@@ -443,15 +473,17 @@ public class ShapeRendererTests : TestsBase
     public void ShapeRenderBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
-        var mockShapeRenderBatchReactable = new Mock<IRenderBatchReactable<ShapeBatchItem>>();
+        var mockShapeRenderBatchReactable = Substitute.For<IRenderBatchReactable<ShapeBatchItem>>();
         mockShapeRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<RectRenderItem>()))
-            .Callback<RectRenderItem>(reactor =>
+            .When(m => m.Subscribe(Arg.Any<RectRenderItem>()))
+            .Do(ci =>
             {
+                var reactor = ci.Arg<RectRenderItem>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 reactor.Name.Should().Be($"ShapeRenderer.ctor() - {PushNotifications.RenderShapesId}");
             });
     }
+
     #endregion
 
     /// <summary>
@@ -459,10 +491,10 @@ public class ShapeRendererTests : TestsBase
     /// </summary>
     /// <returns>The instance to test.</returns>
     private ShapeRenderer CreateSystemUnderTest()
-        => new (this.mockGL.Object,
-            this.mockReactableFactory.Object,
-            this.mockGLService.Object,
-            this.mockGpuBuffer.Object,
-            this.mockShader.Object,
-            this.mockBatchingManager.Object);
+        => new (this.mockGL,
+            this.mockReactableFactory,
+            this.mockGLService,
+            this.mockGpuBuffer,
+            this.mockShader,
+            this.mockBatchingManager);
 }
