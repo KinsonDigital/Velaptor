@@ -12,8 +12,8 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using FluentAssertions;
 using Helpers;
-using Moq;
-using Moq.Language.Flow;
+using NSubstitute;
+using NSubstitute.Core;
 using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -39,14 +39,14 @@ using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memo
 public class TextureRendererTests : TestsBase
 {
     private const uint TextureId = 456u;
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IGpuBuffer<TextureBatchItem>> mockGpuBuffer;
-    private readonly Mock<IShaderProgram> mockShader;
-    private readonly Mock<IBatchingManager> mockBatchingManager;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable> mockPushReactable;
-    private readonly Mock<IRenderBatchReactable<TextureBatchItem>> mockTextureRenderBatchReactable;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IGpuBuffer<TextureBatchItem> mockGpuBuffer;
+    private readonly IShaderProgram mockShader;
+    private readonly IBatchingManager mockBatchingManager;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IPushReactable mockPushReactable;
+    private readonly IRenderBatchReactable<TextureBatchItem> mockTextureRenderBatchReactable;
     private IReceiveSubscription? batchHasBegunReactor;
     private TextureRenderItem? renderReactor;
 
@@ -55,32 +55,34 @@ public class TextureRendererTests : TestsBase
     /// </summary>
     public TextureRendererTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGLService = new Mock<IOpenGLService>();
-        this.mockShader = new Mock<IShaderProgram>();
-        this.mockGpuBuffer = new Mock<IGpuBuffer<TextureBatchItem>>();
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
+        this.mockShader = Substitute.For<IShaderProgram>();
+        this.mockGpuBuffer = Substitute.For<IGpuBuffer<TextureBatchItem>>();
+        this.mockBatchingManager = Substitute.For<IBatchingManager>();
 
-        this.mockBatchingManager = new Mock<IBatchingManager>();
-        this.mockBatchingManager.Name = nameof(this.mockBatchingManager);
+        this.mockPushReactable = Substitute.For<IPushReactable>();
+        this.mockPushReactable
+            .When(m => m.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(ci => this.batchHasBegunReactor = ci.Arg<IReceiveSubscription>());
 
-        this.mockPushReactable = new Mock<IPushReactable>();
-        this.mockPushReactable.Name = "NoADataPushReactable";
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactor => this.batchHasBegunReactor = reactor);
-
-        this.mockTextureRenderBatchReactable = new Mock<IRenderBatchReactable<TextureBatchItem>>();
+        this.mockTextureRenderBatchReactable = Substitute.For<IRenderBatchReactable<TextureBatchItem>>();
         this.mockTextureRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Callback<TextureRenderItem>(reactor => this.renderReactor = reactor);
+            .When(m => m.Subscribe(Arg.Any<TextureRenderItem>()))
+            .Do(ci => this.renderReactor = ci.Arg<TextureRenderItem>());
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable())
-            .Returns(this.mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateRenderTextureReactable())
-            .Returns(this.mockTextureRenderBatchReactable.Object);
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory
+            .CreateNoDataPushReactable()
+            .Returns(this.mockPushReactable);
+        this.mockReactableFactory
+            .CreateRenderTextureReactable()
+            .Returns(this.mockTextureRenderBatchReactable);
     }
 
     #region Constructor Tests
+
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
@@ -89,12 +91,12 @@ public class TextureRendererTests : TestsBase
         var act = () =>
         {
             _ = new TextureRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
+                this.mockGL,
+                this.mockReactableFactory,
                 null,
-                this.mockGpuBuffer.Object,
-                this.mockShader.Object,
-                this.mockBatchingManager.Object);
+                this.mockGpuBuffer,
+                this.mockShader,
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -111,12 +113,12 @@ public class TextureRendererTests : TestsBase
         var act = () =>
         {
             _ = new TextureRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
                 null,
-                this.mockShader.Object,
-                this.mockBatchingManager.Object);
+                this.mockShader,
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -133,12 +135,12 @@ public class TextureRendererTests : TestsBase
         var act = () =>
         {
             _ = new TextureRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
-                this.mockGpuBuffer.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
+                this.mockGpuBuffer,
                 null,
-                this.mockBatchingManager.Object);
+                this.mockBatchingManager);
         };
 
         // Assert
@@ -155,11 +157,11 @@ public class TextureRendererTests : TestsBase
         var act = () =>
         {
             _ = new TextureRenderer(
-                this.mockGL.Object,
-                this.mockReactableFactory.Object,
-                this.mockGLService.Object,
-                this.mockGpuBuffer.Object,
-                this.mockShader.Object,
+                this.mockGL,
+                this.mockReactableFactory,
+                this.mockGLService,
+                this.mockGpuBuffer,
+                this.mockShader,
                 null);
         };
 
@@ -168,9 +170,11 @@ public class TextureRendererTests : TestsBase
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'batchManager')");
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     [Trait("Category", Method)]
     public void Render_WhenNotCallingBeginFirst_ThrowsException()
@@ -182,13 +186,13 @@ public class TextureRendererTests : TestsBase
         AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
         {
             sut.Render(
-                new Mock<ITexture>().Object,
+                Substitute.For<ITexture>(),
                 new Rectangle(10, 20, 30, 40),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
+                default,
+                default,
+                default,
+                default,
+                default);
         }, "The 'Begin()' method must be invoked first before any 'Render()' methods.");
     }
 
@@ -208,13 +212,13 @@ public class TextureRendererTests : TestsBase
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
             sut.Render(
-                new Mock<ITexture>().Object,
+                Substitute.For<ITexture>(),
                 new Rectangle(1, 2, width, height),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
+                default,
+                default,
+                default,
+                default,
+                default);
         }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
     }
 
@@ -228,25 +232,25 @@ public class TextureRendererTests : TestsBase
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            sut.Render(
-                null,
-                new Rectangle(10, 20, 30, 40),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
-        }, $"Cannot render a null '{nameof(ITexture)}'. (Parameter 'texture')");
+            {
+                sut.Render(
+                    null,
+                    new Rectangle(10, 20, 30, 40),
+                    default,
+                    default,
+                    default,
+                    default,
+                    default);
+            }, $"Cannot render a null '{nameof(ITexture)}'. (Parameter 'texture')");
     }
 
     [Fact]
     public void Render_WithZeroWidthOrHeightTexture_ThrowsException()
     {
         // Arrange
-        var mockTexture = new Mock<ITexture>();
-        mockTexture.SetupGet(p => p.Width).Returns(0);
-        mockTexture.SetupGet(p => p.Height).Returns(0);
+        var mockTexture = Substitute.For<ITexture>();
+        mockTexture.Width.Returns(0u);
+        mockTexture.Height.Returns(0u);
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
@@ -255,11 +259,11 @@ public class TextureRendererTests : TestsBase
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
             sut.Render(
-                mockTexture.Object,
-                10,
-                20,
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
+                texture: mockTexture,
+                x: 10,
+                y: 20,
+                color: default,
+                effects: default);
         }, "The source rectangle must have a width and height greater than zero. (Parameter 'rects')");
     }
 
@@ -269,30 +273,35 @@ public class TextureRendererTests : TestsBase
     {
         // Arrange
         const string shaderName = "TestTextureShader";
-        this.mockShader.SetupGet(p => p.Name).Returns(shaderName);
+        this.mockShader.Name.Returns(shaderName);
         _ = CreateSystemUnderTest();
 
         // Act
         this.renderReactor.OnReceive(default);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render Texture Process - Nothing To Render"));
-        this.mockGLService.VerifyOnce(m => m.EndGroup());
-        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Texture Process With {shaderName} Shader"));
-        this.mockShader.VerifyNever(m => m.Use());
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Texture Data - TextureID"))));
-        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
-        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-        this.mockGpuBuffer.VerifyNever(m =>
-            m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()));
-        this.mockGLService.VerifyNever(m =>
-            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
-        this.mockGL.VerifyNever(m => m.DrawElements(
-            It.IsAny<GLPrimitiveType>(),
-            It.IsAny<uint>(),
-            It.IsAny<GLDrawElementsType>(),
-            It.IsAny<nint>()));
+        this.mockGLService.Received(1).BeginGroup("Render Texture Process - Nothing To Render");
+        this.mockGLService.Received(1).EndGroup();
+        this.mockGLService.DidNotReceive().BeginGroup($"Render Texture Process With {shaderName} Shader");
+        this.mockShader.DidNotReceive().Use();
+        this.mockGLService
+            .DidNotReceive()
+            .BeginGroup(Arg.Is<string>(value => value.StartsWith("Update Texture Data - TextureID")));
+        this.mockGL.DidNotReceive().ActiveTexture(Arg.Any<GLTextureUnit>());
+        this.mockGLService.DidNotReceive().BindTexture2D(Arg.Any<uint>());
+        this.mockGpuBuffer
+            .DidNotReceive()
+            .UploadData(Arg.Any<TextureBatchItem>(), Arg.Any<uint>());
+        this.mockGLService
+            .DidNotReceive()
+            .BeginGroup(Arg.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements")));
+        this.mockGL
+            .DidNotReceive()
+            .DrawElements(
+                Arg.Any<GLPrimitiveType>(),
+                Arg.Any<uint>(),
+                Arg.Any<GLDrawElementsType>(),
+                Arg.Any<nint>());
     }
 
     [Fact]
@@ -317,20 +326,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-            {
-                actualBatchItem = item;
-            });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, 123);
+        sut.Render(mockTexture, 10, 20, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -356,20 +363,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, 180, 123);
+        sut.Render(mockTexture, 10, 20, 180, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -395,20 +400,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, 180, 1.5f, 123);
+        sut.Render(mockTexture, 10, 20, 180, 1.5f, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -434,20 +437,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, 180, 1.5f, Color.FromArgb(11, 22, 33, 44), 123);
+        sut.Render(mockTexture, 10, 20, 180, 1.5f, Color.FromArgb(11, 22, 33, 44), 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -474,20 +475,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, expectedRenderEffects, 123);
+        sut.Render(mockTexture, 10, 20, expectedRenderEffects, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -514,20 +513,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, expectedClr, 123);
+        sut.Render(mockTexture, 10, 20, expectedClr, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -555,20 +552,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects, 123);
+        sut.Render(mockTexture, 10, 20, expectedClr, expectedRenderEffects, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -594,20 +589,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-            {
-                actualBatchItem = item;
-            });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), 123);
+        sut.Render(mockTexture, new Vector2(10, 20), 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -633,20 +626,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 123);
+        sut.Render(mockTexture, new Vector2(10, 20), 180, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -672,20 +663,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 1.5f, 123);
+        sut.Render(mockTexture, new Vector2(10, 20), 180, 1.5f, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -711,20 +700,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), 180, 1.5f, Color.FromArgb(30, 40, 50, 60), 123);
+        sut.Render(mockTexture, new Vector2(10, 20), 180, 1.5f, Color.FromArgb(30, 40, 50, 60), 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -751,20 +738,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedRenderEffects, 123);
+        sut.Render(mockTexture, new Vector2(10, 20), expectedRenderEffects, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -791,20 +776,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedClr, 123);
+        sut.Render(mockTexture, new Vector2(10, 20), expectedClr, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -832,20 +815,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockTexture.Object, new Vector2(10, 20), expectedClr, expectedRenderEffects, 123);
+        sut.Render(mockTexture, new Vector2(10, 20), expectedClr, expectedRenderEffects, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The texture batch item being added is incorrect.");
     }
 
@@ -865,11 +846,11 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(
             MockTexture(TextureId),
             new Rectangle(10, 20, srcRectWidth, srcRectHeight),
-            It.IsAny<Rectangle>(),
-            It.IsAny<float>(),
-            It.IsAny<float>(),
-            It.IsAny<Color>(),
-            It.IsAny<RenderEffects>());
+            default,
+            default,
+            default,
+            default,
+            default);
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -914,22 +895,23 @@ public class TextureRendererTests : TestsBase
         sut.Render(
             MockTexture(TextureId),
             new Rectangle(0, 0, 1, 2),
-            It.IsAny<Rectangle>(),
-            It.IsAny<float>(),
-            It.IsAny<float>(),
-            It.IsAny<Color>(),
-            It.IsAny<RenderEffects>());
+            default,
+            default,
+            default,
+            default,
+            default);
 
         // Act
         this.renderReactor.OnReceive(items);
 
         // Assert
-        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 12 Texture Elements"));
-        this.mockGL.VerifyOnce(m
-            => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, nint.Zero));
-        this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
-        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemA, itemABatchIndex));
-        this.mockGpuBuffer.VerifyOnce(m => m.UploadData(batchItemB, itemBBatchIndex));
+        this.mockGLService.Received(1).BeginGroup("Render 12 Texture Elements");
+        this.mockGL
+            .Received(1)
+            .DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
+        this.mockGLService.Received(1).BindTexture2D(TextureId);
+        this.mockGpuBuffer.Received(1).UploadData(batchItemA, itemABatchIndex);
+        this.mockGpuBuffer.Received(1).UploadData(batchItemB, itemBBatchIndex);
     }
 
     [Fact]
@@ -1055,7 +1037,7 @@ public class TextureRendererTests : TestsBase
         var mockAtlas = CreateAtlasDataMock(10, 20);
 
         // Act
-        var act = () => sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 1234);
+        var act = () => sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 1234);
 
         // Assert
         act.Should().Throw<RendererException>().WithMessage(expectedMsg);
@@ -1073,7 +1055,7 @@ public class TextureRendererTests : TestsBase
 
         // Act
         var act = () =>
-            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), Color.CornflowerBlue, 1234);
+            sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), Color.CornflowerBlue, 1234);
 
         // Assert
         act.Should().Throw<RendererException>().WithMessage(expectedMsg);
@@ -1090,7 +1072,7 @@ public class TextureRendererTests : TestsBase
         var mockAtlas = CreateAtlasDataMock(10, 20);
 
         // Act
-        var act = () => sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 25f, 1234);
+        var act = () => sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 25f, 1234);
 
         // Assert
         act.Should().Throw<RendererException>().WithMessage(expectedMsg);
@@ -1108,7 +1090,7 @@ public class TextureRendererTests : TestsBase
 
         // Act
         var act = () =>
-            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 35f, 1.4f, 1234);
+            sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 35f, 1.4f, 1234);
 
         // Assert
         act.Should().Throw<RendererException>().WithMessage(expectedMsg);
@@ -1126,7 +1108,7 @@ public class TextureRendererTests : TestsBase
 
         // Act
         var act = () =>
-            sut.Render(mockAtlas.Object, "test-sub-texture", new Vector2(10, 20), 45f, Color.IndianRed, 1234);
+            sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 45f, Color.IndianRed, 1234);
 
         // Assert
         act.Should().Throw<RendererException>().WithMessage(expectedMsg);
@@ -1145,7 +1127,7 @@ public class TextureRendererTests : TestsBase
         // Act
         var act = () =>
             sut.Render(
-                mockAtlas.Object,
+                mockAtlas,
                 "test-sub-texture",
                 new Vector2(10, 20),
                 15f,
@@ -1170,7 +1152,7 @@ public class TextureRendererTests : TestsBase
         // Act
         var act = () =>
             sut.Render(
-                mockAtlas.Object,
+                mockAtlas,
                 "test-sub-texture",
                 new Vector2(10, 20),
                 15f,
@@ -1206,20 +1188,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1247,20 +1227,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, color, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, color, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1288,20 +1266,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, angle, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1330,20 +1306,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, angle, size, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1372,20 +1346,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, color, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, angle, color, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1415,20 +1387,18 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, color, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, angle, size, color, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
 
@@ -1459,40 +1429,43 @@ public class TextureRendererTests : TestsBase
 
         TextureBatchItem actualBatchItem = default;
 
-        MockAddTextureItem().Callback<TextureBatchItem, int, DateTime>((item, _, _) =>
-        {
-            actualBatchItem = item;
-        });
+        MockAddTextureItem().Do(ci => actualBatchItem = ci.Arg<TextureBatchItem>());
 
         var sut = CreateSystemUnderTest();
         this.batchHasBegunReactor.OnReceive();
 
         // Act
-        sut.Render(mockAtlasData.Object, "test-texture", pos, angle, size, color, effects, 0, 123);
+        sut.Render(mockAtlasData, "test-texture", pos, angle, size, color, effects, 0, 123);
 
         // Assert
         this.mockBatchingManager
-            .VerifyOnce(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), 123, It.IsAny<DateTime>()));
+            .Received(1)
+            .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
         actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
     }
+
     #endregion
 
     #region Reactable Tests
+
     [Fact]
     [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingAndDisposingOfSubscription_CreatesAndDisposesOfSubscriptionCorrectly()
     {
         // Arrange
         IReceiveSubscription? reactor = null;
-        Mock<IDisposable> mockUnsubscriber = new Mock<IDisposable>();
+        IDisposable mockUnsubscriber = Substitute.For<IDisposable>();
 
-        this.mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Callback<IReceiveSubscription>(reactorParam =>
+        this.mockPushReactable
+            .Subscribe(Arg.Any<IReceiveSubscription>())
+            .Returns(mockUnsubscriber)
+            .AndDoes(ci =>
             {
+                var reactorParam = ci.Arg<IReceiveSubscription>();
                 reactorParam.Should().NotBeNull("It is required for unit testing.");
-
                 reactor = reactorParam;
-            }).Returns(mockUnsubscriber.Object);
+            });
+
 
         _ = CreateSystemUnderTest();
 
@@ -1500,7 +1473,7 @@ public class TextureRendererTests : TestsBase
         reactor.OnUnsubscribe();
 
         // Assert
-        mockUnsubscriber.VerifyOnce(m => m.Dispose());
+        mockUnsubscriber.Received(1).Dispose();
     }
 
     [Fact]
@@ -1509,15 +1482,17 @@ public class TextureRendererTests : TestsBase
     {
         // Arrange
         TextureRenderItem? reactor = null;
-        Mock<IDisposable> mockUnsubscriber = new Mock<IDisposable>();
+        IDisposable mockUnsubscriber = Substitute.For<IDisposable>();
 
         this.mockTextureRenderBatchReactable
-            .Setup(m => m.Subscribe(It.IsAny<TextureRenderItem>()))
-            .Callback<TextureRenderItem>(reactorParam =>
+            .Subscribe(Arg.Any<TextureRenderItem>())
+            .Returns(mockUnsubscriber)
+            .AndDoes(ci =>
             {
+                var reactorParam = ci.Arg<TextureRenderItem>();
                 reactorParam.Should().NotBeNull("It is required for unit testing.");
                 reactor = reactorParam;
-            }).Returns(mockUnsubscriber.Object);
+            });
 
         _ = CreateSystemUnderTest();
 
@@ -1525,8 +1500,9 @@ public class TextureRendererTests : TestsBase
         reactor.OnUnsubscribe();
 
         // Assert
-        mockUnsubscriber.VerifyOnce(m => m.Dispose());
+        mockUnsubscriber.Received(1).Dispose();
     }
+
     #endregion
 
     /// <summary>
@@ -1536,10 +1512,10 @@ public class TextureRendererTests : TestsBase
     /// <returns>The instance to use for testing.</returns>
     private static ITexture MockTexture(uint textureId)
     {
-        var mockResult = new Mock<ITexture>();
-        mockResult.SetupGet(p => p.Id).Returns(textureId);
+        var mockResult = Substitute.For<ITexture>();
+        mockResult.Id.Returns(textureId);
 
-        return mockResult.Object;
+        return mockResult;
     }
 
     /// <summary>
@@ -1549,15 +1525,15 @@ public class TextureRendererTests : TestsBase
     /// <param name="expectedWidth">The texture width to mock.</param>
     /// <param name="expectedHeight">The texture height to mock.</param>
     /// <returns>The mocked texture.</returns>
-    private static Mock<ITexture> CreateTextureMock(
+    private static ITexture CreateTextureMock(
         uint textureId,
         uint expectedWidth,
         uint expectedHeight)
     {
-        var mockTexture = new Mock<ITexture>();
-        mockTexture.SetupGet(p => p.Id).Returns(textureId);
-        mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
-        mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+        var mockTexture = Substitute.For<ITexture>();
+        mockTexture.Id.Returns(textureId);
+        mockTexture.Width.Returns(expectedWidth);
+        mockTexture.Height.Returns(expectedHeight);
 
         return mockTexture;
     }
@@ -1595,27 +1571,22 @@ public class TextureRendererTests : TestsBase
     /// <param name="width">The width of the bounds.</param>
     /// <param name="height">The height of the bounds.</param>
     /// <returns>The mocked object.</returns>
-    private static Mock<IAtlasData> CreateAtlasDataMock(int width, int height)
+    private static IAtlasData CreateAtlasDataMock(int width, int height)
     {
-        var mockTexture = new Mock<ITexture>();
-        mockTexture.SetupGet(p => p.Id).Returns(TextureId);
-        var mockPath = new Mock<IPath>();
-        mockPath.Setup(m => m.GetFileNameWithoutExtension(It.IsAny<string>())).Returns("test-atlas");
+        var mockTexture = Substitute.For<ITexture>();
+        mockTexture.Id.Returns(TextureId);
+        var mockPath = Substitute.For<IPath>();
+        mockPath.GetFileNameWithoutExtension(Arg.Any<string>()).Returns("test-atlas");
 
-        var subTextureData = new AtlasSubTextureData
-        {
-            Name = "test-sub-texture",
-            Bounds = new Rectangle(0, 0, width, height),
-            FrameIndex = 0,
-        };
-        var subTextureDataItems = new[] { subTextureData  };
+        var subTextureData = new AtlasSubTextureData { Name = "test-sub-texture", Bounds = new Rectangle(0, 0, width, height), FrameIndex = 0, };
+        var subTextureDataItems = new[] { subTextureData };
 
-        var mock = new Mock<IAtlasData>();
-        mock.SetupGet(p => p.Name).Returns("test-atlas-texture");
-        mock.SetupGet(p => p.Width).Returns((uint)width);
-        mock.SetupGet(p => p.Height).Returns((uint)height);
-        mock.SetupGet(p => p.Texture).Returns(mockTexture.Object);
-        mock.Setup(m => m.GetFrames(It.IsAny<string>())).Returns(subTextureDataItems);
+        var mock = Substitute.For<IAtlasData>();
+        mock.Name.Returns("test-atlas-texture");
+        mock.Width.Returns((uint)width);
+        mock.Height.Returns((uint)height);
+        mock.Texture.Returns(mockTexture);
+        mock.GetFrames(Arg.Any<string>()).Returns(subTextureDataItems);
 
         return mock;
     }
@@ -1624,10 +1595,9 @@ public class TextureRendererTests : TestsBase
     /// Mocks the <see cref="IBatchingManager.AddTextureItem(TextureBatchItem, int, DateTime)"/> method.
     /// </summary>
     /// <returns>The mock setup.</returns>
-    private ISetup<IBatchingManager> MockAddTextureItem()
+    private WhenCalled<IBatchingManager> MockAddTextureItem()
     {
-        return this.mockBatchingManager
-            .Setup(m => m.AddTextureItem(It.IsAny<TextureBatchItem>(), It.IsAny<int>(), It.IsAny<DateTime>()));
+        return this.mockBatchingManager.When(m => m.AddTextureItem(Arg.Any<TextureBatchItem>(), Arg.Any<int>(), Arg.Any<DateTime>()));
     }
 
     /// <summary>
@@ -1635,10 +1605,10 @@ public class TextureRendererTests : TestsBase
     /// </summary>
     /// <returns>The instance to test.</returns>
     private TextureRenderer CreateSystemUnderTest()
-        => new (this.mockGL.Object,
-            this.mockReactableFactory.Object,
-            this.mockGLService.Object,
-            this.mockGpuBuffer.Object,
-            this.mockShader.Object,
-            this.mockBatchingManager.Object);
+        => new (this.mockGL,
+            this.mockReactableFactory,
+            this.mockGLService,
+            this.mockGpuBuffer,
+            this.mockShader,
+            this.mockBatchingManager);
 }
