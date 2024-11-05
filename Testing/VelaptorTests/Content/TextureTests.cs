@@ -7,10 +7,11 @@ namespace VelaptorTests.Content;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -28,10 +29,10 @@ public class TextureTests
     private const string TextureName = "test-texture";
     private const string TexturePath = @"C:\temp\test-texture.png";
     private const uint TextureId = 1234;
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IDisposable> mockDisposeUnsubscriber;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IDisposable mockDisposeUnsubscriber;
+    private readonly IReactableFactory mockReactableFactory;
     private readonly ImageData imageData;
     private IReceiveSubscription<DisposeTextureData>? disposeReactor;
 
@@ -75,34 +76,36 @@ public class TextureTests
             }
         }
 
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.GenTexture().Returns(TextureId);
 
-        this.mockGLService = new Mock<IOpenGLService>();
-        this.mockDisposeUnsubscriber = new Mock<IDisposable>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
+        this.mockDisposeUnsubscriber = Substitute.For<IDisposable>();
 
-        var mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
-        mockDisposeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<DisposeTextureData>>()))
-            .Returns(this.mockDisposeUnsubscriber.Object)
-            .Callback<IReceiveSubscription<DisposeTextureData>>(reactor =>
+        var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
+        mockDisposeReactable.Subscribe(Arg.Any<IReceiveSubscription<DisposeTextureData>>())
+            .Returns(this.mockDisposeUnsubscriber)
+            .AndDoes(callInfo =>
             {
+                var reactor = callInfo.Arg<IReceiveSubscription<DisposeTextureData>>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 this.disposeReactor = reactor;
             });
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateDisposeTextureReactable()).Returns(mockDisposeReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateDisposeTextureReactable().Returns(mockDisposeReactable);
     }
 
     #region Constructor Tests
+
     [Fact]
     public void InternalCtor_WithNullGLParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => new Texture(
             null,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGLService,
+            this.mockReactableFactory,
             TextureName,
             TexturePath,
             this.imageData);
@@ -117,9 +120,9 @@ public class TextureTests
     {
         // Arrange & Act
         var act = () => new Texture(
-            this.mockGL.Object,
+            this.mockGL,
             null,
-            this.mockReactableFactory.Object,
+            this.mockReactableFactory,
             TextureName,
             TexturePath,
             this.imageData);
@@ -134,8 +137,8 @@ public class TextureTests
     {
         // Arrange & Act
         var act = () => new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
+            this.mockGL,
+            this.mockGLService,
             null,
             TextureName,
             TexturePath,
@@ -151,9 +154,9 @@ public class TextureTests
     {
         // Arrange & Act
         var act = () => new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             null,
             TexturePath,
             this.imageData);
@@ -168,9 +171,9 @@ public class TextureTests
     {
         // Arrange & Act
         var act = () => new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             string.Empty,
             TexturePath,
             this.imageData);
@@ -185,9 +188,9 @@ public class TextureTests
     {
         // Act & Assert
         var act = () => new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             TextureName,
             null,
             this.imageData);
@@ -202,9 +205,9 @@ public class TextureTests
     {
         // Act & Assert
         var act = () => new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             TextureName,
             string.Empty,
             this.imageData);
@@ -250,39 +253,38 @@ public class TextureTests
 
         // Act
         _ = new Texture(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             "test-texture.png",
             @"C:\temp\test-texture.png",
             this.imageData);
 
         // Assert
-        this.mockGLService.Verify(m => m.LabelTexture(TextureId, "test-texture.png"),
-            Times.Once());
-        this.mockGL.Verify(m => m.TexParameter(
+        this.mockGLService.Received(1).LabelTexture(TextureId, "test-texture.png");
+        this.mockGL.Received(1).TexParameter(
             GLTextureTarget.Texture2D,
             GLTextureParameterName.TextureMinFilter,
-            GLTextureMinFilter.Linear), Times.Once());
+            GLTextureMinFilter.Linear);
 
-        this.mockGL.Verify(m => m.TexParameter(
+        this.mockGL.Received(1).TexParameter(
             GLTextureTarget.Texture2D,
             GLTextureParameterName.TextureMagFilter,
-            GLTextureMagFilter.Linear), Times.Once());
+            GLTextureMagFilter.Linear);
 
-        this.mockGL.Verify(m => m.TexParameter(
+        this.mockGL.Received(1).TexParameter(
             GLTextureTarget.Texture2D,
             GLTextureParameterName.TextureWrapS,
-            GLTextureWrapMode.ClampToEdge), Times.Once());
+            GLTextureWrapMode.ClampToEdge);
 
-        this.mockGL.Verify(m => m.TexParameter(
+        this.mockGL.Received(1).TexParameter(
             GLTextureTarget.Texture2D,
             GLTextureParameterName.TextureWrapT,
-            GLTextureWrapMode.ClampToEdge), Times.Once());
+            GLTextureWrapMode.ClampToEdge);
 
         var expectedPixelArray = expectedPixelData.ToArray();
 
-        this.mockGL.Verify(m => m.TexImage2D<byte>(
+        this.mockGL.Received(1).TexImage2D<byte>(
             GLTextureTarget.Texture2D,
             0,
             GLInternalFormat.Rgba,
@@ -291,14 +293,16 @@ public class TextureTests
             0,
             GLPixelFormat.Rgba,
             GLPixelType.UnsignedByte,
-            expectedPixelArray), Times.Once());
+            Arg.Is<byte[]>(actualPixelArray => actualPixelArray.SequenceEqual(expectedPixelArray)));
 
-        this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
-        this.mockGLService.Verify(m => m.UnbindTexture2D(), Times.Once);
+        this.mockGLService.Received(1).BindTexture2D(TextureId);
+        this.mockGLService.Received(1).UnbindTexture2D();
     }
+
     #endregion
 
     #region Prop Tests
+
     [Fact]
     public void Id_WhenCreatingTexture_ReturnsCorrectResult()
     {
@@ -363,9 +367,11 @@ public class TextureTests
         // Assert
         actual.Should().Be(3u);
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     public void ReactableNotifications_WithDifferentTextureID_DoesNotDisposeOfTexture()
     {
@@ -378,8 +384,8 @@ public class TextureTests
         this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
-        this.mockGL.Verify(m => m.DeleteTexture(It.IsAny<uint>()), Times.Never);
-        this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Never);
+        this.mockGL.DidNotReceive().DeleteTexture(Arg.Any<uint>());
+        this.mockDisposeUnsubscriber.DidNotReceive().Dispose();
     }
 
     [Fact]
@@ -394,8 +400,10 @@ public class TextureTests
         this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
-        this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
+        // this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
+        this.mockGL.Received(1).DeleteTexture(TextureId);
     }
+
     #endregion
 
     /// <summary>
@@ -404,9 +412,9 @@ public class TextureTests
     /// <returns>The texture instance to test.</returns>
     private Texture CreateSystemUnderTest(bool useEmptyData = false)
         => new (
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockReactableFactory.Object,
+            this.mockGL,
+            this.mockGLService,
+            this.mockReactableFactory,
             TextureName,
             TexturePath,
             useEmptyData ? default : this.imageData);

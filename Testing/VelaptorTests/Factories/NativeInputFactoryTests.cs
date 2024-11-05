@@ -6,7 +6,7 @@ namespace VelaptorTests.Factories;
 
 using System;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Factories;
 using Xunit;
 
@@ -35,7 +35,7 @@ public class NativeInputFactoryTests
     public void Ctor_WithNonNullWindowFactoryParam_DoesNotThrowException()
     {
         // Arrange & Act
-        var act = () => _ = new NativeInputFactory(new Mock<IWindowFactory>().Object);
+        var act = () => _ = new NativeInputFactory(Substitute.For<IWindowFactory>());
 
         // Assert
         act.Should().NotThrow();

@@ -10,7 +10,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
-using Moq;
 using Velaptor.ExtensionMethods;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GpuData;
@@ -32,7 +31,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetVertexPos(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -111,7 +110,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetRectangle(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -185,7 +184,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetAsSolid(It.IsAny<bool>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetAsSolid(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -258,7 +257,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetBorderThickness(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -332,7 +331,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetTopLeftCornerRadius(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -406,7 +405,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetBottomLeftCornerRadius(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -480,7 +479,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetBottomRightCornerRadius(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -554,7 +553,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetTopRightCornerRadius(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()
@@ -628,7 +627,7 @@ public class GpuDataTypeExtensionsTests
         var gpuData = GenerateGpuDataInSequence(0);
 
         // Act
-        var act = () => gpuData.SetColor(It.IsAny<Color>(), (VertexNumber)invalidValue);
+        var act = () => gpuData.SetColor(default, (VertexNumber)invalidValue);
 
         // Assert
         act.Should().Throw<InvalidEnumArgumentException>()

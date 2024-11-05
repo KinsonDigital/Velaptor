@@ -8,8 +8,7 @@ using System;
 using System.Drawing;
 using System.IO.Abstractions;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.Services;
@@ -20,28 +19,29 @@ using Xunit;
 /// </summary>
 public class ImageLoaderTests
 {
-    private readonly Mock<IPath> mockPath;
-    private readonly Mock<IImageService> mockImageService;
-    private readonly Mock<IContentPathResolver> mockTexturePathResolver;
+    private readonly IPath mockPath;
+    private readonly IImageService mockImageService;
+    private readonly IContentPathResolver mockTexturePathResolver;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageLoaderTests"/> class.
     /// </summary>
     public ImageLoaderTests()
     {
-        this.mockPath = new Mock<IPath>();
-        this.mockImageService = new Mock<IImageService>();
-        this.mockTexturePathResolver = new Mock<IContentPathResolver>();
+        this.mockPath = Substitute.For<IPath>();
+        this.mockImageService = Substitute.For<IImageService>();
+        this.mockTexturePathResolver = Substitute.For<IContentPathResolver>();
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImageLoader(null, this.mockImageService.Object, this.mockTexturePathResolver.Object);
+            _ = new ImageLoader(null, this.mockImageService, this.mockTexturePathResolver);
         };
 
         // Assert
@@ -56,7 +56,7 @@ public class ImageLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImageLoader(this.mockPath.Object, null, this.mockTexturePathResolver.Object);
+            _ = new ImageLoader(this.mockPath, null, this.mockTexturePathResolver);
         };
 
         // Assert
@@ -71,7 +71,7 @@ public class ImageLoaderTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImageLoader(this.mockPath.Object, this.mockImageService.Object, null);
+            _ = new ImageLoader(this.mockPath, this.mockImageService, null);
         };
 
         // Assert
@@ -79,9 +79,11 @@ public class ImageLoaderTests
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'texturePathResolver')");
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     public void LoadImage_WithAbsoluteFilePath_LoadsImageData()
     {
@@ -89,9 +91,9 @@ public class ImageLoaderTests
         const string filePath = "test-file-path";
         var expected = new ImageData(new Color[2, 4], filePath);
 
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(true);
-        this.mockImageService.Setup(m => m.Load(filePath))
-            .Returns<string>(_ => new ImageData(new Color[2, 4], filePath));
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
+        this.mockImageService.Load(filePath)
+            .Returns(_ => new ImageData(new Color[2, 4], filePath));
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -99,7 +101,7 @@ public class ImageLoaderTests
 
         // Assert
         actual.Should().Be(expected);
-        this.mockImageService.VerifyOnce(m => m.Load(filePath));
+        this.mockImageService.Received(1).Load(filePath);
     }
 
     [Fact]
@@ -109,11 +111,11 @@ public class ImageLoaderTests
         const string filePath = "test-file-path";
         var expected = new ImageData(new Color[2, 4], filePath);
 
-        this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+        this.mockTexturePathResolver.ResolveFilePath(Arg.Any<string>())
             .Returns(filePath);
-        this.mockPath.Setup(m => m.IsPathRooted(It.IsAny<string?>())).Returns(false);
-        this.mockImageService.Setup(m => m.Load(filePath))
-            .Returns<string>(_ => new ImageData(new Color[2, 4], filePath));
+        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(false);
+        this.mockImageService.Load(filePath)
+            .Returns(_ => new ImageData(new Color[2, 4], filePath));
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -121,8 +123,9 @@ public class ImageLoaderTests
 
         // Assert
         actual.Should().Be(expected);
-        this.mockImageService.VerifyOnce(m => m.Load(filePath));
+        this.mockImageService.Received(1).Load(filePath);
     }
+
     #endregion
 
     /// <summary>
@@ -130,5 +133,5 @@ public class ImageLoaderTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private ImageLoader CreateSystemUnderTest()
-        => new (this.mockPath.Object, this.mockImageService.Object, this.mockTexturePathResolver.Object);
+        => new (this.mockPath, this.mockImageService, this.mockTexturePathResolver);
 }

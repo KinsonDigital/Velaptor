@@ -8,7 +8,7 @@ using System;
 using System.Drawing;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -22,22 +22,22 @@ using Xunit;
 /// </summary>
 public class TextureFactoryTests
 {
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IReactableFactory mockReactableFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactoryTests"/> class.
     /// </summary>
     public TextureFactoryTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGLService = new Mock<IOpenGLService>();
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
 
-        var mockDisposeReactable = new Mock<IPushReactable<DisposeTextureData>>();
+        var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateDisposeTextureReactable()).Returns(mockDisposeReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateDisposeTextureReactable().Returns(mockDisposeReactable);
     }
 
     #region Constructor Tests
@@ -49,8 +49,8 @@ public class TextureFactoryTests
         {
             _ = new TextureFactory(
                 null,
-                this.mockGLService.Object,
-                this.mockReactableFactory.Object);
+                this.mockGLService,
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -66,9 +66,9 @@ public class TextureFactoryTests
         var act = () =>
         {
             _ = new TextureFactory(
-                this.mockGL.Object,
+                this.mockGL,
                 null,
-                this.mockReactableFactory.Object);
+                this.mockReactableFactory);
         };
 
         // Assert
@@ -84,8 +84,8 @@ public class TextureFactoryTests
         var act = () =>
         {
             _ = new TextureFactory(
-                this.mockGL.Object,
-                this.mockGLService.Object,
+                this.mockGL,
+                this.mockGLService,
                 null);
         };
 
@@ -164,8 +164,8 @@ public class TextureFactoryTests
 
         // Assert
         // NOTE: These are only here to prove that the same injected objects are the ones being used.
-        this.mockGL.Verify(m => m.GenTexture(), Times.Once);
-        this.mockGLService.Verify(m => m.LabelTexture(It.IsAny<uint>(), It.IsAny<string>()), Times.Once);
+        this.mockGL.Received(1).GenTexture();
+        this.mockGLService.Received(1).LabelTexture(Arg.Any<uint>(), Arg.Any<string>());
     }
     #endregion
 
@@ -174,7 +174,7 @@ public class TextureFactoryTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private TextureFactory CreateSystemUnderTest() => new (
-        this.mockGL.Object,
-        this.mockGLService.Object,
-        this.mockReactableFactory.Object);
+        this.mockGL,
+        this.mockGLService,
+        this.mockReactableFactory);
 }
