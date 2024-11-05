@@ -63,7 +63,6 @@ public class ShapeRendererTests : TestsBase
         this.mockGLService.ShaderCompiledSuccessfully(Arg.Any<uint>()).Returns(true);
         this.mockGLService.GetViewPortSize().Returns(new Size(800, 600));
 
-
         this.mockShader = Substitute.For<IShaderProgram>();
         this.mockShader.ShaderId.Returns(ShapeShaderId);
 
@@ -89,7 +88,6 @@ public class ShapeRendererTests : TestsBase
                 this.renderReactor = reactor;
             });
 
-
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory
             .CreateNoDataPushReactable()
@@ -97,7 +95,6 @@ public class ShapeRendererTests : TestsBase
         this.mockReactableFactory
             .CreateRenderShapeReactable()
             .Returns(mockShapeRenderBatchReactable);
-
 
         var mockFontTextureAtlas = Substitute.For<ITexture>();
         mockFontTextureAtlas.Width.Returns(200u);
