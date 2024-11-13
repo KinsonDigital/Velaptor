@@ -8,21 +8,21 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Moq;
 using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
 using FluentAssertions;
+using NSubstitute;
 
 /// <summary>
 /// Tests the <see cref="GlfwDisplays"/> class.
 /// </summary>
 public unsafe class GlfwDisplaysTests
 {
-    private readonly Mock<IGlfwInvoker> mockGlfwInvoker;
-    private readonly Mock<IPlatform> mockPlatform;
+    private readonly IGlfwInvoker mockGlfwInvoker;
+    private readonly IPlatform mockPlatform;
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
     private readonly Monitor monitorA;
     private readonly Monitor monitorB;
@@ -37,8 +37,8 @@ public unsafe class GlfwDisplaysTests
     /// </summary>
     public GlfwDisplaysTests()
     {
-        this.mockPlatform = new Mock<IPlatform>();
-        this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
+        this.mockPlatform = Substitute.For<IPlatform>();
+        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
         this.videoModeA = new GlfwVideoMode
         {
@@ -73,20 +73,18 @@ public unsafe class GlfwDisplaysTests
             this.monitorHandleB = (nint)pMonitorB;
         }
 
-        this.mockGlfwInvoker = new Mock<IGlfwInvoker>();
-        this.mockGlfwInvoker.Setup(m => m.GetMonitors()).Returns(() =>
+        this.mockGlfwInvoker = Substitute.For<IGlfwInvoker>();
+        this.mockGlfwInvoker.GetMonitors().Returns((_) =>
         {
             return new[] { this.monitorHandleA, this.monitorHandleB };
         });
 
-        this.mockGlfwInvoker.Setup(m => m.GetVideoMode(this.monitorHandleA)).Returns(this.videoModeA);
-        this.mockGlfwInvoker.Setup(m => m.GetVideoMode(this.monitorHandleB)).Returns(this.videoModeB);
+        this.mockGlfwInvoker.GetVideoMode(this.monitorHandleA).Returns(this.videoModeA);
+        this.mockGlfwInvoker.GetVideoMode(this.monitorHandleB).Returns(this.videoModeB);
 
-        this.mockGlfwInvoker.Setup(m => m.GetMonitorContentScale(this.monitorHandleA))
-            .Returns(new Vector2(7, 8));
+        this.mockGlfwInvoker.GetMonitorContentScale(this.monitorHandleA).Returns(new Vector2(7, 8));
 
-        this.mockGlfwInvoker.Setup(m => m.GetMonitorContentScale(this.monitorHandleB))
-            .Returns(new Vector2(77, 88));
+        this.mockGlfwInvoker.GetMonitorContentScale(this.monitorHandleB).Returns(new Vector2(77, 88));
     }
 
     #region Constructor Test
@@ -94,7 +92,7 @@ public unsafe class GlfwDisplaysTests
     public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new GlfwDisplays(null, this.mockPlatform.Object);
+        var act = () => new GlfwDisplays(null, this.mockPlatform);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -105,7 +103,7 @@ public unsafe class GlfwDisplaysTests
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new GlfwDisplays(this.mockGlfwInvoker.Object, null);
+        var act = () => new GlfwDisplays(this.mockGlfwInvoker, null);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -116,10 +114,10 @@ public unsafe class GlfwDisplaysTests
     public void Ctor_WhenInvoked_InitializesGLFW()
     {
         // Act
-        _ = new GlfwDisplays(this.mockGlfwInvoker.Object, this.mockPlatform.Object);
+        _ = new GlfwDisplays(this.mockGlfwInvoker, this.mockPlatform);
 
         // Assert
-        this.mockGlfwInvoker.Verify(m => m.Init(), Times.Once());
+        this.mockGlfwInvoker.Received(1).Init();
     }
 
     [Fact]
@@ -129,14 +127,14 @@ public unsafe class GlfwDisplaysTests
         CreateDisplays();
 
         // Assert
-        this.mockGlfwInvoker.VerifyAdd(m => m.OnDisplayChanged += It.IsAny<EventHandler<GlfwDisplayChangedEventArgs>>(), Times.Once());
+        this.mockGlfwInvoker.Received(1).OnDisplayChanged += Arg.Any<EventHandler<GlfwDisplayChangedEventArgs>>();
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SystemDisplaysRefreshed()
     {
         // Arrange
-        var expectedDisplayA = new SystemDisplay(this.mockPlatform.Object)
+        var expectedDisplayA = new SystemDisplay(this.mockPlatform)
         {
             IsMain = true,
             Width = 1,
@@ -149,7 +147,7 @@ public unsafe class GlfwDisplaysTests
             VerticalScale = 8,
         };
 
-        var expectedDisplayB = new SystemDisplay(this.mockPlatform.Object)
+        var expectedDisplayB = new SystemDisplay(this.mockPlatform)
         {
             IsMain = false,
             Width = 11,
@@ -178,12 +176,12 @@ public unsafe class GlfwDisplaysTests
         // Arrange
         var refreshInvoked = false;
         CreateDisplays();
-        this.mockGlfwInvoker.Setup(m => m.GetMonitors())
-            .Callback(() => refreshInvoked = true);
+        this.mockGlfwInvoker.When(x => x.GetMonitors())
+            .Do((_) => refreshInvoked = true);
 
         // Act
-        this.mockGlfwInvoker.Raise(e
-            => e.OnDisplayChanged += null, new GlfwDisplayChangedEventArgs(true));
+        this.mockGlfwInvoker.OnDisplayChanged +=
+            Raise.EventWith<GlfwDisplayChangedEventArgs>(new object(), new GlfwDisplayChangedEventArgs(true));
 
         // Assert
         refreshInvoked.Should().BeTrue();
@@ -201,8 +199,7 @@ public unsafe class GlfwDisplaysTests
         displays.Dispose();
 
         // Assert
-        this.mockGlfwInvoker.VerifyRemove(e
-            => e.OnDisplayChanged -= It.IsAny<EventHandler<GlfwDisplayChangedEventArgs>>(), Times.Once);
+        this.mockGlfwInvoker.Received(1).OnDisplayChanged -= Arg.Any<EventHandler<GlfwDisplayChangedEventArgs>>();
     }
     #endregion
 
@@ -210,5 +207,5 @@ public unsafe class GlfwDisplaysTests
     /// Creates a new instance of <see cref="GlfwDisplays"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private GlfwDisplays CreateDisplays() => new (this.mockGlfwInvoker.Object, this.mockPlatform.Object);
+    private GlfwDisplays CreateDisplays() => new (this.mockGlfwInvoker, this.mockPlatform);
 }
