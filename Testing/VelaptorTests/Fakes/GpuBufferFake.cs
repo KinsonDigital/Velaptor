@@ -95,7 +95,7 @@ internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
     protected internal override float[] GenerateData()
     {
         GenerateDataInvoked = true;
-        return new[] { 1f, 2f, 3f, 4f };
+        return [1f, 2f, 3f, 4f];
     }
 
     /// <summary>
@@ -106,6 +106,6 @@ internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
     protected internal override uint[] GenerateIndices()
     {
         GenerateIndicesInvoked = true;
-        return new uint[] { 11, 22, 33, 44 };
+        return [11, 22, 33, 44];
     }
 }
