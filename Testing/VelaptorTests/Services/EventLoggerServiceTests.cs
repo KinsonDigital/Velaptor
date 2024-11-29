@@ -7,7 +7,7 @@ namespace VelaptorTests.Services;
 using System;
 using System.IO.Abstractions;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Services;
 using Xunit;
@@ -17,22 +17,22 @@ using Xunit;
 /// </summary>
 public class EventLoggerServiceTests
 {
-    private readonly Mock<IDirectory> mockDir;
-    private readonly Mock<IFile> mockFile;
-    private readonly Mock<IConsoleService> mockConsoleService;
-    private readonly Mock<IDateTimeService> mockDateTimeService;
-    private readonly Mock<IAppSettingsService> mockAppSettingService;
+    private readonly IDirectory mockDir;
+    private readonly IFile mockFile;
+    private readonly IConsoleService mockConsoleService;
+    private readonly IDateTimeService mockDateTimeService;
+    private readonly IAppSettingsService mockAppSettingService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventLoggerServiceTests"/> class.
     /// </summary>
     public EventLoggerServiceTests()
     {
-        this.mockDir = new Mock<IDirectory>();
-        this.mockFile = new Mock<IFile>();
-        this.mockConsoleService = new Mock<IConsoleService>();
-        this.mockDateTimeService = new Mock<IDateTimeService>();
-        this.mockAppSettingService = new Mock<IAppSettingsService>();
+        this.mockDir = Substitute.For<IDirectory>();
+        this.mockFile = Substitute.For<IFile>();
+        this.mockConsoleService = Substitute.For<IConsoleService>();
+        this.mockDateTimeService = Substitute.For<IDateTimeService>();
+        this.mockAppSettingService = Substitute.For<IAppSettingsService>();
     }
 
     #region Constructor Tests
@@ -44,10 +44,10 @@ public class EventLoggerServiceTests
         {
             _ = new EventLoggerService(
                 null,
-                this.mockFile.Object,
-                this.mockConsoleService.Object,
-                this.mockDateTimeService.Object,
-                this.mockAppSettingService.Object);
+                this.mockFile,
+                this.mockConsoleService,
+                this.mockDateTimeService,
+                this.mockAppSettingService);
         };
 
         // Assert
@@ -63,11 +63,11 @@ public class EventLoggerServiceTests
         var act = () =>
         {
             _ = new EventLoggerService(
-                this.mockDir.Object,
+                this.mockDir,
                 null,
-                this.mockConsoleService.Object,
-                this.mockDateTimeService.Object,
-                this.mockAppSettingService.Object);
+                this.mockConsoleService,
+                this.mockDateTimeService,
+                this.mockAppSettingService);
         };
 
         // Assert
@@ -83,11 +83,11 @@ public class EventLoggerServiceTests
         var act = () =>
         {
             _ = new EventLoggerService(
-                this.mockDir.Object,
-                this.mockFile.Object,
+                this.mockDir,
+                this.mockFile,
                 null,
-                this.mockDateTimeService.Object,
-                this.mockAppSettingService.Object);
+                this.mockDateTimeService,
+                this.mockAppSettingService);
         };
 
         // Assert
@@ -103,11 +103,11 @@ public class EventLoggerServiceTests
         var act = () =>
         {
             _ = new EventLoggerService(
-                this.mockDir.Object,
-                this.mockFile.Object,
-                this.mockConsoleService.Object,
+                this.mockDir,
+                this.mockFile,
+                this.mockConsoleService,
                 null,
-                this.mockAppSettingService.Object);
+                this.mockAppSettingService);
         };
 
         // Assert
@@ -123,10 +123,10 @@ public class EventLoggerServiceTests
         var act = () =>
         {
             _ = new EventLoggerService(
-                this.mockDir.Object,
-                this.mockFile.Object,
-                this.mockConsoleService.Object,
-                this.mockDateTimeService.Object,
+                this.mockDir,
+                this.mockFile,
+                this.mockConsoleService,
+                this.mockDateTimeService,
                 null);
         };
 
@@ -147,7 +147,7 @@ public class EventLoggerServiceTests
             LoggingEnabled = false,
         };
 
-        this.mockAppSettingService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingService.Settings.Returns(appSettings);
 
         var sut = CreateService();
 
@@ -155,13 +155,13 @@ public class EventLoggerServiceTests
         sut.Event("test-event", "event msg");
 
         // Assert
-        this.mockDateTimeService.Verify(m => m.Now(), Times.Never);
-        this.mockConsoleService.Verify(m => m.Write(It.IsAny<string>()), Times.Never);
-        this.mockConsoleService.Verify(m => m.WriteLine(It.IsAny<string>()), Times.Never);
-        this.mockDir.Verify(m => m.GetCurrentDirectory(), Times.Never);
-        this.mockFile.Verify(m => m.Exists(It.IsAny<string>()), Times.Never);
-        this.mockFile.Verify(m => m.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        this.mockFile.Verify(m => m.AppendAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        this.mockDateTimeService.DidNotReceive().Now();
+        this.mockConsoleService.DidNotReceive().Write(Arg.Any<string>());
+        this.mockConsoleService.DidNotReceive().WriteLine(Arg.Any<string>());
+        this.mockDir.DidNotReceive().GetCurrentDirectory();
+        this.mockFile.DidNotReceive().Exists(Arg.Any<string>());
+        this.mockFile.DidNotReceive().WriteAllText(Arg.Any<string>(), Arg.Any<string>());
+        this.mockFile.DidNotReceive().AppendAllText(Arg.Any<string>(), Arg.Any<string>());
     }
 
     [Fact]
@@ -179,27 +179,26 @@ public class EventLoggerServiceTests
             FileLoggingEnabled = false,
         };
 
-        this.mockAppSettingService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingService.Settings.Returns(appSettings);
 
         // Act
         sut.Event("test-event", "event msg");
 
         // Assert
-        this.mockConsoleService.VerifyGet(p => p.ForegroundColor, Times.Once);
-        this.mockConsoleService.VerifySet(p => p.ForegroundColor = ConsoleColor.DarkGray, Times.Exactly(3));
-        this.mockConsoleService.VerifySet(p => p.ForegroundColor = ConsoleColor.Cyan, Times.Once);
-        this.mockConsoleService.VerifySet(p => p.ForegroundColor = ConsoleColor.DarkCyan, Times.Once);
-        this.mockConsoleService.VerifySet(p => p.ForegroundColor = ConsoleColor.White, Times.Exactly(2));
+        this.mockConsoleService.Received(3).ForegroundColor = ConsoleColor.DarkGray;
+        this.mockConsoleService.Received(1).ForegroundColor = ConsoleColor.Cyan;
+        this.mockConsoleService.Received(1).ForegroundColor = ConsoleColor.DarkCyan;
+        this.mockConsoleService.Received(2).ForegroundColor = ConsoleColor.White;
 
-        this.mockConsoleService.Verify(m => m.Write("["), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write("18:36:12"), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write(" EVENT"), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write("("), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write("test-event"), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write(")"), Times.Once);
-        this.mockConsoleService.Verify(m => m.Write("]"), Times.Once);
+        this.mockConsoleService.Received(1).Write("[");
+        this.mockConsoleService.Received(1).Write("18:36:12");
+        this.mockConsoleService.Received(1).Write(" EVENT");
+        this.mockConsoleService.Received(1).Write("(");
+        this.mockConsoleService.Received(1).Write("test-event");
+        this.mockConsoleService.Received(1).Write(")");
+        this.mockConsoleService.Received(1).Write("]");
 
-        this.mockConsoleService.Verify(m => m.Write(" event msg"), Times.Once);
+        this.mockConsoleService.Received(1).Write(" event msg");
     }
 
     [Fact]
@@ -213,8 +212,8 @@ public class EventLoggerServiceTests
         const string logFilePath = $"{baseDirPath}/{logsDirName}/{logFileName}";
 
         MockDateAndTime(2022, 10, 24, 9, 15, 57);
-        this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
-        this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
+        this.mockFile.Exists(Arg.Any<string>()).Returns(false);
+        this.mockDir.GetCurrentDirectory().Returns(baseDirPath);
 
         var sut = CreateService();
         var appSettings = new AppSettings
@@ -224,14 +223,14 @@ public class EventLoggerServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingService.Settings.Returns(appSettings);
 
         // Act
         sut.Event("test-event", "event msg");
 
         // Assert
-        this.mockFile.Verify(m => m.Exists(logFilePath), Times.Once);
-        this.mockFile.Verify(m => m.AppendAllText(logFilePath, expectedTextToAppend), Times.Once);
+        this.mockFile.Received(1).Exists(logFilePath);
+        this.mockFile.Received(1).AppendAllText(logFilePath, expectedTextToAppend);
     }
 
     [Fact]
@@ -245,8 +244,8 @@ public class EventLoggerServiceTests
         const string logFilePath = $"{baseDirPath}/{logsDirName}/{logFileName}";
 
         MockDateAndTime(2022, 10, 24, 9, 15, 57);
-        this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(true);
-        this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+        this.mockDir.GetCurrentDirectory().Returns(baseDirPath);
 
         var sut = CreateService();
         var appSettings = new AppSettings
@@ -256,14 +255,14 @@ public class EventLoggerServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingService.Settings.Returns(appSettings);
 
         // Act
         sut.Event("test-event", "event msg");
 
         // Assert
-        this.mockFile.Verify(m => m.Exists(logFilePath), Times.Once);
-        this.mockFile.Verify(m => m.AppendAllText(logFilePath, expectedTextToAppend), Times.Once);
+        this.mockFile.Received(1).Exists(logFilePath);
+        this.mockFile.Received(1).AppendAllText(logFilePath, expectedTextToAppend);
     }
 
     [Fact]
@@ -277,8 +276,8 @@ public class EventLoggerServiceTests
         const string logFilePath = $"{baseDirPath}/{logsDirName}/{logFileName}";
 
         MockDateAndTime(2022, 09, 02, 14, 08, 23);
-        this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
-        this.mockDir.Setup(m => m.GetCurrentDirectory()).Returns(baseDirPath);
+        this.mockFile.Exists(Arg.Any<string>()).Returns(false);
+        this.mockDir.GetCurrentDirectory().Returns(baseDirPath);
 
         var sut = CreateService();
         var appSettings = new AppSettings
@@ -288,15 +287,15 @@ public class EventLoggerServiceTests
             FileLoggingEnabled = true,
         };
 
-        this.mockAppSettingService.SetupGet(p => p.Settings).Returns(appSettings);
+        this.mockAppSettingService.Settings.Returns(appSettings);
 
         // Act
         sut.Event("test-event", "event msg");
 
         // Assert
-        this.mockFile.Verify(m => m.Exists(logFilePath), Times.Once);
-        this.mockFile.Verify(m => m.WriteAllText(logFilePath, string.Empty));
-        this.mockFile.Verify(m => m.AppendAllText(logFilePath, expectedTextToAppend), Times.Once);
+        this.mockFile.Received(1).Exists(logFilePath);
+        this.mockFile.Received(1).WriteAllText(logFilePath, string.Empty);
+        this.mockFile.Received(1).AppendAllText(logFilePath, expectedTextToAppend);
     }
     #endregion
 
@@ -305,11 +304,11 @@ public class EventLoggerServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private EventLoggerService CreateService()
-        => new (this.mockDir.Object,
-            this.mockFile.Object,
-            this.mockConsoleService.Object,
-            this.mockDateTimeService.Object,
-            this.mockAppSettingService.Object);
+        => new (this.mockDir,
+            this.mockFile,
+            this.mockConsoleService,
+            this.mockDateTimeService,
+            this.mockAppSettingService);
 
     /// <summary>
     /// Mocks the time using the given <paramref name="hour"/>, <paramref name="minute"/>, and <paramref name="second"/>.
@@ -317,18 +316,12 @@ public class EventLoggerServiceTests
     /// <param name="hour">The hour.</param>
     /// <param name="minute">The minute.</param>
     /// <param name="second">The second.</param>
-    private void MockTime(int hour, int minute, int second)
-    {
-        this.mockDateTimeService.Setup(m => m.Now())
-            .Returns(new DateTime(2022, 1, 2, hour, minute, second, 0));
-    }
+    private void MockTime(int hour, int minute, int second) =>
+        this.mockDateTimeService.Now().Returns(new DateTime(2022, 1, 2, hour, minute, second, 0));
 
     /// <summary>
     /// Mocks the date and time using the given values.
     /// </summary>
-    private void MockDateAndTime(int year, int month, int day, int hour, int minute, int second)
-    {
-        this.mockDateTimeService.Setup(m => m.Now())
-            .Returns(new DateTime(year, month, day, hour, minute, second, 0));
-    }
+    private void MockDateAndTime(int year, int month, int day, int hour, int minute, int second) =>
+        this.mockDateTimeService.Now().Returns(new DateTime(year, month, day, hour, minute, second, 0));
 }

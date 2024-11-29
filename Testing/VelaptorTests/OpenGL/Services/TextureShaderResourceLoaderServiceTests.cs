@@ -7,7 +7,7 @@ namespace VelaptorTests.OpenGL.Services;
 using System;
 using System.IO.Abstractions;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor.OpenGL.Services;
 using Velaptor.Services;
 using Xunit;
@@ -21,8 +21,8 @@ public class TextureShaderResourceLoaderServiceTests
     private const string TextureShaderName = "test-source";
     private const string NoProcessingFragShaderSample = "int totalClrs = 4;";
     private readonly string unprocessedFragShaderSample = "uniform mat4 uTransform[10];";
-    private readonly Mock<IEmbeddedResourceLoaderService<string>> mockResourceLoaderService;
-    private readonly Mock<IPath> mockPath;
+    private readonly IEmbeddedResourceLoaderService<string> mockResourceLoaderService;
+    private readonly IPath mockPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureShaderResourceLoaderServiceTests"/> class.
@@ -32,20 +32,16 @@ public class TextureShaderResourceLoaderServiceTests
         const string fragFileName = $"{TextureShaderName}.frag";
         const string vertFileName = $"{TextureShaderName}.vert";
 
-        this.mockPath = new Mock<IPath>();
-        this.mockPath.Setup(m => m.HasExtension(fragFileName)).Returns(true);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fragFileName)).Returns(TextureShaderName);
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.HasExtension(fragFileName).Returns(true);
+        this.mockPath.GetFileNameWithoutExtension(fragFileName).Returns(TextureShaderName);
 
-        this.mockPath.Setup(m => m.HasExtension(vertFileName)).Returns(true);
-        this.mockPath.Setup(m => m.GetFileNameWithoutExtension(vertFileName)).Returns(TextureShaderName);
+        this.mockPath.HasExtension(vertFileName).Returns(true);
+        this.mockPath.GetFileNameWithoutExtension(vertFileName).Returns(TextureShaderName);
 
-        this.mockResourceLoaderService = new Mock<IEmbeddedResourceLoaderService<string>>();
-        this.mockResourceLoaderService.Setup(m
-                => m.LoadResource(fragFileName))
-            .Returns(NoProcessingFragShaderSample);
-        this.mockResourceLoaderService.Setup(m
-                => m.LoadResource(vertFileName))
-            .Returns(this.unprocessedFragShaderSample);
+        this.mockResourceLoaderService = Substitute.For<IEmbeddedResourceLoaderService<string>>();
+        this.mockResourceLoaderService.LoadResource(fragFileName).Returns(NoProcessingFragShaderSample);
+        this.mockResourceLoaderService.LoadResource(vertFileName).Returns(this.unprocessedFragShaderSample);
     }
 
     #region Constructor Tests
@@ -57,7 +53,7 @@ public class TextureShaderResourceLoaderServiceTests
         {
             _ = new TextureShaderResourceLoaderService(
                 null,
-                this.mockPath.Object);
+                this.mockPath);
         }, "Value cannot be null. (Parameter 'resourceLoaderService')");
     }
 
@@ -68,7 +64,7 @@ public class TextureShaderResourceLoaderServiceTests
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
             _ = new TextureShaderResourceLoaderService(
-                this.mockResourceLoaderService.Object,
+                this.mockResourceLoaderService,
                 null);
         }, "Value cannot be null. (Parameter 'path')");
     }
@@ -86,7 +82,7 @@ public class TextureShaderResourceLoaderServiceTests
         var actual = sut.LoadVertSource(TextureShaderName);
 
         // Assert
-        this.mockResourceLoaderService.Verify(m => m.LoadResource(vertFileName), Times.Once);
+        this.mockResourceLoaderService.Received(1).LoadResource(vertFileName);
         Assert.Equal(ProcessedVertShaderSample, actual);
     }
 
@@ -109,5 +105,5 @@ public class TextureShaderResourceLoaderServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private TextureShaderResourceLoaderService CreateSystemUnderTest()
-        => new (this.mockResourceLoaderService.Object, this.mockPath.Object);
+        => new (this.mockResourceLoaderService, this.mockPath);
 }
