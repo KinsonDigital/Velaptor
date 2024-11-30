@@ -35,7 +35,7 @@ public class FontPathResolverTests
         this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
+        this.mockAppService.AppDirectory.Returns("AppHome");
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
@@ -46,7 +46,9 @@ public class FontPathResolverTests
     }
 
 #pragma warning disable SA1514
+
     #region Test Data
+
     /// <summary>
     /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesFilePath"/> test.
     /// </summary>
@@ -55,20 +57,18 @@ public class FontPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Fonts\test-content{Extension}" },
-            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Fonts\test-content{Extension}" },
-            { string.Empty, $"TEST-CONTENT{Extension}", $@"C:\app\Content\Fonts\TEST-CONTENT{Extension}" },
-            {
-                $@"sub-dir\",
-                $"test-content{Extension}",
-                $@"C:\app\Content\Fonts\sub-dir\test-content{Extension}"
-            },
+            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Fonts", $"test-content{Extension}") },
+            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Fonts", $"TEST-CONTENT{Extension}") },
+            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Fonts", "sub-dir", $"test-content{Extension}") },
         };
     }
+
     #endregion
+
 #pragma warning restore SA1514
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
@@ -81,9 +81,11 @@ public class FontPathResolverTests
         // Assert
         actual.Should().Be("Fonts");
     }
+
     #endregion
 
     #region Methods Tests
+
     [Fact]
     public void ResolveFilePath_WithNullParam_ThrowsException()
     {
@@ -115,23 +117,22 @@ public class FontPathResolverTests
     [Theory]
     [MemberData(nameof(ResolveFilePath_WhenContentNameDoesNotExist_Data))]
     public void ResolveFilePath_WhenInvoked_ResolvesFilePath(
-        string dirPath,
+        string subDir,
         string contentName,
         string expected)
     {
         // Arrange
         this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
-        var contentFilePath = $@"C:\app\Content\Fonts" +
-                              $@"\{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath($"{dirPath}{contentName}");
+        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
 
         // Assert
         actual.Should().Be(expected);
-        this.mockFile.Received(1).Exists(contentFilePath);
+        this.mockFile.Received(1).Exists(expected);
     }
+
     #endregion
 
     /// <summary>

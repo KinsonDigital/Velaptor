@@ -34,7 +34,7 @@ public class AudioPathResolverTests
         this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
+        this.mockAppService.AppDirectory.Returns("AppHome");
 
         this.mockFile = Substitute.For<IFile>();
 
@@ -44,6 +44,7 @@ public class AudioPathResolverTests
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
     {
@@ -55,9 +56,11 @@ public class AudioPathResolverTests
         // Assert
         actual.Should().Be("Audio");
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     public void ResolveFilePath_WithNullParam_ThrowsException()
     {
@@ -115,16 +118,15 @@ public class AudioPathResolverTests
     public void ResolveFilePath_WhenInvoked_ResolvesFilePath(string extension)
     {
         // Arrange
-        var contentDir = $@"{this.mockAppService.AppDirectory}\Content\Audio";
-        var expected = $@"{contentDir}\test-content.ogg";
-
+        var fullContentName = $"test-content{extension}";
+        var expected = Path.Join(this.mockAppService.AppDirectory, "Content", "Audio", fullContentName);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(extension);
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath("test-content.ogg");
+        var actual = sut.ResolveFilePath(fullContentName);
 
         // Assert
         actual.Should().Be(expected);
