@@ -36,7 +36,7 @@ public class AtlasJSONDataPathResolverTests
         this.mockPlatform = Substitute.For<IPlatform>();
         this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
-        this.mockAppService.AppDirectory.Returns(_ => this.mockPlatform.CurrentPlatform == OSPlatform.Windows ? @"C:\app" : "/app");
+        this.mockAppService.AppDirectory.Returns("AppHome");
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
@@ -56,11 +56,10 @@ public class AtlasJSONDataPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Atlas\test-content{Extension}" },
-            { string.Empty, $"test-content{Extension}", $@"C:\app\Content\Atlas\test-content{Extension}" },
-            { string.Empty, $"TEST-CONTENT{Extension}", $@"C:\app\Content\Atlas\TEST-CONTENT{Extension}" },
-            { string.Empty, "test-content", $@"C:\app\Content\Atlas\test-content{Extension}" },
-            { @"sub-dir\", $"test-content{Extension}", $@"C:\app\Content\Atlas\sub-dir\test-content{Extension}" },
+            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
+            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Atlas", $"TEST-CONTENT{Extension}") },
+            { string.Empty, "test-content", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
+            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", "sub-dir", $"test-content{Extension}") },
         };
     }
     #endregion
@@ -113,22 +112,20 @@ public class AtlasJSONDataPathResolverTests
     [Theory]
     [MemberData(nameof(ResolveFilePath_WhenContentNameDoesNotExist_Data))]
     public void ResolveFilePath_WhenInvoked_ResolvesFilePath(
-        string dirPath,
+        string subDir,
         string contentName,
         string expected)
     {
         // Arrange
         this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
-        var contentFilePath = $@"C:\app\Content\Atlas" +
-                              $@"\{dirPath}{contentName}{(Path.HasExtension(contentName) ? string.Empty : Extension)}";
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath($"{dirPath}{contentName}");
+        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
 
         // Assert
         actual.Should().Be(expected);
-        this.mockFile.Received(1).Exists(contentFilePath);
+        this.mockFile.Received(1).Exists(expected);
     }
     #endregion
 
