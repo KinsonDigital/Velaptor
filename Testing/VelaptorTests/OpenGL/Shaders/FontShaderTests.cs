@@ -11,8 +11,7 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using FluentAssertions;
-using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
@@ -28,12 +27,12 @@ using Xunit;
 /// </summary>
 public class FontShaderTests
 {
-    private readonly Mock<IGLInvoker> mockGL;
-    private readonly Mock<IOpenGLService> mockGLService;
-    private readonly Mock<IShaderLoaderService> mockShaderLoader;
-    private readonly Mock<IReactableFactory> mockReactableFactory;
-    private readonly Mock<IPushReactable<BatchSizeData>> mockBatchSizeReactable;
-    private readonly Mock<IDisposable> batchSizeUnsubscriber;
+    private readonly IGLInvoker mockGL;
+    private readonly IOpenGLService mockGLService;
+    private readonly IShaderLoaderService mockShaderLoader;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
+    private readonly IDisposable batchSizeUnsubscriber;
     private IReceiveSubscription? glInitReactor;
     private IReceiveSubscription<BatchSizeData>? batchSizeReactor;
 
@@ -42,35 +41,40 @@ public class FontShaderTests
     /// </summary>
     public FontShaderTests()
     {
-        this.mockGL = new Mock<IGLInvoker>();
-        this.mockGLService = new Mock<IOpenGLService>();
-        this.mockShaderLoader = new Mock<IShaderLoaderService>();
+        this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGLService = Substitute.For<IOpenGLService>();
+        this.mockShaderLoader = Substitute.For<IShaderLoaderService>();
 
-        this.batchSizeUnsubscriber = new Mock<IDisposable>();
+        this.batchSizeUnsubscriber = Substitute.For<IDisposable>();
 
-        var mockPushReactable = new Mock<IPushReactable>();
-        mockPushReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription>()))
-            .Returns<IReceiveSubscription>(_ => new Mock<IDisposable>().Object)
-            .Callback<IReceiveSubscription>(reactor =>
+        var mockPushReactable = Substitute.For<IPushReactable>();
+        mockPushReactable.Subscribe(Arg.Any<IReceiveSubscription>()).Returns(_ => Substitute.For<IDisposable>());
+
+        mockPushReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo =>
             {
+                var reactor = callInfo.Arg<IReceiveSubscription>();
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
                     this.glInitReactor = reactor;
                 }
             });
 
-        this.mockBatchSizeReactable = new Mock<IPushReactable<BatchSizeData>>();
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Returns(() => this.batchSizeUnsubscriber.Object)
-            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
+        this.mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Subscribe(Arg.Any<IReceiveSubscription<BatchSizeData>>())
+            .Returns(_ => this.batchSizeUnsubscriber);
+        this.mockBatchSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<BatchSizeData>>()))
+            .Do(callInfo =>
             {
+                var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
             });
 
-        this.mockReactableFactory = new Mock<IReactableFactory>();
-        this.mockReactableFactory.Setup(m => m.CreateNoDataPushReactable()).Returns(mockPushReactable.Object);
-        this.mockReactableFactory.Setup(m => m.CreateBatchSizeReactable()).Returns(this.mockBatchSizeReactable.Object);
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
+        this.mockReactableFactory.CreateBatchSizeReactable().Returns(this.mockBatchSizeReactable);
     }
 
     #region Constructor Tests
@@ -81,9 +85,9 @@ public class FontShaderTests
         var act = () =>
         {
             _ = new FontShader(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderLoader.Object,
+                this.mockGL,
+                this.mockGLService,
+                this.mockShaderLoader,
                 null);
         };
 
@@ -120,9 +124,9 @@ public class FontShaderTests
         const int uniformLocation = 1234;
         const int status = 1;
 
-        this.mockGL.Setup(m => m.CreateProgram()).Returns(shaderId);
-        this.mockGL.Setup(m => m.GetUniformLocation(shaderId, "fontTexture")).Returns(uniformLocation);
-        this.mockGL.Setup(m => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus)).Returns(status);
+        this.mockGL.CreateProgram().Returns(shaderId);
+        this.mockGL.GetUniformLocation(shaderId, "fontTexture").Returns(uniformLocation);
+        this.mockGL.GetProgram(shaderId, GLProgramParameterName.LinkStatus).Returns(status);
 
         var shader = CreateSystemUnderTest();
 
@@ -132,8 +136,8 @@ public class FontShaderTests
         shader.Use();
 
         // Assert
-        this.mockGL.VerifyOnce(m => m.ActiveTexture(GLTextureUnit.Texture1));
-        this.mockGL.VerifyOnce(m => m.Uniform1(uniformLocation, 1));
+        this.mockGL.Received(1).ActiveTexture(GLTextureUnit.Texture1);
+        this.mockGL.Received(1).Uniform1(uniformLocation, 1);
     }
     #endregion
 
@@ -158,9 +162,10 @@ public class FontShaderTests
     public void BatchSizeReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Act & Assert
-        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReceiveSubscription<BatchSizeData>>()))
-            .Callback<IReceiveSubscription<BatchSizeData>>(reactor =>
+        this.mockBatchSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<BatchSizeData>>()))
+            .Do(callInfo =>
             {
+                var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
                 reactor.Should().NotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
                 reactor.Name.Should().Be($"FontShader.ctor() - {PushNotifications.BatchSizeChangedId}");
@@ -179,7 +184,7 @@ public class FontShaderTests
         this.batchSizeReactor.OnUnsubscribe();
 
         // Assert
-        this.batchSizeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        this.batchSizeUnsubscriber.Received(1).Dispose();
     }
     #endregion
 
@@ -188,8 +193,8 @@ public class FontShaderTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private FontShader CreateSystemUnderTest() =>
-        new (this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockShaderLoader.Object,
-            this.mockReactableFactory.Object);
+        new (this.mockGL,
+            this.mockGLService,
+            this.mockShaderLoader,
+            this.mockReactableFactory);
 }

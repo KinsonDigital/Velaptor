@@ -8,7 +8,7 @@ using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Helpers;
-using Moq;
+using NSubstitute;
 using Velaptor;
 using Velaptor.Hardware;
 using Xunit;
@@ -62,10 +62,10 @@ public class SystemDisplayTests
     public void HorizontalDPI_WhenGettingValueOnAnyPlatformExceptOSX_ReturnsCorrectResult(OSPlatform platform, int expectedDPI)
     {
         // Arrange
-        var mockPlatform = new Mock<IPlatform>();
-        mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(platform);
+        var mockPlatform = Substitute.For<IPlatform>();
+        mockPlatform.CurrentPlatform.Returns(platform);
 
-        var sut = new SystemDisplay(mockPlatform.Object)
+        var sut = new SystemDisplay(mockPlatform)
         {
             IsMain = true,
             RedBitDepth = 1,
@@ -90,10 +90,10 @@ public class SystemDisplayTests
     public void VerticalDPI_WhenGettingValueOnAnyPlatformExceptOSX_ReturnsCorrectResult(OSPlatform platform, int expectedDPI)
     {
         // Arrange
-        var mockPlatform = new Mock<IPlatform>();
-        mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(platform);
+        var mockPlatform = Substitute.For<IPlatform>();
+        mockPlatform.CurrentPlatform.Returns(platform);
 
-        var sut = new SystemDisplay(mockPlatform.Object)
+        var sut = new SystemDisplay(mockPlatform)
         {
             IsMain = true,
             RedBitDepth = 1,
@@ -117,7 +117,7 @@ public class SystemDisplayTests
     public void Center_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = new SystemDisplay(new Mock<IPlatform>().Object)
+        var sut = new SystemDisplay(Substitute.For<IPlatform>())
         {
             Width = 100,
             Height = 200,

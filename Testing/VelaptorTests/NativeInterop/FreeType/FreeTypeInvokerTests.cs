@@ -6,8 +6,6 @@ namespace VelaptorTests.NativeInterop.FreeType;
 
 using System;
 using FluentAssertions;
-using FreeTypeSharp;
-using Moq;
 using Velaptor.NativeInterop.FreeType;
 using Xunit;
 
@@ -25,7 +23,7 @@ public class FreeTypeInvokerTests
 
         // Act
         var act = () => sut
-            .FT_Get_Kerning(default, It.IsAny<uint>(), It.IsAny<uint>(), It.IsAny<FT_Kerning_Mode_>());
+            .FT_Get_Kerning(default, default, default, default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -39,7 +37,7 @@ public class FreeTypeInvokerTests
         var sut = new FreeTypeInvoker();
 
         // Act
-        var act = () => sut.FT_Get_Char_Index(default, It.IsAny<uint>());
+        var act = () => sut.FT_Get_Char_Index(default, default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -53,7 +51,7 @@ public class FreeTypeInvokerTests
         var sut = new FreeTypeInvoker();
 
         // Act
-        var act = () => sut.FT_Load_Char(default, It.IsAny<uint>(), It.IsAny<FT_LOAD>());
+        var act = () => sut.FT_Load_Char(default, default, default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -67,7 +65,7 @@ public class FreeTypeInvokerTests
         var sut = new FreeTypeInvoker();
 
         // Act
-        var act = () => sut.FT_Render_Glyph(0, It.IsAny<FT_Render_Mode_>());
+        var act = () => sut.FT_Render_Glyph(0, default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -85,8 +83,8 @@ public class FreeTypeInvokerTests
             0,
             123,
             456,
-            It.IsAny<uint>(),
-            It.IsAny<uint>());
+            default,
+            default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -104,8 +102,8 @@ public class FreeTypeInvokerTests
             123,
             0,
             456,
-            It.IsAny<uint>(),
-            It.IsAny<uint>());
+            default,
+            default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
@@ -123,8 +121,8 @@ public class FreeTypeInvokerTests
             123,
             456,
             0,
-            It.IsAny<uint>(),
-            It.IsAny<uint>());
+            default,
+            default);
 
         // Assert
         act.Should().Throw<NullReferenceException>()

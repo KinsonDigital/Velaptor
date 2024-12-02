@@ -208,7 +208,7 @@ csharp_using_directive_placement = inside_namespace
 #############################################################
 
 # noinspection EditorConfigKeyCorrectness
-
+resharper_csharp_space_before_new_parentheses = true
 resharper_bad_parens_spaces_highlighting = none
 resharper_bad_list_line_breaks_highlighting = none
 resharper_bad_parens_line_breaks_highlighting = none
