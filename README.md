@@ -78,6 +78,7 @@ Complete API documentation and tutorials can be found at [docs.velaptor.io](http
 
 Are you interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via a one-time or recurring donation.
 
+![Alt](https://repobeats.axiom.co/api/embed/d74060d1c188027fa74890158952f6630f383b50.svg "Repobeats analytics image")
 
 <h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
 
