@@ -71,7 +71,6 @@ public class TextureRendererTests : TestsBase
             .When(m => m.Subscribe(Arg.Any<TextureRenderItem>()))
             .Do(ci => this.renderReactor = ci.Arg<TextureRenderItem>());
 
-
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory
             .CreateNoDataPushReactable()
@@ -1465,7 +1464,6 @@ public class TextureRendererTests : TestsBase
                 reactorParam.Should().NotBeNull("It is required for unit testing.");
                 reactor = reactorParam;
             });
-
 
         _ = CreateSystemUnderTest();
 
