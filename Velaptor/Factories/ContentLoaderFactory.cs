@@ -36,12 +36,30 @@ public static class ContentLoaderFactory
             return textureLoader;
         }
 
-        var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var appService = IoC.Container.GetInstance<IAppService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
         var platform = IoC.Container.GetInstance<IPlatform>();
         var pathResolver = new TexturePathResolver(appService, file, path, platform);
+
+        return CreateTextureLoader(pathResolver);
+    }
+
+    /// <summary>
+    /// Creates a loader that loads textures from disk.
+    /// </summary>
+    /// <param name="pathResolver">Resolves paths to texture content.</param>
+    /// <returns>A loader for loading textures.</returns>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
+    public static ILoader<ITexture> CreateTextureLoader(IContentPathResolver pathResolver)
+    {
+        if (textureLoader is not null)
+        {
+            return textureLoader;
+        }
+
+        var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+        var path = IoC.Container.GetInstance<IPath>();
 
         var directory = IoC.Container.GetInstance<IDirectory>();
         textureLoader = new TextureLoader(
