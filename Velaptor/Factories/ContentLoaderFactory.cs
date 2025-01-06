@@ -181,9 +181,26 @@ public static class ContentLoaderFactory
             return fontLoader;
         }
 
+        var pathResolver = PathResolverFactory.CreateFontPathResolver();
+
+        return CreateFontLoader(pathResolver);
+    }
+
+    /// <summary>
+    /// Creates a loader that loads fonts from disk for rendering test.
+    /// </summary>
+    /// <param name="pathResolver">Resolves paths to atlas content.</param>
+    /// <returns>A loader for loading audio data.</returns>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
+    public static ILoader<IFont> CreateFontLoader(IContentPathResolver pathResolver)
+    {
+        if (fontLoader is not null)
+        {
+            return fontLoader;
+        }
+
         var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
         var embeddedResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
-        var pathResolver = PathResolverFactory.CreateFontPathResolver();
         var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var fontFactory = IoC.Container.GetInstance<IFontFactory>();
         var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
@@ -195,7 +212,6 @@ public static class ContentLoaderFactory
         fontLoader = new FontLoader(
             fontAtlasService,
             embeddedResourceService,
-            pathResolver,
             pathResolver,
             cache,
             fontFactory,
