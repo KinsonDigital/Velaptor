@@ -83,9 +83,26 @@ public static class ContentLoaderFactory
             return atlasLoader;
         }
 
+        var pathResolver = PathResolverFactory.CreateAtlasPathResolver();
+
+        return CreateAtlasLoader(pathResolver);
+    }
+
+    /// <summary>
+    /// Creates a loader for loading atlas data from disk.
+    /// </summary>
+    /// <param name="pathResolver">Resolves paths to atlas content.</param>
+    /// <returns>A loader for loading texture atlas data.</returns>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left public for library users.")]
+    public static ILoader<IAtlasData> CreateAtlasLoader(IContentPathResolver pathResolver)
+    {
+        if (atlasLoader is not null)
+        {
+            return atlasLoader;
+        }
+
         var cache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
         var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
-        var pathResolver = PathResolverFactory.CreateAtlasPathResolver();
         var jsonService = IoC.Container.GetInstance<IJsonService>();
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
