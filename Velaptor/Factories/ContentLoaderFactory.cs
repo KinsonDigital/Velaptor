@@ -132,12 +132,31 @@ public static class ContentLoaderFactory
             return audioLoader;
         }
 
-        var cache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
         var appService = IoC.Container.GetInstance<IAppService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
         var platform = IoC.Container.GetInstance<IPlatform>();
         var pathResolver = new AudioPathResolver(appService, file, path, platform);
+
+        return CreateAudioLoader(pathResolver);
+    }
+
+    /// <summary>
+    /// Creates a loader that loads audio from disk.
+    /// </summary>
+    /// <param name="pathResolver">Resolves paths to atlas content.</param>
+    /// <returns>A loader for loading audio data.</returns>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for users.")]
+    public static ILoader<IAudio> CreateAudioLoader(IContentPathResolver pathResolver)
+    {
+        if (audioLoader is not null)
+        {
+            return audioLoader;
+        }
+
+        var cache = IoC.Container.GetInstance<IItemCache<string, IAudio>>();
+        var file = IoC.Container.GetInstance<IFile>();
+        var path = IoC.Container.GetInstance<IPath>();
 
         var directory = IoC.Container.GetInstance<IDirectory>();
         audioLoader = new AudioLoader(
