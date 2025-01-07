@@ -30,7 +30,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-status-check.yml = .github\workflows\build-status-check.yml
-		.github\workflows\prepare-release.yml = .github\workflows\prepare-release.yml
 		.github\workflows\release.yml = .github\workflows\release.yml
 		.github\workflows\sonar-scan-pr-status-check.yml = .github\workflows\sonar-scan-pr-status-check.yml
 		.github\workflows\sync-bot.yml = .github\workflows\sync-bot.yml
