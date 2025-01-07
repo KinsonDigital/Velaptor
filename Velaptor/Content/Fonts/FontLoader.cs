@@ -28,7 +28,6 @@ internal sealed class FontLoader : ILoader<IFont>
     private const uint DefaultFontSize = 12;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
-    private readonly IContentPathResolver contentPathResolver;
     private readonly IContentPathResolver fontPathResolver;
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IFontFactory fontFactory;
@@ -48,7 +47,6 @@ internal sealed class FontLoader : ILoader<IFont>
     /// </summary>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
-    /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
     /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
@@ -63,7 +61,6 @@ internal sealed class FontLoader : ILoader<IFont>
     public FontLoader(
         IFontAtlasService fontAtlasService,
         IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
-        IContentPathResolver contentPathResolver,
         IContentPathResolver fontPathResolver,
         IItemCache<string, ITexture> textureCache,
         IFontFactory fontFactory,
@@ -75,7 +72,6 @@ internal sealed class FontLoader : ILoader<IFont>
     {
         ArgumentNullException.ThrowIfNull(fontAtlasService);
         ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
-        ArgumentNullException.ThrowIfNull(contentPathResolver);
         ArgumentNullException.ThrowIfNull(fontPathResolver);
         ArgumentNullException.ThrowIfNull(textureCache);
         ArgumentNullException.ThrowIfNull(fontFactory);
@@ -87,7 +83,6 @@ internal sealed class FontLoader : ILoader<IFont>
 
         this.fontAtlasService = fontAtlasService;
         this.embeddedFontResourceService = embeddedFontResourceService;
-        this.contentPathResolver = contentPathResolver;
         this.fontPathResolver = fontPathResolver;
         this.textureCache = textureCache;
         this.fontFactory = fontFactory;
@@ -312,7 +307,7 @@ internal sealed class FontLoader : ILoader<IFont>
     private void SetupDefaultFonts()
     {
         var separator = this.path.AltDirectorySeparatorChar;
-        var contentDirPath = this.contentPathResolver.RootDirectoryPath;
+        var contentDirPath = this.fontPathResolver.RootDirectoryPath;
         var contentDirName = this.fontPathResolver.ContentDirectoryName;
         var fontContentDirPath = $"{contentDirPath}{separator}{contentDirName}";
 
