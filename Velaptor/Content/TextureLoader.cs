@@ -18,7 +18,6 @@ internal sealed class TextureLoader : ILoader<ITexture>
     private readonly IItemCache<string, ITexture> textureCache;
     private readonly IContentPathResolver texturePathResolver;
     private readonly IDirectory directory;
-    private readonly IPath path;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -26,25 +25,21 @@ internal sealed class TextureLoader : ILoader<ITexture>
     /// <param name="textureCache">Caches textures for later use to improve performance.</param>
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     /// <param name="directory">Performs operations with directories.</param>
-    /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public TextureLoader(
         IItemCache<string, ITexture> textureCache,
         IContentPathResolver texturePathResolver,
-        IDirectory directory,
-        IPath path)
+        IDirectory directory)
     {
         ArgumentNullException.ThrowIfNull(textureCache);
         ArgumentNullException.ThrowIfNull(texturePathResolver);
         ArgumentNullException.ThrowIfNull(directory);
-        ArgumentNullException.ThrowIfNull(path);
 
         this.textureCache = textureCache;
         this.texturePathResolver = texturePathResolver;
         this.directory = directory;
-        this.path = path;
     }
 
     /// <summary>
@@ -66,7 +61,8 @@ internal sealed class TextureLoader : ILoader<ITexture>
     {
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        var contentDirPath = $"{this.texturePathResolver.RootDirectoryPath}{this.path.AltDirectorySeparatorChar}{this.texturePathResolver.ContentDirectoryName}";
+        var contentDirPath = this.texturePathResolver.ResolveDirPath();
+
         if (!this.directory.Exists(contentDirPath))
         {
             this.directory.CreateDirectory(contentDirPath);
