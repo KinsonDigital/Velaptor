@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.Services;
 
-using System;
 using FluentAssertions;
 using NSubstitute;
 using Velaptor.Services;
@@ -15,116 +14,66 @@ using Xunit;
 /// </summary>
 public class TimerServiceTests
 {
+    private const long Frequency = 10_000_000;
     private readonly IStopWatchWrapper mockStopWatchWrapper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimerServiceTests"/> class.
     /// </summary>
-    public TimerServiceTests() => this.mockStopWatchWrapper = Substitute.For<IStopWatchWrapper>();
+    public TimerServiceTests()
+    {
+        this.mockStopWatchWrapper = Substitute.For<IStopWatchWrapper>();
+        this.mockStopWatchWrapper.Frequency.Returns(Frequency);
+    }
 
     #region Method Tests
     [Fact]
-    public void Start_WhenInvoked_StartsTheTimer()
+    public void StartAndStop_WhenSamplesAreNotFull_CalculatesMillisecondsPassed()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Start();
-
-        // Assert
-        this.mockStopWatchWrapper.Received().Start();
-    }
-
-    [Fact]
-    public void Stop_WithTimerRunning_StopsTheTimer()
-    {
-        // Arrange
-        this.mockStopWatchWrapper.IsRunning.Returns(true);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Stop();
-
-        // Assert
-        this.mockStopWatchWrapper.Received().Stop();
-    }
-
-    [Fact]
-    public void Stop_WithTimerNotRunning_DoesNotStopTimerOrRecordData()
-    {
-        // Arrange
-        this.mockStopWatchWrapper.IsRunning.Returns(false);
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Stop();
-
-        // Assert
-        this.mockStopWatchWrapper.DidNotReceive().Start();
-        _ = this.mockStopWatchWrapper.DidNotReceive().Elapsed;
-    }
-
-    [Fact]
-    public void Stop_WhenInvoked_AddsSampleToSamplesList()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        this.mockStopWatchWrapper.IsRunning.Returns(true);
-        this.mockStopWatchWrapper.Elapsed.Returns(new TimeSpan(0, 0, 0, 0, 100));
-        sut.Start();
-
-        // Act
-        sut.Stop();
-
-        // Assert
-        Assert.Equal(100, sut.MillisecondsPassed);
-    }
-
-    [Fact]
-    public void Stop_WhenStartingAndStopping_CorrectlyRecordsAndReturnsAverageTime()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        this.mockStopWatchWrapper.IsRunning.Returns(true);
-
-        // Act
-        // Record sample 1
-        this.mockStopWatchWrapper.Elapsed.Returns(new TimeSpan(0, 0, 0, 0, 100));
-        sut.Stop();
-
-        // Record sample 2
-        this.mockStopWatchWrapper.Elapsed.Returns(new TimeSpan(0, 0, 0, 0, 1000));
-        sut.Stop();
-
-        // Assert
-        sut.MillisecondsPassed.Should().Be(550);
-    }
-
-    [Fact]
-    public void Stop_WhenRecordingMoreThanTotalSamples_StartsRecordingBackAtBeginning()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        this.mockStopWatchWrapper.IsRunning.Returns(true);
-        this.mockStopWatchWrapper.Elapsed.Returns(new TimeSpan(0, 0, 0, 0, 1000));
-
-        // Make sure that every single sample in the total 1000 sample range
-        // is recorded.
-        for (var i = 1; i <= 1000; i++)
+        var isStarted = false;
+        this.mockStopWatchWrapper.GetTimestamp().Returns(_ =>
         {
+            var result = isStarted ? 320_000L : 160_000L;
+            isStarted = true;
+
+            return result;
+        });
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Start();
+        sut.Stop();
+
+        // Assert
+        this.mockStopWatchWrapper.Received(2).GetTimestamp();
+        sut.MillisecondsPassed.Should().Be(16);
+    }
+
+    [Fact]
+    public void StartAndStop_WhenSamplesAreFull_CalculatesMillisecondsPassed()
+    {
+        // Arrange
+        var isStarted = false;
+        this.mockStopWatchWrapper.GetTimestamp().Returns(_ =>
+        {
+            var result = isStarted ? 320_000L : 160_000L;
+            isStarted = !isStarted;
+
+            return result;
+        });
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        for (var i = 0; i < 1000; i++)
+        {
+            sut.Start();
             sut.Stop();
         }
 
-        // This should be the first sample spot
-        this.mockStopWatchWrapper.Elapsed.Returns(new TimeSpan(0, 0, 0, 0, 10));
-
-        // Act
-        sut.Stop();
-
         // Assert
-        sut.MillisecondsPassed.Should().Be(999.01f);
+        this.mockStopWatchWrapper.Received(2000).GetTimestamp();
+        sut.MillisecondsPassed.Should().Be(16);
     }
 
     [Fact]
@@ -132,12 +81,14 @@ public class TimerServiceTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
+        sut.Start();
+        sut.Stop();
 
         // Act
         sut.Reset();
 
         // Assert
-        this.mockStopWatchWrapper.Received().Reset();
+        sut.MillisecondsPassed.Should().Be(0);
     }
     #endregion
 

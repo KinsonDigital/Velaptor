@@ -1558,7 +1558,6 @@ public class GLWindowTests : TestsBase
         this.mockGLContext.Received(1).SwapBuffers();
         this.mockTimerService.Received(1).Stop();
         sut.Fps.Should().Be(250);
-        this.mockTimerService.Received(1).Reset();
     }
 
     [Fact]
