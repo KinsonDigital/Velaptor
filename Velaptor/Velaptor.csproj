@@ -102,7 +102,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="21.2.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="21.3.1" />
   </ItemGroup>
 
 </Project>
