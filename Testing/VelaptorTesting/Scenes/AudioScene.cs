@@ -185,7 +185,7 @@ public class AudioScene : SceneBase
         audioList.Label = "Audio File";
 
         audioList.Items.Add("Ridley Draygon Theme (OGG)");
-        audioList.Items.Add("Ridleys Hideout (MP3)");
+        audioList.Items.Add("Ridley's Hideout (MP3)");
         audioList.Items.Add("Mother Brain Final Battle (OGG)");
         audioList.SelectedItemIndexChanged += (_, i) =>
         {
@@ -196,7 +196,7 @@ public class AudioScene : SceneBase
             var audioName = chosenItem switch
             {
                 "Ridley Draygon Theme (OGG)" => "ridley-draygon-theme.ogg",
-                "Ridleys Hideout (MP3)" => "ridleys-hideout.mp3",
+                "Ridley's Hideout (MP3)" => "ridleys-hideout.mp3",
                 "Mother Brain Final Battle (OGG)" => "mother-brain-final-battle.ogg",
                 _ => throw new ArgumentException($"The audio item '{chosenItem}' is not supported."),
             };
