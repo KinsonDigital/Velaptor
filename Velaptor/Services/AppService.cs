@@ -4,25 +4,25 @@
 
 namespace Velaptor.Services;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = "No implementation to test")]
 internal class AppService : IAppService
 {
-    private readonly string appDirectory = string.Empty;
     private bool alreadyInitialized;
 
-    /// <inheritdoc/>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "No tests written for this.")]
-    public string AppDirectory => string.IsNullOrEmpty(this.appDirectory)
-        ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty
-        : this.appDirectory;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppService"/> class.
+    /// </summary>
+    public AppService() => AppDirectory = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
 
     /// <inheritdoc/>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "No tests written for this.")]
+    public string AppDirectory { get; }
+
+    /// <inheritdoc/>
     public void Init()
     {
         if (this.alreadyInitialized)
