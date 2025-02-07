@@ -23,13 +23,17 @@
         "Enhancements 💎": "💎enhancement",
         "Bug Fixes 🐛": "🐛bug",
         "Breaking Changes 🧨": "🧨breaking-changes",
-        "Dependency Updates 📦": "📦dependency-update"
+        "Dependency Updates 📦": "📦dependency-update",
+        "Performance 🏎️": "🏎️performance",
+        "CICD ⚙️": "cicd",
+        "Tech Debt 💳": "tech-debt"
     },
     "prCategoryLabelMappings": {
         "Dependency Updates 📦": "📦dependency-update"
     },
     "ignoreLabels": [
-        "🚀preview-release"
+        "🚀preview-release",
+        "🔬research"
     ],
     "wordReplacements": {
         "chore(deps): ": "",
