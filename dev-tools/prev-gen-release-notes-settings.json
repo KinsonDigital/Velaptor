@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/preview/schemas/gen-release-notes-schema.json",
+    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/refs/tags/v1.0.0-preview.7/schemas/gen-release-notes-schema.json",
     "ownerName": "KinsonDigital",
     "repoName": "Velaptor",
     "githubTokenEnvVarName": "CICD_TOKEN",
