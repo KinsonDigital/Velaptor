@@ -35,5 +35,10 @@
     ],
     "githubTokenEnvVarName": "CICD_TOKEN",
     "versionFilePath": "./Velaptor/Velaptor.csproj",
-    "releaseNotesFilePrefix": "Release-Notes-"
+    "releaseNotesFilePrefix": "Release-Notes-",
+    "dotnetCopyrightUpdate": {
+        "companyName": "KinsonDigital",
+        "searchDirPath": "./Velaptor",
+        "projectFileName": "Velaptor.csproj"
+    }
 }
