@@ -59,20 +59,6 @@ public class TextureTests
                     2 => Color.FromArgb(255, 0, 0, 255), // Row 3
                     _ => throw new Exception($"Row '{y}' does not exist when setting up image data for test."),
                 };
-
-                // If the first row
-                switch (y)
-                {
-                    case 0: // Row 1
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0);
-                        break;
-                    case 1: // Row 2
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0);
-                        break;
-                    case 2: // Row 3
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255);
-                        break;
-                }
             }
         }
 
@@ -405,7 +391,6 @@ public class TextureTests
         // this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
         this.mockGL.Received(1).DeleteTexture(TextureId);
     }
-
     #endregion
 
     /// <summary>
