@@ -482,6 +482,40 @@ public class OpenGLServiceTests
         this.mockDotnetService.Received(1).GcKeepAlive(Arg.Any<DebugProc?>());
     }
 
+    [Fact]
+    public void ToOpenGLBytes_WhenInvoked_ReturnsOpenGLBytes()
+    {
+        // Arrange
+        // NOTE: The pixels are in ARGB format and are row major ordering.
+        // Row major ordering means top to bottom and left to right.
+        // Another way to think of it is one row of pixels at a time from the top to the bottom
+        // and each row is one pixel at a time from left to right.
+        var pixels = new[,]
+        {
+            {
+                Color.FromArgb(1, 2, 3, 4), // Pixel 0,0
+                Color.FromArgb(9, 10, 11, 12), // Pixel 1,0
+            },
+            {
+                Color.FromArgb(5, 6, 7, 8), // Pixel 0,1
+                Color.FromArgb(13, 14, 15, 16), // Pixel 1,1
+            },
+        };
+        var expected = new byte[]
+        {
+            2, 3, 4, 1, // Pixel 0,0
+            6, 7, 8, 5, // Pixel 0,1
+            10, 11, 12, 9, // Pixel 1,0
+            14, 15, 16, 13, // Pixel 1,1
+        };
+        var sut = CreateService();
+
+        // Act
+        var actual = sut.ToOpenGLBytes(pixels);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
     #endregion
 
     /// <summary>
