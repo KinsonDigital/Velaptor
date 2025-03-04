@@ -188,6 +188,15 @@ internal interface IOpenGLService
     void LabelTexture(uint textureId, string label);
 
     /// <summary>
+    /// Converts the given color <paramref name="pixels"/> from a 2-dimensional array of pixel colors to a 1-dimensional array of bytes
+    /// that OpenGL and the GPU expects.
+    /// </summary>
+    /// <param name="pixels">The pixel colors to convert.</param>
+    /// <returns>The array of pixel color byte data.</returns>
+    /// <remarks>The color byte order comes in as ARGB and is converted to a format of RGBA which is what OpenGL expects.</remarks>
+    byte[] ToOpenGLBytes(Color[,] pixels);
+
+    /// <summary>
     /// Sets up the error callback.
     /// </summary>
     /// <remarks>

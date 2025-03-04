@@ -143,27 +143,7 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void UploadDataToGpu(string name, ImageData imageData)
     {
-        /*NOTE:
-         * The incoming image data is in the ARGB byte layout.
-         * The data layout required by OpenGL is RGBA.
-         */
-        var pixelData = new List<byte>();
-
-        for (var y = 0; y < imageData.Height; y++)
-        {
-            var rowBytes = new List<byte>();
-
-            for (var x = 0; x < imageData.Width; x++)
-            {
-                rowBytes.Add(imageData.Pixels[x, y].R);
-                rowBytes.Add(imageData.Pixels[x, y].G);
-                rowBytes.Add(imageData.Pixels[x, y].B);
-                rowBytes.Add(imageData.Pixels[x, y].A);
-            }
-
-            pixelData.AddRange(rowBytes);
-            rowBytes.Clear();
-        }
+        var pixelData = this.openGLService.ToOpenGLBytes(imageData.Pixels);
 
         this.openGLService.LabelTexture(Id, name);
 
@@ -199,6 +179,6 @@ public sealed class Texture : ITexture
             border: 0,
             format: GLPixelFormat.Rgba,
             type: GLPixelType.UnsignedByte,
-            pixels: pixelData.ToArray());
+            pixels: pixelData);
     }
 }

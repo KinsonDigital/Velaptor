@@ -59,20 +59,6 @@ public class TextureTests
                     2 => Color.FromArgb(255, 0, 0, 255), // Row 3
                     _ => throw new Exception($"Row '{y}' does not exist when setting up image data for test."),
                 };
-
-                // If the first row
-                switch (y)
-                {
-                    case 0: // Row 1
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0);
-                        break;
-                    case 1: // Row 2
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0);
-                        break;
-                    case 2: // Row 3
-                        this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255);
-                        break;
-                }
             }
         }
 
@@ -232,24 +218,27 @@ public class TextureTests
     public void InternalCtor_WhenInvoked_UploadsTextureDataToGpu()
     {
         // Arrange
-        var expectedPixelData = new List<byte>();
+        var expectedPixelData = new byte[] { 1, 2, 3, 4 };
+        byte[] actualPixelBytes = [];
 
-        // NOTE: Swap from ARGB to RGBA byte layout because this is expected by OpenGL
-        for (var y = 0; y < this.imageData.Height; y++)
-        {
-            var rowBytes = new List<byte>();
+        this.mockGLService.ToOpenGLBytes(Arg.Any<Color[,]>()).Returns(expectedPixelData);
 
-            for (var x = 0; x < this.imageData.Width; x++)
+        this.mockGL.When(x => x.TexImage2D<byte>(
+            Arg.Any<GLTextureTarget>(),
+            Arg.Any<int>(),
+            Arg.Any<GLInternalFormat>(),
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<int>(),
+            Arg.Any<GLPixelFormat>(),
+            Arg.Any<GLPixelType>(),
+            Arg.Any<byte[]>()))
+            .Do(callInfo =>
             {
-                rowBytes.Add(this.imageData.Pixels[x, y].R);
-                rowBytes.Add(this.imageData.Pixels[x, y].G);
-                rowBytes.Add(this.imageData.Pixels[x, y].B);
-                rowBytes.Add(this.imageData.Pixels[x, y].A);
-            }
+                var pixelData = callInfo.Arg<byte[]>();
 
-            expectedPixelData.AddRange(rowBytes);
-            rowBytes.Clear();
-        }
+                actualPixelBytes = pixelData;
+            });
 
         // Act
         _ = new Texture(
@@ -282,8 +271,6 @@ public class TextureTests
             GLTextureParameterName.TextureWrapT,
             GLTextureWrapMode.ClampToEdge);
 
-        var expectedPixelArray = expectedPixelData.ToArray();
-
         this.mockGL.Received(1).TexImage2D<byte>(
             GLTextureTarget.Texture2D,
             0,
@@ -293,10 +280,11 @@ public class TextureTests
             0,
             GLPixelFormat.Rgba,
             GLPixelType.UnsignedByte,
-            Arg.Is<byte[]>(actualPixelArray => actualPixelArray.SequenceEqual(expectedPixelArray)));
+            Arg.Any<byte[]>());
 
         this.mockGLService.Received(1).BindTexture2D(TextureId);
         this.mockGLService.Received(1).UnbindTexture2D();
+        actualPixelBytes.Should().BeEquivalentTo(expectedPixelData.ToArray());
     }
 
     #endregion
@@ -403,7 +391,6 @@ public class TextureTests
         // this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
         this.mockGL.Received(1).DeleteTexture(TextureId);
     }
-
     #endregion
 
     /// <summary>

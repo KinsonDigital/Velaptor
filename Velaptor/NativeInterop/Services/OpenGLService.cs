@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
+// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -95,11 +95,11 @@ internal sealed class OpenGLService : IOpenGLService
     public Vector2 GetViewPortPosition()
     {
         /*
-       * [0] = X
-       * [1] = Y
-       * [3] = Width
-       * [4] = Height
-       */
+         * [0] = X
+         * [1] = Y
+         * [3] = Width
+         * [4] = Height
+         */
         var data = new int[4];
 
         this.glInvoker.GetInteger(GLGetPName.Viewport, data);
@@ -179,8 +179,7 @@ internal sealed class OpenGLService : IOpenGLService
     /// <inheritdoc/>
     public void BeginGroup(string label)
         =>
-            this.glInvoker.PushDebugGroup(
-                GLDebugSource.DebugSourceApplication,
+            this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
                 100,
                 (uint)label.Length,
                 label);
@@ -235,6 +234,38 @@ internal sealed class OpenGLService : IOpenGLService
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+    }
+
+    /// <inheritdoc/>
+    public byte[] ToOpenGLBytes(Color[,] pixels)
+    {
+        var pixelDestIndex = 0;
+        var width = pixels.GetLength(0);
+        var height = pixels.GetLength(1);
+        var result = new byte[width * height * 4];
+
+        unsafe
+        {
+            fixed (byte* pixelDestPtr = result)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        var currentColor = pixels[x, y];
+
+                        pixelDestPtr[pixelDestIndex] = currentColor.R;
+                        pixelDestPtr[pixelDestIndex + 1] = currentColor.G;
+                        pixelDestPtr[pixelDestIndex + 2] = currentColor.B;
+                        pixelDestPtr[pixelDestIndex + 3] = currentColor.A;
+
+                        pixelDestIndex += 4;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 
     /// <inheritdoc/>
