@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
+// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -95,11 +95,11 @@ internal sealed class OpenGLService : IOpenGLService
     public Vector2 GetViewPortPosition()
     {
         /*
-       * [0] = X
-       * [1] = Y
-       * [3] = Width
-       * [4] = Height
-       */
+         * [0] = X
+         * [1] = Y
+         * [3] = Width
+         * [4] = Height
+         */
         var data = new int[4];
 
         this.glInvoker.GetInteger(GLGetPName.Viewport, data);
@@ -179,8 +179,7 @@ internal sealed class OpenGLService : IOpenGLService
     /// <inheritdoc/>
     public void BeginGroup(string label)
         =>
-            this.glInvoker.PushDebugGroup(
-                GLDebugSource.DebugSourceApplication,
+            this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
                 100,
                 (uint)label.Length,
                 label);
