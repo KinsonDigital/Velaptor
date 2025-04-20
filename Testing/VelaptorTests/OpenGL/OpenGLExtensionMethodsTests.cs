@@ -7,7 +7,7 @@ namespace VelaptorTests.OpenGL;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
@@ -28,8 +28,8 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToNDC(100, 200);
 
         // Assert
-        actual.X.Should().Be(0.5f);
-        actual.Y.Should().Be(-0.5f);
+        actual.X.ShouldBe(0.5f);
+        actual.Y.ShouldBe(-0.5f);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class OpenGLExtensionMethodsTests
         var actual = value.ToNDCTextureCoordX(100);
 
         // Assert
-        actual.Should().Be(0.75f);
+        actual.ShouldBe(0.75f);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class OpenGLExtensionMethodsTests
         var actual = value.ToNDCTextureCoordY(100);
 
         // Assert
-        actual.Should().Be(0.25f);
+        actual.ShouldBe(0.25f);
     }
 
     [Fact]
@@ -68,8 +68,8 @@ public class OpenGLExtensionMethodsTests
         var actual = coord.ToNDCTextureCoords(100, 100);
 
         // Assert
-        actual.X.Should().Be(0.75f);
-        actual.Y.Should().Be(0.25f);
+        actual.X.ShouldBe(0.75f);
+        actual.Y.ShouldBe(0.25f);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class OpenGLExtensionMethodsTests
         var actual = color.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class OpenGLExtensionMethodsTests
         var actual = data.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class OpenGLExtensionMethodsTests
         var actual = quadData.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class OpenGLExtensionMethodsTests
         var actual = clr.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vertexData.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class OpenGLExtensionMethodsTests
         var actual = quad.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class OpenGLExtensionMethodsTests
         var actual = OpenGLExtensionMethods.ToArray(quads);
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class OpenGLExtensionMethodsTests
         var actual = vector.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 

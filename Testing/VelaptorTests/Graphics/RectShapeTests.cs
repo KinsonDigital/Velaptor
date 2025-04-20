@@ -7,7 +7,7 @@ namespace VelaptorTests.Graphics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -49,16 +49,16 @@ public class RectShapeTests
         var sut = new RectShape();
 
         // Assert
-        sut.Position.Should().Be(Vector2.Zero);
-        sut.Width.Should().Be(1f);
-        sut.Height.Should().Be(1f);
-        sut.Color.Should().Be(Color.White);
-        sut.IsSolid.Should().BeTrue();
-        sut.BorderThickness.Should().Be(1f);
-        sut.CornerRadius.Should().Be(new CornerRadius(0f, 0f, 0f, 0f));
-        sut.GradientType.Should().Be(ColorGradient.None);
-        sut.GradientStart.Should().Be(Color.White);
-        sut.GradientStop.Should().Be(Color.White);
+        sut.Position.ShouldBe(Vector2.Zero);
+        sut.Width.ShouldBe(1f);
+        sut.Height.ShouldBe(1f);
+        sut.Color.ShouldBe(Color.White);
+        sut.IsSolid.ShouldBeTrue();
+        sut.BorderThickness.ShouldBe(1f);
+        sut.CornerRadius.ShouldBe(new CornerRadius(0f, 0f, 0f, 0f));
+        sut.GradientType.ShouldBe(ColorGradient.None);
+        sut.GradientStart.ShouldBe(Color.White);
+        sut.GradientStop.ShouldBe(Color.White);
     }
     #endregion
 
@@ -77,7 +77,7 @@ public class RectShapeTests
         var actual = sut.Width;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -94,7 +94,7 @@ public class RectShapeTests
         var actual = sut.Height;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class RectShapeTests
         var actual = sut.HalfWidth;
 
         // Assert
-        actual.Should().Be(50f);
+        actual.ShouldBe(50f);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class RectShapeTests
         var actual = sut.HalfHeight;
 
         // Assert
-        actual.Should().Be(50f);
+        actual.ShouldBe(50f);
     }
 
     [Theory]
@@ -146,7 +146,7 @@ public class RectShapeTests
         var actual = sut.BorderThickness;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -159,10 +159,10 @@ public class RectShapeTests
         var actual = sut.CornerRadius;
 
         // Assert
-        actual.TopLeft.Should().Be(0f, "The top left value is incorrect.");
-        actual.BottomLeft.Should().Be(0f, "The bottom left value is incorrect.");
-        actual.BottomRight.Should().Be(0f, "The bottom right value is incorrect.");
-        actual.TopRight.Should().Be(0f, "The top right value is incorrect.");
+        actual.TopLeft.ShouldBe(0f, "The top left value is incorrect.");
+        actual.BottomLeft.ShouldBe(0f, "The bottom left value is incorrect.");
+        actual.BottomRight.ShouldBe(0f, "The bottom right value is incorrect.");
+        actual.TopRight.ShouldBe(0f, "The top right value is incorrect.");
     }
 
     [Fact]
@@ -176,10 +176,10 @@ public class RectShapeTests
         var actual = sut.CornerRadius;
 
         // Assert
-        actual.TopLeft.Should().Be(11f, "The top left value is incorrect.");
-        actual.TopRight.Should().Be(22f, "The top right value is incorrect.");
-        actual.BottomRight.Should().Be(33f, "The bottom right value is incorrect.");
-        actual.BottomLeft.Should().Be(44f, "The bottom left value is incorrect.");
+        actual.TopLeft.ShouldBe(11f, "The top left value is incorrect.");
+        actual.TopRight.ShouldBe(22f, "The top right value is incorrect.");
+        actual.BottomRight.ShouldBe(33f, "The bottom right value is incorrect.");
+        actual.BottomLeft.ShouldBe(44f, "The bottom left value is incorrect.");
     }
 
     [Fact]
@@ -196,9 +196,9 @@ public class RectShapeTests
         var actual = sut.Top;
 
         // Assert
-        actual.Should().Be(40f, $"{nameof(RectShape.Top)} value incorrect.");
-        sut.Position.X.Should().Be(100, $"{nameof(RectShape.Position.X)} value incorrect.");
-        sut.Position.Y.Should().Be(65f, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.ShouldBe(40f, $"{nameof(RectShape.Top)} value incorrect.");
+        sut.Position.X.ShouldBe(100, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.ShouldBe(65f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -215,9 +215,9 @@ public class RectShapeTests
         var actual = sut.Right;
 
         // Assert
-        actual.Should().Be(100f, $"{nameof(RectShape.Right)} value incorrect.");
-        sut.Position.X.Should().Be(50, $"{nameof(RectShape.Position.X)} value incorrect.");
-        sut.Position.Y.Should().Be(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.ShouldBe(100f, $"{nameof(RectShape.Right)} value incorrect.");
+        sut.Position.X.ShouldBe(50, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.ShouldBe(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -234,9 +234,9 @@ public class RectShapeTests
         var actual = sut.Bottom;
 
         // Assert
-        actual.Should().Be(40f, $"{nameof(RectShape.Bottom)} value incorrect.");
-        sut.Position.X.Should().Be(100, $"{nameof(RectShape.Position.X)} value incorrect.");
-        sut.Position.Y.Should().Be(15f, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.ShouldBe(40f, $"{nameof(RectShape.Bottom)} value incorrect.");
+        sut.Position.X.ShouldBe(100, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.ShouldBe(15f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
 
     [Fact]
@@ -253,9 +253,9 @@ public class RectShapeTests
         var actual = sut.Left;
 
         // Assert
-        actual.Should().Be(100f, $"{nameof(RectShape.Left)} value incorrect.");
-        sut.Position.X.Should().Be(150, $"{nameof(RectShape.Position.X)} value incorrect.");
-        sut.Position.Y.Should().Be(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        actual.ShouldBe(100f, $"{nameof(RectShape.Left)} value incorrect.");
+        sut.Position.X.ShouldBe(150, $"{nameof(RectShape.Position.X)} value incorrect.");
+        sut.Position.Y.ShouldBe(100f, $"{nameof(RectShape.Position.Y)} value incorrect.");
     }
     #endregion
 
@@ -282,7 +282,7 @@ public class RectShapeTests
         var actual = sut.Contains(position);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -316,7 +316,7 @@ public class RectShapeTests
         var actual = sut.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -339,16 +339,16 @@ public class RectShapeTests
         sut.Empty();
 
         // Assert
-        sut.Position.Should().Be(Vector2.Zero);
-        sut.Width.Should().Be(1f);
-        sut.Height.Should().Be(1f);
-        sut.Color.Should().Be(Color.Empty);
-        sut.IsSolid.Should().BeFalse();
-        sut.BorderThickness.Should().Be(1f);
-        sut.CornerRadius.Should().Be(new CornerRadius(0f, 0f, 0f, 0f));
-        sut.GradientType.Should().Be(ColorGradient.None);
-        sut.GradientStart.Should().Be(Color.Empty);
-        sut.GradientStop.Should().Be(Color.Empty);
+        sut.Position.ShouldBe(Vector2.Zero);
+        sut.Width.ShouldBe(1f);
+        sut.Height.ShouldBe(1f);
+        sut.Color.ShouldBe(Color.Empty);
+        sut.IsSolid.ShouldBeFalse();
+        sut.BorderThickness.ShouldBe(1f);
+        sut.CornerRadius.ShouldBe(new CornerRadius(0f, 0f, 0f, 0f));
+        sut.GradientType.ShouldBe(ColorGradient.None);
+        sut.GradientStart.ShouldBe(Color.Empty);
+        sut.GradientStop.ShouldBe(Color.Empty);
     }
     #endregion
 }

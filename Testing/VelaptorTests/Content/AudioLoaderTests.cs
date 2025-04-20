@@ -7,7 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -62,9 +62,9 @@ public class AudioLoaderTests
                 this.mockPath);
         };
 
-        // Act
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioCache')");
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'audioCache')");
     }
 
     [Fact]
@@ -82,9 +82,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioPathResolver')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'audioPathResolver')");
     }
 
     [Fact]
@@ -102,9 +101,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -122,9 +120,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -142,9 +139,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
@@ -159,9 +155,8 @@ public class AudioLoaderTests
         var act = () => sut.Load(null);
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -174,9 +169,8 @@ public class AudioLoaderTests
         var act = () => sut.Load(string.Empty);
 
         // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -189,8 +183,8 @@ public class AudioLoaderTests
         var act = () => sut.Load("test-content");
 
         // Assert
-        act.Should().Throw<LoadAudioException>()
-            .WithMessage("The audio file path must contain metadata.");
+        var exception = Should.Throw<LoadAudioException>(act);
+        exception.Message.ShouldBe("The audio file path must contain metadata.");
     }
 
     [Fact]
@@ -203,8 +197,8 @@ public class AudioLoaderTests
         var act = () => sut.Load("test-content|Invalid");
 
         // Assert
-        act.Should().Throw<LoadAudioException>()
-            .WithMessage("The audio buffer type could not be determined.");
+        var exception = Should.Throw<LoadAudioException>(act);
+        exception.Message.ShouldBe("The audio buffer type could not be determined.");
     }
 
     [Fact]
@@ -227,9 +221,8 @@ public class AudioLoaderTests
         var act = () => loader.Load(invalidFilePathWithMetaData);
 
         // Assert
-        act.Should()
-            .Throw<LoadAudioException>()
-            .WithMessage(expectedMsg);
+        var exception = Should.Throw<LoadAudioException>(act);
+        exception.Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -246,9 +239,8 @@ public class AudioLoaderTests
         var act = () => loader.Load($"{this.oggFilePath}|Stream");
 
         // Assert
-        act.Should()
-            .Throw<FileNotFoundException>()
-            .WithMessage(expectedMsg);
+        var exception = Should.Throw<FileNotFoundException>(act);
+        exception.Message.ShouldBe(expectedMsg);
     }
 
     [Fact]

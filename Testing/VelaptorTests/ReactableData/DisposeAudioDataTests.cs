@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ReactableData;
 using Xunit;
 
@@ -24,7 +24,7 @@ public class DisposeAudioDataTests
         };
 
         // Assert
-        sut.AudioId.Should().Be(123);
+        sut.AudioId.ShouldBe(123u);
     }
     #endregion
 }

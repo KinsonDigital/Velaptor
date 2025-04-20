@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Abstractions;
 using System.Linq;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -82,9 +82,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -104,9 +103,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlasDataFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasDataFactory')");
     }
 
     [Fact]
@@ -126,8 +124,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlasDataPathResolver')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasDataPathResolver')");
     }
 
     [Fact]
@@ -147,9 +145,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'jsonService')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'jsonService')");
     }
 
     [Fact]
@@ -169,9 +166,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -191,9 +187,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -213,9 +208,8 @@ public class AtlasLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
@@ -230,8 +224,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -244,8 +238,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -261,8 +255,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load($"{DirPath}/{AtlasContentName}{extension}");
 
         // Assert
-        act.Should().Throw<LoadAtlasException>()
-            .WithMessage("When loading atlas data with fully qualified paths, the files must be a '.png' or '.json' extension.");
+        var exception = act.ShouldThrow<LoadAtlasException>();
+        exception.Message.ShouldBe("When loading atlas data with fully qualified paths, the files must be a '.png' or '.json' extension.");
     }
 
     [Fact]
@@ -309,7 +303,7 @@ public class AtlasLoaderTests
         this.mockFile.Received(1).ReadAllText(AtlasDataFilePath);
         this.mockJSONService.Received(1).Deserialize<AtlasSubTextureData[]>(FakeJSONData);
         this.mockAtlasDataFactory.Received(1).Create(atlasData, DirPath, AtlasContentName);
-        actual.Should().BeSameAs(mockAtlasData);
+        actual.ShouldBeSameAs(mockAtlasData);
     }
 
     [Fact]
@@ -333,8 +327,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load(invalidFilePath);
 
         // Assert
-        act.Should().Throw<LoadAtlasException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<LoadAtlasException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -361,8 +355,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load(invalidImageFilePath);
 
         // Assert
-        act.Should().Throw<LoadAtlasException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<LoadAtlasException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -388,7 +382,7 @@ public class AtlasLoaderTests
         this.mockFile.Received(1).ReadAllText(AtlasDataFilePath);
         this.mockJSONService.Received(1).Deserialize<AtlasSubTextureData[]>(FakeJSONData);
         this.mockAtlasDataFactory.Received(1).Create(atlasData, DirPath, AtlasContentName);
-        actual.Should().BeSameAs(mockAtlasData);
+        actual.ShouldBeSameAs(mockAtlasData);
     }
 
     [Fact]
@@ -403,8 +397,8 @@ public class AtlasLoaderTests
         var act = () => sut.Load(AtlasContentName);
 
         // Assert
-        act.Should().Throw<LoadContentException>()
-            .WithMessage($"There was an issue deserializing the JSON atlas data file at '{AtlasDataFilePath}'.");
+        var exception = act.ShouldThrow<LoadContentException>();
+        exception.Message.ShouldBe($"There was an issue deserializing the JSON atlas data file at '{AtlasDataFilePath}'.");
     }
 
     [Fact]

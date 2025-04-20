@@ -15,7 +15,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -73,7 +73,7 @@ public class ShapeGpuBufferTests
         var mockPushReactable = Substitute.For<IPushReactable>();
         mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -84,14 +84,14 @@ public class ShapeGpuBufferTests
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
                 this.viewPortSizeReactor = reactor;
             }));
 
         var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
             }));
 
@@ -115,9 +115,8 @@ public class ShapeGpuBufferTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -197,7 +196,7 @@ public class ShapeGpuBufferTests
 
         // Assert
         this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, expectedOffset, expectedTotalBytes, Arg.Any<float[]>());
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
         this.mockGLService.Received(2).UnbindVBO();
         this.mockGLService.Received(4).EndGroup();
     }
@@ -218,8 +217,8 @@ public class ShapeGpuBufferTests
         var act = () => sut.UploadVertexData(shape, 0);
 
         // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-           .WithMessage(expected);
+        var exception = act.ShouldThrow<InvalidEnumArgumentException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -444,8 +443,8 @@ public class ShapeGpuBufferTests
         var actual = sut.GenerateData();
 
         // Assert
-        sut.BatchSize.Should().Be(100u);
-        actual.Should().BeEquivalentTo(expected);
+        sut.BatchSize.ShouldBe(100u);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -483,7 +482,7 @@ public class ShapeGpuBufferTests
         sut.SetupVAO();
 
         // Assert
-        paramData.Should().AllSatisfy(data =>
+        foreach (var data in paramData)
         {
             this.mockGL.Received(1).VertexAttribPointer(data.index,
                 data.size,
@@ -491,12 +490,12 @@ public class ShapeGpuBufferTests
                 data.normalized,
                 data.stride,
                 data.offset);
-        });
+        }
 
-        enableVertexAttribArrayParamData.Should().AllSatisfy(data =>
+        foreach (var data in enableVertexAttribArrayParamData)
         {
             this.mockGL.Received(1).EnableVertexAttribArray(data.index);
-        });
+        }
     }
 
     [Fact]
@@ -510,8 +509,8 @@ public class ShapeGpuBufferTests
         var actual = sut.GenerateIndices();
 
         // Assert
-        sut.BatchSize.Should().Be(100u);
-        actual.Should().BeEquivalentTo(expected);
+        sut.BatchSize.ShouldBe(100u);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 
@@ -531,8 +530,8 @@ public class ShapeGpuBufferTests
         // Act & Assert
         void Act(ISubscription reactor)
         {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("ShapeGpuBufferTests.Ctor - BatchSizeChangedId");
+            reactor.ShouldNotBeNull("it is required for this unit test.");
+            reactor.Name.ShouldBe("ShapeGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -546,7 +545,7 @@ public class ShapeGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
-        sut.BatchSize.Should().Be(100);
+        sut.BatchSize.ShouldBe(100u);
     }
 
     [Fact]
@@ -559,7 +558,7 @@ public class ShapeGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Rect });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
     }
 
     [Fact]
@@ -573,7 +572,7 @@ public class ShapeGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Rect });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
 
         this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
         this.mockGLService.Received(8).EndGroup();

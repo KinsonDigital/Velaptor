@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor;
 using Velaptor.ReactableData;
 using Xunit;
@@ -26,8 +26,8 @@ public class BatchSizeDataTests
         };
 
         // Assert
-        sut.BatchSize.Should().Be(1);
-        sut.TypeOfBatch.Should().Be(BatchType.Rect);
+        sut.BatchSize.ShouldBe(1u);
+        sut.TypeOfBatch.ShouldBe(BatchType.Rect);
     }
     #endregion
 }

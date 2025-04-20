@@ -4,8 +4,8 @@
 
 namespace VelaptorTests.Services;
 
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Services;
 using Xunit;
 
@@ -47,7 +47,7 @@ public class TimerServiceTests
 
         // Assert
         this.mockStopWatchWrapper.Received(2).GetTimestamp();
-        sut.MillisecondsPassed.Should().Be(16);
+        sut.MillisecondsPassed.ShouldBe(16);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class TimerServiceTests
 
         // Assert
         this.mockStopWatchWrapper.Received(2000).GetTimestamp();
-        sut.MillisecondsPassed.Should().Be(16);
+        sut.MillisecondsPassed.ShouldBe(16);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class TimerServiceTests
         sut.Reset();
 
         // Assert
-        sut.MillisecondsPassed.Should().Be(0);
+        sut.MillisecondsPassed.ShouldBe(0);
     }
     #endregion
 

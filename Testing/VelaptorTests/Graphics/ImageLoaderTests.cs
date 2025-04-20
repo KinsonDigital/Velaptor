@@ -7,7 +7,7 @@ namespace VelaptorTests.Graphics;
 using System;
 using System.Drawing;
 using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Graphics;
@@ -34,7 +34,6 @@ public class ImageLoaderTests
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
@@ -45,9 +44,8 @@ public class ImageLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -60,9 +58,8 @@ public class ImageLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'imageService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -75,15 +72,12 @@ public class ImageLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'texturePathResolver')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texturePathResolver')");
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     public void LoadImage_WithAbsoluteFilePath_LoadsImageData()
     {
@@ -100,7 +94,7 @@ public class ImageLoaderTests
         var actual = sut.LoadImage("test-file-path");
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
         this.mockImageService.Received(1).Load(filePath);
     }
 
@@ -122,10 +116,9 @@ public class ImageLoaderTests
         var actual = sut.LoadImage("test-file-path");
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
         this.mockImageService.Received(1).Load(filePath);
     }
-
     #endregion
 
     /// <summary>

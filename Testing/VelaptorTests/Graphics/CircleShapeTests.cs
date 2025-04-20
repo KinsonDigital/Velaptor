@@ -7,7 +7,7 @@ namespace VelaptorTests.Graphics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -49,14 +49,14 @@ public class CircleShapeTests
         var sut = new CircleShape();
 
         // Assert
-        sut.IsSolid.Should().BeTrue();
-        sut.Position.Should().Be(Vector2.Zero);
-        sut.Diameter.Should().Be(1f);
-        sut.Color.Should().Be(Color.White);
-        sut.BorderThickness.Should().Be(1f);
-        sut.GradientType.Should().Be(ColorGradient.None);
-        sut.GradientStart.Should().Be(Color.White);
-        sut.GradientStop.Should().Be(Color.White);
+        sut.IsSolid.ShouldBeTrue();
+        sut.Position.ShouldBe(Vector2.Zero);
+        sut.Diameter.ShouldBe(1f);
+        sut.Color.ShouldBe(Color.White);
+        sut.BorderThickness.ShouldBe(1f);
+        sut.GradientType.ShouldBe(ColorGradient.None);
+        sut.GradientStart.ShouldBe(Color.White);
+        sut.GradientStop.ShouldBe(Color.White);
     }
     #endregion
 
@@ -74,7 +74,7 @@ public class CircleShapeTests
         var actual = sut.Diameter;
 
         // Assert
-        actual.Should().Be(expectedDiameter);
+        actual.ShouldBe(expectedDiameter);
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class CircleShapeTests
         var actualDiameter = sut.Diameter;
 
         // Assert
-        actualRadius.Should().Be(50f);
-        actualDiameter.Should().Be(100f);
+        actualRadius.ShouldBe(50f);
+        actualDiameter.ShouldBe(100f);
     }
 
     [Theory]
@@ -109,7 +109,7 @@ public class CircleShapeTests
         var actual = sut.BorderThickness;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -125,9 +125,9 @@ public class CircleShapeTests
         var actual = sut.Top;
 
         // Assert
-        actual.Should().Be(40f);
-        sut.Position.X.Should().Be(100);
-        sut.Position.Y.Should().Be(65f);
+        actual.ShouldBe(40f);
+        sut.Position.X.ShouldBe(100);
+        sut.Position.Y.ShouldBe(65f);
     }
 
     [Fact]
@@ -143,9 +143,9 @@ public class CircleShapeTests
         var actual = sut.Right;
 
         // Assert
-        actual.Should().Be(100f);
-        sut.Position.X.Should().Be(50);
-        sut.Position.Y.Should().Be(100f);
+        actual.ShouldBe(100f);
+        sut.Position.X.ShouldBe(50);
+        sut.Position.Y.ShouldBe(100f);
     }
 
     [Fact]
@@ -161,9 +161,9 @@ public class CircleShapeTests
         var actual = sut.Bottom;
 
         // Assert
-        actual.Should().Be(40f);
-        sut.Position.X.Should().Be(100);
-        sut.Position.Y.Should().Be(15f);
+        actual.ShouldBe(40f);
+        sut.Position.X.ShouldBe(100);
+        sut.Position.Y.ShouldBe(15f);
     }
 
     [Fact]
@@ -179,9 +179,9 @@ public class CircleShapeTests
         var actual = sut.Left;
 
         // Assert
-        actual.Should().Be(100f);
-        sut.Position.X.Should().Be(150);
-        sut.Position.Y.Should().Be(100f);
+        actual.ShouldBe(100f);
+        sut.Position.X.ShouldBe(150);
+        sut.Position.Y.ShouldBe(100f);
     }
     #endregion
 
@@ -207,7 +207,7 @@ public class CircleShapeTests
         var actual = sut.Contains(new Vector2(pointX, pointY));
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -239,7 +239,7 @@ public class CircleShapeTests
         var actual = sut.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -260,14 +260,14 @@ public class CircleShapeTests
         sut.Empty();
 
         // Assert
-        sut.IsSolid.Should().BeFalse();
-        sut.Position.Should().Be(Vector2.Zero);
-        sut.Diameter.Should().Be(1f);
-        sut.Color.Should().Be(Color.Empty);
-        sut.BorderThickness.Should().Be(1f);
-        sut.GradientType.Should().Be(ColorGradient.None);
-        sut.GradientStart.Should().Be(Color.Empty);
-        sut.GradientStop.Should().Be(Color.Empty);
+        sut.IsSolid.ShouldBeFalse();
+        sut.Position.ShouldBe(Vector2.Zero);
+        sut.Diameter.ShouldBe(1f);
+        sut.Color.ShouldBe(Color.Empty);
+        sut.BorderThickness.ShouldBe(1f);
+        sut.GradientType.ShouldBe(ColorGradient.None);
+        sut.GradientStart.ShouldBe(Color.Empty);
+        sut.GradientStop.ShouldBe(Color.Empty);
     }
     #endregion
 }

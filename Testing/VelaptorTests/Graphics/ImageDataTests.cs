@@ -7,7 +7,7 @@ namespace VelaptorTests.Graphics;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using Velaptor.Graphics;
 using Xunit;
@@ -28,9 +28,8 @@ public class ImageDataTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'pixels')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'pixels')");
     }
 
     [Fact]
@@ -44,8 +43,8 @@ public class ImageDataTests
         var actualVerticalFlip = sut.IsFlippedVertically;
 
         // Assert
-        actualHorizontalFlip.Should().BeFalse();
-        actualVerticalFlip.Should().BeFalse();
+        actualHorizontalFlip.ShouldBeFalse();
+        actualVerticalFlip.ShouldBeFalse();
     }
 
     [Theory]
@@ -57,7 +56,7 @@ public class ImageDataTests
         var sut = new ImageData(new Color[1, 1], filePath);
 
         // Assert
-        sut.FilePath.Should().BeEmpty();
+        sut.FilePath.ShouldBeEmpty();
     }
     #endregion
 
@@ -76,7 +75,7 @@ public class ImageDataTests
         var act = () => sut.IsFlippedHorizontally;
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -93,7 +92,7 @@ public class ImageDataTests
         var act = () => sut.IsFlippedVertically;
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -110,7 +109,7 @@ public class ImageDataTests
         var act = () => sut.IsFlippedHorizontally;
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -127,7 +126,7 @@ public class ImageDataTests
         var act = () => sut.IsFlippedVertically;
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
     #endregion
 
@@ -168,28 +167,29 @@ public class ImageDataTests
 
         // Assert
         // First 2 rows
-        row0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        row1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        row2.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row0.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        row0.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        row1.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        row2.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
 
         // Middle rows
-        row3.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row4.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row5.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row6.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row7.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row3.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row4.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row5.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row6.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row7.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
 
         // Last 2 rows
-        row8.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        row9.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row8.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        row9.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
 
         // First 2 columns
-        col0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        col1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col0.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        col1.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
 
         // Last 2 columns
-        col8.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        col9.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col8.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        col9.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
     }
 
     [Fact]
@@ -206,7 +206,7 @@ public class ImageDataTests
         var act = () => sut.FlipHorizontally();
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class ImageDataTests
         var act = () => sut.FlipHorizontally();
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -248,11 +248,11 @@ public class ImageDataTests
         var col3 = TestHelpers.GetColumn(sut, 3);
 
         // Assert
-        col0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
-        col1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
-        col2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
-        col3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
-        sut.IsFlippedHorizontally.Should().BeTrue();
+        col0.ShouldAllBe(clr => clr == Color.Yellow);
+        col1.ShouldAllBe(clr => clr == Color.Yellow);
+        col2.ShouldAllBe(clr => clr == Color.Blue);
+        col3.ShouldAllBe(clr => clr == Color.Blue);
+        sut.IsFlippedHorizontally.ShouldBeTrue();
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class ImageDataTests
         var act = () => sut.FlipVertically();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class ImageDataTests
         var act = () => sut.FlipVertically();
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -311,11 +311,11 @@ public class ImageDataTests
         var row3 = TestHelpers.GetRow(sut, 3);
 
         // Assert
-        row0.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
-        row1.Should().AllSatisfy(clr => clr.Should().Be(Color.Yellow));
-        row2.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
-        row3.Should().AllSatisfy(clr => clr.Should().Be(Color.Blue));
-        sut.IsFlippedVertically.Should().BeTrue();
+        row0.ShouldAllBe(clr => clr == Color.Yellow);
+        row1.ShouldAllBe(clr => clr == Color.Yellow);
+        row2.ShouldAllBe(clr => clr == Color.Blue);
+        row3.ShouldAllBe(clr => clr == Color.Blue);
+        sut.IsFlippedVertically.ShouldBeTrue();
     }
 
     [Fact]
@@ -344,18 +344,18 @@ public class ImageDataTests
 
         // Assert
         // First top 2 blue rows
-        row0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        row1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        row0.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        row1.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
 
         // // Green rows below top 2 blue rows
-        row2.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row3.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row4.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
-        row5.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Green));
+        row2.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row3.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row4.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
+        row5.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Green));
 
         // // First 2 blue columns columns
-        col0.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
-        col1.Should().AllSatisfy(clr => ClrShouldMatch(clr, Color.Blue));
+        col0.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
+        col1.ShouldAllBe(clr => ClrShouldMatch(clr, Color.Blue));
     }
 
     [Fact]
@@ -369,7 +369,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -383,7 +383,7 @@ public class ImageDataTests
         var actual = sutA.Equals(sutB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -439,7 +439,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -453,7 +453,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -467,7 +467,7 @@ public class ImageDataTests
         var actual = imageDataA.Equals(imageDataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -481,7 +481,7 @@ public class ImageDataTests
         var actual = imageDataA == imageDataB;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -495,7 +495,7 @@ public class ImageDataTests
         var actual = imageDataA == imageDataB;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -509,7 +509,7 @@ public class ImageDataTests
         var actual = imageDataA != imageDataB;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Theory]
@@ -525,7 +525,7 @@ public class ImageDataTests
         var actual = sut.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -541,7 +541,7 @@ public class ImageDataTests
         var actual = sut.ToString();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 
@@ -550,16 +550,13 @@ public class ImageDataTests
     /// </summary>
     /// <param name="clrA">The first of two colors to compare.</param>
     /// <param name="clrB">The second of two colors to compare.</param>
-    private static void ClrShouldMatch(Color clrA, Color clrB)
+    private static bool ClrShouldMatch(Color clrA, Color clrB)
     {
         var alphaMatches = clrA.A == clrB.A;
         var redMatches = clrA.R == clrB.R;
         var greenMatches = clrA.G == clrB.G;
         var blueMatches = clrA.B == clrB.B;
 
-        alphaMatches.Should().BeTrue();
-        redMatches.Should().BeTrue();
-        greenMatches.Should().BeTrue();
-        blueMatches.Should().BeTrue();
+        return alphaMatches && redMatches && greenMatches && blueMatches;
     }
 }

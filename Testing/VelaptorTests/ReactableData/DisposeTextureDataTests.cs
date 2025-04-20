@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ReactableData;
 using Xunit;
 
@@ -24,7 +24,7 @@ public class DisposeTextureDataTests
         };
 
         // Assert
-        sut.TextureId.Should().Be(123);
+        sut.TextureId.ShouldBe(123u);
     }
     #endregion
 }

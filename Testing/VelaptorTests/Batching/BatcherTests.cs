@@ -8,9 +8,8 @@ using System;
 using System.Drawing;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Graphics.Renderers.Exceptions;
@@ -48,7 +47,7 @@ public class BatcherTests
                 if (reactorParam is null)
                 {
                     const string methodName = $"{nameof(this.mockPushReactable)}.{nameof(IPushReactable)}.{nameof(IPushReactable.Subscribe)}()";
-                    throw new AssertionFailedException($"The '{methodName}' parameter '{nameof(reactorParam)}' cannot be null.");
+                    throw new ShouldAssertException($"The '{methodName}' parameter '{nameof(reactorParam)}' cannot be null.");
                 }
 
                 this.reactor = reactorParam;
@@ -95,9 +94,8 @@ public class BatcherTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
+        Should.Throw<ArgumentNullException>(act)
+            .Message.ShouldBe("Value cannot be null. (Parameter 'glInvoker')");
     }
 
     [Fact]
@@ -110,9 +108,7 @@ public class BatcherTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glInitReactable')");
+        Should.Throw<ArgumentNullException>(act).Message.ShouldBe("Value cannot be null. (Parameter 'glInitReactable')");
     }
 
     [Fact]
@@ -125,9 +121,8 @@ public class BatcherTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'batchSizeReactable')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'batchSizeReactable')");
     }
     #endregion
 
@@ -156,7 +151,7 @@ public class BatcherTests
         sut.ClearColor = Color.Magenta;
 
         // Assert
-        sut.ClearColor.Should().Be(Color.Magenta);
+        sut.ClearColor.ShouldBe(Color.Magenta);
     }
 
     [Fact]
@@ -187,10 +182,10 @@ public class BatcherTests
         this.mockGLInvoker.Received(1).ClearColor(1, 0, 1, 1);
         this.mockGLInvoker.Received(1).GetFloat(GLGetPName.ColorClearValue, Arg.Any<float[]>());
 
-        actual.A.Should().Be(Color.Magenta.A);
-        actual.R.Should().Be(Color.Magenta.R);
-        actual.G.Should().Be(Color.Magenta.G);
-        actual.B.Should().Be(Color.Magenta.B);
+        actual.A.ShouldBe(Color.Magenta.A);
+        actual.R.ShouldBe(Color.Magenta.R);
+        actual.G.ShouldBe(Color.Magenta.G);
+        actual.B.ShouldBe(Color.Magenta.B);
     }
     #endregion
 
@@ -205,8 +200,8 @@ public class BatcherTests
         var act = () => sut.Begin();
 
         // Assert
-        act.Should().Throw<RendererException>()
-            .WithMessage("The renderer is not initialized.");
+        var exception = Should.Throw<RendererException>(act);
+        exception.Message.ShouldBe("The renderer is not initialized.");
     }
 
     [Fact]
@@ -221,7 +216,7 @@ public class BatcherTests
 
         // Assert
         this.mockPushReactable.Received(1).Push(PushNotifications.BatchHasBegunId);
-        sut.HasBegun.Should().BeTrue();
+        sut.HasBegun.ShouldBeTrue();
     }
 
     [Fact]
@@ -234,8 +229,8 @@ public class BatcherTests
         var act = () => sut.Clear();
 
         // Assert
-        act.Should().Throw<RendererException>()
-            .WithMessage("The renderer is not initialized.");
+        var exception = Should.Throw<RendererException>(act);
+        exception.Message.ShouldBe("The renderer is not initialized.");
     }
 
     [Fact]
@@ -262,8 +257,8 @@ public class BatcherTests
         var act = () => sut.End();
 
         // Assert
-        act.Should().Throw<RendererException>()
-            .WithMessage("The renderer is not initialized.");
+        var exception = Should.Throw<RendererException>(act);
+        exception.Message.ShouldBe("The renderer is not initialized.");
     }
 
     [Fact]
@@ -278,7 +273,7 @@ public class BatcherTests
 
         // Assert
         this.mockPushReactable.Received(1).Push(PushNotifications.BatchHasEndedId);
-        sut.HasBegun.Should().BeFalse();
+        sut.HasBegun.ShouldBeFalse(); // Note: Changed Should().BeFalse() to ShouldBeFalse() for consistency with Shouldly
     }
     #endregion
 

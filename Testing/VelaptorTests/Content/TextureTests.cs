@@ -5,13 +5,12 @@
 namespace VelaptorTests.Content;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -74,7 +73,7 @@ public class TextureTests
             .AndDoes(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<DisposeTextureData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
                 this.disposeReactor = reactor;
             });
 
@@ -83,7 +82,6 @@ public class TextureTests
     }
 
     #region Constructor Tests
-
     [Fact]
     public void InternalCtor_WithNullGLParam_ThrowsException()
     {
@@ -97,8 +95,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'gl')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -114,8 +112,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -131,8 +129,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -148,8 +146,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'name')");
     }
 
     [Fact]
@@ -165,8 +163,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
@@ -182,8 +180,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'filePath')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'filePath')");
     }
 
     [Fact]
@@ -199,8 +197,8 @@ public class TextureTests
             this.imageData);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'filePath')");
     }
 
     [Fact]
@@ -210,8 +208,8 @@ public class TextureTests
         var act = () => CreateSystemUnderTest(true);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The image data must not be empty. (Parameter 'imageData')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The image data must not be empty. (Parameter 'imageData')");
     }
 
     [Fact]
@@ -284,13 +282,11 @@ public class TextureTests
 
         this.mockGLService.Received(1).BindTexture2D(TextureId);
         this.mockGLService.Received(1).UnbindTexture2D();
-        actualPixelBytes.Should().BeEquivalentTo(expectedPixelData.ToArray());
+        actualPixelBytes.ShouldBe(expectedPixelData.ToArray());
     }
-
     #endregion
 
     #region Prop Tests
-
     [Fact]
     public void Id_WhenCreatingTexture_ReturnsCorrectResult()
     {
@@ -301,7 +297,7 @@ public class TextureTests
         var actual = sut.Id;
 
         // Assert
-        actual.Should().Be(TextureId);
+        actual.ShouldBe(TextureId);
     }
 
     [Fact]
@@ -314,7 +310,7 @@ public class TextureTests
         var actual = sut.Name;
 
         // Assert
-        actual.Should().Be(TextureName);
+        actual.ShouldBe(TextureName);
     }
 
     [Fact]
@@ -327,7 +323,7 @@ public class TextureTests
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().Be(TexturePath);
+        actual.ShouldBe(TexturePath);
     }
 
     [Fact]
@@ -340,7 +336,7 @@ public class TextureTests
         var actual = sut.Width;
 
         // Assert
-        actual.Should().Be(2u);
+        actual.ShouldBe(2u);
     }
 
     [Fact]
@@ -353,13 +349,11 @@ public class TextureTests
         var actual = sut.Height;
 
         // Assert
-        actual.Should().Be(3u);
+        actual.ShouldBe(3u);
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     public void ReactableNotifications_WithDifferentTextureID_DoesNotDisposeOfTexture()
     {

@@ -38,12 +38,11 @@ internal sealed class SystemDisplayService : ISystemDisplayService
     /// <inheritdoc/>
     public IReadOnlyCollection<SystemDisplay> Displays =>
         this.displays is null ?
-            new ReadOnlyCollection<SystemDisplay>(Array.Empty<SystemDisplay>()) :
+            new ReadOnlyCollection<SystemDisplay>([]) :
             new ReadOnlyCollection<SystemDisplay>(this.displays.SystemDisplays);
 
     /// <inheritdoc/>
-    public SystemDisplay MainDisplay =>
-        Array.Find(this.displays?.SystemDisplays ?? [], m => m.IsMain);
+    public SystemDisplay MainDisplay => Array.Find(this.displays?.SystemDisplays ?? [], m => m.IsMain);
 
     /// <inheritdoc/>
     public void Refresh() => this.displays?.Refresh();

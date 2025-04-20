@@ -7,7 +7,7 @@ namespace VelaptorTests.Input;
 using System;
 using System.ComponentModel;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Factories;
 using Velaptor.Input;
@@ -47,9 +47,8 @@ public class MouseTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -84,8 +83,8 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        actual.GetPosition().X.Should().Be(11);
-        actual.GetPosition().Y.Should().Be(22);
+        actual.GetPosition().X.ShouldBe(11);
+        actual.GetPosition().Y.ShouldBe(22);
     }
 
     [Theory]
@@ -114,7 +113,7 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        actual.GetButtonState(mouseButton).Should().BeTrue();
+        actual.GetButtonState(mouseButton).ShouldBeTrue();
     }
 
     [Fact]
@@ -139,8 +138,8 @@ public class MouseTests
         var actual = sut.GetState();
 
         // Assert
-        actual.GetScrollDirection().Should().Be(MouseScrollDirection.ScrollDown);
-        actual.GetScrollWheelValue().Should().Be(33);
+        actual.GetScrollDirection().ShouldBe(MouseScrollDirection.ScrollDown);
+        actual.GetScrollWheelValue().ShouldBe(33);
     }
 
     [Fact]
@@ -167,8 +166,8 @@ public class MouseTests
         var act = () => reactor.OnReceive(mouseStateData);
 
         // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<InvalidEnumArgumentException>();
+        exception.Message.ShouldBe(expected);
     }
     #endregion
 

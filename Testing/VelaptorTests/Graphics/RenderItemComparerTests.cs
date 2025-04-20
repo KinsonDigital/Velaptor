@@ -5,7 +5,7 @@
 namespace VelaptorTests.Graphics;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Xunit;
@@ -44,7 +44,7 @@ public class RenderItemComparerTests
         var actual = sut.Compare(itemA, itemB);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -76,7 +76,7 @@ public class RenderItemComparerTests
         var actual = sut.Compare(itemA, itemB);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

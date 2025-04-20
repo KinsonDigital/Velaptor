@@ -11,8 +11,8 @@ using System.IO.Abstractions;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -123,9 +123,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'imageService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -144,9 +143,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureFactory')");
     }
 
     [Fact]
@@ -165,9 +163,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
+        var exception  = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -186,9 +183,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontMetaDataParser')");
+        var exception  = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
@@ -207,9 +203,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception  = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -228,9 +223,8 @@ public class TextureCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception  = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -247,7 +241,7 @@ public class TextureCacheTests
         var actual = sut.TotalCachedItems;
 
         // Assert
-        actual.Should().Be(1);
+        actual.ShouldBe(1);
     }
 
     [Fact]
@@ -263,7 +257,7 @@ public class TextureCacheTests
         var actual = sut.CacheKeys;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 
@@ -278,8 +272,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureFilePath')");
+        var exception  = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureFilePath')");
     }
 
     [Fact]
@@ -292,8 +286,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'textureFilePath')");
+        var exception  = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'textureFilePath')");
     }
 
     [Fact]
@@ -318,8 +312,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(invalidFileType);
 
         // Assert
-        act.Should().Throw<CachingException>()
-            .WithMessage($"Texture caching must be a '{TextureExtension}' file type.");
+        var exception  = act.ShouldThrow<CachingException>();
+        exception.Message.ShouldBe($"Texture caching must be a '{TextureExtension}' file type.");
     }
 
     [Fact]
@@ -348,8 +342,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(nonFontFilePathWithMetaData);
 
         // Assert
-        act.Should().Throw<CachingException>()
-            .WithMessage($"Font caching must be a '{FontExtension}' file type.");
+        var exception  = act.ShouldThrow<CachingException>();
+        exception.Message.ShouldBe($"Font caching must be a '{FontExtension}' file type.");
     }
 
     [Fact]
@@ -374,8 +368,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(nonFullFilePath);
 
         // Assert
-        act.Should().Throw<CachingException>()
-            .WithMessage($"The font file path '{nonFullFilePath}' must be a fully qualified file path of type '{FontExtension}'.");
+        var exception  = act.ShouldThrow<CachingException>();
+        exception.Message.ShouldBe($"The font file path '{nonFullFilePath}' must be a fully qualified file path of type '{FontExtension}'.");
     }
 
     [Fact]
@@ -400,8 +394,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(fullFilePath);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage($"The metadata '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
+        var exception  = act.ShouldThrow<CachingMetaDataException>();
+        exception.Message.ShouldBe($"The metadata '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
     }
 
     [Fact]
@@ -425,8 +419,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(nonFullFilePath);
 
         // Assert
-        act.Should().Throw<CachingException>()
-            .WithMessage($"The texture file path '{nonFullFilePath}' must be a fully qualified file path of type '{TextureExtension}'.");
+        var exception  = act.ShouldThrow<CachingException>();
+        exception.Message.ShouldBe($"The texture file path '{nonFullFilePath}' must be a fully qualified file path of type '{TextureExtension}'.");
     }
 
     [Fact]
@@ -448,7 +442,7 @@ public class TextureCacheTests
         this.mockPath.Received(2).GetFileNameWithoutExtension(TextureFilePath);
         this.mockTextureFactory.Received(1).Create(TextureName, TextureFilePath, this.textureImageData);
 
-        actualB.Should().BeSameAs(actualA);
+        actualB.ShouldBeSameAs(actualA);
     }
 
     [Fact]
@@ -474,7 +468,7 @@ public class TextureCacheTests
 
         this.mockTextureFactory.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData);
 
-        actualB.Should().BeSameAs(actualA);
+        actualB.ShouldBeSameAs(actualA);
     }
 
     [Fact]
@@ -494,8 +488,8 @@ public class TextureCacheTests
         var act = () => sut.GetItem(FontFilePath);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage(expected);
+        var exception  = act.ShouldThrow<CachingMetaDataException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -522,12 +516,12 @@ public class TextureCacheTests
         var act = () => sut.Unload(TextureFilePath);
 
         // Assert
-        act.Should().NotThrow<NullReferenceException>();
+        act.ShouldNotThrow();
 
-        sut.TotalCachedItems.Should().Be(0);
+        sut.TotalCachedItems.ShouldBe(0);
         this.mockDisposeReactable.Received(1).Push(PushNotifications.TextureDisposedId, Arg.Any<DisposeTextureData>());
 
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -586,7 +580,7 @@ public class TextureCacheTests
         // Assert
         this.mockDisposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 11u });
         this.mockDisposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = 22u });
-        sut.TotalCachedItems.Should().Be(0);
+        sut.TotalCachedItems.ShouldBe(0);
     }
     #endregion
 

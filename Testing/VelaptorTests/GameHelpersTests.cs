@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor;
 using Velaptor.Graphics;
 using Xunit;
@@ -17,7 +17,7 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="GameHelpers"/> class.
 /// </summary>
-[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Allowed for unit test classes.")]
+[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514: Element documentation header should be preceded by a blank line", Justification = "Allowed for unit test classes.")]
 public class GameHelpersTests
 {
     private readonly char[] letters;
@@ -64,35 +64,35 @@ public class GameHelpersTests
     public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveResult()
     {
         // Act & Assert
-        (-123f).ForcePositive().Should().Be(123f);
+        (-123f).ForcePositive().ShouldBe(123f);
     }
 
     [Fact]
     public void ForcePositive_WhenUsingPositiveValue_ReturnsPositiveResult()
     {
         // Act & Assert
-        123f.ForcePositive().Should().Be(123f);
+        123f.ForcePositive().ShouldBe(123f);
     }
 
     [Fact]
     public void ForceNegative_WhenUsingPositiveValue_ReturnsNegativeResult()
     {
         // Act & Assert
-        123f.ForceNegative().Should().Be(-123f);
+        123f.ForceNegative().ShouldBe(-123f);
     }
 
     [Fact]
     public void ForceNegative_WhenUsingNegativeValue_ReturnsNegativeResult()
     {
         // Act & Assert
-        (-123f).ForceNegative().Should().Be(-123f);
+        (-123f).ForceNegative().ShouldBe(-123f);
     }
 
     [Fact]
     public void ToRadians_WhenInvoking_ReturnsCorrectResult()
     {
         // Act & Assert
-        1234.1234f.ToDegrees().Should().Be(70710.06f);
+        1234.1234f.ToDegrees().ShouldBe(70710.06f);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class GameHelpersTests
         var actual = vectorToRotate.RotateAround(origin, angle);
 
         // Assert
-        actual.X.Should().Be(expected.X);
-        actual.Y.Should().Be(expected.Y);
+        actual.X.ShouldBe(expected.X);
+        actual.Y.ShouldBe(expected.Y);
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public class GameHelpersTests
         var actual = vectorToRotate.RotateAround(origin, angle, false);
 
         // Assert
-        actual.X.Should().Be(expected.X);
-        actual.Y.Should().Be(expected.Y);
+        actual.X.ShouldBe(expected.X);
+        actual.Y.ShouldBe(expected.Y);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class GameHelpersTests
         var actual = color.ToVector4();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -165,10 +165,10 @@ public class GameHelpersTests
         var actual = color.IncreaseBrightness(brightness);
 
         // Assert
-        actual.A.Should().Be(expectedAlpha);
-        actual.R.Should().Be(expectedRed);
-        actual.G.Should().Be(expectedGreen);
-        actual.B.Should().Be(expectedBlue);
+        actual.A.ShouldBe(expectedAlpha);
+        actual.R.ShouldBe(expectedRed);
+        actual.G.ShouldBe(expectedGreen);
+        actual.B.ShouldBe(expectedBlue);
     }
 
     [Theory]
@@ -193,10 +193,10 @@ public class GameHelpersTests
         var actual = color.DecreaseBrightness(brightness);
 
         // Assert
-        actual.A.Should().Be(expectedAlpha);
-        actual.R.Should().Be(expectedRed);
-        actual.G.Should().Be(expectedGreen);
-        actual.B.Should().Be(expectedBlue);
+        actual.A.ShouldBe(expectedAlpha);
+        actual.R.ShouldBe(expectedRed);
+        actual.G.ShouldBe(expectedGreen);
+        actual.B.ShouldBe(expectedBlue);
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public class GameHelpersTests
         var actual = rect.GetPosition();
 
         // Assert
-        actual.X.Should().Be(1);
-        actual.Y.Should().Be(2);
+        actual.X.ShouldBe(1);
+        actual.Y.ShouldBe(2);
     }
 
     [Theory]
@@ -228,7 +228,7 @@ public class GameHelpersTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -246,7 +246,7 @@ public class GameHelpersTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -264,7 +264,7 @@ public class GameHelpersTests
         var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class GameHelpersTests
         var actual = testValue.MapValue(0, 1_000, 0, 100_000);
 
         // Assert
-        actual.Should().Be(50_000);
+        actual.ShouldBe(50_000);
     }
 
     [Theory]
@@ -289,7 +289,7 @@ public class GameHelpersTests
         var actual = value.ApplySize(2f);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -301,7 +301,7 @@ public class GameHelpersTests
         var actual = value.ApplySize(2f);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -314,8 +314,8 @@ public class GameHelpersTests
         var actual = size.ApplySize(2f);
 
         // Assert
-        actual.Width.Should().Be(30f);
-        actual.Height.Should().Be(60f);
+        actual.Width.ShouldBe(30f);
+        actual.Height.ShouldBe(60f);
     }
 
     [Fact]
@@ -328,10 +328,10 @@ public class GameHelpersTests
         var actual = rect.ApplySize(2f);
 
         // Assert
-        actual.X.Should().Be(3f);
-        actual.Y.Should().Be(6f);
-        actual.Width.Should().Be(30f);
-        actual.Height.Should().Be(60f);
+        actual.X.ShouldBe(3f);
+        actual.Y.ShouldBe(6f);
+        actual.Width.ShouldBe(30f);
+        actual.Height.ShouldBe(60f);
     }
 
     [Fact]
@@ -360,41 +360,41 @@ public class GameHelpersTests
         var actual = metrics.ApplySize(2f);
 
         // Assert
-        actual.GlyphBounds.Should().Be(new RectangleF(6f, 12f, 18f, 24f));
-        actual.Glyph.Should().Be('V');
-        actual.Ascender.Should().Be(6f);
-        actual.Descender.Should().Be(6f);
-        actual.HorizontalAdvance.Should().Be(6f);
-        actual.HoriBearingX.Should().Be(6f);
-        actual.HoriBearingY.Should().Be(6f);
-        actual.GlyphWidth.Should().Be(6f);
-        actual.GlyphHeight.Should().Be(6f);
-        actual.XMin.Should().Be(6f);
-        actual.XMax.Should().Be(6f);
-        actual.YMax.Should().Be(6f);
-        actual.YMin.Should().Be(6f);
-        actual.CharIndex.Should().Be(123u);
+        actual.GlyphBounds.ShouldBe(new RectangleF(6f, 12f, 18f, 24f));
+        actual.Glyph.ShouldBe('V');
+        actual.Ascender.ShouldBe(6f);
+        actual.Descender.ShouldBe(6f);
+        actual.HorizontalAdvance.ShouldBe(6f);
+        actual.HoriBearingX.ShouldBe(6f);
+        actual.HoriBearingY.ShouldBe(6f);
+        actual.GlyphWidth.ShouldBe(6f);
+        actual.GlyphHeight.ShouldBe(6f);
+        actual.XMin.ShouldBe(6f);
+        actual.XMax.ShouldBe(6f);
+        actual.YMax.ShouldBe(6f);
+        actual.YMin.ShouldBe(6f);
+        actual.CharIndex.ShouldBe(123u);
     }
 
     [Fact]
     public void IsLetter_WithLetters_ReturnsTrue()
     {
-        // Act & Assert
-        this.letters.Should().AllSatisfy(l => l.IsLetter().Should().BeTrue());
+        // Arrange & Act & Assert
+        this.letters.ShouldAllBe(l => l.IsLetter());
     }
 
     [Fact]
     public void IsLetter_WithNonLetters_ReturnsFalse()
     {
-        // Act & Assert
-        this.nonLetters.Should().AllSatisfy(l => l.IsLetter().Should().BeFalse());
+        // Arrange & Act & Assert
+        this.nonLetters.ShouldAllBe(l => !l.IsLetter());
     }
 
     [Fact]
     public void IsNotLetter_WithNonLetters_ReturnsTrue()
     {
-        // Act & Assert
-        this.nonLetters.Should().AllSatisfy(l => l.IsNotLetter().Should().BeTrue());
+        // Arrange & Act & Assert
+        this.nonLetters.ShouldAllBe(l => l.IsNotLetter());
     }
 
     [Theory]
@@ -412,7 +412,7 @@ public class GameHelpersTests
         var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -428,7 +428,7 @@ public class GameHelpersTests
         var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -441,7 +441,7 @@ public class GameHelpersTests
         var actual = value.OnlyContainsLetters();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -454,7 +454,7 @@ public class GameHelpersTests
         var actual = value.DoesNotOnlyContainsLetters();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

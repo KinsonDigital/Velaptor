@@ -4,12 +4,12 @@
 
 namespace VelaptorTests.Content.Fonts;
 
+using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using FluentAssertions;
-using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content.Fonts;
 using Velaptor.Services;
@@ -46,9 +46,7 @@ public class FontPathResolverTests
     }
 
 #pragma warning disable SA1514
-
     #region Test Data
-
     /// <summary>
     /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesFilePath"/> test.
     /// </summary>
@@ -62,13 +60,11 @@ public class FontPathResolverTests
             { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Fonts", "sub-dir", $"test-content{Extension}") },
         };
     }
-
     #endregion
 
 #pragma warning restore SA1514
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
@@ -79,13 +75,11 @@ public class FontPathResolverTests
         var actual = resolver.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Fonts");
+        actual.ShouldBe("Fonts");
     }
-
     #endregion
 
     #region Methods Tests
-
     [Fact]
     public void ResolveFilePath_WithNullParam_ThrowsException()
     {
@@ -96,8 +90,8 @@ public class FontPathResolverTests
         var act = () => _ = sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().ThrowArgNullException()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -110,8 +104,8 @@ public class FontPathResolverTests
         var act = () => _ = sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().ThrowArgException()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -129,10 +123,9 @@ public class FontPathResolverTests
         var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
         this.mockFile.Received(1).Exists(expected);
     }
-
     #endregion
 
     /// <summary>

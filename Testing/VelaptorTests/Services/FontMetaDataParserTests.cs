@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Services;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Services;
 using Xunit;
 
@@ -46,11 +46,11 @@ public class FontMetaDataParserTests
         var actual = parser.Parse(stringToParse);
 
         // Assert
-        actual.ContainsMetaData.Should().Be(containsMetaData);
-        actual.IsValid.Should().Be(isValid);
-        actual.MetaDataPrefix.Should().Be(metaDataPrefix);
-        actual.MetaData.Should().Be(metaData);
-        actual.FontSize.Should().Be(fontSize);
+        actual.ContainsMetaData.ShouldBe(containsMetaData);
+        actual.IsValid.ShouldBe(isValid);
+        actual.MetaDataPrefix.ShouldBe(metaDataPrefix);
+        actual.MetaData.ShouldBe(metaData);
+        actual.FontSize.ShouldBe(fontSize);
     }
     #endregion
 }

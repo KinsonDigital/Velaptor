@@ -9,7 +9,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
@@ -85,9 +85,8 @@ public class TextureShaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -101,10 +100,8 @@ public class TextureShaderTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        containsAttribute
-            .Should()
-            .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
-        sut.Name.Should().Be("Texture");
+        containsAttribute.ShouldBeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
+        sut.Name.ShouldBe("Texture");
     }
     #endregion
 
@@ -148,7 +145,7 @@ public class TextureShaderTests
         var actual = shader.BatchSize;
 
         // Assert
-        actual.Should().Be(123u);
+        actual.ShouldBe(123u);
     }
 
     [Fact]
@@ -159,9 +156,9 @@ public class TextureShaderTests
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
-                reactor.Name.Should().Be($"TextureShader.ctor() - {PushNotifications.BatchSizeChangedId}");
+                reactor.Name.ShouldBe($"TextureShader.ctor() - {PushNotifications.BatchSizeChangedId}");
             });
 
         _ = CreateSystemUnderTest();

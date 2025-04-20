@@ -5,7 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class PushNotificationExceptionTests
         var exception = new PushNotificationException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue with the push notification.");
+        exception.Message.ShouldBe("There was an issue with the push notification.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class PushNotificationExceptionTests
         var exception = new PushNotificationException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        exception.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class PushNotificationExceptionTests
         var deviceException = new PushNotificationException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        deviceException.InnerException.Message.ShouldBe("inner-exception");
+        deviceException.Message.ShouldBe("test-exception");
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class PushNotificationExceptionTests
         var deviceException = new PushNotificationException(subscriberSrc, subscriptionId);
 
         // Assert
-        deviceException.Message.Should().Be(expected);
-        deviceException.InnerException.Should().BeNull();
+        deviceException.Message.ShouldBe(expected);
+        deviceException.InnerException.ShouldBeNull();
     }
     #endregion
 }

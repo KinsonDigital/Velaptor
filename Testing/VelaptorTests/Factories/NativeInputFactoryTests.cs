@@ -5,7 +5,7 @@
 namespace VelaptorTests.Factories;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Factories;
 using Xunit;
@@ -26,9 +26,8 @@ public class NativeInputFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'windowFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'windowFactory')");
     }
 
     [Fact]
@@ -38,7 +37,7 @@ public class NativeInputFactoryTests
         var act = () => _ = new NativeInputFactory(Substitute.For<IWindowFactory>());
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
     #endregion
 }

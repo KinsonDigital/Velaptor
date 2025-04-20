@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -44,7 +44,6 @@ public class AudioPathResolverTests
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
     {
@@ -54,13 +53,11 @@ public class AudioPathResolverTests
         var actual = sut.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Audio");
+        actual.ShouldBe("Audio");
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     public void ResolveFilePath_WithNullParam_ThrowsException()
     {
@@ -71,7 +68,8 @@ public class AudioPathResolverTests
         var act = () => sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -84,8 +82,8 @@ public class AudioPathResolverTests
         var act = () => sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -108,8 +106,8 @@ public class AudioPathResolverTests
         var act = () => sut.ResolveFilePath("test-content.other");
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage(expected);
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -129,7 +127,7 @@ public class AudioPathResolverTests
         var actual = sut.ResolveFilePath(fullContentName);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 

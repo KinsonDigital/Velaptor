@@ -5,7 +5,7 @@
 namespace VelaptorTests.NativeInterop.GLFW;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
 
@@ -19,8 +19,8 @@ public class GlfwErrorEventArgsTests
         var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -30,8 +30,8 @@ public class GlfwErrorEventArgsTests
         var act = () => new GlfwErrorEventArgs(GlfwErrorCode.NoError, string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -41,8 +41,8 @@ public class GlfwErrorEventArgsTests
         var eventArgs = new GlfwErrorEventArgs(GlfwErrorCode.ApiUnavailable, "test-message");
 
         // Assert
-        eventArgs.ErrorCode.Should().Be(GlfwErrorCode.ApiUnavailable);
-        eventArgs.ErrorMessage.Should().Be("test-message");
+        eventArgs.ErrorCode.ShouldBe(GlfwErrorCode.ApiUnavailable);
+        eventArgs.ErrorMessage.ShouldBe("test-message");
     }
     #endregion
 }

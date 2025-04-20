@@ -8,7 +8,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -85,9 +85,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -106,9 +105,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -127,9 +125,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlasSubTextureData')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasSubTextureData')");
     }
 
     [Fact]
@@ -148,9 +145,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'dirPath')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'dirPath')");
     }
 
     [Fact]
@@ -163,15 +159,14 @@ public class AtlasDataTests
                 this.mockTextureCache,
                 this.mockDirectory,
                 this.mockPath,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 string.Empty,
                 "atlas-name");
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'dirPath')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'dirPath')");
     }
 
     [Fact]
@@ -190,8 +185,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlasName')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasName')");
     }
 
     [Fact]
@@ -210,8 +205,8 @@ public class AtlasDataTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'atlasName')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'atlasName')");
     }
 
     [Fact]
@@ -224,8 +219,8 @@ public class AtlasDataTests
         var act = () => _ = CreateSystemUnderTest();
 
         // Assert
-        act.Should().Throw<DirectoryNotFoundException>()
-            .WithMessage($"The directory '{DirPath}' does not exist.");
+        var exception = Should.Throw<DirectoryNotFoundException>(act);
+        exception.Message.ShouldBe($"The directory '{DirPath}' does not exist.");
     }
     #endregion
 
@@ -250,7 +245,7 @@ public class AtlasDataTests
         var actual = sut.SubTextureNames;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -263,7 +258,7 @@ public class AtlasDataTests
         var actual = sut.Name;
 
         // Assert
-        actual.Should().Be(AtlasName);
+        actual.ShouldBe(AtlasName);
     }
 
     [Theory]
@@ -291,7 +286,7 @@ public class AtlasDataTests
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -318,7 +313,7 @@ public class AtlasDataTests
         var actual = sut.AtlasDataFilePath;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -336,7 +331,7 @@ public class AtlasDataTests
         var actual = sut.Width;
 
         // Assert
-        actual.Should().Be(123u);
+        actual.ShouldBe(123u);
     }
 
     [Fact]
@@ -354,7 +349,7 @@ public class AtlasDataTests
         var actual = sut.Height;
 
         // Assert
-        actual.Should().Be(123u);
+        actual.ShouldBe(123u);
     }
     #endregion
 
@@ -380,9 +375,9 @@ public class AtlasDataTests
         var actual = sut[2];
 
         // Assert
-        actual.Name.Should().Be(expected.Name);
-        actual.FrameIndex.Should().Be(expected.FrameIndex);
-        actual.Bounds.Should().Be(expected.Bounds);
+        actual.Name.ShouldBe(expected.Name);
+        actual.FrameIndex.ShouldBe(expected.FrameIndex);
+        actual.Bounds.ShouldBe(expected.Bounds);
     }
 
     [Fact]
@@ -395,8 +390,8 @@ public class AtlasDataTests
         var act = () => sut.GetFrames(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'subTextureId')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'subTextureId')");
     }
 
     [Fact]
@@ -409,8 +404,8 @@ public class AtlasDataTests
         var act = () => sut.GetFrames(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'subTextureId')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'subTextureId')");
     }
 
     [Fact]
@@ -431,8 +426,8 @@ public class AtlasDataTests
         var act = () => sut.GetFrames(subTextureId);
 
         // Assert
-        act.Should().Throw<AtlasException>()
-            .WithMessage($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
+        var exception = Should.Throw<AtlasException>(act);
+        exception.Message.ShouldBe($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
     }
 
     [Fact]
@@ -461,7 +456,7 @@ public class AtlasDataTests
         var actual = sut.GetFrames("test-texture");
 
         // Assert
-        actual.Should().BeEquivalentTo(expectedItems);
+        actual.ShouldBeEquivalentTo(expectedItems);
     }
 
     [Fact]
@@ -481,9 +476,9 @@ public class AtlasDataTests
         var actual = sut.GetFrames("test-texture")[0];
 
         // Assert
-        actual.Name.Should().Be(expected.Name);
-        actual.FrameIndex.Should().Be(expected.FrameIndex);
-        actual.Bounds.Should().Be(expected.Bounds);
+        actual.Name.ShouldBe(expected.Name);
+        actual.FrameIndex.ShouldBe(expected.FrameIndex);
+        actual.Bounds.ShouldBe(expected.Bounds);
     }
     #endregion
 

@@ -8,7 +8,7 @@ using System;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Fakes;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -74,7 +74,7 @@ public class ShaderProgramTests
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
 
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -94,7 +94,7 @@ public class ShaderProgramTests
             .Returns(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -183,7 +183,7 @@ public class ShaderProgramTests
         var actual = sut.Name;
 
         // Assert
-        actual.Should().Be("UNKNOWN");
+        actual.ShouldBe("UNKNOWN");
     }
     #endregion
 
@@ -379,15 +379,15 @@ public class ShaderProgramTests
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
-                    reactor.Name.Should().Be($"ShaderProgram.UNKNOWN() - {PushNotifications.GLInitializedId}");
+                    reactor.Name.ShouldBe($"ShaderProgram.UNKNOWN() - {PushNotifications.GLInitializedId}");
                 }
                 else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    reactor.Name.Should().Be($"ShaderProgram.UNKNOWN() - {PushNotifications.SystemShuttingDownId}");
+                    reactor.Name.ShouldBe($"ShaderProgram.UNKNOWN() - {PushNotifications.SystemShuttingDownId}");
                 }
                 else
                 {

@@ -8,7 +8,7 @@ namespace VelaptorTests.ExtensionMethods;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ExtensionMethods;
 using Velaptor.Input;
 using Xunit;
@@ -161,12 +161,12 @@ public class KeyCodeExtensionsTests
         SetKeysToValue(letterKeys, keyCodes, true);
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsLetterKey().Should().Be(actualValue);
-        });
+            actualKey.IsLetterKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -180,12 +180,12 @@ public class KeyCodeExtensionsTests
         SetKeysToValue(standardNumKeys, keyCodes, true);
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsNumberKey().Should().Be(actualValue);
-        });
+            actualKey.IsNumberKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -197,12 +197,12 @@ public class KeyCodeExtensionsTests
         SetKeysToValue(symbolKeys, keyCodes, true);
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsSymbolKey().Should().Be(actualValue);
-        });
+            actualKey.IsSymbolKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -220,12 +220,12 @@ public class KeyCodeExtensionsTests
         SetKeysToValue(numPadKeys, keyCodes, true);
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsVisibleKey().Should().Be(actualValue);
-        });
+            actualKey.IsVisibleKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -243,12 +243,12 @@ public class KeyCodeExtensionsTests
         SetKeysToValue(numPadKeys, keyCodes, false);
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsNotVisibleKey().Should().Be(actualValue);
-        });
+            actualKey.IsNotVisibleKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -260,12 +260,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.RightShift] = true;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsShiftKey().Should().Be(actualValue);
-        });
+            actualKey.IsShiftKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -279,12 +279,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.Down] = true;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsArrowKey().Should().Be(actualValue);
-        });
+            actualKey.IsArrowKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -296,12 +296,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.RightControl] = true;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsCtrlKey().Should().Be(actualValue);
-        });
+            actualKey.IsCtrlKey().ShouldBe(actualValue);
+        }
     }
 
     [Theory]
@@ -312,7 +312,7 @@ public class KeyCodeExtensionsTests
         var actual = key.ToChar(anyShiftKeysDown);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -330,12 +330,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.End] = true;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsMoveCursorKey().Should().Be(actualValue);
-        });
+            actualKey.IsMoveCursorKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -353,12 +353,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.End] = false;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsNotMoveCursorKey().Should().Be(actualValue);
-        });
+            actualKey.IsNotMoveCursorKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -370,12 +370,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.Backspace] = true;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsDeletionKey().Should().Be(actualValue);
-        });
+            actualKey.IsDeletionKey().ShouldBe(actualValue);
+        }
     }
 
     [Fact]
@@ -387,12 +387,12 @@ public class KeyCodeExtensionsTests
         keyCodes[KeyCode.Backspace] = false;
 
         // Act & Assert
-        keyCodes.Should().AllSatisfy(data =>
+        foreach (var data in keyCodes)
         {
             (KeyCode actualKey, var actualValue) = data;
 
-            actualKey.IsNotDeletionKey().Should().Be(actualValue);
-        });
+            actualKey.IsNotDeletionKey().ShouldBe(actualValue);
+        }
     }
 
     /// <summary>

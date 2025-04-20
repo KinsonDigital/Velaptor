@@ -6,7 +6,7 @@ namespace VelaptorTests.OpenGL.Batching;
 
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL.Batching;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,10 +53,10 @@ public class LineBatchItemTests
         var sut = new LineBatchItem(expectedP1, expectedP2, expectedClr, expectedThickness);
 
         // Assert
-        sut.P1.Should().BeEquivalentTo(expectedP1);
-        sut.P2.Should().BeEquivalentTo(expectedP2);
-        sut.Color.Should().BeEquivalentTo(expectedClr);
-        sut.Thickness.Should().Be(expectedThickness);
+        sut.P1.ShouldBeEquivalentTo(expectedP1);
+        sut.P2.ShouldBeEquivalentTo(expectedP2);
+        sut.Color.ShouldBeEquivalentTo(expectedClr);
+        sut.Thickness.ShouldBe(expectedThickness);
     }
 
     [Theory]
@@ -77,7 +77,7 @@ public class LineBatchItemTests
 
         // Assert
         this.testOutputHelper.WriteLine($"Test Param: {testName}");
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

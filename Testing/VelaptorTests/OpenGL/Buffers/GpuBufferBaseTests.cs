@@ -10,9 +10,9 @@ using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Fakes;
-using FluentAssertions;
 using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.NativeInterop.OpenGL;
@@ -76,7 +76,7 @@ public class GpuBufferBaseTests : TestsBase
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
 
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
@@ -94,7 +94,7 @@ public class GpuBufferBaseTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<ViewPortSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.ViewPortSizeChangedId)
                 {
@@ -163,7 +163,7 @@ public class GpuBufferBaseTests : TestsBase
         var actual = buffer.BatchSize;
 
         // Assert
-        actual.Should().Be(100u);
+        actual.ShouldBe(100u);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class GpuBufferBaseTests : TestsBase
         this.glInitReactor.OnReceive();
 
         // Assert
-        buffer.IsInitialized.Should().BeTrue();
+        buffer.IsInitialized.ShouldBeTrue();
     }
     #endregion
 
@@ -247,7 +247,7 @@ public class GpuBufferBaseTests : TestsBase
         this.glInitReactor.OnReceive();
 
         // Assert
-        sut.GenerateDataInvoked.Should().BeTrue(becauseMsg);
+        sut.GenerateDataInvoked.ShouldBeTrue(becauseMsg);
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class GpuBufferBaseTests : TestsBase
         this.glInitReactor.OnReceive();
 
         // Assert
-        sut.GenerateIndicesInvoked.Should().BeTrue(becauseMsg);
+        sut.GenerateIndicesInvoked.ShouldBeTrue(becauseMsg);
     }
 
     [Fact]
@@ -305,7 +305,7 @@ public class GpuBufferBaseTests : TestsBase
         this.glInitReactor.OnReceive();
 
         // Assert
-        sut.SetupVAOInvoked.Should().BeTrue(becauseMsg);
+        sut.SetupVAOInvoked.ShouldBeTrue(becauseMsg);
     }
 
     [Fact]
@@ -356,9 +356,9 @@ public class GpuBufferBaseTests : TestsBase
         this.mockGLService.Received(3).EndGroup();
 
         // Check that the setup data group was called first
-        setupDataGroupSequence.Should().Be(1);
-        uploadVertexDataGroupSequence.Should().Be(2);
-        uploadIndicesDataGroupSequence.Should().Be(3);
+        setupDataGroupSequence.ShouldBe(1);
+        uploadVertexDataGroupSequence.ShouldBe(2);
+        uploadIndicesDataGroupSequence.ShouldBe(3);
     }
 
     [Fact]
@@ -374,7 +374,7 @@ public class GpuBufferBaseTests : TestsBase
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        sut.PrepareForUseInvoked.Should().BeTrue(becauseMsg);
+        sut.PrepareForUseInvoked.ShouldBeTrue(becauseMsg);
     }
 
     [Fact]
@@ -390,7 +390,7 @@ public class GpuBufferBaseTests : TestsBase
         sut.UploadData(batchItem, 0u);
 
         // Assert
-        sut.UpdateVertexDataInvoked.Should().BeTrue(becauseMsg);
+        sut.UpdateVertexDataInvoked.ShouldBeTrue(becauseMsg);
     }
 
     [Fact]
@@ -424,15 +424,15 @@ public class GpuBufferBaseTests : TestsBase
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
 
-                reactor.Should().NotBeNull("it is required for this unit test.");
+                reactor.ShouldNotBeNull("it is required for this unit test.");
 
                 if (reactor.Id == PushNotifications.GLInitializedId)
                 {
-                    reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.GLInitializedId}");
+                    reactor.Name.ShouldBe($"GpuBufferBase.ctor() - {PushNotifications.GLInitializedId}");
                 }
                 else if (reactor.Id == PushNotifications.SystemShuttingDownId)
                 {
-                    reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.SystemShuttingDownId}");
+                    reactor.Name.ShouldBe($"GpuBufferBase.ctor() - {PushNotifications.SystemShuttingDownId}");
                 }
             });
 
@@ -449,8 +449,8 @@ public class GpuBufferBaseTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<ViewPortSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"GpuBufferBase.ctor() - {PushNotifications.ViewPortSizeChangedId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"GpuBufferBase.ctor() - {PushNotifications.ViewPortSizeChangedId}");
             });
     }
 
@@ -464,7 +464,7 @@ public class GpuBufferBaseTests : TestsBase
         this.viewPortSizeReactor.OnReceive(new ViewPortSizeData { Width = 11, Height = 22 });
 
         // Assert
-        sut.ViewPortSize.Should().BeEquivalentTo(new SizeU(11, 22));
+        sut.ViewPortSize.ShouldBeEquivalentTo(new SizeU(11, 22));
     }
     #endregion
 

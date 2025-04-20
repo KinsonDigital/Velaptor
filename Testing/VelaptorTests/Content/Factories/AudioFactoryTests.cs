@@ -7,8 +7,8 @@ namespace VelaptorTests.Content.Factories;
 using System;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
@@ -45,9 +45,8 @@ public class AudioFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -62,7 +61,7 @@ public class AudioFactoryTests
         var actual = sut.GetNewId("test-file");
 
         // Assert
-        actual.Should().Be(1);
+        actual.ShouldBe(1u);
     }
     #endregion
 
@@ -85,8 +84,8 @@ public class AudioFactoryTests
                 var notificationId = callInfo.Arg<Guid>();
                 var data = callInfo.Arg<DisposeAudioData>();
 
-                notificationId.Should().Be(PushNotifications.AudioDisposedId);
-                data.AudioId.Should().Be(1u);
+                notificationId.ShouldBe(PushNotifications.AudioDisposedId);
+                data.AudioId.ShouldBe(1u);
             });
 
         var sut = CreateSystemUnderTest();
@@ -96,7 +95,7 @@ public class AudioFactoryTests
         subscription.OnReceive(new DisposeAudioData { AudioId = 1u });
 
         // Assert
-        sut.LoadedAudio.Should().BeEmpty();
+        sut.LoadedAudio.ShouldBeEmpty();
     }
     #endregion
 

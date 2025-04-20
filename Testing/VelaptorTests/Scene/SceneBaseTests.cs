@@ -9,7 +9,7 @@ using System.Drawing;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using Fakes;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
@@ -52,9 +52,8 @@ public class SceneBaseTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -64,10 +63,10 @@ public class SceneBaseTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.Name.Should().BeEmpty();
-        sut.Id.Should().NotBe(Guid.Empty);
-        sut.IsLoaded.Should().BeFalse();
-        sut.WindowSize.Should().BeEquivalentTo(default(SizeU));
+        sut.Name.ShouldBeEmpty();
+        sut.Id.ShouldNotBe(Guid.Empty);
+        sut.IsLoaded.ShouldBeFalse();
+        sut.WindowSize.ShouldBeEquivalentTo(default(SizeU));
     }
 
     [Fact]
@@ -83,7 +82,7 @@ public class SceneBaseTests
 
         // Assert
         mockPullWinSizeReactable.Received(1).Pull(PullNotifications.GetWindowSizeId);
-        sut.WindowSize.Should().Be(new SizeU(100, 200));
+        sut.WindowSize.ShouldBe(new SizeU(100, 200));
     }
     #endregion
 
@@ -98,7 +97,7 @@ public class SceneBaseTests
         };
 
         // Assert
-        sut.Name.Should().Be("test-value");
+        sut.Name.ShouldBe("test-value");
     }
     #endregion
 
@@ -113,7 +112,7 @@ public class SceneBaseTests
         sut.LoadContent();
 
         // Assert
-        sut.IsLoaded.Should().BeTrue();
+        sut.IsLoaded.ShouldBeTrue();
     }
 
     [Fact]
@@ -128,7 +127,7 @@ public class SceneBaseTests
         sut.UnloadContent();
 
         // Assert
-        sut.IsLoaded.Should().BeFalse();
+        sut.IsLoaded.ShouldBeFalse();
     }
 
     [Fact]
@@ -141,7 +140,7 @@ public class SceneBaseTests
         sut.UnloadContent();
 
         // Assert
-        sut.IsLoaded.Should().BeFalse();
+        sut.IsLoaded.ShouldBeFalse();
     }
 
     [Fact]
@@ -154,7 +153,7 @@ public class SceneBaseTests
         sut.Resize(new SizeU(10u, 10u));
 
         // Assert
-        sut.WindowSize.Should().Be(new SizeU(10u, 10u));
+        sut.WindowSize.ShouldBe(new SizeU(10u, 10u));
     }
     #endregion
 
@@ -169,8 +168,8 @@ public class SceneBaseTests
         this.winSizeReactor.OnReceive(new WindowSizeData { Width = 100, Height = 200 });
 
         // Assert
-        sut.WindowSize.Should().BeEquivalentTo(new SizeU { Width = 100, Height = 200 });
-        sut.WindowCenter.Should().BeEquivalentTo(new Point { X = 50, Y = 100 });
+        sut.WindowSize.ShouldBeEquivalentTo(new SizeU { Width = 100, Height = 200 });
+        sut.WindowCenter.ShouldBeEquivalentTo(new Point { X = 50, Y = 100 });
     }
     #endregion
 

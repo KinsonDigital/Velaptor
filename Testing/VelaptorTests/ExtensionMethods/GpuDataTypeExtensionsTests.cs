@@ -9,7 +9,7 @@ namespace VelaptorTests.ExtensionMethods;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ExtensionMethods;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GpuData;
@@ -30,12 +30,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetVertexPos(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetVertexPos(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -66,15 +63,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.VertexPos.Should().Be(new Vector2(1111f, 2222f));
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.VertexPos.ShouldBe(new Vector2(1111f, 2222f));
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -91,12 +88,9 @@ public class GpuDataTypeExtensionsTests
             new LineVertexData(Vector2.Zero, Color.Empty),
             new LineVertexData(Vector2.Zero, Color.Empty));
 
-        // Act
-        var act = () => gpuData.SetVertexPos(Vector2.Zero, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetVertexPos(Vector2.Zero, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -109,12 +103,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetRectangle(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetRectangle(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -145,15 +136,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(new Vector4(1111f, 2222f, 3333f, 4444f));
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(new Vector4(1111f, 2222f, 3333f, 4444f));
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -167,10 +158,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetRectangle(new Vector4(111, 222, 333, 444));
 
         // Assert
-        actual.Vertex1.BoundingBox.Should().Be(expected);
-        actual.Vertex2.BoundingBox.Should().Be(expected);
-        actual.Vertex3.BoundingBox.Should().Be(expected);
-        actual.Vertex4.BoundingBox.Should().Be(expected);
+        actual.Vertex1.BoundingBox.ShouldBe(expected);
+        actual.Vertex2.BoundingBox.ShouldBe(expected);
+        actual.Vertex3.BoundingBox.ShouldBe(expected);
+        actual.Vertex4.BoundingBox.ShouldBe(expected);
     }
 
     [Fact]
@@ -183,12 +174,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetAsSolid(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetAsSolid(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -219,15 +207,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        actual.IsSolid.Should().BeTrue();
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        actual.IsSolid.ShouldBeTrue();
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -240,10 +228,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetAsSolid(true);
 
         // Assert
-        actual.Vertex1.IsSolid.Should().BeTrue();
-        actual.Vertex2.IsSolid.Should().BeTrue();
-        actual.Vertex3.IsSolid.Should().BeTrue();
-        actual.Vertex4.IsSolid.Should().BeTrue();
+        actual.Vertex1.IsSolid.ShouldBeTrue();
+        actual.Vertex2.IsSolid.ShouldBeTrue();
+        actual.Vertex3.IsSolid.ShouldBeTrue();
+        actual.Vertex4.IsSolid.ShouldBeTrue();
     }
 
     [Fact]
@@ -256,12 +244,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetBorderThickness(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetBorderThickness(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -292,15 +277,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        actual.BorderThickness.Should().Be(123f);
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.IsSolid.Should().Be(expectedVertex.IsSolid);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        actual.BorderThickness.ShouldBe(123f);
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.IsSolid.ShouldBe(expectedVertex.IsSolid);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -314,10 +299,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetBorderThickness(123f);
 
         // Assert
-        actual.Vertex1.BorderThickness.Should().Be(expected);
-        actual.Vertex2.BorderThickness.Should().Be(expected);
-        actual.Vertex3.BorderThickness.Should().Be(expected);
-        actual.Vertex4.BorderThickness.Should().Be(expected);
+        actual.Vertex1.BorderThickness.ShouldBe(expected);
+        actual.Vertex2.BorderThickness.ShouldBe(expected);
+        actual.Vertex3.BorderThickness.ShouldBe(expected);
+        actual.Vertex4.BorderThickness.ShouldBe(expected);
     }
 
     [Fact]
@@ -330,12 +315,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetTopLeftCornerRadius(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetTopLeftCornerRadius(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -366,15 +348,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.TopLeftCornerRadius.Should().Be(1234f);
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.TopLeftCornerRadius.ShouldBe(1234f);
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -388,10 +370,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetTopLeftCornerRadius(123f);
 
         // Assert
-        actual.Vertex1.TopLeftCornerRadius.Should().Be(expected);
-        actual.Vertex2.TopLeftCornerRadius.Should().Be(expected);
-        actual.Vertex3.TopLeftCornerRadius.Should().Be(expected);
-        actual.Vertex4.TopLeftCornerRadius.Should().Be(expected);
+        actual.Vertex1.TopLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex2.TopLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex3.TopLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex4.TopLeftCornerRadius.ShouldBe(expected);
     }
 
     [Fact]
@@ -404,12 +386,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetBottomLeftCornerRadius(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetBottomLeftCornerRadius(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -440,15 +419,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.BottomLeftCornerRadius.Should().Be(1234f);
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.BottomLeftCornerRadius.ShouldBe(1234f);
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -462,10 +441,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetBottomLeftCornerRadius(123f);
 
         // Assert
-        actual.Vertex1.BottomLeftCornerRadius.Should().Be(expected);
-        actual.Vertex2.BottomLeftCornerRadius.Should().Be(expected);
-        actual.Vertex3.BottomLeftCornerRadius.Should().Be(expected);
-        actual.Vertex4.BottomLeftCornerRadius.Should().Be(expected);
+        actual.Vertex1.BottomLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex2.BottomLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex3.BottomLeftCornerRadius.ShouldBe(expected);
+        actual.Vertex4.BottomLeftCornerRadius.ShouldBe(expected);
     }
 
     [Fact]
@@ -478,12 +457,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetBottomRightCornerRadius(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetBottomRightCornerRadius(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -514,15 +490,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.BottomRightCornerRadius.Should().Be(1234f);
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.BottomRightCornerRadius.ShouldBe(1234f);
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -536,10 +512,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetBottomRightCornerRadius(123f);
 
         // Assert
-        actual.Vertex1.BottomRightCornerRadius.Should().Be(expected);
-        actual.Vertex2.BottomRightCornerRadius.Should().Be(expected);
-        actual.Vertex3.BottomRightCornerRadius.Should().Be(expected);
-        actual.Vertex4.BottomRightCornerRadius.Should().Be(expected);
+        actual.Vertex1.BottomRightCornerRadius.ShouldBe(expected);
+        actual.Vertex2.BottomRightCornerRadius.ShouldBe(expected);
+        actual.Vertex3.BottomRightCornerRadius.ShouldBe(expected);
+        actual.Vertex4.BottomRightCornerRadius.ShouldBe(expected);
     }
 
     [Fact]
@@ -552,12 +528,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetTopRightCornerRadius(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetTopRightCornerRadius(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -588,15 +561,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.TopRightCornerRadius.Should().Be(1234f);
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(expectedVertex.Color);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.TopRightCornerRadius.ShouldBe(1234f);
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(expectedVertex.Color);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
     }
 
     [Fact]
@@ -610,10 +583,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetTopRightCornerRadius(123f);
 
         // Assert
-        actual.Vertex1.TopRightCornerRadius.Should().Be(expected);
-        actual.Vertex2.TopRightCornerRadius.Should().Be(expected);
-        actual.Vertex3.TopRightCornerRadius.Should().Be(expected);
-        actual.Vertex4.TopRightCornerRadius.Should().Be(expected);
+        actual.Vertex1.TopRightCornerRadius.ShouldBe(expected);
+        actual.Vertex2.TopRightCornerRadius.ShouldBe(expected);
+        actual.Vertex3.TopRightCornerRadius.ShouldBe(expected);
+        actual.Vertex4.TopRightCornerRadius.ShouldBe(expected);
     }
 
     [Fact]
@@ -626,12 +599,9 @@ public class GpuDataTypeExtensionsTests
 
         var gpuData = GenerateGpuDataInSequence(0);
 
-        // Act
-        var act = () => gpuData.SetColor(default, (VertexNumber)invalidValue);
-
-        // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => gpuData.SetColor(default, (VertexNumber)invalidValue));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -662,15 +632,15 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        expectedVertex.IsSolid.Should().BeFalse();
-        actual.VertexPos.Should().Be(expectedVertex.VertexPos);
-        actual.BoundingBox.Should().Be(expectedVertex.BoundingBox);
-        actual.Color.Should().Be(Color.Blue);
-        actual.BorderThickness.Should().Be(expectedVertex.BorderThickness);
-        actual.TopLeftCornerRadius.Should().Be(expectedVertex.TopLeftCornerRadius);
-        actual.BottomLeftCornerRadius.Should().Be(expectedVertex.BottomLeftCornerRadius);
-        actual.BottomRightCornerRadius.Should().Be(expectedVertex.BottomRightCornerRadius);
-        actual.TopRightCornerRadius.Should().Be(expectedVertex.TopRightCornerRadius);
+        expectedVertex.IsSolid.ShouldBeFalse();
+        actual.VertexPos.ShouldBe(expectedVertex.VertexPos);
+        actual.BoundingBox.ShouldBe(expectedVertex.BoundingBox);
+        actual.Color.ShouldBe(Color.Blue);
+        actual.BorderThickness.ShouldBe(expectedVertex.BorderThickness);
+        actual.TopLeftCornerRadius.ShouldBe(expectedVertex.TopLeftCornerRadius);
+        actual.BottomLeftCornerRadius.ShouldBe(expectedVertex.BottomLeftCornerRadius);
+        actual.BottomRightCornerRadius.ShouldBe(expectedVertex.BottomRightCornerRadius);
+        actual.TopRightCornerRadius.ShouldBe(expectedVertex.TopRightCornerRadius);
     }
 
     [Fact]
@@ -684,10 +654,10 @@ public class GpuDataTypeExtensionsTests
         var actual = gpuData.SetColor(Color.FromArgb(220, 230, 240, 250));
 
         // Assert
-        actual.Vertex1.Color.Should().Be(expected);
-        actual.Vertex2.Color.Should().Be(expected);
-        actual.Vertex3.Color.Should().Be(expected);
-        actual.Vertex4.Color.Should().Be(expected);
+        actual.Vertex1.Color.ShouldBe(expected);
+        actual.Vertex2.Color.ShouldBe(expected);
+        actual.Vertex3.Color.ShouldBe(expected);
+        actual.Vertex4.Color.ShouldBe(expected);
     }
 
     [Fact]
@@ -704,10 +674,10 @@ public class GpuDataTypeExtensionsTests
         var actual = data.SetColor(Color.CornflowerBlue);
 
         // Assert
-        actual.Vertex1.Color.Should().Be(Color.CornflowerBlue);
-        actual.Vertex2.Color.Should().Be(Color.CornflowerBlue);
-        actual.Vertex3.Color.Should().Be(Color.CornflowerBlue);
-        actual.Vertex4.Color.Should().Be(Color.CornflowerBlue);
+        actual.Vertex1.Color.ShouldBe(Color.CornflowerBlue);
+        actual.Vertex2.Color.ShouldBe(Color.CornflowerBlue);
+        actual.Vertex3.Color.ShouldBe(Color.CornflowerBlue);
+        actual.Vertex4.Color.ShouldBe(Color.CornflowerBlue);
     }
 
     [Theory]
@@ -736,7 +706,7 @@ public class GpuDataTypeExtensionsTests
         };
 
         // Assert
-        actual.VertexPos.Should().BeEquivalentTo(expectedPos);
+        actual.VertexPos.ShouldBeEquivalentTo(expectedPos);
     }
 
     /// <summary>

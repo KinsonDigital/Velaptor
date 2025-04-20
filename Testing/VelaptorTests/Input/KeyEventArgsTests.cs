@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Input;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Input;
 using Xunit;
 
@@ -24,7 +24,7 @@ public class KeyEventArgsTests
         var sut = new KeyEventArgs(expectedKey);
 
         // Assert
-        sut.Key.Should().Be(expectedKey);
+        sut.Key.ShouldBe(expectedKey);
     }
     #endregion
 }

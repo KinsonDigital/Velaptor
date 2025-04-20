@@ -4,7 +4,7 @@
 
 namespace VelaptorTests;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor;
 using Xunit;
 
@@ -21,8 +21,8 @@ public class SizeUTests
         var size = new SizeU(11u, 22u);
 
         // Assert
-        size.Width.Should().Be(11u);
-        size.Height.Should().Be(22u);
+        size.Width.ShouldBe(11u);
+        size.Height.ShouldBe(22u);
     }
     #endregion
 }
