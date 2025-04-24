@@ -10,7 +10,7 @@ using System.IO;
 using System.IO.Abstractions;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -75,9 +75,8 @@ public class AudioCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'audioFactory')");
     }
 
     [Fact]
@@ -94,9 +93,8 @@ public class AudioCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -113,9 +111,8 @@ public class AudioCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -132,9 +129,8 @@ public class AudioCacheTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -150,7 +146,7 @@ public class AudioCacheTests
         var actual = sut.TotalCachedItems;
 
         // Assert
-        actual.Should().Be(1);
+        actual.ShouldBe(1);
     }
 
     [Fact]
@@ -165,7 +161,7 @@ public class AudioCacheTests
         var actual = sut.CacheKeys;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 
@@ -180,8 +176,8 @@ public class AudioCacheTests
         var act = () => sut.GetItem(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioFilePath')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'audioFilePath')");
     }
 
     [Fact]
@@ -194,8 +190,8 @@ public class AudioCacheTests
         var act = () => sut.GetItem(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'audioFilePath')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'audioFilePath')");
     }
 
     [Fact]
@@ -217,8 +213,8 @@ public class AudioCacheTests
         var act = () => sut.GetItem($"{audioFilePath}|Stream");
 
         // Assert
-        act.Should().Throw<LoadAudioException>()
-            .WithMessage(expected);
+        var exception = Should.Throw<LoadAudioException>(act);
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -233,8 +229,8 @@ public class AudioCacheTests
         var act = () => sut.GetItem($"{OggAudioFilePath}|Stream");
 
         // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage($"The '{OggFileExtension}' audio file does not exist.");
+        var exception = Should.Throw<FileNotFoundException>(act);
+        exception.Message.ShouldBe($"The '{OggFileExtension}' audio file does not exist.");
     }
 
     [Fact]
@@ -249,8 +245,8 @@ public class AudioCacheTests
         var act = () => sut.GetItem($"{Mp3AudioFilePath}|Stream");
 
         // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage($"The '{Mp3FileExtension}' audio file does not exist.");
+        var exception = Should.Throw<FileNotFoundException>(act);
+        exception.Message.ShouldBe($"The '{Mp3FileExtension}' audio file does not exist.");
     }
 
     [Fact]
@@ -275,16 +271,16 @@ public class AudioCacheTests
         var ogg = sut.GetItem($"{OggAudioFilePath}|Full");
 
         // Assert
-        mp3.Should().NotBeNull();
-        ogg.Should().NotBeNull();
+        mp3.ShouldNotBeNull();
+        ogg.ShouldNotBeNull();
 
-        ogg.Should().NotBeSameAs(mp3);
+        ogg.ShouldNotBeSameAs(mp3);
 
-        mp3.Id.Should().Be(123u);
-        ogg.Id.Should().Be(456u);
+        mp3.Id.ShouldBe(123u);
+        ogg.Id.ShouldBe(456u);
 
-        mp3.FilePath.Should().Be(Mp3AudioFilePath);
-        ogg.FilePath.Should().Be(OggAudioFilePath);
+        mp3.FilePath.ShouldBe(Mp3AudioFilePath);
+        ogg.FilePath.ShouldBe(OggAudioFilePath);
     }
 
     [Fact]
@@ -303,9 +299,9 @@ public class AudioCacheTests
         var act = () => sut.Unload(OggAudioFilePath);
 
         // Assert
-        act.Should().NotThrow<NullReferenceException>();
+        Should.NotThrow(act);
 
-        sut.TotalCachedItems.Should().Be(0);
+        sut.TotalCachedItems.ShouldBe(0);
         this.mockDisposeReactable.Received(1)
             .Push(PushNotifications.AudioDisposedId, Arg.Is<DisposeAudioData>(data => data.AudioId == 123u));
     }

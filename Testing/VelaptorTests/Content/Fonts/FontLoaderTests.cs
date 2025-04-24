@@ -9,7 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using Fakes;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -153,9 +153,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -178,9 +177,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'embeddedFontResourceService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'embeddedFontResourceService')");
     }
 
     [Fact]
@@ -203,8 +201,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontPathResolver')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontPathResolver')");
     }
 
     [Fact]
@@ -227,8 +225,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -251,8 +249,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontFactory')");
     }
 
     [Fact]
@@ -274,8 +272,8 @@ public class FontLoaderTests
                 this.mockPath);
         };
 
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontMetaDataParser')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
@@ -298,8 +296,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -322,8 +320,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -346,8 +344,8 @@ public class FontLoaderTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fileStream')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fileStream')");
     }
 
     [Fact]
@@ -370,8 +368,8 @@ public class FontLoaderTests
         };
 
         // Arrange
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -445,8 +443,8 @@ public class FontLoaderTests
         var act = () => sut.Load(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -459,8 +457,8 @@ public class FontLoaderTests
         var act = () => sut.Load(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -488,8 +486,8 @@ public class FontLoaderTests
         var act = () => sut.Load(contentName);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<CachingMetaDataException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -543,8 +541,8 @@ public class FontLoaderTests
         var act = () => sut.Load(this.filePathWithMetaData);
 
         // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<FileNotFoundException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -586,7 +584,7 @@ public class FontLoaderTests
                     Arg.Any<bool>(),
                     this.glyphMetricData);
 
-        actual.Should().BeEquivalentTo(this.mockFont);
+        actual.ShouldBeEquivalentTo(this.mockFont);
     }
 
     [Fact]
@@ -612,7 +610,7 @@ public class FontLoaderTests
                     Arg.Any<bool>(),
                     this.glyphMetricData);
 
-        actual.Should().BeEquivalentTo(this.mockFont);
+        actual.ShouldBeEquivalentTo(this.mockFont);
     }
 
     [Fact]
@@ -639,7 +637,7 @@ public class FontLoaderTests
                     Arg.Any<bool>(),
                     this.glyphMetricData);
 
-        actual.Should().BeEquivalentTo(this.mockFont);
+        actual.ShouldBeEquivalentTo(this.mockFont);
     }
 
     [Fact]
@@ -667,8 +665,8 @@ public class FontLoaderTests
         var act = () => sut.Unload(contentName);
 
         // Assert
-        act.Should().Throw<CachingMetaDataException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<CachingMetaDataException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]

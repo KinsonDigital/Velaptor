@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Input;
 using Velaptor.ReactableData;
 using Xunit;
@@ -30,12 +30,12 @@ public class MouseStateDataTests
         };
 
         // Assert
-        sut.X.Should().Be(1);
-        sut.Y.Should().Be(2);
-        sut.Button.Should().Be(MouseButton.MiddleButton);
-        sut.ButtonIsDown.Should().BeTrue();
-        sut.ScrollDirection.Should().Be(MouseScrollDirection.ScrollDown);
-        sut.ScrollWheelValue.Should().Be(3);
+        sut.X.ShouldBe(1);
+        sut.Y.ShouldBe(2);
+        sut.Button.ShouldBe(MouseButton.MiddleButton);
+        sut.ButtonIsDown.ShouldBeTrue();
+        sut.ScrollDirection.ShouldBe(MouseScrollDirection.ScrollDown);
+        sut.ScrollWheelValue.ShouldBe(3);
     }
     #endregion
 }

@@ -5,7 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class LoadContentExceptionTests
         var exception = new LoadContentException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue loading the content.");
+        exception.Message.ShouldBe("There was an issue loading the content.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class LoadContentExceptionTests
         var exception = new LoadContentException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        exception.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class LoadContentExceptionTests
         var deviceException = new LoadContentException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        deviceException.InnerException.Message.ShouldBe("inner-exception");
+        deviceException.Message.ShouldBe("test-exception");
     }
     #endregion
 }

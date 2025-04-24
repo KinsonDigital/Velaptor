@@ -5,7 +5,7 @@
 namespace VelaptorTests.Graphics;
 
 using System.Collections.Generic;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -28,7 +28,7 @@ public class GraphicsExtensionMethodsTests
         var actual = metrics.MaxHeight(0);
 
         // Assert
-        actual.Should().Be(20);
+        actual.ShouldBe(20);
     }
 
     [Theory]
@@ -47,6 +47,6 @@ public class GraphicsExtensionMethodsTests
         var actual = metrics.MaxVerticalOffset(0);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 }

@@ -5,7 +5,7 @@
 namespace VelaptorTests;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor;
 using Xunit;
 
@@ -23,8 +23,8 @@ public class FrameTimeTests
         };
 
         // Assert
-        time.TotalTime.Should().Be(new TimeSpan(1, 2, 3, 4));
-        time.ElapsedTime.Should().Be(new TimeSpan(5, 6, 7, 8));
+        time.TotalTime.ShouldBe(new TimeSpan(1, 2, 3, 4));
+        time.ElapsedTime.ShouldBe(new TimeSpan(5, 6, 7, 8));
     }
     #endregion
 }

@@ -4,7 +4,7 @@
 
 namespace VelaptorTests;
 
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using Velaptor;
 using Xunit;
@@ -25,7 +25,7 @@ public class AppSettingsTests
         };
 
         // Act & Assert
-        settings.WindowWidth.Should().Be(1111);
+        settings.WindowWidth.ShouldBe(1111u);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class AppSettingsTests
         };
 
         // Act & Assert
-        settings.WindowHeight.Should().Be(1111);
+        settings.WindowHeight.ShouldBe(1111u);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.WindowWidth.Should().Be(1280);
+        settings.WindowWidth.ShouldBe(1280u);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.WindowHeight.Should().Be(720);
+        settings.WindowHeight.ShouldBe(720u);
     }
 
     [FactForDebug]
@@ -68,7 +68,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.LoggingEnabled.Should().BeTrue();
+        settings.LoggingEnabled.ShouldBeTrue();
     }
 
     [FactForRelease]
@@ -78,7 +78,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.LoggingEnabled.Should().BeFalse();
+        settings.LoggingEnabled.ShouldBeFalse();
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.ConsoleLoggingEnabled.Should().BeTrue();
+        settings.ConsoleLoggingEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class AppSettingsTests
         var settings = new AppSettings();
 
         // Act & Assert
-        settings.FileLoggingEnabled.Should().BeTrue();
+        settings.FileLoggingEnabled.ShouldBeTrue();
     }
     #endregion
 }

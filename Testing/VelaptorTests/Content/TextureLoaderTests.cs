@@ -7,7 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -49,8 +49,8 @@ public class TextureLoaderTests
             this.mockDirectory);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class TextureLoaderTests
             this.mockDirectory);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'texturePathResolver')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texturePathResolver')");
     }
 
     [Fact]
@@ -77,9 +77,8 @@ public class TextureLoaderTests
                 null);
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
     #endregion
 
@@ -94,8 +93,8 @@ public class TextureLoaderTests
         var act = () => sut.Load(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -108,8 +107,8 @@ public class TextureLoaderTests
         var act = () => sut.Load(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -128,7 +127,7 @@ public class TextureLoaderTests
         var actual = sut.Load("test-content.png");
 
         // Assert
-        actual.Should().Be(mockTexture);
+        actual.ShouldBe(mockTexture);
         this.mockTexturePathResolver.Received(1).ResolveFilePath("test-content.png");
         this.mockTextureCache.Received(1).GetItem(TextureFilePath);
     }

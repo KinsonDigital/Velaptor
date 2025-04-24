@@ -4,11 +4,11 @@
 
 namespace VelaptorTests.Content;
 
+using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using FluentAssertions;
-using Helpers;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -77,7 +77,7 @@ public class TexturePathResolverTests
         var actual = resolver.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Graphics");
+        actual.ShouldBe("Graphics");
     }
     #endregion
 
@@ -92,8 +92,8 @@ public class TexturePathResolverTests
         var act = () => _ = sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().ThrowArgNullException()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class TexturePathResolverTests
         var act = () => _ = sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().ThrowArgException()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -125,7 +125,7 @@ public class TexturePathResolverTests
         var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
         this.mockFile.Received(1).Exists(expected);
     }
     #endregion

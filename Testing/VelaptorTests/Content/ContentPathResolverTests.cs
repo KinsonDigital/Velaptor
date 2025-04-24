@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using Fakes;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -111,9 +111,8 @@ public class ContentPathResolverTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'appService')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'appService')");
     }
 
     [Fact]
@@ -126,9 +125,8 @@ public class ContentPathResolverTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -141,9 +139,8 @@ public class ContentPathResolverTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -156,9 +153,8 @@ public class ContentPathResolverTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'platform')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'platform')");
     }
     #endregion
 
@@ -183,7 +179,7 @@ public class ContentPathResolverTests
         var actual = resolver.RootDirectoryPath;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -201,7 +197,7 @@ public class ContentPathResolverTests
         var actual = sut.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 
@@ -219,7 +215,7 @@ public class ContentPathResolverTests
         var actual = sut.ResolveDirPath();
 
         // Assert
-        actual.Should().Be(@"C:\temp\my-content\test-content");
+        actual.ShouldBe(@"C:\temp\my-content\test-content");
     }
 
     [Fact]
@@ -232,8 +228,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -246,8 +242,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -264,8 +260,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath(contentPathOrName);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage(expectedMsg);
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -281,7 +277,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath("test-content");
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithMessage(expectedMsg);
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -299,8 +296,8 @@ public class ContentPathResolverTests
         var act = () => sut.ResolveFilePath(expectedContentFilePath);
 
         // Assert
-        act.Should().Throw<FileNotFoundException>("The content file could not be found.")
-            .And.FileName.Should().Be(expectedContentFilePath);
+        var exception = Should.Throw<FileNotFoundException>(act, "The content file could not be found.");
+        exception.FileName.ShouldBe(expectedContentFilePath);
     }
 
     [Theory]
@@ -324,7 +321,7 @@ public class ContentPathResolverTests
         var actual = sut.ResolveFilePath(contentPathOrName);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 

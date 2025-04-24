@@ -5,8 +5,8 @@
 namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Linq;
-using FluentAssertions;
 using Helpers;
+using Shouldly;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
 
@@ -29,10 +29,10 @@ public class ShapeGpuDataTests
         var data = new ShapeGpuData(vertex1, vertex2, vertex3, vertex4);
 
         // Assert
-        data.Vertex1.Should().Be(vertex1);
-        data.Vertex2.Should().Be(vertex2);
-        data.Vertex3.Should().Be(vertex3);
-        data.Vertex4.Should().Be(vertex4);
+        data.Vertex1.ShouldBe(vertex1);
+        data.Vertex2.ShouldBe(vertex2);
+        data.Vertex3.ShouldBe(vertex3);
+        data.Vertex4.ShouldBe(vertex4);
     }
     #endregion
 
@@ -52,8 +52,8 @@ public class ShapeGpuDataTests
         var actual = data.ToArray();
 
         // Assert
-        actual.Length.Should().Be(64);
-        actual.Should().BeEquivalentTo(expected);
+        actual.Length.ShouldBe(64);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 }

@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Input;
 using Velaptor.ReactableData;
@@ -50,9 +50,8 @@ public class KeyboardDataServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'keyboardDataReactable')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'keyboardDataReactable')");
     }
     #endregion
 
@@ -76,7 +75,7 @@ public class KeyboardDataServiceTests
         var actual = sut.GetKeyStates();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]

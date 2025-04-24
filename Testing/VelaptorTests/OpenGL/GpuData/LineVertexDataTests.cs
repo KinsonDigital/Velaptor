@@ -4,9 +4,10 @@
 
 namespace VelaptorTests.OpenGL.GpuData;
 
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
 
@@ -27,8 +28,8 @@ public class LineVertexDataTests
         var sut = new LineVertexData(expectedPos, expectedClr);
 
         // Assert
-        sut.VertexPos.Should().BeEquivalentTo(expectedPos);
-        sut.Color.Should().BeEquivalentTo(expectedClr);
+        sut.VertexPos.ShouldBeEquivalentTo(expectedPos);
+        sut.Color.ShouldBeEquivalentTo(expectedClr);
     }
     #endregion
 
@@ -40,8 +41,8 @@ public class LineVertexDataTests
         var sut = LineVertexData.Empty();
 
         // Assert
-        sut.VertexPos.Should().BeEquivalentTo(Vector2.Zero);
-        sut.Color.Should().BeEquivalentTo(Color.Empty);
+        sut.VertexPos.ShouldBeEquivalentTo(Vector2.Zero);
+        sut.Color.ShouldBeEquivalentTo(Color.Empty);
     }
 
     [Fact]
@@ -51,14 +52,14 @@ public class LineVertexDataTests
         var actual = LineVertexData.GetStride();
 
         // Assert
-        actual.Should().Be(24);
+        actual.ShouldBe(24u);
     }
 
     [Fact]
     public void ToArray_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = new[] { 1, 2, 4, 5, 6, 3 };
+        IEnumerable<float> expected = [1, 2, 4, 5, 6, 3];
 
         var sut = new LineVertexData(new Vector2(1, 2), Color.FromArgb(3, 4, 5, 6));
 
@@ -66,7 +67,7 @@ public class LineVertexDataTests
         var actual = sut.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

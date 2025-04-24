@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ReactableData;
 using Xunit;
 
@@ -21,8 +21,8 @@ public class WindowSizeDataTests
         var sut = new WindowSizeData { Width = 11, Height = 22 };
 
         // Assert
-        sut.Width.Should().Be(11);
-        sut.Height.Should().Be(22);
+        sut.Width.ShouldBe(11u);
+        sut.Height.ShouldBe(22u);
     }
     #endregion
 }

@@ -6,7 +6,7 @@ namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
 
@@ -33,7 +33,7 @@ public class TextureVertexDataTests
         var actual = dataA != dataB;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class TextureVertexDataTests
         var actual = dataA == dataB;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
     #endregion
 
@@ -65,7 +65,7 @@ public class TextureVertexDataTests
         var actual = TextureVertexData.GetStride();
 
         // Assert
-        actual.Should().Be(32u);
+        actual.ShouldBe(32u);
     }
 
     [Theory]
@@ -87,7 +87,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class TextureVertexDataTests
         var actual = dataA.Equals(dataB);
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Theory]
@@ -156,7 +156,7 @@ public class TextureVertexDataTests
         var actual = data.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

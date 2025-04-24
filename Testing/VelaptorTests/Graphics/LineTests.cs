@@ -6,7 +6,7 @@ namespace VelaptorTests.Graphics;
 
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -27,8 +27,8 @@ public class LineTests
         var sut = new Line(expectedP1, expectedP2);
 
         // Assert
-        sut.P1.Should().BeEquivalentTo(expectedP1);
-        sut.P2.Should().BeEquivalentTo(expectedP2);
+        sut.P1.ShouldBeEquivalentTo(expectedP1);
+        sut.P2.ShouldBeEquivalentTo(expectedP2);
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public class LineTests
         var sut = new Line(expectedP1, expectedP2, expectedColor);
 
         // Assert
-        sut.P1.Should().BeEquivalentTo(expectedP1);
-        sut.P2.Should().BeEquivalentTo(expectedP2);
-        sut.Color.Should().BeEquivalentTo(expectedColor);
+        sut.P1.ShouldBeEquivalentTo(expectedP1);
+        sut.P2.ShouldBeEquivalentTo(expectedP2);
+        sut.Color.ShouldBeEquivalentTo(expectedColor);
     }
 
     [Fact]
@@ -60,9 +60,9 @@ public class LineTests
         var sut = new Line(expectedP1, expectedP2, expectedThickness);
 
         // Assert
-        sut.P1.Should().BeEquivalentTo(expectedP1);
-        sut.P2.Should().BeEquivalentTo(expectedP2);
-        sut.Thickness.Should().Be(4);
+        sut.P1.ShouldBeEquivalentTo(expectedP1);
+        sut.P2.ShouldBeEquivalentTo(expectedP2);
+        sut.Thickness.ShouldBe(4);
     }
 
     [Fact]
@@ -78,10 +78,10 @@ public class LineTests
         var sut = new Line(expectedP1, expectedP2, expectedColor, expectedThickness);
 
         // Assert
-        sut.P1.Should().BeEquivalentTo(expectedP1);
-        sut.P2.Should().BeEquivalentTo(expectedP2);
-        sut.Color.Should().BeEquivalentTo(expectedColor);
-        sut.Thickness.Should().Be(9);
+        sut.P1.ShouldBeEquivalentTo(expectedP1);
+        sut.P2.ShouldBeEquivalentTo(expectedP2);
+        sut.Color.ShouldBeEquivalentTo(expectedColor);
+        sut.Thickness.ShouldBe(9);
     }
     #endregion
 
@@ -98,7 +98,7 @@ public class LineTests
         var actual = sut.P1;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class LineTests
         var actual = sut.P2;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class LineTests
         var actual = sut.Color;
 
         // Assert
-        actual.Should().BeEquivalentTo(Color.White);
+        actual.ShouldBeEquivalentTo(Color.White);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class LineTests
         var actual = sut.Color;
 
         // Assert
-        actual.Should().BeEquivalentTo(Color.White);
+        actual.ShouldBeEquivalentTo(Color.White);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class LineTests
         var actual = sut.Color;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class LineTests
         var actual = sut.Thickness;
 
         // Assert
-        actual.Should().Be(1f);
+        actual.ShouldBe(1f);
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class LineTests
         var actual = sut.Thickness;
 
         // Assert
-        actual.Should().Be(1f);
+        actual.ShouldBe(1f);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class LineTests
         var actual = sut.Thickness;
 
         // Assert
-        actual.Should().Be(1f);
+        actual.ShouldBe(1f);
     }
     #endregion
 }

@@ -6,7 +6,7 @@ namespace VelaptorTests.Helpers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions.Execution;
+using Shouldly;
 using Xunit;
 
 /// <summary>
@@ -28,7 +28,7 @@ public class AssertExtensions : Assert
     public static void ThrowsWithMessage<T>(Action testCode, string expectedMessage)
         where T : Exception
     {
-        Equal(expectedMessage, Throws<T>(testCode).Message);
+        testCode.ShouldThrow<T>().Message.ShouldBe(expectedMessage);
     }
 
     /// <summary>
@@ -60,9 +60,9 @@ public class AssertExtensions : Assert
     /// </summary>
     /// <param name="expectedItems">The expected items.</param>
     /// <param name="actualItems">The actual items.</param>
-    /// <param name="indexStart">The inclusive starting index of the range of items to check.</param>
-    /// <param name="indexStop">The inclusive ending index of the range of items to check.</param>
-    /// <exception cref="AssertionFailedException">
+    /// <param name="indexStart">The inclusive starting index of the range to check.</param>
+    /// <param name="indexStop">The inclusive ending index of the range to check.</param>
+    /// <exception cref="ShouldAssertException">
     ///     Thrown to fail the unit test if any of the items in the ranges between the arrays are not equal.
     /// </exception>
     public static void SectionEquals(float[]? expectedItems, float[]? actualItems, int indexStart, int indexStop)
@@ -106,7 +106,7 @@ public class AssertExtensions : Assert
                 continue;
             }
 
-            throw new AssertionFailedException($"{failMessage}\nExpected: {expectedItems[i]}\nActual: ${actualItems[i]}");
+            throw new ShouldAssertException($"{failMessage}\nExpected: {expectedItems[i]}\nActual: ${actualItems[i]}");
         }
     }
 
@@ -185,7 +185,7 @@ public class AssertExtensions : Assert
             var actualStr = actual is null ? "NULL" : actual.ToString();
             var exceptionMsg = $"{TableFlip}{message}\nExpected: ${expectedStr}\nActual: ${actualStr}";
 
-            throw new AssertionFailedException(exceptionMsg);
+            throw new ShouldAssertException(exceptionMsg);
         }
     }
 }

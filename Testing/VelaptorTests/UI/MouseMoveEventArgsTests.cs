@@ -5,7 +5,7 @@
 namespace VelaptorTests.UI;
 
 using System.Drawing;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.UI;
 using Xunit;
 
@@ -27,7 +27,7 @@ public class MouseMoveEventArgsTests
         var actualLocalPos = eventArgs.LocalPos;
 
         // Assert
-        actualGlobalPos.Should().Be(expectedGlobalPos);
-        actualLocalPos.Should().Be(expectedLocalPos);
+        actualGlobalPos.ShouldBe(expectedGlobalPos);
+        actualLocalPos.ShouldBe(expectedLocalPos);
     }
 }

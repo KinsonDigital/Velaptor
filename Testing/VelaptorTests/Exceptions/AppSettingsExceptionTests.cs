@@ -5,7 +5,7 @@
 namespace VelaptorTests.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class AppSettingsExceptionTests
         var exception = new AppSettingsException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue loading the application settings.");
+        exception.Message.ShouldBe("There was an issue loading the application settings.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class AppSettingsExceptionTests
         var exception = new AppSettingsException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        exception.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class AppSettingsExceptionTests
         var deviceException = new AppSettingsException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        deviceException.InnerException.Message.ShouldBe("inner-exception");
+        deviceException.Message.ShouldBe("test-exception");
     }
     #endregion
 }

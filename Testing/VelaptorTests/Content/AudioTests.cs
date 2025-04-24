@@ -10,9 +10,9 @@ using System;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using CASL;
-using FluentAssertions;
 using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.ReactableData;
@@ -49,9 +49,8 @@ public class AudioTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'disposeReactable')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'disposeReactable')");
     }
 
     [Fact]
@@ -65,9 +64,8 @@ public class AudioTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'internalAudio')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'internalAudio')");
     }
 
     [Fact]
@@ -80,7 +78,7 @@ public class AudioTests : TestsBase
         var actual = sut.Id;
 
         // Assert
-        actual.Should().Be(123);
+        actual.ShouldBe(123u);
     }
     #endregion
 
@@ -92,12 +90,9 @@ public class AudioTests : TestsBase
         var sut = CreateSystemUnderTest();
         sut.Dispose();
 
-        // Act
-        var act = () => sut.Volume = 123;
-
-        // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        // Act && Assert
+        var exception = Should.Throw<ObjectDisposedException>(() => sut.Volume = 123);
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -112,7 +107,7 @@ public class AudioTests : TestsBase
         var actual = sut.Volume;
 
         // Assert
-        actual.Should().Be(0f);
+        actual.ShouldBe(0f);
     }
 
     [Fact]
@@ -125,7 +120,7 @@ public class AudioTests : TestsBase
         sut.Volume = 123;
 
         // Assert
-        sut.Volume.Should().Be(123);
+        sut.Volume.ShouldBe(123);
     }
 
     [Fact]
@@ -140,7 +135,7 @@ public class AudioTests : TestsBase
         var actual = sut.Position;
 
         // Assert
-        actual.Should().Be(TimeSpan.Zero);
+        actual.ShouldBe(TimeSpan.Zero);
     }
 
     [Fact]
@@ -155,7 +150,7 @@ public class AudioTests : TestsBase
         var actual = sut.Position;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -170,7 +165,7 @@ public class AudioTests : TestsBase
         var actual = sut.Length;
 
         // Assert
-        actual.Should().Be(TimeSpan.Zero);
+        actual.ShouldBe(TimeSpan.Zero);
     }
 
     [Fact]
@@ -185,7 +180,7 @@ public class AudioTests : TestsBase
         var actual = sut.Length;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -195,12 +190,10 @@ public class AudioTests : TestsBase
         var sut = CreateSystemUnderTest();
         sut.Dispose();
 
-        // Act
-        var act = () => sut.IsLooping = true;
+        // Act && Assert
+        var exception = Should.Throw<ObjectDisposedException>(() => sut.IsLooping = true);
 
-        // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -215,7 +208,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsLooping;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -228,7 +221,7 @@ public class AudioTests : TestsBase
         sut.IsLooping = true;
 
         // Assert
-        sut.IsLooping.Should().BeTrue();
+        sut.IsLooping.ShouldBeTrue();
     }
 
     [Fact]
@@ -243,7 +236,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsPlaying;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Theory]
@@ -260,7 +253,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsPlaying;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -275,7 +268,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsPaused;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Theory]
@@ -292,7 +285,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsPaused;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -307,7 +300,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsStopped;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Theory]
@@ -324,7 +317,7 @@ public class AudioTests : TestsBase
         var actual = sut.IsStopped;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -339,7 +332,7 @@ public class AudioTests : TestsBase
         var actual = sut.BufferType;
 
         // Assert
-        actual.Should().Be(AudioBuffer.Full);
+        actual.ShouldBe(AudioBuffer.Full);
     }
 
     [Theory]
@@ -355,7 +348,7 @@ public class AudioTests : TestsBase
         var actual = sut.BufferType;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -365,12 +358,9 @@ public class AudioTests : TestsBase
         var sut = CreateSystemUnderTest();
         sut.Dispose();
 
-        // Act
-        var act = () => sut.PlaySpeed = 123;
-
-        // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        // Act && Assert
+        var exception = Should.Throw<ObjectDisposedException>(() => sut.PlaySpeed = 123);
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -385,7 +375,7 @@ public class AudioTests : TestsBase
         var actual = sut.PlaySpeed;
 
         // Assert
-        actual.Should().Be(0);
+        actual.ShouldBe(0);
     }
 
     [Fact]
@@ -398,7 +388,7 @@ public class AudioTests : TestsBase
         sut.PlaySpeed = 123;
 
         // Assert
-        sut.PlaySpeed.Should().Be(123);
+        sut.PlaySpeed.ShouldBe(123);
     }
 
     [Fact]
@@ -412,7 +402,7 @@ public class AudioTests : TestsBase
         var actual = sut.Name;
 
         // Assert
-        actual.Should().Be("test-name");
+        actual.ShouldBe("test-name");
     }
 
     [Fact]
@@ -427,7 +417,7 @@ public class AudioTests : TestsBase
         var actual = sut.Name;
 
         // Assert
-        actual.Should().BeEmpty();
+        actual.ShouldBeEmpty();
     }
 
     [Fact]
@@ -441,7 +431,7 @@ public class AudioTests : TestsBase
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().Be("test-path");
+        actual.ShouldBe("test-path");
     }
 
     [Fact]
@@ -456,7 +446,7 @@ public class AudioTests : TestsBase
         var actual = sut.FilePath;
 
         // Assert
-        actual.Should().BeEmpty();
+        actual.ShouldBeEmpty();
     }
     #endregion
 
@@ -472,8 +462,8 @@ public class AudioTests : TestsBase
         var act = () => sut.FastForward(123);
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -500,8 +490,8 @@ public class AudioTests : TestsBase
         var act = () => sut.Pause();
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -528,8 +518,8 @@ public class AudioTests : TestsBase
         var act = () => sut.Play();
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -556,8 +546,8 @@ public class AudioTests : TestsBase
         var act = () => sut.FastForward(123);
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -584,8 +574,8 @@ public class AudioTests : TestsBase
         var act = () => sut.SetTimePosition(123);
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -612,8 +602,8 @@ public class AudioTests : TestsBase
         var act = () => sut.Stop();
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage("Cannot access a disposed object.\nObject name: 'Velaptor.Content.Audio'.");
+        var exception = act.ShouldThrow<ObjectDisposedException>();
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'Velaptor.Content.Audio'.");
     }
 
     [Fact]
@@ -655,8 +645,8 @@ public class AudioTests : TestsBase
             {
                 var subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
 
-                subscription.Id.Should().Be(PushNotifications.AudioDisposedId);
-                subscription.Name.Should().Be($"Audio.ctor() - {PushNotifications.AudioDisposedId}");
+                subscription.Id.ShouldBe(PushNotifications.AudioDisposedId);
+                subscription.Name.ShouldBe($"Audio.ctor() - {PushNotifications.AudioDisposedId}");
             });
 
         // Act

@@ -3,5 +3,5 @@
     "ownerName": "KinsonDigital",
     "repoName": "Velaptor",
     "githubTokenEnvVarName": "CICD_TOKEN",
-    "baseBranches": [ "main", "preview"]
+    "baseBranches": [ "preview", "main"]
 }

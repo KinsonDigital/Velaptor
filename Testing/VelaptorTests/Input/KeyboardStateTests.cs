@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Input;
 using Xunit;
 
@@ -251,7 +251,7 @@ public class KeyboardStateTests
         var actual = state.IsLeftShiftKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class KeyboardStateTests
         var actual = state.IsRightShiftKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class KeyboardStateTests
         var actual = state.IsLeftCtrlKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -293,7 +293,7 @@ public class KeyboardStateTests
         var actual = state.IsRightCtrlKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class KeyboardStateTests
         var actual = state.IsLeftAltKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public class KeyboardStateTests
         var actual = state.IsRightAltKeyDown();
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
     #endregion
 
@@ -347,7 +347,7 @@ public class KeyboardStateTests
         var actual = state.GetDownKeys();
 
         // Assert
-        actual.ToArray().Should().BeEquivalentTo(expected);
+        actual.ToArray().ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class KeyboardStateTests
         var actual = state.IsKeyUp(KeyCode.C);
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Theory]
@@ -377,7 +377,7 @@ public class KeyboardStateTests
         var actual = state.AnyStandardNumberKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -392,7 +392,7 @@ public class KeyboardStateTests
         var actual = state.AnyNumpadNumberKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -408,7 +408,7 @@ public class KeyboardStateTests
         var actual = state.AnyShiftKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -424,7 +424,7 @@ public class KeyboardStateTests
         var actual = state.AnyCtrlKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -440,7 +440,7 @@ public class KeyboardStateTests
         var actual = state.AnyAltKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -456,7 +456,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -473,7 +473,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -490,7 +490,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -506,7 +506,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -523,7 +523,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -540,7 +540,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(key);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -555,7 +555,7 @@ public class KeyboardStateTests
         var actual = state.KeyToChar(default);
 
         // Assert
-        actual.Should().Be(InvalidCharacter);
+        actual.ShouldBe(InvalidCharacter);
     }
     #endregion
 

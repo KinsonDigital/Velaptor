@@ -6,8 +6,8 @@ namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
 using Helpers;
+using Shouldly;
 using Velaptor.OpenGL.GpuData;
 using Xunit;
 
@@ -30,10 +30,10 @@ public class LineGpuDataTests
         var sut = new LineGpuData(expectedV1, expectedV2, expectedV3, expectedV4);
 
         // Assert
-        sut.Vertex1.Should().Be(expectedV1);
-        sut.Vertex2.Should().Be(expectedV2);
-        sut.Vertex3.Should().Be(expectedV3);
-        sut.Vertex4.Should().Be(expectedV4);
+        sut.Vertex1.ShouldBe(expectedV1);
+        sut.Vertex2.ShouldBe(expectedV2);
+        sut.Vertex3.ShouldBe(expectedV3);
+        sut.Vertex4.ShouldBe(expectedV4);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class LineGpuDataTests
         var actual = LineGpuData.GetTotalBytes();
 
         // Assert
-        actual.Should().Be(96);
+        actual.ShouldBe(96u);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class LineGpuDataTests
         var actual = sut.ToArray();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 

@@ -11,8 +11,8 @@ using System.Numerics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Silk.NET.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
@@ -55,8 +55,8 @@ public class OpenGLServiceTests
         var act = () => new OpenGLService(null, this.mockDotnetService, this.mockLoggingService);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
+        var exception = Should.Throw<ArgumentNullException>(act); // Corrected Shouldly syntax
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'glInvoker')");
     }
 
     [Fact]
@@ -66,8 +66,8 @@ public class OpenGLServiceTests
         var act = () => new OpenGLService(this.mockGLInvoker, null, this.mockLoggingService);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'dotnetService')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'dotnetService')");
     }
 
     [Fact]
@@ -77,8 +77,8 @@ public class OpenGLServiceTests
         var act = () => new OpenGLService(this.mockGLInvoker, this.mockDotnetService, null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'loggingService')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'loggingService')");
     }
     #endregion
 
@@ -96,8 +96,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsVBOBound;
 
         // Assert
-        isBound.Should().BeTrue();
-        isUnbound.Should().BeFalse();
+        isBound.ShouldBeTrue();
+        isUnbound.ShouldBeFalse();
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsEBOBound;
 
         // Assert
-        isBound.Should().BeTrue();
-        isUnbound.Should().BeFalse();
+        isBound.ShouldBeTrue();
+        isUnbound.ShouldBeFalse();
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public class OpenGLServiceTests
         var isUnbound = service.IsVAOBound;
 
         // Assert
-        isBound.Should().BeTrue();
-        isUnbound.Should().BeFalse();
+        isBound.ShouldBeTrue();
+        isUnbound.ShouldBeFalse();
     }
     #endregion
 
@@ -146,7 +146,7 @@ public class OpenGLServiceTests
         var actual = service.GetViewPortSize();
 
         // Assert
-        actual.Should().BeEquivalentTo(new Size(33, 44));
+        actual.ShouldBeEquivalentTo(new Size(33, 44));
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class OpenGLServiceTests
         var actual = service.GetViewPortPosition();
 
         // Assert
-        actual.Should().BeEquivalentTo(new Vector2(11, 22));
+        actual.ShouldBeEquivalentTo(new Vector2(11, 22));
     }
 
     [Fact]
@@ -225,8 +225,8 @@ public class OpenGLServiceTests
         var act = service.UnbindEBO;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("The VAO object must be unbound before unbinding an EBO object.");
+        var exception = Should.Throw<InvalidOperationException>(act);
+        exception.Message.ShouldBe("The VAO object must be unbound before unbinding an EBO object.");
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class OpenGLServiceTests
         var actual = service.ProgramLinkedSuccessfully(123);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -325,7 +325,7 @@ public class OpenGLServiceTests
         var actual = service.ShaderCompiledSuccessfully(123);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -413,8 +413,8 @@ public class OpenGLServiceTests
         var act = () => service.LabelBuffer(default, default, (OpenGLBufferType)invalidValue);
 
         // Assert
-        act.Should().Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        var exception = Should.Throw<InvalidEnumArgumentException>(act);
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -514,7 +514,7 @@ public class OpenGLServiceTests
         var actual = sut.ToOpenGLBytes(pixels);
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 

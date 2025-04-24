@@ -5,8 +5,8 @@
 // ReSharper disable InvokeAsExtensionMethod
 namespace VelaptorTests.ExtensionMethods;
 
-using FluentAssertions;
-using Helpers;
+using System;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -29,7 +29,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockFontLoader, null, 12);
 
         // Assert
-        act.Should().ThrowArgNullException().WithNullParamMsg("fontName");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontName')");
     }
 
     [Fact]
@@ -42,7 +43,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockFontLoader, string.Empty, 12);
 
         // Assert
-        act.Should().ThrowArgException().WithEmptyStringParamMsg("fontName");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'fontName')");
     }
 
     [Theory]
@@ -73,7 +75,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, null);
 
         // Assert
-        act.Should().ThrowArgNullException().WithNullParamMsg("atlasPathOrName");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasPathOrName')");
     }
 
     [Fact]
@@ -86,7 +89,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, string.Empty);
 
         // Assert
-        act.Should().ThrowArgException().WithEmptyStringParamMsg("atlasPathOrName");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'atlasPathOrName')");
     }
 
     [Fact]
@@ -99,7 +103,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, null, AudioBuffer.Full);
 
         // Assert
-        act.Should().ThrowArgNullException().WithNullParamMsg("audioPathOrName");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'audioPathOrName')");
     }
 
     [Fact]
@@ -112,7 +117,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, string.Empty, AudioBuffer.Full);
 
         // Assert
-        act.Should().ThrowArgException().WithEmptyStringParamMsg("audioPathOrName");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'audioPathOrName')");
     }
 
     [Fact]
@@ -125,7 +131,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, null);
 
         // Assert
-        act.Should().ThrowArgNullException().WithNullParamMsg("texturePathOrName");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texturePathOrName')");
     }
 
     [Fact]
@@ -138,7 +145,8 @@ public class ContentExtensionsTests
         var act = () => ContentExtensions.Load(mockLoader, string.Empty);
 
         // Assert
-        act.Should().ThrowArgException().WithEmptyStringParamMsg("texturePathOrName");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'texturePathOrName')");
     }
 
     [Fact]
@@ -151,7 +159,7 @@ public class ContentExtensionsTests
         var act = () => mockLoader.Unload(null);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
         mockLoader.DidNotReceive().Unload("test-file-path");
     }
 
@@ -180,7 +188,7 @@ public class ContentExtensionsTests
         var act = () => mockLoader.Unload(null);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
         mockLoader.DidNotReceive().Unload("test-file-path");
     }
 
@@ -211,7 +219,7 @@ public class ContentExtensionsTests
         var act = () => mockLoader.Unload(null);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
         mockLoader.DidNotReceive().Unload("test-file-path");
     }
 
@@ -240,7 +248,7 @@ public class ContentExtensionsTests
         var act = () => mockLoader.Unload(null);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
         mockLoader.DidNotReceive().Unload("test-file-path");
     }
 

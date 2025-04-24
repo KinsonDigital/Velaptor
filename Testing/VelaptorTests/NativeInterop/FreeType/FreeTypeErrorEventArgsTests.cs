@@ -5,7 +5,7 @@
 namespace VelaptorTests.NativeInterop.FreeType;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.NativeInterop.FreeType;
 using Xunit;
 
@@ -22,8 +22,8 @@ public class FreeTypeErrorEventArgsTests
         var act = () => new FreeTypeErrorEventArgs(null);
 
         // Act
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -33,8 +33,8 @@ public class FreeTypeErrorEventArgsTests
         var act = () => new FreeTypeErrorEventArgs(string.Empty);
 
         // Act
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class FreeTypeErrorEventArgsTests
         var eventArgs = new FreeTypeErrorEventArgs("test-message");
 
         // Assert
-        eventArgs.ErrorMessage.Should().Be("test-message");
+        eventArgs.ErrorMessage.ShouldBe("test-message");
     }
     #endregion
 }

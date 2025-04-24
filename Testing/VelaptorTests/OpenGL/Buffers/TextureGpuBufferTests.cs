@@ -10,7 +10,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -88,7 +88,7 @@ public class TextureGpuBufferTests : TestsBase
         this.mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
             {
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
                 this.batchSizeReactor = reactor;
             }));
 
@@ -157,9 +157,8 @@ public class TextureGpuBufferTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -175,7 +174,7 @@ public class TextureGpuBufferTests : TestsBase
         var act = () => sut.UploadVertexData(default, 0);
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The texture buffer has not been initialized.");
+        act.ShouldThrow<BufferNotInitializedException>("The texture buffer has not been initialized.");
     }
 
     [Fact]
@@ -198,7 +197,8 @@ public class TextureGpuBufferTests : TestsBase
         var act = () => sut.UploadVertexData(textureQuad, 0);
 
         // Assert
-        act.Should().Throw<InvalidRenderEffectsException>("The 'RenderEffects' value of '1234' is not valid.");
+        var exception = Should.Throw<InvalidRenderEffectsException>(act);
+        exception.Message.ShouldBe("The 'RenderEffects' value of '1234' is not valid.");
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class TextureGpuBufferTests : TestsBase
         // Assert
         this.mockGLService.Received(3).BindVBO(VertexBufferId);
         this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, Arg.Any<float[]>());
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
         this.mockGLService.Received().UnbindVBO();
     }
 
@@ -319,7 +319,7 @@ public class TextureGpuBufferTests : TestsBase
         var actual = sut.GenerateData();
 
         // Assert
-        actual.Length.Should().Be(3_200);
+        actual.Length.ShouldBe(3_200);
     }
 
     [Fact]
@@ -386,7 +386,7 @@ public class TextureGpuBufferTests : TestsBase
         // Arrange & Assert
         this.mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
         {
-            reactor.Should().NotBeNull("It is required for unit testing.");
+            reactor.ShouldNotBeNull("It is required for unit testing.");
         }));
 
         // Act
@@ -399,8 +399,8 @@ public class TextureGpuBufferTests : TestsBase
         // Arrange & Assert
         this.mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("It is required for unit testing.");
-            reactor.Name.Should().Be($"TextureGpuBuffer.ctor() - {PushNotifications.BatchSizeChangedId}");
+            reactor.ShouldNotBeNull("It is required for unit testing.");
+            reactor.Name.ShouldBe($"TextureGpuBuffer.ctor() - {PushNotifications.BatchSizeChangedId}");
         }));
 
         // Act
@@ -417,7 +417,7 @@ public class TextureGpuBufferTests : TestsBase
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line });
 
         // Assert
-        sut.BatchSize.Should().Be(100);
+        sut.BatchSize.ShouldBe(100u);
     }
 
     [Fact]
@@ -430,7 +430,7 @@ public class TextureGpuBufferTests : TestsBase
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
     }
 
     [Fact]
@@ -444,7 +444,7 @@ public class TextureGpuBufferTests : TestsBase
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
 
         this.mockGLService.Received(2).BeginGroup($"Set size of {BufferName} Vertex Data");
         this.mockGLService.Received(6).EndGroup();

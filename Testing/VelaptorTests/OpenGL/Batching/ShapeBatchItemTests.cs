@@ -7,7 +7,7 @@ namespace VelaptorTests.OpenGL.Batching;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Xunit;
@@ -65,16 +65,16 @@ public class ShapeBatchItemTests
             Color.FromArgb(18, 19, 20, 21));
 
         // Assert
-        sut.Position.Should().Be(new Vector2(1, 2));
-        sut.Width.Should().Be(3);
-        sut.Height.Should().Be(4);
-        sut.Color.Should().Be(Color.FromArgb(5, 6, 7, 8));
-        sut.IsSolid.Should().Be(true);
-        sut.BorderThickness.Should().Be(9);
-        sut.CornerRadius.Should().Be(new CornerRadius(10, 11, 12, 13));
-        sut.GradientType.Should().Be(ColorGradient.Horizontal);
-        sut.GradientStart.Should().Be(Color.FromArgb(14, 15, 16, 17));
-        sut.GradientStop.Should().Be(Color.FromArgb(18, 19, 20, 21));
+        sut.Position.ShouldBe(new Vector2(1, 2));
+        sut.Width.ShouldBe(3);
+        sut.Height.ShouldBe(4);
+        sut.Color.ShouldBe(Color.FromArgb(5, 6, 7, 8));
+        sut.IsSolid.ShouldBe(true);
+        sut.BorderThickness.ShouldBe(9);
+        sut.CornerRadius.ShouldBe(new CornerRadius(10, 11, 12, 13));
+        sut.GradientType.ShouldBe(ColorGradient.Horizontal);
+        sut.GradientStart.ShouldBe(Color.FromArgb(14, 15, 16, 17));
+        sut.GradientStop.ShouldBe(Color.FromArgb(18, 19, 20, 21));
     }
     #endregion
 
@@ -115,7 +115,7 @@ public class ShapeBatchItemTests
 
         // Assert
         this.testOutputHelper.WriteLine($"Test Param: {testName}");
-        actual.Should().Be(expected, sut.ToString());
+        actual.ShouldBe(expected, sut.ToString());
     }
     #endregion
 }

@@ -5,7 +5,7 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -22,8 +22,8 @@ public class GpuBufferNameAttributeTests
         var act = () => _ = new GpuBufferNameAttribute(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'name')");
     }
 
     [Fact]
@@ -33,8 +33,8 @@ public class GpuBufferNameAttributeTests
         var act = () => _ = new GpuBufferNameAttribute(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class GpuBufferNameAttributeTests
         var attribute = new GpuBufferNameAttribute("test-name");
 
         // Assert
-        attribute.Name.Should().Be("test-name");
+        attribute.Name.ShouldBe("test-name");
     }
     #endregion
 }

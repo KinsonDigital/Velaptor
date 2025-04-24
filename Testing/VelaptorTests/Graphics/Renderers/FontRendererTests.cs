@@ -11,7 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -116,7 +116,6 @@ public class FontRendererTests : TestsBase
     }
 
     #region Constructor Tests
-
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
@@ -134,9 +133,8 @@ public class FontRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -156,9 +154,8 @@ public class FontRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'buffer')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'buffer')");
     }
 
     [Fact]
@@ -178,9 +175,8 @@ public class FontRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'shader')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'shader')");
     }
 
     [Fact]
@@ -200,15 +196,12 @@ public class FontRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'batchManager')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'batchManager')");
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     [Trait("Category", Method)]
     public void Render_WithNullFont_ThrowsException()
@@ -220,8 +213,8 @@ public class FontRendererTests : TestsBase
         var act = () => sut.Render(null, "test", 10, 20, 1f, 0f, Color.White);
 
         // Asset
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage($"Cannot render a null '{nameof(IFont)}'. (Parameter 'font')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe($"Cannot render a null '{nameof(IFont)}'. (Parameter 'font')");
     }
 
     [Fact]
@@ -340,8 +333,8 @@ public class FontRendererTests : TestsBase
             color: default);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("The 'Begin()' method must be invoked first before any 'Render()' methods.");
+        var exception = act.ShouldThrow<InvalidOperationException>();
+        exception.Message.ShouldBe("The 'Begin()' method must be invoked first before any 'Render()' methods.");
     }
 
     [Fact]
@@ -470,7 +463,7 @@ public class FontRendererTests : TestsBase
         this.mockBatchingManager
             .Received(renderText.Length)
             .AddFontItem(Arg.Any<FontGlyphBatchItem>(), Arg.Any<int>(), Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -513,7 +506,7 @@ public class FontRendererTests : TestsBase
 
         // Assert
         this.mockBatchingManager.Received(totalGlyphs).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -557,7 +550,7 @@ public class FontRendererTests : TestsBase
         this.mockBatchingManager
             .Received(totalGlyphs)
             .AddFontItem(Arg.Any<FontGlyphBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -604,7 +597,7 @@ public class FontRendererTests : TestsBase
         this.mockBatchingManager
             .Received(totalGlyphs)
             .AddFontItem(Arg.Any<FontGlyphBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -650,7 +643,7 @@ public class FontRendererTests : TestsBase
         this.mockBatchingManager
             .Received(totalGlyphs)
             .AddFontItem(Arg.Any<FontGlyphBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -696,7 +689,7 @@ public class FontRendererTests : TestsBase
         this.mockBatchingManager
             .Received(totalGlyphs)
             .AddFontItem(Arg.Is<FontGlyphBatchItem>(x => true), 123, Arg.Any<DateTime>());
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -742,7 +735,7 @@ public class FontRendererTests : TestsBase
             .Received(totalGlyphs)
             .AddFontItem(Arg.Is<FontGlyphBatchItem>(x => true), 123, Arg.Any<DateTime>());
 
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -790,7 +783,7 @@ public class FontRendererTests : TestsBase
             .Received(totalGlyphs)
             .AddFontItem(Arg.Is<FontGlyphBatchItem>(x => true), 123, Arg.Any<DateTime>());
 
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -837,7 +830,7 @@ public class FontRendererTests : TestsBase
             .Received(totalGlyphs)
             .AddFontItem(Arg.Is<FontGlyphBatchItem>(x => true), 123, Arg.Any<DateTime>());
 
-        actualBatchResultData.Should().BeEquivalentTo(expectedBatchResultData);
+        actualBatchResultData.ShouldBe(expectedBatchResultData);
     }
 
     [Fact]
@@ -879,11 +872,9 @@ public class FontRendererTests : TestsBase
         this.mockGLService.Received(1).BindTexture2D(AtlasTextureId);
         this.mockGpuBuffer.Received(renderText.Length).UploadData(Arg.Any<FontGlyphBatchItem>(), Arg.Any<uint>());
     }
-
     #endregion
 
     #region Reactable Tests
-
     [Fact]
     [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
@@ -895,8 +886,8 @@ public class FontRendererTests : TestsBase
             .Do(ci =>
             {
                 var reactor = ci.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"FontRenderer.ctor() - {PushNotifications.BatchHasBegunId}");
             });
     }
 
@@ -911,11 +902,10 @@ public class FontRendererTests : TestsBase
             .Do(ci =>
             {
                 var reactor = ci.Arg<FontRenderItem>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"FontRenderer.ctor() - {PushNotifications.RenderFontsId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"FontRenderer.ctor() - {PushNotifications.RenderFontsId}");
             });
     }
-
     #endregion
 
     /// <summary>

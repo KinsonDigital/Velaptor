@@ -5,8 +5,8 @@
 namespace VelaptorTests.Content.Factories;
 
 using System;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Factories;
@@ -52,9 +52,8 @@ public class FontFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]
@@ -71,9 +70,8 @@ public class FontFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontStatsService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontStatsService')");
     }
 
     [Fact]
@@ -90,9 +88,8 @@ public class FontFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
@@ -109,14 +106,12 @@ public class FontFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
     }
     #endregion
 
     #region Method Tests
-
     [Fact]
     public void Create_WhenInvoked_ReturnsCorrectResultWithoutThrowingException()
     {
@@ -144,8 +139,8 @@ public class FontFactoryTests
         };
 
         // Assert
-        act.Should().NotThrow();
-        actual.Should().NotBeNull();
+        act.ShouldNotThrow();
+        actual.ShouldNotBeNull();
     }
     #endregion
 }

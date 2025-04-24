@@ -7,8 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.Drawing;
 using Carbonate.OneWay;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -54,9 +54,8 @@ public class TextureFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'gl')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'gl')");
     }
 
     [Fact]
@@ -72,9 +71,8 @@ public class TextureFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -90,9 +88,8 @@ public class TextureFactoryTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -107,8 +104,8 @@ public class TextureFactoryTests
         var act = () => sut.Create(null, "test-path", new ImageData(new Color[0, 0]));
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'name')");
     }
 
     [Fact]
@@ -121,8 +118,8 @@ public class TextureFactoryTests
         var act = () => sut.Create(string.Empty, "test-path", new ImageData(new Color[0, 0]));
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
@@ -135,8 +132,8 @@ public class TextureFactoryTests
         var act = () => sut.Create("test-name", null, new ImageData(new Color[0, 0]));
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'filePath')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'filePath')");
     }
 
     [Fact]
@@ -149,8 +146,8 @@ public class TextureFactoryTests
         var act = () => sut.Create("test-name", string.Empty, new ImageData(new Color[0, 0]));
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'filePath')");
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("The value cannot be an empty string. (Parameter 'filePath')");
     }
 
     [Fact]

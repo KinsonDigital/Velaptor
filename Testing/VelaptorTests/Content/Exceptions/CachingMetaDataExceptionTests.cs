@@ -5,7 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class CachingMetaDataExceptionTests
         var sut = new CachingMetaDataException();
 
         // Assert
-        sut.Message.Should().Be("There was an issue with caching the metadata.");
+        sut.Message.ShouldBe("There was an issue with caching the metadata.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class CachingMetaDataExceptionTests
         var sut = new CachingMetaDataException("test-message");
 
         // Assert
-        sut.Message.Should().Be("test-message");
+        sut.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class CachingMetaDataExceptionTests
         var sut = new CachingMetaDataException("test-exception", innerException);
 
         // Assert
-        sut.InnerException.Message.Should().Be("inner-exception");
-        sut.Message.Should().Be("test-exception");
+        sut.InnerException.Message.ShouldBe("inner-exception");
+        sut.Message.ShouldBe("test-exception");
     }
     #endregion
 }

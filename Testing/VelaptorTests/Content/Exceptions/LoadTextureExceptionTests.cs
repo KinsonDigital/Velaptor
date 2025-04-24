@@ -5,7 +5,7 @@
 namespace VelaptorTests.Content.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Content.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class LoadTextureExceptionTests
         var sut = new LoadTextureException();
 
         // Assert
-        sut.Message.Should().Be("There was an issue loading the texture.");
+        sut.Message.ShouldBe("There was an issue loading the texture.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class LoadTextureExceptionTests
         var sut = new LoadTextureException("test-message");
 
         // Assert
-        sut.Message.Should().Be("test-message");
+        sut.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class LoadTextureExceptionTests
         var sut = new LoadTextureException("test-exception", innerException);
 
         // Assert
-        sut.InnerException.Message.Should().Be("inner-exception");
-        sut.Message.Should().Be("test-exception");
+        sut.InnerException.Message.ShouldBe("inner-exception");
+        sut.Message.ShouldBe("test-exception");
     }
     #endregion
 }

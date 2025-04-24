@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 /// </summary>
 public readonly record struct SystemDisplay
 {
-    private readonly IPlatform platform;
+    private readonly IPlatform? platform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemDisplay"/> class.
@@ -114,5 +114,5 @@ public readonly record struct SystemDisplay
     /// </summary>
     /// <returns>The current platform's DPI setting.</returns>
     [ExcludeFromCodeCoverage(Justification = "Cannot test because hash codes do not return repeatable results.")]
-    private float GetPlatformDefaultDpi() => this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f;
+    private float GetPlatformDefaultDpi() => this.platform?.CurrentPlatform == OSPlatform.OSX ? 72f : 96f;
 }

@@ -5,7 +5,7 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -22,8 +22,8 @@ public class ShaderNameAttributeTests
         var act = () => _ = new ShaderNameAttribute(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'name')");
     }
 
     [Fact]
@@ -33,8 +33,8 @@ public class ShaderNameAttributeTests
         var act = () => _ = new ShaderNameAttribute(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class ShaderNameAttributeTests
         var attribute = new ShaderNameAttribute("test-name");
 
         // Assert
-        attribute.Name.Should().BeEquivalentTo("test-name");
+        attribute.Name.ShouldBeEquivalentTo("test-name");
     }
     #endregion
 }

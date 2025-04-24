@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ReactableData;
 using Xunit;
 
@@ -25,8 +25,8 @@ public class ViewPortSizeDataTests
         };
 
         // Assert
-        sut.Width.Should().Be(1);
-        sut.Height.Should().Be(2);
+        sut.Width.ShouldBe(1u);
+        sut.Height.ShouldBe(2u);
     }
     #endregion
 }

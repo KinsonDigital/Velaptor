@@ -7,7 +7,7 @@ namespace VelaptorTests.Services;
 using System;
 using System.IO.Abstractions;
 using System.Text.Json;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Exceptions;
@@ -54,9 +54,8 @@ public class AppSettingsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'jsonService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'jsonService')");
     }
 
     [Fact]
@@ -72,9 +71,8 @@ public class AppSettingsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -90,9 +88,8 @@ public class AppSettingsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -126,8 +123,9 @@ public class AppSettingsServiceTests
         var act = () => _ = CreateService();
 
         // Assert
-        act.Should().Throw<AppSettingsException>()
-            .WithMessage(expected).WithInnerException<JsonException>();
+        var exception = act.ShouldThrow<AppSettingsException>();
+        exception.Message.ShouldBe(expected);
+        exception.InnerException.ShouldBeOfType<JsonException>();
     }
     #endregion
 
@@ -142,7 +140,7 @@ public class AppSettingsServiceTests
         var actual = sut.Settings;
 
         // Assert
-        actual.Should().NotBeNull();
+        actual.ShouldNotBeNull();
     }
     #endregion
 

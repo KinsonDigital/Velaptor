@@ -15,7 +15,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
@@ -70,7 +70,7 @@ public class LineGpuBufferTests
         var mockPushReactable = Substitute.For<IPushReactable>();
         mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
                 {
-                    reactor.Should().NotBeNull("It is required for unit testing.");
+                    reactor.ShouldNotBeNull("It is required for unit testing.");
 
                     if (reactor.Id == PushNotifications.GLInitializedId)
                     {
@@ -81,14 +81,14 @@ public class LineGpuBufferTests
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
                 {
-                    reactor.Should().NotBeNull("It is required for unit testing.");
+                    reactor.ShouldNotBeNull("It is required for unit testing.");
                     this.viewPortSizeReactor = reactor;
                 }));
 
         var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
                 {
-                    reactor.Should().NotBeNull("It is required for unit testing.");
+                    reactor.ShouldNotBeNull("It is required for unit testing.");
                     this.batchSizeReactor = reactor;
                 }));
 
@@ -112,9 +112,8 @@ public class LineGpuBufferTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -129,7 +128,8 @@ public class LineGpuBufferTests
         var act = () => sut.UploadVertexData(default, 0);
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The line buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The line buffer has not been initialized.");
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class LineGpuBufferTests
 
         // Assert
         this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, 0x3c0, 96, Arg.Any<float[]>());
-        actual.Should().BeEquivalentTo(expectedData);
+        actual.ShouldBeEquivalentTo(expectedData);
         this.mockGLService.Received(2).UnbindVBO();
         this.mockGLService.Received(4).EndGroup();
     }
@@ -228,8 +228,8 @@ public class LineGpuBufferTests
         var act = () => sut.PrepareForUpload();
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>()
-            .WithMessage("The line buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The line buffer has not been initialized.");
     }
 
     [Fact]
@@ -255,9 +255,9 @@ public class LineGpuBufferTests
         var actual = sut.GenerateData();
 
         // Assert
-        sut.BatchSize.Should().Be(100u);
-        actual.Should().HaveCount(2400);
-        actual.Should().AllSatisfy(expected => expected.Should().Be(0));
+        sut.BatchSize.ShouldBe(100u);
+        actual.Length.ShouldBe(2400);
+        actual.ShouldAllBe(expected => expected == 0);
     }
 
     [Fact]
@@ -309,8 +309,8 @@ public class LineGpuBufferTests
         var actual = sut.GenerateIndices();
 
         // Assert
-        sut.BatchSize.Should().Be(100u);
-        actual.Should().BeEquivalentTo(expected);
+        sut.BatchSize.ShouldBe(100u);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 
@@ -330,8 +330,8 @@ public class LineGpuBufferTests
         // Act & Assert
         void Act(ISubscription reactor)
         {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("LineGpuBufferTests.Ctor - BatchSizeChangedId");
+            reactor.ShouldNotBeNull("it is required for this unit test.");
+            reactor.Name.ShouldBe("LineGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -345,7 +345,7 @@ public class LineGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
-        sut.BatchSize.Should().Be(100);
+        sut.BatchSize.ShouldBe(100u);
     }
 
     [Fact]
@@ -358,7 +358,7 @@ public class LineGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class LineGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Line });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
 
         this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
         this.mockGLService.Received(8).EndGroup();
