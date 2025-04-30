@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.OpenGL.GpuData;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Shouldly;
@@ -53,21 +52,6 @@ public class LineVertexDataTests
 
         // Assert
         actual.ShouldBe(24u);
-    }
-
-    [Fact]
-    public void ToArray_WhenInvoked_ReturnsCorrectResult()
-    {
-        // Arrange
-        IEnumerable<float> expected = [1, 2, 4, 5, 6, 3];
-
-        var sut = new LineVertexData(new Vector2(1, 2), Color.FromArgb(3, 4, 5, 6));
-
-        // Act
-        var actual = sut.ToArray();
-
-        // Assert
-        actual.ShouldBe(expected);
     }
     #endregion
 }
