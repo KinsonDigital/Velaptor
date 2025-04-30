@@ -1,4 +1,4 @@
-// <copyright file="LineGpuData.cs" company="KinsonDigital">
+﻿// <copyright file="LineGpuData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -36,7 +36,7 @@ internal readonly struct LineGpuData
     /// Gets the vertex data for the top left vertex of a render area.
     /// </summary>
     /// <remarks>
-    ///     This is first vertex of the top left triangle that makes up the render area.
+    ///     This is the first vertex of the top left triangle that makes up the render area.
     /// </remarks>
     public LineVertexData Vertex1 { get; }
 
@@ -45,10 +45,10 @@ internal readonly struct LineGpuData
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     This is second vertex of the bottom left triangle that makes up the render area.
+    ///     This is the second vertex of the bottom left triangle that makes up the render area.
     /// </para>
     /// <para>
-    ///     This vertex is shared with the second vertex of the bottom right triangle of the render area.
+    ///     This vertex is shared with the second vertex, which is the bottom right triangle of the render area.
     /// </para>
     /// </remarks>
     public LineVertexData Vertex2 { get; }
@@ -58,10 +58,10 @@ internal readonly struct LineGpuData
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     This is third vertex of the top left triangle that makes up the render area.
+    ///     This is the third vertex of the top left triangle that makes up the render area.
     /// </para>
     /// <para>
-    ///     This vertex is shared with the first vertex of the bottom right triangle of the render area.
+    ///     This vertex is shared with the first vertex, which is the bottom right triangle of the render area.
     /// </para>
     /// </remarks>
     public LineVertexData Vertex3 { get; }
@@ -70,7 +70,7 @@ internal readonly struct LineGpuData
     /// Gets the vertex data for the bottom right vertex of a render area.
     /// </summary>
     /// <remarks>
-    ///     This is the third vertex of the bottom right triangle of the render area.
+    ///     This is the third vertex, which is the bottom right triangle of the render area.
     /// </remarks>
     public LineVertexData Vertex4 { get; }
 
@@ -105,7 +105,7 @@ internal readonly struct LineGpuData
     {
         /* NOTE:
             The order of the array elements is extremely important.
-            It determines the layout of each stride of vertex data and that layout
+            It determines the layout of each vertex data stride, and that layout
             has to match the layout told to OpenGL.
         */
 

@@ -1,4 +1,4 @@
-// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL;
 using System.Numerics;
 
 /// <summary>
-/// Provides various helper methods for OpenGL related operations.
+/// Provides various helper methods for OpenGL-related operations.
 /// </summary>
 internal static class OpenGLExtensionMethods
 {

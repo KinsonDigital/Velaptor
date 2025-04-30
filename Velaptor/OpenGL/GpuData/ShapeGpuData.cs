@@ -36,7 +36,7 @@ internal readonly struct ShapeGpuData
     /// Gets the vertex data for the top left vertex of a bounding box.
     /// </summary>
     /// <remarks>
-    ///     This is first vertex of the top left triangle that makes up the bounding box.
+    ///     This is the first vertex of the top left triangle that makes up the bounding box.
     /// </remarks>
     public ShapeVertexData Vertex1 { get; }
 
@@ -45,10 +45,10 @@ internal readonly struct ShapeGpuData
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     This is second vertex of the bottom left triangle that makes up the bounding box.
+    ///     This is the second vertex of the bottom left triangle that makes up the bounding box.
     /// </para>
     /// <para>
-    ///     This vertex is shared with the second vertex of the bottom right triangle of the bounding box.
+    ///     This vertex is shared with the second vertex, which is the bottom right triangle of the bounding box.
     /// </para>
     /// </remarks>
     public ShapeVertexData Vertex2 { get; }
@@ -58,10 +58,10 @@ internal readonly struct ShapeGpuData
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     This is third vertex of the top left triangle that makes up the bounding box.
+    ///     This is the third vertex of the top left triangle that makes up the bounding box.
     /// </para>
     /// <para>
-    ///     This vertex is shared with the first vertex of the bottom right triangle of the bounding box.
+    ///     This vertex is shared with the first vertex, which is the bottom right triangle of the bounding box.
     /// </para>
     /// </remarks>
     public ShapeVertexData Vertex3 { get; }
@@ -70,7 +70,7 @@ internal readonly struct ShapeGpuData
     /// Gets the vertex data for the bottom right vertex of a bounding box.
     /// </summary>
     /// <remarks>
-    ///     This is the third vertex of the bottom right triangle of the bounding box.
+    ///     This is the third vertex, which is the bottom right triangle of the bounding box.
     /// </remarks>
     public ShapeVertexData Vertex4 { get; }
 

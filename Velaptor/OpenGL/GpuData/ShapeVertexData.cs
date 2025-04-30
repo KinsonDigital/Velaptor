@@ -65,8 +65,8 @@ internal readonly struct ShapeVertexData
     /// <remarks>
     /// The components below represent the bounding box:
     /// <list type="bullet">
-    ///     <item><c>X:</c> The position of the center of the bounding box on the X axis.</item>
-    ///     <item><c>Y:</c> The position of the center of the bounding box on the Y axis.</item>
+    ///     <item><c>X:</c> The position in the center of the bounding box on the X axis.</item>
+    ///     <item><c>Y:</c> The position in the center of the bounding box on the Y axis.</item>
     ///     <item><c>Z:</c> The width of the bound box.</item>
     ///     <item><c>W:</c> The height of the bound box.</item>
     /// </list>
@@ -93,22 +93,22 @@ internal readonly struct ShapeVertexData
     public float BorderThickness { get; }
 
     /// <summary>
-    /// Gets the radius of the top left corner of the bound box.
+    /// Gets the radius in the top left corner of the bound box.
     /// </summary>
     public float TopLeftCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the bottom left corner of the bound box.
+    /// Gets the radius in the bottom left corner of the bound box.
     /// </summary>
     public float BottomLeftCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the bottom right corner of the bound box.
+    /// Gets the radius in the bottom right corner of the bound box.
     /// </summary>
     public float BottomRightCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the top right corner of the bound box.
+    /// Gets the radius in the top right corner of the bound box.
     /// </summary>
     public float TopRightCornerRadius { get; }
 
