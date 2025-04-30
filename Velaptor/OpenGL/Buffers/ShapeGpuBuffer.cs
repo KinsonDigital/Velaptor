@@ -202,19 +202,6 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     }
 
     /// <summary>
-    /// Generates default <see cref="ShapeVertexData"/> for all four vertices that make
-    /// up a rectangular rendering area.
-    /// </summary>
-    /// <returns>The four vertex data items.</returns>
-    private static ShapeVertexData[] GenerateVertexData() =>
-    [
-        ShapeVertexData.New(-1.0f, 1.0f),
-            ShapeVertexData.New(-1.0f, -1.0f),
-            ShapeVertexData.New(1.0f, 1.0f),
-            ShapeVertexData.New(1.0f, 1.0f)
-    ];
-
-    /// <summary>
     /// Applies the color of the given <paramref name="shape"/> shape to the shape
     /// data being sent to the GPU.
     /// </summary>

@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL.GpuData;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 
@@ -151,32 +150,4 @@ internal readonly struct ShapeVertexData
             0f,
             0f,
             0f);
-
-    /// <summary>
-    /// Returns all the vertex data as an array or ordered values.
-    /// </summary>
-    /// <returns>All the vertex data values.</returns>
-    public IEnumerable<float> ToArray()
-    {
-        /* NOTE:
-            The order of the array elements is extremely important.
-            It determines the layout of each stride of vertex data and that layout
-            has to match the layout told to OpenGL.
-        */
-
-        var result = new List<float>();
-
-        result.AddRange(VertexPos.ToArray());
-        result.AddRange(BoundingBox.ToArray());
-        result.AddRange(Color.ToArray());
-
-        result.Add(IsSolid ? 1f : 0f);
-        result.Add(BorderThickness);
-        result.Add(TopLeftCornerRadius);
-        result.Add(BottomLeftCornerRadius);
-        result.Add(BottomRightCornerRadius);
-        result.Add(TopRightCornerRadius);
-
-        return result.ToArray();
-    }
 }
