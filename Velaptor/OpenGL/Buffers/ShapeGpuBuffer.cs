@@ -137,15 +137,12 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        var result = new List<float>();
-
-        for (var i = 0u; i < BatchSize; i++)
+        if (!IsInitialized)
         {
-            var vertexData = GenerateVertexData();
-            result.AddRange(new ShapeGpuData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]).ToArray());
+            throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        return result.ToArray();
+        return ShapeGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>
