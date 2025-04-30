@@ -1,10 +1,8 @@
-﻿// <copyright file="LineGpuData.cs" company="KinsonDigital">
+// <copyright file="LineGpuData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.OpenGL.GpuData;
-
-using System.Collections.Generic;
 
 /// <summary>
 /// Holds all the necessary data for a line to send to the GPU for rendering.
@@ -83,6 +81,23 @@ internal readonly struct LineGpuData
     public static uint GetTotalBytes() => Stride;
 
     /// <summary>
+    /// Generates default data to be sent to the GPU.
+    /// </summary>
+    /// <param name="batchSize">The batch size.</param>
+    /// <returns>The default data.</returns>
+    public static float[] GenerateDefaultData(uint batchSize)
+    {
+        var result = new float[batchSize * 24];
+
+        for (var i = 0u; i < batchSize; i++)
+        {
+            result[i] = 0f;
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Returns all the vertex data in an array of <see cref="float"/> value.
     /// </summary>
     /// <returns>The array of vertex data.</returns>
@@ -94,14 +109,40 @@ internal readonly struct LineGpuData
             has to match the layout told to OpenGL.
         */
 
-        // return ToArrayDebug();
-        var result = new List<float>();
+        var result = new float[24];
 
-        result.AddRange(Vertex1.ToArray());
-        result.AddRange(Vertex2.ToArray());
-        result.AddRange(Vertex3.ToArray());
-        result.AddRange(Vertex4.ToArray());
+        // Vector 1
+        result[0] = Vertex1.VertexPos.X;
+        result[1] = Vertex1.VertexPos.Y;
+        result[2] = Vertex1.Color.R;
+        result[3] = Vertex1.Color.G;
+        result[4] = Vertex1.Color.B;
+        result[5] = Vertex1.Color.A;
 
-        return result.ToArray();
+        // Vector 2
+        result[6] = Vertex2.VertexPos.X;
+        result[7] = Vertex2.VertexPos.Y;
+        result[8] = Vertex2.Color.R;
+        result[9] = Vertex2.Color.G;
+        result[10] = Vertex2.Color.B;
+        result[11] = Vertex2.Color.A;
+
+        // Vector 3
+        result[12] = Vertex3.VertexPos.X;
+        result[13] = Vertex3.VertexPos.Y;
+        result[14] = Vertex3.Color.R;
+        result[15] = Vertex3.Color.G;
+        result[16] = Vertex3.Color.B;
+        result[17] = Vertex3.Color.A;
+
+        // Vector 4
+        result[18] = Vertex4.VertexPos.X;
+        result[19] = Vertex4.VertexPos.Y;
+        result[20] = Vertex4.Color.R;
+        result[21] = Vertex4.Color.G;
+        result[22] = Vertex4.Color.B;
+        result[23] = Vertex4.Color.A;
+
+        return result;
     }
 }

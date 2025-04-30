@@ -250,6 +250,7 @@ public class LineGpuBufferTests
     {
         // Arrange
         var sut = CreateSystemUnderTest(false);
+        this.glInitReactor.OnReceive();
 
         // Act
         var actual = sut.GenerateData();
