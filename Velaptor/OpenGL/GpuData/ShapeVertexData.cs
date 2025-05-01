@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL.GpuData;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 
@@ -66,8 +65,8 @@ internal readonly struct ShapeVertexData
     /// <remarks>
     /// The components below represent the bounding box:
     /// <list type="bullet">
-    ///     <item><c>X:</c> The position of the center of the bounding box on the X axis.</item>
-    ///     <item><c>Y:</c> The position of the center of the bounding box on the Y axis.</item>
+    ///     <item><c>X:</c> The position in the center of the bounding box on the X axis.</item>
+    ///     <item><c>Y:</c> The position in the center of the bounding box on the Y axis.</item>
     ///     <item><c>Z:</c> The width of the bound box.</item>
     ///     <item><c>W:</c> The height of the bound box.</item>
     /// </list>
@@ -94,22 +93,22 @@ internal readonly struct ShapeVertexData
     public float BorderThickness { get; }
 
     /// <summary>
-    /// Gets the radius of the top left corner of the bound box.
+    /// Gets the radius in the top left corner of the bound box.
     /// </summary>
     public float TopLeftCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the bottom left corner of the bound box.
+    /// Gets the radius in the bottom left corner of the bound box.
     /// </summary>
     public float BottomLeftCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the bottom right corner of the bound box.
+    /// Gets the radius in the bottom right corner of the bound box.
     /// </summary>
     public float BottomRightCornerRadius { get; }
 
     /// <summary>
-    /// Gets the radius of the top right corner of the bound box.
+    /// Gets the radius in the top right corner of the bound box.
     /// </summary>
     public float TopRightCornerRadius { get; }
 
@@ -151,32 +150,4 @@ internal readonly struct ShapeVertexData
             0f,
             0f,
             0f);
-
-    /// <summary>
-    /// Returns all the vertex data as an array or ordered values.
-    /// </summary>
-    /// <returns>All the vertex data values.</returns>
-    public IEnumerable<float> ToArray()
-    {
-        /* NOTE:
-            The order of the array elements is extremely important.
-            It determines the layout of each stride of vertex data and that layout
-            has to match the layout told to OpenGL.
-        */
-
-        var result = new List<float>();
-
-        result.AddRange(VertexPos.ToArray());
-        result.AddRange(BoundingBox.ToArray());
-        result.AddRange(Color.ToArray());
-
-        result.Add(IsSolid ? 1f : 0f);
-        result.Add(BorderThickness);
-        result.Add(TopLeftCornerRadius);
-        result.Add(BottomLeftCornerRadius);
-        result.Add(BottomRightCornerRadius);
-        result.Add(TopRightCornerRadius);
-
-        return result.ToArray();
-    }
 }

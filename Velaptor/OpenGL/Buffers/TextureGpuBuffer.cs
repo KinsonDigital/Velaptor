@@ -186,14 +186,7 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        var result = new List<TextureGpuData>();
-
-        for (var i = 0u; i < BatchSize; i++)
-        {
-            result.AddRange(new TextureGpuData[] { new (default, default, default, default) });
-        }
-
-        return OpenGLExtensionMethods.ToArray(result);
+        return TextureGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>

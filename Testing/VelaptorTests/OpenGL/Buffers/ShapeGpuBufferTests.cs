@@ -434,10 +434,9 @@ public class ShapeGpuBufferTests
     public void GenerateData_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var expected = TestDataLoader
-            .LoadTestData<float[]>(string.Empty,
-                $"{nameof(ShapeGpuBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
+        var expected = Enumerable.Range(0, 6400).Select(i => 0f).ToArray();
         var sut = CreateSystemUnderTest(false);
+        this.glInitReactor.OnReceive();
 
         // Act
         var actual = sut.GenerateData();

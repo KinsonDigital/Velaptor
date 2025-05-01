@@ -5,7 +5,6 @@
 namespace VelaptorTests.OpenGL.GpuData;
 
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using Shouldly;
 using Velaptor.OpenGL.GpuData;
@@ -72,44 +71,6 @@ public class ShapeVertexDataTests
 
         // Assert
         actual.ShouldBe(64u);
-    }
-
-    [Fact]
-    public void ToArray_WhenInvoked_ReturnsCorrectResult()
-    {
-        // Arrange
-        var data = new ShapeVertexData(
-            new Vector2(1f, 2f),
-            new Vector4(3f, 4f, 5f, 6f),
-            Color.FromArgb(7, 8, 9, 10),
-            true,
-            11f,
-            12f,
-            13f,
-            14f,
-            15);
-
-        // Act
-        var actual = data.ToArray().ToArray();
-
-        // Assert
-        actual.Length.ShouldBe(16);
-        actual[0].ShouldBe(1f, "the Vertex Pos X should be correct.");
-        actual[1].ShouldBe(2f, "the Vertex Pos Y should be correct.");
-        actual[2].ShouldBe(3f, "the Rectangle X should be correct.");
-        actual[3].ShouldBe(4f, "the Rectangle Y should be correct.");
-        actual[4].ShouldBe(5f, "the Rectangle Width should be correct.");
-        actual[5].ShouldBe(6f, "the Rectangle Height should be correct.");
-        actual[6].ShouldBe(8, "the Color R should be correct.");
-        actual[7].ShouldBe(9, "the Color G should be correct.");
-        actual[8].ShouldBe(10, "the Color B should be correct.");
-        actual[9].ShouldBe(7, "the Color A should be correct.");
-        actual[10].ShouldBe(1, "the IsSolid should be correct.");
-        actual[11].ShouldBe(11f, "the Border Thickness should be correct.");
-        actual[12].ShouldBe(12f, "the Top Left Radius should be correct.");
-        actual[13].ShouldBe(13f, "the Bottom Left Radius should be correct.");
-        actual[14].ShouldBe(14f, "the Bottom Right Radius should be correct.");
-        actual[15].ShouldBe(15f, "the Top Right Radius should be correct.");
     }
     #endregion
 }

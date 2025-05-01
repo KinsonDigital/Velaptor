@@ -137,15 +137,12 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        var result = new List<float>();
-
-        for (var i = 0u; i < BatchSize; i++)
+        if (!IsInitialized)
         {
-            var vertexData = GenerateVertexData();
-            result.AddRange(new ShapeGpuData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]).ToArray());
+            throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        return result.ToArray();
+        return ShapeGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>
@@ -203,19 +200,6 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
 
         return result.ToArray();
     }
-
-    /// <summary>
-    /// Generates default <see cref="ShapeVertexData"/> for all four vertices that make
-    /// up a rectangular rendering area.
-    /// </summary>
-    /// <returns>The four vertex data items.</returns>
-    private static ShapeVertexData[] GenerateVertexData() =>
-    [
-        ShapeVertexData.New(-1.0f, 1.0f),
-            ShapeVertexData.New(-1.0f, -1.0f),
-            ShapeVertexData.New(1.0f, 1.0f),
-            ShapeVertexData.New(1.0f, 1.0f)
-    ];
 
     /// <summary>
     /// Applies the color of the given <paramref name="shape"/> shape to the shape

@@ -114,14 +114,12 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        var result = new List<float>();
-
-        for (var i = 0; i < BatchSize; i++)
+        if (!IsInitialized)
         {
-            result.AddRange(new LineGpuData(default, default, default, default).ToArray());
+            throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        return result.ToArray();
+        return LineGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>
