@@ -29,14 +29,9 @@
         "Tech-Debt": "Tech Debt 📉"
     },
     "issueCategoryLabelMappings": {
-        "New Features ✨": "✨new-feature",
-        "Enhancements 💎": "💎enhancement",
-        "Bug Fixes 🐛": "🐛bug",
-        "Breaking Changes 🧨": "🧨breaking-changes",
-        "Dependency Updates 📦": "📦dependency-update",
-        "Performance 🏎️": "🏎️performance",
-        "CICD ⚙️": "cicd",
-        "Tech Debt 💳": "tech-debt"
+        "Breaking Changes 🧨": "breaking-changes",
+        "Dependency Updates 📦": "dependency-update",
+        "Performance 🏎️": "performance"
     },
     "prCategoryLabelMappings": {
         "Dependency Updates 📦": "📦dependency-update"
