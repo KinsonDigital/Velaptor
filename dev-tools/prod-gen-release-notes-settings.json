@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/refs/tags/v1.0.0-preview.7/schemas/gen-release-notes-schema.json",
+    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/preview/schemas/gen-release-notes-schema.json",
     "ownerName": "KinsonDigital",
     "repoName": "Velaptor",
     "githubTokenEnvVarName": "CICD_TOKEN",
@@ -14,15 +14,20 @@
         "🧪",
         "🔬"
     ],
+    "issueCategoryIssueTypeMappings": {
+        "CICD": "CICD ⚙️",
+        "Bug": "Bug Fixes 🐛",
+        "Enhancement": "Enhancements 💎",
+        "Feature": "New Features ✨",
+        "Project-Config": "Configuration 🛠️",
+        "Research": "Research 🔬",
+        "QA-Testing": "Testing 🧪",
+        "Tech-Debt": "Tech Debt 📉"
+    },
     "issueCategoryLabelMappings": {
-        "New Features ✨": "✨new-feature",
-        "Enhancements 💎": "💎enhancement",
-        "Bug Fixes 🐛": "🐛bug",
-        "Breaking Changes 🧨": "🧨breaking-changes",
-        "Dependency Updates 📦": "📦dependency-update",
-        "Performance 🏎️": "🏎️performance",
-        "CICD ⚙️": "cicd",
-        "Tech Debt 💳": "tech-debt"
+        "Breaking Changes 🧨": "breaking-changes",
+        "Dependency Updates 📦": "dependency-update",
+        "Performance 🏎️": "performance"
     },
     "prCategoryLabelMappings": {
         "Dependency Updates 📦": "📦dependency-update"
