@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/refs/tags/v1.0.0-preview.7/schemas/prepare-release-schema.json",
+    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/preview/schemas/prepare-release-schema.json",
     "ownerName": "KinsonDigital",
     "repoName": "Velaptor",
     "orgProjectName": "KD-Team",

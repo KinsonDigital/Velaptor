@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/refs/tags/v1.0.0-preview.7/schemas/create-pr-schema.json",
+    "$schema": "https://raw.githubusercontent.com/KinsonDigital/kd-admin/preview/schemas/create-pr-schema.json",
     "ownerName": "KinsonDigital",
     "repoName": "Velaptor",
     "githubTokenEnvVarName": "CICD_TOKEN",
