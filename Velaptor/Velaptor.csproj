@@ -82,7 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FreeTypeSharp" Version="3.0.0" />
+    <PackageReference Include="FreeTypeSharp" Version="3.0.1" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
     <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.22" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">

@@ -29,16 +29,15 @@
         "Tech-Debt": "Tech Debt 📉"
     },
     "issueCategoryLabelMappings": {
-        "Breaking Changes 🧨": "breaking-changes",
-        "Dependency Updates 📦": "dependency-update",
-        "Performance 🏎️": "performance"
+        "Breaking Changes 🧨": "🧨breaking-changes",
+        "Dependency Updates 📦": "📦dependency-update",
+        "Performance 🏎️": "🏎️performance"
     },
     "prCategoryLabelMappings": {
         "Dependency Updates 📦": "📦dependency-update"
     },
     "ignoreLabels": [
-        "🚀preview-release",
-        "🔬research"
+        "🚀preview-release"
     ],
     "wordReplacements": {
         "chore(deps): ": "",
@@ -82,6 +81,5 @@
         "Integrate": "Integrated"
     },
     "boldedVersions": true,
-    "italicVersions": true,
-    "otherCategoryName": "Other 🪧"
+    "italicVersions": true
 }
