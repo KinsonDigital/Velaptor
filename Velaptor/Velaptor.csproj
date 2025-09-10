@@ -7,10 +7,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.41</Version>
+    <Version>1.0.0-preview.42</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.41</FileVersion>
+    <FileVersion>1.0.0-preview.42</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -26,7 +26,7 @@
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
     <Description>2D game or application development framework that provides 2D rendering, audio, keyboard and mouse input, etc.</Description>
-    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
+    <Copyright>Copyright ©2025 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
     <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
