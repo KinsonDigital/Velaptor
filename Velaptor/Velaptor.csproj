@@ -84,25 +84,25 @@
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="3.0.0" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
-    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.21" />
+    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.22" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MP3Sharp" Version="1.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.22.0" />
     <PackageReference Include="Silk.NET" Version="2.22.0" />
     <PackageReference Include="SimpleInjector" Version="5.5.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="22.0.13" />
+    <PackageReference Include="System.IO.Abstractions" Version="22.0.15" />
   </ItemGroup>
 
 </Project>
