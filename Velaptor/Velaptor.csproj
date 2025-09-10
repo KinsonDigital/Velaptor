@@ -7,10 +7,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.41</Version>
+    <Version>1.0.0-preview.42</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.41</FileVersion>
+    <FileVersion>1.0.0-preview.42</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
