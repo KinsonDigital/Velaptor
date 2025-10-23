@@ -1,5 +1,7 @@
 {
-	"deno.enable": false,
+	"deno.enablePaths": [
+		"./DevTools/"
+	],
 	"cSpell.words": [
 		"Analyers",
 		"andymckay",
