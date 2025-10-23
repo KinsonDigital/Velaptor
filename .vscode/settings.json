@@ -69,6 +69,17 @@
 		"Vorbis",
 		"xunit"
 	],
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/.idea": true,
+		"*.sln.DotSettings.user": true,
+		"**/bin": true,
+		"**/obj": true
+	},
 	"dotnet.defaultSolution": "Velaptor.sln",
 	"[csharp]": {
 		"editor.insertSpaces": false,
