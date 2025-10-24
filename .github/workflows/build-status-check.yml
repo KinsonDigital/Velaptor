@@ -13,14 +13,106 @@ on:
 
 
 jobs:
-  build_status_check:
-    name: ${{ vars.PROJECT_NAME }} Build Status Check
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v15.0.0
-    with:
-      project-name: "${{ vars.PROJECT_NAME }}"
-      build-config: Debug
-      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
-      checkout-ref: ${{ github.event.pull_request.head.ref }}
-    secrets:
-      cicd-pat: ${{ secrets.CICD_TOKEN }}
+  build_velaptor:
+    name: Build Velaptor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+
+
+  build_velaptor_testing:
+    name: Build Velaptor Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Testing/${{ vars.PROJECT_NAME }}Testing.csproj" -c Debug;
+
+
+  build_avalonia_testing:
+    name: Build Avalonia Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Testing/AvaloniaTesting/AvaloniaTesting.csproj" -c Debug;
+
+
+  build_playground:
+    name: Build Playground
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Testing/PlaygroundApp/PlaygroundApp.csproj" -c Debug;
+
+
+  build_keyboard_perf:
+    name: Build Keyboard Performance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Performance/KeyboardPerf/KeyboardPerf.csproj" -c Debug;
+
+
+  build_measure_text_perf:
+    name: Build Measure Text Performance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Performance/MeasureTextPerf/MeasureTextPerf.csproj" -c Debug;
+
+
+  build_mouse_perf:
+    name: Build Mouse Performance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/Performance/MousePerf/MousePerf.csproj" -c Debug;
