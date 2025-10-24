@@ -1,0 +1,11 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@kinsondigital/sprocket@2.2.0": "2.2.0"
+  },
+  "jsr": {
+    "@kinsondigital/sprocket@2.2.0": {
+      "integrity": "76efac8eba41da38ff6d1dce712e5d79c9641e0b5b450245c0c52c9f68cf72e8"
+    }
+  }
+}
