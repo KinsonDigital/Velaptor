@@ -27,4 +27,4 @@ jobs:
 
       - name: Run Tests
         run: |
-          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests.csproj" -c Debug;
+          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests/${{ vars.PROJECT_NAME }}Tests.csproj" -c Debug;
