@@ -23,6 +23,31 @@ on:
 
 
 jobs:
+  validate_branch:
+    name: Validate Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Preview Branch
+        if: ${{ inputs.release-type == 'Preview' }}
+        run: |
+          $branchName = "${{ github.ref_name }}".Trim();
+
+          if ($branchName -ne "${{ vars.PREV_BRANCH }}") {
+            Write-Error "::error::The branch name must be 'release' for a preview release.";
+            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+          }
+
+      - name: Check Production Branch
+        if: ${{ inputs.release-type == 'Production' }}
+        run: |
+          $branchName = "${{ github.ref_name }}".Trim();
+
+          if ($branchName -ne "${{ vars.PROD_BRANCH }}") {
+            Write-Host "::error::The branch name must be 'main' for a production release.";
+            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+          }
+
+
   determine_release_notes_path:
     name: Determine Release Notes Dir Path
     runs-on: ubuntu-latest
@@ -37,7 +62,7 @@ jobs:
 
 
   get_and_validate_version:
-    name: Get Version
+    name: Get And Validate Version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get-version.outputs.version }}
@@ -58,7 +83,7 @@ jobs:
 
 
   run_tests:
-    name: Building Testing Project
+    name: Run Unit Tests
     needs: get_and_validate_version
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +96,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests.csproj" `
+          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests/${{ vars.PROJECT_NAME }}Tests.csproj" `
             -c ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }};
 
 
@@ -83,7 +108,7 @@ jobs:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
+      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
       send-x-release-post: ${{ vars.X_BROADCAST_ENABLED == 'true' }}
       dry-run: ${{ inputs.dry-run }}

@@ -84,10 +84,28 @@
 		"**/bin": true,
 		"**/obj": true
 	},
+	"files.eol": "\n",
+	"window.title": "🦖Velaptor",
+	"workbench.colorCustomizations": {
+		"titleBar.activeBackground": "#5f4f41",
+		"titleBar.activeForeground": "#FFFFFF",
+	},
+	"workbench.editor.customLabels.patterns": {
+		"**/Testing/**/*.cs": "${filename}🧪",
+		"**/Velaptor/**/*.cs": "${filename}👾",
+		"**/DevTools/**/*.ts": "${filename}🔧",
+		"**/.github/workflows/**/*.yml": "${filename}⚙️",
+		"**/ReleaseNotes/**/*.md": "${filename}📋",
+	},
 	"dotnet.defaultSolution": "Velaptor.sln",
 	"[csharp]": {
 		"editor.insertSpaces": false,
 		"editor.indentSize": 4,
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "denoland.vscode-deno",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 4,
 	},
 	"[jsonc]": {
 		"editor.insertSpaces": false,
