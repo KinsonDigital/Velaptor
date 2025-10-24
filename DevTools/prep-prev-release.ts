@@ -178,3 +178,6 @@ printGray(`⌛Adding pull request '#${newPr.number}' to project '${githubProject
 const projClient = new ProjectClient(ownerName, repoName, token);
 
 await projClient.addPullRequestToProject(newPr.number, githubProjectName);
+
+const prUrl = `https://github.com/${ownerName}/${repoName}/pull/${newPr.number}`;
+console.log(`Pull Request: ${prUrl}`);
