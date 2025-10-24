@@ -1,3 +1,4 @@
+import { existsSync } from "jsr:@std/fs@1.0.19";
 import { Input } from "jsr:@cliffy/prompt@1.0.0-rc.8";
 import {
 	branchExistsLocally,
@@ -14,6 +15,8 @@ import {
 import { LabelClient, ProjectClient, PullRequestClient, MilestoneClient } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15";
 import { IssueOrPRRequestData } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15/core";
 import { printGray } from "jsr:@kinsondigital/sprocket@2.1.0/console";
+import { ReleaseNotesGenerator } from "https://jsr.io/@kinsondigital/sprocket/2.2.0/src/release-notes-generator.ts";
+import { GeneratorSettings } from "https://jsr.io/@kinsondigital/sprocket/2.2.0/src/core/releases.ts";
 
 const token = (Deno.env.get("CICD_TOKEN") ?? "").trim();
 
@@ -38,7 +41,7 @@ const ownerName = "KinsonDigital";
 const repoName = "sprocket";
 const prevLabel = "🚀preview-release";
 const baseBranch = "main";
-const releaseType = "preview";
+const releaseType = "Preview";
 
 // Ask the user for a version number
 const releaseVersion = await Input.prompt({
@@ -62,6 +65,14 @@ const labelExists = await labelClient.exists(prevLabel);
 if (!labelExists) {
 	console.error(`The label '${prevLabel}' does not exist in the repository '${ownerName}/${repoName}'.`);
 	Deno.exit(1);
+}
+
+const settingsFileName = "prev-gen-release-notes-settings.json";
+const settingsFilePath = `${Deno.cwd()}/DevTools/${settingsFileName}`;
+
+if (!existsSync(settingsFilePath)) {
+    console.error(`The release notes settings file '${settingsFileName}' does not exist.`);
+    Deno.exit(1);
 }
 
 printGray(`⌛Checking if the branch '${baseBranch}' exists locally. . .`);
@@ -97,7 +108,7 @@ if (await branchExistsLocally(baseBranch)) {
 	}
 }
 
-const headBranch = `${releaseType}-release`;
+const headBranch = `${releaseType.toLowerCase()}-release`;
 
 printGray(`⌛Creating the branch '${headBranch}'. . .`);
 await createCheckoutBranch(headBranch);
@@ -106,11 +117,27 @@ printGray(`⌛Updating the version in the '${csProjFilePath}' file. . .`);
 const updatedProjectFileData = projectFileData.replace(versionRegex, `<Version>${releaseVersion}</Version>`);
 Deno.writeTextFileSync(csProjFilePath, updatedProjectFileData);
 
-printGray("⌛Staging version changes. . .");
+printGray("⌛\tStaging version changes. . .");
 await stageFiles([`*${projFileName}`]);
-printGray("⌛Creating commit. . .");
+printGray("⌛\tCreating commit for version changes. . .");
 await createCommit(`release: update version to v${releaseVersion}`);
-printGray("⌛Pushing to remote. . .");
+
+printGray("⌛Generating release notes. . .");
+const releaseNotesFilePath = `${Deno.cwd()}ReleaseNotes/${releaseType}Releases/ReleaseNotes-${releaseVersion}.md`;
+const generator: ReleaseNotesGenerator = new ReleaseNotesGenerator();
+const settingsFileContent = Deno.readTextFileSync(settingsFilePath);
+const settings: GeneratorSettings = JSON.parse(settingsFileContent);
+settings.version = `v${releaseVersion}`;
+
+const notes = await generator.generateNotes(settings);
+Deno.writeTextFileSync(releaseNotesFilePath, notes);
+
+printGray("⌛\tStaging release note changes. . .");
+await stageFiles([`*${projFileName}`]);
+printGray("⌛\tCreating commit for release note changes. . .");
+await createCommit(`release: create release notes for version v${releaseVersion}`);
+
+printGray("⌛Pushing changes to remote. . .");
 await pushToRemote(headBranch);
 
 const title = `🚀Production Release (v${releaseVersion})`;
