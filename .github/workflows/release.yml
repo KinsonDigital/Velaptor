@@ -15,11 +15,6 @@ on:
         required: true
         type: choice
         options: [Preview, Production]
-      trigger-api-docs-release:
-        description: Check to trigger a release of the API Documentation website.
-        required: false
-        default: true
-        type: boolean
       dry-run:
         description: Dry Run - Check to run the workflow without creating a release.
         required: false
@@ -41,22 +36,59 @@ jobs:
           "release-notes-dir-path=$dirPath" >> $env:GITHUB_OUTPUT;
 
 
+  get_and_validate_version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Get Version
+        id: get-version
+        uses: KinsonDigital/Infrastructure/actions/get-version@v16.0.0
+        with:
+          version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+      - name: Validate Version
+        uses: KinsonDigital/Infrastructure/actions/validate-version@v16.0.0
+        with:
+          version: "v${{ steps.get-version.outputs.version }}"
+          release-type: "${{ inputs.release-type }}"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+
+  run_tests:
+    name: Building Testing Project
+    needs: get_and_validate_version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Tests
+        run: |
+          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests.csproj" `
+            -c ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }};
+
+
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: determine_release_notes_path
+    needs: [get_and_validate_version, determine_release_notes_path, run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v16.0.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
-      run-branch: "${{ github.ref_name }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      relative-release-notes-dir-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}"
-      release-notes-file-name-prefix: "${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
+      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
-      pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
       send-x-release-post: ${{ vars.X_BROADCAST_ENABLED == 'true' }}
       dry-run: ${{ inputs.dry-run }}
       transpile-readme: true
+      deno-version: "${{ vars.DENO_VERSION }}"
     secrets:
       cicd-pat: "${{ secrets.CICD_TOKEN }}"
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
@@ -64,47 +96,3 @@ jobs:
       x-consumer-api-secret: "${{ secrets.X_CONSUMER_API_SECRET }}"
       x-access-token-key: "${{ secrets.X_ACCESS_TOKEN_KEY }}"
       x-access-token-secret: "${{ secrets.X_ACCESS_TOKEN_SECRET }}"
-
-
-  validate_version:
-    name: Validate Version
-    uses: KinsonDigital/Infrastructure/.github/workflows/validate-csharp-version.yml@v16.0.0
-    with:
-      project-name: "${{ vars.PROJECT_NAME }}"
-      release-type: "${{ inputs.release-type }}"
-    secrets:
-      cicd-pat: "${{ secrets.CICD_TOKEN }}"
-
-
-  run_api_doc_release:
-    name: Run API Doc Release
-    needs: [run_release, validate_version]
-    if: ${{ inputs.trigger-api-docs-release == true }}
-    runs-on: ubuntu-latest
-    steps:
-      - name:  Checkout Repo
-        uses: actions/checkout@v5
-
-      - name: Set Up Deno (${{ vars.DENO_VERSION }})
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: ${{ vars.DENO_VERSION }}
-
-      - name: Execute API Release Workflow
-        run: |
-          $scriptUrl = "${{ github.workspace }}/.github/cicd/scripts/trigger-api-docs-release.ts";
-
-          deno run `
-            --allow-net `
-            $scriptUrl `
-            "${{ vars.DOC_SITE_REPO_NAME }}" `
-            "${{ vars.DOC_SITE_RELEASE_BRANCH }}" `
-            "${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}" `
-            "[api-version,${{ needs.validate_version.outputs.version }}]" `
-            "${{ secrets.CICD_TOKEN }}";
-            
-          $releasesUrl = "https://github.com/${{ vars.ORGANIZATION_NAME }}/${{ vars.DOC_SITE_REPO_NAME }}/actions/workflows/${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}";
-
-          $notice = "An API documentation release has been triggered for the '${{ vars.DOC_SITE_REPO_NAME }}' repository."
-          $notice = $notice + "`n`t${{ vars.DOC_SITE_REPO_NAME }} Releases: $releasesUrl";
-          Write-Host "::notice::$notice";
