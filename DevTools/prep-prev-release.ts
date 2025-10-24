@@ -123,7 +123,7 @@ printGray("⌛\tCreating commit for version changes. . .");
 await createCommit(`release: update version to v${releaseVersion}`);
 
 printGray("⌛Generating release notes. . .");
-const releaseNotesFilePath = `${Deno.cwd()}ReleaseNotes/${releaseType}Releases/ReleaseNotes-${releaseVersion}.md`;
+const releaseNotesFilePath = `${Deno.cwd()}/ReleaseNotes/${releaseType}Releases/ReleaseNotes-${releaseVersion}.md`;
 const generator: ReleaseNotesGenerator = new ReleaseNotesGenerator();
 const settingsFileContent = Deno.readTextFileSync(settingsFilePath);
 const settings: GeneratorSettings = JSON.parse(settingsFileContent);
