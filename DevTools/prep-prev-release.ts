@@ -30,11 +30,18 @@ const projFileName = `${projectName}.csproj`;
 const csProjFilePath = `./Velaptor/${projFileName}`;
 const projectFileData = Deno.readTextFileSync(csProjFilePath);
 const versionRegex = /<Version>(.+)<\/Version>/;
+const fileVersionRegex = /<FileVersion>(.+)<\/FileVersion>/;
 const versionMatch = projectFileData.match(versionRegex);
+const fileVersionMatch = projectFileData.match(fileVersionRegex);
 
 if (versionMatch === null) {
   console.log("Could not find version in the .csproj file.");
   Deno.exit(1);
+}
+
+if (fileVersionMatch === null) {
+	console.log("Could not find file version in the .csproj file.");
+	Deno.exit(1);
 }
 
 const ownerName = "KinsonDigital";
@@ -114,7 +121,13 @@ printGray(`⌛Creating the branch '${headBranch}'. . .`);
 await createCheckoutBranch(headBranch);
 
 printGray(`⌛Updating the version in the '${csProjFilePath}' file. . .`);
-const updatedProjectFileData = projectFileData.replace(versionRegex, `<Version>${releaseVersion}</Version>`);
+const updatedProjectFileData = projectFileData.replace(
+	versionRegex,
+	`<Version>${releaseVersion}</Version>`,
+).replace(
+	fileVersionRegex,
+	`<FileVersion>${releaseVersion}</FileVersion>`,
+);
 Deno.writeTextFileSync(csProjFilePath, updatedProjectFileData);
 
 printGray("⌛\tStaging version changes. . .");
