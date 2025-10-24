@@ -2,7 +2,11 @@ import { delay } from "jsr:@std/async@1.0.15";
 import { existsSync, walkSync } from "jsr:@std/fs@1.0.19";
 import { Input } from "jsr:@cliffy/prompt@1.0.0-rc.8/input";
 import { IssueOrPRRequestData } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15/core";
-import { IssueClient, ProjectClient, PullRequestClient } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15/github";
+import {
+	IssueClient,
+	ProjectClient,
+	PullRequestClient,
+} from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15/github";
 import {
 	branchExistsLocally,
 	branchExistsRemotely,
@@ -12,7 +16,12 @@ import {
 	isCheckedOut,
 	pushToRemote,
 } from "jsr:@kinsondigital/sprocket@2.2.0/git";
-import { printIndianRed, printGray, printCyan, printYellow } from "jsr:@kinsondigital/sprocket@2.2.0/console";
+import {
+	printCyan,
+	printGray,
+	printIndianRed,
+	printYellow,
+} from "jsr:@kinsondigital/sprocket@2.2.0/console";
 
 const token = (Deno.env.get("CICD_TOKEN") ?? "").trim();
 const prReviewer = "KinsonDigitalAdmin";
@@ -26,7 +35,10 @@ const GET_DIR_PATH = "./.git";
 const GIT_CONFIG_FILE_PATH = "./.git/config";
 
 // If the git dir path or git config file path do not exist, notify the user and stop the process
-if (!existsSync(GET_DIR_PATH, { isDirectory: true }) || !existsSync(GIT_CONFIG_FILE_PATH, { isFile: true })) {
+if (
+	!existsSync(GET_DIR_PATH, { isDirectory: true }) ||
+	!existsSync(GIT_CONFIG_FILE_PATH, { isFile: true })
+) {
 	printIndianRed("Not a valid git repository");
 
 	Deno.exit(1);
@@ -38,7 +50,8 @@ let repoName = "";
 try {
 	printGray("Validating repository");
 	const gitConfigFileData = Deno.readTextFileSync(GIT_CONFIG_FILE_PATH);
-	const remoteOriginMatch = gitConfigFileData.match(/\[remote "origin"\][\s\S]*?url = (.+)/m) ?? "";
+	const remoteOriginMatch =
+		gitConfigFileData.match(/\[remote "origin"\][\s\S]*?url = (.+)/m) ?? "";
 
 	if (remoteOriginMatch === null) {
 		printIndianRed("The repository does not have a remote configured.");
@@ -52,7 +65,9 @@ try {
 	const urlMatch = remoteText.match(urlRegex);
 
 	if (urlMatch === null) {
-		printIndianRed("The repository does not have a remote 'origin' URL configured.");
+		printIndianRed(
+			"The repository does not have a remote 'origin' URL configured.",
+		);
 
 		Deno.exit(1);
 	}
@@ -74,7 +89,9 @@ try {
 	printGray(`Repository owner ${repoOwnerName}`);
 	printGray(`Repository name ${repoName}`);
 } catch (error) {
-	const errMsg = error instanceof Error ? error.message : "An error occurred reading the git config file.";
+	const errMsg = error instanceof Error
+		? error.message
+		: "An error occurred reading the git config file.";
 	printIndianRed(errMsg);
 
 	Deno.exit(1);
@@ -135,7 +152,9 @@ const featureBranch = await Input.prompt({
 			.replace(/-+$/, "");
 
 		if (!regex.test(value)) {
-			printIndianRed("Branch name must match the pattern 'feature/123-my-branch'.");
+			printIndianRed(
+				"Branch name must match the pattern 'feature/123-my-branch'.",
+			);
 
 			return false;
 		}
@@ -192,11 +211,14 @@ try {
 	const issue = await issueClient.getIssue(issueNumber);
 
 	printGray("Searching for 'pr-template.md' file");
-	const templateFiles = Array.from(walkSync("./", { includeFiles: true, match: [/pr-template\.md$/] }))
+	const templateFiles = Array.from(
+		walkSync("./", { includeFiles: true, match: [/pr-template\.md$/] }),
+	)
 		.map((entry) => entry.path);
 
 	const prTemplateFilePath = templateFiles.length > 0 ? templateFiles[0] : "";
-	const noTemplateFoundDescription = "No template file 'pr-template.md' was found.";
+	const noTemplateFoundDescription =
+		"No template file 'pr-template.md' was found.";
 	const templateFound = prTemplateFilePath !== "";
 
 	if (templateFound) {
@@ -205,10 +227,15 @@ try {
 		printGray(noTemplateFoundDescription);
 	}
 
-	let prDescription = templateFound ? await Deno.readTextFile(prTemplateFilePath) : noTemplateFoundDescription;
+	let prDescription = templateFound
+		? await Deno.readTextFile(prTemplateFilePath)
+		: noTemplateFoundDescription;
 
 	// Replace issue number placeholder with actual issue number
-	prDescription = prDescription.replace("{ISSUE_NUMBER}", issue.number.toString());
+	prDescription = prDescription.replace(
+		"{ISSUE_NUMBER}",
+		issue.number.toString(),
+	);
 
 	// Create a pull request
 	const prClient = new PullRequestClient(repoOwnerName, repoName, token);
@@ -233,7 +260,9 @@ try {
 	};
 
 	// Update the labels assignees, and milestone to match the linked issue
-	printGray(`Setting pull request assignees, labels, and milestone to match issue '${newPr.number}'.`);
+	printGray(
+		`Setting pull request assignees, labels, and milestone to match issue '${newPr.number}'.`,
+	);
 	await prClient.updatePullRequest(newPr.number, prData);
 
 	const projClient = new ProjectClient(repoOwnerName, repoName, token);
@@ -244,13 +273,18 @@ try {
 	// Sync all of the issue projects to the pull request
 	for await (const issueProject of issueProjects) {
 		printGray(`Adding pull request to project '${issueProject.title}'`);
-		await projClient.addPullRequestToProject(newPr.number, issueProject.title);
+		await projClient.addPullRequestToProject(
+			newPr.number,
+			issueProject.title,
+		);
 	}
 
 	printCyan(`Pull request '#${newPr.number}' has been created successfully!`);
 	printCyan(`URL: ${newPr.html_url}`);
 } catch (error) {
-	const errMsg = error instanceof Error ? error.message : "An error occurred.";
+	const errMsg = error instanceof Error
+		? error.message
+		: "An error occurred.";
 	printIndianRed(errMsg);
 
 	printYellow("\nCheck the following fine-grained access token permissions:");
