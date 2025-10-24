@@ -25,7 +25,7 @@ if (token === "") {
 	Deno.exit(1);
 }
 
-const projectName = "Version";
+const projectName = "Velaptor";
 const projFileName = `${projectName}.csproj`;
 const csProjFilePath = `./Velaptor/${projFileName}`;
 const projectFileData = Deno.readTextFileSync(csProjFilePath);
@@ -40,14 +40,14 @@ if (versionMatch === null) {
 const ownerName = "KinsonDigital";
 const repoName = "Velaptor";
 const prevLabel = "🚀preview-release";
-const baseBranch = "main";
+const baseBranch = "preview";
 const releaseType = "Preview";
 
 // Ask the user for a version number
 const releaseVersion = await Input.prompt({
 	message: "Enter the release version:",
 	validate: (value) => {
-		const prevVersionRegex = /^v([1-9]\d*|0)\.([1-9]\d*|0)\.([1-9]\d*|0)$/gm;
+		const prevVersionRegex = /^v([1-9]\d*|0)\.([1-9]\d*|0)\.([1-9]\d*|0)-preview\.([1-9]\d*)$/gm;
 
 		return prevVersionRegex.test(value.trim().toLowerCase());
 	},
@@ -123,7 +123,8 @@ printGray("⌛\tCreating commit for version changes. . .");
 await createCommit(`release: update version to v${releaseVersion}`);
 
 printGray("⌛Generating release notes. . .");
-const releaseNotesFilePath = `${Deno.cwd()}/ReleaseNotes/${releaseType}Releases/ReleaseNotes-${releaseVersion}.md`;
+const releaseNotesFileName = `Release-Notes-v${releaseVersion}.md`;
+const releaseNotesFilePath = `${Deno.cwd()}/ReleaseNotes/${releaseType}Releases/${releaseNotesFileName}`;
 const generator: ReleaseNotesGenerator = new ReleaseNotesGenerator();
 const settingsFileContent = Deno.readTextFileSync(settingsFilePath);
 const settings: GeneratorSettings = JSON.parse(settingsFileContent);
@@ -133,7 +134,7 @@ const notes = await generator.generateNotes(settings);
 Deno.writeTextFileSync(releaseNotesFilePath, notes);
 
 printGray("⌛\tStaging release note changes. . .");
-await stageFiles([`*${releaseNotesFilePath}`]);
+await stageFiles([`*${releaseNotesFileName}`]);
 printGray("⌛\tCreating commit for release note changes. . .");
 await createCommit(`release: create release notes for version v${releaseVersion}`);
 
