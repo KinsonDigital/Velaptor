@@ -38,7 +38,7 @@ if (versionMatch === null) {
 }
 
 const ownerName = "KinsonDigital";
-const repoName = "sprocket";
+const repoName = "Velaptor";
 const prevLabel = "🚀preview-release";
 const baseBranch = "main";
 const releaseType = "Preview";
@@ -47,9 +47,9 @@ const releaseType = "Preview";
 const releaseVersion = await Input.prompt({
 	message: "Enter the release version:",
 	validate: (value) => {
-		const prodVersionRegex = /^v([1-9]\d*|0)\.([1-9]\d*|0)\.([1-9]\d*|0)$/gm;
+		const prevVersionRegex = /^v([1-9]\d*|0)\.([1-9]\d*|0)\.([1-9]\d*|0)$/gm;
 
-		return prodVersionRegex.test(value.trim().toLowerCase());
+		return prevVersionRegex.test(value.trim().toLowerCase());
 	},
 	transform: (value) => {
 		const result = value.trim().toLowerCase();
@@ -133,20 +133,20 @@ const notes = await generator.generateNotes(settings);
 Deno.writeTextFileSync(releaseNotesFilePath, notes);
 
 printGray("⌛\tStaging release note changes. . .");
-await stageFiles([`*${projFileName}`]);
+await stageFiles([`*${releaseNotesFilePath}`]);
 printGray("⌛\tCreating commit for release note changes. . .");
 await createCommit(`release: create release notes for version v${releaseVersion}`);
 
 printGray("⌛Pushing changes to remote. . .");
 await pushToRemote(headBranch);
 
-const title = `🚀Production Release (v${releaseVersion})`;
+const title = `🚀Preview Release (v${releaseVersion})`;
 const assignee = "CalvinWilkinson";
 const githubProjectName = "KD-Team";
 const reviewer = "KinsonDigitalAdmin";
 
-const prodReleasePrTemplateFilePath = `${Deno.cwd()}/templates/prod-prepare-release-template.md`;
-const templateFileContent = Deno.readTextFileSync(prodReleasePrTemplateFilePath);
+const prevReleasePrTemplateFilePath = `${Deno.cwd()}/templates/prev-prepare-release-template.md`;
+const templateFileContent = Deno.readTextFileSync(prevReleasePrTemplateFilePath);
 
 printGray(`⌛Getting milestone data. . .`);
 const milestoneClient = new MilestoneClient(ownerName, repoName, token);
