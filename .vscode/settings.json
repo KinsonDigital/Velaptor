@@ -99,7 +99,7 @@
 	},
 	"dotnet.defaultSolution": "Velaptor.sln",
 	"[csharp]": {
-		"editor.insertSpaces": false,
+		"editor.insertSpaces": true,
 		"editor.indentSize": 4,
 	},
 	"[typescript]": {
