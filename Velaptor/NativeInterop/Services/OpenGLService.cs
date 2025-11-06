@@ -321,11 +321,13 @@ internal sealed class OpenGLService : IOpenGLService
         }
         else
         {
-            if (severity != GLEnum.DebugSeverityNotification)
+            if (severity == GLEnum.DebugSeverityNotification)
             {
-                this.loggingService.Error(openGLMessage);
-                this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
+                return;
             }
+
+            this.loggingService.Error(openGLMessage);
+            this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
         }
     }
 }
