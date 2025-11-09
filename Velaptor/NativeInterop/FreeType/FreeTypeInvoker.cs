@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.FreeType;
 
 using System;
+using System.Numerics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,7 +20,7 @@ using Guards;
 ///     For more information and documentation, refer to the https://www.freetype.org/ website.
 /// </remarks>
 [ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the FreeType library.")]
-[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Param nameing to match original library.")]
+[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Param naming to match original library.")]
 internal sealed class FreeTypeInvoker : IFreeTypeInvoker
 {
     private readonly FreeTypeLibrary library = new ();
@@ -41,19 +42,20 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
 
     /// <inheritdoc/>
     // TODO: Change the return type to a standard dotnet vector
-    public FT_Vector_ FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode)
+    public Vector2 FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode)
     {
         EnsureThat.PointerIsNotNull(face);
 
         unsafe
         {
+            // ReSharper disable once IdentifierTypo
             FT_Vector_ akerning;
 
             var error = FT.FT_Get_Kerning((FT_FaceRec_*)face, left_glyph, right_glyph, kern_mode, &akerning);
 
             if (error == FT_Error.FT_Err_Ok)
             {
-                return akerning;
+                return new Vector2(akerning.x >> 6, akerning.y >> 6);
             }
 
             this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));

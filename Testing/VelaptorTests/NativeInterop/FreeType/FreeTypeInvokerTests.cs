@@ -21,7 +21,7 @@ public class FreeTypeInvokerTests
         // Arrange
         var sut = new FreeTypeInvoker();
 
-        // Act && Assert
+        // Act & Assert
         var exception = Should.Throw<NullReferenceException>(() => sut.FT_Get_Kerning(0, 0, 0, default));
         exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
