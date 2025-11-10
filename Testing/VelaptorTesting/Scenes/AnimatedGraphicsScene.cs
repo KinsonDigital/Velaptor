@@ -54,7 +54,7 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.mainAtlas = this.contentManager.LoadAtlas("K:/SOFTWARE-DEVELOPMENT/PERSONAL/Velaptor/Testing/VelaptorTesting/Content/Atlas/Main-Atlas.png");
+        this.mainAtlas = this.contentManager.LoadAtlas("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
         var ctrlFactory = new ControlFactory();
