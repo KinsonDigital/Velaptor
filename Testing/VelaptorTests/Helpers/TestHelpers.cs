@@ -135,7 +135,7 @@ public static class TestHelpers
 
         srcImage.Dispose();
 
-        return ToImageData(destImage);
+        return ToImgData(destImage);
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public static class TestHelpers
     /// </summary>
     /// <param name="image">The image to convert.</param>
     /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-    public static ImageData ToImageData(this Image<Rgba32> image)
+    public static ImageData ToImgData(this Image<Rgba32> image)
     {
         var pixelData = new NETColor[image.Width, image.Height];
 
