@@ -167,8 +167,8 @@ internal sealed class FreeTypeService : IFreeTypeService
             (uint)FT_Kerning_Mode_.FT_KERNING_DEFAULT);
 
         return this.platform.Is32BitProcess
-            ? (float)(result.x.ToInt32() >> 6)
-            : result.x.ToInt64() >> 6;
+            ? result.X
+            : result.Y;
     }
 
     /// <inheritdoc/>

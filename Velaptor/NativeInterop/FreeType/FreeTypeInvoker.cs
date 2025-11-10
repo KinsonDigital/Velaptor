@@ -41,7 +41,6 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    // TODO: Change the return type to a standard dotnet vector
     public Vector2 FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode)
     {
         EnsureThat.PointerIsNotNull(face);
