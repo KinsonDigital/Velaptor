@@ -5,13 +5,13 @@
 namespace VelaptorTests.Content;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
-using Velaptor.Content.Caching;
 using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Xunit;
@@ -19,14 +19,16 @@ using Xunit;
 /// <summary>
 /// Tests the <see cref="AtlasData"/> class.
 /// </summary>
+[SuppressMessage("ReSharper", "ConvertToLocalFunction", Justification = "Improves readability")]
 public class AtlasDataTests
 {
-    private const string DirPath = "C:/Content/Atlas";
     private const string AtlasName = "test-atlas";
-    private const string TextureExtension = ".png";
-    private const string JSONFileExtension = ".json";
-    private const string AtlasImagePath = $"{DirPath}/{AtlasName}{TextureExtension}";
-    private readonly IItemCache<string, ITexture> mockTextureCache;
+    private const string AtlasImgExtension = ".png";
+    private const string AtlasDataFileExtension = ".json";
+    private static readonly string DirPath = Path.Combine("C:", "Content", "Atlas");
+    private static readonly string AtlasImgFilePath = Path.Combine(DirPath, $"{AtlasName}{AtlasImgExtension}");
+    private static readonly string AtlasDataFilePath = Path.Combine(DirPath, $"{AtlasName}{AtlasDataFileExtension}");
+    private readonly ITexture mockTexture;
     private readonly IPath mockPath;
     private readonly IDirectory mockDirectory;
     private readonly AtlasSubTextureData[] atlasData;
@@ -36,17 +38,18 @@ public class AtlasDataTests
     /// </summary>
     public AtlasDataTests()
     {
-        this.mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
-
+        this.mockTexture = Substitute.For<ITexture>();
         this.mockDirectory = Substitute.For<IDirectory>();
         this.mockDirectory.Exists(Arg.Any<string?>()).Returns(true);
 
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.GetDirectoryName(DirPath).Returns(DirPath);
         this.mockPath.GetFileNameWithoutExtension(AtlasName).Returns(AtlasName);
+        this.mockPath.Combine(DirPath, AtlasName + AtlasDataFileExtension).Returns(AtlasDataFilePath);
+        this.mockPath.Combine(DirPath, AtlasName + AtlasImgExtension).Returns(AtlasImgFilePath);
 
-        this.atlasData = new[]
-        {
+        this.atlasData =
+        [
             new AtlasSubTextureData() // First frame of animating sub texture
             {
                 Name = "test-texture",
@@ -65,12 +68,12 @@ public class AtlasDataTests
                 FrameIndex = -1,
                 Bounds = new Rectangle(111, 222, 333, 444),
             },
-        };
+        ];
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullTextureCacheParam_ThrowsException()
+    public void Ctor_WithNullTextureParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -79,14 +82,14 @@ public class AtlasDataTests
                 null,
                 this.mockDirectory,
                 this.mockPath,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 "dir-path",
                 "atlas-name");
         };
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texture')");
     }
 
     [Fact]
@@ -96,10 +99,10 @@ public class AtlasDataTests
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 null,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 "dir-path",
                 "atlas-name");
         };
@@ -110,13 +113,33 @@ public class AtlasDataTests
     }
 
     [Fact]
+    public void Ctor_WithNullDirectoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AtlasData(
+                this.mockTexture,
+                null,
+                this.mockPath,
+                [],
+                "dir-path",
+                "atlas-name");
+        };
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
+    }
+
+    [Fact]
     public void Ctor_WithNullAtlasSubTextureDataParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 this.mockPath,
                 null,
@@ -136,10 +159,10 @@ public class AtlasDataTests
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 this.mockPath,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 null,
                 "atlas-name");
         };
@@ -156,7 +179,7 @@ public class AtlasDataTests
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 this.mockPath,
                 [],
@@ -176,10 +199,10 @@ public class AtlasDataTests
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 this.mockPath,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 "dir-path",
                 null);
         };
@@ -196,10 +219,10 @@ public class AtlasDataTests
         var act = () =>
         {
             _ = new AtlasData(
-                this.mockTextureCache,
+                this.mockTexture,
                 this.mockDirectory,
                 this.mockPath,
-                Array.Empty<AtlasSubTextureData>(),
+                [],
                 "dir-path",
                 string.Empty);
         };
@@ -261,69 +284,37 @@ public class AtlasDataTests
         actual.ShouldBe(AtlasName);
     }
 
-    [Theory]
-    [InlineData("C:/atlas-dir", "")]
-    [InlineData("C:/atlas-dir", ".txt")]
-    [InlineData("C:/atlas-dir/", ".txt")]
-    [InlineData(@"C:\atlas-dir\", ".txt")]
-    public void FilePath_WhenGettingValue_ReturnsCorrectResult(
-        string dirPath,
-        string extension)
+    [Fact]
+    public void FilePath_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        const string atlasName = "testAtlas";
-        var atlasFileName = $"{atlasName}{extension}";
-        const string expected = $"C:/atlas-dir/{atlasName}{TextureExtension}";
-
-        this.mockPath.GetFileNameWithoutExtension($"{atlasName}{extension}")
-            .Returns(atlasName);
-
-        var sut = CreateSystemUnderTest(
-            dirPath: dirPath,
-            atlasName: atlasFileName);
+        var sut = CreateSystemUnderTest();
 
         // Act
         var actual = sut.FilePath;
 
         // Assert
-        actual.ShouldBe(expected);
+        actual.ShouldBe(AtlasImgFilePath);
     }
 
-    [Theory]
-    [InlineData("C:/atlas-dir", "")]
-    [InlineData("C:/atlas-dir", ".txt")]
-    [InlineData("C:/atlas-dir/", ".txt")]
-    [InlineData(@"C:\atlas-dir\", ".txt")]
-    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(
-        string dirPath,
-        string extension)
+    [Fact]
+    public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        const string atlasName = "testAtlas";
-        var atlasFileName = $"{atlasName}{extension}";
-        const string expected = $"C:/atlas-dir/{atlasName}{JSONFileExtension}";
-
-        this.mockPath.GetFileNameWithoutExtension($"{atlasName}{extension}")
-            .Returns(atlasName);
-        var sut = CreateSystemUnderTest(
-            dirPath: dirPath,
-            atlasName: atlasFileName);
+        var sut = CreateSystemUnderTest();
 
         // Act
         var actual = sut.AtlasDataFilePath;
 
         // Assert
-        actual.ShouldBe(expected);
+        actual.ShouldBe(AtlasDataFilePath);
     }
 
     [Fact]
     public void Width_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var mockTexture = Substitute.For<ITexture>();
-        mockTexture.Width.Returns(123u);
-        this.mockTextureCache.GetItem(AtlasImagePath)
-            .Returns(mockTexture);
+        this.mockTexture.Width.Returns(123u);
 
         var sut = CreateSystemUnderTest();
 
@@ -338,10 +329,7 @@ public class AtlasDataTests
     public void Height_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var mockTexture = Substitute.For<ITexture>();
-        mockTexture.Height.Returns(123u);
-        this.mockTextureCache.GetItem(AtlasImagePath)
-            .Returns(mockTexture);
+        this.mockTexture.Height.Returns(123u);
 
         var sut = CreateSystemUnderTest();
 
@@ -413,14 +401,8 @@ public class AtlasDataTests
     {
         // Arrange
         const string subTextureId = "test-id";
-        const string dirPath = "C:/atlas-dir";
 
-        var data = new[]
-        {
-            new AtlasSubTextureData { Name = "itemA" },
-        };
-
-        var sut = CreateSystemUnderTest(subTextureData: data, dirPath: dirPath);
+        var sut = CreateSystemUnderTest();
 
         // Act
         var act = () => sut.GetFrames(subTextureId);
@@ -486,19 +468,11 @@ public class AtlasDataTests
     /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private AtlasData CreateSystemUnderTest(
-        AtlasSubTextureData[]? subTextureData = null,
-        string? dirPath = DirPath,
-        string? atlasName = AtlasName)
-    {
-        var data = subTextureData ?? this.atlasData;
-
-        return new (
-            this.mockTextureCache,
+    private AtlasData CreateSystemUnderTest() =>
+        new (this.mockTexture,
             this.mockDirectory,
             this.mockPath,
-            data,
-            dirPath,
-            atlasName);
-    }
+            this.atlasData,
+            DirPath,
+            AtlasName);
 }
