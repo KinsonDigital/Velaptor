@@ -29,6 +29,7 @@
 		"GLFW",
 		"GLSL",
 		"Hori",
+		"ICASL",
 		"IJSON",
 		"imagesharp",
 		"indianred",
@@ -47,10 +48,12 @@
 		"prereleases",
 		"pwsh",
 		"Reactable",
+		"reactables",
 		"releasetype",
 		"releasetypes",
 		"REPONAME",
 		"runsettings",
+		"samus",
 		"Sawaid",
 		"SDLC",
 		"serilog",
@@ -81,14 +84,16 @@
 		"**/Thumbs.db": true,
 		"**/.idea": true,
 		"*.sln.DotSettings.user": true,
-		"**/bin": true,
-		"**/obj": true
 	},
 	"files.eol": "\n",
 	"window.title": "🦖Velaptor",
 	"workbench.colorCustomizations": {
 		"titleBar.activeBackground": "#5f4f41",
 		"titleBar.activeForeground": "#FFFFFF",
+		"tab.activeBackground": "#534538",
+		"tab.activeForeground": "#e0bb98",
+		"tab.activeBorder": "#e0bb98",
+		"tab.activeBorderTop": "#e0bb98"
 	},
 	"workbench.editor.customLabels.patterns": {
 		"**/Testing/**/*.cs": "${filename}🧪",
@@ -97,6 +102,8 @@
 		"**/.github/workflows/**/*.yml": "${filename}⚙️",
 		"**/ReleaseNotes/**/*.md": "${filename}📋",
 	},
+	"workbench.editor.titleScrollbarSizing": "large",
+	"workbench.editor.wrapTabs": true,
 	"dotnet.defaultSolution": "Velaptor.sln",
 	"[csharp]": {
 		"editor.insertSpaces": true,
