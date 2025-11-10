@@ -13,18 +13,16 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
-using Velaptor.Factories;
 using Velaptor.Scene;
 
 public class AudioScene : SceneBase
 {
     private const int WindowPadding = 10;
     private readonly ControlFactory ctrlFactory;
+    private readonly IContentManager contentManager;
     private IControlGroup? grpInfoCtrls;
     private IControlGroup? grpAudioCtrls;
     private BackgroundManager? backgroundManager;
-    private ILoader<IAudio>? loader;
     private IAudio? audio;
     private ISlider? sldPosition;
     private string? lblRepeatsName;
@@ -37,7 +35,11 @@ public class AudioScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioScene"/> class.
     /// </summary>
-    public AudioScene() => this.ctrlFactory = new ControlFactory();
+    public AudioScene()
+    {
+        this.ctrlFactory = new ControlFactory();
+        this.contentManager = ContentManager.Create();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -45,8 +47,7 @@ public class AudioScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.loader = ContentLoaderFactory.CreateAudioLoader();
-        this.audio = this.loader.Load("ridley-draygon-theme.ogg", AudioBuffer.Stream);
+        this.audio = this.contentManager.LoadAudio("ridley-draygon-theme.ogg", AudioBuffer.Stream);
 
         CreateInfoCtrls();
         CreateAudioCtrls();
@@ -98,8 +99,7 @@ public class AudioScene : SceneBase
 
         if (this.audio is not null)
         {
-            this.audio.Stop();
-            this.loader.Unload(this.audio);
+            this.contentManager.Unload(this.audio);
         }
 
         this.backgroundManager?.Unload();
@@ -190,7 +190,7 @@ public class AudioScene : SceneBase
         audioList.SelectedItemIndexChanged += (_, i) =>
         {
             this.audio.Stop();
-            this.loader.Unload(this.audio);
+            this.contentManager.Unload(this.audio);
 
             var chosenItem = audioList.Items[i];
             var audioName = chosenItem switch
@@ -201,7 +201,7 @@ public class AudioScene : SceneBase
                 _ => throw new ArgumentException($"The audio item '{chosenItem}' is not supported."),
             };
 
-            this.audio = this.loader.Load(audioName, AudioBuffer.Stream);
+            this.audio = this.contentManager.LoadAudio(audioName, AudioBuffer.Stream);
 
             this.currentAudioType = Path.GetExtension(this.audio.FilePath).ToUpper().TrimStart('.');
         };
@@ -221,7 +221,7 @@ public class AudioScene : SceneBase
         this.sldPosition.Name = nameof(this.sldPosition);
         this.sldPosition.Min = 0f;
         this.sldPosition.Max = (float)this.audio.Length.TotalSeconds;
-        this.sldPosition.Text = "Position";
+        this.sldPosition.Text = "Position(sec)";
         this.sldPosition.ValueChanged += (_, value) =>
         {
             this.audio.SetTimePosition(value);

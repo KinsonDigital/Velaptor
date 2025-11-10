@@ -12,7 +12,6 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -32,6 +31,7 @@ public class LayeredRectRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
+    private readonly IContentManager contentManager;
     private ITexture? background;
     private RectShape orangeRect;
     private RectShape whiteRect;
@@ -41,7 +41,6 @@ public class LayeredRectRenderingScene : SceneBase
     private Vector2 backgroundPos;
     private ITextureRenderer? textureRenderer;
     private IShapeRenderer? shapeRenderer;
-    private ILoader<ITexture>? textureLoader;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpRectState;
     private RenderLayer whiteLayer = RenderLayer.One;
@@ -50,7 +49,11 @@ public class LayeredRectRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
     /// </summary>
-    public LayeredRectRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public LayeredRectRenderingScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.contentManager = ContentManager.Create();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -63,9 +66,7 @@ public class LayeredRectRenderingScene : SceneBase
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
-        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
-
-        this.background = this.textureLoader.Load("layered-rendering-background");
+        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         var textLines = new[]
@@ -177,7 +178,7 @@ public class LayeredRectRenderingScene : SceneBase
             return;
         }
 
-        this.textureLoader.Unload(this.background);
+        this.contentManager.Unload(this.background);
         this.grpInstructions.Dispose();
         this.grpRectState.Dispose();
         this.grpInstructions = null;

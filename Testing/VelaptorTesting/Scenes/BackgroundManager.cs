@@ -4,10 +4,10 @@
 
 namespace VelaptorTesting.Scenes;
 
+using System;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 
@@ -18,10 +18,15 @@ public class BackgroundManager : IDrawable
 {
     private const int BackgroundLayer = -50;
     private const string BackgroundTextureName = "layered-rendering-background";
-    private ILoader<ITexture>? loader;
+    private readonly IContentManager contentManager;
     private ITextureRenderer? textureRenderer;
     private Vector2 backgroundPos;
     private ITexture? background;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BackgroundManager"/> class.
+    /// </summary>
+    public BackgroundManager() => this.contentManager = ContentManager.Create();
 
     /// <summary>
     /// Loads the background texture.
@@ -30,9 +35,8 @@ public class BackgroundManager : IDrawable
     public void Load(Vector2 position)
     {
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.loader = ContentLoaderFactory.CreateTextureLoader();
 
-        this.background = this.loader.Load(BackgroundTextureName);
+        this.background = this.contentManager.Load<ITexture>(BackgroundTextureName);
         this.backgroundPos = position;
     }
 
@@ -46,5 +50,13 @@ public class BackgroundManager : IDrawable
     /// <summary>
     /// Unloads the background texture.
     /// </summary>
-    public void Unload() => this.loader.Unload(this.background.FilePath);
+    public void Unload()
+    {
+        if (this.background is null)
+        {
+            throw new NullReferenceException("The background texture cannot be null");
+        }
+
+        this.contentManager.Unload(this.background);
+    }
 }

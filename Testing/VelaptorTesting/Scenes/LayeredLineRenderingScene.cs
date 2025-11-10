@@ -12,7 +12,6 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -30,6 +29,7 @@ public class LayeredLineRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
+    private readonly IContentManager contentManager;
     private ITexture? background;
     private ITextureRenderer? textureRenderer;
     private ILineRenderer? lineRenderer;
@@ -39,7 +39,6 @@ public class LayeredLineRenderingScene : SceneBase
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
     private Vector2 backgroundPos;
-    private ILoader<ITexture>? textureLoader;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpLineState;
     private RenderLayer whiteLayer = RenderLayer.One;
@@ -48,7 +47,11 @@ public class LayeredLineRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
     /// </summary>
-    public LayeredLineRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public LayeredLineRenderingScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.contentManager = ContentManager.Create();
+    }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
@@ -61,9 +64,7 @@ public class LayeredLineRenderingScene : SceneBase
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
 
-        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
-
-        this.background = this.textureLoader.Load("layered-rendering-background");
+        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         var textLines = new[]
@@ -173,7 +174,7 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        this.textureLoader.Unload(this.background);
+        this.contentManager.Unload(this.background);
         this.grpInstructions.Dispose();
         this.grpLineState.Dispose();
         this.grpInstructions = null;

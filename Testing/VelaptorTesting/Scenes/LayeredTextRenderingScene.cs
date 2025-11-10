@@ -11,7 +11,6 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
@@ -28,6 +27,7 @@ public class LayeredTextRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
+    private readonly IContentManager contentManager;
     private ITexture? background;
     private ITextureRenderer? textureRenderer;
     private IFontRenderer? fontRenderer;
@@ -39,8 +39,6 @@ public class LayeredTextRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private Vector2 backgroundPos;
     private SizeF whiteTextSize;
-    private ILoader<ITexture>? textureLoader;
-    private ILoader<IFont>? fontLoader;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string whiteText = string.Empty;
     private string orangeText = string.Empty;
@@ -49,7 +47,11 @@ public class LayeredTextRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextRenderingScene"/> class.
     /// </summary>
-    public LayeredTextRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public LayeredTextRenderingScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.contentManager = ContentManager.Create();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -62,15 +64,10 @@ public class LayeredTextRenderingScene : SceneBase
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
 
-        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
-        this.background = this.textureLoader.Load("layered-rendering-background");
+        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
         this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultFont, 12);
-
-        this.font.Style = FontStyle.Bold;
-        this.font.Size = 24;
+        this.font = this.contentManager.LoadFont(DefaultFont, 24);
 
         var whiteLines = new[]
         {
@@ -170,8 +167,18 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        this.textureLoader.Unload(this.background);
-        this.fontLoader.Unload(this.font);
+        if (this.background is null)
+        {
+            throw new Exception("The background texture cannot be null.");
+        }
+
+        if (this.font is null)
+        {
+            throw new Exception("The font texture cannot be null.");
+        }
+
+        this.contentManager.Unload(this.background);
+        this.contentManager.Unload(this.font);
 
         base.UnloadContent();
     }

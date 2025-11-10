@@ -12,7 +12,6 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -31,7 +30,7 @@ public class LayeredTextureRenderingScene : SceneBase
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
     private readonly BackgroundManager backgroundManager;
-    private readonly ILoader<IAtlasData> atlasLoader;
+    private readonly IContentManager contentManager;
     private IAtlasData? atlas;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
@@ -54,7 +53,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.contentManager = ContentManager.Create();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -68,7 +67,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.isFirstRender = true;
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.atlas = this.atlasLoader.Load("layered-rendering-atlas");
+        this.atlas = this.contentManager.LoadAtlas("layered-rendering-atlas");
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
@@ -170,7 +169,7 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.backgroundManager.Unload();
-        this.atlasLoader.Unload(this.atlas);
+        this.contentManager.Unload(this.atlas);
 
         this.atlas = null;
         this.grpInstructions.Dispose();

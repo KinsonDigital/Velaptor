@@ -12,7 +12,6 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -27,7 +26,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     private const int WindowPadding = 10;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
-    private readonly ILoader<IAtlasData> atlasLoader;
+    private readonly IContentManager contentManager;
     private IAtlasData? mainAtlas;
     private IControlGroup? grpControls;
     private KeyboardState prevKeyState;
@@ -41,7 +40,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.contentManager = ContentManager.Create();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -51,6 +50,8 @@ public class NonAnimatedGraphicsScene : SceneBase
         {
             return;
         }
+
+        this.mainAtlas = this.contentManager.LoadAtlas("Main-Atlas");
 
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
@@ -79,8 +80,6 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.grpControls.Add(lblInstructions);
 
-        this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
-
         base.LoadContent();
     }
 
@@ -93,9 +92,15 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager?.Unload();
-        this.atlasLoader.Unload(this.mainAtlas);
+
+        if (this.mainAtlas is null)
+        {
+            throw new Exception("The main atlas texture cannot be null");
+        }
+
         this.renderEffects = RenderEffects.None;
 
+        this.contentManager.Unload(this.mainAtlas);
         this.mainAtlas = null;
 
         base.UnloadContent();
@@ -154,6 +159,11 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
+        if (this.mainAtlas is null)
+        {
+            return;
+        }
+
         this.backgroundManager?.Render();
 
         this.textureRenderer.Render(

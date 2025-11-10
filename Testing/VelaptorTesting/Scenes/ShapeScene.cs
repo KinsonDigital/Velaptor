@@ -14,7 +14,6 @@ using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -42,7 +41,7 @@ public class ShapeScene : SceneBase
     ];
 
     private IShapeRenderer? shapeRenderer;
-    private ILoader<IFont>? fontLoader;
+    private IContentManager contentManager;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -109,16 +108,16 @@ public class ShapeScene : SceneBase
             IsSolid = false,
         };
 
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultRegularFont, 12);
+        this.contentManager = ContentManager.Create();
+        this.font = this.contentManager.LoadFont(DefaultRegularFont, 12);
 
         CreateCircleInstructions();
         CreateRectInstructions();
         CreateShapeTypeCtrls();
-        CreateCircleCtrls();
+        CreateRectCtrls();
         CreateCircleGradCtrls();
         CreateRectGradCtrls();
-        CreateRectCtrls();
+        CreateCircleCtrls();
         CreateRadiusCtrls();
 
         base.LoadContent();
@@ -128,7 +127,7 @@ public class ShapeScene : SceneBase
     public override void UnloadContent()
     {
         this.backgroundManager?.Unload();
-        this.fontLoader.Unload(this.font);
+        this.contentManager.Unload(this.font);
         base.UnloadContent();
     }
 
