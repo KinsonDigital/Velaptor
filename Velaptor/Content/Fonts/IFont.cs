@@ -1,4 +1,4 @@
-// <copyright file="IFont.cs" company="KinsonDigital">
+﻿// <copyright file="IFont.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,10 +10,9 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using Graphics;
-using VelFontStyle = FontStyle;
 
 /// <summary>
-/// The font to use when rendering text to the screen.
+/// Represents a font with a set size and style that can be used to render text to the screen.
 /// </summary>
 public interface IFont : IContent
 {
