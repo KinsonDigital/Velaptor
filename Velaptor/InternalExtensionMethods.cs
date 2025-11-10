@@ -457,12 +457,12 @@ internal static class InternalExtensionMethods
 
         for (var i = items.Length - 1; i > middleIndex; i--)
         {
-            index--;
-
             if (predicate(items.Span[i]))
             {
                 return index;
             }
+
+            index--;
         }
 
         return -1;
