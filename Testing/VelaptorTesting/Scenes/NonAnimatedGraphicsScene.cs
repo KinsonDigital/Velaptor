@@ -51,7 +51,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             return;
         }
 
-        this.mainAtlas = this.contentManager.LoadAtlas("Main-Atlas");
+        this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
 
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));

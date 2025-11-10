@@ -67,7 +67,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.isFirstRender = true;
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.atlas = this.contentManager.LoadAtlas("layered-rendering-atlas");
+        this.atlas = this.contentManager.Load<IAtlasData>("layered-rendering-atlas");
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];

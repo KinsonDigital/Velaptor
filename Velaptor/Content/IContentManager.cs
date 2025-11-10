@@ -110,18 +110,6 @@ public interface IContentManager
     IAudio LoadAudio(string pathOrName, AudioBuffer bufferType);
 
     /// <summary>
-    /// Loads atlas data with the given <paramref name="pathOrName"/>.
-    /// </summary>
-    /// <param name="pathOrName">The atlas file path or name.</param>
-    /// <returns>The loaded atlas data.</returns>
-    /// <remarks>
-    /// If the <paramref name="pathOrName"/> is a fully qualified file path, an attempt will be made to load the content
-    /// using the file path directly.  If the <paramref name="pathOrName"/> is just the name of the content item,
-    /// the content manager system will try to find and resolve the location of the content item automatically.
-    /// </remarks>
-    IAtlasData LoadAtlas(string pathOrName);
-
-    /// <summary>
     /// Unloads the given <paramref name="item"/>.
     /// </summary>
     /// <param name="item">The content item.</param>

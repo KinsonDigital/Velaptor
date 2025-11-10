@@ -110,19 +110,6 @@ public sealed class ContentManager : IContentManager
     }
 
     /// <inheritdoc />
-    public IAtlasData LoadAtlas(string pathOrName)
-    {
-        if (loaderFactory is null)
-        {
-            throw new InvalidOperationException("The content loader factory has not been initialized.");
-        }
-
-        var atlasLoader = loaderFactory.CreateAtlasLoader();
-
-        return atlasLoader.Load(pathOrName);
-    }
-
-    /// <inheritdoc />
     public void Unload<T>(T item)
         where T : IContent
     {

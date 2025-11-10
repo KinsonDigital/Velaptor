@@ -38,7 +38,7 @@ public class Playground : Window
     /// </summary>
     protected override void OnLoad()
     {
-        this.atlas = this.contentManager.LoadAtlas("logo");
+        this.atlas = this.contentManager.Load<IAtlasData>("logo");
         base.OnLoad();
     }
 

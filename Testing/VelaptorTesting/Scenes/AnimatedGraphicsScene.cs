@@ -54,7 +54,7 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.mainAtlas = this.contentManager.LoadAtlas("Main-Atlas");
+        this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
         var ctrlFactory = new ControlFactory();
