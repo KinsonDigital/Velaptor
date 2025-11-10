@@ -43,13 +43,6 @@ internal static class InternalExtensionMethods
         keyboardState.IsKeyDown(KeyCode.Down);
 
     /// <summary>
-    /// Returns the given value divided by 2.
-    /// </summary>
-    /// <param name="value">The value do divide.</param>
-    /// <returns>Half of the original value.</returns>
-    public static float Half(this float value) => value / 2;
-
-    /// <summary>
     /// Builds a name that represents a location of where an execution took place.
     /// </summary>
     /// <param name="unused">The object to enable this extension method to be executed anywhere.</param>
@@ -343,14 +336,6 @@ internal static class InternalExtensionMethods
     ///     Regular casting rules apply.
     /// </remarks>
     public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
-
-    /// <summary>
-    /// Returns a value indicating whether the given list of items is empty.
-    /// </summary>
-    /// <param name="items">The list to check.</param>
-    /// <typeparam name="T">The type of items in the list.</typeparam>
-    /// <returns><c>true</c> if the items are empty.</returns>
-    public static bool IsEmpty<T>(this IEnumerable<T>? items) => items is null || !items.Any();
 
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
