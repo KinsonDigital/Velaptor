@@ -5,31 +5,39 @@
 namespace Velaptor.Content;
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using Caching;
+using Carbonate;
+using Carbonate.OneWay;
 using Exceptions;
+using Factories;
+using ReactableData;
+using Velaptor.Factories;
 
 /// <summary>
 /// Loads audio content.
 /// </summary>
-internal sealed class AudioLoader : ILoader<IAudio>
+internal sealed class AudioLoader : IAudioLoader
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private const char MetaDataSignifier = '|';
-    private const char WinDirSepChar = '\\';
-    private readonly IItemCache<string, IAudio> audioCache;
+    private readonly ConcurrentDictionary<string, IAudio> audioCache = new ();
+    private readonly IPushReactable<DisposeAudioData> disposeReactable;
+    private readonly IDisposable unsubscriber;
+    private readonly IAudioFactory audioFactory;
     private readonly IContentPathResolver audioPathResolver;
     private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioLoader"/> class.
     /// </summary>
-    /// <param name="audioCache">Caches textures for later use.</param>
+    /// <param name="audioFactory">Creates audio objects.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="audioPathResolver">Resolves the path to the audio content.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
@@ -38,31 +46,56 @@ internal sealed class AudioLoader : ILoader<IAudio>
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public AudioLoader(
-        IItemCache<string, IAudio> audioCache,
+        IAudioFactory audioFactory,
+        IReactableFactory reactableFactory,
         IContentPathResolver audioPathResolver,
         IDirectory directory,
         IFile file,
         IPath path)
     {
-        ArgumentNullException.ThrowIfNull(audioCache);
+        ArgumentNullException.ThrowIfNull(audioFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(audioPathResolver);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
 
-        this.audioCache = audioCache;
+        this.audioFactory = audioFactory;
         this.audioPathResolver = audioPathResolver;
         this.directory = directory;
         this.file = file;
         this.path = path;
+
+        this.disposeReactable = reactableFactory.CreateDisposeAudioReactable();
+        var shutDownReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.unsubscriber = shutDownReactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <summary>
-    /// Loads the audio with the given name.
+    /// Finalizes an instance of the <see cref="AudioLoader"/> class.
     /// </summary>
-    /// <param name="contentPathOrName">The full file path or name of the audio to load.</param>
-    /// <returns>The loaded audio.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
+    [ExcludeFromCodeCoverage]
+    ~AudioLoader()
+    {
+#if DEBUG
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+#endif
+
+        ShutDown();
+    }
+
+    /// <inheritdoc cref="IAudioLoader.TotalCachedItems"/>
+    public int TotalCachedItems => this.audioCache.Count;
+
+    /// <inheritdoc cref="IAudioLoader.Load"/>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="pathOrName"/> is null or empty.</exception>
     /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
     /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
@@ -72,27 +105,11 @@ internal sealed class AudioLoader : ILoader<IAudio>
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
     /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
-    public IAudio Load(string contentPathOrName)
+    public IAudio Load(string pathOrName, AudioBuffer bufferType)
     {
-        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
+        ArgumentException.ThrowIfNullOrEmpty(pathOrName);
 
-        if (contentPathOrName.DoesNotContain(MetaDataSignifier))
-        {
-            throw new LoadAudioException("The audio file path must contain metadata.");
-        }
-
-        var wholeSections = contentPathOrName.Split(MetaDataSignifier);
-        var contentFilePath = wholeSections[0];
-        var bufferTypeStr = wholeSections[1];
-
-        var parseSuccess = Enum.TryParse(bufferTypeStr, out AudioBuffer bufferType);
-
-        if (!parseSuccess)
-        {
-            throw new LoadAudioException("The audio buffer type could not be determined.");
-        }
-
-        var isPathRooted = this.path.IsPathRooted(contentFilePath);
+        var isPathRooted = this.path.IsPathRooted(pathOrName);
 
         if (!isPathRooted)
         {
@@ -105,8 +122,8 @@ internal sealed class AudioLoader : ILoader<IAudio>
         }
 
         var filePath = isPathRooted
-            ? contentFilePath
-            : this.audioPathResolver.ResolveFilePath(contentFilePath);
+            ? pathOrName
+            : this.audioPathResolver.ResolveFilePath(pathOrName);
 
         if (!this.file.Exists(filePath))
         {
@@ -117,25 +134,52 @@ internal sealed class AudioLoader : ILoader<IAudio>
         var validExtensions = new[] { OggFileExtension, Mp3FileExtension };
         var isInvalidExtension = Array.TrueForAll(validExtensions, e => e != fileExtension);
 
-        if (!isInvalidExtension)
+        if (isInvalidExtension)
         {
-            return this.audioCache.GetItem($"{filePath}|{bufferType}");
+            var exceptionMsg = $"The file '{filePath}' must be an audio file with";
+            exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
+
+            throw new LoadAudioException(exceptionMsg);
         }
 
-        var exceptionMsg = $"The file '{filePath}' must be a audio file with";
-        exceptionMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
+        var cacheKey = BuildCacheKey(filePath, bufferType);
 
-        throw new LoadAudioException(exceptionMsg);
+        return this.audioCache.GetOrAdd(cacheKey, (_) => this.audioFactory.Create(filePath, bufferType));
     }
 
-    /// <inheritdoc/>
-    [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-    public void Unload(string contentPathOrName)
+    /// <inheritdoc cref="IUnloader{T}.Unload"/>
+    public void Unload(IAudio audio)
     {
-        var filePath = this.path.IsPathRooted(contentPathOrName)
-            ? contentPathOrName
-            : this.audioPathResolver.ResolveFilePath(contentPathOrName);
+        var cacheKey = BuildCacheKey(audio.FilePath, audio.BufferType);
+        this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
+        this.audioCache.TryRemove(cacheKey, out _);
+    }
 
-        this.audioCache.Unload(filePath);
+    /// <summary>
+    /// Builds the cache key used to store/retrieve font data in/from the cache.
+    /// </summary>
+    /// <param name="filePath">The full path to the font content file.</param>
+    /// <param name="bufferType">The buffer mode.</param>
+    /// <returns>The cache key.</returns>
+    private static string BuildCacheKey(string filePath, AudioBuffer bufferType) => $"{filePath}|{bufferType}";
+
+    /// <summary>
+    /// Disposes of all resources.
+    /// </summary>
+    private void ShutDown()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        foreach (var audioCacheItem in this.audioCache)
+        {
+            var audio = audioCacheItem.Value;
+            this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
+        }
+
+        this.audioCache.Clear();
+        this.isDisposed = true;
     }
 }
