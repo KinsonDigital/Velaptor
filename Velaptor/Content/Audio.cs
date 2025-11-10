@@ -1,4 +1,4 @@
-﻿// <copyright file="Audio.cs" company="KinsonDigital">
+// <copyright file="Audio.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -163,9 +163,6 @@ public sealed class Audio : IAudio
         ObjectDisposedException.ThrowIf(this.isDisposed, typeof(Audio));
         this.caslAudio.Reset();
     }
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(new DisposeAudioData { AudioId = Id });
 
     /// <summary>
     /// Disposes of the audio if this audio <see cref="Id"/> matches the audio ID in the given <paramref name="data"/>.
