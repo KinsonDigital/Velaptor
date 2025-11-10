@@ -24,18 +24,21 @@ internal sealed class AppSettingsService : IAppSettingsService
     /// <param name="jsonService">Provides JSON related services.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="AppSettingsException">Occurs if there are issues with loading the application settings file.</exception>
-    public AppSettingsService(IJsonService jsonService, IDirectory directory, IFile file)
+    public AppSettingsService(IJsonService jsonService, IDirectory directory, IFile file, IPath path)
     {
         ArgumentNullException.ThrowIfNull(jsonService);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.jsonService = jsonService;
         this.file = file;
 
-        var baseDirPath = directory.GetCurrentDirectory().ToCrossPlatPath();
-        this.appSettingsFilePath = $"{baseDirPath}/{AppSettingsFileName}";
+        var baseDirPath = directory.GetCurrentDirectory();
+        this.appSettingsFilePath = path.Combine(baseDirPath, AppSettingsFileName);
+
         LoadSettings();
     }
 
