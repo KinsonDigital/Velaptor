@@ -121,33 +121,14 @@ public sealed class Font : IFont
     public uint Size
     {
         get => this.size;
-        set
-        {
-            this.size = value > 100 ? 100 : value;
-
-            if (this.fontInitialized && this.size > 0u)
-            {
-                RebuildAtlasTexture();
-            }
-
-            // Clear the entire size cache since the size has changed
-            this.textSizeCache.Clear();
-        }
+        internal set => this.size = value > 100 ? 100 : value;
     }
 
     /// <inheritdoc/>
     public FontStyle Style
     {
-        get => this.fontStyle;
-        set
-        {
-            this.fontStyle = value;
-
-            if (this.fontInitialized)
-            {
-                RebuildAtlasTexture();
-            }
-        }
+        get;
+        internal set;
     }
 
     /// <inheritdoc/>
@@ -359,37 +340,16 @@ public sealed class Font : IFont
         var newList = new List<FontStats>();
         newList.AddRange(this.fontStats);
         this.fontStats = newList.ToArray();
-    }
+        return;
 
-    /// <summary>
-    /// Rebuilds the font atlas texture and glyph metrics.
-    /// </summary>
-    /// <exception cref="FontException">Thrown if the current style that is being attempted does not exist.</exception>
-    private void RebuildAtlasTexture()
-    {
-        var fontFilePath = string.Empty;
-
-        foreach (var fontStat in this.fontStats ?? [])
+        bool AllStylesFound()
         {
-            if (fontStat.Style == this.fontStyle)
-            {
-                fontFilePath = fontStat.FontFilePath;
-            }
+            const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
+
+            return this.fontStats.Length == 4 && Array.TrueForAll(
+                this.fontStats,
+                d => d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
         }
-
-        if (string.IsNullOrEmpty(fontFilePath))
-        {
-            throw new FontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
-        }
-
-        var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
-        Atlas = this.textureCache.GetItem(filePathWithMetaData);
-
-        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fontFilePath, Size);
-
-        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
-
-        this.metrics = glyphMetrics;
     }
 
     /// <summary>

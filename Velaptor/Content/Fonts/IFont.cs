@@ -1,4 +1,4 @@
-﻿// <copyright file="IFont.cs" company="KinsonDigital">
+// <copyright file="IFont.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -29,14 +29,14 @@ public interface IFont : IContent
     ITexture Atlas { get; }
 
     /// <summary>
-    /// Gets or sets the size of the font in points.
+    /// Gets the size of the font in points.
     /// </summary>
-    uint Size { get; set; }
+    uint Size { get; }
 
     /// <summary>
-    /// Gets or sets the style of the font.
+    /// Gets the style of the font.
     /// </summary>
-    VelFontStyle Style { get; set; }
+    FontStyle Style { get; }
 
     /// <summary>
     /// Gets a value indicating whether the font is a default font.
