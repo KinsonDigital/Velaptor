@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using Helpers;
 using Shouldly;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -62,7 +61,7 @@ public class InternalExtensionMethodsTests
         var expectedPixels = CreateImageDataPixels(2, 3, rowColors);
 
         // Act
-        var actual = TestHelpers.ToImageData(sixLaborsImage);
+        var actual = sixLaborsImage.ToImageData();
 
         // Assert
         actual.Pixels.ShouldBeEquivalentTo(expectedPixels);
@@ -183,23 +182,36 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void FirstItemIndex_WhenPredicateReturnsTrue_ReturnsCorrectIndex()
+    public void FirstItemIndex_WhenPredicateReturnsTrueWhenItemIsInFirstHalf_ReturnsCorrectIndex()
     {
         // Arrange
-        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+        var sut = new Memory<string>(["item-1", "item-2", "item-3", "item-4", "item-5"]);
 
         // Act
-        var actual = sut.FirstItemIndex(i => i == "item-C");
+        var actual = sut.FirstItemIndex(i => i == "item-2");
 
         // Assert
         actual.ShouldBe(1);
     }
 
     [Fact]
+    public void FirstItemIndex_WhenPredicateReturnsTrueWhenItemIsInLastHalf_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Memory<string>(["item-1", "item-2", "item-3", "item-4", "item-5"]);
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-4");
+
+        // Assert
+        actual.ShouldBe(3);
+    }
+
+    [Fact]
     public void FirstItemIndex_WhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+        var sut = new Memory<string>(["item-A", "item-C", "item-B"]);
 
         // Act
         var actual = sut.FirstItemIndex(i => i == "item-D");
@@ -339,7 +351,7 @@ public class InternalExtensionMethodsTests
     {
         // Arrange
         var expected = new[] { 1, 2, 3, 4, 0, 0 };
-        var items = new Memory<int>(new[] { 1, 2, 3, 4, });
+        var items = new Memory<int>([1, 2, 3, 4]);
 
         // Act
         items.IncreaseBy(2);

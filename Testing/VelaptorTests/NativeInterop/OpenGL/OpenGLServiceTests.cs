@@ -22,8 +22,8 @@ using Velaptor.Services;
 /// </summary>
 public class OpenGLServiceTests
 {
-    private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
-    private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
+    private const int ApiIdRecompileFragmentShader = 2;
+    private const int ApiIdRecompileVertexShader = 131218;
     private readonly IGLInvoker mockGLInvoker;
     private readonly IDotnetService mockDotnetService;
     private readonly ILoggingService mockLoggingService;
@@ -522,9 +522,9 @@ public class OpenGLServiceTests
 
     #region Indirect Tests
     [Theory]
-    [InlineData(API_ID_RECOMPILE_FRAGMENT_SHADER)]
-    [InlineData(API_ID_RECOMPILE_VERTEX_SHADER)]
-    public void DebugCallback_WhenInvokedComplicationWarnings_DoNotLogError(int shaderId)
+    [InlineData(ApiIdRecompileFragmentShader)]
+    [InlineData(ApiIdRecompileVertexShader)]
+    public void DebugCallback_WhenInvokedCompilationWarnings_DoNotLogError(int shaderId)
     {
         // Arrange
         DebugProc? debugProc = null;

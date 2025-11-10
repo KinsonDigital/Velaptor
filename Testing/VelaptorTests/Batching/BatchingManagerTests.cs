@@ -22,6 +22,7 @@ using Velaptor.Factories;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
 using Xunit;
+using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
 
 /// <summary>
 /// Tests the <see cref="BatchingManager"/> class.
@@ -323,11 +324,10 @@ public class BatchingManagerTests : TestsBase
     {
         // Arrange & Act & Assert
         var mockTextureBatchPullReactable = Substitute.For<IBatchPullReactable<TextureBatchItem>>();
-        mockTextureBatchPullReactable.When(x => x.Subscribe(Arg.Any<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>()))
+        mockTextureBatchPullReactable.When(x => x.Subscribe(Arg.Any<TextureBatchPullSubscription>()))
             .Do(callInfo =>
             {
-                // TODO: Maybe create an alias for this type?
-                var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>();
+                var reactor = callInfo.Arg<TextureBatchPullSubscription>();
 
                 reactor.ShouldNotBeNull("It is required for unit testing.");
                 reactor.Name.ShouldBe($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
@@ -338,20 +338,21 @@ public class BatchingManagerTests : TestsBase
     [Trait("Category", Subscription)]
     public void BatchSizeReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
     {
-        // Arrange & Assert
+        // Arrange
+        IReceiveSubscription<BatchSizeData>? reactor = null;
+
         this.mockBatchSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<BatchSizeData>>()))
             .Do(callInfo =>
             {
-                var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.ShouldNotBeNull("It is required for unit testing.");
-                reactor.Name.ShouldBe($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
+                reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
             });
-
-        // TODO: Remove?
-        // .Returns<IReceiveSubscription<BatchSizeData>>(_ => this.mockBatchSizeUnsubscriber);
 
         // Act
         _ = CreateSystemUnderTest();
+
+        // Assert
+        reactor.ShouldNotBeNull("It is required for unit testing.");
+        reactor.Name.ShouldBe($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
     }
 
     [Fact]

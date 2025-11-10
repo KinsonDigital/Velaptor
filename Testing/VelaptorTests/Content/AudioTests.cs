@@ -25,8 +25,10 @@ using ICASLAudio = CASL.IAudio;
 /// </summary>
 public class AudioTests : TestsBase
 {
+    private const uint AudioId = 123;
     private readonly IPushReactable<DisposeAudioData> mockDisposeReactable;
     private readonly ICASLAudio mockCASLAudio;
+    private IReceiveSubscription<DisposeAudioData>? mockDisposeReactableSubscription;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioTests"/> class.
@@ -34,6 +36,18 @@ public class AudioTests : TestsBase
     public AudioTests()
     {
         this.mockDisposeReactable = Substitute.For<IPushReactable<DisposeAudioData>>();
+        this.mockDisposeReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
+            .Do((callInfo) =>
+            {
+                var subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
+
+                if (subscription.Id == PushNotifications.AudioDisposedId)
+                {
+                    this.mockDisposeReactableSubscription = subscription;
+                }
+            });
+
         this.mockCASLAudio = Substitute.For<ICASLAudio>();
     }
 
@@ -45,7 +59,7 @@ public class AudioTests : TestsBase
         // Arrange & Act
         var act = () =>
         {
-            _ = new Audio(null, this.mockCASLAudio, 1);
+            _ = new Audio(null, this.mockCASLAudio, AudioId);
         };
 
         // Assert
@@ -60,7 +74,7 @@ public class AudioTests : TestsBase
         // Arrange & Act
         var act = () =>
         {
-            _ = new Audio(this.mockDisposeReactable, null, 1);
+            _ = new Audio(this.mockDisposeReactable, null, AudioId);
         };
 
         // Assert
@@ -69,16 +83,16 @@ public class AudioTests : TestsBase
     }
 
     [Fact]
-    [Trait("Category", Ctor)]
-    public void Ctor_WhenInvoked_CorrectlySetsIdProperty()
+    public void Ctor_WhenInvoked_SetsAudioId()
     {
-        // Arrange & Act
-        var sut = CreateSystemUnderTest(123);
+        // Arrange
+        var sut = CreateSystemUnderTest();
 
+        // Act
         var actual = sut.Id;
 
         // Assert
-        actual.ShouldBe(123u);
+        actual.ShouldBe(AudioId);
     }
     #endregion
 
@@ -88,7 +102,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act && Assert
         var exception = Should.Throw<ObjectDisposedException>(() => sut.Volume = 123);
@@ -101,7 +115,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.Volume.Returns(123);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.Volume;
@@ -129,7 +143,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.Position.Returns(new AudioTime(0.123f));
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.Position;
@@ -159,7 +173,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.Length.Returns(new AudioTime(0.123f));
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.Length;
@@ -188,7 +202,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act && Assert
         var exception = Should.Throw<ObjectDisposedException>(() => sut.IsLooping = true);
@@ -202,7 +216,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.IsLooping.Returns(true);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.IsLooping;
@@ -230,7 +244,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.State.Returns(AudioState.Playing);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.IsPlaying;
@@ -262,7 +276,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.State.Returns(AudioState.Paused);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.IsPaused;
@@ -294,7 +308,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.State.Returns(AudioState.Playing);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.IsStopped;
@@ -326,7 +340,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.BufferType.Returns(BufferType.Stream);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.BufferType;
@@ -356,7 +370,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act && Assert
         var exception = Should.Throw<ObjectDisposedException>(() => sut.PlaySpeed = 123);
@@ -369,7 +383,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.PlaySpeed.Returns(123);
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.PlaySpeed;
@@ -411,7 +425,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.Name.Returns("test-name");
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.Name;
@@ -440,7 +454,7 @@ public class AudioTests : TestsBase
         // Arrange
         this.mockCASLAudio.FilePath.Returns("test-path");
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var actual = sut.FilePath;
@@ -456,7 +470,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.FastForward(123);
@@ -484,7 +498,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.Pause();
@@ -512,7 +526,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.Play();
@@ -540,7 +554,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.FastForward(123);
@@ -568,7 +582,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.SetTimePosition(123);
@@ -596,7 +610,7 @@ public class AudioTests : TestsBase
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Act
         var act = () => sut.Stop();
@@ -623,11 +637,11 @@ public class AudioTests : TestsBase
     public void Dispose_WhenInvoked_DisposesOfAudio()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
 
         // Act
-        sut.Dispose();
-        sut.Dispose();
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
+        this.mockDisposeReactableSubscription.OnReceive(new  DisposeAudioData { AudioId = AudioId });
 
         // Assert
         this.mockCASLAudio.Received(1).Dispose();
@@ -640,7 +654,8 @@ public class AudioTests : TestsBase
     public void DisposeReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
     {
         // Arrange & Assert
-        this.mockDisposeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
+        this.mockDisposeReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
             .Do(callInfo =>
             {
                 var subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
@@ -654,64 +669,28 @@ public class AudioTests : TestsBase
     }
 
     [Fact]
-    public void DisposeReactable_WhenSendingDisposeNotification_DisposesOfAudio()
-    {
-        // Arrange
-        IReceiveSubscription<DisposeAudioData>? subscription = null;
-        this.mockDisposeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
-            .Do(callInfo =>
-            {
-                subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
-            });
-
-        _ = CreateSystemUnderTest(123);
-
-        // Act
-        subscription.OnReceive(new DisposeAudioData { AudioId = 123 });
-        subscription.OnReceive(new DisposeAudioData { AudioId = 123 });
-
-        // Assert
-        this.mockCASLAudio.Received(1).Dispose();
-    }
-
-    [Fact]
-    public void DisposeReactable_WhenSendingDisposeNotificationWithIncorrectId_DoesNotDisposesOfAudio()
-    {
-        // Arrange
-        IReceiveSubscription<DisposeAudioData>? subscription = null;
-        this.mockDisposeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
-            .Do(callInfo =>
-            {
-                subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
-            });
-
-        _ = CreateSystemUnderTest(123);
-
-        // Act
-        subscription.OnReceive(new DisposeAudioData { AudioId = 456 });
-
-        // Assert
-        this.mockCASLAudio.DidNotReceive().Dispose();
-    }
-
-    [Fact]
     public void DisposeReactable_WhenDisposingOfReactable_InvokesUnsubscriber()
     {
         // Arrange
-        IReceiveSubscription<DisposeAudioData>? subscription = null;
         var mockUnsubscriber = Substitute.For<IDisposable>();
 
         this.mockDisposeReactable.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()).Returns(mockUnsubscriber);
-        this.mockDisposeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
+        this.mockDisposeReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
             .Do(callInfo =>
             {
-                subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
+                var subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
+
+                if (subscription.Id == PushNotifications.AudioDisposedId)
+                {
+                    this.mockDisposeReactableSubscription = subscription;
+                }
             });
 
-        _ = CreateSystemUnderTest(123);
+        _ = CreateSystemUnderTest();
 
         // Act
-        subscription.OnUnsubscribe();
+        this.mockDisposeReactableSubscription.OnUnsubscribe();
 
         // Assert
         mockUnsubscriber.Received(1).Dispose();
@@ -721,8 +700,7 @@ public class AudioTests : TestsBase
     /// <summary>
     /// Creates a new instance of <see cref="Audio"/> for the purpose of testing.
     /// </summary>
-    /// <param name="audioId">The audio id used for testing.</param>
     /// <returns>The instance to test.</returns>
-    private Audio CreateSystemUnderTest(uint audioId = 1)
-        => new (this.mockDisposeReactable, this.mockCASLAudio, audioId);
+    private Audio CreateSystemUnderTest()
+        => new (this.mockDisposeReactable, this.mockCASLAudio, AudioId);
 }
