@@ -136,9 +136,7 @@ internal sealed class TextureLoader : ITextureLoader
 
         foreach (var textureDataItem in this.textureCache)
         {
-            var texture = textureDataItem.Value;
-
-            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = textureDataItem.Value.Id });
         }
 
         this.textureCache.Clear();

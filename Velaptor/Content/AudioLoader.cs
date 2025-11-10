@@ -175,8 +175,7 @@ internal sealed class AudioLoader : IAudioLoader
 
         foreach (var audioCacheItem in this.audioCache)
         {
-            var audio = audioCacheItem.Value;
-            this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
+            this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audioCacheItem.Value.Id });
         }
 
         this.audioCache.Clear();

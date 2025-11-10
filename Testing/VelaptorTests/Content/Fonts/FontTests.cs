@@ -559,7 +559,8 @@ public class FontTests
         actual.ShouldAllBe(data => testText.ToString().Contains(data.character.ToString()), $"the character should be in the text '{testText}'.");
 
         // Assert that the test text characters all have a bounds Y position of 0
-        actual.ShouldAllBe(data => data.character == '-' || data.bounds.Y == 0);
+        const float epsilon = 1e-5f;
+        actual.ShouldAllBe(data => data.character == '-' || Math.Abs(data.bounds.Y - 0f) <= epsilon);
 
         // Assert that the character 't' has the correct height
         actual.Where(i => i.character == 't').ShouldAllBe(data => Math.Abs(data.bounds.Height - 26) <= 0);
