@@ -5,106 +5,147 @@
 namespace Velaptor.Content.Fonts;
 
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Caching;
+using Carbonate;
+using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Graphics;
+using Services;
+using Velaptor.Factories;
+using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
+using ReactableData;
 
 /// <summary>
 /// Loads font content for rendering text.
 /// </summary>
-internal sealed class FontLoader : ILoader<IFont>
+internal sealed class FontLoader : IFontLoader
 {
-    private const string ExpectedMetaDataSyntax = "size:<font-size>";
     private const string FontFileExtension = ".ttf";
     private const string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
     private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
     private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
     private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
-    private const uint DefaultFontSize = 12;
+    private const string DefaultFontPrefix = "[DEFAULT]";
+    private readonly ConcurrentDictionary<string, (ITexture fontTextureAtlas, GlyphMetrics[] metrics)> fontCache = new ();
+    private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
     private readonly IContentPathResolver fontPathResolver;
-    private readonly IItemCache<string, ITexture> textureCache;
+    private readonly ITextureFactory textureFactory;
     private readonly IFontFactory fontFactory;
-    private readonly IFontMetaDataParser fontMetaDataParser;
+    private readonly IFreeTypeService freeTypeService;
+    private readonly IFontStatsService fontStatsService;
     private readonly IDirectory directory;
-    private readonly IFileStreamFactory fileStream;
+    private readonly IFileStreamFactory fileStreamFactory;
     private readonly IFile file;
     private readonly IPath path;
+    private readonly IDisposable unsubscriber;
     private readonly string[] defaultFontNames =
     [
         DefaultRegularFontName, DefaultBoldFontName,
         DefaultItalicFontName, DefaultBoldItalicFontName
     ];
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.
     /// </summary>
-    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
-    /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
     /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
-    /// <param name="textureCache">Caches textures for later use to improve performance.</param>
-    /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
-    /// <param name="fontMetaDataParser">Parses metadata from strings.</param>
+    /// <param name="textureFactory">Creates textures.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="fileStreamFactory">Provides a stream to a file for file operations.</param>
+    /// <param name="fontFactory">Creates font objects.</param>
+    /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
+    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
+    /// <param name="freeTypeService">Provides font services to the loaded font.</param>
+    /// <param name="fontStatsService">Provides font stat collection services to the loaded font.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
-    /// <param name="fileStream">Provides a stream to a file for file operations.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public FontLoader(
-        IFontAtlasService fontAtlasService,
-        IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
         IContentPathResolver fontPathResolver,
-        IItemCache<string, ITexture> textureCache,
+        ITextureFactory textureFactory,
+        IReactableFactory reactableFactory,
+        IFileStreamFactory fileStreamFactory,
         IFontFactory fontFactory,
-        IFontMetaDataParser fontMetaDataParser,
+        IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
+        IFontAtlasService fontAtlasService,
+        IFreeTypeService freeTypeService,
+        IFontStatsService fontStatsService,
         IDirectory directory,
         IFile file,
-        IFileStreamFactory fileStream,
         IPath path)
     {
-        ArgumentNullException.ThrowIfNull(fontAtlasService);
-        ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
         ArgumentNullException.ThrowIfNull(fontPathResolver);
-        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(textureFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(fileStreamFactory);
         ArgumentNullException.ThrowIfNull(fontFactory);
-        ArgumentNullException.ThrowIfNull(fontMetaDataParser);
+        ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
+        ArgumentNullException.ThrowIfNull(fontAtlasService);
+        ArgumentNullException.ThrowIfNull(freeTypeService);
+        ArgumentNullException.ThrowIfNull(fontStatsService);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(file);
-        ArgumentNullException.ThrowIfNull(fileStream);
         ArgumentNullException.ThrowIfNull(path);
 
-        this.fontAtlasService = fontAtlasService;
-        this.embeddedFontResourceService = embeddedFontResourceService;
         this.fontPathResolver = fontPathResolver;
-        this.textureCache = textureCache;
+        this.textureFactory = textureFactory;
+        this.fileStreamFactory = fileStreamFactory;
         this.fontFactory = fontFactory;
-        this.fontMetaDataParser = fontMetaDataParser;
+        this.embeddedFontResourceService = embeddedFontResourceService;
+        this.fontAtlasService = fontAtlasService;
+        this.freeTypeService = freeTypeService;
+        this.fontStatsService = fontStatsService;
         this.directory = directory;
         this.file = file;
-        this.fileStream = fileStream;
         this.path = path;
+
+        this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
+        var shutDownReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.unsubscriber = shutDownReactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.unsubscriber?.Dispose());
 
         SetupDefaultFonts();
     }
 
     /// <summary>
-    /// Loads font content from the application's content directory or directly using a full file path.
+    /// Finalizes an instance of the <see cref="FontLoader"/> class.
     /// </summary>
-    /// <param name="contentPathOrName">The name or full file path to the font with metadata.</param>
-    /// <returns>The loaded font.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     Occurs when the <paramref name="contentPathOrName"/> argument is null or empty.
+    [ExcludeFromCodeCoverage]
+    ~FontLoader()
+    {
+#if DEBUG
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+#endif
+
+        ShutDown();
+    }
+
+    /// <inheritdoc cref="IFontLoader.TotalCachedItems"/>
+    public int TotalCachedItems => this.fontCache.Count;
+
+    /// <inheritdoc cref="IFontLoader.Load"/>
+    /// <exception cref="ArgumentException">
+    ///     Occurs when the <paramref name="pathOrName"/> argument is null or empty.
     /// </exception>
-    /// <exception cref="CachingMetaDataException">
-    ///     Occurs if the metadata is invalid.
+    /// <exception cref="FontException">
+    ///     Occurs if something has gone wrong creating the font object.
     /// </exception>
     /// <exception cref="FileNotFoundException">
     ///     Occurs if the font file does not exist.
@@ -112,82 +153,23 @@ internal sealed class FontLoader : ILoader<IFont>
     /// <remarks>
     ///     If a path is used, it must be a fully qualified file path.
     ///     <para>Directory paths are not valid.</para>
-    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
     /// </remarks>
     /// <example>
     ///     <code>
     ///         // Valid Example 1
-    ///         ContentLoader.Load("my-font|size:12");
+    ///         ContentLoader.Load("my-font", 12);
     ///         <br/>
     ///         // Valid Example 2
-    ///         ContentLoader.Load("my-font");
-    ///         <br/>
-    ///         // Valid Example 3
-    ///         ContentLoader.Load("my-font.ttf");
-    ///         <br/>
-    ///         // Valid Example 4
-    ///         ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
-    ///         <br/>
-    ///         // Invalid Example 1
-    ///         ContentLoader.Load("my-font|size:12");
-    ///         <br/>
-    ///         // Invalid Example 2
-    ///         ContentLoader.Load("my-font|size:12");
-    ///         <br/>
-    ///         // Invalid Example 3
-    ///         ContentLoader.Load("my-font|size12");
+    ///         ContentLoader.Load(@"C:\fonts\my-font.ttf", 14);
     ///     </code>
     /// </example>
-    public IFont Load(string contentPathOrName)
+    public IFont Load(string pathOrName, uint size)
     {
-        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
+        ArgumentException.ThrowIfNullOrEmpty(pathOrName);
 
-        var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
-        string fullFontFilePath;
-
-        if (parseResult.ContainsMetaData)
-        {
-            if (parseResult.IsValid)
-            {
-                fullFontFilePath = parseResult.MetaDataPrefix;
-
-                // If the file path is a full file path, leave it be.
-                // If it is not, then it is a content name and could be a file name with an extension.
-                // If this is the case, remove the extension
-                if (!this.path.IsPathRooted(parseResult.MetaDataPrefix))
-                {
-                    var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
-
-                    parseResult = parseResult with { MetaDataPrefix = newMetaDataPrefix };
-                }
-            }
-            else
-            {
-                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when loading '{contentPathOrName}'.";
-                exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-                exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
-                throw new CachingMetaDataException(exceptionMsg);
-            }
-        }
-        else
-        {
-            var defaultMetaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
-
-            parseResult = new FontMetaDataParseResult
-            {
-                ContainsMetaData = true,
-                IsValid = true,
-                MetaDataPrefix = defaultMetaDataPrefix,
-                MetaData = $"size:{DefaultFontSize}",
-                FontSize = DefaultFontSize,
-            };
-
-            fullFontFilePath = defaultMetaDataPrefix;
-        }
-
-        fullFontFilePath = this.path.IsPathRooted(fullFontFilePath)
-            ? parseResult.MetaDataPrefix
-            : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+        var fullFontFilePath = this.path.IsPathRooted(pathOrName)
+            ? pathOrName
+            : this.fontPathResolver.ResolveFilePath(pathOrName);
 
         // If the full font file path is empty, then the font does not exist. Throw an exception
         if (!this.file.Exists(fullFontFilePath))
@@ -199,106 +181,47 @@ internal sealed class FontLoader : ILoader<IFont>
 
         var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, parseResult.FontSize);
-
-        var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
         var fileName = this.path.GetFileName(fullFontFilePath);
-        var fontAtlasTexture = this.textureCache.GetItem(cacheKey);
-
         var isDefaultFont = this.defaultFontNames.Contains(fileName);
+        var cacheKeyPrefix = isDefaultFont ? DefaultFontPrefix : string.Empty;
+        var cacheKey = $"{cacheKeyPrefix}{fullFontFilePath}|{size}";
 
-        return this.fontFactory.Create(
-            fontAtlasTexture,
-            contentName,
-            fullFontFilePath,
-            parseResult.FontSize,
-            isDefaultFont,
-            glyphMetrics);
+        (ITexture fontTextureAtlas, GlyphMetrics[] metrics) = this.fontCache.GetOrAdd(cacheKey, _ =>
+        {
+            (ImageData imageData, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, size);
+            imageData.FlipVertically();
+            var loadedTexture = this.textureFactory.Create(contentName, fullFontFilePath, imageData);
+
+            return (loadedTexture, glyphMetrics);
+        });
+
+        return this.fontFactory.Create(fontTextureAtlas, contentName, fullFontFilePath, size, isDefaultFont, metrics);
     }
 
-    /// <inheritdoc/>
-    /// <exception cref="CachingMetaDataException">
-    ///     Thrown when the metadata is invalid if metadata exists.
-    /// </exception>
-    /// <remarks>
-    ///     If a path is used, it must be a fully qualified file path.
-    ///     <para>Directory paths are not valid.</para>
-    ///     <para>If no metadata is provided, then a default font size of 12 will be used.</para>
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    ///         // Valid Example 1
-    ///         ContentLoader.Unload("my-font|size:12");
-    ///         <br/>
-    ///         // Valid Example 2
-    ///         ContentLoader.Unload("my-font");
-    ///         <br/>
-    ///         // Valid Example 3
-    ///         ContentLoader.Unload("my-font.ttf");
-    ///         <br/>
-    ///         // Valid Example 4
-    ///         ContentLoader.Unload(@"C:\fonts\my-font.ttf|size:12");
-    ///         <br/>
-    ///         // Invalid Example 1
-    ///         ContentLoader.Unload("my-font|size:12");
-    ///         <br/>
-    ///         // Invalid Example 2
-    ///         ContentLoader.Unload("my-font|size:12");
-    ///         <br/>
-    ///         // Invalid Example 3
-    ///         ContentLoader.Unload("my-font|size12");
-    ///     </code>
-    /// </example>
-    public void Unload(string contentPathOrName)
+    /// <inheritdoc cref="IUnloader{T}.Unload"/>
+    public void Unload(IFont font)
     {
-        var parseResult = this.fontMetaDataParser.Parse(contentPathOrName);
+        var fileName = this.path.GetFileName(font.FilePath);
+        var isDefaultFont = this.defaultFontNames.Contains(fileName);
+        var cacheKey = BuildCacheKey(font.FilePath, font.Size, isDefaultFont);
 
-        if (parseResult.ContainsMetaData)
-        {
-            if (parseResult.IsValid)
-            {
-                var fullFilePath = this.path.IsPathRooted(parseResult.MetaDataPrefix)
-                    ? parseResult.MetaDataPrefix
-                    : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = font.Atlas.Id });
 
-                var cacheKey = $"{fullFilePath}|{parseResult.MetaData}";
+        this.fontCache.TryRemove(cacheKey, out _);
+    }
 
-                this.textureCache.Unload(cacheKey);
-            }
-            else
-            {
-                var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentPathOrName}'.";
-                exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-                exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
-                throw new CachingMetaDataException(exceptionMsg);
-            }
-        }
-        else
-        {
-            var metaDataPrefix = this.path.GetFileNameWithoutExtension(contentPathOrName);
+    /// <summary>
+    /// Builds the cache key used to store/retrieve font data in/from the cache.
+    /// </summary>
+    /// <param name="filePath">The full path to the font content file.</param>
+    /// <param name="size">The size of the font.</param>
+    /// <param name="isDefaultFont">True if the font is a default font.</param>
+    /// <returns>The cache key.</returns>
+    private static string BuildCacheKey(string filePath, uint size, bool isDefaultFont)
+    {
+        var cacheKeyPrefix = isDefaultFont ? DefaultFontPrefix : string.Empty;
 
-            parseResult = new FontMetaDataParseResult
-            {
-                ContainsMetaData = true,
-                IsValid = true,
-                MetaDataPrefix = metaDataPrefix,
-                MetaData = $"size:{DefaultFontSize}",
-                FontSize = DefaultFontSize,
-            };
-
-            var fullFilePath = this.path.IsPathRooted(metaDataPrefix)
-                ? parseResult.MetaDataPrefix
-                : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
-
-            var fileName = this.path.GetFileName(fullFilePath);
-            var isDefaultFont = this.defaultFontNames.Contains(fileName);
-
-            var cacheKey = isDefaultFont
-                ? $"[DEFAULT]{fullFilePath}|{parseResult.MetaData}"
-                : $"{fullFilePath}|{parseResult.MetaData}";
-
-            this.textureCache.Unload(cacheKey);
-        }
+        return $"{cacheKeyPrefix}{filePath}|{size}";
     }
 
     /// <summary>
@@ -328,9 +251,30 @@ internal sealed class FontLoader : ILoader<IFont>
             }
 
             using var fontFileStream = this.embeddedFontResourceService.LoadResource(fontName);
-            using var copyToStream = this.fileStream.New(filePath, FileMode.Create, FileAccess.Write);
+            using var copyToStream = this.fileStreamFactory.New(filePath, FileMode.Create, FileAccess.Write);
 
             fontFileStream?.CopyTo(copyToStream);
         }
+    }
+
+    /// <summary>
+    /// Disposes of all resources.
+    /// </summary>
+    private void ShutDown()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        foreach (var fontDataItem in this.fontCache)
+        {
+            (ITexture fontTextureAtlas, _) = fontDataItem.Value;
+
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = fontTextureAtlas.Id });
+        }
+
+        this.fontCache.Clear();
+        this.isDisposed = true;
     }
 }
