@@ -7,10 +7,18 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.OneWay;
 using Shouldly;
 using NSubstitute;
+using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Caching;
+using Velaptor.Content.Factories;
+using Velaptor.Factories;
+using Velaptor.Graphics;
+using Velaptor.ReactableData;
+using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -19,52 +27,123 @@ using Xunit;
 public class TextureLoaderTests
 {
     private const string TextureExtension = ".png";
-    private const string TextureFileName = "test-texture";
-    private static readonly string AppDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/" : "/";
+    private const string TextureContentName = "test-texture";
+    private const string TextureFileName = $"{TextureContentName}{TextureExtension}";
+    private const uint TextureId = 123u;
+    private static readonly string AppDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:" : "/";
     private static readonly string ContentDirPath = $"{AppDirPath}/Content";
     private static readonly string TextureDirPath = $"{ContentDirPath}/Graphics";
-    private static readonly string TextureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
-    private readonly IItemCache<string, ITexture> mockTextureCache;
+    private static readonly string TextureFilePath = $"{TextureDirPath}/{TextureFileName}";
+    private readonly ITextureFactory mockTextureFactory;
+    private readonly IReactableFactory mockReactableFactory;
+    private readonly IImageService mockImageService;
     private readonly IContentPathResolver mockTexturePathResolver;
     private readonly IDirectory mockDirectory;
+    private readonly IPath mockPath;
+    private readonly ITexture mockTexture;
+    private readonly IPushReactable<DisposeTextureData> mockDisposeTextureReactable;
+    private readonly IDisposable mockShutdownUnsubscriber;
+    private IReceiveSubscription? mockShutdownSubscription;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
     /// </summary>
     public TextureLoaderTests()
     {
-        this.mockTexturePathResolver = Substitute.For<IContentPathResolver>();
-        this.mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
+        this.mockTextureFactory = Substitute.For<ITextureFactory>();
+
+        this.mockShutdownUnsubscriber = Substitute.For<IDisposable>();
+        var mockShutdownReactable = Substitute.For<IPushReactable>();
+        mockShutdownReactable.Subscribe(Arg.Any<IReceiveSubscription>()).Returns(this.mockShutdownUnsubscriber);
+        mockShutdownReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo =>
+            {
+                var subscription = callInfo.Arg<IReceiveSubscription>();
+
+                if (subscription.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    this.mockShutdownSubscription = subscription;
+                }
+            });
+
+        this.mockDisposeTextureReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateDisposeTextureReactable().Returns(this.mockDisposeTextureReactable);
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockShutdownReactable);
+
+        this.mockImageService = Substitute.For<IImageService>();
+
         this.mockDirectory = Substitute.For<IDirectory>();
+        this.mockDirectory.Exists(Arg.Any<string>()).Returns(true);
+
+        this.mockPath = Substitute.For<IPath>();
+
+        this.mockTexturePathResolver = Substitute.For<IContentPathResolver>();
+        this.mockTexturePathResolver.ResolveDirPath().Returns(TextureDirPath);
+        this.mockTexturePathResolver.ResolveFilePath(Arg.Any<string>()).Returns(TextureFilePath);
+        this.mockPath.GetFileNameWithoutExtension(Arg.Any<string>()).Returns(TextureContentName);
+        this.mockImageService.Load(Arg.Any<string>()).Returns(default(ImageData));
+
+        this.mockTexture = Substitute.For<ITexture>();
+        this.mockTexture.Id.Returns(TextureId);
+
+        this.mockTextureFactory
+            .Create(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImageData>())
+            .Returns(this.mockTexture);
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullTextureCacheParam_ThrowsException()
+    public void Ctor_WithNullTextureFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => new TextureLoader(
             null,
+            this.mockReactableFactory,
+            this.mockImageService,
             this.mockTexturePathResolver,
-            this.mockDirectory);
+            this.mockDirectory,
+            this.mockPath);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureCache')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureFactory')");
     }
 
     [Fact]
-    public void Ctor_WithNullTexturePathResolverParam_ThrowsException()
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => new TextureLoader(
-            this.mockTextureCache,
+            this.mockTextureFactory,
             null,
-            this.mockDirectory);
+            this.mockImageService,
+            this.mockTexturePathResolver,
+            this.mockDirectory,
+            this.mockPath);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texturePathResolver')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullImageServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new TextureLoader(
+            this.mockTextureFactory,
+            this.mockReactableFactory,
+            null,
+            this.mockTexturePathResolver,
+            this.mockDirectory,
+            this.mockPath);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imageService')");
     }
 
     [Fact]
@@ -72,19 +151,39 @@ public class TextureLoaderTests
     {
         // Arrange & Act
         var act = () => new TextureLoader(
-                this.mockTextureCache,
+                this.mockTextureFactory,
+                this.mockReactableFactory,
+                this.mockImageService,
                 this.mockTexturePathResolver,
-                null);
+                null,
+                this.mockPath);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
+
+    [Fact]
+    public void Ctor_WithNullTexturePathResolverParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new TextureLoader(
+            this.mockTextureFactory,
+            this.mockReactableFactory,
+            this.mockImageService,
+            this.mockTexturePathResolver,
+            this.mockDirectory,
+            null);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
+    }
     #endregion
 
     #region Method Tests
     [Fact]
-    public void Load_WithNullParam_ThrowsException()
+    public void Load_WithNullPathOrNameParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -94,11 +193,11 @@ public class TextureLoaderTests
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'pathOrName')");
     }
 
     [Fact]
-    public void Load_WithEmptyParam_ThrowsException()
+    public void Load_WithEmptyPathOrNameParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
@@ -108,28 +207,7 @@ public class TextureLoaderTests
 
         // Assert
         var exception = act.ShouldThrow<ArgumentException>();
-        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
-    }
-
-    [Fact]
-    public void Load_WhenLoadingContent_LoadsTexture()
-    {
-        // Arrange
-        this.mockTexturePathResolver.ResolveFilePath(Arg.Any<string>()).Returns(TextureFilePath);
-
-        var mockTexture = Substitute.For<ITexture>();
-
-        this.mockTextureCache.GetItem(TextureFilePath).Returns(mockTexture);
-
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.Load("test-content.png");
-
-        // Assert
-        actual.ShouldBe(mockTexture);
-        this.mockTexturePathResolver.Received(1).ResolveFilePath("test-content.png");
-        this.mockTextureCache.Received(1).GetItem(TextureFilePath);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'pathOrName')");
     }
 
     [Fact]
@@ -150,16 +228,97 @@ public class TextureLoaderTests
     }
 
     [Fact]
-    public void Unload_WhenInvoked_UnloadsCachedTextures()
+    public void Load_WhenLoadingUncachedContent_CachesAndLoadsTexture()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.Unload(TextureFilePath);
+        var actual = sut.Load(TextureFileName);
 
         // Assert
-        this.mockTextureCache.Received(1).Unload(TextureFilePath);
+        sut.TotalCachedItems.ShouldBe(1);
+        actual.ShouldBeSameAs(this.mockTexture);
+        this.mockTexturePathResolver.Received(1).ResolveDirPath();
+        this.mockDirectory.Received(1).Exists(TextureDirPath);
+        this.mockDirectory.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        this.mockTexturePathResolver.Received(1).ResolveFilePath(TextureFileName);
+        this.mockImageService.Received(1).Load(TextureFilePath);
+        this.mockPath.Received(1).GetFileNameWithoutExtension(TextureFilePath);
+        this.mockTextureFactory.Received(1).Create(TextureContentName, TextureFilePath, default);
+    }
+
+    [Fact]
+    public void Load_WhenLoadingCachedContent_DoesNotCacheAndLoadsTexture()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actualA = sut.Load(TextureFileName);
+        var actualB = sut.Load(TextureFileName);
+
+        // Assert
+        sut.TotalCachedItems.ShouldBe(1);
+        actualA.ShouldBeSameAs(this.mockTexture);
+        actualB.ShouldBeSameAs(this.mockTexture);
+        this.mockTexturePathResolver.Received(2).ResolveDirPath();
+        this.mockDirectory.Received(2).Exists(TextureDirPath);
+        this.mockDirectory.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        this.mockTexturePathResolver.Received(2).ResolveFilePath(TextureFileName);
+        this.mockImageService.Received(1).Load(TextureFilePath);
+        this.mockPath.Received(1).GetFileNameWithoutExtension(TextureFilePath);
+        this.mockTextureFactory.Received(1).Create(TextureContentName, TextureFilePath, default);
+    }
+
+    [Fact]
+    public void Unload_WhenInvoked_UnloadsCachedTextures()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        var actual = sut.Load(TextureFileName);
+
+        // Act
+        sut.Unload(actual);
+
+        // Assert
+        sut.TotalCachedItems.ShouldBe(1);
+        this.mockDisposeTextureReactable.Received(1).Push(
+            PushNotifications.TextureDisposedId,
+            Arg.Is<DisposeTextureData>(data => data.TextureId == TextureId));
+    }
+    #endregion
+
+    #region Indirect Tests
+    [Fact]
+    public void Reactables_WhenUnsubscribing_DisposesOfSubscription()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.mockShutdownSubscription.OnUnsubscribe();
+
+        // Assert
+        this.mockShutdownUnsubscriber.Received(1).Dispose();
+    }
+
+    [Fact]
+    public void ShutdownProcess_WhenInvoked_ShutsDownFontLoader()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Load(TextureFileName);
+        this.mockShutdownSubscription.OnReceive();
+        this.mockShutdownSubscription.OnReceive(); // Tests idempotent behavior for the shutdown process
+
+        // Assert
+        sut.TotalCachedItems.ShouldBe(0);
+        this.mockDisposeTextureReactable.Received(1).Push(
+            PushNotifications.TextureDisposedId,
+            Arg.Is<DisposeTextureData>(data => data.TextureId == TextureId));
     }
     #endregion
 
@@ -167,5 +326,11 @@ public class TextureLoaderTests
     /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureLoader CreateSystemUnderTest() => new (this.mockTextureCache, this.mockTexturePathResolver, this.mockDirectory);
+    private TextureLoader CreateSystemUnderTest() => new (
+        this.mockTextureFactory,
+        this.mockReactableFactory,
+        this.mockImageService,
+        this.mockTexturePathResolver,
+        this.mockDirectory,
+        this.mockPath);
 }
