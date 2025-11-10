@@ -72,9 +72,14 @@ public interface IFont : IContent
     bool CacheEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum number of measurements to cache.
+    /// Gets or sets the maximum number of text measurements to cache.
     /// </summary>
-    int MaxCacheSize { get; set; }
+    int MaxMeasureCacheSize { get; set; }
+
+    /// <summary>
+    /// Gets the total number of text size measurements that are cached.
+    /// </summary>
+    int CurrentMeasureCacheSize { get; }
 
     /// <summary>
     /// Gets the list of metrics for all the glyphs supported by the font.

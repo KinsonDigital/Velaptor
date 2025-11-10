@@ -153,7 +153,10 @@ public sealed class Font : IFont
     public bool CacheEnabled { get; set; } = true;
 
     /// <inheritdoc/>
-    public int MaxCacheSize { get; set; } = 1000;
+    public int MaxMeasureCacheSize { get; set; } = 1000;
+
+    /// <inheritdoc/>
+    public int CurrentMeasureCacheSize => this.textSizeCache.Count;
 
     /// <inheritdoc/>
     public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
@@ -305,7 +308,7 @@ public sealed class Font : IFont
             return;
         }
 
-        if (this.textSizeCache.Count <= MaxCacheSize)
+        if (this.textSizeCache.Count <= MaxMeasureCacheSize)
         {
             return;
         }
