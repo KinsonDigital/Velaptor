@@ -14,6 +14,7 @@ internal interface IAtlasLoader : IUnloader<IAtlasData>
     /// </summary>
     int TotalCachedItems { get; }
 
+#pragma warning disable SA1629 // Documentation text should end with a period.
     /// <summary>
     /// Loads texture atlas data using the given <paramref name="atlasPathOrName"/>.
     /// </summary>
@@ -25,4 +26,5 @@ internal interface IAtlasLoader : IUnloader<IAtlasData>
     /// atlasLoader.Load("C:/content/my-atlas.png");
     /// </code>
     IAtlasData Load(string atlasPathOrName);
+#pragma warning restore SA1629 // Documentation text should end with a period.
 }

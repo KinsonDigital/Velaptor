@@ -14,6 +14,7 @@ internal interface IAudioLoader : IUnloader<IAudio>
     /// </summary>
     int TotalCachedItems { get; }
 
+#pragma warning disable SA1629 // Documentation text should end with a period.
     /// <summary>
     /// Loads the audio with the given name.
     /// </summary>
@@ -23,7 +24,8 @@ internal interface IAudioLoader : IUnloader<IAudio>
     /// <code>
     /// audioLoader.Load("my-atlas", AudioBuffer.Full);
     /// // or
-    /// audioLoader.Load("C:/content/my-atlas.png", , AudioBuffer.Stream);
+    /// audioLoader.Load("C:/content/my-atlas.png", AudioBuffer.Stream);
     /// </code>
     IAudio Load(string audioPathOrName, AudioBuffer bufferType);
+#pragma warning restore SA1629 // Documentation text should end with a period.
 }
