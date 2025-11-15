@@ -40,8 +40,8 @@ public class ShapeScene : SceneBase
         Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue
     ];
 
-    private IShapeRenderer? shapeRenderer;
-    private IContentManager contentManager;
+    private readonly IContentManager contentManager;
+    private readonly IShapeRenderer shapeRenderer;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -73,6 +73,8 @@ public class ShapeScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.ctrlFactory = new ControlFactory();
+        this.contentManager = ContentManager.Create();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -81,8 +83,6 @@ public class ShapeScene : SceneBase
         this.shapeType = ShapeType.Circle;
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-
-        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
         this.rectangle = new RectShape
         {
@@ -108,7 +108,6 @@ public class ShapeScene : SceneBase
             IsSolid = false,
         };
 
-        this.contentManager = ContentManager.Create();
         this.font = this.contentManager.LoadFont(DefaultRegularFont, 12);
 
         CreateCircleInstructions();
@@ -127,7 +126,12 @@ public class ShapeScene : SceneBase
     public override void UnloadContent()
     {
         this.backgroundManager?.Unload();
-        this.contentManager.Unload(this.font);
+
+        if (this.font is not null)
+        {
+            this.contentManager.Unload(this.font);
+        }
+
         base.UnloadContent();
     }
 
@@ -228,8 +232,8 @@ public class ShapeScene : SceneBase
         cmbShapeType.Width = 125;
         cmbShapeType.Items =
         [
-            ShapeType.Rectangle.ToString(),
-            ShapeType.Circle.ToString(),
+            nameof(ShapeType.Rectangle),
+            nameof(ShapeType.Circle),
         ];
         cmbShapeType.SelectedItemIndex = 1;
         cmbShapeType.SelectedItemIndexChanged += (_, selectedIndex) =>
@@ -331,9 +335,9 @@ public class ShapeScene : SceneBase
         cmbCircleGradType.Width = 125;
         cmbCircleGradType.Items =
         [
-            ColorGradient.None.ToString(),
-            ColorGradient.Horizontal.ToString(),
-            ColorGradient.Vertical.ToString(),
+            nameof(ColorGradient.None),
+            nameof(ColorGradient.Horizontal),
+            nameof(ColorGradient.Vertical),
         ];
         cmbCircleGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
@@ -399,9 +403,9 @@ public class ShapeScene : SceneBase
         cmbRectGradType.Width = 125;
         cmbRectGradType.Items =
         [
-            ColorGradient.None.ToString(),
-            ColorGradient.Horizontal.ToString(),
-            ColorGradient.Vertical.ToString(),
+            nameof(ColorGradient.None),
+            nameof(ColorGradient.Horizontal),
+            nameof(ColorGradient.Vertical),
         ];
         cmbRectGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
         {

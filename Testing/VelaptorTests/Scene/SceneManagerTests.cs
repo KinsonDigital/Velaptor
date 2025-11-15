@@ -708,7 +708,6 @@ public class SceneManagerTests
 
         // Act
         var act = () => sut.LoadContent();
-
     }
 
     [Fact]

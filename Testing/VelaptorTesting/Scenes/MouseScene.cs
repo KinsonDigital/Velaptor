@@ -100,7 +100,7 @@ public class MouseScene : SceneBase
         }
 
         this.scrollDirection = MouseScrollDirection.None;
-        this.mouse = default;
+        this.mouse = null;
 
         this.backgroundManager?.Unload();
         this.grpControls.Dispose();
