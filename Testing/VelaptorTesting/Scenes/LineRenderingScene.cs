@@ -24,20 +24,24 @@ public class LineRenderingScene : SceneBase
 {
     private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
+    private readonly BackgroundManager backgroundManager;
     private IAppInput<MouseState>? mouse;
     private IAppInput<KeyboardState>? keyboard;
     private ILineRenderer? lineRenderer;
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
-    private BackgroundManager? backgroundManager;
     private IControlGroup? grpControls;
     private bool mouseEnteredAtLeastOnce;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LineRenderingScene"/> class.
+    /// </summary>
+    public LineRenderingScene() => this.backgroundManager = new BackgroundManager();
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.lineRenderer = RendererFactory.CreateLineRenderer();
@@ -102,7 +106,7 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
         this.lineRenderer.Render(this.line);
 
         this.grpControls.Render();
@@ -118,7 +122,7 @@ public class LineRenderingScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
+        this.backgroundManager.Unload();
         this.grpControls.Dispose();
         this.grpControls = null;
 

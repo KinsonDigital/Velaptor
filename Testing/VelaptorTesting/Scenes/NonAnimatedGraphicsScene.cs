@@ -27,10 +27,10 @@ public class NonAnimatedGraphicsScene : SceneBase
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
     private readonly IContentManager contentManager;
+    private readonly BackgroundManager backgroundManager;
     private IAtlasData? mainAtlas;
     private IControlGroup? grpControls;
     private KeyboardState prevKeyState;
-    private BackgroundManager? backgroundManager;
     private RenderEffects renderEffects = RenderEffects.None;
 
     /// <summary>
@@ -41,6 +41,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -53,7 +54,6 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var textLines = new List<string>
@@ -91,12 +91,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
-
-        if (this.mainAtlas is null)
-        {
-            throw new Exception("The main atlas texture cannot be null");
-        }
+        this.backgroundManager.Unload();
 
         this.renderEffects = RenderEffects.None;
 
@@ -164,7 +159,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
 
         this.textureRenderer.Render(
             this.mainAtlas,

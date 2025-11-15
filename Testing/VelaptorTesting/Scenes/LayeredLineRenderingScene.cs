@@ -25,20 +25,16 @@ public class LayeredLineRenderingScene : SceneBase
 {
     private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
-    private const int BackgroundLayer = -50;
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
-    private readonly IContentManager contentManager;
-    private ITexture? background;
-    private ITextureRenderer? textureRenderer;
+    private readonly BackgroundManager backgroundManager;
     private ILineRenderer? lineRenderer;
     private Line whiteLine;
     private Line orangeLine;
     private Line blueLine;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private Vector2 backgroundPos;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpLineState;
     private RenderLayer whiteLayer = RenderLayer.One;
@@ -50,7 +46,7 @@ public class LayeredLineRenderingScene : SceneBase
     public LayeredLineRenderingScene()
     {
         this.keyboard = HardwareFactory.GetKeyboard();
-        this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
     }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
@@ -61,11 +57,8 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.lineRenderer = RendererFactory.CreateLineRenderer();
-
-        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
-        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         var textLines = new[]
         {
@@ -157,8 +150,8 @@ public class LayeredLineRenderingScene : SceneBase
         this.lineRenderer.Render(this.orangeLine, (int)OrangeLayer);
         this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
 
-        // Render the checkerboard background
-        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        // Render the background
+        this.backgroundManager.Render();
 
         this.grpInstructions.Render();
         this.grpLineState.Render();
@@ -174,7 +167,7 @@ public class LayeredLineRenderingScene : SceneBase
             return;
         }
 
-        this.contentManager.Unload(this.background);
+        this.backgroundManager.Unload();
         this.grpInstructions.Dispose();
         this.grpLineState.Dispose();
         this.grpInstructions = null;

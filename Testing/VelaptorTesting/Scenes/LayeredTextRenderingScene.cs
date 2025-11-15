@@ -23,13 +23,11 @@ public class LayeredTextRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";
     private const float Speed = 100f;
-    private const int BackgroundLayer = -50;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
     private readonly IContentManager contentManager;
-    private ITexture? background;
-    private ITextureRenderer? textureRenderer;
+    private readonly BackgroundManager backgroundManager;
     private IFontRenderer? fontRenderer;
     private IFont? font;
     private Vector2 whiteTextPos;
@@ -37,7 +35,6 @@ public class LayeredTextRenderingScene : SceneBase
     private Vector2 blueTextPos;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private Vector2 backgroundPos;
     private SizeF whiteTextSize;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string whiteText = string.Empty;
@@ -51,6 +48,7 @@ public class LayeredTextRenderingScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -61,11 +59,9 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
 
-        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
-        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.font = this.contentManager.LoadFont(DefaultFont, 24);
 
@@ -153,8 +149,8 @@ public class LayeredTextRenderingScene : SceneBase
             Color.AntiqueWhite,
             (int)this.whiteLayer);
 
-        // Render the checkerboard background
-        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        // Render the background
+        this.backgroundManager.Render();
 
         base.Render();
     }
@@ -167,17 +163,7 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        if (this.background is null)
-        {
-            throw new Exception("The background texture cannot be null.");
-        }
-
-        if (this.font is null)
-        {
-            throw new Exception("The font texture cannot be null.");
-        }
-
-        this.contentManager.Unload(this.background);
+        this.backgroundManager.Unload();
         this.contentManager.Unload(this.font);
 
         base.UnloadContent();

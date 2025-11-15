@@ -11,7 +11,6 @@ using System.Numerics;
 using KdGui;
 using KdGui.Factories;
 using Velaptor;
-using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -25,21 +24,17 @@ public class LayeredRectRenderingScene : SceneBase
 {
     private const int WindowPadding = 10;
     private const float Speed = 200f;
-    private const int BackgroundLayer = -50;
     private const int RectWidth = 200;
     private const int RectHeight = 200;
     private const RenderLayer BlueLayer = RenderLayer.Two;
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly IContentManager contentManager;
-    private ITexture? background;
+    private readonly BackgroundManager backgroundManager;
     private RectShape orangeRect;
     private RectShape whiteRect;
     private RectShape blueRect;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private Vector2 backgroundPos;
-    private ITextureRenderer? textureRenderer;
     private IShapeRenderer? shapeRenderer;
     private IControlGroup? grpInstructions;
     private IControlGroup? grpRectState;
@@ -52,7 +47,7 @@ public class LayeredRectRenderingScene : SceneBase
     public LayeredRectRenderingScene()
     {
         this.keyboard = HardwareFactory.GetKeyboard();
-        this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -63,11 +58,8 @@ public class LayeredRectRenderingScene : SceneBase
             return;
         }
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-
-        this.background = this.contentManager.Load<ITexture>("layered-rendering-background");
-        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         var textLines = new[]
         {
@@ -161,8 +153,7 @@ public class LayeredRectRenderingScene : SceneBase
         this.shapeRenderer.Render(this.orangeRect, (int)OrangeLayer);
         this.shapeRenderer.Render(this.whiteRect, (int)this.whiteLayer);
 
-        // Render the checkerboard background
-        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        this.backgroundManager.Render();
 
         this.grpInstructions.Render();
         this.grpRectState.Render();
@@ -178,7 +169,7 @@ public class LayeredRectRenderingScene : SceneBase
             return;
         }
 
-        this.contentManager.Unload(this.background);
+        this.backgroundManager.Unload();
         this.grpInstructions.Dispose();
         this.grpRectState.Dispose();
         this.grpInstructions = null;

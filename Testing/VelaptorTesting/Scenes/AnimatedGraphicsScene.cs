@@ -4,7 +4,6 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System;
 using System.Drawing;
 using System.Numerics;
 using KdGui;
@@ -120,11 +119,6 @@ public class AnimatedGraphicsScene : SceneBase
         if (!IsLoaded || IsDisposed)
         {
             return;
-        }
-
-        if (this.mainAtlas is null)
-        {
-            throw new Exception("The main atlas texture cannot be null");
         }
 
         this.contentManager.Unload(this.mainAtlas);

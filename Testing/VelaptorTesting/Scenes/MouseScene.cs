@@ -19,11 +19,16 @@ using Velaptor.Scene;
 /// </summary>
 public class MouseScene : SceneBase
 {
+    private readonly BackgroundManager backgroundManager;
     private IAppInput<MouseState>? mouse;
     private IControlGroup? grpControls;
-    private BackgroundManager? backgroundManager;
     private MouseScrollDirection scrollDirection;
     private string? mouseStateLabelName;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseScene"/> class.
+    /// </summary>
+    public MouseScene() => this.backgroundManager = new BackgroundManager();
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -33,7 +38,6 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.mouse = HardwareFactory.GetMouse();
@@ -85,7 +89,7 @@ public class MouseScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
         this.grpControls.Render();
 
         base.Render();
@@ -102,7 +106,7 @@ public class MouseScene : SceneBase
         this.scrollDirection = MouseScrollDirection.None;
         this.mouse = null;
 
-        this.backgroundManager?.Unload();
+        this.backgroundManager.Unload();
         this.grpControls.Dispose();
         this.grpControls = null;
 

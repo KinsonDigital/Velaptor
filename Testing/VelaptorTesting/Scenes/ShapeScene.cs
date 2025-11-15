@@ -42,6 +42,7 @@ public class ShapeScene : SceneBase
 
     private readonly IContentManager contentManager;
     private readonly IShapeRenderer shapeRenderer;
+    private readonly BackgroundManager backgroundManager;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
@@ -54,7 +55,6 @@ public class ShapeScene : SceneBase
     private IControlGroup? grpRectCtrls;
     private IControlGroup? grpRectClrGradCtrls;
     private IControlGroup? grpRectCornerRadiusCtrls;
-    private BackgroundManager? backgroundManager;
     private ShapeType shapeType;
     private string? sldCircleDiameterName;
     private string? cmbCircleSolidColorName;
@@ -75,13 +75,13 @@ public class ShapeScene : SceneBase
         this.ctrlFactory = new ControlFactory();
         this.contentManager = ContentManager.Create();
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.backgroundManager = new BackgroundManager();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
         this.shapeType = ShapeType.Circle;
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.rectangle = new RectShape
@@ -125,12 +125,8 @@ public class ShapeScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
-        this.backgroundManager?.Unload();
-
-        if (this.font is not null)
-        {
-            this.contentManager.Unload(this.font);
-        }
+        this.backgroundManager.Unload();
+        this.contentManager.Unload(this.font);
 
         base.UnloadContent();
     }
@@ -166,8 +162,7 @@ public class ShapeScene : SceneBase
                     typeof(ShapeType));
         }
 
-        this.backgroundManager?.Render();
-
+        this.backgroundManager.Render();
         this.grpCircleInstructions.Render();
         this.grpRectInstructions.Render();
         this.grpShapeType.Render();

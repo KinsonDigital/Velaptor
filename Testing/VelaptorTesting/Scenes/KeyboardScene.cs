@@ -20,14 +20,18 @@ using Velaptor.Scene;
 public class KeyboardScene : SceneBase
 {
     private readonly IAppInput<KeyboardState> keyboard;
-    private BackgroundManager? backgroundManager;
+    private readonly BackgroundManager backgroundManager;
     private IControlGroup? grpControls;
     private string? downKeysName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
     /// </summary>
-    public KeyboardScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public KeyboardScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.backgroundManager = new BackgroundManager();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
     public override void LoadContent()
@@ -37,7 +41,6 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         var ctrlFactory = new ControlFactory();
@@ -69,7 +72,7 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
+        this.backgroundManager.Unload();
         this.grpControls.Dispose();
         this.grpControls = null;
 
@@ -108,7 +111,7 @@ public class KeyboardScene : SceneBase
     /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render()
     {
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
 
         this.grpControls.Render();
         base.Render();

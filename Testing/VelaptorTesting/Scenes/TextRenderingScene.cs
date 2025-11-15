@@ -34,11 +34,11 @@ public class TextRenderingScene : SceneBase
         ($"{nameof(FontStyle.Bold)} & {nameof(FontStyle.Italic)}", $"{DefaultFontName}-{nameof(FontStyle.Bold)}{nameof(FontStyle.Italic)}.ttf"),
     ];
     private readonly IContentManager contentManager;
+    private readonly BackgroundManager backgroundManager;
     private IControlGroup? grpControls;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private string text = SingleLineText;
-    private BackgroundManager? backgroundManager;
     private float renderSize = 1;
     private float angle;
     private bool isBlue;
@@ -48,7 +48,11 @@ public class TextRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
     /// </summary>
-    public TextRenderingScene() => this.contentManager = ContentManager.Create();
+    public TextRenderingScene()
+    {
+        this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -58,7 +62,6 @@ public class TextRenderingScene : SceneBase
             return;
         }
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.fontRenderer = RendererFactory.CreateFontRenderer();
@@ -150,15 +153,8 @@ public class TextRenderingScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
-
-        if (this.textFont is null)
-        {
-            throw new Exception("The text font cannot be null");
-        }
-
+        this.backgroundManager.Unload();
         this.contentManager.Unload(this.textFont);
-
         this.grpControls.Dispose();
         this.grpControls = null;
 
@@ -177,7 +173,7 @@ public class TextRenderingScene : SceneBase
             this.isFirstRender = false;
         }
 
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
         this.fontRenderer.Render(
             this.textFont,
             this.text,
