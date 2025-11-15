@@ -8,7 +8,6 @@ using System;
 using System.IO.Abstractions;
 using System.Text.Json;
 using Exceptions;
-using ExtensionMethods;
 
 /// <inheritdoc/>
 internal sealed class AppSettingsService : IAppSettingsService

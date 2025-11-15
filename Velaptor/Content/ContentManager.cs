@@ -110,12 +110,17 @@ public sealed class ContentManager : IContentManager
     }
 
     /// <inheritdoc />
-    public void Unload<T>(T item)
+    public void Unload<T>(T? item)
         where T : IContent
     {
         if (loaderFactory is null)
         {
             throw new InvalidOperationException("The content loader factory has not been initialized.");
+        }
+
+        if (item is null)
+        {
+            return;
         }
 
         switch (typeof(T))

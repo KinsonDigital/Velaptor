@@ -130,7 +130,11 @@ public interface IContentManager
     ///         <see cref="IAtlasData"/>
     ///     </item>
     /// </list>
+    ///
+    /// <para>
+    /// NOTE: Null items will simply be ignored.
+    /// </para>
     /// </remarks>
-    void Unload<T>(T item)
+    void Unload<T>(T? item)
         where T : IContent;
 }
