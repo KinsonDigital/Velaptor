@@ -309,36 +309,6 @@ public class AtlasDataTests
         // Assert
         actual.ShouldBe(AtlasDataFilePath);
     }
-
-    [Fact]
-    public void Width_WhenGettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        this.mockTexture.Width.Returns(123u);
-
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.Width;
-
-        // Assert
-        actual.ShouldBe(123u);
-    }
-
-    [Fact]
-    public void Height_WhenGettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        this.mockTexture.Height.Returns(123u);
-
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.Height;
-
-        // Assert
-        actual.ShouldBe(123u);
-    }
     #endregion
 
     #region Method Tests

@@ -116,12 +116,6 @@ public sealed class AtlasData : IAtlasData
     public ITexture Texture { get; }
 
     /// <inheritdoc/>
-    public uint Width => Texture.Width;
-
-    /// <inheritdoc/>
-    public uint Height => Texture.Height;
-
-    /// <inheritdoc/>
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
     /// <inheritdoc/>
