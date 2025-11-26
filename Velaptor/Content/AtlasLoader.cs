@@ -159,7 +159,6 @@ internal sealed class AtlasLoader : IAtlasLoader
             }
         }
 
-        // var atlasDataFilePath = $"{contentDirPath}{this.path.AltDirectorySeparatorChar}{name}{AtlasDataExtension}";
         var atlasDataFilePath = this.path.Combine(contentDirPath, name + AtlasDataExtension);
 
         if (!this.file.Exists(atlasDataFilePath))
@@ -170,7 +169,6 @@ internal sealed class AtlasLoader : IAtlasLoader
             throw new FileNotFoundException(exceptionMsg, atlasDataFilePath);
         }
 
-        // var atlasImageFilePath = $"{contentDirPath}{this.path.AltDirectorySeparatorChar}{name}{TextureExtension}";
         var atlasImageFilePath = this.path.Combine(contentDirPath, name + TextureExtension);
 
         if (!this.file.Exists(atlasImageFilePath))
