@@ -10,7 +10,7 @@ namespace Velaptor.Content;
 internal interface IAtlasLoader : IUnloader<IAtlasData>
 {
     /// <summary>
-    /// Gets the total number of cached textures.
+    /// Gets the total number of cached atlas data items.
     /// </summary>
     int TotalCachedItems { get; }
 
