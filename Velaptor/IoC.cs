@@ -258,6 +258,7 @@ internal static class IoC
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
+        IoCContainer.Register<IPathResolverFactory, PathResolverFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -289,7 +290,7 @@ internal static class IoC
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
                 IoCContainer.GetInstance<IFreeTypeService>(),
-                PathResolverFactory.CreateFontPathResolver(),
+                IoCContainer.GetInstance<IPathResolverFactory>().CreateFontPathResolver(),
                 IoCContainer.GetInstance<IDirectory>(),
                 IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 

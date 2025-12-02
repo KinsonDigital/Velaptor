@@ -73,7 +73,8 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
             return atlasLoader;
         }
 
-        var pathResolver = PathResolverFactory.CreateAtlasPathResolver();
+        var pathResolverFactory = IoC.Container.GetInstance<IPathResolverFactory>();
+        var pathResolver = pathResolverFactory.CreateAtlasPathResolver();
 
         return CreateAtlasLoader(pathResolver);
     }
@@ -110,23 +111,6 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
     }
 
     /// <inheritdoc />
-    public IAudioLoader CreateAudioLoader()
-    {
-        if (audioLoader is not null)
-        {
-            return audioLoader;
-        }
-
-        var appService = IoC.Container.GetInstance<IAppService>();
-        var file = IoC.Container.GetInstance<IFile>();
-        var path = IoC.Container.GetInstance<IPath>();
-        var platform = IoC.Container.GetInstance<IPlatform>();
-        var pathResolver = new AudioPathResolver(appService, file, path, platform);
-
-        return CreateAudioLoader(pathResolver);
-    }
-
-    /// <inheritdoc />
     public IAudioLoader CreateAudioLoader(IContentPathResolver pathResolver)
     {
         if (audioLoader is not null)
@@ -152,6 +136,23 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
     }
 
     /// <inheritdoc />
+    public IAudioLoader CreateAudioLoader()
+    {
+        if (audioLoader is not null)
+        {
+            return audioLoader;
+        }
+
+        var appService = IoC.Container.GetInstance<IAppService>();
+        var file = IoC.Container.GetInstance<IFile>();
+        var path = IoC.Container.GetInstance<IPath>();
+        var platform = IoC.Container.GetInstance<IPlatform>();
+        var pathResolver = new AudioPathResolver(appService, file, path, platform);
+
+        return CreateAudioLoader(pathResolver);
+    }
+
+    /// <inheritdoc />
     public IFontLoader CreateFontLoader()
     {
         if (fontLoader is not null)
@@ -159,7 +160,8 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
             return fontLoader;
         }
 
-        var pathResolver = PathResolverFactory.CreateFontPathResolver();
+        var pathResolverFactory = IoC.Container.GetInstance<IPathResolverFactory>();
+        var pathResolver = pathResolverFactory.CreateFontPathResolver();
 
         return CreateFontLoader(pathResolver);
     }
