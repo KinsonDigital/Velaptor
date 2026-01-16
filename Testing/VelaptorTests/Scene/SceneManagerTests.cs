@@ -709,6 +709,7 @@ public class SceneManagerTests
         // Act
         var act = () => sut.LoadContent();
 
+        act.ShouldNotThrow();
     }
 
     [Fact]

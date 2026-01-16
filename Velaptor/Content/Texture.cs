@@ -60,7 +60,7 @@ public sealed class Texture : ITexture
     /// <summary>
     /// Finalizes an instance of the <see cref="Texture"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
     ~Texture()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

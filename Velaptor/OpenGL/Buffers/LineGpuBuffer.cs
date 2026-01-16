@@ -19,7 +19,6 @@ using NativeInterop.Services;
 /// <summary>
 /// Updates data in the line GPU buffer.
 /// </summary>
-[GpuBufferName("Line")]
 internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
 {
     private const string BufferNotInitMsg = "The line buffer has not been initialized.";
@@ -60,6 +59,11 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
             },
             () => this.unsubscriber?.Dispose());
     }
+
+    /// <summary>
+    /// Gets the human-friendly buffer type name used for debug labeling.
+    /// </summary>
+    protected override string BufferType => "Line";
 
     /// <inheritdoc/>
     protected internal override void UploadVertexData(LineBatchItem lineData, uint batchIndex)

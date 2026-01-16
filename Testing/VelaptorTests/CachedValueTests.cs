@@ -3,6 +3,7 @@
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests;
 
 using System;

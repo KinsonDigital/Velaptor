@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 /// <inheritdoc/>
 internal sealed class TimerService : ITimerService
 {
-    private const int SAMPLE_SIZE = 1000;
+    private const int SampleSize = 1000;
     private readonly IStopWatchWrapper stopWatch;
-    private readonly double[] timeSamples = new double[SAMPLE_SIZE];
+    private readonly double[] timeSamples = new double[SampleSize];
     private readonly double tickFreqMs;
     private double runningSum;
     private long startTicks;
@@ -45,12 +45,12 @@ internal sealed class TimerService : ITimerService
         var sample = (this.stopTicks - this.startTicks) * this.tickFreqMs;
         AddSample(sample);
 
-        // Set the divisor to avoid division by zero and to divide by the correct number of samples
+        // Set the divisor to avoid division by zero and to divide by the correct number of samples,
         // which is important for calculating the average
         this.divisor = this.index == 1 ? 1 : this.index;
 
-        // Calculate average using running sum
-        MillisecondsPassed = (float)(this.runningSum / (this.isArrayFull ? SAMPLE_SIZE : this.divisor));
+        // Calculate average using a running sum
+        MillisecondsPassed = (float)(this.runningSum / (this.isArrayFull ? SampleSize : this.divisor));
     }
 
     /// <inheritdoc/>
@@ -59,7 +59,7 @@ internal sealed class TimerService : ITimerService
         this.index = 0;
         this.runningSum = 0;
         this.isArrayFull = false;
-        Array.Clear(this.timeSamples, 0, SAMPLE_SIZE);
+        Array.Clear(this.timeSamples, 0, SampleSize);
         MillisecondsPassed = 0;
     }
 
@@ -70,12 +70,12 @@ internal sealed class TimerService : ITimerService
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddSample(double sample)
     {
-        // Subtract the old value from running sum before replacing it
+        // Subtract the old value from a running sum before replacing it
         this.runningSum -= this.timeSamples[this.index];
         this.runningSum += sample;
         this.timeSamples[this.index] = sample;
 
-        if (this.index == SAMPLE_SIZE - 1)
+        if (this.index == SampleSize - 1)
         {
             this.isArrayFull = true;
         }

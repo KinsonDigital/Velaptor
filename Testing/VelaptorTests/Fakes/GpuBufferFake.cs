@@ -17,7 +17,7 @@ using Velaptor.OpenGL.Buffers;
 internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GpuBufferFake"/> class for the purpose of testing.
+    /// Initializes a new instance of the <see cref="GpuBufferFake"/> class for testing.
     /// </summary>
     /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
     /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
@@ -60,12 +60,12 @@ internal sealed class GpuBufferFake : GpuBufferBase<TextureBatchItem>
     public bool UpdateVertexDataInvoked { get; private set; }
 
     /// <summary>
-    /// Gets the viewport size for the purpose of testing.
+    /// Gets the viewport size for testing.
     /// </summary>
     public new SizeU ViewPortSize => base.ViewPortSize;
 
     /// <summary>
-    /// Gets the batch size for the purpose of testing.
+    /// Gets the batch size for testing.
     /// </summary>
     public new uint BatchSize => base.BatchSize;
 

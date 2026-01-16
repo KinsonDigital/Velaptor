@@ -21,7 +21,6 @@ using Velaptor.Exceptions;
 /// <summary>
 /// Updates texture data in the GPU buffer.
 /// </summary>
-[GpuBufferName("Texture")]
 internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
 {
     private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
@@ -62,6 +61,11 @@ internal sealed class TextureGpuBuffer : GpuBufferBase<TextureBatchItem>
             },
             () => this.unsubscriber?.Dispose());
     }
+
+    /// <summary>
+    /// Gets the human-friendly buffer type name used for debug labeling.
+    /// </summary>
+    protected override string BufferType => "Texture";
 
     /// <inheritdoc/>
     protected internal override void UploadVertexData(TextureBatchItem textureQuad, uint batchIndex)

@@ -88,7 +88,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
     /// <summary>
     /// Finalizes an instance of the <see cref="TextureCache"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
     ~TextureCache()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

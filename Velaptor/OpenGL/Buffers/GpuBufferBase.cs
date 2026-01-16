@@ -68,14 +68,12 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
                 ViewPortSize = new SizeU(data.Width, data.Height);
             },
             () => this.portSizeUnsubscriber?.Dispose());
-
-        ProcessCustomAttributes();
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="GpuBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
     ~GpuBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -103,6 +101,11 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     protected internal string Name { get; private set; } = string.Empty;
 
     /// <summary>
+    /// Gets a value to hold the type of buffer which is used for OpenGL debugging for debug builds.
+    /// </summary>
+    protected virtual string BufferType => "UNKNOWN BUFFER";
+
+    /// <summary>
     /// Gets the size of the viewport.
     /// </summary>
     protected SizeU ViewPortSize { get; private set; }
@@ -113,7 +116,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected IGLInvoker GL { get; }
 
     /// <summary>
-    /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
+    /// Gets the OpenGL service that provides helper methods for OpenGL-related operations.
     /// </summary>
     private protected IOpenGLService OpenGLService { get; }
 
@@ -128,7 +131,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected uint VBO { get; private set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the buffer has been disposed.
+    /// Gets or sets a value indicating whether the buffer has been disposed of.
     /// </summary>
     private bool IsDisposed { get; set; }
 
@@ -230,6 +233,9 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// </summary>
     private void Init()
     {
+        // Ensure the buffer name is set from a derived type
+        Name = BufferType;
+
         // Generate the VAO and VBO with only 1 object each
         VAO = GL.GenVertexArray();
         OpenGLService.BindVAO(VAO);
@@ -254,48 +260,5 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         OpenGLService.UnbindVAO();
         OpenGLService.UnbindEBO();
         OpenGLService.EndGroup();
-    }
-
-    /// <summary>
-    /// Looks for and pulls settings out of various attributes to help set the state of the buffer.
-    /// </summary>
-    private void ProcessCustomAttributes()
-    {
-        Attribute[]? attributes = null;
-        var currentType = GetType();
-
-        if (currentType == typeof(TextureGpuBuffer))
-        {
-            attributes = Attribute.GetCustomAttributes(typeof(TextureGpuBuffer));
-        }
-        else if (currentType == typeof(FontGpuBuffer))
-        {
-            attributes = Attribute.GetCustomAttributes(typeof(FontGpuBuffer));
-        }
-        else if (currentType == typeof(ShapeGpuBuffer))
-        {
-            attributes = Attribute.GetCustomAttributes(typeof(ShapeGpuBuffer));
-        }
-        else if (currentType == typeof(LineGpuBuffer))
-        {
-            attributes = Attribute.GetCustomAttributes(typeof(LineGpuBuffer));
-        }
-        else
-        {
-            Name = "UNKNOWN BUFFER";
-        }
-
-        if (attributes is null || attributes.Length <= 0)
-        {
-            return;
-        }
-
-        foreach (var attribute in attributes)
-        {
-            if (attribute is GpuBufferNameAttribute nameAttribute)
-            {
-                Name = nameAttribute.Name;
-            }
-        }
     }
 }
