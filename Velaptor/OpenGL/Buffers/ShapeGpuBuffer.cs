@@ -23,7 +23,6 @@ using NativeInterop.Services;
 /// <summary>
 /// Updates data in the shape GPU buffer.
 /// </summary>
-[GpuBufferName("Shape")]
 [SuppressMessage("csharpsquid", "S101", Justification = "GPU is an acceptable acronym.")]
 internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
 {
@@ -65,6 +64,11 @@ internal sealed class ShapeGpuBuffer : GpuBufferBase<ShapeBatchItem>
             },
             () => this.unsubscriber?.Dispose());
     }
+
+    /// <summary>
+    /// Gets the human-friendly buffer type name used for debug labeling.
+    /// </summary>
+    protected override string BufferType => "Shape";
 
     /// <inheritdoc/>
     protected internal override void UploadVertexData(ShapeBatchItem shape, uint batchIndex)

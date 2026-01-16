@@ -178,26 +178,43 @@ internal sealed class OpenGLService : IOpenGLService
 
     /// <inheritdoc/>
     public void BeginGroup(string label)
-        =>
-            this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
-                100,
-                (uint)label.Length,
-                label);
+    {
+#if DEBUG || DEBUG_CONSOLE
+        this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
+            100,
+            (uint)label.Length,
+            label);
+#endif
+    }
 
     /// <inheritdoc/>
-    public void EndGroup() => this.glInvoker.PopDebugGroup();
+    public void EndGroup()
+    {
+#if DEBUG || DEBUG_CONSOLE
+        this.glInvoker.PopDebugGroup();
+#endif
+    }
 
     /// <inheritdoc/>
     public void LabelShader(uint shaderId, string label)
-        => this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+    {
+#if DEBUG || DEBUG_CONSOLE
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+#endif
+    }
 
     /// <inheritdoc/>
     public void LabelShaderProgram(uint shaderId, string label)
-        => this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+    {
+#if DEBUG || DEBUG_CONSOLE
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+#endif
+    }
 
     /// <inheritdoc/>
     public void LabelVertexArray(uint vertexArrayId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
@@ -205,11 +222,13 @@ internal sealed class OpenGLService : IOpenGLService
         var newLabel = $"{label} VAO";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
@@ -224,16 +243,19 @@ internal sealed class OpenGLService : IOpenGLService
         var newLabel = $"{label} {bufferTypeAcronym}";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelTexture(uint textureId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+#endif
     }
 
     /// <inheritdoc/>

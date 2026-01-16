@@ -9,6 +9,7 @@
 #pragma warning disable SA1129
 #pragma warning disable SA1124
 #pragma warning disable SA1514
+#pragma warning disable SA1515
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 namespace KeyboardPerf;
 
@@ -144,7 +145,7 @@ public class KeyboardBenchmarks
     {
         var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-        // NOTE: This is used for worse case scenario for checking if a single key is in the down position
+        // NOTE: This is used for a worse case scenario for checking if a single key is in the down position
         var midIndex = keys.Length / 2;
 
         for (var i = 0; i < keys.Length; i++)
