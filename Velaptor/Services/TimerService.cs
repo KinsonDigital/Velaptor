@@ -1,4 +1,4 @@
-// <copyright file="TimerService.cs" company="KinsonDigital">
+﻿// <copyright file="TimerService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -45,11 +45,11 @@ internal sealed class TimerService : ITimerService
         var sample = (this.stopTicks - this.startTicks) * this.tickFreqMs;
         AddSample(sample);
 
-        // Set the divisor to avoid division by zero and to divide by the correct number of samples
+        // Set the divisor to avoid division by zero and to divide by the correct number of samples,
         // which is important for calculating the average
         this.divisor = this.index == 1 ? 1 : this.index;
 
-        // Calculate average using running sum
+        // Calculate average using a running sum
         MillisecondsPassed = (float)(this.runningSum / (this.isArrayFull ? SampleSize : this.divisor));
     }
 
@@ -70,7 +70,7 @@ internal sealed class TimerService : ITimerService
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddSample(double sample)
     {
-        // Subtract the old value from running sum before replacing it
+        // Subtract the old value from a running sum before replacing it
         this.runningSum -= this.timeSamples[this.index];
         this.runningSum += sample;
         this.timeSamples[this.index] = sample;

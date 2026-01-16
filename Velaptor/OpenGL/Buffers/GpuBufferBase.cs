@@ -73,7 +73,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// <summary>
     /// Finalizes an instance of the <see cref="GpuBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Deconstructors cannot be unit tested.")]
     ~GpuBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
@@ -116,7 +116,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected IGLInvoker GL { get; }
 
     /// <summary>
-    /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
+    /// Gets the OpenGL service that provides helper methods for OpenGL-related operations.
     /// </summary>
     private protected IOpenGLService OpenGLService { get; }
 
@@ -131,7 +131,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected uint VBO { get; private set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the buffer has been disposed.
+    /// Gets or sets a value indicating whether the buffer has been disposed of.
     /// </summary>
     private bool IsDisposed { get; set; }
 
