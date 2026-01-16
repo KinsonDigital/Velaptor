@@ -470,7 +470,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void DebugMessageCallback<T0>(DebugProc callback, in T0 userParam)
         where T0 : unmanaged
-        => this.gl.DebugMessageCallback(callback, userParam);
+        => this.gl.DebugMessageCallback(callback, in userParam);
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
