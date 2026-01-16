@@ -1,4 +1,4 @@
-﻿// <copyright file="GpuBufferFake.cs" company="KinsonDigital">
+// <copyright file="GpuBufferFake.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
