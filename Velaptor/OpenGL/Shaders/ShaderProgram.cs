@@ -68,7 +68,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <summary>
     /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "De-constructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
     ~ShaderProgram()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)

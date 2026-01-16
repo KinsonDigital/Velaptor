@@ -73,7 +73,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     /// <summary>
     /// Finalizes an instance of the <see cref="GpuBufferBase{TData}"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Deconstructors cannot be unit tested.")]
+    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
     ~GpuBufferBase()
     {
         if (UnitTestDetector.IsRunningFromUnitTest)
