@@ -18,7 +18,7 @@ jobs:
     name: Run Unit Tests Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
