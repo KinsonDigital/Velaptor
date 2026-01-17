@@ -22,6 +22,8 @@ using Velaptor.Services;
 /// </summary>
 public class OpenGLServiceTests
 {
+    private const int ApiIdRecompileFragmentShader = 2;
+    private const int ApiIdRecompileVertexShader = 131218;
     private readonly IGLInvoker mockGLInvoker;
     private readonly IDotnetService mockDotnetService;
     private readonly ILoggingService mockLoggingService;
@@ -87,7 +89,7 @@ public class OpenGLServiceTests
     public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindVBO(123u);
@@ -104,7 +106,7 @@ public class OpenGLServiceTests
     public void IsEBOBound_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindEBO(123u);
@@ -121,7 +123,7 @@ public class OpenGLServiceTests
     public void IsVAOBound_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindVAO(123u);
@@ -140,7 +142,7 @@ public class OpenGLServiceTests
     public void GetViewPortSize_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var actual = service.GetViewPortSize();
@@ -153,7 +155,7 @@ public class OpenGLServiceTests
     public void SetViewPortSize_WhenInvoked_SetsViewPort()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.SetViewPortSize(new Size(55, 66));
@@ -166,7 +168,7 @@ public class OpenGLServiceTests
     public void GetViewPortPosition_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var actual = service.GetViewPortPosition();
@@ -179,7 +181,7 @@ public class OpenGLServiceTests
     public void BindVBO_WhenInvoked_BindsVertexBufferObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindVBO(123u);
@@ -192,7 +194,7 @@ public class OpenGLServiceTests
     public void UnbindVBO_WhenInvoked_UnbindsVertexBufferObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.UnbindVBO();
@@ -205,7 +207,7 @@ public class OpenGLServiceTests
     public void BindEBO_WhenInvoked_BindsElementBufferObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindEBO(123u);
@@ -218,7 +220,7 @@ public class OpenGLServiceTests
     public void UnbindEBO_WithBoundVAO_ThrowsException()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
         service.BindVAO(123u);
 
         // Act
@@ -233,7 +235,7 @@ public class OpenGLServiceTests
     public void UnbindEBO_WhenInvoked_UnbindsElementBufferObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.UnbindEBO();
@@ -246,7 +248,7 @@ public class OpenGLServiceTests
     public void BindVAO_WhenInvoked_BindsVertexArrayObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindVAO(123u);
@@ -259,7 +261,7 @@ public class OpenGLServiceTests
     public void UnbindVAO_WhenInvoked_UnbindsVertexArrayObject()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.UnbindVAO();
@@ -272,7 +274,7 @@ public class OpenGLServiceTests
     public void BindTexture2D_WhenInvoked_BindsTexture()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BindTexture2D(123u);
@@ -285,7 +287,7 @@ public class OpenGLServiceTests
     public void UnbindTexture2D_WhenInvoked_UnbindsTexture()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.UnbindTexture2D();
@@ -302,7 +304,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         this.mockGLInvoker.GetProgram(123, GLProgramParameterName.LinkStatus).Returns(linkStatus);
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var actual = service.ProgramLinkedSuccessfully(123);
@@ -319,7 +321,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         this.mockGLInvoker.GetShader(123, GLShaderParameter.CompileStatus).Returns(compileStatus);
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var actual = service.ShaderCompiledSuccessfully(123);
@@ -333,7 +335,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         const string label = "test-label";
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.BeginGroup(label);
@@ -346,7 +348,7 @@ public class OpenGLServiceTests
     public void EndGroup_WhenInvoked_EndsDebugGroup()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.EndGroup();
@@ -360,7 +362,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         const string label = "test-label";
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.LabelShader(123, label);
@@ -374,7 +376,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         const string label = "test-label";
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.LabelShaderProgram(123, label);
@@ -390,7 +392,7 @@ public class OpenGLServiceTests
     public void LabelVertexArray_WhenInvoked_LabelsVertexArray(string? label, string expected)
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.LabelVertexArray(123, label);
@@ -407,7 +409,7 @@ public class OpenGLServiceTests
         var expected = $"The value of argument 'bufferType' ({invalidValue}) is invalid for Enum type " +
                        $"'{nameof(OpenGLBufferType)}'. (Parameter 'bufferType')";
 
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         var act = () => service.LabelBuffer(default, default, (OpenGLBufferType)invalidValue);
@@ -428,7 +430,7 @@ public class OpenGLServiceTests
     {
         // Arrange
         var bufferType = (OpenGLBufferType)bufferTypeNumericalValue;
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.LabelBuffer(123, label, bufferType);
@@ -444,7 +446,7 @@ public class OpenGLServiceTests
     public void LabelTexture_WhenInvoked_LabelsTexture(string? label, string expected)
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.LabelTexture(123, label);
@@ -457,7 +459,7 @@ public class OpenGLServiceTests
     public void SetupErrorCallback_WhenInvokedTheFirstTime_InvokesIDotnetServiceAndIGLInvokerMethods()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.SetupErrorCallback();
@@ -472,7 +474,7 @@ public class OpenGLServiceTests
     public void SetupErrorCallback_WhenInvokedTheSecondTime_DoesNotPerformAnyAction()
     {
         // Arrange
-        var service = CreateService();
+        var service = CreateSystemUnderTest();
 
         // Act
         service.SetupErrorCallback();
@@ -508,7 +510,7 @@ public class OpenGLServiceTests
             10, 11, 12, 9, // Pixel 1,0
             14, 15, 16, 13, // Pixel 1,1
         };
-        var sut = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
         var actual = sut.ToOpenGLBytes(pixels);
@@ -518,9 +520,188 @@ public class OpenGLServiceTests
     }
     #endregion
 
+    #region Indirect Tests
+    [Theory]
+    [InlineData(ApiIdRecompileFragmentShader)]
+    [InlineData(ApiIdRecompileVertexShader)]
+    public void DebugCallback_WhenInvokedCompilationWarnings_DoNotLogError(int shaderId)
+    {
+        // Arrange
+        DebugProc? debugProc = null;
+        var glErrorEventExecuted = false;
+
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(123)).Returns("test-message");
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(456)).Returns("user-param");
+        this.mockGLInvoker
+            .When(x => x.DebugMessageCallback(Arg.Any<DebugProc>(), Arg.Any<nint>()))
+            .Do((callInfo) =>
+            {
+                debugProc = callInfo.Arg<DebugProc>();
+
+                if (debugProc is null)
+                {
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                }
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.GLError += (_, _) => glErrorEventExecuted = true;
+
+        sut.SetupErrorCallback();
+
+        // Act
+        debugProc(
+            GLEnum.ActiveProgram,
+            GLEnum.ActiveTexture,
+            shaderId,
+            GLEnum.NoError,
+            20,
+            new IntPtr(123),
+            new IntPtr(456));
+
+        // Assert
+        this.mockLoggingService.DidNotReceive().Warning(Arg.Any<string?>());
+        this.mockLoggingService.DidNotReceive().Error(Arg.Any<string?>());
+        glErrorEventExecuted.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void DebugCallback_WhenInvokedWithNoError_LogsDebugMessage()
+    {
+        // Arrange
+        DebugProc? debugProc = null;
+        var expectedMsg = "test-message";
+        expectedMsg += $"{Environment.NewLine}\tSrc: ActiveProgram";
+        expectedMsg += $"{Environment.NewLine}\tType: ActiveTexture";
+        expectedMsg += $"{Environment.NewLine}\tID: 10";
+        expectedMsg += $"{Environment.NewLine}\tSeverity: NoError";
+        expectedMsg += $"{Environment.NewLine}\tLength: 20";
+        expectedMsg += $"{Environment.NewLine}\tUser Param: user-param";
+
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(123)).Returns("test-message");
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(456)).Returns("user-param");
+        this.mockGLInvoker
+            .When(x => x.DebugMessageCallback(Arg.Any<DebugProc>(), Arg.Any<nint>()))
+            .Do((callInfo) =>
+            {
+                debugProc = callInfo.Arg<DebugProc>();
+
+                if (debugProc is null)
+                {
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                }
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.SetupErrorCallback();
+
+        // Act
+        debugProc(
+            GLEnum.ActiveProgram,
+            GLEnum.ActiveTexture,
+            10,
+            GLEnum.NoError,
+            20,
+            new IntPtr(123),
+            new IntPtr(456));
+
+        // Assert
+        this.mockLoggingService.Received(1).Warning(expectedMsg);
+    }
+
+    [Fact]
+    public void DebugCallback_WhenInvokedWithErrorNotification_LogsDebugMessage()
+    {
+        // Arrange
+        DebugProc? debugProc = null;
+        var glErrorEventExecuted = false;
+
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(123)).Returns("test-message");
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(456)).Returns("user-param");
+        this.mockGLInvoker
+            .When(x => x.DebugMessageCallback(Arg.Any<DebugProc>(), Arg.Any<nint>()))
+            .Do((callInfo) =>
+            {
+                debugProc = callInfo.Arg<DebugProc>();
+
+                if (debugProc is null)
+                {
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                }
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.GLError += (_, _) => glErrorEventExecuted = true;
+
+        sut.SetupErrorCallback();
+
+        // Act
+        debugProc(
+            GLEnum.ActiveProgram,
+            GLEnum.ActiveTexture,
+            10,
+            GLEnum.DebugSeverityNotification,
+            20,
+            new IntPtr(123),
+            new IntPtr(456));
+
+        // Assert
+        this.mockLoggingService.DidNotReceive().Warning(Arg.Any<string?>());
+        glErrorEventExecuted.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void DebugCallback_WhenInvokedWithError_LogsDebugMessage()
+    {
+        // Arrange
+        DebugProc? debugProc = null;
+        var glErrorEventExecuted = false;
+        var expectedMsg = "test-message";
+        expectedMsg += $"{Environment.NewLine}\tSrc: ActiveProgram";
+        expectedMsg += $"{Environment.NewLine}\tType: ActiveTexture";
+        expectedMsg += $"{Environment.NewLine}\tID: 10";
+        expectedMsg += $"{Environment.NewLine}\tSeverity: DebugTypeError";
+        expectedMsg += $"{Environment.NewLine}\tLength: 20";
+        expectedMsg += $"{Environment.NewLine}\tUser Param: user-param";
+
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(123)).Returns("test-message");
+        this.mockDotnetService.MarshalPtrToStringAnsi(new IntPtr(456)).Returns("user-param");
+        this.mockGLInvoker
+            .When(x => x.DebugMessageCallback(Arg.Any<DebugProc>(), Arg.Any<nint>()))
+            .Do((callInfo) =>
+            {
+                debugProc = callInfo.Arg<DebugProc>();
+
+                if (debugProc is null)
+                {
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                }
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.GLError += (_, _) => glErrorEventExecuted = true;
+
+        sut.SetupErrorCallback();
+
+        // Act
+        debugProc(
+            GLEnum.ActiveProgram,
+            GLEnum.ActiveTexture,
+            10,
+            GLEnum.DebugTypeError,
+            20,
+            new IntPtr(123),
+            new IntPtr(456));
+
+        // Assert
+        this.mockLoggingService.Received(1).Error(expectedMsg);
+        glErrorEventExecuted.ShouldBeTrue();
+    }
+    #endregion
+
     /// <summary>
     /// Creates a new instance of <see cref="OpenGLService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private OpenGLService CreateService() => new (this.mockGLInvoker, this.mockDotnetService, this.mockLoggingService);
+    private OpenGLService CreateSystemUnderTest() => new (this.mockGLInvoker, this.mockDotnetService, this.mockLoggingService);
 }

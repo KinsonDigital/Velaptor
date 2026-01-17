@@ -14,7 +14,6 @@ using Avalonia.Threading;
 using Silk.NET.OpenGL;
 using Velaptor.Batching;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -65,9 +64,9 @@ public class OpenGLControl : OpenGlControlBase
 
         this.batcher = RendererFactory.CreateBatcher();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        var contentLoader = ContentLoaderFactory.CreateTextureLoader();
+        var contentManager = ContentManager.Create();
 
-        this.texture = contentLoader.Load("velaptor-logo");
+        this.texture = contentManager.Load<ITexture>("velaptor-logo");
         this.batcher.ClearColor = Color.FromArgb(255, 34, 34, 34);
 
         this.isInitialized = true;

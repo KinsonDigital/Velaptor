@@ -10,25 +10,18 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using Caching;
-using Exceptions;
 using ExtensionMethods;
 using Graphics;
 using NativeInterop.Services;
 using Services;
-using Velaptor.Services;
 
-/// <summary>
-/// Represents a font with a set size and style that can be used to render text to the screen.
-/// </summary>
+/// <inheritdoc cref="IFont"/>
 public sealed class Font : IFont
 {
     private const char InvalidCharacter = '□';
     private readonly IFreeTypeService freeTypeService;
     private readonly IFontStatsService fontStatsService;
-    private readonly IFontAtlasService fontAtlasService;
-    private readonly IItemCache<string, ITexture> textureCache;
-    private readonly Dictionary<string, SizeF> textSizeCache = new ();
+    private readonly Dictionary<string, SizeF> textSizeCache = [];
     private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
@@ -38,10 +31,8 @@ public sealed class Font : IFont
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
         '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' '
     ];
-    private readonly bool fontInitialized;
-    private GlyphMetrics[] metrics;
+    private readonly GlyphMetrics[] metrics;
     private FontStats[]? fontStats;
-    private FontStyle fontStyle;
     private uint size;
 
     /// <summary>
@@ -50,8 +41,6 @@ public sealed class Font : IFont
     /// <param name="texture">The font atlas texture that contains bitmap data for all the available glyphs.</param>
     /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
     /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
-    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
-    /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
     /// <param name="name">The name of the font content.</param>
     /// <param name="fontFilePath">The path to the font content.</param>
     /// <param name="size">The size to set the font.</param>
@@ -61,8 +50,6 @@ public sealed class Font : IFont
         ITexture texture,
         IFreeTypeService freeTypeService,
         IFontStatsService fontStatsService,
-        IFontAtlasService fontAtlasService,
-        IItemCache<string, ITexture> textureCache,
         string name,
         string fontFilePath,
         uint size,
@@ -72,20 +59,17 @@ public sealed class Font : IFont
         ArgumentNullException.ThrowIfNull(texture);
         ArgumentNullException.ThrowIfNull(freeTypeService);
         ArgumentNullException.ThrowIfNull(fontStatsService);
-        ArgumentNullException.ThrowIfNull(fontAtlasService);
-        ArgumentNullException.ThrowIfNull(textureCache);
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         Atlas = texture;
         this.freeTypeService = freeTypeService;
         this.fontStatsService = fontStatsService;
-        this.fontAtlasService = fontAtlasService;
-        this.textureCache = textureCache;
 
         this.metrics = glyphMetrics;
         this.invalidGlyph = Array.Find(glyphMetrics, m => m.Glyph == InvalidCharacter);
 
         this.facePtr = this.freeTypeService.CreateFontFace(fontFilePath);
+        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, size);
 
         this.size = size;
         Name = name;
@@ -97,9 +81,6 @@ public sealed class Font : IFont
         GetFontStatData();
 
         HasKerning = this.freeTypeService.HasKerning(this.facePtr);
-        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
-
-        this.fontInitialized = true;
     }
 
     /// <inheritdoc/>
@@ -108,46 +89,27 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public FontSource Source => this.fontStats?.Length <= 0
         ? FontSource.Unknown
-        : (from s in this.fontStats where s.Style == this.fontStyle select s.Source).FirstOrDefault();
+        : (from s in this.fontStats where s.Style == Style select s.Source).FirstOrDefault();
 
     /// <inheritdoc/>
     public string FilePath { get; }
 
     /// <inheritdoc/>
-    public ITexture Atlas { get; private set; }
+    public ITexture Atlas { get; }
 
     /// <inheritdoc/>
     /// <remarks>The size of the font has a max size of 100.</remarks>
     public uint Size
     {
         get => this.size;
-        set
-        {
-            this.size = value > 100 ? 100 : value;
-
-            if (this.fontInitialized && this.size > 0u)
-            {
-                RebuildAtlasTexture();
-            }
-
-            // Clear the entire size cache since the size has changed
-            this.textSizeCache.Clear();
-        }
+        internal set => this.size = value > 100 ? 100 : value;
     }
 
     /// <inheritdoc/>
     public FontStyle Style
     {
-        get => this.fontStyle;
-        set
-        {
-            this.fontStyle = value;
-
-            if (this.fontInitialized)
-            {
-                RebuildAtlasTexture();
-            }
-        }
+        get;
+        internal set;
     }
 
     /// <inheritdoc/>
@@ -166,13 +128,16 @@ public sealed class Font : IFont
     public bool HasKerning { get; }
 
     /// <inheritdoc/>
-    public float LineSpacing { get; private set; }
+    public float LineSpacing { get; }
 
     /// <inheritdoc/>
     public bool CacheEnabled { get; set; } = true;
 
     /// <inheritdoc/>
-    public int MaxCacheSize { get; set; } = 1000;
+    public int MaxMeasureCacheSize { get; set; } = 1000;
+
+    /// <inheritdoc/>
+    public int CurrentMeasureCacheSize => this.textSizeCache.Count;
 
     /// <inheritdoc/>
     public IReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.AsReadOnly();
@@ -259,7 +224,7 @@ public sealed class Font : IFont
     {
         if (string.IsNullOrEmpty(text))
         {
-            return Array.Empty<(char, RectangleF)>();
+            return [];
         }
 
         var textMetrics = ToGlyphMetrics(text);
@@ -310,7 +275,8 @@ public sealed class Font : IFont
     ///     The bounds include the width, height, and position of the character relative to
     ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
     /// </remarks>
-    public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos) => GetCharacterBounds(text.ToString(), textPos);
+    public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(StringBuilder text, Vector2 textPos)
+        => GetCharacterBounds(text.ToString(), textPos);
 
     /// <summary>
     /// Adds the given text and size to the cache.
@@ -324,7 +290,7 @@ public sealed class Font : IFont
             return;
         }
 
-        if (this.textSizeCache.Count <= MaxCacheSize)
+        if (this.textSizeCache.Count <= MaxMeasureCacheSize)
         {
             return;
         }
@@ -341,15 +307,6 @@ public sealed class Font : IFont
         // First collect all the data from the content directory
         this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
 
-        bool AllStylesFound()
-        {
-            const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
-
-            return this.fontStats.Length == 4 && Array.TrueForAll(
-                this.fontStats,
-                d => d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
-        }
-
         // If all four styles have been found and finished
         if (AllStylesFound())
         {
@@ -359,37 +316,16 @@ public sealed class Font : IFont
         var newList = new List<FontStats>();
         newList.AddRange(this.fontStats);
         this.fontStats = newList.ToArray();
-    }
+        return;
 
-    /// <summary>
-    /// Rebuilds the font atlas texture and glyph metrics.
-    /// </summary>
-    /// <exception cref="FontException">Thrown if the current style that is being attempted does not exist.</exception>
-    private void RebuildAtlasTexture()
-    {
-        var fontFilePath = string.Empty;
-
-        foreach (var fontStat in this.fontStats ?? [])
+        bool AllStylesFound()
         {
-            if (fontStat.Style == this.fontStyle)
-            {
-                fontFilePath = fontStat.FontFilePath;
-            }
+            const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
+
+            return this.fontStats.Length == 4 && Array.TrueForAll(
+                this.fontStats,
+                d => d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
         }
-
-        if (string.IsNullOrEmpty(fontFilePath))
-        {
-            throw new FontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
-        }
-
-        var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
-        Atlas = this.textureCache.GetItem(filePathWithMetaData);
-
-        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fontFilePath, Size);
-
-        LineSpacing = this.freeTypeService.GetFontScaledLineSpacing(this.facePtr, Size);
-
-        this.metrics = glyphMetrics;
     }
 
     /// <summary>

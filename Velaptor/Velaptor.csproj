@@ -7,7 +7,7 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.43</Version>
+    <Version>1.0.0-preview.44</Version>
 
     <!--Update this for production and preview releases-->
     <FileVersion>1.0.0-preview.43</FileVersion>
@@ -53,6 +53,7 @@
     <InternalsVisibleTo Include="MeasureTextPerf" />
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
+    <InternalsVisibleTo Include="VelaptorAseprite" />
   </ItemGroup>
 
   <ItemGroup>

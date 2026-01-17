@@ -5,61 +5,99 @@
 namespace Velaptor.Content;
 
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using Caching;
-using Exceptions;
+using Carbonate;
+using Carbonate.OneWay;
+using Factories;
+using Velaptor.Factories;
+using ReactableData;
+using Services;
 
 /// <summary>
 /// Loads textures.
 /// </summary>
-internal sealed class TextureLoader : ILoader<ITexture>
+internal sealed class TextureLoader : ITextureLoader
 {
-    private readonly IItemCache<string, ITexture> textureCache;
+    private readonly IImageService imageService;
+    private readonly ConcurrentDictionary<string, ITexture> textureCache = new ();
+    private readonly IPushReactable<DisposeTextureData> disposeReactable;
+    private readonly IDisposable unsubscriber;
+    private readonly ITextureFactory textureFactory;
     private readonly IContentPathResolver texturePathResolver;
+    private readonly IPath path;
     private readonly IDirectory directory;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
     /// </summary>
-    /// <param name="textureCache">Caches textures for later use to improve performance.</param>
+    /// <param name="textureFactory">Creates textures.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="imageService">Provides image related services.</param>
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     /// <param name="directory">Performs operations with directories.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
     /// </exception>
     public TextureLoader(
-        IItemCache<string, ITexture> textureCache,
+        ITextureFactory textureFactory,
+        IReactableFactory reactableFactory,
+        IImageService imageService,
         IContentPathResolver texturePathResolver,
-        IDirectory directory)
+        IDirectory directory,
+        IPath path)
     {
-        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(textureFactory);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(imageService);
         ArgumentNullException.ThrowIfNull(texturePathResolver);
         ArgumentNullException.ThrowIfNull(directory);
+        ArgumentNullException.ThrowIfNull(path);
 
-        this.textureCache = textureCache;
+        this.imageService = imageService;
+        this.textureFactory = textureFactory;
         this.texturePathResolver = texturePathResolver;
+        this.path = path;
         this.directory = directory;
+
+        this.disposeReactable = reactableFactory.CreateDisposeTextureReactable();
+        var shutDownReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.unsubscriber = shutDownReactable.CreateNonReceiveOrRespond(
+            PushNotifications.SystemShuttingDownId,
+            ShutDown,
+            () => this.unsubscriber?.Dispose());
     }
 
     /// <summary>
-    /// Loads a texture with the given <paramref name="contentPathOrName"/>.
+    /// Finalizes an instance of the <see cref="TextureLoader"/> class.
     /// </summary>
-    /// <param name="contentPathOrName">The full file path or name of the texture to load.</param>
-    /// <returns>The loaded texture.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="contentPathOrName"/> is null or empty.</exception>
-    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
-    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
-    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
-    /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
-    /// <exception cref="PathTooLongException">
-    ///     The specified path, file name, or both exceed the system-defined maximum length.
-    /// </exception>
-    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
-    /// <exception cref="NotSupportedException">The path contains a colon character <c>:</c> that is not part of a drive label.</exception>
-    public ITexture Load(string contentPathOrName)
+    [ExcludeFromCodeCoverage]
+    ~TextureLoader()
     {
-        ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
+#if DEBUG
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+#endif
+
+        ShutDown();
+    }
+
+    /// <inheritdoc cref="ITextureLoader.TotalCachedItems"/>
+    public int TotalCachedItems => this.textureCache.Count;
+
+    /// <inheritdoc cref="ITextureLoader.Load"/>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="pathOrName"/> is null or empty.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+    public ITexture Load(string pathOrName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(pathOrName);
 
         var contentDirPath = this.texturePathResolver.ResolveDirPath();
 
@@ -68,11 +106,40 @@ internal sealed class TextureLoader : ILoader<ITexture>
             this.directory.CreateDirectory(contentDirPath);
         }
 
-        var filePath = this.texturePathResolver.ResolveFilePath(contentPathOrName);
+        var textureFilePath = this.texturePathResolver.ResolveFilePath(pathOrName);
 
-        return this.textureCache.GetItem(filePath);
+        return this.textureCache.GetOrAdd(textureFilePath, (filePath) =>
+        {
+            var imageData = this.imageService.Load(filePath);
+            var name = this.path.GetFileNameWithoutExtension(textureFilePath);
+
+            return this.textureFactory.Create(name, filePath, imageData);
+        });
     }
 
-    /// <inheritdoc/>
-    public void Unload(string contentPathOrName) => this.textureCache.Unload(contentPathOrName);
+    /// <inheritdoc cref="IUnloader{T}.Unload"/>
+    public void Unload(ITexture texture)
+    {
+        this.textureCache.TryRemove(texture.FilePath, out _);
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+    }
+
+    /// <summary>
+    /// Disposes of resources.
+    /// </summary>
+    private void ShutDown()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        foreach (var textureDataItem in this.textureCache)
+        {
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = textureDataItem.Value.Id });
+        }
+
+        this.textureCache.Clear();
+        this.isDisposed = true;
+    }
 }

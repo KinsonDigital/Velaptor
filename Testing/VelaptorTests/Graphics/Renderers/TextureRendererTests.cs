@@ -1572,6 +1572,9 @@ public class TextureRendererTests : TestsBase
     {
         var mockTexture = Substitute.For<ITexture>();
         mockTexture.Id.Returns(TextureId);
+        mockTexture.Width.Returns((uint)width);
+        mockTexture.Height.Returns((uint)height);
+
         var mockPath = Substitute.For<IPath>();
         mockPath.GetFileNameWithoutExtension(Arg.Any<string>()).Returns("test-atlas");
 
@@ -1580,8 +1583,6 @@ public class TextureRendererTests : TestsBase
 
         var mock = Substitute.For<IAtlasData>();
         mock.Name.Returns("test-atlas-texture");
-        mock.Width.Returns((uint)width);
-        mock.Height.Returns((uint)height);
         mock.Texture.Returns(mockTexture);
         mock.GetFrames(Arg.Any<string>()).Returns(subTextureDataItems);
 

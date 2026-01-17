@@ -6,13 +6,13 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Scene;
@@ -23,19 +23,36 @@ using Velaptor.Scene;
 public class TextRenderingScene : SceneBase
 {
     private const int WindowPadding = 10;
-    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+    private const string DefaultFontName = "TimesNewRoman";
     private const string SingleLineText = "Change me using the font properties.";
     private readonly string multiLineText = $"Change me using{Environment.NewLine}the buttons to the left.";
+    private readonly (string DisplayName, string FileName)[] fontFileNames =
+    [
+        (nameof(FontStyle.Regular), $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf"),
+        (nameof(FontStyle.Italic), $"{DefaultFontName}-{nameof(FontStyle.Italic)}.ttf"),
+        (nameof(FontStyle.Bold), $"{DefaultFontName}-{nameof(FontStyle.Bold)}.ttf"),
+        ($"{nameof(FontStyle.Bold)} & {nameof(FontStyle.Italic)}", $"{DefaultFontName}-{nameof(FontStyle.Bold)}{nameof(FontStyle.Italic)}.ttf"),
+    ];
+    private readonly IContentManager contentManager;
+    private readonly BackgroundManager backgroundManager;
     private IControlGroup? grpControls;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private string text = SingleLineText;
-    private BackgroundManager? backgroundManager;
-    private ILoader<IFont>? fontLoader;
     private float renderSize = 1;
     private float angle;
     private bool isBlue;
     private bool isFirstRender = true;
+    private string currentChosenFontFileName = $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
+    /// </summary>
+    public TextRenderingScene()
+    {
+        this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -45,12 +62,10 @@ public class TextRenderingScene : SceneBase
             return;
         }
 
-        this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.fontRenderer = RendererFactory.CreateFontRenderer();
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.textFont = this.fontLoader.Load(DefaultRegularFont, 12);
+        this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, 12);
 
         var ctrlFactory = new ControlFactory();
 
@@ -98,7 +113,7 @@ public class TextRenderingScene : SceneBase
             value = value > 100 ? 100 : value;
             value = value < 0 ? 0 : value;
 
-            this.textFont.Size = (uint)value;
+            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
         };
 
         // Set the font style to bold
@@ -106,16 +121,11 @@ public class TextRenderingScene : SceneBase
         cmbSetStyle.Name = nameof(cmbSetStyle);
         cmbSetStyle.Label = "Style:";
         cmbSetStyle.Width = 150;
-        cmbSetStyle.Items =
-        [
-            FontStyle.Regular.ToString(),
-            FontStyle.Italic.ToString(),
-            FontStyle.Bold.ToString(),
-            $"{FontStyle.Italic.ToString()} & {FontStyle.Bold.ToString()}"
-        ];
+        cmbSetStyle.Items = this.fontFileNames.Select(i => i.DisplayName).ToList();
         cmbSetStyle.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            this.textFont.Style = (FontStyle)selectedIndex;
+            this.currentChosenFontFileName = this.fontFileNames[selectedIndex].FileName;
+            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
         };
 
         this.grpControls = ctrlFactory.CreateControlGroup();
@@ -143,8 +153,8 @@ public class TextRenderingScene : SceneBase
             return;
         }
 
-        this.backgroundManager?.Unload();
-        this.fontLoader.Unload(this.textFont);
+        this.backgroundManager.Unload();
+        this.contentManager.Unload(this.textFont);
         this.grpControls.Dispose();
         this.grpControls = null;
 
@@ -163,7 +173,7 @@ public class TextRenderingScene : SceneBase
             this.isFirstRender = false;
         }
 
-        this.backgroundManager?.Render();
+        this.backgroundManager.Render();
         this.fontRenderer.Render(
             this.textFont,
             this.text,

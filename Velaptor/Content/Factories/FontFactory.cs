@@ -4,46 +4,28 @@
 
 namespace Velaptor.Content.Factories;
 
-using System;
-using Caching;
+using System.Diagnostics.CodeAnalysis;
 using Fonts;
 using Fonts.Services;
 using Graphics;
 using NativeInterop.Services;
-using Services;
 
 /// <summary>
 /// Generates <see cref="IFont"/> instances.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
 internal sealed class FontFactory : IFontFactory
 {
-    private readonly IFreeTypeService freeTypeService;
     private readonly IFontStatsService fontStatsService;
-    private readonly IFontAtlasService fontAtlasService;
-    private readonly IItemCache<string, ITexture> textureCache;
+    private readonly IFreeTypeService freeTypeService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontFactory"/> class.
     /// </summary>
-    /// <param name="freeTypeService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
-    /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
-    /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
-    /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
-    public FontFactory(
-        IFreeTypeService freeTypeService,
-        IFontStatsService fontStatsService,
-        IFontAtlasService fontAtlasService,
-        IItemCache<string, ITexture> textureCache)
+    public FontFactory()
     {
-        ArgumentNullException.ThrowIfNull(fontAtlasService);
-        ArgumentNullException.ThrowIfNull(textureCache);
-        ArgumentNullException.ThrowIfNull(freeTypeService);
-        ArgumentNullException.ThrowIfNull(fontStatsService);
-
-        this.fontAtlasService = fontAtlasService;
-        this.textureCache = textureCache;
-        this.freeTypeService = freeTypeService;
-        this.fontStatsService = fontStatsService;
+        this.fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
+        this.freeTypeService = IoC.Container.GetInstance<IFreeTypeService>();
     }
 
     /// <inheritdoc/>
@@ -58,8 +40,6 @@ internal sealed class FontFactory : IFontFactory
             atlasTexture,
             this.freeTypeService,
             this.fontStatsService,
-            this.fontAtlasService,
-            this.textureCache,
             name,
             fontFilePath,
             size,

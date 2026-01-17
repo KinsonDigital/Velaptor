@@ -138,7 +138,6 @@ public class KeyboardBenchmarks
         this.keyboard.GetState();
     }
 
-    #region Setup
     /// <summary>
     /// Sets up the keyboard state object for analysis.
     /// </summary>
@@ -165,5 +164,4 @@ public class KeyboardBenchmarks
         var keyboardDataStore = new KeyboardDataService(reactable);
         this.keyboard = new Keyboard(keyboardDataStore);
     }
-    #endregion
 }

@@ -10,10 +10,9 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using Graphics;
-using VelFontStyle = FontStyle;
 
 /// <summary>
-/// The font to use when rendering text to the screen.
+/// Represents a font with a set size and style that can be used to render text to the screen.
 /// </summary>
 public interface IFont : IContent
 {
@@ -29,14 +28,14 @@ public interface IFont : IContent
     ITexture Atlas { get; }
 
     /// <summary>
-    /// Gets or sets the size of the font in points.
+    /// Gets the size of the font in points.
     /// </summary>
-    uint Size { get; set; }
+    uint Size { get; }
 
     /// <summary>
-    /// Gets or sets the style of the font.
+    /// Gets the style of the font.
     /// </summary>
-    VelFontStyle Style { get; set; }
+    FontStyle Style { get; }
 
     /// <summary>
     /// Gets a value indicating whether the font is a default font.
@@ -72,9 +71,14 @@ public interface IFont : IContent
     bool CacheEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum number of measurements to cache.
+    /// Gets or sets the maximum number of text measurements to cache.
     /// </summary>
-    int MaxCacheSize { get; set; }
+    int MaxMeasureCacheSize { get; set; }
+
+    /// <summary>
+    /// Gets the total number of text size measurements that are cached.
+    /// </summary>
+    int CurrentMeasureCacheSize { get; }
 
     /// <summary>
     /// Gets the list of metrics for all the glyphs supported by the font.

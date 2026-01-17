@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Caching;
-using ExtensionMethods;
 using Graphics;
 using Velaptor.Exceptions;
 
@@ -19,7 +17,6 @@ using Velaptor.Exceptions;
 /// </summary>
 public sealed class AtlasData : IAtlasData
 {
-    private const char CrossPlatDirSeparatorChar = '/';
     private const string AtlasDataExtension = ".json";
     private const string TextureExtension = ".png";
     private readonly AtlasSubTextureData[] subTexturesData;
@@ -28,7 +25,7 @@ public sealed class AtlasData : IAtlasData
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasData"/> class.
     /// </summary>
-    /// <param name="textureCache">Caches textures for later use to improve performance.</param>
+    /// <param name="texture">The texture atlas.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <param name="atlasSubTextureData">The sub texture data of all sub textures in the atlas.</param>
@@ -39,15 +36,14 @@ public sealed class AtlasData : IAtlasData
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="dirPath"/> does not exist.</exception>
     internal AtlasData(
-        IItemCache<string, ITexture> textureCache,
+        ITexture texture,
         IDirectory directory,
         IPath path,
-        IEnumerable<AtlasSubTextureData> atlasSubTextureData,
+        IList<AtlasSubTextureData> atlasSubTextureData,
         string dirPath,
         string atlasName)
     {
-        // ReSharper disable PossibleMultipleEnumeration
-        ArgumentNullException.ThrowIfNull(textureCache);
+        ArgumentNullException.ThrowIfNull(texture);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(atlasSubTextureData);
@@ -58,15 +54,12 @@ public sealed class AtlasData : IAtlasData
 
         foreach (var group in groups)
         {
-            this.dataGroups.Add(group.Key, group.ToArray());
+            this.dataGroups.Add(group.Key, [.. group]);
         }
 
-        this.subTexturesData = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
+        this.subTexturesData = [.. atlasSubTextureData.OrderBy(data => data.FrameIndex)];
 
-        // ReSharper restore PossibleMultipleEnumeration
         atlasName = path.GetFileNameWithoutExtension(atlasName);
-
-        dirPath = dirPath.ToCrossPlatPath().TrimDirSeparatorFromEnd();
 
         if (!directory.Exists(dirPath))
         {
@@ -74,9 +67,10 @@ public sealed class AtlasData : IAtlasData
         }
 
         Name = atlasName;
-        FilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{TextureExtension}";
-        AtlasDataFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{AtlasDataExtension}";
-        Texture = textureCache.GetItem(FilePath);
+        FilePath = path.Combine(dirPath, atlasName + TextureExtension);
+        AtlasDataFilePath = path.Combine(dirPath, atlasName + AtlasDataExtension);
+
+        Texture = texture;
     }
 
     /// <summary>
@@ -122,27 +116,19 @@ public sealed class AtlasData : IAtlasData
     public ITexture Texture { get; }
 
     /// <inheritdoc/>
-    public uint Width => Texture.Width;
-
-    /// <inheritdoc/>
-    public uint Height => Texture.Height;
-
-    /// <inheritdoc/>
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
     /// <inheritdoc/>
-    /// <exception cref="ArgumentNullException">
+    /// <exception cref="ArgumentException">
     ///     Thrown if the <paramref name="subTextureId"/> is null or empty.
     /// </exception>
+    /// <exception cref="AtlasException">Thrown if the given <paramref name="subTextureId"/> does not exist in the atlas.</exception>
     public AtlasSubTextureData[] GetFrames(string subTextureId)
     {
         ArgumentException.ThrowIfNullOrEmpty(subTextureId);
 
-        if (!this.dataGroups.TryGetValue(subTextureId, out AtlasSubTextureData[]? frames))
-        {
-            throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.");
-        }
-
-        return frames;
+        return !this.dataGroups.TryGetValue(subTextureId, out AtlasSubTextureData[]? frames)
+            ? throw new AtlasException($"The sub-texture id '{subTextureId}' does not exist in the atlas.")
+            : frames;
     }
 }

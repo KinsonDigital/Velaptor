@@ -4,6 +4,7 @@
 
 namespace Velaptor.OpenGL.GpuData;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
@@ -140,6 +141,7 @@ internal readonly struct ShapeVertexData
     /// <param name="x">The X component of the position.</param>
     /// <param name="y">The Y component of the position.</param>
     /// <returns>The new instance.</returns>
+    [ExcludeFromCodeCoverage(Justification = "Nothing to test and not worth the problems with static methods in tests.")]
     public static ShapeVertexData New(float x, float y) =>
         new (new Vector2(x, y),
             Vector4.Zero,

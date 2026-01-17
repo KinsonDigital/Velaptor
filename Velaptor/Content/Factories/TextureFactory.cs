@@ -14,6 +14,7 @@ using Velaptor.Factories;
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class TextureFactory : ITextureFactory
 {
     private readonly IGLInvoker gl;
@@ -23,7 +24,6 @@ internal sealed class TextureFactory : ITextureFactory
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
     public TextureFactory()
     {
         this.gl = IoC.Container.GetInstance<IGLInvoker>();

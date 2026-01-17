@@ -347,7 +347,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             0f,
             1f,
             Color.White,
@@ -384,7 +384,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             0f,
             1f,
             color,
@@ -421,7 +421,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             angle,
             1f,
             Color.White,
@@ -458,7 +458,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             angle,
             size,
             Color.White,
@@ -495,7 +495,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             angle,
             1f,
             color,
@@ -540,7 +540,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             angle,
             size,
             color,
@@ -586,7 +586,7 @@ internal sealed class TextureRenderer : ITextureRenderer
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Width, (int)atlas.Height)),
+            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
             angle,
             size,
             color,

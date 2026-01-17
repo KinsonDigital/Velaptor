@@ -1,4 +1,4 @@
-﻿// <copyright file="TimerService.cs" company="KinsonDigital">
+// <copyright file="TimerService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
