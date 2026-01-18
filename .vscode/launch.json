@@ -24,5 +24,25 @@
 			"attachSimplePort": 9229,
 			"console": "integratedTerminal"
 		},
+		{ // PREP PREV RELEASE
+			"request": "launch",
+			"name": "Prev Prev Release",
+			"type": "node",
+			"program": "${workspaceFolder}/DevTools/prep-prev-release.ts",
+			"cwd": "${workspaceFolder}",
+			"windows": {
+				"runtimeExecutable": "${userHome}/.deno/bin/deno.exe"
+			},
+			"linux": {
+				"runtimeExecutable": "${userHome}/.deno/bin/deno"
+			},
+			"runtimeArgs": [
+				"run",
+				"--inspect-wait",
+				"--allow-all",
+			],
+			"attachSimplePort": 9229,
+			"console": "integratedTerminal"
+		},
 	]
 }

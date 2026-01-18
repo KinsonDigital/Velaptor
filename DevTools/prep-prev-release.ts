@@ -143,7 +143,11 @@ Deno.writeTextFileSync(csProjFilePath, updatedProjectFileData);
 printGray("⌛\tStaging version changes. . .");
 await stageFiles([`*${projFileName}`]);
 printGray("⌛\tCreating commit for version changes. . .");
-await createCommit(`release: update version to v${releaseVersion}`);
+
+// If there are changes to commit
+if (await uncommittedChangesExist()) {
+	await createCommit(`release: update version to v${releaseVersion}`);
+}
 
 printGray("⌛Generating release notes. . .");
 const releaseNotesFileName = `Release-Notes-v${releaseVersion}.md`;
