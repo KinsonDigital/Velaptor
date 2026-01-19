@@ -54,6 +54,7 @@
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
     <InternalsVisibleTo Include="VelaptorAseprite" />
+    <InternalsVisibleTo Include="VelaptorAsepriteTests" />
   </ItemGroup>
 
   <ItemGroup>
