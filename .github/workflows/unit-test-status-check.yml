@@ -16,7 +16,15 @@ on:
 jobs:
   run_tests:
     name: Run Unit Tests Status Check
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # for Intel based macs.
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 
