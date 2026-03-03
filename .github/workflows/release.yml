@@ -82,10 +82,41 @@ jobs:
           deno-version: "${{ vars.DENO_VERSION }}"
 
 
+  build:
+    name: Build Velaptor Status Check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # for Intel based macs.
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+
+
   run_tests:
     name: Run Unit Tests
     needs: get_and_validate_version
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # for Intel based macs.
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 
@@ -102,15 +133,15 @@ jobs:
 
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: [get_and_validate_version, determine_release_notes_path, run_tests]
-    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v16.0.0
+    needs: [get_and_validate_version, determine_release_notes_path, build, run_tests]
+    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v17.1.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
       release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
-      send-x-release-post: ${{ vars.X_BROADCAST_ENABLED == 'true' }}
+      build-project: false
       dry-run: ${{ inputs.dry-run }}
       transpile-readme: true
       deno-version: "${{ vars.DENO_VERSION }}"
