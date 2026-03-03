@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate SDK Versions
-        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@v16.0.0
+        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@v17.1.0
         with:
           base-search-dir-path: "${{ github.workspace }}"
           net-sdk-version: "${{ vars.NET_SDK_VERSION }}"

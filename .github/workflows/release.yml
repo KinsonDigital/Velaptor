@@ -69,13 +69,13 @@ jobs:
     steps:
       - name: Get Version
         id: get-version
-        uses: KinsonDigital/Infrastructure/actions/get-version@v16.0.0
+        uses: KinsonDigital/Infrastructure/actions/get-version@v17.1.0
         with:
           version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
           deno-version: "${{ vars.DENO_VERSION }}"
 
       - name: Validate Version
-        uses: KinsonDigital/Infrastructure/actions/validate-version@v16.0.0
+        uses: KinsonDigital/Infrastructure/actions/validate-version@v17.1.0
         with:
           version: "v${{ steps.get-version.outputs.version }}"
           release-type: "${{ inputs.release-type }}"
@@ -84,6 +84,7 @@ jobs:
 
   build:
     name: Build Velaptor Status Check
+    needs: validate_branch
     strategy:
       fail-fast: false
       matrix:
@@ -91,7 +92,6 @@ jobs:
           - platform: "windows-latest"
           - platform: "ubuntu-latest"
           - platform: "macos-latest" # for Arm based macs (M1 and above).
-          - platform: "macos-latest" # for Intel based macs.
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -107,7 +107,7 @@ jobs:
 
   run_tests:
     name: Run Unit Tests
-    needs: get_and_validate_version
+    needs: [validate_branch, get_and_validate_version]
     strategy:
       fail-fast: false
       matrix:
@@ -115,7 +115,6 @@ jobs:
           - platform: "windows-latest"
           - platform: "ubuntu-latest"
           - platform: "macos-latest" # for Arm based macs (M1 and above).
-          - platform: "macos-latest" # for Intel based macs.
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -133,7 +132,7 @@ jobs:
 
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: [get_and_validate_version, determine_release_notes_path, build, run_tests]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v17.1.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
