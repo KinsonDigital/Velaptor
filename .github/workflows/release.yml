@@ -148,7 +148,41 @@ jobs:
     secrets:
       cicd-pat: "${{ secrets.CICD_TOKEN }}"
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
-      x-consumer-api-key: "${{ secrets.X_CONSUMER_API_KEY }}"
-      x-consumer-api-secret: "${{ secrets.X_CONSUMER_API_SECRET }}"
-      x-access-token-key: "${{ secrets.X_ACCESS_TOKEN_KEY }}"
-      x-access-token-secret: "${{ secrets.X_ACCESS_TOKEN_SECRET }}"
+
+
+  send_release_announcements:
+    name: Send Release Announcements
+    runs-on: ubuntu-latest
+    needs: [validate_branch, determine_release_notes_path, get_and_validate_version, run_tests, run_release]
+    if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
+    steps:
+      - name: Send X Release Announcement
+        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@v17.1.0
+        with:
+          repo-owner: ${{ vars.ORGANIZATION_NAME }}
+          project-name: ${{ vars.PROJECT_NAME }}
+          version: ${{ needs.get_and_validate_version.outputs.version }}
+          website-url: ${{ vars.WEBSITE_URL }}
+          local-post-template-file-path: "${{ github.workspace }}/templates/release-announcement.txt"
+          discord-invite-code: ${{ vars.DISCORD_INVITE_CODE }}
+          access-token-key: ${{ secrets.X_ACCESS_TOKEN_KEY }}
+          access-token-secret: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          consumer-api-key: ${{ secrets.X_CONSUMER_API_KEY }}
+          consumer-api-secret: ${{ secrets.X_CONSUMER_API_SECRET }}
+          deno-version: ${{ vars.DENO_VERSION }}
+          github-token: ${{ secrets.CICD_TOKEN }}
+
+      - name: Send Bluesky Release Announcement
+        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@v17.1.0
+        with:
+          repo-owner: ${{ vars.ORGANIZATION_NAME }}
+          project-name: ${{ vars.PROJECT_NAME }}
+          version: ${{ needs.get_and_validate_version.outputs.version }}
+          website-url: ${{ vars.WEBSITE_URL }}
+          local-post-template-file-path: "${{ github.workspace }}/templates/release-announcement.txt"
+          discord-invite-code: ${{ vars.DISCORD_INVITE_CODE }}
+          service: ${{ vars.BLUESKY_SERVICE }} 
+          identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
+          password:  ${{ secrets.BLUESKY_PASSWORD }}
+          deno-version: ${{ vars.DENO_VERSION }}
+          github-token: ${{ secrets.CICD_TOKEN }}
