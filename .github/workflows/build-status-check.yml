@@ -15,7 +15,14 @@ on:
 jobs:
   build_velaptor:
     name: Build Velaptor Status Check
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 
@@ -30,7 +37,14 @@ jobs:
 
   build_velaptor_testing:
     name: Build Velaptor Testing Status Check
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 

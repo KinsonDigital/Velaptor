@@ -1,0 +1,7 @@
+{PROJECT_NAME} {VERSION} is live! 🚀
+
+Building 2D games just got better. Take it for a spin, share what you build, and help drive the framework's evolution! 🤘🏼
+
+Get started here: {WEBSITE_URL}
+
+#velaptor #dotnet #gamedev #opensource #indiedev
