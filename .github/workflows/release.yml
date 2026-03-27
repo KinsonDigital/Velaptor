@@ -15,6 +15,11 @@ on:
         required: true
         type: choice
         options: [Preview, Production]
+      trigger-docs-release:
+        description: Trigger Velaptor docs release workflow after the library release is done. Only applicable for production releases.
+        required: false
+        default: true
+        type: boolean
       dry-run:
         description: Dry Run - Check to run the workflow without creating a release.
         required: false
@@ -149,10 +154,30 @@ jobs:
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
 
 
+  # Execute the full Velaptor docs release workflow after the library release is done.
+  release_velaptor_docs:
+    name: Release Velaptor Docs
+    runs-on: ubuntu-latest
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
+    if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
+    steps:
+      - name: Execute Release
+        env:
+          GH_TOKEN: ${{ secrets.CICD_TOKEN }}
+        run: |
+          $workflowName = "${{ vars.VELAPTOR_DOCS_FULL_RELEASE_WORKFLOW_NAME }}";
+          $orgName = "${{ vars.ORGANIZATION_NAME }}";
+          $repoName = "${{ vars.VELAPTOR_DOCS_REPO_NAME }}";
+          $version = "v${{ needs.get_and_validate_version.outputs.version }}";
+
+          # TODO: Need to replace the name of the branch
+          gh workflow run $workflowName -R "$orgName/$repoName" --ref "main" --field "api-version=$version" --field "executed-externally=true";
+
+
   send_release_announcements:
     name: Send Release Announcements
     runs-on: ubuntu-latest
-    needs: [validate_branch, determine_release_notes_path, get_and_validate_version, run_tests, run_release]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release, release_velaptor_docs]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
     steps:
       - name: Send X Release Announcement
@@ -180,7 +205,7 @@ jobs:
           website-url: ${{ vars.WEBSITE_URL }}
           local-post-template-file-path: "${{ github.workspace }}/templates/release-announcement.txt"
           discord-invite-code: ${{ vars.DISCORD_INVITE_CODE }}
-          service: ${{ vars.BLUESKY_SERVICE }} 
+          service: ${{ vars.BLUESKY_SERVICE }}
           identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
           password:  ${{ secrets.BLUESKY_PASSWORD }}
           deno-version: ${{ vars.DENO_VERSION }}
