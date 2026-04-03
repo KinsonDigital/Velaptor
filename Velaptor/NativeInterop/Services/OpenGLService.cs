@@ -14,7 +14,7 @@ using Velaptor.OpenGL;
 using Velaptor.Services;
 
 /// <summary>
-/// Provides OpenGL helper methods to improve OpenGL related operations.
+/// Provides OpenGL helper methods to improve OpenGL-related operations.
 /// </summary>
 internal sealed class OpenGLService : IOpenGLService
 {
@@ -23,6 +23,10 @@ internal sealed class OpenGLService : IOpenGLService
     private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
     private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
 #pragma warning restore SA1310
+
+#if RELEASE
+    private const string EMPTY_STRING = "";
+#endif
 
     // ReSharper restore InconsistentNaming
     private readonly IGLInvoker glInvoker;
@@ -179,36 +183,40 @@ internal sealed class OpenGLService : IOpenGLService
     /// <inheritdoc/>
     public void BeginGroup(string label)
     {
-#if DEBUG || DEBUG_CONSOLE
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
         this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
             100,
             (uint)label.Length,
             label);
-#endif
     }
 
     /// <inheritdoc/>
-    public void EndGroup()
-    {
-#if DEBUG || DEBUG_CONSOLE
-        this.glInvoker.PopDebugGroup();
-#endif
-    }
+    public void EndGroup() => this.glInvoker.PopDebugGroup();
 
     /// <inheritdoc/>
     public void LabelShader(uint shaderId, string label)
     {
-#if DEBUG || DEBUG_CONSOLE
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
-#endif
     }
 
     /// <inheritdoc/>
     public void LabelShaderProgram(uint shaderId, string label)
     {
-#if DEBUG || DEBUG_CONSOLE
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
-#endif
     }
 
     /// <inheritdoc/>
@@ -218,10 +226,11 @@ internal sealed class OpenGLService : IOpenGLService
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
-
         var newLabel = $"{label} VAO";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, 0, EMPTY_STRING);
 #endif
     }
 
@@ -239,10 +248,11 @@ internal sealed class OpenGLService : IOpenGLService
             OpenGLBufferType.IndexArrayObject => "EBO",
             _ => throw new InvalidEnumArgumentException(nameof(bufferType), (int)bufferType, typeof(OpenGLBufferType))
         };
-
         var newLabel = $"{label} {bufferTypeAcronym}";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, 0, EMPTY_STRING);
 #endif
     }
 
@@ -255,6 +265,8 @@ internal sealed class OpenGLService : IOpenGLService
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, 0, EMPTY_STRING);
 #endif
     }
 
@@ -303,7 +315,7 @@ internal sealed class OpenGLService : IOpenGLService
         /*NOTE:
          * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
          * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
-         * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+         * without the native system knowing about it, which causes this exception. The GC.KeepAlive()
          * method tells the garbage collector to not collect the delegate to prevent this from happening.
          */
         this.dotnetService.GcKeepAlive(this.debugCallback);
@@ -311,7 +323,7 @@ internal sealed class OpenGLService : IOpenGLService
     }
 
     /// <summary>
-    /// Invoked when there is an OpenGL related error.
+    /// Invoked when there is an OpenGL-related error.
     /// </summary>
     /// <param name="source">The debug source.</param>
     /// <param name="type">The debug type.</param>

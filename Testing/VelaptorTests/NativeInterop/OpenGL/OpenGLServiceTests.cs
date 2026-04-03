@@ -2,12 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests.NativeInterop.OpenGL;
 
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using Helpers;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
@@ -50,6 +52,7 @@ public class OpenGLServiceTests
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
@@ -82,9 +85,11 @@ public class OpenGLServiceTests
         var exception = Should.Throw<ArgumentNullException>(act);
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'loggingService')");
     }
+
     #endregion
 
     #region Prop Tests
+
     [Fact]
     public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
     {
@@ -135,9 +140,11 @@ public class OpenGLServiceTests
         isBound.ShouldBeTrue();
         isUnbound.ShouldBeFalse();
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     public void GetViewPortSize_WhenInvoked_ReturnsCorrectResult()
     {
@@ -330,6 +337,21 @@ public class OpenGLServiceTests
         actual.ShouldBe(expected);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void BeginGroup_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.BeginGroup(label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
+    }
+
     [Fact]
     public void BeginGroup_WhenInvoked_CreatesDebugGroup()
     {
@@ -357,6 +379,21 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).PopDebugGroup();
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void LabelShader_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.LabelShader(123, label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
+    }
+
     [Fact]
     public void LabelShader_WhenInvoked_LabelsShader()
     {
@@ -369,6 +406,21 @@ public class OpenGLServiceTests
 
         // Assert
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void LabelShaderProgram_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.LabelShaderProgram(123, label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -385,11 +437,11 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label);
     }
 
-    [Theory]
+    [TheoryForDebug]
     [InlineData("", "NOT SET VAO")]
     [InlineData(null, "NOT SET VAO")]
     [InlineData("test-label", "test-label VAO")]
-    public void LabelVertexArray_WhenInvoked_LabelsVertexArray(string? label, string expected)
+    public void LabelVertexArray_WhenInvokedInDebugBuild_LabelsVertexArray(string? label, string expected)
     {
         // Arrange
         var service = CreateSystemUnderTest();
@@ -401,8 +453,21 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected);
     }
 
-    [Fact]
-    public void LabelBuffer_WithInvalidBufferType_ThrowsException()
+    [FactForProduction]
+    public void LabelVertexArray_WhenInvokedInProductionBuilds_LabelsVertexArray()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelVertexArray(123, "test-value");
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.VertexArray, 123, 0, string.Empty);
+    }
+
+    [FactForDebug]
+    public void LabelBuffer_WithInvalidBufferTypeInDebugBuilds_ThrowsException()
     {
         // Arrange
         const int invalidValue = 123;
@@ -412,21 +477,21 @@ public class OpenGLServiceTests
         var service = CreateSystemUnderTest();
 
         // Act
-        var act = () => service.LabelBuffer(default, default, (OpenGLBufferType)invalidValue);
+        var act = () => service.LabelBuffer(0, null, (OpenGLBufferType)invalidValue);
 
         // Assert
         var exception = Should.Throw<InvalidEnumArgumentException>(act);
         exception.Message.ShouldBe(expected);
     }
 
-    [Theory]
+    [TheoryForDebug]
     [InlineData("", (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
     [InlineData(null, (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
     [InlineData("test-label", (int)OpenGLBufferType.VertexBufferObject, "test-label VBO")]
     [InlineData("", (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData(null, (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData("test-label", (int)OpenGLBufferType.IndexArrayObject, "test-label EBO")]
-    public void LabelBuffer_WhenInvoked_LabelsVertexArray(string? label, int bufferTypeNumericalValue, string expected)
+    public void LabelBuffer_WhenInvokedInDebugBuilds_LabelsVertexArray(string? label, int bufferTypeNumericalValue, string expected)
     {
         // Arrange
         var bufferType = (OpenGLBufferType)bufferTypeNumericalValue;
@@ -439,11 +504,24 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected);
     }
 
-    [Theory]
+    [FactForProduction]
+    public void LabelBuffer_WhenInvokedInProductionBuilds_LabelsVertexArray()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelBuffer(123, "test-value", OpenGLBufferType.VertexBufferObject);
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Buffer, 123, 0, string.Empty);
+    }
+
+    [TheoryForDebug]
     [InlineData("", "NOT SET")]
     [InlineData(null, "NOT SET")]
     [InlineData("test-label", "test-label")]
-    public void LabelTexture_WhenInvoked_LabelsTexture(string? label, string expected)
+    public void LabelTexture_WhenInvokedInDebugBuilds_LabelsTexture(string? label, string expected)
     {
         // Arrange
         var service = CreateSystemUnderTest();
@@ -453,6 +531,19 @@ public class OpenGLServiceTests
 
         // Assert
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected);
+    }
+
+    [FactForProduction]
+    public void LabelTexture_WhenInvokedInProductionBuilds_LabelsTexture()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelTexture(123, "test-value");
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Texture, 123, 0, string.Empty);
     }
 
     [Fact]
@@ -490,7 +581,7 @@ public class OpenGLServiceTests
         // Arrange
         // NOTE: The pixels are in ARGB format and are row major ordering.
         // Row major ordering means top to bottom and left to right.
-        // Another way to think of it is one row of pixels at a time from the top to the bottom
+        // Another way to think of it is one row of pixels at a time from the top to the bottom,
         // and each row is one pixel at a time from left to right.
         var pixels = new[,]
         {
@@ -540,7 +631,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -588,7 +679,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -626,7 +717,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -674,7 +765,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
