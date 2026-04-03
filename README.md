@@ -86,6 +86,9 @@ Are you interested in contributing? If so, click [here](https://github.com/Kinso
 ![x-logo-light-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-light-mode.svg#gh-light-mode-only)
 [Calvin Wilkinson](https://x.com/KDCoder) (KinsonDigital GitHub Organization - Owner)
 
+![bluesky-logo](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/bluesky-logo-16x16.svg)
+[Calvin Wilkinson](https://bsky.app/profile/kdcoder.bsky.social) (KinsonDigital GitHub Organization - Owner)
+
 <br/>
 
 <h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
