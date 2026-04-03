@@ -52,6 +52,7 @@ public class OpenGLServiceTests
     }
 
     #region Constructor Tests
+
     [Fact]
     public void Ctor_WithNullGLInvokerParam_ThrowsException()
     {
@@ -84,9 +85,11 @@ public class OpenGLServiceTests
         var exception = Should.Throw<ArgumentNullException>(act);
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'loggingService')");
     }
+
     #endregion
 
     #region Prop Tests
+
     [Fact]
     public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
     {
@@ -137,9 +140,11 @@ public class OpenGLServiceTests
         isBound.ShouldBeTrue();
         isUnbound.ShouldBeFalse();
     }
+
     #endregion
 
     #region Method Tests
+
     [Fact]
     public void GetViewPortSize_WhenInvoked_ReturnsCorrectResult()
     {
@@ -332,6 +337,21 @@ public class OpenGLServiceTests
         actual.ShouldBe(expected);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void BeginGroup_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.BeginGroup(label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
+    }
+
     [Fact]
     public void BeginGroup_WhenInvoked_CreatesDebugGroup()
     {
@@ -359,6 +379,21 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).PopDebugGroup();
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void LabelShader_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.LabelShader(123, label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
+    }
+
     [Fact]
     public void LabelShader_WhenInvoked_LabelsShader()
     {
@@ -371,6 +406,21 @@ public class OpenGLServiceTests
 
         // Assert
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Shader, 123, (uint)label.Length, label);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void LabelShaderProgram_WhenInvokedWithNullOrEmptyLabel_ThrowsException(string? label)
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var act = () => service.LabelShaderProgram(123, label);
+
+        // Assert
+        act.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
