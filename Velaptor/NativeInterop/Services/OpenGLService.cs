@@ -24,6 +24,10 @@ internal sealed class OpenGLService : IOpenGLService
     private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
 #pragma warning restore SA1310
 
+#if RELEASE
+    private const string EMPTY_STRING = "";
+#endif
+
     // ReSharper restore InconsistentNaming
     private readonly IGLInvoker glInvoker;
     private readonly IDotnetService dotnetService;
@@ -177,35 +181,63 @@ internal sealed class OpenGLService : IOpenGLService
     }
 
     /// <inheritdoc/>
-    public void BeginGroup(string label) =>
+    public void BeginGroup(string label)
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
         this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
             100,
             (uint)label.Length,
             label);
+    }
 
     /// <inheritdoc/>
     public void EndGroup() => this.glInvoker.PopDebugGroup();
 
     /// <inheritdoc/>
-    public void LabelShader(uint shaderId, string label) => this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+    public void LabelShader(uint shaderId, string label)
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+    }
 
     /// <inheritdoc/>
-    public void LabelShaderProgram(uint shaderId, string label) => this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+    public void LabelShaderProgram(uint shaderId, string label)
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+    }
 
     /// <inheritdoc/>
     public void LabelVertexArray(uint vertexArrayId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
         var newLabel = $"{label} VAO";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, 0, EMPTY_STRING);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
@@ -216,20 +248,26 @@ internal sealed class OpenGLService : IOpenGLService
             OpenGLBufferType.IndexArrayObject => "EBO",
             _ => throw new InvalidEnumArgumentException(nameof(bufferType), (int)bufferType, typeof(OpenGLBufferType))
         };
-
         var newLabel = $"{label} {bufferTypeAcronym}";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, 0, EMPTY_STRING);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelTexture(uint textureId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, 0, EMPTY_STRING);
+#endif
     }
 
     /// <inheritdoc/>
