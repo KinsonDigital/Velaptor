@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
+using Helpers;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Xunit;
@@ -386,11 +387,11 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Program, 123, (uint)label.Length, label);
     }
 
-    [Theory]
+    [TheoryForDebug]
     [InlineData("", "NOT SET VAO")]
     [InlineData(null, "NOT SET VAO")]
     [InlineData("test-label", "test-label VAO")]
-    public void LabelVertexArray_WhenInvoked_LabelsVertexArray(string? label, string expected)
+    public void LabelVertexArray_WhenInvokedInDebugBuild_LabelsVertexArray(string? label, string expected)
     {
         // Arrange
         var service = CreateSystemUnderTest();
@@ -402,8 +403,21 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.VertexArray, 123, (uint)expected.Length, expected);
     }
 
-    [Fact]
-    public void LabelBuffer_WithInvalidBufferType_ThrowsException()
+    [FactForProduction]
+    public void LabelVertexArray_WhenInvokedInProductionBuilds_LabelsVertexArray()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelVertexArray(123, "test-value");
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.VertexArray, 123, 0, string.Empty);
+    }
+
+    [FactForDebug]
+    public void LabelBuffer_WithInvalidBufferTypeInDebugBuilds_ThrowsException()
     {
         // Arrange
         const int invalidValue = 123;
@@ -420,14 +434,14 @@ public class OpenGLServiceTests
         exception.Message.ShouldBe(expected);
     }
 
-    [Theory]
+    [TheoryForDebug]
     [InlineData("", (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
     [InlineData(null, (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
     [InlineData("test-label", (int)OpenGLBufferType.VertexBufferObject, "test-label VBO")]
     [InlineData("", (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData(null, (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
     [InlineData("test-label", (int)OpenGLBufferType.IndexArrayObject, "test-label EBO")]
-    public void LabelBuffer_WhenInvoked_LabelsVertexArray(string? label, int bufferTypeNumericalValue, string expected)
+    public void LabelBuffer_WhenInvokedInDebugBuilds_LabelsVertexArray(string? label, int bufferTypeNumericalValue, string expected)
     {
         // Arrange
         var bufferType = (OpenGLBufferType)bufferTypeNumericalValue;
@@ -440,11 +454,24 @@ public class OpenGLServiceTests
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Buffer, 123, (uint)expected.Length, expected);
     }
 
-    [Theory]
+    [FactForProduction]
+    public void LabelBuffer_WhenInvokedInProductionBuilds_LabelsVertexArray()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelBuffer(123, "test-value", OpenGLBufferType.VertexBufferObject);
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Buffer, 123, 0, string.Empty);
+    }
+
+    [TheoryForDebug]
     [InlineData("", "NOT SET")]
     [InlineData(null, "NOT SET")]
     [InlineData("test-label", "test-label")]
-    public void LabelTexture_WhenInvoked_LabelsTexture(string? label, string expected)
+    public void LabelTexture_WhenInvokedInDebugBuilds_LabelsTexture(string? label, string expected)
     {
         // Arrange
         var service = CreateSystemUnderTest();
@@ -454,6 +481,19 @@ public class OpenGLServiceTests
 
         // Assert
         this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Texture, 123, (uint)expected.Length, expected);
+    }
+
+    [FactForProduction]
+    public void LabelTexture_WhenInvokedInProductionBuilds_LabelsTexture()
+    {
+        // Arrange
+        var service = CreateSystemUnderTest();
+
+        // Act
+        service.LabelTexture(123, "test-value");
+
+        // Assert
+        this.mockGLInvoker.Received(1).ObjectLabel(GLObjectIdentifier.Texture, 123, 0, string.Empty);
     }
 
     [Fact]
