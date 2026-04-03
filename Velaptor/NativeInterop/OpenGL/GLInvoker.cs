@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
+// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -55,26 +55,32 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
     {
+#if DEBUG || DEBUG_CONSOLE
         ArgumentException.ThrowIfNullOrEmpty(message);
 
         AddToGLCallStack(nameof(PushDebugGroup));
         this.gl.PushDebugGroup((DebugSource)source, id, length, message);
+#endif
     }
 
     /// <inheritdoc/>
     public void PopDebugGroup()
     {
+#if DEBUG || DEBUG_CONSOLE
         AddToGLCallStack(nameof(PopDebugGroup));
         this.gl.PopDebugGroup();
+#endif
     }
 
     /// <inheritdoc/>
     public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         ArgumentException.ThrowIfNullOrEmpty(label);
 
         AddToGLCallStack(nameof(ObjectLabel));
         this.gl.ObjectLabel((ObjectIdentifier)identifier, name, length, label);
+#endif
     }
 
     /// <inheritdoc/>
