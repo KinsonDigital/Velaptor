@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests.NativeInterop.OpenGL;
 
 using System;
@@ -412,7 +413,7 @@ public class OpenGLServiceTests
         var service = CreateSystemUnderTest();
 
         // Act
-        var act = () => service.LabelBuffer(default, default, (OpenGLBufferType)invalidValue);
+        var act = () => service.LabelBuffer(0, null, (OpenGLBufferType)invalidValue);
 
         // Assert
         var exception = Should.Throw<InvalidEnumArgumentException>(act);
@@ -490,7 +491,7 @@ public class OpenGLServiceTests
         // Arrange
         // NOTE: The pixels are in ARGB format and are row major ordering.
         // Row major ordering means top to bottom and left to right.
-        // Another way to think of it is one row of pixels at a time from the top to the bottom
+        // Another way to think of it is one row of pixels at a time from the top to the bottom,
         // and each row is one pixel at a time from left to right.
         var pixels = new[,]
         {
@@ -540,7 +541,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -588,7 +589,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -626,7 +627,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 
@@ -674,7 +675,7 @@ public class OpenGLServiceTests
 
                 if (debugProc is null)
                 {
-                    throw new Exception("The 'DebugProc' parameter cannot be null during test set up.");
+                    throw new Exception("The 'DebugProc' parameter cannot be null during test setup.");
                 }
             });
 

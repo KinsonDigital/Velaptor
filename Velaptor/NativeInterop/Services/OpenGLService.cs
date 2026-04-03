@@ -14,7 +14,7 @@ using Velaptor.OpenGL;
 using Velaptor.Services;
 
 /// <summary>
-/// Provides OpenGL helper methods to improve OpenGL related operations.
+/// Provides OpenGL helper methods to improve OpenGL-related operations.
 /// </summary>
 internal sealed class OpenGLService : IOpenGLService
 {
@@ -277,7 +277,7 @@ internal sealed class OpenGLService : IOpenGLService
         /*NOTE:
          * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
          * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
-         * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+         * without the native system knowing about it, which causes this exception. The GC.KeepAlive()
          * method tells the garbage collector to not collect the delegate to prevent this from happening.
          */
         this.dotnetService.GcKeepAlive(this.debugCallback);
@@ -285,7 +285,7 @@ internal sealed class OpenGLService : IOpenGLService
     }
 
     /// <summary>
-    /// Invoked when there is an OpenGL related error.
+    /// Invoked when there is an OpenGL-related error.
     /// </summary>
     /// <param name="source">The debug source.</param>
     /// <param name="type">The debug type.</param>

@@ -1,4 +1,4 @@
-// <copyright file="GLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ using Velaptor.OpenGL;
 /// <summary>
 /// Invokes OpenGL calls.
 /// </summary>
-[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the SILK library.")]
 internal sealed class GLInvoker : IGLInvoker
 {
     private static readonly Queue<string> OpenGLCallStack = new ();
@@ -441,7 +441,7 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <inheritdoc/>
-    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep same API signature.")]
+    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep the same API signature.")]
     public void TexImage2D<T>(
         GLTextureTarget target,
         int level,
