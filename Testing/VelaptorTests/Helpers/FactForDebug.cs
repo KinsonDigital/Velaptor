@@ -24,5 +24,3 @@ public sealed class FactForDebug : FactAttribute
 #endif
     }
 }
-
-
