@@ -89,7 +89,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="timerService">Measures the time it takes to process the game loop.</param>
-    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+    /// <param name="openGLService">Provides OpenGL-related helper methods.</param>
     public GLWindow(
         uint width,
         uint height,
@@ -404,7 +404,7 @@ internal sealed class GLWindow : VelaptorIWindow
 
         if (this.glInputContext.Keyboards.Count <= 0)
         {
-            throw new NoKeyboardException("Input Exception: No connected keyboards available.");
+            throw new NoKeyboardException("Input Exception: No connected keyboards are available.");
         }
 
         this.glInputContext.Keyboards[0].KeyDown += GLKeyboardInput_KeyDown;
@@ -412,7 +412,7 @@ internal sealed class GLWindow : VelaptorIWindow
 
         if (this.glInputContext.Mice.Count <= 0)
         {
-            throw new NoMouseException("Input Exception: No connected mice available.");
+            throw new NoMouseException("Input Exception: No connected mice are available.");
         }
 
         this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;
@@ -420,7 +420,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
 
-        // Manually invoke the resize to update the rest of the system such as the viewport.
+        // Manually invoke the resize to update the rest of the system, such as the viewport.
         GLWindow_Resize(new Vector2D<int>((int)width, (int)height));
 
         this.appService.Init();
@@ -475,7 +475,7 @@ internal sealed class GLWindow : VelaptorIWindow
          * currently in this method, the GL context still exists.  After leaving this method,
          * the GL context will be destroyed.  Any further disposal attempts to the texture
          * will fail due to the GL context being destroyed.  Sending this push notification
-         * will trigger subscriptions in the texture cache which in turn will send
+         * will trigger subscriptions in the texture cache, which in turn will send
          * disposal notifications to all textures.
          *
          * Other types that depend on this shutdown process occurring before the GL context
@@ -639,7 +639,7 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when there is mouse scroll wheel input.
+    /// Invoked when there is mouse scroll-wheel input.
     /// </summary>
     /// <param name="mouse">The system mouse object.</param>
     /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
@@ -752,7 +752,7 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Setup all the caching for the properties that need caching.
+    /// Set up all the caching for the properties that need caching.
     /// </summary>
     private void SetupOtherPropCaches()
     {
