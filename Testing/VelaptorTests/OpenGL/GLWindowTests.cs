@@ -1075,7 +1075,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         var exception = act.ShouldThrow<NoKeyboardException>();
-        exception.Message.ShouldBe("Input Exception: No connected keyboards available.");
+        exception.Message.ShouldBe("Input Exception: No connected keyboards are available.");
     }
 
     [Fact]
@@ -1094,7 +1094,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         var exception = act.ShouldThrow<NoMouseException>();
-        exception.Message.ShouldBe("Input Exception: No connected mice available.");
+        exception.Message.ShouldBe("Input Exception: No connected mice are available.");
     }
 
     [Fact]
