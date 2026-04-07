@@ -5,7 +5,7 @@
 namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -32,7 +32,7 @@ public class GraphicsContentSourceTests
         var actual = source.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Graphics");
+        actual.ShouldBe("Graphics");
     }
     #endregion
 }

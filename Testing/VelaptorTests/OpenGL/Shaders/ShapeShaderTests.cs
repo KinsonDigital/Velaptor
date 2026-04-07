@@ -9,7 +9,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
@@ -56,7 +56,7 @@ public class ShapeShaderTests
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 this.batchSizeReactor = reactor;
             });
@@ -81,9 +81,8 @@ public class ShapeShaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -97,10 +96,8 @@ public class ShapeShaderTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        containsAttribute
-            .Should()
-            .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
-        sut.Name.Should().Be("Shape");
+        containsAttribute.ShouldBeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
+        sut.Name.ShouldBe("Shape");
     }
     #endregion
 
@@ -118,7 +115,7 @@ public class ShapeShaderTests
         var actual = shader.BatchSize;
 
         // Assert
-        actual.Should().Be(123u);
+        actual.ShouldBe(123u);
     }
 
     [Fact]
@@ -129,10 +126,10 @@ public class ShapeShaderTests
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 this.batchSizeReactor = reactor;
-                reactor.Name.Should().Be($"ShapeShader.ctor() - {PushNotifications.BatchSizeChangedId}");
+                reactor.Name.ShouldBe($"ShapeShader.ctor() - {PushNotifications.BatchSizeChangedId}");
             });
 
         _ = CreateSystemUnderTest();

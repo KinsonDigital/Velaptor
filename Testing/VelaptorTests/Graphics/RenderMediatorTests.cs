@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -92,7 +92,6 @@ public class RenderMediatorTests : TestsBase
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
@@ -108,9 +107,8 @@ public class RenderMediatorTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -128,9 +126,8 @@ public class RenderMediatorTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureItemComparer')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'textureItemComparer')");
     }
 
     [Fact]
@@ -148,9 +145,8 @@ public class RenderMediatorTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontItemComparer')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontItemComparer')");
     }
 
     [Fact]
@@ -168,9 +164,8 @@ public class RenderMediatorTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'shapeItemComparer')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'shapeItemComparer')");
     }
 
     [Fact]
@@ -188,15 +183,12 @@ public class RenderMediatorTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'lineItemComparer')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'lineItemComparer')");
     }
-
     #endregion
 
     #region Indirect Tests
-
     [Fact]
     public void PushReactable_WithBatchEndNotification_CoordinatesRenderCalls()
     {
@@ -261,35 +253,33 @@ public class RenderMediatorTests : TestsBase
 
         void AssertTextureItems(Guid eventId, in Memory<RenderItem<TextureBatchItem>> data)
         {
-            eventId.Should().Be(PushNotifications.RenderTexturesId);
-            data.Span.ToArray().Should().HaveCount(2);
+            eventId.ShouldBe(PushNotifications.RenderTexturesId);
+            data.Span.ToArray().Length.ShouldBe(2);
         }
 
         void AssertFontItems(Guid eventId, in Memory<RenderItem<FontGlyphBatchItem>> data)
         {
-            eventId.Should().Be(PushNotifications.RenderFontsId);
-            data.Span.ToArray().Should().HaveCount(2);
+            eventId.ShouldBe(PushNotifications.RenderFontsId);
+            data.Span.ToArray().Length.ShouldBe(2);
         }
 
         void AssertShapeItems(Guid eventId, in Memory<RenderItem<ShapeBatchItem>> data)
         {
-            eventId.Should().Be(PushNotifications.RenderShapesId);
-            data.Span.ToArray().Should().HaveCount(2);
+            eventId.ShouldBe(PushNotifications.RenderShapesId);
+            data.Span.ToArray().Length.ShouldBe(2);
         }
 
         void AssertLineItems(Guid eventId, in Memory<RenderItem<LineBatchItem>> data)
         {
-            eventId.Should().Be(PushNotifications.RenderLinesId);
-            data.Span.ToArray().Should().HaveCount(2);
+            eventId.ShouldBe(PushNotifications.RenderLinesId);
+            data.Span.ToArray().Length.ShouldBe(2);
         }
 
         this.mockPushReactable.Received(1).Push(PushNotifications.EmptyBatchId);
     }
-
     #endregion
 
     #region Reacteable Tests
-
     [Fact]
     [Trait("Category", Subscription)]
     public void EndBatchReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
@@ -300,14 +290,13 @@ public class RenderMediatorTests : TestsBase
             .Do(ci =>
             {
                 var reactor = ci.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"RenderMediator.ctor() - {PushNotifications.BatchHasEndedId}");
             });
 
         // Act
         _ = CreateSystemUnderTest();
     }
-
     #endregion
 
     private static RenderItem<T> CreateRenderItem<T>(T item, int layer) => new () { Layer = layer, Item = item };

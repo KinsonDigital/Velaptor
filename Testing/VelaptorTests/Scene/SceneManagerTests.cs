@@ -1,4 +1,4 @@
-﻿// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
+// <copyright file="SceneManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace VelaptorTests.Scene;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Scene;
@@ -33,7 +33,7 @@ public class SceneManagerTests
         var actual = sut.CurrentScene;
 
         // Assert
-        actual.Should().BeSameAs(mockScene);
+        actual.ShouldBeSameAs(mockScene);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class SceneManagerTests
         var actual = sut.InActiveScenes;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class SceneManagerTests
         var actual = sut.IsLoaded;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class SceneManagerTests
         var actual = sut.IsLoaded;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class SceneManagerTests
         var actual = sut.TotalScenes;
 
         // Assert
-        actual.Should().Be(2);
+        actual.ShouldBe(2);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class SceneManagerTests
         var actual = sut.CurrentSceneIndex;
 
         // Assert
-        actual.Should().Be(0);
+        actual.ShouldBe(0);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class SceneManagerTests
         var actual = sut.UsesNavigationWrapping;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
     #endregion
 
@@ -159,8 +159,8 @@ public class SceneManagerTests
         var act = () => sut.AddScene(mockSceneB);
 
         // Assert
-        act.Should().Throw<Exception>()
-            .WithMessage($"The scene 'test-name' with the ID '{sceneId}' already exists.");
+        var exception = Should.Throw<Exception>(act);
+        exception.Message.ShouldBe($"The scene 'test-name' with the ID '{sceneId}' already exists.");
     }
 
     [Theory]
@@ -178,8 +178,8 @@ public class SceneManagerTests
         sut.AddScene(mockSceneA, setToActive);
 
         // Assert
-        sut.CurrentScene.Should().BeSameAs(mockSceneA);
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentScene.ShouldBeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.ShouldBe(0);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class SceneManagerTests
         sut.AddScene(mockSceneB, setToActive: true);
 
         // Assert
-        sut.CurrentScene.Should().BeSameAs(mockSceneB);
-        sut.CurrentSceneIndex.Should().Be(1);
+        sut.CurrentScene.ShouldBeSameAs(mockSceneB);
+        sut.CurrentSceneIndex.ShouldBe(1);
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public class SceneManagerTests
         sut.AddScene(mockSceneB, setToActive: false);
 
         // Assert
-        sut.CurrentScene.Should().BeSameAs(mockSceneA);
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentScene.ShouldBeSameAs(mockSceneA);
+        sut.CurrentSceneIndex.ShouldBe(0);
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class SceneManagerTests
         var act = () => sut.RemoveScene(Guid.NewGuid());
 
         // Assert
-        act.Should().NotThrow();
-        sut.CurrentScene.Should().BeNull();
+        Should.NotThrow(act);
+        sut.CurrentScene.ShouldBeNull();
     }
 
     [Fact]
@@ -255,8 +255,8 @@ public class SceneManagerTests
         sut.RemoveScene(doesNotExistSceneId);
 
         // Assert
-        sut.CurrentScene.Should().NotBeNull();
-        sut.SceneExists(sceneId).Should().BeTrue();
+        sut.CurrentScene.ShouldNotBeNull();
+        sut.SceneExists(sceneId).ShouldBeTrue();
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class SceneManagerTests
         sut.RemoveScene(sceneId);
 
         // Assert
-        sut.CurrentScene.Should().BeNull();
+        sut.CurrentScene.ShouldBeNull();
         mockScene.Received(1).UnloadContent();
     }
 
@@ -302,7 +302,7 @@ public class SceneManagerTests
         sut.RemoveScene(sceneAId);
 
         // Assert
-        sut.CurrentScene.Should().NotBeNull();
+        sut.CurrentScene.ShouldNotBeNull();
         mockSceneA.Received(1).UnloadContent();
     }
 
@@ -328,7 +328,7 @@ public class SceneManagerTests
         sut.RemoveScene(sceneBId);
 
         // Assert
-        sut.CurrentScene.Should().NotBeNull();
+        sut.CurrentScene.ShouldNotBeNull();
     }
 
     [Fact]
@@ -370,13 +370,13 @@ public class SceneManagerTests
         sut.NextScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(1);
+        sut.CurrentSceneIndex.ShouldBe(1);
 
         mockFirstScene.Received(1).UnloadContent();
         mockLastScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
-        sut.CurrentScene.Should().BeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldBeSameAs(mockLastScene);
     }
 
     [Fact]
@@ -401,13 +401,13 @@ public class SceneManagerTests
         sut.NextScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentSceneIndex.ShouldBe(0);
 
         mockLastScene.Received(1).UnloadContent();
         mockFirstScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockLastScene);
     }
 
     [Fact]
@@ -432,13 +432,13 @@ public class SceneManagerTests
         sut.NextScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(1);
+        sut.CurrentSceneIndex.ShouldBe(1);
 
         mockFirstScene.Received(1).UnloadContent();
         mockLastScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockLastScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockFirstScene);
     }
 
     [Fact]
@@ -463,13 +463,13 @@ public class SceneManagerTests
         sut.NextScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(1);
+        sut.CurrentSceneIndex.ShouldBe(1);
 
         mockFirstScene.DidNotReceive().UnloadContent();
         mockLastScene.DidNotReceive().LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockLastScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockFirstScene);
     }
 
     [Fact]
@@ -511,13 +511,13 @@ public class SceneManagerTests
         sut.PreviousScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(1);
+        sut.CurrentSceneIndex.ShouldBe(1);
 
         mockFirstScene.Received(1).UnloadContent();
         mockLastScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockLastScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockFirstScene);
     }
 
     [Fact]
@@ -542,13 +542,13 @@ public class SceneManagerTests
         sut.PreviousScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentSceneIndex.ShouldBe(0);
 
         mockLastScene.Received(1).UnloadContent();
         mockFirstScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockLastScene);
     }
 
     [Fact]
@@ -573,13 +573,13 @@ public class SceneManagerTests
         sut.PreviousScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentSceneIndex.ShouldBe(0);
 
         mockFirstScene.DidNotReceive().UnloadContent();
         mockLastScene.DidNotReceive().LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldBeSameAs(mockFirstScene);
+        sut.CurrentScene.ShouldNotBeSameAs(mockLastScene);
     }
 
     [Fact]
@@ -604,13 +604,12 @@ public class SceneManagerTests
         sut.PreviousScene();
 
         // Assert
-        sut.CurrentSceneIndex.Should().Be(0);
+        sut.CurrentSceneIndex.ShouldBe(0);
 
         mockLastScene.Received(1).UnloadContent();
         mockFirstScene.Received(1).LoadContent();
 
-        sut.CurrentScene.Should().BeSameAs(mockFirstScene);
-        sut.CurrentScene.Should().NotBeSameAs(mockLastScene);
+        sut.CurrentScene.ShouldBeSameAs(mockFirstScene);
     }
 
     [Fact]
@@ -633,12 +632,9 @@ public class SceneManagerTests
         sut.AddScene(mockSceneA);
         sut.AddScene(mockSceneB, setToActive: true);
 
-        // Act
-        var act = () => sut.SetSceneAsActive(id);
-
-        // Assert
-        act.Should().Throw<SceneDoesNotExistException>()
-            .WithMessage($"The scene with the ID '{id.ToString()}' does not exist.");
+        // Act && Assert
+        var exception = Should.Throw<SceneDoesNotExistException>(() => sut.SetSceneAsActive(id));
+        exception.Message.ShouldBe($"The scene with the ID '{id.ToString()}' does not exist.");
     }
 
     [Fact]
@@ -666,7 +662,7 @@ public class SceneManagerTests
         sut.SetSceneAsActive(sceneAId);
 
         // Assert
-        sut.InActiveScenes.Should().BeEquivalentTo(expected);
+        sut.InActiveScenes.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -683,8 +679,8 @@ public class SceneManagerTests
         var act = () => sut.LoadContent();
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>()
-            .WithMessage(expected);
+        var exception = Should.Throw<ObjectDisposedException>(act);
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -713,8 +709,7 @@ public class SceneManagerTests
         // Act
         var act = () => sut.LoadContent();
 
-        // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -739,7 +734,7 @@ public class SceneManagerTests
         // Assert
         mockSceneA.DidNotReceive().UnloadContent();
         mockSceneB.DidNotReceive().UnloadContent();
-        sut.CurrentScene.Should().NotBeNull();
+        sut.CurrentScene.ShouldNotBeNull();
     }
 
     [Fact]
@@ -766,7 +761,7 @@ public class SceneManagerTests
         // Assert
         mockSceneA.Received(1).UnloadContent();
         mockSceneB.Received(1).UnloadContent();
-        sut.CurrentScene.Should().BeNull();
+        sut.CurrentScene.ShouldBeNull();
     }
 
     [Fact]
@@ -797,9 +792,9 @@ public class SceneManagerTests
         // Assert
         mockSceneA.Received(1).UnloadContent();
         mockSceneB.Received(1).UnloadContent();
-        sut.CurrentScene.Should().NotBeNull();
-        sut.CurrentScene.Id.Should().Be(sceneAId);
-        sut.InActiveScenes.Should().BeEquivalentTo(expectedInActiveIds);
+        sut.CurrentScene.ShouldNotBeNull();
+        sut.CurrentScene.Id.ShouldBe(sceneAId);
+        sut.InActiveScenes.ShouldBeEquivalentTo(expectedInActiveIds);
     }
 
     [Fact]
@@ -812,7 +807,7 @@ public class SceneManagerTests
         var act = () => sut.Update(default);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -848,7 +843,7 @@ public class SceneManagerTests
         var act = () => sut.Render();
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Fact]
@@ -884,7 +879,7 @@ public class SceneManagerTests
         var actual = sut.SceneExists(sceneAId);
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
 
     [Fact]
@@ -903,7 +898,7 @@ public class SceneManagerTests
         var actual = sut.SceneExists(Guid.NewGuid());
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -951,7 +946,7 @@ public class SceneManagerTests
         // Assert
         mockSceneA.Received(1).UnloadContent();
         mockSceneB.Received(1).UnloadContent();
-        sut.CurrentScene.Should().BeNull();
+        sut.CurrentScene.ShouldBeNull();
     }
     #endregion
 }

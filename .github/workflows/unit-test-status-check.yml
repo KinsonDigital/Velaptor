@@ -9,58 +9,29 @@ defaults:
 
 on:
   workflow_dispatch:
-  pull_request_target:
+  pull_request:
     branches: [main, preview]
 
 
 jobs:
-  # These are not tests but it is testing related. This is just here to make sure that the
-  # 'test' related project at least builds.
-  build_velaptor_testing:
-    name: Build ${{ vars.PROJECT_NAME }} Testing App
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v14.1.0
-    with:
-      project-name: "${{ vars.PROJECT_NAME }}Testing"
-      build-config: Debug
-      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
-      checkout-ref: ${{ github.event.pull_request.head.ref }}
-    secrets:
-      cicd-pat: ${{ secrets.CICD_TOKEN }}
-
-
-  # These are not tests but it is testing related. This is just here to make sure that the
-  # 'test' related project at least builds.
-  build_avalonia_testing:
-    name: Build Avalonia Testing App
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v14.1.0
-    with:
-      project-name: "AvaloniaTesting"
-      build-config: Debug
-      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
-      checkout-ref: ${{ github.event.pull_request.head.ref }}
-    secrets:
-      cicd-pat: ${{ secrets.CICD_TOKEN }}
-
-
   run_tests:
-    name: Run ${{ vars.PROJECT_NAME }} Tests
-    uses: KinsonDigital/Infrastructure/.github/workflows/run-csharp-tests.yml@v14.1.0
-    with:
-      project-name: "${{ vars.PROJECT_NAME }}Tests"
-      build-config: Debug
-      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      checkout-repository: ${{ github.event.pull_request.head.repo.full_name }}
-      checkout-ref: ${{ github.event.pull_request.head.ref }}
-    secrets:
-      cicd-pat: ${{ secrets.CICD_TOKEN }}
-
-
-  test_status_check:
-    name: ${{ vars.PROJECT_NAME }} Test Status Check
-    needs: [build_velaptor_testing, build_avalonia_testing, run_tests]
-    runs-on: ubuntu-latest
+    name: Run Unit Tests Status Check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+    runs-on: ${{ matrix.platform }}
     steps:
-      - name: Print Status Check Pass Message
-        run: Write-Host "::notice::✅Test Status Check Passed✅";
+      - uses: actions/checkout@v6
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Tests
+        run: |
+          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests/${{ vars.PROJECT_NAME }}Tests.csproj" -c Debug;

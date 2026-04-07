@@ -15,8 +15,8 @@ on:
         required: true
         type: choice
         options: [Preview, Production]
-      trigger-api-docs-release:
-        description: Check to trigger a release of the API Documentation website.
+      trigger-docs-release:
+        description: Trigger Velaptor docs release workflow after the library release is done. Only applicable for production releases.
         required: false
         default: true
         type: boolean
@@ -28,6 +28,31 @@ on:
 
 
 jobs:
+  validate_branch:
+    name: Validate Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Preview Branch
+        if: ${{ inputs.release-type == 'Preview' }}
+        run: |
+          $branchName = "${{ github.ref_name }}".Trim();
+
+          if ($branchName -ne "${{ vars.PREV_BRANCH }}") {
+            Write-Error "::error::The branch name must be 'release' for a preview release.";
+            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+          }
+
+      - name: Check Production Branch
+        if: ${{ inputs.release-type == 'Production' }}
+        run: |
+          $branchName = "${{ github.ref_name }}".Trim();
+
+          if ($branchName -ne "${{ vars.PROD_BRANCH }}") {
+            Write-Host "::error::The branch name must be 'main' for a production release.";
+            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+          }
+
+
   determine_release_notes_path:
     name: Determine Release Notes Dir Path
     runs-on: ubuntu-latest
@@ -41,70 +66,147 @@ jobs:
           "release-notes-dir-path=$dirPath" >> $env:GITHUB_OUTPUT;
 
 
+  get_and_validate_version:
+    name: Get And Validate Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Get Version
+        id: get-version
+        uses: KinsonDigital/Infrastructure/actions/get-version@v17.1.0
+        with:
+          version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+      - name: Validate Version
+        uses: KinsonDigital/Infrastructure/actions/validate-version@v17.1.0
+        with:
+          version: "v${{ steps.get-version.outputs.version }}"
+          release-type: "${{ inputs.release-type }}"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+
+  build:
+    name: Build Velaptor Status Check
+    needs: validate_branch
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+
+
+  run_tests:
+    name: Run Unit Tests
+    needs: [validate_branch, get_and_validate_version]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "ubuntu-latest"
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Tests
+        run: |
+          dotnet test "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Tests/${{ vars.PROJECT_NAME }}Tests.csproj" `
+            -c ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }};
+
+
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: determine_release_notes_path
-    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v14.1.0
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests]
+    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v17.1.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
-      run-branch: "${{ github.ref_name }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      relative-release-notes-dir-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}"
-      release-notes-file-name-prefix: "${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}"
+      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
-      pr-include-notes-label: "${{ vars.PR_INCLUDE_NOTES_LABEL }}"
-      send-release-tweet: ${{ vars.TWITTER_BROADCAST_ENABLED == 'true' }}
+      build-project: false
       dry-run: ${{ inputs.dry-run }}
       transpile-readme: true
+      deno-version: "${{ vars.DENO_VERSION }}"
     secrets:
       cicd-pat: "${{ secrets.CICD_TOKEN }}"
       nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
-      twitter-consumer-api-key: "${{ secrets.TWITTER_CONSUMER_API_KEY }}"
-      twitter-consumer-api-secret: "${{ secrets.TWITTER_CONSUMER_API_SECRET }}"
-      twitter-access-token: "${{ secrets.TWITTER_ACCESS_TOKEN }}"
-      twitter-access-token-secret: "${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}"
 
 
-  validate_version:
-    name: Validate Version
-    uses: KinsonDigital/Infrastructure/.github/workflows/validate-csharp-version.yml@v14.1.0
-    with:
-      project-name: "${{ vars.PROJECT_NAME }}"
-      release-type: "${{ inputs.release-type }}"
-    secrets:
-      cicd-pat: "${{ secrets.CICD_TOKEN }}"
-
-
-  run_api_doc_release:
-    name: Run API Doc Release
-    needs: [run_release, validate_version]
-    if: ${{ inputs.trigger-api-docs-release == true }}
+  # Execute the full Velaptor docs release workflow after the library release is done.
+  release_velaptor_docs:
+    name: Release Velaptor Docs
     runs-on: ubuntu-latest
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
+    if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
     steps:
-      - name:  Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Set Up Deno (${{ vars.DENO_VERSION }})
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: ${{ vars.DENO_VERSION }}
-
-      - name: Execute API Release Workflow
+      - name: Execute Release
+        env:
+          GH_TOKEN: ${{ secrets.CICD_TOKEN }}
         run: |
-          $scriptUrl = "${{ github.workspace }}/.github/cicd/scripts/trigger-api-docs-release.ts";
+          $workflowName = "${{ vars.VELAPTOR_DOCS_FULL_RELEASE_WORKFLOW_NAME }}";
+          $orgName = "${{ vars.ORGANIZATION_NAME }}";
+          $repoName = "${{ vars.VELAPTOR_DOCS_REPO_NAME }}";
+          $version = "v${{ needs.get_and_validate_version.outputs.version }}";
 
-          deno run `
-            --allow-net `
-            $scriptUrl `
-            "${{ vars.DOC_SITE_REPO_NAME }}" `
-            "${{ vars.DOC_SITE_RELEASE_BRANCH }}" `
-            "${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}" `
-            "[api-version,${{ needs.validate_version.outputs.version }}]" `
-            "${{ secrets.CICD_TOKEN }}";
-            
-          $releasesUrl = "https://github.com/${{ vars.ORGANIZATION_NAME }}/${{ vars.DOC_SITE_REPO_NAME }}/actions/workflows/${{ vars.DOC_SITE_API_RELEASE_WORKFLOW_NAME }}";
+          # TODO: Need to replace the name of the branch
+          gh workflow run $workflowName -R "$orgName/$repoName" --ref "main" --field "api-version=$version" --field "executed-externally=true";
 
-          $notice = "An API documentation release has been triggered for the '${{ vars.DOC_SITE_REPO_NAME }}' repository."
-          $notice = $notice + "`n`t${{ vars.DOC_SITE_REPO_NAME }} Releases: $releasesUrl";
-          Write-Host "::notice::$notice";
+
+  send_release_announcements:
+    name: Send Release Announcements
+    runs-on: ubuntu-latest
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
+    if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
+    steps:
+      - name: Send X Release Announcement
+        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@v17.1.0
+        with:
+          repo-owner: ${{ vars.ORGANIZATION_NAME }}
+          project-name: ${{ vars.PROJECT_NAME }}
+          version: ${{ needs.get_and_validate_version.outputs.version }}
+          website-url: ${{ vars.WEBSITE_URL }}
+          local-post-template-file-path: "${{ github.workspace }}/templates/release-announcement.txt"
+          discord-invite-code: ${{ vars.DISCORD_INVITE_CODE }}
+          access-token-key: ${{ secrets.X_ACCESS_TOKEN_KEY }}
+          access-token-secret: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          consumer-api-key: ${{ secrets.X_CONSUMER_API_KEY }}
+          consumer-api-secret: ${{ secrets.X_CONSUMER_API_SECRET }}
+          deno-version: ${{ vars.DENO_VERSION }}
+          github-token: ${{ secrets.CICD_TOKEN }}
+
+      - name: Send Bluesky Release Announcement
+        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@v17.1.0
+        with:
+          repo-owner: ${{ vars.ORGANIZATION_NAME }}
+          project-name: ${{ vars.PROJECT_NAME }}
+          version: ${{ needs.get_and_validate_version.outputs.version }}
+          website-url: ${{ vars.WEBSITE_URL }}
+          local-post-template-file-path: "${{ github.workspace }}/templates/release-announcement.txt"
+          discord-invite-code: ${{ vars.DISCORD_INVITE_CODE }}
+          service: ${{ vars.BLUESKY_SERVICE }}
+          identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
+          password:  ${{ secrets.BLUESKY_PASSWORD }}
+          deno-version: ${{ vars.DENO_VERSION }}
+          github-token: ${{ secrets.CICD_TOKEN }}

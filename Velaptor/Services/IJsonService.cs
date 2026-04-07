@@ -20,7 +20,10 @@ internal interface IJsonService
     /// Deserializes the JSON to the specified .NET type.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="useCamelCase">
+    /// True to use camel case property names during deserialization; otherwise, false.
+    /// </param>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <returns>The deserialized object from the JSON string.</returns>
-    T? Deserialize<T>(string value);
+    T? Deserialize<T>(string value, bool useCamelCase = true);
 }

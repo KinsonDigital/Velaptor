@@ -17,7 +17,7 @@ using Velaptor.OpenGL;
 /// <summary>
 /// Invokes OpenGL calls.
 /// </summary>
-[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the SILK library.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the SILK library.")]
 internal sealed class GLInvoker : IGLInvoker
 {
     private static readonly Queue<string> OpenGLCallStack = new ();
@@ -55,26 +55,32 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
     {
+#if DEBUG || DEBUG_CONSOLE
         ArgumentException.ThrowIfNullOrEmpty(message);
 
         AddToGLCallStack(nameof(PushDebugGroup));
         this.gl.PushDebugGroup((DebugSource)source, id, length, message);
+#endif
     }
 
     /// <inheritdoc/>
     public void PopDebugGroup()
     {
+#if DEBUG || DEBUG_CONSOLE
         AddToGLCallStack(nameof(PopDebugGroup));
         this.gl.PopDebugGroup();
+#endif
     }
 
     /// <inheritdoc/>
     public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         ArgumentException.ThrowIfNullOrEmpty(label);
 
         AddToGLCallStack(nameof(ObjectLabel));
         this.gl.ObjectLabel((ObjectIdentifier)identifier, name, length, label);
+#endif
     }
 
     /// <inheritdoc/>
@@ -435,7 +441,7 @@ internal sealed class GLInvoker : IGLInvoker
     }
 
     /// <inheritdoc/>
-    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep same API signature.")]
+    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Need to keep the same API signature.")]
     public void TexImage2D<T>(
         GLTextureTarget target,
         int level,
@@ -470,7 +476,7 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public void DebugMessageCallback<T0>(DebugProc callback, in T0 userParam)
         where T0 : unmanaged
-        => this.gl.DebugMessageCallback(callback, userParam);
+        => this.gl.DebugMessageCallback(callback, in userParam);
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()

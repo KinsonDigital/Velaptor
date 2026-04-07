@@ -36,7 +36,7 @@ internal sealed class BatchingManager : IBatchingManager
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchingManager"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Creates reactable objects.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public BatchingManager(IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(reactableFactory);

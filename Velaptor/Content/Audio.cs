@@ -25,26 +25,29 @@ public sealed class Audio : IAudio
     /// </summary>
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
     /// <param name="internalAudio">Internal audio.</param>
-    /// <param name="audioId">The unique ID of the audio.</param>
-    internal Audio(
-        IPushReactable<DisposeAudioData> disposeReactable,
-        ICASLAudio internalAudio,
-        uint audioId)
+    /// <param name="id">A unique id to identify the audio object for disposal purposes.</param>
+    /// <remarks>
+    /// The purpose of the <paramref name="id"/> is to make sure that when the <paramref name="disposeReactable"/>
+    /// event is fired, the payload of the event will carry the unique id of the specific audio object
+    /// that needs to dispose of itself.  If we did not have this mechanism, the first audio disposal would
+    /// dispose of all audio objects.
+    /// </remarks>
+    internal Audio(IPushReactable<DisposeAudioData> disposeReactable, ICASLAudio internalAudio, uint id)
     {
         ArgumentNullException.ThrowIfNull(disposeReactable);
         ArgumentNullException.ThrowIfNull(internalAudio);
 
         this.unsubscriber = disposeReactable.CreateOneWayReceive(
             PushNotifications.AudioDisposedId,
-            Dispose,
+            Unload,
             () => this.unsubscriber?.Dispose());
 
         this.caslAudio = internalAudio;
-        Id = audioId;
+        Id = id;
     }
 
     /// <inheritdoc/>
-    public uint Id { get; private set; }
+    public uint Id { get; }
 
     /// <inheritdoc cref="IAudio"/>
     public float Volume
@@ -59,11 +62,11 @@ public sealed class Audio : IAudio
 
     /// <inheritdoc cref="IAudio"/>
     public TimeSpan Position =>
-        this.isDisposed ? default : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Position.Milliseconds);
+        this.isDisposed ? TimeSpan.Zero : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Position.Milliseconds);
 
     /// <inheritdoc cref="IAudio"/>
     public TimeSpan Length =>
-        this.isDisposed ? default : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Length.Milliseconds);
+        this.isDisposed ? TimeSpan.Zero : new TimeSpan(0, 0, 0, 0, (int)this.caslAudio.Length.Milliseconds);
 
     /// <inheritdoc cref="IAudio"/>
     public bool IsLooping
@@ -164,21 +167,21 @@ public sealed class Audio : IAudio
         this.caslAudio.Reset();
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(new DisposeAudioData { AudioId = Id });
-
     /// <summary>
-    /// Disposes of the audio if this audio <see cref="Id"/> matches the audio ID in the given <paramref name="data"/>.
+    /// Disposes of the audio if audio.
+    /// <param name="disposeData">The data used to dispose of the audio.</param>
     /// </summary>
-    /// <param name="data">The data of the audio to dispose.</param>
-    private void Dispose(DisposeAudioData data)
+    private void Unload(DisposeAudioData disposeData)
     {
-        if (this.isDisposed || Id != data.AudioId)
+        if (this.isDisposed)
         {
             return;
         }
 
-        this.caslAudio.Dispose();
+        if (disposeData.AudioId == Id)
+        {
+            this.caslAudio.Dispose();
+        }
 
         this.isDisposed = true;
     }

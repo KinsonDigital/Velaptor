@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
 using Fakes;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -51,9 +51,8 @@ public class WindowTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'window')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'window')");
     }
 
     [Fact]
@@ -64,10 +63,10 @@ public class WindowTests : TestsBase
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.AutoSceneLoading.Should().BeTrue();
-        sut.AutoSceneRendering.Should().BeTrue();
-        sut.AutoSceneUnloading.Should().BeTrue();
-        sut.AutoSceneUpdating.Should().BeTrue();
+        sut.AutoSceneLoading.ShouldBeTrue();
+        sut.AutoSceneRendering.ShouldBeTrue();
+        sut.AutoSceneUnloading.ShouldBeTrue();
+        sut.AutoSceneUpdating.ShouldBeTrue();
     }
     #endregion
 
@@ -89,8 +88,8 @@ public class WindowTests : TestsBase
         var actual = sut.Initialize;
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeSameAs(actual);
+        actual.ShouldNotBeNull();
+        actual.ShouldBeSameAs(actual);
     }
 
     [Fact]
@@ -110,8 +109,8 @@ public class WindowTests : TestsBase
         var actual = sut.Update;
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeSameAs(actual);
+        actual.ShouldNotBeNull();
+        actual.ShouldBeSameAs(actual);
     }
 
     [Fact]
@@ -131,8 +130,8 @@ public class WindowTests : TestsBase
         var actual = sut.Draw;
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeSameAs(actual);
+        actual.ShouldNotBeNull();
+        actual.ShouldBeSameAs(actual);
     }
 
     [Fact]
@@ -152,8 +151,8 @@ public class WindowTests : TestsBase
         var actual = sut.WinResize;
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeSameAs(actual);
+        actual.ShouldNotBeNull();
+        actual.ShouldBeSameAs(actual);
     }
 
     [Fact]
@@ -173,8 +172,8 @@ public class WindowTests : TestsBase
         var actual = sut.Uninitialize;
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeSameAs(actual);
+        actual.ShouldNotBeNull();
+        actual.ShouldBeSameAs(actual);
     }
 
     [Fact]
@@ -269,7 +268,7 @@ public class WindowTests : TestsBase
         sut.AutoSceneLoading = !sut.AutoSceneLoading;
 
         // Assert
-        sut.AutoSceneLoading.Should().Be(!defaultValue);
+        sut.AutoSceneLoading.ShouldBe(!defaultValue);
     }
 
     [Fact]
@@ -284,7 +283,7 @@ public class WindowTests : TestsBase
         sut.AutoSceneUnloading = !sut.AutoSceneUnloading;
 
         // Assert
-        sut.AutoSceneUnloading.Should().Be(!defaultValue);
+        sut.AutoSceneUnloading.ShouldBe(!defaultValue);
     }
 
     [Fact]
@@ -299,7 +298,7 @@ public class WindowTests : TestsBase
         sut.AutoSceneUpdating = !sut.AutoSceneUpdating;
 
         // Assert
-        sut.AutoSceneUpdating.Should().Be(!defaultValue);
+        sut.AutoSceneUpdating.ShouldBe(!defaultValue);
     }
 
     [Fact]
@@ -314,7 +313,7 @@ public class WindowTests : TestsBase
         sut.AutoSceneRendering = !sut.AutoSceneRendering;
 
         // Assert
-        sut.AutoSceneRendering.Should().Be(!defaultValue);
+        sut.AutoSceneRendering.ShouldBe(!defaultValue);
     }
 
     [Fact]
@@ -389,7 +388,7 @@ public class WindowTests : TestsBase
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.SceneManager.Should().BeSameAs(this.mockSceneManager);
+        sut.SceneManager.ShouldBeSameAs(this.mockSceneManager);
     }
 
     [Fact]
@@ -404,7 +403,7 @@ public class WindowTests : TestsBase
         var actual = sut.Fps;
 
         // Assert
-        actual.Should().Be(123);
+        actual.ShouldBe(123);
     }
 
     [Fact]
@@ -419,7 +418,7 @@ public class WindowTests : TestsBase
         var actual = sut.Initialized;
 
         // Assert
-        actual.Should().BeTrue();
+        actual.ShouldBeTrue();
     }
     #endregion
 

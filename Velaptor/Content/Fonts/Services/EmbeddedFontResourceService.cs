@@ -41,11 +41,11 @@ internal sealed class EmbeddedFontResourceService : IEmbeddedResourceLoaderServi
 
         var resources = assembly.GetManifestResourceNames();
 
-        var shaderSrcResource = (from r in resources
+        var fontResource = (from r in resources
             where r.EndsWith(name, StringComparison.Ordinal)
             select r).SingleOrDefault();
 
-        if (resources is null || resources.Length <= 0 || string.IsNullOrEmpty(shaderSrcResource))
+        if (resources is null || resources.Length <= 0 || string.IsNullOrEmpty(fontResource))
         {
             throw new LoadEmbeddedResourceException($"The embedded text file resource with the name '{name}' does not exist.");
         }

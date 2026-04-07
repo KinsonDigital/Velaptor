@@ -100,6 +100,7 @@ internal sealed class RenderMediator : IRenderMediator
 
         var layerIndex = 0;
 
+        // Collect all existing layers that exist before sorting them from the farthest back to the front
         for (var i = 0; i < textureItems.Length; i++)
         {
             var textureLayer = textureItems.Span[i].Layer;
@@ -148,6 +149,7 @@ internal sealed class RenderMediator : IRenderMediator
             layerIndex++;
         }
 
+        // Sort all the existing layers from the farthest back to the front.
         this.allLayers.Span.Sort();
 
         // Renders all the items in a coordinated fashion
@@ -167,38 +169,38 @@ internal sealed class RenderMediator : IRenderMediator
 
             if (totalTexturesOnCurrentLayer > 0)
             {
-                var textureLayerStart = textureItems.FirstLayerIndex(currentLayer);
+                var textureLayerStartIndex = textureItems.FirstLayerIndex(currentLayer);
 
                 this.textureRenderBatchReactable.Push(
                     PushNotifications.RenderTexturesId,
-                    textureItems.Slice(textureLayerStart, totalTexturesOnCurrentLayer));
+                    textureItems.Slice(textureLayerStartIndex, totalTexturesOnCurrentLayer));
             }
 
             if (totalFontOnCurrentLayer > 0)
             {
-                var fontLayerStart = fontItems.FirstLayerIndex(currentLayer);
+                var fontLayerStartIndex = fontItems.FirstLayerIndex(currentLayer);
 
                 this.fontRenderBatchReactable.Push(
                     PushNotifications.RenderFontsId,
-                    fontItems.Slice(fontLayerStart, totalFontOnCurrentLayer));
+                    fontItems.Slice(fontLayerStartIndex, totalFontOnCurrentLayer));
             }
 
             if (totalShapesOnCurrentLayer > 0)
             {
-                var shapeLayerStart = shapeItems.FirstLayerIndex(currentLayer);
+                var shapeLayerStartIndex = shapeItems.FirstLayerIndex(currentLayer);
 
                 this.shapeRenderBatchReactable.Push(
                     PushNotifications.RenderShapesId,
-                    shapeItems.Slice(shapeLayerStart, totalShapesOnCurrentLayer));
+                    shapeItems.Slice(shapeLayerStartIndex, totalShapesOnCurrentLayer));
             }
 
             if (totalLinesOnCurrentLayer > 0)
             {
-                var lineLayerStart = lineItems.FirstLayerIndex(currentLayer);
+                var lineLayerStartIndex = lineItems.FirstLayerIndex(currentLayer);
 
                 this.lineRenderBatchReactable.Push(
                     PushNotifications.RenderLinesId,
-                    lineItems.Slice(lineLayerStart, totalLinesOnCurrentLayer));
+                    lineItems.Slice(lineLayerStartIndex, totalLinesOnCurrentLayer));
             }
 
             // Resets the item back to the default value

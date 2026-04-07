@@ -5,10 +5,12 @@
 #pragma warning disable SA1515
 namespace Velaptor.NativeInterop.ImGui;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using ImGuiNET;
 
 /// <inheritdoc/>
+[ExcludeFromCodeCoverage(Justification = "Direct calls to the ImGui external library.")]
 public sealed class ImGuiInvoker : IImGuiInvoker
 {
     /// <inheritdoc/>

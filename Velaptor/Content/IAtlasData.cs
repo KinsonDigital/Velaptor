@@ -25,16 +25,6 @@ public interface IAtlasData : IContent
     ITexture Texture { get; }
 
     /// <summary>
-    /// Gets the width of the entire texture atlas texture.
-    /// </summary>
-    uint Width { get; }
-
-    /// <summary>
-    /// Gets the height of the entire texture atlas texture.
-    /// </summary>
-    uint Height { get; }
-
-    /// <summary>
     /// Gets the file path to the atlas data.
     /// </summary>
     string AtlasDataFilePath { get; }

@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.OpenGL;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -25,8 +25,8 @@ public class WindowSizeEventArgsTests
         var actualHeight = eventArgs.Height;
 
         // Assert
-        actualWidth.Should().Be(123u);
-        actualHeight.Should().Be(456u);
+        actualWidth.ShouldBe(123u);
+        actualHeight.ShouldBe(456u);
     }
     #endregion
 }

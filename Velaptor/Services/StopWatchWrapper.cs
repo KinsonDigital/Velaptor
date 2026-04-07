@@ -4,7 +4,6 @@
 
 namespace Velaptor.Services;
 
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,25 +18,9 @@ using System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage(Justification = "Thin wrapper around the Stopwatch class.")]
 internal class StopWatchWrapper : IStopWatchWrapper
 {
-    private readonly Stopwatch stopWatch;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StopWatchWrapper"/> class.
-    /// </summary>
-    public StopWatchWrapper() => this.stopWatch = new Stopwatch();
+    /// <inheritdoc />
+    public long Frequency => Stopwatch.Frequency;
 
     /// <inheritdoc/>
-    public TimeSpan Elapsed => this.stopWatch.Elapsed;
-
-    /// <inheritdoc/>
-    public bool IsRunning => this.stopWatch.IsRunning;
-
-    /// <inheritdoc/>
-    public void Start() => this.stopWatch.Start();
-
-    /// <inheritdoc/>
-    public void Stop() => this.stopWatch.Stop();
-
-    /// <inheritdoc/>
-    public void Reset() => this.stopWatch.Reset();
+    public long GetTimestamp() => Stopwatch.GetTimestamp();
 }

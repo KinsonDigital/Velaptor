@@ -12,8 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using FluentAssertions;
-using Helpers;
+using Shouldly;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
@@ -44,7 +43,7 @@ public class InternalExtensionMethodsTests
         var actualPixels = GetSixLaborPixels(sixLaborsImage);
 
         // Assert
-        actualPixels.Should().BeEquivalentTo(expectedPixels);
+        actualPixels.ShouldBeEquivalentTo(expectedPixels);
     }
 
     [Fact]
@@ -62,10 +61,10 @@ public class InternalExtensionMethodsTests
         var expectedPixels = CreateImageDataPixels(2, 3, rowColors);
 
         // Act
-        var actual = TestHelpers.ToImageData(sixLaborsImage);
+        var actual = sixLaborsImage.ToImageData();
 
         // Assert
-        actual.Pixels.Should().BeEquivalentTo(expectedPixels);
+        actual.Pixels.ShouldBeEquivalentTo(expectedPixels);
     }
 
     [Fact]
@@ -78,8 +77,8 @@ public class InternalExtensionMethodsTests
         var actual = rect.GetPosition();
 
         // Assert
-        actual.X.Should().Be(11f);
-        actual.Y.Should().Be(22f);
+        actual.X.ShouldBe(11f);
+        actual.Y.ShouldBe(22f);
     }
 
     [Theory]
@@ -96,8 +95,8 @@ public class InternalExtensionMethodsTests
         var actual = paths.NormalizePaths().ToArray();
 
         // Assert
-        actual.Should().ContainSingle();
-        actual[0].Should().Be(expected);
+        actual.ShouldHaveSingleItem();
+        actual[0].ShouldBe(expected);
     }
 
     [Fact]
@@ -110,8 +109,8 @@ public class InternalExtensionMethodsTests
         var actual = point.ToVector2();
 
         // Assert
-        actual.X.Should().Be(11f);
-        actual.Y.Should().Be(22f);
+        actual.X.ShouldBe(11f);
+        actual.Y.ShouldBe(22f);
     }
 
     [Fact]
@@ -124,8 +123,8 @@ public class InternalExtensionMethodsTests
         var actual = point.ToPoint();
 
         // Assert
-        actual.X.Should().Be(11);
-        actual.Y.Should().Be(22);
+        actual.X.ShouldBe(11);
+        actual.Y.ShouldBe(22);
     }
 
     [Fact]
@@ -163,8 +162,8 @@ public class InternalExtensionMethodsTests
         queue.DequeueWhile(untilPredicate);
 
         // Assert
-        totalInvokes.Should().Be(2);
-        queue.Should().BeEmpty();
+        totalInvokes.ShouldBe(2);
+        queue.ShouldBeEmpty();
     }
 
     [Theory]
@@ -179,33 +178,46 @@ public class InternalExtensionMethodsTests
         var actual = items.IndexOf(i => i == value);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
-    public void FirstItemIndex_WhenPredicateReturnsTrue_ReturnsCorrectIndex()
+    public void FirstItemIndex_WhenPredicateReturnsTrueWhenItemIsInFirstHalf_ReturnsCorrectIndex()
     {
         // Arrange
-        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+        var sut = new Memory<string>(["item-1", "item-2", "item-3", "item-4", "item-5"]);
 
         // Act
-        var actual = sut.FirstItemIndex(i => i == "item-C");
+        var actual = sut.FirstItemIndex(i => i == "item-2");
 
         // Assert
-        actual.Should().Be(1);
+        actual.ShouldBe(1);
+    }
+
+    [Fact]
+    public void FirstItemIndex_WhenPredicateReturnsTrueWhenItemIsInLastHalf_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Memory<string>(["item-1", "item-2", "item-3", "item-4", "item-5"]);
+
+        // Act
+        var actual = sut.FirstItemIndex(i => i == "item-4");
+
+        // Assert
+        actual.ShouldBe(3);
     }
 
     [Fact]
     public void FirstItemIndex_WhenPredicateNeverReturnsTrue_ReturnsCorrectResult()
     {
         // Arrange
-        var sut = new Memory<string>(new[] { "item-A", "item-C", "item-B" });
+        var sut = new Memory<string>(["item-A", "item-C", "item-B"]);
 
         // Act
         var actual = sut.FirstItemIndex(i => i == "item-D");
 
         // Assert
-        actual.Should().Be(-1);
+        actual.ShouldBe(-1);
     }
 
     [Fact]
@@ -226,7 +238,7 @@ public class InternalExtensionMethodsTests
         var actual = items.FirstLayerIndex(30);
 
         // Assert
-        actual.Should().Be(2);
+        actual.ShouldBe(2);
     }
 
     [Fact]
@@ -247,7 +259,7 @@ public class InternalExtensionMethodsTests
         var actual = items.FirstLayerIndex(300);
 
         // Assert
-        actual.Should().Be(-1);
+        actual.ShouldBe(-1);
     }
 
     [Fact]
@@ -268,7 +280,7 @@ public class InternalExtensionMethodsTests
         var actual = items.TotalOnLayer(20);
 
         // Assert
-        actual.Should().Be(2);
+        actual.ShouldBe(2);
     }
 
     [Fact]
@@ -289,7 +301,7 @@ public class InternalExtensionMethodsTests
         var actual = items.TotalOnLayer(200);
 
         // Assert
-        actual.Should().Be(0);
+        actual.ShouldBe(0);
     }
 
     [Fact]
@@ -310,7 +322,7 @@ public class InternalExtensionMethodsTests
         var actual = items.IndexOf(string.IsNullOrEmpty);
 
         // Assert
-        actual.Should().Be(2);
+        actual.ShouldBe(2);
     }
 
     [Fact]
@@ -331,7 +343,7 @@ public class InternalExtensionMethodsTests
         var actual = items.IndexOf(string.IsNullOrEmpty);
 
         // Assert
-        actual.Should().Be(-1);
+        actual.ShouldBe(-1);
     }
 
     [Fact]
@@ -339,13 +351,13 @@ public class InternalExtensionMethodsTests
     {
         // Arrange
         var expected = new[] { 1, 2, 3, 4, 0, 0 };
-        var items = new Memory<int>(new[] { 1, 2, 3, 4, });
+        var items = new Memory<int>([1, 2, 3, 4]);
 
         // Act
         items.IncreaseBy(2);
 
         // Assert
-        items.Span.ToArray().Should().BeEquivalentTo(expected);
+        items.Span.ToArray().ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -381,7 +393,7 @@ public class InternalExtensionMethodsTests
         var actual = sut.ToBatchItem();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -415,7 +427,7 @@ public class InternalExtensionMethodsTests
         var actual = sut.ToBatchItem();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Theory]
@@ -437,7 +449,7 @@ public class InternalExtensionMethodsTests
         var actual = keyState.AnyArrowKeysDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 

@@ -5,7 +5,7 @@
 namespace VelaptorTests.ExtensionMethods;
 
 using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ExtensionMethods;
 using Xunit;
 
@@ -27,7 +27,7 @@ public class StringBuilderExtensionsTests
 
         // ReSharper disable StringLiteralTypo
         // Assert
-        sut.ToString().Should().Be(expected);
+        sut.ToString().ShouldBe(expected);
     }
 
     [Theory]
@@ -43,7 +43,7 @@ public class StringBuilderExtensionsTests
         var actual = sut.Substring(start, length);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -58,7 +58,7 @@ public class StringBuilderExtensionsTests
         sut.RemoveChar((uint)index);
 
         // Assert
-        sut.ToString().Should().Be(expected);
+        sut.ToString().ShouldBe(expected);
     }
 
     [Theory]
@@ -73,7 +73,7 @@ public class StringBuilderExtensionsTests
         var actual = sut.LastCharIndex();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -88,6 +88,6 @@ public class StringBuilderExtensionsTests
         var actual = sut.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 }

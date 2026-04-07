@@ -6,7 +6,7 @@ namespace VelaptorTests.Input;
 
 using System.ComponentModel;
 using System.Drawing;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Input;
 using Xunit;
 
@@ -26,7 +26,7 @@ public class MouseStateTests
         var actual = sut.GetPosition();
 
         // Assert
-        actual.Should().Be(new Point(10, 20));
+        actual.ShouldBe(new Point(10, 20));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class MouseStateTests
         var actual = sut.GetX();
 
         // Assert
-        actual.Should().Be(123);
+        actual.ShouldBe(123);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class MouseStateTests
         var actual = sut.GetY();
 
         // Assert
-        actual.Should().Be(123);
+        actual.ShouldBe(123);
     }
 
     [Fact]
@@ -65,13 +65,9 @@ public class MouseStateTests
 
         var sut = default(MouseState);
 
-        // Act
-        var act = () => sut.IsButtonDown((MouseButton)1234);
-
-        // Assert
-        act.Should()
-            .Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => sut.IsButtonDown((MouseButton)1234));
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -84,13 +80,9 @@ public class MouseStateTests
 
         var sut = default(MouseState);
 
-        // Act
-        var act = () => sut.IsButtonUp((MouseButton)invalidMouseButton);
-
-        // Assert
-        act.Should()
-            .Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        // Act && Assert
+        var exception = Should.Throw<InvalidEnumArgumentException>(() => sut.IsButtonUp((MouseButton)invalidMouseButton));
+        exception.Message.ShouldBe(expected);
     }
 
     [Theory]
@@ -109,7 +101,7 @@ public class MouseStateTests
         var actual = sut.IsButtonUp(button);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -128,7 +120,7 @@ public class MouseStateTests
         var actual = sut.IsButtonDown(button);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -152,7 +144,7 @@ public class MouseStateTests
         var actual = sut.AnyButtonsDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -165,7 +157,7 @@ public class MouseStateTests
         var actual = sut.GetScrollWheelValue();
 
         // Assert
-        actual.Should().Be(123);
+        actual.ShouldBe(123);
     }
 
     [Fact]
@@ -178,7 +170,7 @@ public class MouseStateTests
         var actual = sut.GetScrollDirection();
 
         // Assert
-        actual.Should().Be(MouseScrollDirection.ScrollDown);
+        actual.ShouldBe(MouseScrollDirection.ScrollDown);
     }
 
     [Theory]
@@ -193,7 +185,7 @@ public class MouseStateTests
         var actual = sut.IsLeftButtonDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -208,7 +200,7 @@ public class MouseStateTests
         var actual = sut.IsMiddleButtonDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -223,7 +215,7 @@ public class MouseStateTests
         var actual = sut.IsRightButtonDown();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -238,7 +230,7 @@ public class MouseStateTests
         var actual = sut.IsLeftButtonUp();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -253,7 +245,7 @@ public class MouseStateTests
         var actual = sut.IsMiddleButtonUp();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -268,7 +260,7 @@ public class MouseStateTests
         var actual = sut.IsRightButtonUp();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -287,7 +279,7 @@ public class MouseStateTests
         var actual = sut.GetButtonState(downButton);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -300,7 +292,7 @@ public class MouseStateTests
         var actual = sut.GetButtonState((MouseButton)1234);
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
     #endregion
 

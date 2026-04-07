@@ -52,7 +52,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
-1. [#535](https://github.com/KinsonDigital/Velaptor/issues/535) - Updated the Twitter links in the project's _**README.md**_ file.
+1. [#535](https://github.com/KinsonDigital/Velaptor/issues/535) - Updated the X links in the project's _**README.md**_ file.
 2. [#530](https://github.com/KinsonDigital/Velaptor/issues/530) - Removed various markdown and image files from the project.  These have been moved to the organizational level.
 3. [#526](https://github.com/KinsonDigital/Velaptor/issues/526) - Setup code coverage with CICD system through [codecov](https://about.codecov.io/).
 4. [#122](https://github.com/KinsonDigital/Velaptor/issues/122) - Updated code documentation for constructors throughout the entire codebase.

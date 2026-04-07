@@ -6,7 +6,7 @@ namespace VelaptorTests.OpenGL.Batching;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
 using Xunit;
@@ -57,13 +57,13 @@ public class TextureBatchItemTests
             15);
 
         // Assert
-        sut.SrcRect.Should().Be(new RectangleF(1, 2, 3, 4));
-        sut.DestRect.Should().Be(new RectangleF(5, 6, 7, 8));
-        sut.Size.Should().Be(9);
-        sut.Angle.Should().Be(10);
-        sut.TintColor.Should().Be(Color.FromArgb(11, 12, 13, 14));
-        sut.Effects.Should().Be(RenderEffects.FlipHorizontally);
-        sut.TextureId.Should().Be(15);
+        sut.SrcRect.ShouldBe(new RectangleF(1, 2, 3, 4));
+        sut.DestRect.ShouldBe(new RectangleF(5, 6, 7, 8));
+        sut.Size.ShouldBe(9);
+        sut.Angle.ShouldBe(10);
+        sut.TintColor.ShouldBe(Color.FromArgb(11, 12, 13, 14));
+        sut.Effects.ShouldBe(RenderEffects.FlipHorizontally);
+        sut.TextureId.ShouldBe(15u);
     }
     #endregion
 
@@ -97,7 +97,7 @@ public class TextureBatchItemTests
 
         // Assert
         this.testOutputHelper.WriteLine($"Test Param: {testName}");
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

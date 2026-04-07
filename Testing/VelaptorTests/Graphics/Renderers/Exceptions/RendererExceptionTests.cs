@@ -5,7 +5,7 @@
 namespace VelaptorTests.Graphics.Renderers.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics.Renderers.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class RendererExceptionTests
         var exception = new RendererException();
 
         // Assert
-        exception.Message.Should().Be("There was an issue with the renderer.");
+        exception.Message.ShouldBe("There was an issue with the renderer.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class RendererExceptionTests
         var exception = new RendererException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        exception.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class RendererExceptionTests
         var deviceException = new RendererException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        deviceException.InnerException.Message.ShouldBe("inner-exception");
+        deviceException.Message.ShouldBe("test-exception");
     }
     #endregion
 }

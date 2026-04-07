@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.FreeType;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using FreeTypeSharp;
 
 /// <summary>
@@ -49,7 +50,7 @@ internal interface IFreeTypeInvoker
     ///     The kerning vector.  This is either in font units, fractional pixels (26.6 format), or pixels for scalable formats,
     ///     and in pixels for fixed-sizes formats.
     /// </returns>
-    FT_Vector_ FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode);
+    Vector2 FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, FT_Kerning_Mode_ kern_mode);
 
     /// <summary>
     /// Load a glyph into the glyph slot of a face object.

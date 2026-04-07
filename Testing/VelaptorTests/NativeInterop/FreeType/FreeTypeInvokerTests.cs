@@ -5,7 +5,7 @@
 namespace VelaptorTests.NativeInterop.FreeType;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.NativeInterop.FreeType;
 using Xunit;
 
@@ -21,13 +21,9 @@ public class FreeTypeInvokerTests
         // Arrange
         var sut = new FreeTypeInvoker();
 
-        // Act
-        var act = () => sut
-            .FT_Get_Kerning(default, default, default, default);
-
-        // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'face' cannot be a value of zero.");
+        // Act & Assert
+        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Get_Kerning(0, 0, 0, default));
+        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
 
     [Fact]
@@ -36,12 +32,9 @@ public class FreeTypeInvokerTests
         // Arrange
         var sut = new FreeTypeInvoker();
 
-        // Act
-        var act = () => sut.FT_Get_Char_Index(default, default);
-
-        // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'face' cannot be a value of zero.");
+        // Act && Assert
+        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Get_Char_Index(0, 0));
+        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
 
     [Fact]
@@ -50,12 +43,9 @@ public class FreeTypeInvokerTests
         // Arrange
         var sut = new FreeTypeInvoker();
 
-        // Act
-        var act = () => sut.FT_Load_Char(default, default, default);
-
-        // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'face' cannot be a value of zero.");
+        // Act && Assert
+        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Load_Char(0, 0, default));
+        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
 
     [Fact]
@@ -64,12 +54,9 @@ public class FreeTypeInvokerTests
         // Arrange
         var sut = new FreeTypeInvoker();
 
-        // Act
-        var act = () => sut.FT_Render_Glyph(0, default);
-
-        // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'slot' cannot be a value of zero.");
+        // Act && Assert
+        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Render_Glyph(0, default));
+        exception.Message.ShouldBe("The pointer parameter 'slot' cannot be a value of zero.");
     }
 
     [Fact]
@@ -87,8 +74,8 @@ public class FreeTypeInvokerTests
             default);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'face' cannot be a value of zero.");
+        var exception = Should.Throw<NullReferenceException>(act);
+        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
 
     [Fact]
@@ -106,8 +93,8 @@ public class FreeTypeInvokerTests
             default);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'char_width' cannot be a value of zero.");
+        var exception = Should.Throw<NullReferenceException>(act);
+        exception.Message.ShouldBe("The pointer parameter 'char_width' cannot be a value of zero.");
     }
 
     [Fact]
@@ -125,8 +112,8 @@ public class FreeTypeInvokerTests
             default);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'char_height' cannot be a value of zero.");
+        var exception = Should.Throw<NullReferenceException>(act);
+        exception.Message.ShouldBe("The pointer parameter 'char_height' cannot be a value of zero.");
     }
 
     [Fact]
@@ -139,8 +126,8 @@ public class FreeTypeInvokerTests
         var act = () => sut.FT_Done_Face(0);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'face' cannot be a value of zero.");
+        var exception = Should.Throw<NullReferenceException>(act);
+        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
     }
 
     [Fact]
@@ -153,8 +140,8 @@ public class FreeTypeInvokerTests
         var act = () => sut.FT_Done_Glyph(0);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage("The pointer parameter 'glyph' cannot be a value of zero.");
+        var exception = Should.Throw<NullReferenceException>(act);
+        exception.Message.ShouldBe("The pointer parameter 'glyph' cannot be a value of zero.");
     }
     #endregion
 }

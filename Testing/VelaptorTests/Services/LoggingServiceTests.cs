@@ -5,9 +5,9 @@
 namespace VelaptorTests.Services;
 
 using System;
-using FluentAssertions;
 using NSubstitute;
 using Serilog;
+using Shouldly;
 using Velaptor;
 using Velaptor.Services;
 using Xunit;
@@ -45,7 +45,6 @@ public class LoggingServiceTests
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullAppSettingsServiceParam_ThrowsException()
     {
@@ -60,9 +59,8 @@ public class LoggingServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'appSettingsService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'appSettingsService')");
     }
 
     [Fact]
@@ -79,9 +77,8 @@ public class LoggingServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'consoleLoggerService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'consoleLoggerService')");
     }
 
     [Fact]
@@ -98,9 +95,8 @@ public class LoggingServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fileLoggerService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fileLoggerService')");
     }
 
     [Fact]
@@ -117,9 +113,8 @@ public class LoggingServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'eventLoggerService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'eventLoggerService')");
     }
     #endregion
 

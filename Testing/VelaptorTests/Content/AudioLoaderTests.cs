@@ -5,56 +5,152 @@
 namespace VelaptorTests.Content;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using FluentAssertions;
+using Carbonate.Core.NonDirectional;
+using Carbonate.NonDirectional;
+using Carbonate.OneWay;
+using Shouldly;
 using NSubstitute;
+using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
+using Velaptor.Content.Factories;
+using Velaptor.Factories;
+using Velaptor.ReactableData;
 using Xunit;
 
 /// <summary>
 /// Tests the <see cref="AudioLoader"/> class.
 /// </summary>
+[SuppressMessage("ReSharper", "ConvertToLocalFunction", Justification = "Improves readability")]
+[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Improves readability")]
 public class AudioLoaderTests
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private const string AudioDirPath = @"C:\temp\Content\audio\";
-    private const string AudioName = "test-audio";
-    private readonly string oggFilePath;
-    private readonly string mp3FilePath;
-    private readonly IItemCache<string, IAudio> mockAudioCache;
+    private const string AudioContentName = "test-audio";
+    private const string OggFileName = $"{AudioContentName}{OggFileExtension}";
+    private const string Mp3FileName = $"{AudioContentName}{Mp3FileExtension}";
+    private const string BaseDirPath = "C:";
+    private const uint AudioId = 123;
+    private static readonly string ContentDirPath = Path.Combine(BaseDirPath, "Content");
+    private static readonly string AudioDirPath = Path.Combine(ContentDirPath, "Audio");
+    private static readonly string OggFilePath = Path.Combine(AudioDirPath, OggFileName);
+    private static readonly string Mp3FilePath = Path.Combine(AudioDirPath, Mp3FileName);
+    private readonly IAudioFactory mockAudioFactory;
+    private readonly IReactableFactory mockReactableFactory;
     private readonly IContentPathResolver mockAudioPathResolver;
     private readonly IDirectory mockDirectory;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
+    private readonly IAudio mockAudio;
+    private readonly IDisposable mockShutdownUnsubscriber;
+    private readonly IPushReactable<DisposeAudioData> mockDisposeAudioReactable;
+    private IReceiveSubscription? mockShutdownSubscription;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioLoaderTests"/> class.
     /// </summary>
     public AudioLoaderTests()
     {
-        this.oggFilePath = $"{AudioDirPath}{AudioName}{OggFileExtension}";
-        this.mp3FilePath = $"{AudioDirPath}{AudioName}{Mp3FileExtension}";
+        this.mockShutdownUnsubscriber = Substitute.For<IDisposable>();
+        var mockShutdownReactable = Substitute.For<IPushReactable>();
+        mockShutdownReactable.Subscribe(Arg.Any<IReceiveSubscription>()).Returns(this.mockShutdownUnsubscriber);
+        mockShutdownReactable
+            .When(x => x.Subscribe(Arg.Any<IReceiveSubscription>()))
+            .Do(callInfo =>
+            {
+                var subscription = callInfo.Arg<IReceiveSubscription>();
 
-        this.mockAudioCache = Substitute.For<IItemCache<string, IAudio>>();
+                if (subscription.Id == PushNotifications.SystemShuttingDownId)
+                {
+                    this.mockShutdownSubscription = subscription;
+                }
+            });
+
+        this.mockDisposeAudioReactable = Substitute.For<IPushReactable<DisposeAudioData>>();
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateDisposeAudioReactable().Returns(this.mockDisposeAudioReactable);
+        this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockShutdownReactable);
+
+        this.mockAudio = Substitute.For<IAudio>();
+        this.mockAudio.Id.Returns(AudioId);
+        this.mockAudio.FilePath.Returns(OggFilePath);
+
+        this.mockAudioFactory = Substitute.For<IAudioFactory>();
+        this.mockAudioFactory.Create(Arg.Any<string>(), Arg.Any<AudioBuffer>()).Returns(this.mockAudio);
+
         this.mockAudioPathResolver = Substitute.For<IContentPathResolver>();
+        this.mockAudioPathResolver.ResolveDirPath().Returns(AudioDirPath);
+        this.mockAudioPathResolver.ResolveFilePath(Arg.Any<string>()).Returns(OggFilePath);
 
         this.mockDirectory = Substitute.For<IDirectory>();
+        this.mockDirectory.Exists(Arg.Any<string>()).Returns(true);
+
         this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+
         this.mockPath = Substitute.For<IPath>();
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(OggFileExtension);
+        this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
     }
+
+    #region Test Data
+    /// <summary>
+    /// Provides test data for the <see cref="AudioLoader.Load"/> method unit test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static TheoryData<string, string> LoadRootedPathTestData() =>
+        new ()
+        {
+            { OggFilePath, OggFilePath },
+            { Mp3FilePath, Mp3FilePath },
+        };
+
+    /// <summary>
+    /// Provides test data for the <see cref="AudioLoader.Load"/> method unit test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static TheoryData<string, string, string> LoadUnrootedPathTestData() =>
+        new ()
+        {
+            { AudioContentName, OggFileExtension, OggFilePath },
+            { AudioContentName, Mp3FileExtension, Mp3FilePath },
+        };
+    #endregion
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullAudioCacheParam_ThrowsException()
+    public void Ctor_WithNullAudioFactoryParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
             _ = new AudioLoader(
+                null,
+                this.mockReactableFactory,
+                this.mockAudioPathResolver,
+                this.mockDirectory,
+                this.mockFile,
+                this.mockPath);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'audioFactory')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullReactableFactoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AudioLoader(
+                this.mockAudioFactory,
                 null,
                 this.mockAudioPathResolver,
                 this.mockDirectory,
@@ -62,9 +158,9 @@ public class AudioLoaderTests
                 this.mockPath);
         };
 
-        // Act
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioCache')");
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
 
     [Fact]
@@ -74,7 +170,8 @@ public class AudioLoaderTests
         var act = () =>
         {
             _ = new AudioLoader(
-                this.mockAudioCache,
+                this.mockAudioFactory,
+                this.mockReactableFactory,
                 null,
                 this.mockDirectory,
                 this.mockFile,
@@ -82,9 +179,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'audioPathResolver')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'audioPathResolver')");
     }
 
     [Fact]
@@ -94,7 +190,8 @@ public class AudioLoaderTests
         var act = () =>
         {
             _ = new AudioLoader(
-                this.mockAudioCache,
+                this.mockAudioFactory,
+                this.mockReactableFactory,
                 this.mockAudioPathResolver,
                 null,
                 this.mockFile,
@@ -102,9 +199,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -114,7 +210,8 @@ public class AudioLoaderTests
         var act = () =>
         {
             _ = new AudioLoader(
-                this.mockAudioCache,
+                this.mockAudioFactory,
+                this.mockReactableFactory,
                 this.mockAudioPathResolver,
                 this.mockDirectory,
                 null,
@@ -122,9 +219,8 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -134,7 +230,8 @@ public class AudioLoaderTests
         var act = () =>
         {
             _ = new AudioLoader(
-                this.mockAudioCache,
+                this.mockAudioFactory,
+                this.mockReactableFactory,
                 this.mockAudioPathResolver,
                 this.mockDirectory,
                 this.mockFile,
@@ -142,221 +239,216 @@ public class AudioLoaderTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
     #region Method Tests
     [Fact]
-    public void Load_WithNullParam_ThrowsException()
+    public void Load_WithNullPathOrNameParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(null);
+        var act = () => sut.Load(null, AudioBuffer.Full);
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'pathOrName')");
     }
 
     [Fact]
-    public void Load_WithEmptyParam_ThrowsException()
+    public void Load_WithEmptyPathOrNameParam_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(string.Empty);
+        var act = () => sut.Load(string.Empty, AudioBuffer.Full);
 
         // Assert
-        act.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = Should.Throw<ArgumentException>(act);
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'pathOrName')");
     }
 
-    [Fact]
-    public void Load_WithMissingDataSignifier_ThrowsException()
+    [Theory]
+    [MemberData(nameof(LoadRootedPathTestData))]
+    public void Load_WithRootedPath_LoadsContent(string rootedFilePath, string expectedFilePath)
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load("test-content");
+        var actual = sut.Load(rootedFilePath, AudioBuffer.Full);
 
         // Assert
-        act.Should().Throw<LoadAudioException>()
-            .WithMessage("The audio file path must contain metadata.");
+        sut.TotalCachedItems.ShouldBe(1);
+        actual.ShouldBeSameAs(this.mockAudio);
+        this.mockPath.Received(1).IsPathRooted(expectedFilePath);
+
+        // Is a rooted path so should not invoke these
+        this.mockAudioPathResolver.DidNotReceive().ResolveDirPath();
+        this.mockDirectory.DidNotReceive().Exists(Arg.Any<string>());
+        this.mockDirectory.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        this.mockAudioPathResolver.DidNotReceive().ResolveFilePath(expectedFilePath);
+
+        this.mockFile.Received(1).Exists(expectedFilePath);
+        this.mockPath.Received(1).GetExtension(expectedFilePath);
+        this.mockAudioFactory.Received(1).Create(expectedFilePath, AudioBuffer.Full);
     }
 
-    [Fact]
-    public void Load_WithInvalidMetaData_ThrowsException()
+    [Theory]
+    [MemberData(nameof(LoadUnrootedPathTestData))]
+    public void Load_WithUnrootedPathAndWhenContentDirDoesNotExist_LoadsContent(
+        string unrootedContentName,
+        string fileExtension,
+        string expectedFilePath)
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.Load("test-content|Invalid");
-
-        // Assert
-        act.Should().Throw<LoadAudioException>()
-            .WithMessage("The audio buffer type could not be determined.");
-    }
-
-    [Fact]
-    public void Load_WithInvalidExtensionForFullFilePath_ThrowsException()
-    {
-        // Arrange
-        const string invalidExtension = ".txt";
-        const string invalidFilePath = $"{AudioDirPath}{AudioName}{invalidExtension}";
-        const string invalidFilePathWithMetaData = $"{invalidFilePath}|Stream";
-        this.mockFile.Exists(invalidFilePath).Returns(true);
-        this.mockPath.GetExtension(invalidFilePath).Returns(invalidExtension);
-        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
-
-        var expectedMsg = $"The file '{invalidFilePath}' must be a audio file with";
-        expectedMsg += $" the extension '{OggFileExtension}' or '{Mp3FileExtension}'.";
-
-        var loader = CreateSystemUnderTest();
-
-        // Act
-        var act = () => loader.Load(invalidFilePathWithMetaData);
-
-        // Assert
-        act.Should()
-            .Throw<LoadAudioException>()
-            .WithMessage(expectedMsg);
-    }
-
-    [Fact]
-    public void Load_WhenAudioFileDoesNotExist_ThrowsException()
-    {
-        // Arrange
-        this.mockFile.Exists(this.oggFilePath).Returns(false);
-
-        const string expectedMsg = "The audio file does not exist.";
-
-        var loader = CreateSystemUnderTest();
-
-        // Act
-        var act = () => loader.Load($"{this.oggFilePath}|Stream");
-
-        // Assert
-        act.Should()
-            .Throw<FileNotFoundException>()
-            .WithMessage(expectedMsg);
-    }
-
-    [Fact]
-    public void Load_WhenContentDirPathDoesNotExist_CreateDirectory()
-    {
-        // Arrange
-        this.mockFile.Exists(Arg.Any<string?>()).Returns(true);
-        this.mockPath.GetExtension(Arg.Any<string?>()).Returns(".ogg");
-        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(false);
-        this.mockAudioPathResolver.ResolveDirPath().Returns(AudioDirPath);
+        this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(false);
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(fileExtension);
+        this.mockAudioPathResolver.ResolveFilePath(Arg.Any<string>()).Returns(expectedFilePath);
+        this.mockDirectory.Exists(Arg.Any<string>()).Returns(false);
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.Load("test-content|Stream");
+        var actual = sut.Load(unrootedContentName, AudioBuffer.Full);
 
         // Assert
+        sut.TotalCachedItems.ShouldBe(1);
+        actual.ShouldBeSameAs(this.mockAudio);
+        this.mockPath.Received(1).IsPathRooted(AudioContentName);
+
         this.mockAudioPathResolver.Received(1).ResolveDirPath();
-        this.mockDirectory.Received(1).CreateDirectory(AudioDirPath);
+        this.mockDirectory.Received(1).Exists(AudioDirPath);
+        this.mockAudioPathResolver.DidNotReceive().ResolveFilePath(expectedFilePath);
+        this.mockDirectory.Received(1).Exists(AudioDirPath);
+        this.mockFile.Received(1).Exists(expectedFilePath);
+        this.mockPath.Received(1).GetExtension(expectedFilePath);
+        this.mockAudioFactory.Received(1).Create(expectedFilePath, AudioBuffer.Full);
     }
 
-    [Theory]
-    [InlineData(AudioName, "")]
-    [InlineData(AudioName, ".txt")]
-    public void Load_WhenLoadingOggAudioByFileNameOnly_LoadsOggAudio(string contentName, string extension)
+    [Fact]
+    public void Load_WhenContentFileDoesNotExist_ThrowException()
     {
         // Arrange
-        this.mockFile.Exists(Arg.Any<string?>()).Returns(true);
-        this.mockPath.GetExtension(Arg.Any<string?>()).Returns(OggFileExtension);
-        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(false);
-        this.mockAudioPathResolver.ResolveFilePath(Arg.Any<string>())
-            .Returns(this.oggFilePath);
-
-        var loader = CreateSystemUnderTest();
+        this.mockFile.Exists(Arg.Any<string>()).Returns(false);
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.Load($"{contentName}{extension}|Stream");
+        var act = () => sut.Load(OggFilePath, AudioBuffer.Full);
 
         // Assert
-        this.mockAudioCache.Received(1).GetItem($"{this.oggFilePath}|Stream");
-        this.mockPath.Received(1).IsPathRooted($"{contentName}{extension}");
-        this.mockAudioPathResolver.Received(1).ResolveFilePath($"{contentName}{extension}");
-        this.mockFile.Received(1).Exists(this.oggFilePath);
-        this.mockPath.Received(1).GetExtension(this.oggFilePath);
+        var exception = act.ShouldThrow<FileNotFoundException>();
+        exception.Message.ShouldBe($"The audio file does not exist.");
+        exception.FileName.ShouldBe(OggFilePath);
     }
 
-    [Theory]
-    [InlineData(AudioName, "")]
-    [InlineData(AudioName, ".txt")]
-    public void Load_WhenLoadingMp3AudioByFileNameOnly_LoadsMp3Audio(string contentName, string extension)
+    [Fact]
+    public void Load_WithInvalidContentFileNameExtension_ThrowException()
     {
         // Arrange
-        this.mockFile.Exists(Arg.Any<string?>()).Returns(true);
-        this.mockPath.GetExtension(Arg.Any<string?>()).Returns(Mp3FileExtension);
-        this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(false);
-        this.mockAudioPathResolver.ResolveFilePath(Arg.Any<string>())
-            .Returns(this.mp3FilePath);
+        const string oggFilePath = "C:/Content/Audio/test-audio.txt";
 
-        var loader = CreateSystemUnderTest();
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(".txt");
+
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.Load($"{contentName}{extension}|Stream");
+        var act = () => sut.Load(oggFilePath, AudioBuffer.Full);
 
         // Assert
-        this.mockAudioCache.Received(1).GetItem($"{this.mp3FilePath}|Stream");
-        this.mockPath.Received(1).IsPathRooted($"{contentName}{extension}");
-        this.mockAudioPathResolver.Received(1).ResolveFilePath($"{contentName}{extension}");
-        this.mockFile.Received(1).Exists(this.mp3FilePath);
-        this.mockPath.Received(1).GetExtension(this.mp3FilePath);
+        var exception = act.ShouldThrow<LoadAudioException>();
+        exception.Message.ShouldBe($"The file '{oggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
+    }
+
+    [Fact]
+    public void Load_WithInvalidExtension_ThrowsException()
+    {
+        // Arrange
+        this.mockPath.GetExtension(Arg.Any<string>()).Returns(".txt");
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load(OggFilePath, AudioBuffer.Full);
+
+        // Assert
+        var exception = act.ShouldThrow<LoadAudioException>();
+        exception.Message.ShouldBe($"The file '{OggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
     }
 
     [Fact]
     public void Unload_WhenUnloadingUsingContentName_UnloadsAudio()
     {
         // Arrange
-        this.mockFile.Exists(this.oggFilePath).Returns(true);
-        this.mockPath.GetExtension(this.oggFilePath).Returns(OggFileExtension);
-        this.mockPath.GetFileNameWithoutExtension(AudioName).Returns(AudioName);
+        this.mockFile.Exists(OggFilePath).Returns(true);
+        this.mockPath.GetExtension(OggFilePath).Returns(OggFileExtension);
+        this.mockPath.GetFileNameWithoutExtension(AudioContentName).Returns(AudioContentName);
         this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(false);
-        this.mockAudioPathResolver.ResolveFilePath(AudioName).Returns(this.oggFilePath);
+        this.mockAudioPathResolver.ResolveFilePath(AudioContentName).Returns(OggFilePath);
 
-        var loader = CreateSystemUnderTest();
-        loader.Load($"{AudioName}|Stream");
+        var sut = CreateSystemUnderTest();
+        var audio = sut.Load(AudioContentName, AudioBuffer.Full);
 
         // Act
-        loader.Unload(AudioName);
+        sut.Unload(audio);
 
         // Assert
-        this.mockAudioCache.Received(1).Unload(this.oggFilePath);
+        sut.TotalCachedItems.ShouldBe(0);
     }
 
     [Fact]
     public void Unload_WhenUnloadingUsingFullDirectPath_UnloadsAudio()
     {
         // Arrange
-        this.mockFile.Exists(this.oggFilePath).Returns(true);
-        this.mockPath.GetExtension(this.oggFilePath).Returns(OggFileExtension);
+        this.mockFile.Exists(OggFilePath).Returns(true);
+        this.mockPath.GetExtension(OggFilePath).Returns(OggFileExtension);
         this.mockPath.IsPathRooted(Arg.Any<string?>()).Returns(true);
-        this.mockAudioPathResolver.ResolveFilePath(this.oggFilePath).Returns(this.oggFilePath);
+        this.mockAudioPathResolver.ResolveFilePath(OggFilePath).Returns(OggFilePath);
 
-        var loader = CreateSystemUnderTest();
-        loader.Load($"{this.oggFilePath}|Stream");
+        var sut = CreateSystemUnderTest();
+        var audio = sut.Load(OggFilePath, AudioBuffer.Full);
 
         // Act
-        loader.Unload(this.oggFilePath);
+        sut.Unload(audio);
 
         // Assert
-        this.mockAudioCache.Received(1).Unload(this.oggFilePath);
+        sut.TotalCachedItems.ShouldBe(0);
+    }
+    #endregion
+
+    #region Indirect Tests
+    [Fact]
+    public void Reactables_WhenUnsubscribing_DisposesOfSubscription()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.mockShutdownSubscription.OnUnsubscribe();
+
+        // Assert
+        this.mockShutdownUnsubscriber.Received(1).Dispose();
+    }
+
+    [Fact]
+    public void ShutdownProcess_WhenInvoked_ShutsDownFontLoader()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Load(OggFileName, AudioBuffer.Full);
+        this.mockShutdownSubscription.OnReceive();
+        this.mockShutdownSubscription.OnReceive(); // Tests idempotent behavior for the shutdown process
+
+        // Assert
+        sut.TotalCachedItems.ShouldBe(0);
+        this.mockDisposeAudioReactable.Received(1).Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = AudioId });
     }
     #endregion
 
@@ -365,7 +457,8 @@ public class AudioLoaderTests
     /// </summary>
     /// <returns>The mocked audio loader instance used for testing.</returns>
     private AudioLoader CreateSystemUnderTest() => new (
-        this.mockAudioCache,
+        this.mockAudioFactory,
+        this.mockReactableFactory,
         this.mockAudioPathResolver,
         this.mockDirectory,
         this.mockFile,

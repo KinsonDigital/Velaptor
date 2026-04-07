@@ -9,7 +9,7 @@ namespace VelaptorTests.ExtensionMethods;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
@@ -58,8 +58,8 @@ public class RenderingExtensionsTests
         var actual = sut.Scale(0.5f);
 
         // Assert
-        actual.P1.Should().Be(expectedP1);
-        actual.P2.Should().Be(expectedP2);
+        actual.P1.ShouldBe(expectedP1);
+        actual.P2.ShouldBe(expectedP2);
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class RenderingExtensionsTests
         var actual = sut.FlipEnd();
 
         // Assert
-        actual.P1.Should().Be(expectedP1);
-        actual.P2.Should().Be(expectedP2);
+        actual.P1.ShouldBe(expectedP1);
+        actual.P2.ShouldBe(expectedP2);
     }
 
     [Fact]
@@ -92,10 +92,10 @@ public class RenderingExtensionsTests
         sut = sut.Clamp(0f, 100f);
 
         // Assert
-        sut.TopLeft.Should().Be(100f);
-        sut.BottomLeft.Should().Be(100f);
-        sut.BottomRight.Should().Be(0f);
-        sut.TopRight.Should().Be(0f);
+        sut.TopLeft.ShouldBe(100f);
+        sut.BottomLeft.ShouldBe(100f);
+        sut.BottomRight.ShouldBe(0f);
+        sut.TopRight.ShouldBe(0f);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class RenderingExtensionsTests
         var actual = line.Length();
 
         // Assert
-        actual.Should().Be(175.53146f);
+        actual.ShouldBe(175.53146f);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class RenderingExtensionsTests
         var actual = item.SetP1(new Vector2(10, 20));
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class RenderingExtensionsTests
         var actual = item.SetP2(new Vector2(20, 30));
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class RenderingExtensionsTests
         var actual = item.SwapEnds();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 
     [Theory]
@@ -217,6 +217,6 @@ public class RenderingExtensionsTests
         var actual = line.CreateRectFromLine();
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
 }

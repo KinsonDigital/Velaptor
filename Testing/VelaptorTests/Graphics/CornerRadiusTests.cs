@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Graphics;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 
@@ -21,10 +21,10 @@ public class CornerRadiusTests
         var corners = new CornerRadius(11, 22, 33, 44);
 
         // Assert
-        corners.TopLeft.Should().Be(11u);
-        corners.TopRight.Should().Be(22u);
-        corners.BottomRight.Should().Be(33u);
-        corners.BottomLeft.Should().Be(44u);
+        corners.TopLeft.ShouldBe(11u);
+        corners.TopRight.ShouldBe(22u);
+        corners.BottomRight.ShouldBe(33u);
+        corners.BottomLeft.ShouldBe(44u);
     }
 
     [Fact]
@@ -34,10 +34,10 @@ public class CornerRadiusTests
         var corners = new CornerRadius(123f);
 
         // Assert
-        corners.TopLeft.Should().Be(123);
-        corners.BottomLeft.Should().Be(123);
-        corners.BottomRight.Should().Be(123);
-        corners.TopRight.Should().Be(123);
+        corners.TopLeft.ShouldBe(123);
+        corners.BottomLeft.ShouldBe(123);
+        corners.BottomRight.ShouldBe(123);
+        corners.TopRight.ShouldBe(123);
     }
     #endregion
 
@@ -53,7 +53,7 @@ public class CornerRadiusTests
         var actual = CornerRadius.SetTopLeft(sut, 55);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class CornerRadiusTests
         var actual = CornerRadius.SetBottomLeft(sut, 55);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class CornerRadiusTests
         var actual = CornerRadius.SetBottomRight(sut, 55);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class CornerRadiusTests
         var actual = CornerRadius.SetTopRight(sut, 55);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -118,7 +118,7 @@ public class CornerRadiusTests
         var actual = radius.IsEmpty();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
     #endregion
 }

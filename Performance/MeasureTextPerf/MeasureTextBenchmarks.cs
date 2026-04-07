@@ -12,12 +12,10 @@ using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json;
 using NSubstitute;
 using Velaptor.Content;
-using Velaptor.Content.Caching;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.Services;
-using Velaptor.Services;
 
 /// <summary>
 /// Performance benchmarks for measuring the time it takes to measure text.
@@ -50,15 +48,11 @@ public class MeasureTextBenchmarks
         mockFreeTypeService.HasKerning(Arg.Any<nint>()).Returns(false);
 
         var mockFontStatsService = Substitute.For<IFontStatsService>();
-        var mockFontAtlasService = Substitute.For<IFontAtlasService>();
-        var mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
 
         this.font = new Font(
             mockTexture,
             mockFreeTypeService,
             mockFontStatsService,
-            mockFontAtlasService,
-            mockTextureCache,
             "test-font",
             "test-font-path",
             12u,

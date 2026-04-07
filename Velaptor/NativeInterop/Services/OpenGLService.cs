@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
+// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,7 +14,7 @@ using Velaptor.OpenGL;
 using Velaptor.Services;
 
 /// <summary>
-/// Provides OpenGL helper methods to improve OpenGL related operations.
+/// Provides OpenGL helper methods to improve OpenGL-related operations.
 /// </summary>
 internal sealed class OpenGLService : IOpenGLService
 {
@@ -23,6 +23,10 @@ internal sealed class OpenGLService : IOpenGLService
     private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
     private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
 #pragma warning restore SA1310
+
+#if RELEASE
+    private const string EMPTY_STRING = "";
+#endif
 
     // ReSharper restore InconsistentNaming
     private readonly IGLInvoker glInvoker;
@@ -95,11 +99,11 @@ internal sealed class OpenGLService : IOpenGLService
     public Vector2 GetViewPortPosition()
     {
         /*
-       * [0] = X
-       * [1] = Y
-       * [3] = Width
-       * [4] = Height
-       */
+         * [0] = X
+         * [1] = Y
+         * [3] = Width
+         * [4] = Height
+         */
         var data = new int[4];
 
         this.glInvoker.GetInteger(GLGetPName.Viewport, data);
@@ -178,39 +182,62 @@ internal sealed class OpenGLService : IOpenGLService
 
     /// <inheritdoc/>
     public void BeginGroup(string label)
-        =>
-            this.glInvoker.PushDebugGroup(
-                GLDebugSource.DebugSourceApplication,
-                100,
-                (uint)label.Length,
-                label);
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
+        this.glInvoker.PushDebugGroup(GLDebugSource.DebugSourceApplication,
+            100,
+            (uint)label.Length,
+            label);
+    }
 
     /// <inheritdoc/>
     public void EndGroup() => this.glInvoker.PopDebugGroup();
 
     /// <inheritdoc/>
     public void LabelShader(uint shaderId, string label)
-        => this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+    }
 
     /// <inheritdoc/>
     public void LabelShaderProgram(uint shaderId, string label)
-        => this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+    {
+        if (string.IsNullOrEmpty(label))
+        {
+            ArgumentException.ThrowIfNullOrEmpty(label);
+        }
+
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+    }
 
     /// <inheritdoc/>
     public void LabelVertexArray(uint vertexArrayId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
-
         var newLabel = $"{label} VAO";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, 0, EMPTY_STRING);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
@@ -221,20 +248,58 @@ internal sealed class OpenGLService : IOpenGLService
             OpenGLBufferType.IndexArrayObject => "EBO",
             _ => throw new InvalidEnumArgumentException(nameof(bufferType), (int)bufferType, typeof(OpenGLBufferType))
         };
-
         var newLabel = $"{label} {bufferTypeAcronym}";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, 0, EMPTY_STRING);
+#endif
     }
 
     /// <inheritdoc/>
     public void LabelTexture(uint textureId, string label)
     {
+#if DEBUG || DEBUG_CONSOLE
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+#else
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, 0, EMPTY_STRING);
+#endif
+    }
+
+    /// <inheritdoc/>
+    public byte[] ToOpenGLBytes(Color[,] pixels)
+    {
+        var pixelDestIndex = 0;
+        var width = pixels.GetLength(0);
+        var height = pixels.GetLength(1);
+        var result = new byte[width * height * 4];
+
+        unsafe
+        {
+            fixed (byte* pixelDestPtr = result)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        var currentColor = pixels[x, y];
+
+                        pixelDestPtr[pixelDestIndex] = currentColor.R;
+                        pixelDestPtr[pixelDestIndex + 1] = currentColor.G;
+                        pixelDestPtr[pixelDestIndex + 2] = currentColor.B;
+                        pixelDestPtr[pixelDestIndex + 3] = currentColor.A;
+
+                        pixelDestIndex += 4;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 
     /// <inheritdoc/>
@@ -250,7 +315,7 @@ internal sealed class OpenGLService : IOpenGLService
         /*NOTE:
          * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
          * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
-         * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+         * without the native system knowing about it, which causes this exception. The GC.KeepAlive()
          * method tells the garbage collector to not collect the delegate to prevent this from happening.
          */
         this.dotnetService.GcKeepAlive(this.debugCallback);
@@ -258,7 +323,7 @@ internal sealed class OpenGLService : IOpenGLService
     }
 
     /// <summary>
-    /// Invoked when there is an OpenGL related error.
+    /// Invoked when there is an OpenGL-related error.
     /// </summary>
     /// <param name="source">The debug source.</param>
     /// <param name="type">The debug type.</param>
@@ -290,11 +355,13 @@ internal sealed class OpenGLService : IOpenGLService
         }
         else
         {
-            if (severity != GLEnum.DebugSeverityNotification)
+            if (severity == GLEnum.DebugSeverityNotification)
             {
-                this.loggingService.Error(openGLMessage);
-                this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
+                return;
             }
+
+            this.loggingService.Error(openGLMessage);
+            this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
         }
     }
 }

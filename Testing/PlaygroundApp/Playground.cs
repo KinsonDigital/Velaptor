@@ -8,7 +8,6 @@ using System.Drawing;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -21,7 +20,7 @@ public class Playground : Window
 {
     private readonly IBatcher batcher;
     private readonly ITextureRenderer textureRenderer;
-    private readonly ILoader<IAtlasData> atlasLoader;
+    private readonly IContentManager contentManager;
     private IAtlasData? atlas;
 
     /// <summary>
@@ -31,7 +30,7 @@ public class Playground : Window
     {
         this.batcher = RendererFactory.CreateBatcher();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.contentManager = ContentManager.Create();
     }
 
     /// <summary>
@@ -39,7 +38,7 @@ public class Playground : Window
     /// </summary>
     protected override void OnLoad()
     {
-        this.atlas = this.atlasLoader.Load("logo");
+        this.atlas = this.contentManager.Load<IAtlasData>("logo");
         base.OnLoad();
     }
 
@@ -48,7 +47,7 @@ public class Playground : Window
     /// </summary>
     protected override void OnUnload()
     {
-        this.atlasLoader.Unload(this.atlas);
+        this.contentManager.Unload<IAtlasData>(this.atlas);
         base.OnUnload();
     }
 

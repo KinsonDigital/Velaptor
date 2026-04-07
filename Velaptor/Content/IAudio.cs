@@ -9,7 +9,7 @@ using System;
 /// <summary>
 /// A single audio that can be played, paused etc.
 /// </summary>
-public interface IAudio : IContent, IDisposable
+public interface IAudio : IContent
 {
     /// <summary>
     /// Gets the unique ID of the audio.

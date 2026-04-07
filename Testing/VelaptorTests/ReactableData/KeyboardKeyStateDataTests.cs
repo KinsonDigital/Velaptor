@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ReactableData;
 
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Input;
 using Velaptor.ReactableData;
 using Xunit;
@@ -26,8 +26,8 @@ public class KeyboardKeyStateDataTests
         };
 
         // Assert
-        sut.Key.Should().Be(KeyCode.V);
-        sut.IsDown.Should().BeTrue();
+        sut.Key.ShouldBe(KeyCode.V);
+        sut.IsDown.ShouldBeTrue();
     }
     #endregion
 }

@@ -5,7 +5,7 @@
 namespace VelaptorTests.OpenGL;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.OpenGL;
 using Xunit;
 
@@ -22,8 +22,8 @@ public class GLErrorEventArgsTests
         var act = () => new GLErrorEventArgs(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'errorMessage')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -33,8 +33,8 @@ public class GLErrorEventArgsTests
         var act = () => new GLErrorEventArgs(string.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'errorMessage')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'errorMessage')");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class GLErrorEventArgsTests
         var args = new GLErrorEventArgs("test-message");
 
         // Assert
-        Assert.Equal("test-message", args.ErrorMessage);
+        args.ErrorMessage.ShouldBe("test-message");
     }
     #endregion
 }

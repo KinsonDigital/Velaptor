@@ -4,11 +4,11 @@
 
 namespace VelaptorTests.Content;
 
+using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using FluentAssertions;
-using Helpers;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Content;
@@ -37,7 +37,6 @@ public class AtlasJSONDataPathResolverTests
         this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
         this.mockAppService.AppDirectory.Returns("AppHome");
-
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
 
@@ -76,7 +75,7 @@ public class AtlasJSONDataPathResolverTests
         var actual = resolver.ContentDirectoryName;
 
         // Assert
-        actual.Should().Be("Atlas");
+        actual.ShouldBe("Atlas");
     }
     #endregion
 
@@ -91,8 +90,8 @@ public class AtlasJSONDataPathResolverTests
         var act = () => _ = sut.ResolveFilePath(null);
 
         // Assert
-        act.Should().ThrowArgNullException()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathOrName')");
     }
 
     [Fact]
@@ -105,8 +104,8 @@ public class AtlasJSONDataPathResolverTests
         var act = () => _ = sut.ResolveFilePath(string.Empty);
 
         // Assert
-        act.Should().ThrowArgException()
-            .WithMessage("The value cannot be an empty string. (Parameter 'contentPathOrName')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'contentPathOrName')");
     }
 
     [Theory]
@@ -124,7 +123,7 @@ public class AtlasJSONDataPathResolverTests
         var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
         this.mockFile.Received(1).Exists(expected);
     }
     #endregion

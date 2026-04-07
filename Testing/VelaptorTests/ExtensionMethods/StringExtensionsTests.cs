@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using Velaptor.ExtensionMethods;
 using Xunit;
@@ -85,7 +85,7 @@ public class StringExtensionsTests
         var actual = stringToCheck.DoesNotStartWith(character);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -100,7 +100,7 @@ public class StringExtensionsTests
         var actual = stringToCheck.DoesNotStartWith(stringValue);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -115,7 +115,7 @@ public class StringExtensionsTests
         var actual = stringToCheck.DoesNotEndWith(character);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -130,7 +130,7 @@ public class StringExtensionsTests
         var actual = stringToCheck.DoesNotEndWith(stringValue);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -149,7 +149,7 @@ public class StringExtensionsTests
         var actual = content.TrimLeftOf(value, trimChar);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -168,7 +168,7 @@ public class StringExtensionsTests
         var actual = content.TrimRightOf(value, trimChar);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -186,7 +186,7 @@ public class StringExtensionsTests
         var actual = value.OnlyContainsDrive();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [TheoryForWindows]
@@ -211,7 +211,7 @@ public class StringExtensionsTests
         var actual = value.GetLastDirName();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [TheoryForLinux]
@@ -233,7 +233,7 @@ public class StringExtensionsTests
         var actual = value.GetLastDirName();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -244,7 +244,7 @@ public class StringExtensionsTests
         var actual = dirPath.HasValidDriveSyntax();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -255,7 +255,7 @@ public class StringExtensionsTests
         var actual = dirPath.HasValidFullDirPathSyntax();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -266,7 +266,7 @@ public class StringExtensionsTests
         var actual = path.HasValidUNCPathSyntax();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -282,7 +282,7 @@ public class StringExtensionsTests
         var actual = value.TrimNewLineFromEnd();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -303,7 +303,7 @@ public class StringExtensionsTests
         var actual = value.TrimDirSeparatorFromEnd();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -315,7 +315,7 @@ public class StringExtensionsTests
         var actual = path.ToCrossPlatPath();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class StringExtensionsTests
         var actual = values.TrimAllEnds();
 
         // Assert
-        actual.Should().AllBe("item");
+        actual.ShouldAllBe((item) => item == "item");
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public class StringExtensionsTests
         var actual = values.TrimAllEnds('~');
 
         // Assert
-        actual.Should().AllBe("item");
+        actual.ShouldAllBe((item) => item == "item");
     }
 
     [Fact]
@@ -354,6 +354,6 @@ public class StringExtensionsTests
         var actual = testValue.RemoveAll("remove");
 
         // Assert
-        actual.Should().Be("keep--keep-keep--keep");
+        actual.ShouldBe("keep--keep-keep--keep");
     }
 }

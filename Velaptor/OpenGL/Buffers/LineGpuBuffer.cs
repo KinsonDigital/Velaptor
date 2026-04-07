@@ -19,7 +19,6 @@ using NativeInterop.Services;
 /// <summary>
 /// Updates data in the line GPU buffer.
 /// </summary>
-[GpuBufferName("Line")]
 internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
 {
     private const string BufferNotInitMsg = "The line buffer has not been initialized.";
@@ -60,6 +59,11 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
             },
             () => this.unsubscriber?.Dispose());
     }
+
+    /// <summary>
+    /// Gets the human-friendly buffer type name used for debug labeling.
+    /// </summary>
+    protected override string BufferType => "Line";
 
     /// <inheritdoc/>
     protected internal override void UploadVertexData(LineBatchItem lineData, uint batchIndex)
@@ -114,14 +118,12 @@ internal sealed class LineGpuBuffer : GpuBufferBase<LineBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        var result = new List<float>();
-
-        for (var i = 0; i < BatchSize; i++)
+        if (!IsInitialized)
         {
-            result.AddRange(new LineGpuData(default, default, default, default).ToArray());
+            throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        return result.ToArray();
+        return LineGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>

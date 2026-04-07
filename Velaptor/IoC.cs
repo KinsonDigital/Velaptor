@@ -13,7 +13,6 @@ using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Content;
-using Content.Caching;
 using Content.Factories;
 using Content.Fonts.Services;
 using Factories;
@@ -104,8 +103,6 @@ internal static class IoC
         SetupBuffers();
 
         SetupRendering();
-
-        SetupCaching();
 
         SetupFactories();
 
@@ -249,27 +246,19 @@ internal static class IoC
     }
 
     /// <summary>
-    /// Sets up the container registration related to caching.
-    /// </summary>
-    private static void SetupCaching()
-    {
-        IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
-        IoCContainer.Register<IItemCache<string, IAudio>, AudioCache>(Lifestyle.Singleton);
-    }
-
-    /// <summary>
     /// Sets up the container registration related to factories.
     /// </summary>
     private static void SetupFactories()
     {
         IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
         IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
+        IoCContainer.Register<IPathResolverFactory, PathResolverFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -301,7 +290,7 @@ internal static class IoC
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
                 IoCContainer.GetInstance<IFreeTypeService>(),
-                PathResolverFactory.CreateFontPathResolver(),
+                IoCContainer.GetInstance<IPathResolverFactory>().CreateFontPathResolver(),
                 IoCContainer.GetInstance<IDirectory>(),
                 IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 
@@ -313,9 +302,9 @@ internal static class IoC
     /// </summary>
     private static void SetupContent()
     {
-        IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
         IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
         IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
+        IoCContainer.Register<IContentLoaderFactory, ContentLoaderFactory>(Lifestyle.Singleton);
     }
 
     /// <summary>

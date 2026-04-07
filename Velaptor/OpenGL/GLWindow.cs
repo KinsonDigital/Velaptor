@@ -578,7 +578,6 @@ internal sealed class GLWindow : VelaptorIWindow
 
         this.timerService.Stop();
         Fps = 1000f / this.timerService.MillisecondsPassed;
-        this.timerService.Reset();
     }
 
     /// <summary>

@@ -5,7 +5,7 @@
 namespace VelaptorTests.Scene.Exceptions;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Scene.Exceptions;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class SceneAlreadyExistsExceptionTests
         var exception = new SceneAlreadyExistsException();
 
         // Assert
-        exception.Message.Should().Be("The scene already exists.");
+        exception.Message.ShouldBe("The scene already exists.");
     }
 
     [Theory]
@@ -50,7 +50,7 @@ public class SceneAlreadyExistsExceptionTests
         var actual = sut.Message;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class SceneAlreadyExistsExceptionTests
         var exception = new SceneAlreadyExistsException("test-message");
 
         // Assert
-        exception.Message.Should().Be("test-message");
+        exception.Message.ShouldBe("test-message");
     }
 
     [Fact]
@@ -73,8 +73,8 @@ public class SceneAlreadyExistsExceptionTests
         var deviceException = new SceneAlreadyExistsException("test-exception", innerException);
 
         // Assert
-        deviceException.InnerException.Message.Should().Be("inner-exception");
-        deviceException.Message.Should().Be("test-exception");
+        deviceException.InnerException.Message.ShouldBe("inner-exception");
+        deviceException.Message.ShouldBe("test-exception");
     }
     #endregion
 }

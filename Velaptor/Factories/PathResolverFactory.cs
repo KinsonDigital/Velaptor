@@ -10,58 +10,44 @@ using Content;
 using Content.Fonts;
 using Services;
 
-/// <summary>
-/// Creates path resolver instances.
-/// </summary>
+/// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
-public static class PathResolverFactory
+public class PathResolverFactory : IPathResolverFactory
 {
     private static IContentPathResolver? texturePathResolver;
     private static IContentPathResolver? atlasPathResolver;
     private static IContentPathResolver? audioPathResolver;
     private static IContentPathResolver? fontPathResolver;
 
-    /// <summary>
-    /// Creates a path resolver that resolves paths to texture content.
-    /// </summary>
-    /// <returns>The resolver to texture content.</returns>
+    /// <inheritdoc/>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IContentPathResolver CreateTexturePathResolver() =>
+    public IContentPathResolver CreateTexturePathResolver() =>
         texturePathResolver ??= new TexturePathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
             IoC.Container.GetInstance<IPath>(),
             IoC.Container.GetInstance<IPlatform>());
 
-    /// <summary>
-    /// Creates a path resolver that resolves paths to texture atlas textures.
-    /// </summary>
-    /// <returns>The resolver to texture content.</returns>
+    /// <inheritdoc/>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IContentPathResolver CreateAtlasPathResolver() =>
+    public IContentPathResolver CreateAtlasPathResolver() =>
         atlasPathResolver ??= new AtlasTexturePathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
             IoC.Container.GetInstance<IPath>(),
             IoC.Container.GetInstance<IPlatform>());
 
-    /// <summary>
-    /// Creates a path resolver that resolves paths to font content.
-    /// </summary>
-    /// <returns>The resolver to atlas content.</returns>
-    public static IContentPathResolver CreateFontPathResolver() =>
+    /// <inheritdoc/>
+    public IContentPathResolver CreateFontPathResolver() =>
         fontPathResolver ??= new FontPathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
             IoC.Container.GetInstance<IPath>(),
             IoC.Container.GetInstance<IPlatform>());
 
-    /// <summary>
-    /// Creates a path resolver that resolves paths to audio content.
-    /// </summary>
-    /// <returns>The resolver to audio content.</returns>
+    /// <inheritdoc/>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-    public static IContentPathResolver CreateAudioPathResolver() =>
+    public IContentPathResolver CreateAudioPathResolver() =>
         audioPathResolver ??= new AudioPathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),

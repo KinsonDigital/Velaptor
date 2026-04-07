@@ -5,9 +5,10 @@
 namespace VelaptorTests.Services;
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Text.Json;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Exceptions;
@@ -20,11 +21,12 @@ using Xunit;
 public class AppSettingsServiceTests
 {
     private const string AppSettingsFileName = "app-settings.json";
-    private const string BaseDirPath = "C:/velaptor";
-    private const string SettingsFilePath = $"{BaseDirPath}/{AppSettingsFileName}";
+    private static readonly string BaseDirPath = Path.Combine("C:", "Velaptor");
+    private static readonly string SettingsFilePath = Path.Combine(BaseDirPath, AppSettingsFileName);
     private readonly IJsonService mockJsonService;
     private readonly IDirectory mockDirService;
-    private readonly IFile mockFileService;
+    private readonly IFile mockFile;
+    private readonly IPath mockPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppSettingsServiceTests"/> class.
@@ -36,8 +38,11 @@ public class AppSettingsServiceTests
         this.mockDirService = Substitute.For<IDirectory>();
         this.mockDirService.GetCurrentDirectory().Returns(BaseDirPath);
 
-        this.mockFileService = Substitute.For<IFile>();
-        this.mockFileService.Exists(Arg.Any<string>()).Returns(true);
+        this.mockFile = Substitute.For<IFile>();
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+
+        this.mockPath = Substitute.For<IPath>();
+        this.mockPath.Combine(BaseDirPath, AppSettingsFileName).Returns(SettingsFilePath);
     }
 
     #region Constructor Tests
@@ -50,13 +55,13 @@ public class AppSettingsServiceTests
             _ = new AppSettingsService(
                 null,
                 this.mockDirService,
-                this.mockFileService);
+                this.mockFile,
+                this.mockPath);
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'jsonService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'jsonService')");
     }
 
     [Fact]
@@ -68,13 +73,13 @@ public class AppSettingsServiceTests
             _ = new AppSettingsService(
                 this.mockJsonService,
                 null,
-                this.mockFileService);
+                this.mockFile,
+                this.mockPath);
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -86,29 +91,47 @@ public class AppSettingsServiceTests
             _ = new AppSettingsService(
                 this.mockJsonService,
                 this.mockDirService,
+                null,
+                this.mockPath);
+        };
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullPathParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AppSettingsService(
+                this.mockJsonService,
+                this.mockDirService,
+                this.mockFile,
                 null);
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
 
     [Fact]
     public void Ctor_WhenSettingsFileDoesNotExist_CreatesSettingsFileWithDefaultValues()
     {
         // Arrange
-        this.mockFileService.Exists(Arg.Any<string>()).Returns(false);
+        this.mockFile.Exists(Arg.Any<string>()).Returns(false);
         this.mockJsonService.Serialize(Arg.Any<object?>()).Returns("test-data");
 
         // Act
         _ = CreateService();
 
         // Assert
-        this.mockFileService.Received(1).Exists(SettingsFilePath);
+        this.mockFile.Received(1).Exists(SettingsFilePath);
         this.mockJsonService.Received(1).Serialize(Arg.Any<AppSettings>());
-        this.mockFileService.Received(1).WriteAllText(SettingsFilePath, "test-data");
+        this.mockFile.Received(1).WriteAllText(SettingsFilePath, "test-data");
     }
 
     [Fact]
@@ -126,8 +149,9 @@ public class AppSettingsServiceTests
         var act = () => _ = CreateService();
 
         // Assert
-        act.Should().Throw<AppSettingsException>()
-            .WithMessage(expected).WithInnerException<JsonException>();
+        var exception = act.ShouldThrow<AppSettingsException>();
+        exception.Message.ShouldBe(expected);
+        exception.InnerException.ShouldBeOfType<JsonException>();
     }
     #endregion
 
@@ -142,7 +166,7 @@ public class AppSettingsServiceTests
         var actual = sut.Settings;
 
         // Assert
-        actual.Should().NotBeNull();
+        actual.ShouldNotBeNull();
     }
     #endregion
 
@@ -151,5 +175,5 @@ public class AppSettingsServiceTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private AppSettingsService CreateService()
-        => new (this.mockJsonService, this.mockDirService, this.mockFileService);
+        => new (this.mockJsonService, this.mockDirService, this.mockFile, this.mockPath);
 }

@@ -10,7 +10,7 @@ using System.IO.Abstractions;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using NSubstitute.Core;
@@ -81,7 +81,6 @@ public class TextureRendererTests : TestsBase
     }
 
     #region Constructor Tests
-
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
@@ -99,9 +98,8 @@ public class TextureRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -121,9 +119,8 @@ public class TextureRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'buffer')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'buffer')");
     }
 
     [Fact]
@@ -143,9 +140,8 @@ public class TextureRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'shader')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'shader')");
     }
 
     [Fact]
@@ -165,15 +161,12 @@ public class TextureRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'batchManager')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'batchManager')");
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     [Trait("Category", Method)]
     public void Render_WhenNotCallingBeginFirst_ThrowsException()
@@ -182,7 +175,7 @@ public class TextureRendererTests : TestsBase
         var sut = CreateSystemUnderTest();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+        var exception = Should.Throw<InvalidOperationException>(() =>
         {
             sut.Render(
                 Substitute.For<ITexture>(),
@@ -192,7 +185,9 @@ public class TextureRendererTests : TestsBase
                 default,
                 default,
                 default);
-        }, "The 'Begin()' method must be invoked first before any 'Render()' methods.");
+        });
+
+        exception.Message.ShouldBe("The 'Begin()' method must be invoked first before any 'Render()' methods.");
     }
 
     [Theory]
@@ -208,7 +203,7 @@ public class TextureRendererTests : TestsBase
         this.batchHasBegunReactor.OnReceive();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+        var exception = Should.Throw<ArgumentException>(() =>
         {
             sut.Render(
                 Substitute.For<ITexture>(),
@@ -218,7 +213,9 @@ public class TextureRendererTests : TestsBase
                 default,
                 default,
                 default);
-        }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
+        });
+
+        exception.Message.ShouldBe("The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
     }
 
     [Fact]
@@ -230,17 +227,19 @@ public class TextureRendererTests : TestsBase
         this.batchHasBegunReactor.OnReceive();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                sut.Render(
-                    null,
-                    new Rectangle(10, 20, 30, 40),
-                    default,
-                    default,
-                    default,
-                    default,
-                    default);
-            }, $"Cannot render a null '{nameof(ITexture)}'. (Parameter 'texture')");
+        var exception = Should.Throw<ArgumentNullException>(() =>
+        {
+            sut.Render(
+                null,
+                new Rectangle(10, 20, 30, 40),
+                default,
+                default,
+                default,
+                default,
+                default);
+        });
+
+        exception.Message.ShouldBe($"Cannot render a null '{nameof(ITexture)}'. (Parameter 'texture')");
     }
 
     [Fact]
@@ -255,7 +254,7 @@ public class TextureRendererTests : TestsBase
         this.batchHasBegunReactor.OnReceive();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+        var exception = Should.Throw<ArgumentException>(() =>
         {
             sut.Render(
                 texture: mockTexture,
@@ -263,7 +262,9 @@ public class TextureRendererTests : TestsBase
                 y: 20,
                 color: default,
                 effects: default);
-        }, "The source rectangle must have a width and height greater than zero. (Parameter 'rects')");
+        });
+
+        exception.Message.ShouldBe("The source rectangle must have a width and height greater than zero. (Parameter 'rects')");
     }
 
     [Fact]
@@ -337,7 +338,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -374,7 +375,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -411,7 +412,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -448,7 +449,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -600,7 +601,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -637,7 +638,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -674,7 +675,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -711,7 +712,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -852,8 +853,8 @@ public class TextureRendererTests : TestsBase
             default);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
     }
 
     [Fact]
@@ -924,8 +925,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20));
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -939,8 +940,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), Color.CornflowerBlue);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -954,8 +955,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 25f);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -969,8 +970,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 35f, 1.4f);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -984,8 +985,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 45f, Color.IndianRed);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -999,8 +1000,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(null, "test-texture", new Vector2(10, 20), 15f, 1.2f, Color.IndianRed);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -1021,8 +1022,8 @@ public class TextureRendererTests : TestsBase
             RenderEffects.FlipVertically);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'atlas')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
     [Fact]
@@ -1039,7 +1040,8 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        var exception = act.ShouldThrow<RendererException>();
+        exception.Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1057,7 +1059,7 @@ public class TextureRendererTests : TestsBase
             sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), Color.CornflowerBlue, 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1074,7 +1076,7 @@ public class TextureRendererTests : TestsBase
         var act = () => sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 25f, 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1092,7 +1094,7 @@ public class TextureRendererTests : TestsBase
             sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 35f, 1.4f, 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1110,7 +1112,7 @@ public class TextureRendererTests : TestsBase
             sut.Render(mockAtlas, "test-sub-texture", new Vector2(10, 20), 45f, Color.IndianRed, 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1135,7 +1137,7 @@ public class TextureRendererTests : TestsBase
                 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1161,7 +1163,7 @@ public class TextureRendererTests : TestsBase
                 1234);
 
         // Assert
-        act.Should().Throw<RendererException>().WithMessage(expectedMsg);
+        act.ShouldThrow<RendererException>().Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -1199,7 +1201,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1238,7 +1240,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1277,7 +1279,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1317,7 +1319,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1357,7 +1359,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1398,7 +1400,7 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
 
     [Fact]
@@ -1440,13 +1442,11 @@ public class TextureRendererTests : TestsBase
         this.mockBatchingManager
             .Received(1)
             .AddTextureItem(Arg.Any<TextureBatchItem>(), 123, Arg.Any<DateTime>());
-        actualBatchItem.Should().BeEquivalentTo(expectedBatchItem);
+        actualBatchItem.ShouldBeEquivalentTo(expectedBatchItem);
     }
-
     #endregion
 
     #region Reactable Tests
-
     [Fact]
     [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingAndDisposingOfSubscription_CreatesAndDisposesOfSubscriptionCorrectly()
@@ -1461,7 +1461,7 @@ public class TextureRendererTests : TestsBase
             .AndDoes(ci =>
             {
                 var reactorParam = ci.Arg<IReceiveSubscription>();
-                reactorParam.Should().NotBeNull("It is required for unit testing.");
+                reactorParam.ShouldNotBeNull("It is required for unit testing.");
                 reactor = reactorParam;
             });
 
@@ -1488,7 +1488,7 @@ public class TextureRendererTests : TestsBase
             .AndDoes(ci =>
             {
                 var reactorParam = ci.Arg<TextureRenderItem>();
-                reactorParam.Should().NotBeNull("It is required for unit testing.");
+                reactorParam.ShouldNotBeNull("It is required for unit testing.");
                 reactor = reactorParam;
             });
 
@@ -1500,7 +1500,6 @@ public class TextureRendererTests : TestsBase
         // Assert
         mockUnsubscriber.Received(1).Dispose();
     }
-
     #endregion
 
     /// <summary>
@@ -1573,6 +1572,9 @@ public class TextureRendererTests : TestsBase
     {
         var mockTexture = Substitute.For<ITexture>();
         mockTexture.Id.Returns(TextureId);
+        mockTexture.Width.Returns((uint)width);
+        mockTexture.Height.Returns((uint)height);
+
         var mockPath = Substitute.For<IPath>();
         mockPath.GetFileNameWithoutExtension(Arg.Any<string>()).Returns("test-atlas");
 
@@ -1581,8 +1583,6 @@ public class TextureRendererTests : TestsBase
 
         var mock = Substitute.For<IAtlasData>();
         mock.Name.Returns("test-atlas-texture");
-        mock.Width.Returns((uint)width);
-        mock.Height.Returns((uint)height);
         mock.Texture.Returns(mockTexture);
         mock.GetFrames(Arg.Any<string>()).Returns(subTextureDataItems);
 

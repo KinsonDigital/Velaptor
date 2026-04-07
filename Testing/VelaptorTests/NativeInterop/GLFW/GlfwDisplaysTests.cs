@@ -13,7 +13,7 @@ using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 
 /// <summary>
@@ -95,8 +95,8 @@ public unsafe class GlfwDisplaysTests
         var act = () => new GlfwDisplays(null, this.mockPlatform);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glfwInvoker')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'glfwInvoker')");
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public unsafe class GlfwDisplaysTests
         var act = () => new GlfwDisplays(this.mockGlfwInvoker, null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'platform')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'platform')");
     }
 
     [Fact]
@@ -165,7 +165,9 @@ public unsafe class GlfwDisplaysTests
         var actual = displays.SystemDisplays;
 
         // Assert
-        actual.Should().HaveCount(2).And.ContainInOrder(expectedDisplayA, expectedDisplayB);
+        actual.Length.ShouldBe(2);
+        actual[0].ShouldBe(expectedDisplayA);
+        actual[1].ShouldBe(expectedDisplayB);
     }
     #endregion
 
@@ -184,7 +186,7 @@ public unsafe class GlfwDisplaysTests
             Raise.EventWith<GlfwDisplayChangedEventArgs>(new object(), new GlfwDisplayChangedEventArgs(true));
 
         // Assert
-        refreshInvoked.Should().BeTrue();
+        refreshInvoked.ShouldBeTrue();
     }
 
     [Fact]

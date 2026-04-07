@@ -6,7 +6,7 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Input;
 using Velaptor.Services;
@@ -35,9 +35,8 @@ public class KeyboardTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'keyboardDataService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'keyboardDataService')");
     }
     #endregion
 
@@ -57,7 +56,7 @@ public class KeyboardTests
         var actual = state.KeyStates;
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 

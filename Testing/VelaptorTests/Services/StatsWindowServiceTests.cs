@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using FluentAssertions;
+using Shouldly;
 using ImGuiNET;
 using NSubstitute;
 using Velaptor.Input;
@@ -196,9 +196,8 @@ public class StatsWindowServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'imGuiInvoker')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imGuiInvoker')");
     }
 
     [Fact]
@@ -211,9 +210,8 @@ public class StatsWindowServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'keyboard')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'keyboard')");
     }
     #endregion
 
@@ -228,7 +226,7 @@ public class StatsWindowServiceTests
         sut.Position = new Point(10, 20);
 
         // Assert
-        sut.Position.Should().Be(new Point(10, 20));
+        sut.Position.ShouldBe(new Point(10, 20));
     }
 
     [Fact]
@@ -242,8 +240,8 @@ public class StatsWindowServiceTests
         sut.Visible = true;
 
         // Assert
-        defaultValue.Should().BeFalse();
-        sut.Visible.Should().BeTrue();
+        defaultValue.ShouldBeFalse();
+        sut.Visible.ShouldBeTrue();
     }
     #endregion
 
@@ -280,7 +278,7 @@ public class StatsWindowServiceTests
         var actual = sut.Visible;
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -334,8 +332,8 @@ public class StatsWindowServiceTests
         this.mockImGuiInvoker.Received(1).CalcTextSize("Runtime Stats");
         this.mockImGuiInvoker.Received(1).GetStyle();
         this.mockImGuiInvoker.Received(1).SetWindowSize(expected);
-        eventWasRaised.Should().BeTrue();
-        sut.Size.Should().Be(new Size((int)expected.X, (int)expected.Y));
+        eventWasRaised.ShouldBeTrue();
+        sut.Size.ShouldBe(new Size((int)expected.X, (int)expected.Y));
     }
 
     [Fact]
@@ -357,7 +355,7 @@ public class StatsWindowServiceTests
         sut.Render();
 
         // Assert
-        eventWasRaised.Should().BeFalse();
+        eventWasRaised.ShouldBeFalse();
     }
     #endregion
 

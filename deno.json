@@ -1,0 +1,33 @@
+{
+    "tasks": {
+        "create-pr": "deno run -A jsr:@kinsondigital/sprocket@2.2.0 run-job ./DevTools/sprocket-config.ts --job-name Create-PR",
+        "prep-prev-release": "deno run -A jsr:@kinsondigital/sprocket@2.2.0 run-job ./DevTools/sprocket-config.ts --job-name Prep-Prev-Release"
+    },
+    "lint": {
+        "include": [
+            "DevTools/",
+            "tests/"
+        ],
+        "exclude": [
+            "**/playground.ts"
+        ]
+    },
+    "fmt": {
+        "include": [
+            "DevTools/"
+        ],
+        "exclude": [
+            "**/*.md",
+            "**/*.json",
+            "**/*.js",
+            "**/*.yml",
+            "**/*.yaml",
+            "**/playground.ts"
+        ],
+        "useTabs": true,
+        "lineWidth": 130,
+        "indentWidth": 4,
+        "semiColons": true,
+        "singleQuote": false
+    }
+}

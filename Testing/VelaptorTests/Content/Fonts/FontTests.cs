@@ -10,18 +10,16 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using FluentAssertions;
+using System.Text;
 using Newtonsoft.Json;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Exceptions;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.Services;
-using Velaptor.Services;
 using Xunit;
 
 /// <summary>
@@ -38,8 +36,6 @@ public class FontTests
     private readonly IFreeTypeService mockFreeTypeService;
     private readonly IFontStatsService mockFontStatsService;
     private readonly ITexture mockTexture;
-    private readonly IFontAtlasService mockFontAtlasService;
-    private readonly IItemCache<string, ITexture> mockTextureCache;
     private readonly string sampleTestDataDirPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
         .ToCrossPlatPath() + "/SampleTestData";
     private readonly Dictionary<char, GlyphMetrics> glyphMetrics = new ();
@@ -70,9 +66,6 @@ public class FontTests
 
         this.mockFontStatsService = Substitute.For<IFontStatsService>();
 
-        this.mockFontAtlasService = Substitute.For<IFontAtlasService>();
-        this.mockTextureCache = Substitute.For<IItemCache<string, ITexture>>();
-
         this.mockTexture = Substitute.For<ITexture>();
     }
 
@@ -87,8 +80,6 @@ public class FontTests
                 null,
                 this.mockFreeTypeService,
                 this.mockFontStatsService,
-                this.mockFontAtlasService,
-                this.mockTextureCache,
                 FontName,
                 this.fontFilePath,
                 12u,
@@ -97,12 +88,12 @@ public class FontTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'texture')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'texture')");
     }
 
     [Fact]
-    public void Ctor_WithNullFontServiceParam_ThrowsException()
+    public void Ctor_WithNullFreeTypeServiceParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -111,8 +102,6 @@ public class FontTests
                 this.mockTexture,
                 null,
                 this.mockFontStatsService,
-                this.mockFontAtlasService,
-                this.mockTextureCache,
                 FontName,
                 this.fontFilePath,
                 12u,
@@ -121,8 +110,8 @@ public class FontTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]
@@ -135,8 +124,6 @@ public class FontTests
                 this.mockTexture,
                 this.mockFreeTypeService,
                 null,
-                this.mockFontAtlasService,
-                this.mockTextureCache,
                 FontName,
                 this.fontFilePath,
                 12u,
@@ -145,56 +132,8 @@ public class FontTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontStatsService')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullFontAtlasServiceParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Font(
-                this.mockTexture,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
-                null,
-                this.mockTextureCache,
-                FontName,
-                this.fontFilePath,
-                12u,
-                true,
-                this.glyphMetrics.Values.ToArray());
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'fontAtlasService')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullTextureCacheParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new Font(
-                this.mockTexture,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
-                this.mockFontAtlasService,
-                null,
-                FontName,
-                this.fontFilePath,
-                12u,
-                true,
-                this.glyphMetrics.Values.ToArray());
-        };
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'textureCache')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontStatsService')");
     }
 
     [Fact]
@@ -207,8 +146,6 @@ public class FontTests
                 this.mockTexture,
                 this.mockFreeTypeService,
                 this.mockFontStatsService,
-                this.mockFontAtlasService,
-                this.mockTextureCache,
                 null,
                 this.fontFilePath,
                 12u,
@@ -217,8 +154,8 @@ public class FontTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'name')");
     }
 
     [Fact]
@@ -231,8 +168,6 @@ public class FontTests
                 this.mockTexture,
                 this.mockFreeTypeService,
                 this.mockFontStatsService,
-                this.mockFontAtlasService,
-                this.mockTextureCache,
                 string.Empty,
                 this.fontFilePath,
                 12u,
@@ -241,8 +176,8 @@ public class FontTests
         };
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("The value cannot be an empty string. (Parameter 'name')");
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldBe("The value cannot be an empty string. (Parameter 'name')");
     }
 
     [Fact]
@@ -256,12 +191,12 @@ public class FontTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.Atlas.Should().BeEquivalentTo(this.mockTexture);
-        sut.Metrics.Count.Should().Be(this.glyphMetrics.Count);
-        sut.Name.Should().Be(FontName);
-        sut.FamilyName.Should().Be("test-font-family");
-        sut.HasKerning.Should().BeTrue();
-        sut.FilePath.Should().Be(this.fontFilePath);
+        sut.Atlas.ShouldBeEquivalentTo(this.mockTexture);
+        sut.Metrics.Count.ShouldBe(this.glyphMetrics.Count);
+        sut.Name.ShouldBe(FontName);
+        sut.FamilyName.ShouldBe("test-font-family");
+        sut.HasKerning.ShouldBeTrue();
+        sut.FilePath.ShouldBe(this.fontFilePath);
     }
 
     [Fact]
@@ -286,7 +221,7 @@ public class FontTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.Source.Should().Be(FontSource.AppContent);
+        sut.Source.ShouldBe(FontSource.AppContent);
     }
 
     [Fact]
@@ -301,7 +236,7 @@ public class FontTests
         var sut = CreateSystemUnderTest();
 
         // Assert
-        sut.Source.Should().Be(FontSource.Unknown);
+        sut.Source.ShouldBe(FontSource.Unknown);
     }
 
     [Fact]
@@ -316,9 +251,9 @@ public class FontTests
         var actualIsDefaultFont = sut.IsDefaultFont;
 
         // Assert
-        actualName.Should().Be(FontName);
-        actualFilePath.Should().Be(this.fontFilePath);
-        actualIsDefaultFont.Should().BeTrue();
+        actualName.ShouldBe(FontName);
+        actualFilePath.ShouldBe(this.fontFilePath);
+        actualIsDefaultFont.ShouldBeTrue();
     }
 
     [Fact]
@@ -328,8 +263,8 @@ public class FontTests
         var sut = CreateSystemUnderTest();
 
         // Act & Assert
-        sut.CacheEnabled.Should().BeTrue();
-        sut.MaxCacheSize.Should().Be(1000);
+        sut.CacheEnabled.ShouldBeTrue();
+        sut.MaxMeasureCacheSize.ShouldBe(1000);
     }
     #endregion
 
@@ -346,7 +281,7 @@ public class FontTests
         var actual = sut.AvailableStylesForFamily;
 
         // Assert
-        actual.Should().BeEmpty();
+        actual.ShouldBeEmpty();
     }
 
     [Fact]
@@ -362,7 +297,7 @@ public class FontTests
         var actual = sut.AvailableStylesForFamily;
 
         // Assert
-        actual.Should().ContainSingle();
+        actual.ShouldHaveSingleItem();
     }
 
     [Fact]
@@ -377,7 +312,7 @@ public class FontTests
         var actual = sut.LineSpacing;
 
         // Assert
-        actual.Should().Be(0.5f);
+        actual.ShouldBe(0.5f);
     }
 
     [Fact]
@@ -394,25 +329,7 @@ public class FontTests
         var actual = sut.Style;
 
         // Assert
-        actual.Should().Be(FontStyle.Italic);
-    }
-
-    [Fact]
-    public void Style_WhenUsingStyleThatDoesNotExist_ThrowsException()
-    {
-        // Arrange
-        this.mockFreeTypeService.GetFamilyName(this.facePtr, this.fontFilePath).Returns("test-font-family");
-        this.mockFontStatsService.GetContentStatsForFontFamily(Arg.Any<string>())
-            .Returns([new () { Style = FontStyle.Bold }]);
-
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.Style = FontStyle.Italic;
-
-        // Assert
-        act.Should().Throw<FontException>()
-            .WithMessage("The font style 'Italic' does not exist for the font family 'test-font-family'.");
+        actual.ShouldBe(FontStyle.Italic);
     }
 
     [Fact]
@@ -429,7 +346,7 @@ public class FontTests
         var actual = sut.Size;
 
         // Assert
-        actual.Should().Be(22u);
+        actual.ShouldBe(22u);
     }
 
     [Fact]
@@ -447,9 +364,8 @@ public class FontTests
         sut.Size = 0;
 
         // Assert
-        sut.Atlas.Should().Be(this.mockTexture);
-        sut.LineSpacing.Should().Be(123);
-        this.mockFontAtlasService.DidNotReceive().CreateAtlas(Arg.Any<string>(), Arg.Any<uint>());
+        sut.Atlas.ShouldBe(this.mockTexture);
+        sut.LineSpacing.ShouldBe(123);
         this.mockFreeTypeService.DidNotReceive().GetFontScaledLineSpacing(Arg.Any<nint>(), 0u);
     }
 
@@ -464,7 +380,7 @@ public class FontTests
         var actual = sut.CacheEnabled;
 
         // Assert
-        actual.Should().BeFalse();
+        actual.ShouldBeFalse();
     }
 
     [Fact]
@@ -474,11 +390,11 @@ public class FontTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.MaxCacheSize = 100;
-        var actual = sut.MaxCacheSize;
+        sut.MaxMeasureCacheSize = 100;
+        var actual = sut.MaxMeasureCacheSize;
 
         // Assert
-        actual.Should().Be(100);
+        actual.ShouldBe(100);
     }
     #endregion
 
@@ -495,7 +411,7 @@ public class FontTests
 
         // Assert
         this.mockFreeTypeService.Received(1).GetKerning(this.facePtr, 11, 22);
-        actual.Should().Be(33);
+        actual.ShouldBe(33);
     }
 
     [Theory]
@@ -510,8 +426,8 @@ public class FontTests
         var actual = sut.Measure(text);
 
         // Assert
-        actual.Width.Should().Be(0);
-        actual.Height.Should().Be(0);
+        actual.Width.ShouldBe(0);
+        actual.Height.ShouldBe(0);
     }
 
     [Theory]
@@ -522,10 +438,9 @@ public class FontTests
         // ReSharper disable once CommentTypo
         /* NOTE:
          * The kerning invoke count is 20 because the Measure() method is being called twice.
-         * The text 'hello\nworld' contains 10 render capable characters and kerning is invoked for each character.
+         * The text 'hello\nworld' contains 10 render-capable characters and kerning is invoked for each character.
          */
         // Arrange
-        // ReSharper disable once GrammarMistakeInStringLiteral
         const string text = "hello\r\nworld";
 
         this.mockFreeTypeService.GetFontScaledLineSpacing(this.facePtr, 12).Returns(2f);
@@ -540,10 +455,28 @@ public class FontTests
         font.Measure(text);
 
         // Assert
-        actual.Width.Should().Be(137);
-        actual.Height.Should().Be(33);
+        actual.Width.ShouldBe(137);
+        actual.Height.ShouldBe(33);
 
         this.mockFreeTypeService.Received(executeKerningCount).GetKerning(Arg.Any<nint>(), Arg.Any<uint>(), Arg.Any<uint>());
+    }
+
+    [Fact]
+    public void Measure_WhenInvoked_Something()
+    {
+        // Arrange
+        const string text = "hello\r\nworld";
+        MockGlyphKernings(text);
+
+        var font = CreateSystemUnderTest();
+        font.CacheEnabled = true;
+        font.MaxMeasureCacheSize = 0;
+
+        // Act
+        font.Measure(text);
+
+        // Assert
+        font.CurrentMeasureCacheSize.ShouldBe(0);
     }
 
     [Fact]
@@ -557,12 +490,12 @@ public class FontTests
         var actual = sut.ToGlyphMetrics(text);
 
         // Assert
-        actual.Should().HaveCount(5);
-        actual[0].Glyph.Should().Be('t');
-        actual[1].Glyph.Should().Be('e');
-        actual[2].Glyph.Should().Be('s');
-        actual[3].Glyph.Should().Be('t');
-        actual[4].Glyph.Should().Be(InvalidCharacter);
+        actual.Length.ShouldBe(5);
+        actual[0].Glyph.ShouldBe('t');
+        actual[1].Glyph.ShouldBe('e');
+        actual[2].Glyph.ShouldBe('s');
+        actual[3].Glyph.ShouldBe('t');
+        actual[4].Glyph.ShouldBe(InvalidCharacter);
     }
 
     [Theory]
@@ -577,11 +510,11 @@ public class FontTests
         var actual = sut.GetCharacterBounds(value, Vector2.Zero);
 
         // Assert
-        actual.Should().BeEmpty();
+        actual.ShouldBeEmpty();
     }
 
     [Fact]
-    public void GetCharacterBounds_WhenInvoked_ReturnsCorrectResult()
+    public void GetCharacterBounds_WhenInvokedWithStringParam_ReturnsCorrectResult()
     {
         // Arrange
         const string testText = "test-value";
@@ -591,50 +524,58 @@ public class FontTests
         var actual = sut.GetCharacterBounds(testText, Vector2.Zero).ToArray();
 
         // Assert
-        actual.Should().AllSatisfy(data =>
-        {
-            var character = data.character;
-            testText.Should().Contain(character.ToString(), $"the character '{character}' should be in the text '{testText}'.");
-        });
+        actual.ShouldAllBe(data => testText.Contains(data.character.ToString()), $"the character should be in the text '{testText}'.");
 
         // Assert that the test text characters all have a bounds Y position of 0
-        actual.Should().AllSatisfy(data =>
-        {
-            if (data.character == '-')
-            {
-                return;
-            }
+        actual.ShouldAllBe(data => data.character == '-' || data.bounds.Y == 0);
 
-            var bounds = data.bounds;
-            bounds.Y.Should().Be(0);
-        });
+        // Assert that the character 't' has the correct height
+        actual.Where(i => i.character == 't').ShouldAllBe(data => Math.Abs(data.bounds.Height - 26) <= 0);
 
-        // Assert that the character t has the correct height
-        actual.Where(i => i.character == 't').Should().AllSatisfy(data =>
-        {
-            data.bounds.Height.Should().Be(26);
-        });
+        // Assert that the character '-' has the correct height
+        actual.Where(i => i.character == '-').ShouldAllBe(data => Math.Abs(data.bounds.Height - 4) <= 0);
 
-        // Assert that the character - has the correct height
-        actual.Where(i => i.character == '-').Should().AllSatisfy(data =>
-        {
-            data.bounds.Height.Should().Be(4);
-        });
+        // Assert that the character 'l' has the correct height
+        actual.Where(i => i.character == 'l').ShouldAllBe(data => Math.Abs(data.bounds.Height - 31) <= 0);
 
-        // Assert that the character l has the correct height
-        actual.Where(i => i.character == 'l').Should().AllSatisfy(data =>
-        {
-            data.bounds.Height.Should().Be(31);
-        });
-
-        // Assert that all the characters e, s, v, a, and u all have a height of 20
-        actual.Where(i => "esvau".Contains(i.character)).Should().AllSatisfy(data =>
-        {
-            data.bounds.Height.Should().Be(20);
-        });
+        // Assert that all the characters 'e', 's', 'v', 'a', and 'u' all have a height of 20
+        actual.Where(i => "esvau".Contains(i.character)).ShouldAllBe(data => Math.Abs(data.bounds.Height - 20) <= 0);
 
         Assert.Equal(10, actual.Length);
-        actual.Length.Should().Be(10);
+        actual.Length.ShouldBe(10);
+    }
+
+    [Fact]
+    public void GetCharacterBounds_WhenInvokedWithStringBuilderParam_ReturnsCorrectResult()
+    {
+        // Arrange
+        var testText = new StringBuilder("test-value");
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var actual = sut.GetCharacterBounds(testText, Vector2.Zero).ToArray();
+
+        // Assert
+        actual.ShouldAllBe(data => testText.ToString().Contains(data.character.ToString()), $"the character should be in the text '{testText}'.");
+
+        // Assert that the test text characters all have a bounds Y position of 0
+        const float epsilon = 1e-5f;
+        actual.ShouldAllBe(data => data.character == '-' || Math.Abs(data.bounds.Y - 0f) <= epsilon);
+
+        // Assert that the character 't' has the correct height
+        actual.Where(i => i.character == 't').ShouldAllBe(data => Math.Abs(data.bounds.Height - 26) <= 0);
+
+        // Assert that the character '-' has the correct height
+        actual.Where(i => i.character == '-').ShouldAllBe(data => Math.Abs(data.bounds.Height - 4) <= 0);
+
+        // Assert that the character 'l' has the correct height
+        actual.Where(i => i.character == 'l').ShouldAllBe(data => Math.Abs(data.bounds.Height - 31) <= 0);
+
+        // Assert that all the characters 'e', 's', 'v', 'a', and 'u' all have a height of 20
+        actual.Where(i => "esvau".Contains(i.character)).ShouldAllBe(data => Math.Abs(data.bounds.Height - 20) <= 0);
+
+        Assert.Equal(10, actual.Length);
+        actual.Length.ShouldBe(10);
     }
     #endregion
 
@@ -647,8 +588,6 @@ public class FontTests
             this.mockTexture,
             this.mockFreeTypeService,
             this.mockFontStatsService,
-            this.mockFontAtlasService,
-            this.mockTextureCache,
             FontName,
             this.fontFilePath,
             size,
@@ -666,9 +605,8 @@ public class FontTests
             Assert.Fail($"Cannot run test with the static class member '{this.glyphMetrics}' being null or empty.");
         }
 
-        // Strip new line and carriage feed characters.  This white space characters
-        // do not contribute to the kerning values anyhow and this interferes with
-        // differences between windows and linux
+        // Strip new line and carriage feed characters. The white space characters
+        // do not contribute to the kerning values.
         text = text.Replace("\r", string.Empty);
         text = text.Replace("\n", string.Empty);
 

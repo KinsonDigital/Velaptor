@@ -11,7 +11,6 @@ using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
@@ -24,12 +23,11 @@ public class LayeredTextRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";
     private const float Speed = 100f;
-    private const int BackgroundLayer = -50;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
-    private ITexture? background;
-    private ITextureRenderer? textureRenderer;
+    private readonly IContentManager contentManager;
+    private readonly BackgroundManager backgroundManager;
     private IFontRenderer? fontRenderer;
     private IFont? font;
     private Vector2 whiteTextPos;
@@ -37,10 +35,7 @@ public class LayeredTextRenderingScene : SceneBase
     private Vector2 blueTextPos;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private Vector2 backgroundPos;
     private SizeF whiteTextSize;
-    private ILoader<ITexture>? textureLoader;
-    private ILoader<IFont>? fontLoader;
     private RenderLayer whiteLayer = RenderLayer.One;
     private string whiteText = string.Empty;
     private string orangeText = string.Empty;
@@ -49,7 +44,12 @@ public class LayeredTextRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextRenderingScene"/> class.
     /// </summary>
-    public LayeredTextRenderingScene() => this.keyboard = HardwareFactory.GetKeyboard();
+    public LayeredTextRenderingScene()
+    {
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.contentManager = ContentManager.Create();
+        this.backgroundManager = new BackgroundManager();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -59,18 +59,11 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
 
-        this.textureLoader = ContentLoaderFactory.CreateTextureLoader();
-        this.background = this.textureLoader.Load("layered-rendering-background");
-        this.backgroundPos = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.fontLoader = ContentLoaderFactory.CreateFontLoader();
-        this.font = this.fontLoader.Load(DefaultFont, 12);
-
-        this.font.Style = FontStyle.Bold;
-        this.font.Size = 24;
+        this.font = this.contentManager.LoadFont(DefaultFont, 24);
 
         var whiteLines = new[]
         {
@@ -156,8 +149,8 @@ public class LayeredTextRenderingScene : SceneBase
             Color.AntiqueWhite,
             (int)this.whiteLayer);
 
-        // Render the checkerboard background
-        this.textureRenderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
+        // Render the background
+        this.backgroundManager.Render();
 
         base.Render();
     }
@@ -170,8 +163,8 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        this.textureLoader.Unload(this.background);
-        this.fontLoader.Unload(this.font);
+        this.backgroundManager.Unload();
+        this.contentManager.Unload(this.font);
 
         base.UnloadContent();
     }

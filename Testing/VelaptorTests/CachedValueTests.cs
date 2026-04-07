@@ -3,10 +3,11 @@
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor;
 using Xunit;
 
@@ -23,9 +24,8 @@ public class CachedValueTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'getterWhenNotCaching')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'getterWhenNotCaching')");
     }
 
     [Fact]
@@ -38,9 +38,8 @@ public class CachedValueTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'setterWhenNotCaching')");
+        var exception = Should.Throw<ArgumentNullException>(act);
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'setterWhenNotCaching')");
     }
 
     [Fact]
@@ -58,8 +57,8 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
-        externalSystemValue.Should().Be(0);
+        actual.ShouldBe(1234);
+        externalSystemValue.ShouldBe(0);
     }
 
     [Fact]
@@ -77,7 +76,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
     #endregion
 
@@ -100,7 +99,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
 
     [Fact]
@@ -121,7 +120,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
     #endregion
 
@@ -139,7 +138,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
 
     [Fact]
@@ -158,7 +157,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
 
     [Fact]
@@ -176,7 +175,7 @@ public class CachedValueTests
         var actual = cachedValue.GetValue();
 
         // Assert
-        actual.Should().Be(5678);
+        actual.ShouldBe(5678);
     }
 
     [Fact]
@@ -196,7 +195,7 @@ public class CachedValueTests
         cachedValue.SetValue(1234);
 
         // Assert
-        actual.Should().Be(1234);
+        actual.ShouldBe(1234);
     }
     #endregion
 }

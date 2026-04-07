@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using Velaptor;
@@ -98,7 +98,6 @@ public class LineRendererTests : TestsBase
     }
 
     #region Constructor Tests
-
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
@@ -116,9 +115,8 @@ public class LineRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'openGLService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -138,9 +136,8 @@ public class LineRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'buffer')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'buffer')");
     }
 
     [Fact]
@@ -160,9 +157,8 @@ public class LineRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'shader')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'shader')");
     }
 
     [Fact]
@@ -182,15 +178,12 @@ public class LineRendererTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'batchManager')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'batchManager')");
     }
-
     #endregion
 
     #region Method Tests
-
     [Fact]
     [Trait("Category", Method)]
     public void Render_WhenBegunHasNotBeenInvoked_ThrowsException()
@@ -203,8 +196,8 @@ public class LineRendererTests : TestsBase
         var act = () => sut.Render(default(Line));
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<InvalidOperationException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -407,11 +400,9 @@ public class LineRendererTests : TestsBase
                 nint.Zero);
         this.mockGpuBuffer.Received(1).UploadData(batchItem, batchIndex);
     }
-
     #endregion
 
     #region Reactable Tests
-
     [Fact]
     [Trait("Category", Subscription)]
     public void PushReactable_WhenCreatingSubscription_CreatesSubscriptionCorrectly()
@@ -423,7 +414,7 @@ public class LineRendererTests : TestsBase
             .Do(ci =>
             {
                 var reactor = ci.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
             });
     }
 
@@ -438,11 +429,10 @@ public class LineRendererTests : TestsBase
             .Do(ci =>
             {
                 var reactor = ci.Arg<LineRenderItem>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"LineRenderer.ctor() - {PushNotifications.RenderLinesId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"LineRenderer.ctor() - {PushNotifications.RenderLinesId}");
             });
     }
-
     #endregion
 
     /// <summary>

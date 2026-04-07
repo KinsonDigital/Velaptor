@@ -26,7 +26,10 @@ public class ImageLoader : IImageLoader
     {
         this.path = IoC.Container.GetInstance<IPath>();
         this.imageService = IoC.Container.GetInstance<IImageService>();
-        this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
+
+        var pathResolverFactory = IoC.Container.GetInstance<IPathResolverFactory>();
+
+        this.texturePathResolver = pathResolverFactory.CreateTexturePathResolver();
     }
 
     /// <summary>

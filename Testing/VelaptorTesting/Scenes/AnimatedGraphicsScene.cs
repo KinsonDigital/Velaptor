@@ -10,7 +10,6 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.ExtensionMethods;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -24,7 +23,7 @@ public class AnimatedGraphicsScene : SceneBase
     private const int WindowPadding = 10;
     private readonly ITextureRenderer textureRenderer;
     private readonly BackgroundManager backgroundManager;
-    private readonly ILoader<IAtlasData> atlasLoader;
+    private readonly IContentManager contentManager;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
     private IControlGroup? grpInstructions;
@@ -41,7 +40,7 @@ public class AnimatedGraphicsScene : SceneBase
     {
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.atlasLoader = ContentLoaderFactory.CreateAtlasLoader();
+        this.contentManager = ContentManager.Create();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -54,7 +53,7 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.mainAtlas = this.atlasLoader.Load("Main-Atlas");
+        this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
         var ctrlFactory = new ControlFactory();
@@ -75,6 +74,7 @@ public class AnimatedGraphicsScene : SceneBase
         var optBackward = ctrlFactory.CreateRadioButton();
         optBackward.Name = "optBackward";
         optBackward.Text = "Backwards";
+        optBackward.IsSelected = false;
 
         var sldSpeed = ctrlFactory.CreateSlider();
         sldSpeed.Name = "sldSpeed";
@@ -121,8 +121,10 @@ public class AnimatedGraphicsScene : SceneBase
             return;
         }
 
+        this.contentManager.Unload(this.mainAtlas);
+        this.mainAtlas = null;
+
         this.backgroundManager.Unload();
-        this.atlasLoader.Unload(this.mainAtlas);
         this.grpInstructions.Dispose();
         this.grpInstructions = null;
         this.grpAnimation.Dispose();

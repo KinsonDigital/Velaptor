@@ -6,7 +6,7 @@
 namespace VelaptorTests.Guards;
 
 using System;
-using FluentAssertions;
+using Shouldly;
 using Velaptor.Guards;
 using Xunit;
 
@@ -26,7 +26,7 @@ public class EnsureThatTests
         var act = () => EnsureThat.PointerIsNotNull(pointer);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Theory]
@@ -40,8 +40,8 @@ public class EnsureThatTests
         var act = () => EnsureThat.PointerIsNotNull(nint.Zero, paramName);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<NullReferenceException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class EnsureThatTests
         var act = () => EnsureThat.PointerIsNotNull(123u);
 
         // Assert
-        act.Should().NotThrow();
+        Should.NotThrow(act);
     }
 
     [Theory]
@@ -65,8 +65,8 @@ public class EnsureThatTests
         var act = () => EnsureThat.PointerIsNotNull(nuint.Zero, paramName);
 
         // Assert
-        act.Should().Throw<NullReferenceException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<NullReferenceException>();
+        exception.Message.ShouldBe(expected);
     }
     #endregion
 }

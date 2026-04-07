@@ -11,7 +11,7 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor;
 using Velaptor.Factories;
@@ -72,7 +72,7 @@ public class FontGpuBufferTests
         var mockPushReactable = Substitute.For<IPushReactable>();
         mockPushReactable.Subscribe(Arg.Do<IReceiveSubscription>(reactor =>
         {
-            reactor.Should().NotBeNull("It is required for unit testing.");
+            reactor.ShouldNotBeNull("It is required for unit testing.");
 
             if (reactor.Id == PushNotifications.GLInitializedId)
             {
@@ -91,14 +91,14 @@ public class FontGpuBufferTests
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
         mockViewPortReactable.Subscribe(Arg.Do<IReceiveSubscription<ViewPortSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("It is required for unit testing.");
+            reactor.ShouldNotBeNull("It is required for unit testing.");
             this.viewPortSizeReactor = reactor;
         }));
 
         var mockBatchSizeReactable = Substitute.For<IPushReactable<BatchSizeData>>();
         mockBatchSizeReactable.Subscribe(Arg.Do<IReceiveSubscription<BatchSizeData>>(reactor =>
         {
-            reactor.Should().NotBeNull("It is required for unit testing.");
+            reactor.ShouldNotBeNull("It is required for unit testing.");
             this.batchSizeReactor = reactor;
         }));
 
@@ -122,9 +122,8 @@ public class FontGpuBufferTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -139,7 +138,8 @@ public class FontGpuBufferTests
         var act = () => sut.UploadVertexData(default, 0);
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class FontGpuBufferTests
         // Assert
         this.mockGLService.Received().BindVBO(VertexBufferId);
         this.mockGL.Received(1).BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, Arg.Any<float[]>());
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBe(expected);
         this.mockGLService.Received().UnbindVBO();
     }
 
@@ -223,7 +223,8 @@ public class FontGpuBufferTests
         var act = () => sut.PrepareForUpload();
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -250,7 +251,7 @@ public class FontGpuBufferTests
         var act = () => sut.GenerateData();
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
+        act.ShouldThrow<BufferNotInitializedException>("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -265,7 +266,7 @@ public class FontGpuBufferTests
         var actual = sut.GenerateData();
 
         // Assert
-        actual.Length.Should().Be(3_200);
+        actual.Length.ShouldBe(3_200);
     }
 
     [Fact]
@@ -278,7 +279,8 @@ public class FontGpuBufferTests
         var act = () => sut.SetupVAO();
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The font buffer has not been initialized.");
     }
 
     [Fact]
@@ -318,7 +320,8 @@ public class FontGpuBufferTests
         var act = () => sut.GenerateIndices();
 
         // Assert
-        act.Should().Throw<BufferNotInitializedException>("The font buffer has not been initialized.");
+        var exception = act.ShouldThrow<BufferNotInitializedException>();
+        exception.Message.ShouldBe("The font buffer has not been initialized.");
     }
     #endregion
 
@@ -338,8 +341,8 @@ public class FontGpuBufferTests
         // Act & Assert
         void Act(ISubscription reactor)
         {
-            reactor.Should().NotBeNull("it is required for this unit test.");
-            reactor.Name.Should().Be("FontGpuBufferTests.Ctor - BatchSizeChangedId");
+            reactor.ShouldNotBeNull("it is required for this unit test.");
+            reactor.Name.ShouldBe("FontGpuBufferTests.Ctor - BatchSizeChangedId");
         }
     }
 
@@ -353,7 +356,7 @@ public class FontGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Texture });
 
         // Assert
-        sut.BatchSize.Should().Be(100);
+        sut.BatchSize.ShouldBe(100u);
     }
 
     [Fact]
@@ -366,7 +369,7 @@ public class FontGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Font });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
     }
 
     [Fact]
@@ -380,7 +383,7 @@ public class FontGpuBufferTests
         this.batchSizeReactor.OnReceive(new BatchSizeData { BatchSize = 123, TypeOfBatch = BatchType.Font });
 
         // Assert
-        sut.BatchSize.Should().Be(123);
+        sut.BatchSize.ShouldBe(123u);
 
         this.mockGLService.Received().BeginGroup($"Set size of {BufferName} Vertex Data");
         this.mockGLService.Received(6).EndGroup();

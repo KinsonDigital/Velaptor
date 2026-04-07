@@ -20,7 +20,6 @@ using NativeInterop.Services;
 /// <summary>
 /// Updates font data in the GPU buffer.
 /// </summary>
-[GpuBufferName("Font")]
 internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
@@ -62,6 +61,11 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
             () => this.unsubscriber?.Dispose());
     }
 
+    /// <summary>
+    /// Gets the human-friendly buffer type name used for debug labeling.
+    /// </summary>
+    protected override string BufferType => "Font";
+
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
@@ -70,14 +74,7 @@ internal sealed class FontGpuBuffer : GpuBufferBase<FontGlyphBatchItem>
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        var result = new List<TextureGpuData>();
-
-        for (var i = 0u; i < BatchSize; i++)
-        {
-            result.AddRange(new TextureGpuData[] { new (default, default, default, default) });
-        }
-
-        return OpenGLExtensionMethods.ToArray(result);
+        return TextureGpuData.GenerateDefaultData(BatchSize);
     }
 
     /// <inheritdoc/>

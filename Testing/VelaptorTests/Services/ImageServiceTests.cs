@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
-using FluentAssertions;
+using Shouldly;
 using Helpers;
 using NSubstitute;
 using SixLabors.ImageSharp;
@@ -52,7 +52,6 @@ public class ImageServiceTests : IDisposable
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
@@ -63,9 +62,8 @@ public class ImageServiceTests : IDisposable
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
     #endregion
 
@@ -76,12 +74,9 @@ public class ImageServiceTests : IDisposable
         // Arrange
         var service = CreateSystemUnderTest();
 
-        // Act
-        var act = () => service.Load(null);
-
-        // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage("The image file was not found.");
+        // Act && Assert
+        var exception = Should.Throw<FileNotFoundException>(() => service.Load(null));
+        exception.Message.ShouldBe("The image file was not found.");
     }
 
     [Fact]
@@ -90,12 +85,9 @@ public class ImageServiceTests : IDisposable
         // Arrange
         var service = CreateSystemUnderTest();
 
-        // Act
-        var act = () => service.Load(string.Empty);
-
-        // Assert
-        act.Should().Throw<FileNotFoundException>()
-            .WithMessage("The image file was not found.");
+        // Act && Assert
+        var exception = Should.Throw<FileNotFoundException>(() => service.Load(string.Empty));
+        exception.Message.ShouldBe("The image file was not found.");
     }
 
     [Fact]
@@ -109,7 +101,7 @@ public class ImageServiceTests : IDisposable
         var imageData = service.Load(this.testAssetFilePath);
 
         // Assert
-        imageData.Pixels.Should().BeEquivalentTo(expected);
+        imageData.Pixels.ShouldBe(expected);
     }
 
     [Fact]
@@ -154,7 +146,7 @@ public class ImageServiceTests : IDisposable
         var actualSavedPixelData = LoadSaveResultImage(saveResultImageFilePath);
 
         // Assert
-        actualSavedPixelData.Should().BeEquivalentTo(expectedPixelData);
+        actualSavedPixelData.ShouldBe(expectedPixelData);
     }
 
     [Fact]
@@ -163,7 +155,7 @@ public class ImageServiceTests : IDisposable
         // Arrange
         var service = CreateSystemUnderTest();
 
-        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImgData();
 
         // Act
         var flippedImage = service.FlipVertically(comparisonSample);
@@ -209,7 +201,7 @@ public class ImageServiceTests : IDisposable
     {
         // Arrange
         var service = CreateSystemUnderTest();
-        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+        var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImgData();
 
         // Act
         var flippedImage = service.FlipHorizontally(comparisonSample);
@@ -317,10 +309,10 @@ public class ImageServiceTests : IDisposable
 
                 var pixel = pixels[x, y];
 
-                expectedClr.A.Should().Be(pixel.A);
-                expectedClr.R.Should().Be(pixel.R);
-                expectedClr.G.Should().Be(pixel.G);
-                expectedClr.B.Should().Be(pixel.B);
+                expectedClr.A.ShouldBe(pixel.A);
+                expectedClr.R.ShouldBe(pixel.R);
+                expectedClr.G.ShouldBe(pixel.G);
+                expectedClr.B.ShouldBe(pixel.B);
             }
         }
     }

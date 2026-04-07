@@ -6,8 +6,8 @@ namespace VelaptorTests.NativeInterop.ImGui;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor.NativeInterop.ImGui;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
@@ -47,9 +47,8 @@ public class ImGuiFacadeTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'glInvoker')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'glInvoker')");
     }
 
     [Fact]
@@ -65,9 +64,8 @@ public class ImGuiFacadeTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'imGuiManager')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imGuiManager')");
     }
 
     [Fact]
@@ -83,9 +81,8 @@ public class ImGuiFacadeTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'imGuiService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imGuiService')");
     }
     #endregion
 
@@ -170,9 +167,8 @@ public class ImGuiFacadeTests
         var act = () => sut.Render();
 
         // Assert
-        act.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<InvalidOperationException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -191,9 +187,8 @@ public class ImGuiFacadeTests
         var act = () => sut.Render();
 
         // Assert
-        act.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage(expected);
+        var exception = act.ShouldThrow<InvalidOperationException>();
+        exception.Message.ShouldBe(expected);
     }
 
     [Fact]

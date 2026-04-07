@@ -6,8 +6,8 @@ namespace VelaptorTests.Services;
 
 using System;
 using System.IO.Abstractions;
-using FluentAssertions;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Services;
 using Xunit;
@@ -51,9 +51,8 @@ public class EventLoggerServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -71,9 +70,8 @@ public class EventLoggerServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'file')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
     }
 
     [Fact]
@@ -91,9 +89,8 @@ public class EventLoggerServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'consoleService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'consoleService')");
     }
 
     [Fact]
@@ -111,9 +108,8 @@ public class EventLoggerServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'dateTimeService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'dateTimeService')");
     }
 
     [Fact]
@@ -131,9 +127,8 @@ public class EventLoggerServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'appSettingsService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'appSettingsService')");
     }
     #endregion
 

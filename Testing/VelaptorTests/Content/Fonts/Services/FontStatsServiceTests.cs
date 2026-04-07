@@ -7,7 +7,7 @@ namespace VelaptorTests.Content.Fonts.Services;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -44,7 +44,6 @@ public class FontStatsServiceTests
     }
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullFontServiceParam_ThrowsException()
     {
@@ -59,9 +58,8 @@ public class FontStatsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'freeTypeService')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'freeTypeService')");
     }
 
     [Fact]
@@ -78,9 +76,8 @@ public class FontStatsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'contentPathResolver')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'contentPathResolver')");
     }
 
     [Fact]
@@ -97,9 +94,8 @@ public class FontStatsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'directory')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'directory')");
     }
 
     [Fact]
@@ -116,9 +112,8 @@ public class FontStatsServiceTests
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'path')");
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
@@ -179,7 +174,7 @@ public class FontStatsServiceTests
         var actual = sut.GetContentStatsForFontFamily(fontFamily);
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected);
     }
     #endregion
 

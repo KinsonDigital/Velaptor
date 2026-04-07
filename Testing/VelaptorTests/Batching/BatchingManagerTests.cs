@@ -13,15 +13,16 @@ using Carbonate.Core.NonDirectional;
 using Carbonate.Core.OneWay;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using FluentAssertions;
 using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
 using Xunit;
+using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
 
 /// <summary>
 /// Tests the <see cref="BatchingManager"/> class.
@@ -131,9 +132,8 @@ public class BatchingManagerTests : TestsBase
         };
 
         // Assert
-        act.Should()
-            .Throw<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'reactableFactory')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
     }
     #endregion
 
@@ -178,17 +178,10 @@ public class BatchingManagerTests : TestsBase
         this.emptyBatchReactor.OnReceive();
 
         // Assert
-        sut.TextureItems.ToArray().Should().AllSatisfy(expected =>
-            expected.Should().BeEquivalentTo(default(RenderItem<TextureBatchItem>)));
-
-        sut.FontItems.ToArray().Should().AllSatisfy(expected =>
-            expected.Should().BeEquivalentTo(default(RenderItem<FontGlyphBatchItem>)));
-
-        sut.ShapeItems.ToArray().Should().AllSatisfy(expected =>
-            expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
-
-        sut.LineItems.ToArray().Should().AllSatisfy(expected =>
-            expected.Should().BeEquivalentTo(default(RenderItem<LineBatchItem>)));
+        sut.TextureItems.ToArray().ShouldAllBe(expected => expected == default);
+        sut.FontItems.ToArray().ShouldAllBe(expected => expected == default);
+        sut.ShapeItems.ToArray().ShouldAllBe(expected => expected == default);
+        sut.LineItems.ToArray().ShouldAllBe(expected => expected == default);
     }
 
     [Fact]
@@ -202,21 +195,17 @@ public class BatchingManagerTests : TestsBase
         this.batchSizeReactor.OnUnsubscribe();
 
         // Assert
-        sut.TextureItems.ToArray().Should().HaveCount(2);
-        sut.TextureItems.ToArray().Should()
-            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<TextureBatchItem>)));
+        sut.TextureItems.ToArray().Length.ShouldBe(2);
+        sut.TextureItems.ToArray().ShouldAllBe(expected => expected == default);
 
-        sut.FontItems.ToArray().Should().HaveCount(2);
-        sut.FontItems.ToArray().Should()
-            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<FontGlyphBatchItem>)));
+        sut.FontItems.ToArray().Length.ShouldBe(2);
+        sut.FontItems.ToArray().ShouldAllBe(expected => expected == default);
 
-        sut.ShapeItems.ToArray().Should().HaveCount(2);
-        sut.ShapeItems.ToArray().Should()
-            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<ShapeBatchItem>)));
+        sut.ShapeItems.ToArray().Length.ShouldBe(2);
+        sut.ShapeItems.ToArray().ShouldAllBe(expected => expected == default);
 
-        sut.LineItems.ToArray().Should().HaveCount(2);
-        sut.LineItems.ToArray().Should()
-            .AllSatisfy(expected => expected.Should().BeEquivalentTo(default(RenderItem<LineBatchItem>)));
+        sut.LineItems.ToArray().Length.ShouldBe(2);
+        sut.LineItems.ToArray().ShouldAllBe(expected => expected == default);
 
         this.mockBatchSizeUnsubscriber.Received(1).Dispose();
     }
@@ -239,13 +228,13 @@ public class BatchingManagerTests : TestsBase
         var actual = this.textureBatchPullReactor.OnRespond();
 
         // Assert
-        actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
-        actual.ToArray()[0].Layer.Should().Be(1);
-        actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
+        actual.ToArray().Length.ShouldBe(2);
+        actual.ToArray().Select(i => i.Item).ShouldNotContain(itemC);
+        actual.ToArray()[0].Layer.ShouldBe(1);
+        actual.ToArray()[0].Item.ShouldBeEquivalentTo(itemA);
 
-        actual.ToArray()[1].Layer.Should().Be(2);
-        actual.ToArray()[1].Item.Should().BeEquivalentTo(itemB);
+        actual.ToArray()[1].Layer.ShouldBe(2);
+        actual.ToArray()[1].Item.ShouldBeEquivalentTo(itemB);
     }
 
     [Fact]
@@ -266,13 +255,13 @@ public class BatchingManagerTests : TestsBase
         var actual = this.fontBatchPullReactor.OnRespond();
 
         // Assert
-        actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
-        actual.ToArray()[0].Layer.Should().Be(1);
-        actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
+        actual.ToArray().Length.ShouldBe(2);
+        actual.ToArray().Select(i => i.Item).ShouldNotContain(itemC);
+        actual.ToArray()[0].Layer.ShouldBe(1);
+        actual.ToArray()[0].Item.ShouldBeEquivalentTo(itemA);
 
-        actual.ToArray()[1].Layer.Should().Be(2);
-        actual.ToArray()[1].Item.Should().BeEquivalentTo(itemB);
+        actual.ToArray()[1].Layer.ShouldBe(2);
+        actual.ToArray()[1].Item.ShouldBeEquivalentTo(itemB);
     }
 
     [Fact]
@@ -293,13 +282,13 @@ public class BatchingManagerTests : TestsBase
         var actual = this.shapeBatchPullReactor.OnRespond();
 
         // Assert
-        actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
-        actual.ToArray()[0].Layer.Should().Be(1);
-        actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
+        actual.ToArray().Length.ShouldBe(2);
+        actual.ToArray().Select(i => i.Item).ShouldNotContain(itemC);
+        actual.ToArray()[0].Layer.ShouldBe(1);
+        actual.ToArray()[0].Item.ShouldBeEquivalentTo(itemA);
 
-        actual.ToArray()[1].Layer.Should().Be(2);
-        actual.ToArray()[1].Item.Should().BeEquivalentTo(itemB);
+        actual.ToArray()[1].Layer.ShouldBe(2);
+        actual.ToArray()[1].Item.ShouldBeEquivalentTo(itemB);
     }
 
     [Fact]
@@ -320,13 +309,13 @@ public class BatchingManagerTests : TestsBase
         var actual = this.lineBatchPullReactor.OnRespond();
 
         // Assert
-        actual.ToArray().Should().HaveCount(2);
-        actual.ToArray().Select(i => i.Item).Should().NotContain(itemC);
-        actual.ToArray()[0].Layer.Should().Be(1);
-        actual.ToArray()[0].Item.Should().BeEquivalentTo(itemA);
+        actual.ToArray().Length.ShouldBe(2);
+        actual.ToArray().Select(i => i.Item).ShouldNotContain(itemC);
+        actual.ToArray()[0].Layer.ShouldBe(1);
+        actual.ToArray()[0].Item.ShouldBeEquivalentTo(itemA);
 
-        actual.ToArray()[1].Layer.Should().Be(2);
-        actual.ToArray()[1].Item.Should().BeEquivalentTo(itemB);
+        actual.ToArray()[1].Layer.ShouldBe(2);
+        actual.ToArray()[1].Item.ShouldBeEquivalentTo(itemB);
     }
 
     [Fact]
@@ -335,14 +324,13 @@ public class BatchingManagerTests : TestsBase
     {
         // Arrange & Act & Assert
         var mockTextureBatchPullReactable = Substitute.For<IBatchPullReactable<TextureBatchItem>>();
-        mockTextureBatchPullReactable.When(x => x.Subscribe(Arg.Any<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>()))
+        mockTextureBatchPullReactable.When(x => x.Subscribe(Arg.Any<TextureBatchPullSubscription>()))
             .Do(callInfo =>
             {
-                // TODO: Maybe create an alias for this type?
-                var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>>();
+                var reactor = callInfo.Arg<TextureBatchPullSubscription>();
 
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"BatchingManagerTests.Ctor - {nameof(PullResponses.GetTextureItemsId)}");
             });
     }
 
@@ -350,20 +338,21 @@ public class BatchingManagerTests : TestsBase
     [Trait("Category", Subscription)]
     public void BatchSizeReactable_WhenCreatingSubscription_SubscriptionCreatedCorrectly()
     {
-        // Arrange & Assert
+        // Arrange
+        IReceiveSubscription<BatchSizeData>? reactor = null;
+
         this.mockBatchSizeReactable.When(x => x.Subscribe(Arg.Any<IReceiveSubscription<BatchSizeData>>()))
             .Do(callInfo =>
             {
-                var reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
+                reactor = callInfo.Arg<IReceiveSubscription<BatchSizeData>>();
             });
-
-        // TODO: Remove?
-        // .Returns<IReceiveSubscription<BatchSizeData>>(_ => this.mockBatchSizeUnsubscriber);
 
         // Act
         _ = CreateSystemUnderTest();
+
+        // Assert
+        reactor.ShouldNotBeNull("It is required for unit testing.");
+        reactor.Name.ShouldBe($"BatchingManager.ctor() - {PushNotifications.BatchSizeChangedId}");
     }
 
     [Fact]
@@ -376,11 +365,11 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
 
                 if (reactor.Id == PushNotifications.EmptyBatchId)
                 {
-                    reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PushNotifications.EmptyBatchId}");
+                    reactor.Name.ShouldBe($"BatchingManagerTests.ctor() - {PushNotifications.EmptyBatchId}");
                 }
             });
 
@@ -397,8 +386,8 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetFontItemsId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"BatchingManagerTests.ctor() - {PullResponses.GetFontItemsId}");
             });
 
         // Act
@@ -415,7 +404,7 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
             });
     }
 
@@ -429,8 +418,8 @@ public class BatchingManagerTests : TestsBase
             .Do(callInfo =>
             {
                 var reactor = callInfo.Arg<IRespondSubscription<Memory<RenderItem<LineBatchItem>>>>();
-                reactor.Should().NotBeNull("It is required for unit testing.");
-                reactor.Name.Should().Be($"BatchingManagerTests.ctor() - {PullResponses.GetLineItemsId}");
+                reactor.ShouldNotBeNull("It is required for unit testing.");
+                reactor.Name.ShouldBe($"BatchingManagerTests.ctor() - {PullResponses.GetLineItemsId}");
             });
 
         // Act
@@ -474,16 +463,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddTextureItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.TextureItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
+        sut.TextureItems.ToArray().Length.ShouldBe(3, "The total number of items should have increased.");
 
-        sut.TextureItems.ToArray().Should().Contain(expectedA);
-        sut.TextureItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
+        sut.TextureItems.ToArray().ShouldContain(expectedA);
+        sut.TextureItems[0].ShouldBeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
-        sut.TextureItems.ToArray().Should().Contain(expectedB);
-        sut.TextureItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
+        sut.TextureItems.ToArray().ShouldContain(expectedB);
+        sut.TextureItems[1].ShouldBeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
-        sut.TextureItems.ToArray().Should().Contain(expectedC);
-        sut.TextureItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
+        sut.TextureItems.ToArray().ShouldContain(expectedC);
+        sut.TextureItems[2].ShouldBeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -517,9 +506,8 @@ public class BatchingManagerTests : TestsBase
         var act = () => sut.AddTextureItem(itemC, 3, DateTime.Now);
 
         // Assert
-        act.Should()
-            .Throw<InvalidEnumArgumentException>()
-            .WithMessage(expected);
+        act.ShouldThrow<InvalidEnumArgumentException>()
+            .Message.ShouldBe(expected);
     }
 
     [Fact]
@@ -540,8 +528,8 @@ public class BatchingManagerTests : TestsBase
         sut.AddTextureItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.TextureItems.ToArray().Should().Contain(new RenderItem<TextureBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.TextureItems.ToArray().Should().Contain(new RenderItem<TextureBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.TextureItems.ToArray().ShouldContain(new RenderItem<TextureBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.TextureItems.ToArray().ShouldContain(new RenderItem<TextureBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
 
     [Fact]
@@ -579,16 +567,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddFontItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.FontItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
+        sut.FontItems.ToArray().Length.ShouldBe(3, "The total number of items should have increased.");
 
-        sut.FontItems.ToArray().Should().Contain(expectedA);
-        sut.FontItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
+        sut.FontItems.ToArray().ShouldContain(expectedA);
+        sut.FontItems[0].ShouldBeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
-        sut.FontItems.ToArray().Should().Contain(expectedB);
-        sut.FontItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
+        sut.FontItems.ToArray().ShouldContain(expectedB);
+        sut.FontItems[1].ShouldBeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
-        sut.FontItems.ToArray().Should().Contain(expectedC);
-        sut.FontItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
+        sut.FontItems.ToArray().ShouldContain(expectedC);
+        sut.FontItems[2].ShouldBeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -609,8 +597,8 @@ public class BatchingManagerTests : TestsBase
         sut.AddFontItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.FontItems.ToArray().Should().Contain(new RenderItem<FontGlyphBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.FontItems.ToArray().Should().Contain(new RenderItem<FontGlyphBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.FontItems.ToArray().ShouldContain(new RenderItem<FontGlyphBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.FontItems.ToArray().ShouldContain(new RenderItem<FontGlyphBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
 
     [Fact]
@@ -648,16 +636,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddShapeItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.ShapeItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
+        sut.ShapeItems.ToArray().Length.ShouldBe(3, "The total number of items should have increased.");
 
-        sut.ShapeItems.ToArray().Should().Contain(expectedA);
-        sut.ShapeItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().ShouldContain(expectedA);
+        sut.ShapeItems[0].ShouldBeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
-        sut.ShapeItems.ToArray().Should().Contain(expectedB);
-        sut.ShapeItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().ShouldContain(expectedB);
+        sut.ShapeItems[1].ShouldBeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
-        sut.ShapeItems.ToArray().Should().Contain(expectedC);
-        sut.ShapeItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
+        sut.ShapeItems.ToArray().ShouldContain(expectedC);
+        sut.ShapeItems[2].ShouldBeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -678,8 +666,8 @@ public class BatchingManagerTests : TestsBase
         sut.AddShapeItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.ShapeItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.ShapeItems.ToArray().Should().Contain(new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.ShapeItems.ToArray().ShouldContain(new RenderItem<ShapeBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.ShapeItems.ToArray().ShouldContain(new RenderItem<ShapeBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
 
     [Fact]
@@ -717,16 +705,16 @@ public class BatchingManagerTests : TestsBase
         sut.AddLineItem(itemC, 3, renderStampC);
 
         // Assert
-        sut.LineItems.ToArray().Should().HaveCount(3, "The total number of items should have increased.");
+        sut.LineItems.ToArray().Length.ShouldBe(3, "The total number of items should have increased.");
 
-        sut.LineItems.ToArray().Should().Contain(expectedA);
-        sut.LineItems[0].Should().BeEquivalentTo(expectedA, "The previously added items should be in the same order.");
+        sut.LineItems.ToArray().ShouldContain(expectedA);
+        sut.LineItems[0].ShouldBeEquivalentTo(expectedA, "The previously added items should be in the same order.");
 
-        sut.LineItems.ToArray().Should().Contain(expectedB);
-        sut.LineItems[1].Should().BeEquivalentTo(expectedB, "The previously added items should be in the same order.");
+        sut.LineItems.ToArray().ShouldContain(expectedB);
+        sut.LineItems[1].ShouldBeEquivalentTo(expectedB, "The previously added items should be in the same order.");
 
-        sut.LineItems.ToArray().Should().Contain(expectedC);
-        sut.LineItems[2].Should().BeEquivalentTo(expectedC, "The previously added items should be in the same order.");
+        sut.LineItems.ToArray().ShouldContain(expectedC);
+        sut.LineItems[2].ShouldBeEquivalentTo(expectedC, "The previously added items should be in the same order.");
     }
 
     [Fact]
@@ -747,8 +735,8 @@ public class BatchingManagerTests : TestsBase
         sut.AddLineItem(itemB, 2, renderStampB);
 
         // Assert
-        sut.LineItems.ToArray().Should().Contain(new RenderItem<LineBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
-        sut.LineItems.ToArray().Should().Contain(new RenderItem<LineBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
+        sut.LineItems.ToArray().ShouldContain(new RenderItem<LineBatchItem> { Layer = 1, Item = itemA, RenderStamp = renderStampA });
+        sut.LineItems.ToArray().ShouldContain(new RenderItem<LineBatchItem> { Layer = 2, Item = itemB, RenderStamp = renderStampB });
     }
     #endregion
 
