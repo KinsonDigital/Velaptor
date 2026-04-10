@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
@@ -22,7 +23,7 @@ internal sealed class GLInvoker : IGLInvoker
 {
     private static readonly Queue<string> OpenGLCallStack = new ();
     private readonly IDisposable unsubscriber;
-    private bool isDisposed;
+    private int isDisposed;
     private GL gl = null!;
 
     /// <summary>
@@ -481,12 +482,11 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
     {
-        if (this.isDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
 
-        this.isDisposed = true;
         this.unsubscriber.Dispose();
         this.gl.Dispose();
         GC.SuppressFinalize(this);

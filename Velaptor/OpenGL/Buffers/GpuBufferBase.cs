@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Buffers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Carbonate;
 using Factories;
 using NativeInterop.OpenGL;
@@ -22,6 +23,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private readonly IDisposable shutDownUnsubscriber;
     private readonly IDisposable portSizeUnsubscriber;
     private uint ebo; // Element Buffer Object
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBufferBase{TData}"/> class.
@@ -131,11 +133,6 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     private protected uint VBO { get; private set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the buffer has been disposed of.
-    /// </summary>
-    private bool IsDisposed { get; set; }
-
-    /// <summary>
     /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.
     /// </summary>
     /// <param name="data">The data to send to the GPU.</param>
@@ -216,7 +213,7 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
     [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Kept for future use.")]
     protected virtual void ShutDown()
     {
-        if (IsDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
@@ -224,8 +221,6 @@ internal abstract class GpuBufferBase<TData> : IGpuBuffer<TData>
         GL.DeleteVertexArray(VAO);
         GL.DeleteBuffer(VBO);
         GL.DeleteBuffer(this.ebo);
-
-        IsDisposed = true;
     }
 
     /// <summary>
