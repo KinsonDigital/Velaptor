@@ -4,7 +4,6 @@
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.vscode-dotnet-runtime",
         "github.vscode-github-actions",
-        "aliasadidev.nugetpackagemanagergui",
         "redhat.vscode-yaml"
     ]
 }
