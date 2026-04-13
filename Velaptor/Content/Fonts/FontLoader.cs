@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
@@ -51,7 +52,7 @@ internal sealed class FontLoader : IFontLoader
         DefaultRegularFontName, DefaultBoldFontName,
         DefaultItalicFontName, DefaultBoldItalicFontName
     ];
-    private bool isDisposed;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontLoader"/> class.
@@ -262,7 +263,7 @@ internal sealed class FontLoader : IFontLoader
     /// </summary>
     private void ShutDown()
     {
-        if (this.isDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
@@ -275,6 +276,5 @@ internal sealed class FontLoader : IFontLoader
         }
 
         this.fontCache.Clear();
-        this.isDisposed = true;
     }
 }

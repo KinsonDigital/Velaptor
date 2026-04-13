@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Factories;
@@ -29,7 +30,7 @@ internal sealed class TextureLoader : ITextureLoader
     private readonly IContentPathResolver texturePathResolver;
     private readonly IPath path;
     private readonly IDirectory directory;
-    private bool isDisposed;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -129,7 +130,7 @@ internal sealed class TextureLoader : ITextureLoader
     /// </summary>
     private void ShutDown()
     {
-        if (this.isDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
@@ -140,6 +141,5 @@ internal sealed class TextureLoader : ITextureLoader
         }
 
         this.textureCache.Clear();
-        this.isDisposed = true;
     }
 }

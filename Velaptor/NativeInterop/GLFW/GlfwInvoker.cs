@@ -17,7 +17,7 @@ using Silk.NET.GLFW;
 internal sealed class GlfwInvoker : IGlfwInvoker
 {
     private readonly Glfw glfw;
-    private bool isDisposed;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GlfwInvoker"/> class.
@@ -103,10 +103,9 @@ internal sealed class GlfwInvoker : IGlfwInvoker
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
     {
-        if (!this.isDisposed)
+        if (System.Threading.Interlocked.Exchange(ref this.isDisposed, 1) == 0)
         {
             this.glfw.Dispose();
-            this.isDisposed = true;
         }
 
         GC.SuppressFinalize(this);

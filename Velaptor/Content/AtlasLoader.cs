@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
@@ -35,7 +36,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     private readonly IDirectory directory;
     private readonly IFile file;
     private readonly IPath path;
-    private bool isDisposed;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
@@ -210,7 +211,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     /// </summary>
     private void ShutDown()
     {
-        if (this.isDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
@@ -223,6 +224,5 @@ internal sealed class AtlasLoader : IAtlasLoader
         }
 
         this.atlasCache.Clear();
-        this.isDisposed = true;
     }
 }

@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Carbonate;
 using Exceptions;
 using Factories;
@@ -20,6 +21,7 @@ internal abstract class ShaderProgram : IShaderProgram
     private readonly IDisposable glInitReactorUnsubscriber;
     private readonly IDisposable shutDownReactorUnsubscriber;
     private bool isInitialized;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -91,13 +93,13 @@ internal abstract class ShaderProgram : IShaderProgram
     public uint BatchSize { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the <see cref="ShaderProgram"/> is disposed.
+    /// Gets a value indicating whether the <see cref="ShaderProgram"/> is disposed.
     /// </summary>
     [SuppressMessage(
         "ReSharper",
         "MemberCanBePrivate.Global",
         Justification = "Left of inheriting members to use.")]
-    protected bool IsDisposed { get; set; }
+    protected bool IsDisposed => this.isDisposed != 0;
 
     /// <summary>
     /// Gets invokes OpenGL functions.
@@ -135,14 +137,12 @@ internal abstract class ShaderProgram : IShaderProgram
         Justification = "Will be used in the future.")]
     protected virtual void ShutDown()
     {
-        if (IsDisposed)
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
 
         GL.DeleteProgram(ShaderId);
-
-        IsDisposed = true;
     }
 
     /// <summary>

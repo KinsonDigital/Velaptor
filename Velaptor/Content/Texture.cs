@@ -6,6 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Graphics;
@@ -23,7 +24,7 @@ public sealed class Texture : ITexture
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
     private IDisposable? unsubscriber;
-    private bool isDisposed;
+    private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Texture"/> class.
@@ -92,14 +93,17 @@ public sealed class Texture : ITexture
     /// <param name="data">The data of the texture to dispose.</param>
     private void Unload(DisposeTextureData data)
     {
-        if (this.isDisposed || Id != data.TextureId)
+        if (Id != data.TextureId)
+        {
+            return;
+        }
+
+        if (Interlocked.Exchange(ref this.isDisposed, 1) != 0)
         {
             return;
         }
 
         this.gl.DeleteTexture(Id);
-
-        this.isDisposed = true;
     }
 
     /// <summary>
