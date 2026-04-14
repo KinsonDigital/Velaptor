@@ -107,7 +107,7 @@ public class ContentPathResolverTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ContentPathResolverFake(null, this.mockFile, this.mockPath, this.mockPlatform);
+            _ = new ContentPathResolverFake(null, this.mockFile, this.mockPath);
         };
 
         // Assert
@@ -121,7 +121,7 @@ public class ContentPathResolverTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ContentPathResolverFake(this.mockAppService, null, this.mockPath, this.mockPlatform);
+            _ = new ContentPathResolverFake(this.mockAppService, null, this.mockPath);
         };
 
         // Assert
@@ -135,26 +135,12 @@ public class ContentPathResolverTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ContentPathResolverFake(this.mockAppService, this.mockFile, null, this.mockPlatform);
+            _ = new ContentPathResolverFake(this.mockAppService, this.mockFile, null);
         };
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullPlatformParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new AudioPathResolver(this.mockAppService, this.mockFile, this.mockPath, null);
-        };
-
-        // Assert
-        var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'platform')");
     }
     #endregion
 
@@ -329,5 +315,5 @@ public class ContentPathResolverTests
     /// Creates a new instance of <see cref="ContentPathResolverFake"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ContentPathResolverFake CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+    private ContentPathResolverFake CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
 }

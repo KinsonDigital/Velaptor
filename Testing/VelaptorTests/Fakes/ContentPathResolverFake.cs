@@ -6,7 +6,6 @@ namespace VelaptorTests.Fakes;
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Services;
 
@@ -17,8 +16,8 @@ using Velaptor.Services;
 internal sealed class ContentPathResolverFake : ContentPathResolver
 {
     // ReSharper disable once ConvertToPrimaryConstructor
-    public ContentPathResolverFake(IAppService appService, IFile file, IPath path, IPlatform platform)
-        : base(appService, file, path, platform)
+    public ContentPathResolverFake(IAppService appService, IFile file, IPath path)
+        : base(appService, file, path)
     {
     }
 }

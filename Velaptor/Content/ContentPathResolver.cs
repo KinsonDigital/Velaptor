@@ -7,7 +7,6 @@ namespace Velaptor.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using ExtensionMethods;
 using Services;
 
@@ -19,7 +18,6 @@ internal abstract class ContentPathResolver : IContentPathResolver
     private const char WinDirSepChar = '\\';
     private readonly IFile file;
     private readonly IPath path;
-    private readonly IPlatform platform;
     private string rootDirPath;
     private string contentDirName = string.Empty;
 
@@ -29,27 +27,23 @@ internal abstract class ContentPathResolver : IContentPathResolver
     /// <param name="appService">Provides application services.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
-    /// <param name="platform">Provides information about the current platform.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown if the following parameters are null:
     /// <list type="bullet">
     ///     <item><paramref name="appService"/></item>
     ///     <item><paramref name="file"/></item>
     ///     <item><paramref name="path"/></item>
-    ///     <item><paramref name="platform"/></item>
     /// </list>
     /// </exception>
-    protected ContentPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
+    protected ContentPathResolver(IAppService appService, IFile file, IPath path)
     {
         ArgumentNullException.ThrowIfNull(appService);
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
-        ArgumentNullException.ThrowIfNull(platform);
 
         this.file = file;
         this.path = path;
-        this.platform = platform;
-        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content";
+        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content".NormalizeSeparators();
     }
 
     /// <inheritdoc/>

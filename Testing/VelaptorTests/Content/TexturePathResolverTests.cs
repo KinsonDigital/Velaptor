@@ -1,4 +1,4 @@
-﻿// <copyright file="TexturePathResolverTests.cs" company="KinsonDigital">
+// <copyright file="TexturePathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,10 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using Shouldly;
 using NSubstitute;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;
@@ -24,16 +22,12 @@ public class TexturePathResolverTests
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
-    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TexturePathResolverTests"/> class.
     /// </summary>
     public TexturePathResolverTests()
     {
-        this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
-
         this.mockAppService = Substitute.For<IAppService>();
         this.mockAppService.AppDirectory.Returns("AppHome");
 
@@ -43,8 +37,6 @@ public class TexturePathResolverTests
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
-
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Create("WINDOWS"));
     }
 
 #pragma warning disable SA1514
@@ -71,7 +63,7 @@ public class TexturePathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var resolver = new TexturePathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+        var resolver = new TexturePathResolver(this.mockAppService, this.mockFile, this.mockPath);
 
         // Act
         var actual = resolver.ContentDirectoryName;
@@ -134,5 +126,5 @@ public class TexturePathResolverTests
     /// Creates a new instance of <see cref="TexturePathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TexturePathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+    private TexturePathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
 }
