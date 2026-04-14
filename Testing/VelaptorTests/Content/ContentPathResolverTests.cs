@@ -22,7 +22,7 @@ using Xunit;
 /// </summary>
 public class ContentPathResolverTests
 {
-    private static readonly string RootDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\app" : "/app";
+    private static readonly string RootDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/app" : "/app";
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -62,12 +62,12 @@ public class ContentPathResolverTests
             {
                 "test-content.png",
                 false,
-                $"{RootDirPath}Content/Graphics/{contentName}"
+                $"{RootDirPath}/Content/Graphics/{contentName}"
             },
             {
                 @"sub-dir\test-content.png",
                 false,
-                $"{RootDirPath}Content/Graphics/sub-dir/{contentName}"
+                $"{RootDirPath}/Content/Graphics/sub-dir/{contentName}"
             },
         };
     }
@@ -212,14 +212,14 @@ public class ContentPathResolverTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.RootDirectoryPath = $@"{RootDirPath}temp\my-content\";
+        sut.RootDirectoryPath = $@"{RootDirPath}\my-content\";
         sut.ContentDirectoryName = "test-content";
 
         // Act
         var actual = sut.ResolveDirPath();
 
         // Assert
-        actual.ShouldBe($@"{RootDirPath}temp/my-content/test-content");
+        actual.ShouldBe($"{RootDirPath}/my-content/test-content");
     }
 
     [Fact]
