@@ -1,4 +1,4 @@
-﻿// <copyright file="StringExtensions.cs" company="KinsonDigital">
+// <copyright file="StringExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -335,6 +335,22 @@ internal static class StringExtensions
     ///     The '/' directory separator is valid on Windows and Linux systems.
     /// </returns>
     public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+
+    /// <summary>
+    /// Normalizes directory separators in the given <paramref name="path"/> by replacing all
+    /// backslash characters <c>'\'</c> with forward slash characters <c>'/'</c>.
+    /// </summary>
+    /// <param name="path">The path to normalize.</param>
+    /// <returns>
+    ///     The path with all <c>'\'</c> characters replaced by <c>'/'</c> characters,
+    ///     or <see cref="string.Empty"/> if <paramref name="path"/> is <see langword="null"/> or empty.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// The <c>'/'</c> directory separator is valid on Windows, Linux, and macOS, making it safe to use as a universal separator across all supported platforms.
+    /// </para>
+    /// </remarks>
+    public static string NormalizeSeparators(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
     /// <summary>
     /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.

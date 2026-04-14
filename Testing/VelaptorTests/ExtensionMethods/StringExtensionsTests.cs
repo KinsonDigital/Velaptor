@@ -318,6 +318,24 @@ public class StringExtensionsTests
         actual.ShouldBe(expected);
     }
 
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("no-backslashes", "no-backslashes")]
+    [InlineData("already/normalized/path.png", "already/normalized/path.png")]
+    [InlineData(@"sub-dir\file.png", "sub-dir/file.png")]
+    [InlineData(@"characters\hero\sprite.png", "characters/hero/sprite.png")]
+    [InlineData(@"mixed/path\file.png", "mixed/path/file.png")]
+    [InlineData(@"C:\dir-1\dir-2\file.png", "C:/dir-1/dir-2/file.png")]
+    [InlineData(@"C:\dir-1\dir-2\", "C:/dir-1/dir-2/")]
+    public void NormalizeSeparators_WhenInvoked_ReturnsCorrectResult(string path, string expected)
+    {
+        // Act
+        var actual = path!.NormalizeSeparators();
+
+        // Assert
+        actual.ShouldBe(expected);
+    }
+
     [Fact]
     public void TrimAllEnds_WhenUsingDefaultParamValue_TrimsEndsOfAllStrings()
     {
