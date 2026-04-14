@@ -546,7 +546,7 @@ public class AtlasLoaderTests
     #endregion
 
     /// <summary>
-    /// Creates atlas sub texture data for the purpose of testing.
+    /// Creates atlas sub texture data for testing.
     /// </summary>
     /// <returns>The data to use for testing.</returns>
     private static AtlasSubTextureData[] CreateAtlasSubTextureData()

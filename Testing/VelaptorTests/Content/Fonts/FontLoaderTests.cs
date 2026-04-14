@@ -1,4 +1,4 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -641,7 +641,7 @@ public class FontLoaderTests
         this.mockPath);
 
     /// <summary>
-    /// Mocks the loading of an embedded font resource file using the given name for the purpose of testing.
+    /// Mocks the loading of an embedded font resource file using the given name for testing.
     /// </summary>
     /// <param name="name">The name of the resource to mock.</param>
     /// <returns>The mock object to verify against.</returns>

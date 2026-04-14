@@ -1,4 +1,4 @@
-// <copyright file="FontPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="FontPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,7 +19,7 @@ using Velaptor.Services;
 /// <para/>
 /// <para>
 ///     NOTE: Only Windows system fonts are currently supported.
-///     Other systems will be supported in a future releases.
+///     Other systems will be supported in a future release.
 /// </para>
 /// </remarks>
 internal sealed class FontPathResolver : ContentPathResolver

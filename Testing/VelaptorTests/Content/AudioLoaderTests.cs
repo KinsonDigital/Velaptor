@@ -25,7 +25,7 @@ using Xunit;
 /// Tests the <see cref="AudioLoader"/> class.
 /// </summary>
 [SuppressMessage("ReSharper", "ConvertToLocalFunction", Justification = "Improves readability")]
-[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Improves readability")]
+[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514: Element documentation header requires it be preceded by a blank line", Justification = "Improves readability")]
 public class AudioLoaderTests
 {
     private const string OggFileExtension = ".ogg";

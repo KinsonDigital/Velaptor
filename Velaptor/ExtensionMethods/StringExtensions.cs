@@ -1,4 +1,4 @@
-// <copyright file="StringExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="StringExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -52,7 +52,7 @@ internal static class StringExtensions
 
     /// <summary>
     /// Removes all occurrences of the given <paramref name="trimChar"/> from the left
-    /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+    /// side of all occurrences of the given <paramref name="value"/>, inside this string.
     /// </summary>
     /// <param name="content">The string data containing the values to trim.</param>
     /// <param name="value">The value to trim the characters from.</param>
@@ -74,7 +74,7 @@ internal static class StringExtensions
 
     /// <summary>
     /// Removes all occurrences of the given <paramref name="trimChar"/> from the right
-    /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+    /// side of all occurrences of the given <paramref name="value"/>, inside this string.
     /// </summary>
     /// <param name="content">The string data containing the values to trim.</param>
     /// <param name="value">The value to trim the characters from.</param>
