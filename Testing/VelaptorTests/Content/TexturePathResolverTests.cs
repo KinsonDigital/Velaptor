@@ -1,4 +1,4 @@
-// <copyright file="TexturePathResolverTests.cs" company="KinsonDigital">
+﻿// <copyright file="TexturePathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -49,10 +49,10 @@ public class TexturePathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Graphics", $"test-content{Extension}") },
-            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Graphics", $"TEST-CONTENT{Extension}") },
-            { string.Empty, "test-content", Path.Join("AppHome", "Content", "Graphics", $"test-content{Extension}") },
-            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Graphics", "sub-dir", $"test-content{Extension}") },
+            { string.Empty, $"test-content{Extension}", $"AppHome/Content/Graphics/test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"AppHome/Content/Graphics/TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $"AppHome/Content/Graphics/test-content{Extension}" },
+            { "sub-dir", $"test-content{Extension}", $"AppHome/Content/Graphics/sub-dir/test-content{Extension}" },
         };
     }
     #endregion
@@ -114,7 +114,7 @@ public class TexturePathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
+        var actual = sut.ResolveFilePath(string.IsNullOrEmpty(subDir) ? contentName : $"{subDir}/{contentName}");
 
         // Assert
         actual.ShouldBe(expected);

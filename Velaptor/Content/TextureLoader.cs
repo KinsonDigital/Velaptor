@@ -12,6 +12,7 @@ using System.IO.Abstractions;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
+using ExtensionMethods;
 using Factories;
 using Velaptor.Factories;
 using ReactableData;
@@ -99,6 +100,7 @@ internal sealed class TextureLoader : ITextureLoader
     public ITexture Load(string pathOrName)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
+        pathOrName = pathOrName.NormalizeSeparators();
 
         var contentDirPath = this.texturePathResolver.ResolveDirPath();
 

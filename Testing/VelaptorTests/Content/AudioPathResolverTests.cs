@@ -117,7 +117,7 @@ public class AudioPathResolverTests
     {
         // Arrange
         var fullContentName = $"test-content{extension}";
-        var expected = Path.Join(this.mockAppService.AppDirectory, "Content", "Audio", fullContentName);
+        var expected = $"{this.mockAppService.AppDirectory}/Content/Audio/{fullContentName}";
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(extension);
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);

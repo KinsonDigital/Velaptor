@@ -330,7 +330,7 @@ public class StringExtensionsTests
     public void NormalizeSeparators_WhenInvoked_ReturnsCorrectResult(string path, string expected)
     {
         // Act
-        var actual = path!.NormalizeSeparators();
+        var actual = path.NormalizeSeparators();
 
         // Assert
         actual.ShouldBe(expected);

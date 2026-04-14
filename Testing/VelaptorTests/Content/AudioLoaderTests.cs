@@ -35,10 +35,10 @@ public class AudioLoaderTests
     private const string Mp3FileName = $"{AudioContentName}{Mp3FileExtension}";
     private const string BaseDirPath = "C:";
     private const uint AudioId = 123;
-    private static readonly string ContentDirPath = Path.Combine(BaseDirPath, "Content");
-    private static readonly string AudioDirPath = Path.Combine(ContentDirPath, "Audio");
-    private static readonly string OggFilePath = Path.Combine(AudioDirPath, OggFileName);
-    private static readonly string Mp3FilePath = Path.Combine(AudioDirPath, Mp3FileName);
+    private static readonly string ContentDirPath = $"{BaseDirPath}/Content";
+    private static readonly string AudioDirPath = $"{ContentDirPath}/Audio";
+    private static readonly string OggFilePath = $"{AudioDirPath}/{OggFileName}";
+    private static readonly string Mp3FilePath = $"{AudioDirPath}/{Mp3FileName}";
     private readonly IAudioFactory mockAudioFactory;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IContentPathResolver mockAudioPathResolver;

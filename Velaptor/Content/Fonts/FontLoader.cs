@@ -14,6 +14,7 @@ using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
+using ExtensionMethods;
 using Factories;
 using Graphics;
 using Velaptor.Factories;
@@ -155,6 +156,7 @@ internal sealed class FontLoader : IFontLoader
     public IFont Load(string pathOrName, uint size)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
+        pathOrName = pathOrName.NormalizeSeparators();
 
         var fullFontFilePath = this.path.IsPathRooted(pathOrName)
             ? pathOrName

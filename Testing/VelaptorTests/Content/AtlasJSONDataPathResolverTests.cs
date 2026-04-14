@@ -49,10 +49,10 @@ public class AtlasJSONDataPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
-            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Atlas", $"TEST-CONTENT{Extension}") },
-            { string.Empty, "test-content", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
-            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", "sub-dir", $"test-content{Extension}") },
+            { string.Empty, $"test-content{Extension}", $"AppHome/Content/Atlas/test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"AppHome/Content/Atlas/TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $"AppHome/Content/Atlas/test-content{Extension}" },
+            { "sub-dir", $"test-content{Extension}", $"AppHome/Content/Atlas/sub-dir/test-content{Extension}" },
         };
     }
     #endregion
@@ -114,7 +114,7 @@ public class AtlasJSONDataPathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
+        var actual = sut.ResolveFilePath(string.IsNullOrEmpty(subDir) ? contentName : $"{subDir}/{contentName}");
 
         // Assert
         actual.ShouldBe(expected);

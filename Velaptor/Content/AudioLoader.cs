@@ -13,6 +13,7 @@ using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
+using ExtensionMethods;
 using Factories;
 using ReactableData;
 using Velaptor.Factories;
@@ -109,6 +110,7 @@ internal sealed class AudioLoader : IAudioLoader
     public IAudio Load(string pathOrName, AudioBuffer bufferType)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
+        pathOrName = pathOrName.NormalizeSeparators();
 
         var isPathRooted = this.path.IsPathRooted(pathOrName);
 

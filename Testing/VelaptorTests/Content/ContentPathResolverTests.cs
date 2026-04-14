@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests.Content;
 
 using System;
@@ -60,34 +61,22 @@ public class ContentPathResolverTests
         return new TheoryData<string, bool, bool, string>
         {
             {
-                $@"C:\root-dir\{contentName}", // contentPathOrName
+                $@"C:\root-dir\{contentName}", // contentPathOrName - backslash rooted path input
                 true, // isPathRooted
                 IsWindows, // isWindows
-                $@"C:\root-dir\{contentName}" // expected
+                $"C:/root-dir/{contentName}" // expected - normalized to forward slashes
             },
             {
                 "test-content.png",
                 false,
                 IsWindows,
-                $@"C:\app\Content\Graphics\{contentName}"
+                $"C:/app/Content/Graphics/{contentName}"
             },
             {
                 @"sub-dir\test-content.png",
                 false,
                 IsWindows,
-                $@"C:\app\Content\Graphics\sub-dir\{contentName}"
-            },
-            {
-                "test-content.png",
-                false,
-                IsLinux,
-                $"/app/Content/Graphics/{contentName}"
-            },
-            {
-                "test-content.png",
-                false,
-                IsLinux,
-                $"/app/Content/Graphics/{contentName}"
+                $"C:/app/Content/Graphics/sub-dir/{contentName}"
             },
             {
                 "test-content.png",
@@ -146,12 +135,12 @@ public class ContentPathResolverTests
 
     #region Prop Tests
     [Theory]
-    [InlineData(null, @"C:\app\Content", IsWindows)]
-    [InlineData("", @"C:\app\Content", IsWindows)]
+    [InlineData(null, "C:/app/Content", IsWindows)]
+    [InlineData("", "C:/app/Content", IsWindows)]
     [InlineData(null, "/app/Content", IsLinux)]
     [InlineData("", "/app/Content", IsLinux)]
-    [InlineData(@"C:\base-content\", @"C:\base-content", IsWindows)]
-    [InlineData("C:/base-content/", @"C:\base-content", IsWindows)]
+    [InlineData(@"C:\base-content\", "C:/base-content", IsWindows)]
+    [InlineData("C:/base-content/", "C:/base-content", IsWindows)]
     [InlineData(@"\base-content\", "/base-content", IsLinux)]
     [InlineData(@"/base-content/", "/base-content", IsLinux)]
     public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string? rootDirectory, string expected, bool isWindows)
@@ -201,7 +190,7 @@ public class ContentPathResolverTests
         var actual = sut.ResolveDirPath();
 
         // Assert
-        actual.ShouldBe(@"C:\temp\my-content\test-content");
+        actual.ShouldBe(@"C:/temp/my-content/test-content");
     }
 
     [Fact]
@@ -233,12 +222,12 @@ public class ContentPathResolverTests
     }
 
     [Theory]
-    [InlineData(@"content.png\")]
-    [InlineData("content.png/")]
-    public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException(string contentPathOrName)
+    [InlineData(@"content.png\", "content.png/")]
+    [InlineData("content.png/", "content.png/")]
+    public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException(string contentPathOrName, string normalizedPathOrName)
     {
         // Arrange
-        var expectedMsg = $"The '{contentPathOrName}' cannot end with a folder. It must end with or without an extension." +
+        var expectedMsg = $"The '{normalizedPathOrName}' cannot end with a folder. It must end with or without an extension." +
                           " (Parameter 'contentPathOrName')";
         var sut = CreateSystemUnderTest();
 
@@ -271,7 +260,9 @@ public class ContentPathResolverTests
     public void ResolveFilePath_WhenContentFileDoesNotExist_ThrowsException()
     {
         // Arrange
-        const string expectedContentFilePath = @"C\:app\test-content.png";
+        // Input uses backslashes; after NormalizeSeparators they become forward slashes.
+        const string inputFilePath = @"C\:app\test-content.png";
+        const string expectedNormalizedFilePath = "C/:app/test-content.png";
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockFile.Exists(Arg.Any<string>()).Returns(false);
@@ -279,11 +270,11 @@ public class ContentPathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.ResolveFilePath(expectedContentFilePath);
+        var act = () => sut.ResolveFilePath(inputFilePath);
 
         // Assert
         var exception = Should.Throw<FileNotFoundException>(act, "The content file could not be found.");
-        exception.FileName.ShouldBe(expectedContentFilePath);
+        exception.FileName.ShouldBe(expectedNormalizedFilePath);
     }
 
     [Theory]
