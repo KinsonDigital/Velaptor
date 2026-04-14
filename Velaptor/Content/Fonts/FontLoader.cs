@@ -5,11 +5,12 @@
 namespace Velaptor.Content.Fonts;
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
@@ -33,7 +34,7 @@ internal sealed class FontLoader : IFontLoader
     private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
     private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
     private const string DefaultFontPrefix = "[DEFAULT]";
-    private readonly ConcurrentDictionary<string, (ITexture fontTextureAtlas, GlyphMetrics[] metrics)> fontCache = new ();
+    private readonly Dictionary<string, (ITexture fontTextureAtlas, GlyphMetrics[] metrics)> fontCache = new ();
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
@@ -187,16 +188,16 @@ internal sealed class FontLoader : IFontLoader
         var cacheKeyPrefix = isDefaultFont ? DefaultFontPrefix : string.Empty;
         var cacheKey = $"{cacheKeyPrefix}{fullFontFilePath}|{size}";
 
-        (ITexture fontTextureAtlas, GlyphMetrics[] metrics) = this.fontCache.GetOrAdd(cacheKey, _ =>
+        ref var cacheItem = ref CollectionsMarshal.GetValueRefOrAddDefault(this.fontCache, cacheKey, out var exists);
+        if (!exists || cacheItem.fontTextureAtlas is null)
         {
             (ImageData imageData, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateAtlas(fullFontFilePath, size);
             imageData.FlipVertically();
             var loadedTexture = this.textureFactory.Create(contentName, fullFontFilePath, imageData);
+            cacheItem = (loadedTexture, glyphMetrics);
+        }
 
-            return (loadedTexture, glyphMetrics);
-        });
-
-        return this.fontFactory.Create(fontTextureAtlas, contentName, fullFontFilePath, size, isDefaultFont, metrics);
+        return this.fontFactory.Create(cacheItem.fontTextureAtlas, contentName, fullFontFilePath, size, isDefaultFont, cacheItem.metrics);
     }
 
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
@@ -208,7 +209,7 @@ internal sealed class FontLoader : IFontLoader
 
         this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = font.Atlas.Id });
 
-        this.fontCache.TryRemove(cacheKey, out _);
+        this.fontCache.Remove(cacheKey);
     }
 
     /// <summary>

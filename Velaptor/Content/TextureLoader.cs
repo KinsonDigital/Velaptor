@@ -5,10 +5,11 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
@@ -23,7 +24,7 @@ using Services;
 internal sealed class TextureLoader : ITextureLoader
 {
     private readonly IImageService imageService;
-    private readonly ConcurrentDictionary<string, ITexture> textureCache = new ();
+    private readonly Dictionary<string, ITexture> textureCache = new ();
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IDisposable unsubscriber;
     private readonly ITextureFactory textureFactory;
@@ -109,19 +110,21 @@ internal sealed class TextureLoader : ITextureLoader
 
         var textureFilePath = this.texturePathResolver.ResolveFilePath(pathOrName);
 
-        return this.textureCache.GetOrAdd(textureFilePath, (filePath) =>
+        ref var cacheItem = ref CollectionsMarshal.GetValueRefOrAddDefault(this.textureCache, textureFilePath, out var exists);
+        if (!exists || cacheItem is null)
         {
-            var imageData = this.imageService.Load(filePath);
+            var imageData = this.imageService.Load(textureFilePath);
             var name = this.path.GetFileNameWithoutExtension(textureFilePath);
+            cacheItem = this.textureFactory.Create(name, textureFilePath, imageData);
+        }
 
-            return this.textureFactory.Create(name, filePath, imageData);
-        });
+        return cacheItem!;
     }
 
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
     public void Unload(ITexture texture)
     {
-        this.textureCache.TryRemove(texture.FilePath, out _);
+        this.textureCache.Remove(texture.FilePath);
         this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
     }
 
