@@ -352,18 +352,16 @@ public class AudioLoaderTests
     public void Load_WithInvalidContentFileNameExtension_ThrowException()
     {
         // Arrange
-        const string oggFilePath = "C:/Content/Audio/test-audio.txt";
-
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(".txt");
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(oggFilePath, AudioBuffer.Full);
+        var act = () => sut.Load(OggFilePath, AudioBuffer.Full);
 
         // Assert
         var exception = act.ShouldThrow<LoadAudioException>();
-        exception.Message.ShouldBe($"The file '{oggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
+        exception.Message.ShouldBe($"The file '{OggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
     }
 
     [Fact]

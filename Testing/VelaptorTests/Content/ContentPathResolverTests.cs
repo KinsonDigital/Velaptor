@@ -22,6 +22,7 @@ using Xunit;
 /// </summary>
 public class ContentPathResolverTests
 {
+    private static readonly string RootDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\app" : "/app";
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
@@ -32,8 +33,7 @@ public class ContentPathResolverTests
     public ContentPathResolverTests()
     {
         this.mockAppService = Substitute.For<IAppService>();
-        this.mockAppService.AppDirectory
-            .Returns(_ => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\app" : "/app");
+        this.mockAppService.AppDirectory.Returns(_ => RootDirPath);
 
         this.mockFile = Substitute.For<IFile>();
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
@@ -54,20 +54,20 @@ public class ContentPathResolverTests
 
         return new TheoryData<string, bool, string>
         {
-            // {
-            //     $@"C:\root-dir\{contentName}", // contentPathOrName - backslash rooted path input
-            //     true, // isPathRooted
-            //     $"C:/root-dir/{contentName}" // expected - normalized to forward slashes
-            // },
-            // {
-            //     "test-content.png",
-            //     false,
-            //     $"C:/app/Content/Graphics/{contentName}"
-            // },
+            {
+                $@"{RootDirPath}root-dir\{contentName}", // contentPathOrName - backslash rooted path input
+                true, // isPathRooted
+                $"{RootDirPath}root-dir/{contentName}" // expected - normalized to forward slashes
+            },
+            {
+                "test-content.png",
+                false,
+                $"{RootDirPath}Content/Graphics/{contentName}"
+            },
             {
                 @"sub-dir\test-content.png",
                 false,
-                $"C:/app/Content/Graphics/sub-dir/{contentName}"
+                $"{RootDirPath}Content/Graphics/sub-dir/{contentName}"
             },
         };
     }
@@ -85,17 +85,17 @@ public class ContentPathResolverTests
             {
                 "test-content.png",
                 false,
-                $"C:/app/Content/Graphics/{contentName}"
+                $"{RootDirPath}/Content/Graphics/{contentName}"
             },
             {
                 @"sub-dir\test-content.png",
                 false,
-                $"C:/app/Content/Graphics/sub-dir/{contentName}"
+                $"{RootDirPath}/Content/Graphics/sub-dir/{contentName}"
             },
             {
                 "test-content.png",
                 false,
-                $"/app/Content/Graphics/{contentName}"
+                $"{RootDirPath}/Content/Graphics/{contentName}"
             },
         };
     }
@@ -212,14 +212,14 @@ public class ContentPathResolverTests
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.RootDirectoryPath = @"C:\temp\my-content\";
+        sut.RootDirectoryPath = $@"{RootDirPath}temp\my-content\";
         sut.ContentDirectoryName = "test-content";
 
         // Act
         var actual = sut.ResolveDirPath();
 
         // Assert
-        actual.ShouldBe(@"C:/temp/my-content/test-content");
+        actual.ShouldBe($@"{RootDirPath}temp/my-content/test-content");
     }
 
     [Fact]
@@ -290,8 +290,8 @@ public class ContentPathResolverTests
     {
         // Arrange
         // Input uses backslashes; after NormalizeSeparators they become forward slashes.
-        const string inputFilePath = @"C\:app\test-content.png";
-        const string expectedNormalizedFilePath = "C/:app/test-content.png";
+        var inputFilePath = $@"{RootDirPath}\app\test-content.png";
+        var expectedNormalizedFilePath = $"{RootDirPath}/app/test-content.png";
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockFile.Exists(Arg.Any<string>()).Returns(false);

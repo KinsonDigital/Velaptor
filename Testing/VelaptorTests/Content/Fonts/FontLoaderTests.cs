@@ -23,6 +23,8 @@ using Velaptor.Graphics;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;
+using System.Runtime.InteropServices;
+
 
 /// <summary>
 /// Tests the <see cref="FontLoader"/> class.
@@ -30,14 +32,14 @@ using Xunit;
 public class FontLoaderTests
 {
     private const int FontSize = 12;
+    private const uint TextureAtlasId = 123u;
     private const string FontExtension = ".ttf";
     private const string FontDirName = "fonts";
-    private const string AppDirPath = "C:/app";
-    private const string ContentDirPath = $"{AppDirPath}/content";
     private const string FontContentName = "test-font";
     private const string FontFileName = $"{FontContentName}{FontExtension}";
-    private const string FontContentDirPath = $"{ContentDirPath}/{FontDirName}";
-    private const uint TextureAtlasId = 123u;
+    private static readonly string AppDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/app" : "/app";
+    private static readonly string ContentDirPath = $"{AppDirPath}/content";
+    private static readonly string FontContentDirPath = $"{ContentDirPath}/{FontDirName}";
     private readonly string defaultFontFilePath;
     private readonly IFontAtlasService mockFontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> mockEmbeddedFontResourceService;
@@ -387,10 +389,10 @@ public class FontLoaderTests
         const string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
         const string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
 
-        const string defaultRegularFontFilePath = $"{FontContentDirPath}/{defaultRegularFontName}";
-        const string defaultBoldFontFilePath = $"{FontContentDirPath}/{defaultBoldFontName}";
-        const string defaultItalicFontFilePath = $"{FontContentDirPath}/{defaultItalicFontName}";
-        const string defaultBoldItalicFontFilePath = $"{FontContentDirPath}/{defaultBoldItalicFontName}";
+        var defaultRegularFontFilePath = $"{FontContentDirPath}/{defaultRegularFontName}";
+        var defaultBoldFontFilePath = $"{FontContentDirPath}/{defaultBoldFontName}";
+        var defaultItalicFontFilePath = $"{FontContentDirPath}/{defaultItalicFontName}";
+        var defaultBoldItalicFontFilePath = $"{FontContentDirPath}/{defaultBoldItalicFontName}";
 
         var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
         var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
