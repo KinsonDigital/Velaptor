@@ -16,9 +16,7 @@ using Carbonate.OneWay;
 using Exceptions;
 using Factories;
 using Graphics;
-using Services;
 using Velaptor.Factories;
-using Velaptor.NativeInterop.Services;
 using Velaptor.Services;
 using ReactableData;
 
@@ -40,8 +38,6 @@ internal sealed class FontLoader : IFontLoader
     private readonly IContentPathResolver fontPathResolver;
     private readonly ITextureFactory textureFactory;
     private readonly IFontFactory fontFactory;
-    private readonly IFreeTypeService freeTypeService;
-    private readonly IFontStatsService fontStatsService;
     private readonly IDirectory directory;
     private readonly IFileStreamFactory fileStreamFactory;
     private readonly IFile file;
@@ -64,8 +60,6 @@ internal sealed class FontLoader : IFontLoader
     /// <param name="fontFactory">Creates font objects.</param>
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
     /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
-    /// <param name="freeTypeService">Provides font services to the loaded font.</param>
-    /// <param name="fontStatsService">Provides font stat collection services to the loaded font.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
@@ -80,8 +74,6 @@ internal sealed class FontLoader : IFontLoader
         IFontFactory fontFactory,
         IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
         IFontAtlasService fontAtlasService,
-        IFreeTypeService freeTypeService,
-        IFontStatsService fontStatsService,
         IDirectory directory,
         IFile file,
         IPath path)
@@ -93,8 +85,6 @@ internal sealed class FontLoader : IFontLoader
         ArgumentNullException.ThrowIfNull(fontFactory);
         ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
         ArgumentNullException.ThrowIfNull(fontAtlasService);
-        ArgumentNullException.ThrowIfNull(freeTypeService);
-        ArgumentNullException.ThrowIfNull(fontStatsService);
         ArgumentNullException.ThrowIfNull(directory);
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
@@ -105,8 +95,6 @@ internal sealed class FontLoader : IFontLoader
         this.fontFactory = fontFactory;
         this.embeddedFontResourceService = embeddedFontResourceService;
         this.fontAtlasService = fontAtlasService;
-        this.freeTypeService = freeTypeService;
-        this.fontStatsService = fontStatsService;
         this.directory = directory;
         this.file = file;
         this.path = path;
