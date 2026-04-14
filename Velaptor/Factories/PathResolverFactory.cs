@@ -11,7 +11,7 @@ using Content.Fonts;
 using Services;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage(Justification = "Cannot unit test due to the direct interaction with IoC container.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to interaction with 'IoC' container.")]
 public class PathResolverFactory : IPathResolverFactory
 {
     private static IContentPathResolver? texturePathResolver;
