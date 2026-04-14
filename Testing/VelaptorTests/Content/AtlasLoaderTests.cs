@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -37,7 +38,9 @@ public class AtlasLoaderTests
     private const string AtlasContentName = "test-atlas";
     private const string FakeJSONData = "fake-json-data";
     private const uint AtlasTextureId = 123;
-    private static readonly string AtlasDirPath = "C:/Content/Atlas";
+    private static readonly string AtlasDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "C:/Content/Atlas"
+            : "/Content/Atlas";
     private static readonly string AtlasImageFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasImageExtension}";
     private static readonly string AtlasDataFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasDataExtension}";
     private readonly ITextureFactory mockTextureFactory;

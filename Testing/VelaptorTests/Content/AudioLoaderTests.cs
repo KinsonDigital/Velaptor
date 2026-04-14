@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -33,8 +34,8 @@ public class AudioLoaderTests
     private const string AudioContentName = "test-audio";
     private const string OggFileName = $"{AudioContentName}{OggFileExtension}";
     private const string Mp3FileName = $"{AudioContentName}{Mp3FileExtension}";
-    private const string BaseDirPath = "C:";
     private const uint AudioId = 123;
+    private static readonly string BaseDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:" : "/";
     private static readonly string ContentDirPath = $"{BaseDirPath}/Content";
     private static readonly string AudioDirPath = $"{ContentDirPath}/Audio";
     private static readonly string OggFilePath = $"{AudioDirPath}/{OggFileName}";

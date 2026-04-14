@@ -336,7 +336,7 @@ public class StringExtensionsTests
         actual.ShouldBe(expected);
     }
 
-    [TheoryForNonWindows]
+    [TheoryForPosix]
     [InlineData("", "")]
     [InlineData("no-backslashes", "no-backslashes")]
     [InlineData("already/normalized/path.png", "already/normalized/path.png")]

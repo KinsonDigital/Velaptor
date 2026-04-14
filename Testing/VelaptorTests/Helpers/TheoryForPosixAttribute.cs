@@ -1,4 +1,4 @@
-﻿// <copyright file="TheoryForNonWindowsAttribute.cs" company="KinsonDigital">
+﻿// <copyright file="TheoryForPosixAttribute.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,18 +13,18 @@ using Xunit;
 ///     Test is only executed for Non-<c>Windows</c> platform.
 /// </para>
 /// </summary>
-public sealed class TheoryForNonWindowsAttribute : TheoryAttribute
+public sealed class TheoryForPosixAttribute : TheoryAttribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TheoryForNonWindowsAttribute"/> class.
+    /// Initializes a new instance of the <see cref="TheoryForPosixAttribute"/> class.
     /// </summary>
-    public TheoryForNonWindowsAttribute()
+    public TheoryForPosixAttribute()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return;
         }
 
-        Skip = $"Only executed on Non-{OSPlatform.Windows}.";
+        Skip = "Only executed on Posix platforms.";
     }
 }

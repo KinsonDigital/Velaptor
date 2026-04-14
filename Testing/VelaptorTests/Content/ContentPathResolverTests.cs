@@ -10,6 +10,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using Fakes;
+using Helpers;
 using Shouldly;
 using NSubstitute;
 using Velaptor;
@@ -51,37 +52,56 @@ public class ContentPathResolverTests
 #pragma warning disable SA1514
     #region Test Data
     /// <summary>
-    /// Provides test data for the <see cref="ResolveFilePath_WhenInvoked_ResolvesContentFilePath"/> test.
+    /// Provides test data for the <see cref="ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath"/> test.
     /// </summary>
     /// <returns>The test data.</returns>
-    public static TheoryData<string, bool, bool, string> ResolveFilePath_WhenInvoked_ResolvesContentFilePath_Data()
+    public static TheoryData<string, bool, string> ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath_Data()
     {
         const string contentName = "test-content.png";
 
-        return new TheoryData<string, bool, bool, string>
+        return new TheoryData<string, bool, string>
         {
             {
                 $@"C:\root-dir\{contentName}", // contentPathOrName - backslash rooted path input
                 true, // isPathRooted
-                IsWindows, // isWindows
                 $"C:/root-dir/{contentName}" // expected - normalized to forward slashes
             },
             {
                 "test-content.png",
                 false,
-                IsWindows,
                 $"C:/app/Content/Graphics/{contentName}"
             },
             {
                 @"sub-dir\test-content.png",
                 false,
-                IsWindows,
+                $"C:/app/Content/Graphics/sub-dir/{contentName}"
+            },
+        };
+    }
+
+    /// <summary>
+    /// Provides test data for the <see cref="ResolveFilePath_WhenInvokedOnPosix_ResolvesContentFilePath"/> test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static TheoryData<string, bool, string> ResolveFilePath_WhenInvokedOnPosix_ResolvesContentFilePath_Data()
+    {
+        const string contentName = "test-content.png";
+
+        return new TheoryData<string, bool, string>
+        {
+            {
+                "test-content.png",
+                false,
+                $"C:/app/Content/Graphics/{contentName}"
+            },
+            {
+                @"sub-dir\test-content.png",
+                false,
                 $"C:/app/Content/Graphics/sub-dir/{contentName}"
             },
             {
                 "test-content.png",
                 false,
-                IsLinux,
                 $"/app/Content/Graphics/{contentName}"
             },
         };
@@ -277,19 +297,39 @@ public class ContentPathResolverTests
         exception.FileName.ShouldBe(expectedNormalizedFilePath);
     }
 
-    [Theory]
-    [MemberData(nameof(ResolveFilePath_WhenInvoked_ResolvesContentFilePath_Data))]
-    public void ResolveFilePath_WhenInvoked_ResolvesContentFilePath(
+    [TheoryForWindows]
+    [MemberData(nameof(ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath_Data))]
+    public void ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath(
         string contentPathOrName,
         bool isPathRooted,
-        bool isWindows,
         string expected)
     {
         // Arrange
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(isPathRooted);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
-        this.mockPlatform.CurrentPlatform.Returns(isWindows ? OSPlatform.Windows : OSPlatform.Linux);
+
+        var sut = CreateSystemUnderTest();
+        sut.ContentDirectoryName = "Graphics";
+
+        // Act
+        var actual = sut.ResolveFilePath(contentPathOrName);
+
+        // Assert
+        actual.ShouldBe(expected);
+    }
+
+    [TheoryForPosix]
+    [MemberData(nameof(ResolveFilePath_WhenInvokedOnPosix_ResolvesContentFilePath_Data))]
+    public void ResolveFilePath_WhenInvokedOnPosix_ResolvesContentFilePath(
+        string contentPathOrName,
+        bool isPathRooted,
+        string expected)
+    {
+        // Arrange
+        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
+        this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(isPathRooted);
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
 
         var sut = CreateSystemUnderTest();
         sut.ContentDirectoryName = "Graphics";

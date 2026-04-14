@@ -346,7 +346,7 @@ internal static class StringExtensions
     /// <param name="path">The path to normalize.</param>
     /// <returns>
     ///     The path with all <c>'\'</c> characters replaced by <c>'/'</c> characters,
-    ///     or <see cref="string.Empty"/> if <paramref name="path"/> is <see langword="null"/> or empty.
+    ///     or <see cref="string.Empty"/> if <paramref name="path"/> is empty.
     /// </returns>
     /// <remarks>
     /// <para>

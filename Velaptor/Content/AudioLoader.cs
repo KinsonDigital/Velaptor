@@ -98,7 +98,7 @@ internal sealed class AudioLoader : IAudioLoader
 
     /// <inheritdoc cref="IAudioLoader.Load"/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="pathOrName"/> is null or empty.</exception>
-    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="LoadAudioException">Thrown if the resulting audio content file path is invalid.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
     /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
     /// <exception cref="PathTooLongException">
