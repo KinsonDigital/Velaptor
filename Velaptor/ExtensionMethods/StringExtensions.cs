@@ -4,9 +4,11 @@
 
 namespace Velaptor.ExtensionMethods;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 /// <summary>
@@ -16,6 +18,7 @@ internal static class StringExtensions
 {
     private const char WinDirSeparatorChar = '\\';
     private const char CrossPlatDirSeparatorChar = '/';
+    private static readonly bool IsNotOnWindows = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     /// <summary>
     /// Determines whether this string instance starts with the specified character.
@@ -350,7 +353,35 @@ internal static class StringExtensions
     /// The <c>'/'</c> directory separator is valid on Windows, Linux, and macOS, making it safe to use as a universal separator across all supported platforms.
     /// </para>
     /// </remarks>
-    public static string NormalizePath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+    public static string NormalizePath(this string path)
+    {
+        var span = path.AsSpan();
+        var start = 0;
+
+        // If not on Windows
+        if (IsNotOnWindows)
+        {
+            // Strip drive letter + colon (e.g. "C:")
+            if (span.Length >= 2 && char.IsLetter(span[0]) && span[1] == ':')
+            {
+                start = 2;
+            }
+        }
+
+        var source = span[start..];
+
+        // If no backslashes, return the original no replacement required
+        if (!source.Contains(WinDirSeparatorChar))
+        {
+            return start > 0 ? new string(source) : path;
+        }
+
+        // Replace the '\' characters with '/' characters using a single allocation + single-pass SIMD copy+replace
+        return string.Create(source.Length, (path, start), static (dst, state) =>
+        {
+            state.path.AsSpan(state.start).Replace(dst, '\\', '/');
+        });
+    }
 
     /// <summary>
     /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.
