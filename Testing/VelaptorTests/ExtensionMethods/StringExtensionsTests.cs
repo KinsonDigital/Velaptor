@@ -327,10 +327,10 @@ public class StringExtensionsTests
     [InlineData(@"mixed/path\file.png", "mixed/path/file.png")]
     [InlineData(@"C:\dir-1\dir-2\file.png", "C:/dir-1/dir-2/file.png")]
     [InlineData(@"C:\dir-1\dir-2\", "C:/dir-1/dir-2/")]
-    public void NormalizeSeparators_WhenInvoked_ReturnsCorrectResult(string path, string expected)
+    public void NormalizePath_WhenInvoked_ReturnsCorrectResult(string path, string expected)
     {
         // Act
-        var actual = path.NormalizeSeparators();
+        var actual = path.NormalizePath();
 
         // Assert
         actual.ShouldBe(expected);

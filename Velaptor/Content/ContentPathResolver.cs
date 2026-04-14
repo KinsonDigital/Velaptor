@@ -42,7 +42,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
 
         this.file = file;
         this.path = path;
-        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content".NormalizeSeparators();
+        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content".NormalizePath();
     }
 
     /// <inheritdoc/>
@@ -59,7 +59,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
                 return;
             }
 
-            value = value.NormalizeSeparators();
+            value = value.NormalizePath();
 
             value = value.EndsWith(this.path.AltDirectorySeparatorChar)
                 ? value[..^1]
@@ -92,7 +92,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
     {
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        contentPathOrName = contentPathOrName.NormalizeSeparators();
+        contentPathOrName = contentPathOrName.NormalizePath();
 
         if (contentPathOrName.EndsWith(this.path.AltDirectorySeparatorChar))
         {

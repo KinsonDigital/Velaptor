@@ -134,7 +134,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     public IAtlasData Load(string atlasPathOrName)
     {
         ArgumentException.ThrowIfNullOrEmpty(atlasPathOrName);
-        atlasPathOrName = atlasPathOrName.NormalizeSeparators();
+        atlasPathOrName = atlasPathOrName.NormalizePath();
 
         var isPathRooted = this.path.IsPathRooted(atlasPathOrName);
         var contentDirPath = isPathRooted

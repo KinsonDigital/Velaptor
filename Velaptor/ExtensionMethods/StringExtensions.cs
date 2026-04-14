@@ -350,7 +350,7 @@ internal static class StringExtensions
     /// The <c>'/'</c> directory separator is valid on Windows, Linux, and macOS, making it safe to use as a universal separator across all supported platforms.
     /// </para>
     /// </remarks>
-    public static string NormalizeSeparators(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+    public static string NormalizePath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
     /// <summary>
     /// Removes all instances of the given <paramref name="str"/> parameter from the <c>string</c>.

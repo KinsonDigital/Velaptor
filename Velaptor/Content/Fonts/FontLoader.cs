@@ -156,7 +156,7 @@ internal sealed class FontLoader : IFontLoader
     public IFont Load(string pathOrName, uint size)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
-        pathOrName = pathOrName.NormalizeSeparators();
+        pathOrName = pathOrName.NormalizePath();
 
         var fullFontFilePath = this.path.IsPathRooted(pathOrName)
             ? pathOrName

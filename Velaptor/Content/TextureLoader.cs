@@ -100,7 +100,7 @@ internal sealed class TextureLoader : ITextureLoader
     public ITexture Load(string pathOrName)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
-        pathOrName = pathOrName.NormalizeSeparators();
+        pathOrName = pathOrName.NormalizePath();
 
         var contentDirPath = this.texturePathResolver.ResolveDirPath();
 
