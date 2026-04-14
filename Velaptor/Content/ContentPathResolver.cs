@@ -42,7 +42,7 @@ internal abstract class ContentPathResolver : IContentPathResolver
 
         this.file = file;
         this.path = path;
-        this.rootDirPath = $"{appService.AppDirectory}{path.DirectorySeparatorChar}Content".NormalizePath();
+        this.rootDirPath = $"{appService.AppDirectory}{path.AltDirectorySeparatorChar}Content".NormalizePath();
     }
 
     /// <inheritdoc/>

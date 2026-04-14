@@ -12,7 +12,6 @@ using System.IO.Abstractions;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
-using ExtensionMethods;
 using Factories;
 using Velaptor.Factories;
 using ReactableData;
