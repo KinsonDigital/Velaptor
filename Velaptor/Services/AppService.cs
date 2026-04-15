@@ -17,7 +17,7 @@ internal class AppService : IAppService
     /// <summary>
     /// Initializes a new instance of the <see cref="AppService"/> class.
     /// </summary>
-    public AppService() => AppDirectory = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+    public AppService() => AppDirectory = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
     /// <inheritdoc/>
     public string AppDirectory { get; }

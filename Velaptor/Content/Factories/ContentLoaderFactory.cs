@@ -10,9 +10,7 @@ using System.IO.Abstractions;
 using Content;
 using Fonts;
 using Services;
-using Velaptor.Content.Fonts.Services;
 using Velaptor.Factories;
-using Velaptor.NativeInterop.Services;
 
 /// <inheritdoc />
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with 'IoC' container.")]
@@ -34,8 +32,7 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
         var appService = IoC.Container.GetInstance<IAppService>();
         var file = IoC.Container.GetInstance<IFile>();
         var path = IoC.Container.GetInstance<IPath>();
-        var platform = IoC.Container.GetInstance<IPlatform>();
-        var pathResolver = new TexturePathResolver(appService, file, path, platform);
+        var pathResolver = new TexturePathResolver(appService, file, path);
 
         return CreateTextureLoader(pathResolver);
     }
@@ -179,8 +176,6 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
         var textureFactory = IoC.Container.GetInstance<ITextureFactory>();
         var reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         var fontFactory = IoC.Container.GetInstance<IFontFactory>();
-        var freeTypeService = IoC.Container.GetInstance<IFreeTypeService>();
-        var fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
         var directory = IoC.Container.GetInstance<IDirectory>();
         var file = IoC.Container.GetInstance<IFile>();
         var fileStreamFactory = IoC.Container.GetInstance<IFileStreamFactory>();
@@ -194,8 +189,6 @@ internal sealed class ContentLoaderFactory : IContentLoaderFactory
             fontFactory,
             embeddedResourceService,
             fontAtlasService,
-            freeTypeService,
-            fontStatsService,
             directory,
             file,
             path);

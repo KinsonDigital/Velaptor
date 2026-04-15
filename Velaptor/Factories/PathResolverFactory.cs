@@ -11,7 +11,7 @@ using Content.Fonts;
 using Services;
 
 /// <inheritdoc/>
-[ExcludeFromCodeCoverage(Justification = "Cannot unit test due direct interaction with IoC container.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to interaction with 'IoC' container.")]
 public class PathResolverFactory : IPathResolverFactory
 {
     private static IContentPathResolver? texturePathResolver;
@@ -25,8 +25,7 @@ public class PathResolverFactory : IPathResolverFactory
         texturePathResolver ??= new TexturePathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
-            IoC.Container.GetInstance<IPath>(),
-            IoC.Container.GetInstance<IPlatform>());
+            IoC.Container.GetInstance<IPath>());
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
@@ -34,16 +33,14 @@ public class PathResolverFactory : IPathResolverFactory
         atlasPathResolver ??= new AtlasTexturePathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
-            IoC.Container.GetInstance<IPath>(),
-            IoC.Container.GetInstance<IPlatform>());
+            IoC.Container.GetInstance<IPath>());
 
     /// <inheritdoc/>
     public IContentPathResolver CreateFontPathResolver() =>
         fontPathResolver ??= new FontPathResolver(
             IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<IFile>(),
-            IoC.Container.GetInstance<IPath>(),
-            IoC.Container.GetInstance<IPlatform>());
+            IoC.Container.GetInstance<IPath>());
 
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]

@@ -18,13 +18,13 @@ using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts;
-using Velaptor.Content.Fonts.Services;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.NativeInterop.Services;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;
+using System.Runtime.InteropServices;
+
 
 /// <summary>
 /// Tests the <see cref="FontLoader"/> class.
@@ -32,14 +32,14 @@ using Xunit;
 public class FontLoaderTests
 {
     private const int FontSize = 12;
+    private const uint TextureAtlasId = 123u;
     private const string FontExtension = ".ttf";
     private const string FontDirName = "fonts";
-    private const string AppDirPath = "C:/app";
-    private const string ContentDirPath = $"{AppDirPath}/content";
     private const string FontContentName = "test-font";
     private const string FontFileName = $"{FontContentName}{FontExtension}";
-    private const string FontContentDirPath = $"{ContentDirPath}/{FontDirName}";
-    private const uint TextureAtlasId = 123u;
+    private static readonly string AppDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/app" : "/app";
+    private static readonly string ContentDirPath = $"{AppDirPath}/content";
+    private static readonly string FontContentDirPath = $"{ContentDirPath}/{FontDirName}";
     private readonly string defaultFontFilePath;
     private readonly IFontAtlasService mockFontAtlasService;
     private readonly IEmbeddedResourceLoaderService<Stream?> mockEmbeddedFontResourceService;
@@ -47,14 +47,10 @@ public class FontLoaderTests
     private readonly ITextureFactory mockTextureFactory;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IFontFactory mockFontFactory;
-    private readonly IFreeTypeService mockFreeTypeService;
-    private readonly IFontStatsService mockFontStatsService;
     private readonly IFileStreamFactory mockFileStreamFactory;
     private readonly IPath mockPath;
     private readonly IDirectory mockDirectory;
     private readonly IFile mockFile;
-    private readonly ITexture mockAtlasTexture;
-    private readonly IFont mockFont;
     private readonly IPushReactable<DisposeTextureData> mockDisposeTextureReactable;
     private readonly IDisposable mockShutdownUnsubscriber;
 
@@ -67,8 +63,8 @@ public class FontLoaderTests
     {
         this.defaultFontFilePath = $"{ContentDirPath}{FontDirName}/{FontContentName}{FontExtension}";
 
-        this.mockAtlasTexture = Substitute.For<ITexture>();
-        this.mockAtlasTexture.Id.Returns(TextureAtlasId);
+        var mockAtlasTexture = Substitute.For<ITexture>();
+        mockAtlasTexture.Id.Returns(TextureAtlasId);
 
         GlyphMetrics[] glyphMetricData1 =
         [
@@ -110,10 +106,10 @@ public class FontLoaderTests
 
         this.mockFileStreamFactory = Substitute.For<IFileStreamFactory>();
 
-        this.mockFont = Substitute.For<IFont>();
-        this.mockFont.Name.Returns(FontContentName);
-        this.mockFont.FilePath.Returns(this.defaultFontFilePath);
-        this.mockFont.Atlas.Returns(this.mockAtlasTexture);
+        var mockFont = Substitute.For<IFont>();
+        mockFont.Name.Returns(FontContentName);
+        mockFont.FilePath.Returns(this.defaultFontFilePath);
+        mockFont.Atlas.Returns(mockAtlasTexture);
 
         this.mockFontFactory = Substitute.For<IFontFactory>();
         this.mockFontFactory.Create(
@@ -123,15 +119,12 @@ public class FontLoaderTests
                 Arg.Any<uint>(),
                 Arg.Any<bool>(),
                 Arg.Any<GlyphMetrics[]>())
-            .Returns(this.mockFont);
+            .Returns(mockFont);
 
         this.mockEmbeddedFontResourceService = Substitute.For<IEmbeddedResourceLoaderService<Stream?>>();
 
         this.mockFontAtlasService = Substitute.For<IFontAtlasService>();
         this.mockFontAtlasService.CreateAtlas(this.defaultFontFilePath, FontSize).Returns((default(ImageData), glyphMetricData1));
-
-        this.mockFreeTypeService = Substitute.For<IFreeTypeService>();
-        this.mockFontStatsService = Substitute.For<IFontStatsService>();
 
         this.mockDirectory = Substitute.For<IDirectory>();
 
@@ -161,8 +154,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -187,8 +178,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -213,8 +202,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -239,8 +226,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -265,8 +250,6 @@ public class FontLoaderTests
                 null,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -291,8 +274,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 null,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -317,8 +298,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 null,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 this.mockPath);
@@ -327,56 +306,6 @@ public class FontLoaderTests
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontAtlasService')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullFreeTypeServiceParser_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new FontLoader(
-                this.mockFontPathResolver,
-                this.mockTextureFactory,
-                this.mockReactableFactory,
-                this.mockFileStreamFactory,
-                this.mockFontFactory,
-                this.mockEmbeddedFontResourceService,
-                this.mockFontAtlasService,
-                null,
-                this.mockFontStatsService,
-                this.mockDirectory,
-                this.mockFile,
-                this.mockPath);
-        };
-
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'freeTypeService')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullFontStatsServiceParser_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new FontLoader(
-                this.mockFontPathResolver,
-                this.mockTextureFactory,
-                this.mockReactableFactory,
-                this.mockFileStreamFactory,
-                this.mockFontFactory,
-                this.mockEmbeddedFontResourceService,
-                this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                null,
-                this.mockDirectory,
-                this.mockFile,
-                this.mockPath);
-        };
-
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'fontStatsService')");
     }
 
     [Fact]
@@ -393,8 +322,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 null,
                 this.mockFile,
                 this.mockPath);
@@ -419,8 +346,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 null,
                 this.mockPath);
@@ -445,8 +370,6 @@ public class FontLoaderTests
                 this.mockFontFactory,
                 this.mockEmbeddedFontResourceService,
                 this.mockFontAtlasService,
-                this.mockFreeTypeService,
-                this.mockFontStatsService,
                 this.mockDirectory,
                 this.mockFile,
                 null);
@@ -466,10 +389,10 @@ public class FontLoaderTests
         const string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
         const string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
 
-        const string defaultRegularFontFilePath = $"{FontContentDirPath}/{defaultRegularFontName}";
-        const string defaultBoldFontFilePath = $"{FontContentDirPath}/{defaultBoldFontName}";
-        const string defaultItalicFontFilePath = $"{FontContentDirPath}/{defaultItalicFontName}";
-        const string defaultBoldItalicFontFilePath = $"{FontContentDirPath}/{defaultBoldItalicFontName}";
+        var defaultRegularFontFilePath = $"{FontContentDirPath}/{defaultRegularFontName}";
+        var defaultBoldFontFilePath = $"{FontContentDirPath}/{defaultBoldFontName}";
+        var defaultItalicFontFilePath = $"{FontContentDirPath}/{defaultItalicFontName}";
+        var defaultBoldItalicFontFilePath = $"{FontContentDirPath}/{defaultBoldItalicFontName}";
 
         var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
         var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
@@ -715,14 +638,12 @@ public class FontLoaderTests
         this.mockFontFactory,
         this.mockEmbeddedFontResourceService,
         this.mockFontAtlasService,
-        this.mockFreeTypeService,
-        this.mockFontStatsService,
         this.mockDirectory,
         this.mockFile,
         this.mockPath);
 
     /// <summary>
-    /// Mocks the loading of an embedded font resource file using the given name for the purpose of testing.
+    /// Mocks the loading of an embedded font resource file using the given name for testing.
     /// </summary>
     /// <param name="name">The name of the resource to mock.</param>
     /// <returns>The mock object to verify against.</returns>

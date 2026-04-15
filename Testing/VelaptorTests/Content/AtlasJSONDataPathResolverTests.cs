@@ -7,10 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using Shouldly;
 using NSubstitute;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;
@@ -24,7 +22,6 @@ public class AtlasJSONDataPathResolverTests
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
-    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolverTests"/> class.
@@ -32,9 +29,6 @@ public class AtlasJSONDataPathResolverTests
     public AtlasJSONDataPathResolverTests()
     {
         this.mockAppService = Substitute.For<IAppService>();
-
-        this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
 
         this.mockAppService.AppDirectory.Returns("AppHome");
         this.mockFile = Substitute.For<IFile>();
@@ -55,10 +49,10 @@ public class AtlasJSONDataPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
-            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Atlas", $"TEST-CONTENT{Extension}") },
-            { string.Empty, "test-content", Path.Join("AppHome", "Content", "Atlas", $"test-content{Extension}") },
-            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Atlas", "sub-dir", $"test-content{Extension}") },
+            { string.Empty, $"test-content{Extension}", $"AppHome/Content/Atlas/test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"AppHome/Content/Atlas/TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $"AppHome/Content/Atlas/test-content{Extension}" },
+            { "sub-dir", $"test-content{Extension}", $"AppHome/Content/Atlas/sub-dir/test-content{Extension}" },
         };
     }
     #endregion
@@ -69,7 +63,7 @@ public class AtlasJSONDataPathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var resolver = new AtlasJSONDataPathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+        var resolver = new AtlasJSONDataPathResolver(this.mockAppService, this.mockFile, this.mockPath);
 
         // Act
         var actual = resolver.ContentDirectoryName;
@@ -120,7 +114,7 @@ public class AtlasJSONDataPathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
+        var actual = sut.ResolveFilePath(string.IsNullOrEmpty(subDir) ? contentName : $"{subDir}/{contentName}");
 
         // Assert
         actual.ShouldBe(expected);
@@ -132,5 +126,5 @@ public class AtlasJSONDataPathResolverTests
     /// Creates a new instance of <see cref="AtlasJSONDataPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private AtlasJSONDataPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+    private AtlasJSONDataPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
 }

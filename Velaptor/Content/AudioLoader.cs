@@ -13,6 +13,7 @@ using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Exceptions;
+using ExtensionMethods;
 using Factories;
 using ReactableData;
 using Velaptor.Factories;
@@ -97,9 +98,8 @@ internal sealed class AudioLoader : IAudioLoader
 
     /// <inheritdoc cref="IAudioLoader.Load"/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="pathOrName"/> is null or empty.</exception>
-    /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+    /// <exception cref="LoadAudioException">Thrown if the resulting audio content file path is invalid.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
-    /// <exception cref="IOException">The directory specified a file or the network name is not known.</exception>
     /// <exception cref="UnauthorizedAccessException">The caller does not have the required permissions.</exception>
     /// <exception cref="PathTooLongException">
     ///     The specified path, file name, or both exceed the system-defined maximum length.
@@ -109,6 +109,7 @@ internal sealed class AudioLoader : IAudioLoader
     public IAudio Load(string pathOrName, AudioBuffer bufferType)
     {
         ArgumentException.ThrowIfNullOrEmpty(pathOrName);
+        pathOrName = pathOrName.NormalizePath();
 
         var isPathRooted = this.path.IsPathRooted(pathOrName);
 

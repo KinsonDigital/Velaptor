@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -37,9 +38,11 @@ public class AtlasLoaderTests
     private const string AtlasContentName = "test-atlas";
     private const string FakeJSONData = "fake-json-data";
     private const uint AtlasTextureId = 123;
-    private static readonly string AtlasDirPath = Path.Combine("C:", "Content", "Atlas");
-    private static readonly string AtlasImageFilePath = Path.Combine(AtlasDirPath, AtlasContentName + AtlasImageExtension);
-    private static readonly string AtlasDataFilePath = Path.Combine(AtlasDirPath, AtlasContentName + AtlasDataExtension);
+    private static readonly string AtlasDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "C:/Content/Atlas"
+            : "/Content/Atlas";
+    private static readonly string AtlasImageFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasImageExtension}";
+    private static readonly string AtlasDataFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasDataExtension}";
     private readonly ITextureFactory mockTextureFactory;
     private readonly IAtlasDataFactory mockAtlasDataFactory;
     private readonly IReactableFactory mockReactableFactory;
@@ -401,8 +404,8 @@ public class AtlasLoaderTests
     {
         // Arrange
         const string missingJsonContentName = "missing-json-file";
-        var nonMissingImgFile = Path.Combine(AtlasDirPath, missingJsonContentName + AtlasImageExtension);
-        var missingJsonFilePath = Path.Combine(AtlasDirPath, missingJsonContentName + AtlasDataExtension);
+        var nonMissingImgFile = $"{AtlasDirPath}/{missingJsonContentName}{AtlasImageExtension}";
+        var missingJsonFilePath = $"{AtlasDirPath}/{missingJsonContentName}{AtlasDataExtension}";
 
         var sut = CreateSystemUnderTest();
 
@@ -434,8 +437,8 @@ public class AtlasLoaderTests
     {
         // Arrange
         const string missingImgContentName = "missing-img-file";
-        var nonMissingDataFile = Path.Combine(AtlasDirPath, missingImgContentName + AtlasDataExtension);
-        var missingImgFilePath = Path.Combine(AtlasDirPath, missingImgContentName + AtlasImageExtension);
+        var nonMissingDataFile = $"{AtlasDirPath}/{missingImgContentName}{AtlasDataExtension}";
+        var missingImgFilePath = $"{AtlasDirPath}/{missingImgContentName}{AtlasImageExtension}";
 
         var sut = CreateSystemUnderTest();
 
@@ -546,7 +549,7 @@ public class AtlasLoaderTests
     #endregion
 
     /// <summary>
-    /// Creates atlas sub texture data for the purpose of testing.
+    /// Creates atlas sub texture data for testing.
     /// </summary>
     /// <returns>The data to use for testing.</returns>
     private static AtlasSubTextureData[] CreateAtlasSubTextureData()
