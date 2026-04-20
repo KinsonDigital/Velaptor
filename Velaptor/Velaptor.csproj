@@ -47,6 +47,17 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
 
+  <!--
+  Opt out of telemetry data when running as a developer.
+  // TODO: Add link to docs about telemetry
+  -->
+  <PropertyGroup>
+    <EnableTelemetry>false</EnableTelemetry>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(EnableTelemetry)' == 'true'">
+    <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName)Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
