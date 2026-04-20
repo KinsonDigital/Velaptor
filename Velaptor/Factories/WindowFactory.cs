@@ -12,6 +12,7 @@ using NativeInterop.Services;
 using OpenGL;
 using Scene;
 using Services;
+using Telemetry;
 using VelaptorIWindow = UI.IWindow;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 
@@ -47,6 +48,7 @@ internal static class WindowFactory
             width,
             height,
             IoC.Container.GetInstance<IAppService>(),
+            IoC.Container.GetInstance<ITelemetryService>(),
             IoC.Container.GetInstance<SilkIWindow>(),
             IoC.Container.GetInstance<INativeInputFactory>(),
             IoC.Container.GetInstance<IGLInvoker>(),
