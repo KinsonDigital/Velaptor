@@ -36,6 +36,7 @@ using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
+using Velaptor.Telemetry;
 using Xunit;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
@@ -52,6 +53,7 @@ using GLObjectsReactable = Carbonate.OneWay.IPushReactable<Velaptor.ReactableDat
 public class GLWindowTests : TestsBase
 {
     private readonly IAppService mockAppService;
+    private readonly ITelemetryService mockTelemetryService;
     private readonly IGLInvoker mockGL;
     private readonly IGlfwInvoker mockGlfw;
     private readonly IGLContext mockGLContext;
@@ -83,6 +85,7 @@ public class GLWindowTests : TestsBase
     public GLWindowTests()
     {
         this.mockAppService = Substitute.For<IAppService>();
+        this.mockTelemetryService = Substitute.For<ITelemetryService>();
         this.mockGLContext = Substitute.For<IGLContext>();
         this.mockSilkWindow = Substitute.For<SilkIWindow>();
         this.mockSilkWindow.GLContext.Returns(this.mockGLContext);
@@ -145,6 +148,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 null,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -166,6 +170,35 @@ public class GLWindowTests : TestsBase
 
     [Fact]
     [Trait("Category", Ctor)]
+    public void Ctor_WithNullTelemetryServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => _ = new GLWindow(
+                100,
+                200,
+                this.mockAppService,
+                null,
+                this.mockSilkWindow,
+                this.mockNativeInputFactory,
+                this.mockGL,
+                this.mockGlfw,
+                this.mockDisplayService,
+                this.mockPlatform,
+                this.mockTaskService,
+                this.mockStatsWindowService,
+                this.mockImGuiFacade,
+                this.mockSceneManager,
+                this.mockReactableFactory,
+                this.mockTimerService,
+                this.mockOpenGLService);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'telemetryService')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
     public void Ctor_WithNullSilkWindowParam_ThrowsException()
     {
         // Arrange & Act
@@ -174,6 +207,7 @@ public class GLWindowTests : TestsBase
                 200,
                 this.mockAppService,
                 null,
+                this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
                 this.mockGlfw,
@@ -201,6 +235,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 null,
                 this.mockGL,
@@ -229,6 +264,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 null,
@@ -257,6 +293,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -285,6 +322,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -313,6 +351,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -341,6 +380,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -369,6 +409,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -397,6 +438,7 @@ public class GLWindowTests : TestsBase
             100,
             200,
             this.mockAppService,
+            this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
             this.mockGL,
@@ -425,6 +467,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -453,6 +496,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -481,6 +525,7 @@ public class GLWindowTests : TestsBase
                 100,
                 200,
                 this.mockAppService,
+                this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
@@ -509,6 +554,7 @@ public class GLWindowTests : TestsBase
             100,
             200,
             this.mockAppService,
+            this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
             this.mockGL,
@@ -1105,7 +1151,7 @@ public class GLWindowTests : TestsBase
         sut.Dispose();
 
         // Act
-        var act = () => sut.Show();
+        var act = sut.Show;
 
         // Assert
         var exception = act.ShouldThrow<ObjectDisposedException>();
@@ -1340,7 +1386,7 @@ public class GLWindowTests : TestsBase
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutput);
         this.mockGL.Received(1).Enable(GLEnableCap.DebugOutputSynchronous);
 
-        // Assert that all prop caching has been disabled
+        // Assert that all properties caching has been disabled
         sut.CachedStringProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
         sut.CachedBoolProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
         sut.CachedIntProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
@@ -1759,6 +1805,7 @@ public class GLWindowTests : TestsBase
     private GLWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
         => new (width, height,
             this.mockAppService,
+            this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
             this.mockGL,
