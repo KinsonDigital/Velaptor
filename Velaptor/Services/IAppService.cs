@@ -15,6 +15,21 @@ internal interface IAppService
     string AppDirectory { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the application is a debug build.
+    /// </summary>
+    bool IsDebug { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether telemetry is enabled.
+    /// </summary>
+    bool TelemetryEnabled { get; }
+
+    /// <summary>
+    /// Gets the version of the application.
+    /// </summary>
+    string Version { get; }
+
+    /// <summary>
     /// Starts the application initialization process.
     /// </summary>
     void Init();
