@@ -33,6 +33,7 @@ using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
+using Telemetry;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -112,6 +113,7 @@ internal static class IoC
 
         SetupReactables();
 
+        IoCContainer.Register<ITelemetryClient, TelemetryClient>(Lifestyle.Singleton);
         IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);
@@ -267,6 +269,7 @@ internal static class IoC
     private static void SetupServices()
     {
         IoCContainer.Register<IAppService, AppService>(Lifestyle.Singleton);
+        IoCContainer.Register<ITelemetryService, TelemetryService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleService, ConsoleService>(Lifestyle.Singleton);
         IoCContainer.Register<IDateTimeService, DateTimeService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleLoggerService, ConsoleLoggerService>(Lifestyle.Singleton);
