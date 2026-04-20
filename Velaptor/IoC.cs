@@ -47,7 +47,7 @@ internal static class IoC
     private static bool isInitialized;
 
     /// <summary>
-    /// Gets the inversion of control container used to get instances of objects.
+    /// Gets the inversion of the control container used to get instances of objects.
     /// </summary>
     public static Container Container
     {
