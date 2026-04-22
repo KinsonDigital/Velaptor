@@ -173,8 +173,8 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
+                this.mockTelemetryService,
                 null,
-                this.mockSilkWindow,
                 this.mockNativeInputFactory,
                 this.mockGL,
                 this.mockGlfw,

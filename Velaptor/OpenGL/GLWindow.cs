@@ -108,6 +108,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ITimerService timerService,
         IOpenGLService openGLService)
     {
+        ArgumentNullException.ThrowIfNull(telemetryService);
         ArgumentNullException.ThrowIfNull(silkWindow);
         ArgumentNullException.ThrowIfNull(nativeInputFactory);
         ArgumentNullException.ThrowIfNull(glInvoker);
