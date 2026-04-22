@@ -1,5 +1,5 @@
 ---
-name: "Code Reviewer & Security Auditor"
+name: "Velaptor Code Reviewer & Security Auditor"
 description: "Use when performing code reviews, security audits, or architectural assessments in this C# .NET game engine codebase. Trigger phrases: review this, audit, security check, code review, check for allocations, review performance, check thread safety, review architecture, check testability, unsafe code review, review game loop, check rendering pipeline, review reactable, check batch renderer, OWASP, validate conventions."
 model: Claude Sonnet 4.6 (copilot)
 tools: [read, search, todo]
