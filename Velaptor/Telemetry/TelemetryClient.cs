@@ -6,7 +6,10 @@ namespace Velaptor.Telemetry;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Services;
@@ -16,28 +19,44 @@ using Services;
 internal class TelemetryClient : ITelemetryClient, IDisposable
 {
     private static readonly HttpClient HttpClient = new () { Timeout = TimeSpan.FromSeconds(5) };
-    private readonly IAppService appService;
     private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryClient"/> class.
     /// </summary>
-    /// <param name="appService">Provides application services.</param>
-    public TelemetryClient(IAppService appService) => this.appService = appService;
+    public TelemetryClient()
+    {
+        var telemetryKey = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "TelemetryKey")?.Value;
+
+        HttpClient.DefaultRequestHeaders.Add("Api-Key", telemetryKey);
+    }
 
     /// <inheritdoc/>
     public async Task TrackEvent(string jsonPayload)
     {
         try
         {
-            var isDebug = this.appService.IsDebug;
-            var protocol = isDebug ? "http" : "https";
-            var serverHost = isDebug ? "localhost:8000" : "velaptor-telemetry.kinsondigital.deno.net";
+#if TELEMETRY_DEBUG || TELEMETRY_RELEASE
+            const string protocol = "http";
+            const string serverHost = "localhost:8000";
+#else
+            const string protocol = "https";
+            const string serverHost = "kinson-digital.kinsondigital.deno.net";
+#endif
             const string endpoint = "velaptor-template-telemetry";
 
             using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-            await HttpClient.PostAsync($"{protocol}://{serverHost}/{endpoint}", content);
+            HttpResponseMessage response = await HttpClient.PostAsync($"{protocol}://{serverHost}/{endpoint}", content);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Telemetry event failed to send. Status code: {response.StatusCode}");
+                Console.WriteLine($"Response body: {responseBody}");
+            }
         }
         catch
         {

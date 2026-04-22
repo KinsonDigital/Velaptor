@@ -52,7 +52,6 @@ using GLObjectsReactable = Carbonate.OneWay.IPushReactable<Velaptor.ReactableDat
 /// </summary>
 public class GLWindowTests : TestsBase
 {
-    private readonly IAppService mockAppService;
     private readonly ITelemetryService mockTelemetryService;
     private readonly IGLInvoker mockGL;
     private readonly IGlfwInvoker mockGlfw;
@@ -84,7 +83,6 @@ public class GLWindowTests : TestsBase
     /// </summary>
     public GLWindowTests()
     {
-        this.mockAppService = Substitute.For<IAppService>();
         this.mockTelemetryService = Substitute.For<ITelemetryService>();
         this.mockGLContext = Substitute.For<IGLContext>();
         this.mockSilkWindow = Substitute.For<SilkIWindow>();
@@ -141,42 +139,12 @@ public class GLWindowTests : TestsBase
     #region Contructor Tests
     [Fact]
     [Trait("Category", Ctor)]
-    public void Ctor_WithNullAppServiceParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () => _ = new GLWindow(
-                100,
-                200,
-                null,
-                this.mockTelemetryService,
-                this.mockSilkWindow,
-                this.mockNativeInputFactory,
-                this.mockGL,
-                this.mockGlfw,
-                this.mockDisplayService,
-                this.mockPlatform,
-                this.mockTaskService,
-                this.mockStatsWindowService,
-                this.mockImGuiFacade,
-                this.mockSceneManager,
-                this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
-
-        // Assert
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'appService')");
-    }
-
-    [Fact]
-    [Trait("Category", Ctor)]
     public void Ctor_WithNullTelemetryServiceParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 null,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -205,7 +173,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 null,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -234,7 +201,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 null,
@@ -263,7 +229,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -292,7 +257,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -321,7 +285,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -350,7 +313,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -379,7 +341,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -408,7 +369,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -437,7 +397,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
             100,
             200,
-            this.mockAppService,
             this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
@@ -466,7 +425,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -495,7 +453,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -524,7 +481,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
                 100,
                 200,
-                this.mockAppService,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
@@ -553,7 +509,6 @@ public class GLWindowTests : TestsBase
         var act = () => _ = new GLWindow(
             100,
             200,
-            this.mockAppService,
             this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
@@ -1362,8 +1317,6 @@ public class GLWindowTests : TestsBase
         this.mockSilkMouse.Received().MouseMove += Arg.Any<Action<IMouse, SysVector2>>();
         this.mockSilkMouse.Received().Scroll += Arg.Any<Action<IMouse, ScrollWheel>>();
 
-        this.mockAppService.Received(1).Init();
-
         // Assert that the window has been set to the correct size
         this.mockGL.Received(1).Viewport(0, 0, 123, 456);
         this.mockPushWinSizeReactable.Received(1)
@@ -1804,7 +1757,6 @@ public class GLWindowTests : TestsBase
     /// <returns>The instance to test.</returns>
     private GLWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
         => new (width, height,
-            this.mockAppService,
             this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,

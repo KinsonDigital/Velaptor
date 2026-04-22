@@ -17,7 +17,7 @@ using VelaptorIWindow = UI.IWindow;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 
 /// <summary>
-/// Velaptor application specific functionality.
+/// Velaptor application-specific functionality.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal static class WindowFactory
@@ -47,7 +47,6 @@ internal static class WindowFactory
         => new GLWindow(
             width,
             height,
-            IoC.Container.GetInstance<IAppService>(),
             IoC.Container.GetInstance<ITelemetryService>(),
             IoC.Container.GetInstance<SilkIWindow>(),
             IoC.Container.GetInstance<INativeInputFactory>(),

@@ -8,12 +8,17 @@
 #>
 
 param (
-    [string]$BuildConfig
+    [string]$BuildConfig,
+    [string]$EnableTelemetry
 )
 
-if ($BuildConfig -eq $null -or $BuildConfig -eq "" -or
-    ($BuildConfig -ne "Debug" -and $BuildConfig -ne "Release")) {
-    Write-Error "A build configuration must be specified with the values 'Debug' or 'Release'."
+if ($BuildConfig -eq $null -or $BuildConfig -eq "") {
+    Write-Error "A build configuration parameter must be specified."
+    exit 1;
+}
+
+if ($EnableTelemetry -eq $null -or $EnableTelemetry -eq "") {
+    Write-Error "A enable telemetry parameter must be specified."
     exit 1;
 }
 
@@ -31,4 +36,5 @@ dotnet build $projectPath -c $BuildConfig -o $outputPath;
 Get-ChildItem -Path $outputPath -Filter "KinsonDigital.Velaptor.*" | Remove-Item -Force
 
 # Create the nuget package
-dotnet pack $projectPath -c $BuildConfig -o $outputPath -p:EnableTelemetry=true;
+Write-Host "Creating nuget package using the '$BuildConfig' configuration..." -ForegroundColor Cyan;
+dotnet pack $projectPath -c $BuildConfig -o $outputPath -p:EnableTelemetry=$EnableTelemetry;

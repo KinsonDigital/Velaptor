@@ -96,7 +96,7 @@ jobs:
         include:
           - platform: "windows-latest"
           - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # ARM-based (M1 and above).
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -119,7 +119,7 @@ jobs:
         include:
           - platform: "windows-latest"
           - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # ARM-based (M1 and above).
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -151,8 +151,9 @@ jobs:
       deno-version: "${{ vars.DENO_VERSION }}"
       telemetry-enabled: true
     secrets:
-      cicd-pat: "${{ secrets.CICD_TOKEN }}"
-      nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
+        cicd-pat: "${{ secrets.CICD_TOKEN }}"
+        nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
+        telemetry-key: "${{ secrets.TELEMETRY_KEY }}"
 
 
   # Execute the full Velaptor docs release workflow after the library release is done.

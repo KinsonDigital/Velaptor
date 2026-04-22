@@ -76,7 +76,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
-    /// <param name="appService">Provides application services.</param>
     /// <param name="telemetryService">Provides telemetry services.</param>
     /// <param name="silkWindow">The <see cref="Silk"/> specific <see cref="Silk.NET.Windowing.IWindow"/> object.</param>
     /// <param name="nativeInputFactory">Creates a native input object.</param>
@@ -94,7 +93,6 @@ internal sealed class GLWindow : VelaptorIWindow
     public GLWindow(
         uint width,
         uint height,
-        IAppService appService,
         ITelemetryService telemetryService,
         SilkIWindow silkWindow,
         INativeInputFactory nativeInputFactory,
@@ -110,7 +108,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ITimerService timerService,
         IOpenGLService openGLService)
     {
-        ArgumentNullException.ThrowIfNull(appService);
         ArgumentNullException.ThrowIfNull(silkWindow);
         ArgumentNullException.ThrowIfNull(nativeInputFactory);
         ArgumentNullException.ThrowIfNull(glInvoker);
@@ -164,7 +161,6 @@ internal sealed class GLWindow : VelaptorIWindow
             () => new WindowSizeData { Width = Width, Height = Height },
             () => this.pullWinSizeUnsubscriber?.Dispose());
 
-        appService.Init();
         telemetryService.TrackAppStart();
     }
 

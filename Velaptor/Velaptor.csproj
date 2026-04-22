@@ -7,7 +7,7 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.44</Version>
+    <Version>1.0.0-preview.400</Version>
 
     <!--Update this for production and preview releases-->
     <FileVersion>1.0.0-preview.44</FileVersion>
@@ -28,7 +28,7 @@
     <Description>2D game or application development framework that provides 2D rendering, audio, keyboard and mouse input, etc.</Description>
     <Copyright>Copyright ©2025 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;Telemetry-Release;Telemetry-Debug</Configurations>
     <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KinsonDigital/Velaptor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -48,12 +48,35 @@
   </PropertyGroup>
 
   <!--
-  Opt out of telemetry data when running as a developer.
-  // TODO: Add link to docs about telemetry
+    Opt out of telemetry data when running as a developer.
+    // TODO: Add link to docs about telemetry
   -->
   <PropertyGroup>
     <EnableTelemetry>false</EnableTelemetry>
+    <TelemetryKey>local-testing-telemetry-key</TelemetryKey>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!--Adds the telemetry key to the assembly for use during runtime.-->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>TelemetryKey</_Parameter1>
+      <_Parameter2>$(TelemetryKey)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <!--
+    Define a conditional compilation symbol for telemetry so that any code related to telemetry can be conditionally
+    compiled out of the assembly when telemetry is disabled.
+  -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Telemetry-Debug|x64'">
+    <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY;DEBUG</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|x64' ">
+    <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(EnableTelemetry)' == 'true'">
     <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY</DefineConstants>
   </PropertyGroup>
