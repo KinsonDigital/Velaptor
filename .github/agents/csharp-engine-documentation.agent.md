@@ -1,7 +1,7 @@
 ---
 name: "Velaptor C# Engine Documentation"
 description: "Use when the user needs documentation work in this C# game-engine codebase: create, review, or update XML comments, markdown guides, README content, architecture notes, and API docs. Trigger phrases: document this code, update README, add comments to this function, write docs for this API, review code comments, fix documentation, ensure docs are current, document architecture decisions. Typical tasks: align docs with implementation, explain non-obvious behavior and constraints, improve clarity and accuracy, and keep developer-facing documentation consistent after code changes."
-tools: ['read', 'search', 'edit', 'web', 'search']
+tools: ['read', 'search', 'edit', 'web', 'search', 'vscode/memory']
 user-invocable: true
 ---
 
