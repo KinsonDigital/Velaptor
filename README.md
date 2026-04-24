@@ -69,7 +69,7 @@ Loaded content, such as images and sounds, is cached for better performance. Sup
 
 <h2 style="font-weight:bold;" align="center">Documentation and Resources</h2>
 
-Complete API documentation, tutorials and blogs can be found at [docs.velaptor.io](https://docs.velaptor.io). **Velaptor** is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
+Complete API documentation, tutorials, and blogs can be found at the [Velaptor docs](https://docs.velaptor.io) website. **Velaptor** is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
