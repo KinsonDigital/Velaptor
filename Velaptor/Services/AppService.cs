@@ -23,6 +23,7 @@ internal class AppService : IAppService
         IsDebug = IsInDebugMode();
         ConsumerIsDebug = IsLibraryConsumerInDebugMode();
         Version = GetVelaptorVersion();
+        InDevelopmentEnvironment = IsInDeveloperEnvironment();
     }
 
     /// <inheritdoc/>
@@ -36,6 +37,9 @@ internal class AppService : IAppService
 
     /// <inheritdoc/>
     public string Version { get; }
+
+    /// <inheritdoc/>
+    public bool InDevelopmentEnvironment { get; }
 
     /// <summary>
     /// Returns a value indicating whether the consumer of the velaptor library is in debug mode.
@@ -72,5 +76,70 @@ internal class AppService : IAppService
         return assembly.
             GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion ?? "unknown";
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if the process appears to be running inside a developer's project.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Primary signal: walk ancestor directories of the running executable looking for
+    /// <c>*.csproj</c> or <c>*.sln</c> files.  These only exist in a development
+    /// environment — a game that has been published and distributed to players will never
+    /// have project files anywhere in its directory tree.
+    /// </para>
+    /// <para>
+    /// Fallback signal: check whether the .NET SDK is installed on this machine.
+    /// Developers must have the SDK installed to build games; players typically only have
+    /// the .NET Runtime or run a self-contained game bundle.
+    /// </para>
+    /// </remarks>
+    private static bool IsInDeveloperEnvironment()
+    {
+#if ENABLE_TELEMETRY
+        try
+        {
+            var processPath = Environment.ProcessPath ?? string.Empty;
+            var sep = Path.DirectorySeparatorChar;
+
+            // Fast exit path: .NET always builds to bin/Debug/ or bin/Release/.
+            // A distributed game will never have these in its path.
+            if (processPath.Contains($"{sep}bin{sep}Debug{sep}", StringComparison.OrdinalIgnoreCase) ||
+                processPath.Contains($"{sep}bin{sep}Release{sep}", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            var executableDir = Path.GetDirectoryName(processPath) ?? string.Empty;
+            var root = Path.GetPathRoot(executableDir) ?? string.Empty;
+            var dir = executableDir;
+
+            while (!string.IsNullOrEmpty(dir) && !string.Equals(dir, root, StringComparison.OrdinalIgnoreCase))
+            {
+                if (Directory.GetFiles(dir, "*.csproj", SearchOption.TopDirectoryOnly).Length > 0 ||
+                    Directory.GetFiles(dir, "*.sln", SearchOption.TopDirectoryOnly).Length > 0)
+                {
+                    return true;
+                }
+
+                var parent = Path.GetDirectoryName(dir);
+                if (parent is null || string.Equals(parent, dir, StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                dir = parent;
+            }
+
+            // No project files found anywhere in the directory tree — this is a distributed game, not a development run.
+            return false;
+        }
+        catch
+        {
+            return true;
+        }
+#else
+        return false;
+#endif
     }
 }

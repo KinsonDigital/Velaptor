@@ -28,4 +28,9 @@ internal interface IAppService
     /// Gets the version of the application.
     /// </summary>
     string Version { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the application is running in a development environment.
+    /// </summary>
+    bool InDevelopmentEnvironment { get; }
 }

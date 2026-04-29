@@ -12,7 +12,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Services;
 
 /// <inheritdoc cref="ITelemetryClient"/>
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
@@ -40,7 +39,7 @@ internal class TelemetryClient : ITelemetryClient, IDisposable
         {
 #if TELEMETRY_DEBUG || TELEMETRY_RELEASE
             const string protocol = "http";
-            const string serverHost = "localhost:8000";
+            const string serverHost = "localhost:8500";
 #else
             const string protocol = "https";
             const string serverHost = "kinson-digital.kinsondigital.deno.net";
