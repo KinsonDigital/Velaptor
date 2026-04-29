@@ -1,0 +1,117 @@
+<Solution>
+    <Configurations>
+        <BuildType Name="Debug" />
+        <BuildType Name="Debug-Console" />
+        <BuildType Name="Release" />
+        <BuildType Name="Release-Console" />
+        <BuildType Name="Telemetry-Debug" />
+        <BuildType Name="Telemetry-Release" />
+        <Platform Name="x64" />
+    </Configurations>
+
+    <Folder Name="/Performance/">
+        <Project Path="Performance/KeyboardPerf/KeyboardPerf.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+            <Build Solution="Telemetry-Debug|*" Project="false" />
+            <Build Solution="Telemetry-Release|*" Project="false" />
+        </Project>
+
+        <Project Path="Performance/MeasureTextPerf/MeasureTextPerf.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+            <Build Solution="Telemetry-Debug|*" Project="false" />
+            <Build Solution="Telemetry-Release|*" Project="false" />
+        </Project>
+
+        <Project Path="Performance/MousePerf/MousePerf.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+            <Build Solution="Telemetry-Debug|*" Project="false" />
+            <Build Solution="Telemetry-Release|*" Project="false" />
+        </Project>
+    </Folder>
+
+    <Folder Name="/SolutionItems/">
+        <File Path=".editorconfig" />
+        <File Path=".github/stale.yml" />
+        <File Path=".gitignore" />
+        <File Path="BACKERS.md" />
+        <File Path="codecov.yml" />
+        <File Path="LICENSE.md" />
+        <File Path="README.md" />
+        <File Path="renovate.json" />
+    </Folder>
+
+    <Folder Name="/SolutionItems/DevTools/">
+        <File Path="DevTools/create-local-nuget-pkg.ps1" />
+        <File Path="DevTools/create-pr.ts" />
+        <File Path="DevTools/playground.ts" />
+        <File Path="DevTools/prep-prev-release.ts" />
+        <File Path="DevTools/prev-gen-release-notes-settings.json" />
+        <File Path="DevTools/sprocket-config.ts" />
+    </Folder>
+
+    <Folder Name="/SolutionItems/Workflows/">
+        <File Path=".github/workflows/add-new-item-to-project.yml" />
+        <File Path=".github/workflows/build-status-check.yml" />
+        <File Path=".github/workflows/release.yml" />
+        <File Path=".github/workflows/sonar-scan-pr-status-check.yml" />
+        <File Path=".github/workflows/triage-issue.yml" />
+        <File Path=".github/workflows/unit-test-status-check.yml" />
+    </Folder>
+
+    <Folder Name="/Testing/">
+        <File Path="Testing/.editorconfig" />
+        <File Path="Testing/Velaptor.runsettings" />
+
+        <Project Path="Testing/AvaloniaTesting/AvaloniaTesting.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+            <Build Solution="Telemetry-Debug|*" Project="false" />
+            <Build Solution="Telemetry-Release|*" Project="false" />
+        </Project>
+
+        <Project Path="Testing/PlaygroundApp/PlaygroundApp.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+            <Build Solution="Telemetry-Debug|*" Project="false" />
+            <Build Solution="Telemetry-Release|*" Project="false" />
+        </Project>
+
+        <Project Path="Testing/VelaptorTesting/VelaptorTesting.csproj">
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+        </Project>
+
+        <Project Path="Testing/VelaptorTests/VelaptorTests.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Release" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Release" />
+            <Platform Project="x64" />
+        </Project>
+    </Folder>
+
+    <Project Path="Velaptor/Velaptor.csproj">
+        <BuildType Solution="Debug-Console|*" Project="Debug" />
+        <BuildType Solution="Release-Console|*" Project="Release" />
+        <Platform Project="x64" />
+    </Project>
+</Solution>
