@@ -1,14 +1,17 @@
-﻿// <copyright file="TelemetryData.cs" company="KinsonDigital">
+﻿// <copyright file="UsageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Velaptor.Telemetry;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Contains the data to send to the telemetry service.
 /// </summary>
-public record TelemetryData
+[ExcludeFromCodeCoverage(Justification = "Very minimal properties with no logic.")]
+public record UsageData
 {
     /// <summary>
     /// Gets or sets the name of the life cycle event.
@@ -46,7 +49,7 @@ public record TelemetryData
     public string OsName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the operating system architecture..
+    /// Gets or sets the operating system architecture.
     /// </summary>
     public string OsArchitecture { get; set; } = string.Empty;
 }
