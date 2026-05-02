@@ -13,4 +13,9 @@ internal interface ITelemetryService
     /// Tracks the start of the application.
     /// </summary>
     void TrackAppStart();
+
+    /// <summary>
+    /// Tracks what hardware the user has.
+    /// </summary>
+    void TrackHardware();
 }

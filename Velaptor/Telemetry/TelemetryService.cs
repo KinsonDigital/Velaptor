@@ -2,50 +2,101 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable once GrammarMistakeInComment
 namespace Velaptor.Telemetry;
 
 #if ENABLE_TELEMETRY
+
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System;
-using Services;
+using System.IO.Abstractions;
+using Hardware.Services;
+using System.Linq;
+using System.Text.Json.Serialization;
+
+#else
+
+using System;
+
 #endif
 
 using System.Diagnostics.CodeAnalysis;
+using Services;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
 internal class TelemetryService : ITelemetryService
 {
 #if ENABLE_TELEMETRY
+    private const string HardwareDataFileName = "hardware-specs.json";
     private readonly ITelemetryClient telemetryClient;
-    private readonly IAppService appService;
+    private readonly ICpuService cpuService;
+    private readonly IGpuService gpuService;
     private readonly JsonSerializerOptions serializeOptions = new ()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase, Converters = { new JsonStringEnumConverter() },
     };
+    private readonly IFile file;
 #endif
-
+    private readonly IAppService appService;
 #if ENABLE_TELEMETRY
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryService"/> class.
     /// </summary>
     /// <param name="appService">Provides application services.</param>
     /// <param name="telemetryClient">Communicates with the telemetry server.</param>
-    public TelemetryService(IAppService appService, ITelemetryClient telemetryClient)
+    /// <param name="cpuService">Provides CPU services.</param>
+    /// <param name="gpuService">Provides GPU services.</param>
+    /// <param name="file">Performs operations with files.</param>
+    public TelemetryService(IAppService appService, ITelemetryClient telemetryClient, ICpuService cpuService, IGpuService gpuService, IFile file)
     {
+        ArgumentNullException.ThrowIfNull(appService);
+        ArgumentNullException.ThrowIfNull(telemetryClient);
+        ArgumentNullException.ThrowIfNull(cpuService);
+        ArgumentNullException.ThrowIfNull(gpuService);
+        ArgumentNullException.ThrowIfNull(file);
         this.appService = appService;
         this.telemetryClient = telemetryClient;
+        this.cpuService = cpuService;
+        this.gpuService = gpuService;
+        this.file = file;
+
+        // Has the user opted into telemetry?
+        // Set by anyone (maintainer or game developer) to suppress telemetry.
+        // Game developers who do not want telemetry tracked should set this env var to 1 or true.
+        if (IsNotOptedIn())
+        {
+            ShowDisabledTelemetryMsg();
+        }
+        else
+        {
+            ShowEnabledTelemetryMsg();
+        }
     }
 #else
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryService"/> class.
     /// </summary>
-    public TelemetryService()
+    /// <param name="appService">Provides application services.</param>
+    public TelemetryService(IAppService appService)
     {
+        ArgumentNullException.ThrowIfNull(appService);
+
+        this.appService = appService;
+
+        // Has the user opted into telemetry?
+        // Set by anyone (maintainer or game developer) to suppress telemetry.
+        // Game developers who do not want telemetry tracked should set this env var to 1 or true.
+        if (IsNotOptedIn())
+        {
+            ShowDisabledTelemetryMsg();
+        }
+        else
+        {
+            ShowEnabledTelemetryMsg();
+        }
     }
 #endif
 
@@ -53,19 +104,8 @@ internal class TelemetryService : ITelemetryService
     public void TrackAppStart()
     {
 #if ENABLE_TELEMETRY
-        // Set by anyone (maintainer or game developer) to suppress telemetry.
-        // Game developers who do not want telemetry tracked should set this env var to 1 or true.
-        var optIn = (Environment.GetEnvironmentVariable("VELAPTOR_OPT_IN_TELEMETRY") ?? string.Empty).ToLower();
-
-        Console.WriteLine($"Opt In State: {optIn}");
-        Console.WriteLine($"Consumer Is Debug: {this.appService.ConsumerIsDebug}");
-        Console.WriteLine($"In Dev Environment: {this.appService.InDevelopmentEnvironment}");
-
-        // Has the user opted into telemetry?
-        if (string.IsNullOrEmpty(optIn) || optIn is "0" or "false")
+        if (IsNotOptedIn())
         {
-            ShowDisabledTelemetryMsg();
-
             return;
         }
 
@@ -77,36 +117,59 @@ internal class TelemetryService : ITelemetryService
         // Only send telemetry when running in a developer environment.
         // A published game distributed to players will not be running in
         // a game development environment.
-        if (this.appService.InDevelopmentEnvironment)
+        if (!this.appService.InDevelopmentEnvironment)
         {
-            ShowEnabledTelemetryMsg();
-
-            var version = this.appService.Version;
-            var osName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows"
-                : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux"
-                : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS"
-                : "Unknown";
-
-            var payload = new TelemetryData
-            {
-                LifeCycleEvent = "app-start",
-                FeatureArea = null,
-                FeatureName = null,
-                Version = version,
-                DotnetVersion = Environment.Version.ToString(),
-                Language = CultureInfo.CurrentUICulture.Parent.EnglishName,
-                OsName = osName,
-                OsArchitecture = RuntimeInformation.OSArchitecture.ToString().ToLower(),
-            };
-
-            var json = JsonSerializer.Serialize(payload, this.serializeOptions);
-
-            Task.Run(() => this.telemetryClient.TrackEvent(json));
+            return;
         }
+
+        var version = this.appService.Version;
+        var osName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
+            RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
+            RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Unknown";
+        var payload = new UsageData
+        {
+            LifeCycleEvent = "app-start",
+            FeatureArea = null,
+            FeatureName = null,
+            Version = version,
+            DotnetVersion = Environment.Version.ToString(),
+            Language = CultureInfo.CurrentUICulture.Parent.EnglishName,
+            OsName = osName,
+            OsArchitecture = RuntimeInformation.OSArchitecture.ToString().ToLower(),
+        };
+        var json = JsonSerializer.Serialize(payload, this.serializeOptions);
+        Task.Run(() => this.telemetryClient.TrackEvent(json));
 #endif
     }
 
+    /// <inheritdoc/>
+    public void TrackHardware()
+    {
 #if ENABLE_TELEMETRY
+        // Only send telemetry when running in a developer environment.
+        // A published game distributed to players will not be running in
+        // a game development environment.
+        if (!this.appService.InDevelopmentEnvironment)
+        {
+            return;
+        }
+
+        var jsonData = GetHardwareData();
+
+        Task.Run(() => this.telemetryClient.TrackHardware(jsonData));
+#endif
+    }
+
+    /// <summary>
+    /// Returns a value indicating whether the user has opted out of telemetry.
+    /// </summary>
+    /// <returns>True if the user has opted out.</returns>
+    private static bool IsNotOptedIn()
+    {
+        var optIn = (Environment.GetEnvironmentVariable("VELAPTOR_OPT_IN_TELEMETRY") ?? string.Empty).ToLower();
+        return string.IsNullOrEmpty(optIn) || optIn is "0" or "false";
+    }
+
     /// <summary>
     /// Shows the message that explains the telemetry feature.
     /// </summary>
@@ -192,6 +255,33 @@ internal class TelemetryService : ITelemetryService
                           ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
                           """);
+    }
+
+#if ENABLE_TELEMETRY
+    /// <summary>
+    /// Gets the hardware data.
+    /// </summary>
+    /// <returns>The hardware JSON data.</returns>
+    private string GetHardwareData()
+    {
+        var hardwareSpecsFilepath = $"{this.appService.AppDirectory}/{HardwareDataFileName}";
+        string jsonData;
+
+        if (this.file.Exists(hardwareSpecsFilepath))
+        {
+            jsonData = this.file.ReadAllText(hardwareSpecsFilepath);
+        }
+        else
+        {
+            var cpu = this.cpuService.GetCpuInfo();
+            var gpus = this.gpuService.GetGpuInfo();
+            var hardware = new HardwareData { Cpu = cpu, Gpus = gpus.ToArray(), };
+            jsonData = JsonSerializer.Serialize(hardware, this.serializeOptions);
+
+            this.file.WriteAllText(hardwareSpecsFilepath, jsonData);
+        }
+
+        return jsonData;
     }
 #endif
 }

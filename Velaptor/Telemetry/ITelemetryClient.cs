@@ -19,4 +19,13 @@ internal interface ITelemetryClient
     /// A <see cref="Task"/> representing the asynchronous operation of sending the telemetry data.
     /// </returns>
     Task TrackEvent(string jsonPayload);
+
+    /// <summary>
+    /// Tracks hardware information.
+    /// </summary>
+    /// <param name="jsonPayload">The JSON data to send.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation of sending the telemetry data.
+    /// </returns>
+    Task TrackHardware(string jsonPayload);
 }
