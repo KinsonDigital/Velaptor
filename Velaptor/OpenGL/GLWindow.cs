@@ -163,6 +163,7 @@ internal sealed class GLWindow : VelaptorIWindow
             () => this.pullWinSizeUnsubscriber?.Dispose());
 
         telemetryService.TrackAppStart();
+        telemetryService.TrackHardware();
     }
 
     /// <inheritdoc/>
