@@ -18,6 +18,7 @@ using Content.Fonts.Services;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
+using Hardware.Services;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
@@ -269,6 +270,8 @@ internal static class IoC
     private static void SetupServices()
     {
         IoCContainer.Register<IAppService, AppService>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuService, GpuService>(Lifestyle.Singleton);
+        IoCContainer.Register<ICpuService, CpuService>(Lifestyle.Singleton);
         IoCContainer.Register<ITelemetryService, TelemetryService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleService, ConsoleService>(Lifestyle.Singleton);
         IoCContainer.Register<IDateTimeService, DateTimeService>(Lifestyle.Singleton);
