@@ -28,12 +28,12 @@
     <Description>2D game or application development framework that provides 2D rendering, audio, keyboard and mouse input, etc.</Description>
     <Copyright>Copyright ©2025 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
-    <Configurations>Debug;Release;Telemetry-Release;Telemetry-Debug</Configurations>
+    <Configurations>Debug;Release;Telemetry-Release;Telemetry-Debug;Debug-Console;Release-Console</Configurations>
     <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KinsonDigital/Velaptor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>velaptor-logo.png</PackageIcon>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>CS7035</NoWarn>
@@ -74,6 +74,28 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|x64' ">
     <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|arm64' ">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|x64' ">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|arm64' ">
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|x64' ">
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|arm64' ">
+    <DefineConstants>TRACE;ENABLE_TELEMETRY;DEBUG</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|arm64' ">
+    <DefineConstants>TRACE;ENABLE_TELEMETRY;RELEASE</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
 

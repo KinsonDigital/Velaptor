@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>12.0</LangVersion>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyTitle>ScorpionCoreTests</AssemblyTitle>
@@ -14,7 +14,7 @@
     <Company>Kinson Digital</Company>
     <AssemblyName>VelaptorTests</AssemblyName>
     <RootNamespace>VelaptorTests</RootNamespace>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;Debug-Console;Release-Console;Telemetry-Debug;Telemetry-Release</Configurations>
     <OutputType>Library</OutputType>
     <!--
         Warning Suppression Reasons:
