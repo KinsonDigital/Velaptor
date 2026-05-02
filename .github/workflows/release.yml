@@ -93,10 +93,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: "windows-latest"
-          - platform: "ubuntu-latest"
-          - platform: "macos-latest" # ARM-based (M1 and above).
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+        build_config: ${{ fromJSON(inputs.release-type == 'Preview' && '["Debug", "Telemetry-Debug"]' || '["Release", "Telemetry-Release"]') }}
+
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -107,7 +106,7 @@ jobs:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
       - name: Run Build
-        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
 
 
   run_tests:
