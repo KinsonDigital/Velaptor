@@ -203,7 +203,7 @@ internal class TelemetryService : ITelemetryService
                             Data is only collected from the developers that use Velaptor.
                             Data is NOT collected in built/compiled games!
 
-                            Learn more: https://docs.velaptor.io/telemetry.md
+                            Learn more: https://docs.velaptor.io/telemetry
 
                             To opt out, set this environment variable:
                                  VELAPTOR_OPT_IN_TELEMETRY=0 or VELAPTOR_OPT_IN_TELEMETRY=false 
@@ -251,7 +251,7 @@ internal class TelemetryService : ITelemetryService
 
                             To opt in, add the environment variable VELAPTOR_OPT_IN_TELEMETRY=1 or VELAPTOR_OPT_IN_TELEMETRY=true.
 
-                            Learn more: https://docs.velaptor.io/telemetry.md
+                            Learn more: https://docs.velaptor.io/telemetry
                           ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
                           """);
