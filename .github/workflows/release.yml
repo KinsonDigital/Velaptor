@@ -34,20 +34,26 @@ jobs:
     steps:
       - name: Check Preview Branch
         if: ${{ inputs.release-type == 'Preview' }}
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          EXPECTED_BRANCH: ${{ vars.PREV_BRANCH }}
         run: |
-          $branchName = "${{ github.ref_name }}".Trim();
+          $branchName = "$env:BRANCH_NAME".Trim();
 
-          if ($branchName -ne "${{ vars.PREV_BRANCH }}") {
-            Write-Error "::error::The branch name must be 'release' for a preview release.";
+          if ($branchName -ne "$env:EXPECTED_BRANCH") {
+            Write-Host "::error::The branch name must be 'release' for a preview release.";
             exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
           }
 
       - name: Check Production Branch
         if: ${{ inputs.release-type == 'Production' }}
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          EXPECTED_BRANCH: ${{ vars.PROD_BRANCH }}
         run: |
-          $branchName = "${{ github.ref_name }}".Trim();
+          $branchName = "$env:BRANCH_NAME".Trim();
 
-          if ($branchName -ne "${{ vars.PROD_BRANCH }}") {
+          if ($branchName -ne "$env:EXPECTED_BRANCH") {
             Write-Host "::error::The branch name must be 'main' for a production release.";
             exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
           }
@@ -87,15 +93,39 @@ jobs:
           deno-version: "${{ vars.DENO_VERSION }}"
 
 
-  build:
-    name: Build Velaptor Status Check
-    needs: validate_branch
+  # Build with preview/debug build configs
+  build_preview:
+    name: Build Velaptor (PREVIEW)
+    if: ${{ inputs.release-type == 'Preview' }}
+    needs: [validate_branch, get_and_validate_version]
     strategy:
       fail-fast: false
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
-        build_config: ${{ fromJSON(inputs.release-type == 'Preview' && '["Debug", "Telemetry-Debug"]' || '["Release", "Telemetry-Release"]') }}
+        build_config: ["Debug", "Telemetry-Debug"]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v6
 
+      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ vars.NET_SDK_VERSION }}
+
+      - name: Run Build
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
+
+
+  # Build with production/release build configs
+  build_production:
+    name: Build Velaptor (PRODUCTION)
+    if: ${{ inputs.release-type == 'Production' }}
+    needs: [validate_branch, get_and_validate_version]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+        build_config: ["Release", "Telemetry-Release"]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -136,13 +166,13 @@ jobs:
 
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v17.2.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
+      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
       build-project: false
       dry-run: ${{ inputs.dry-run }}
@@ -159,7 +189,7 @@ jobs:
   release_velaptor_docs:
     name: Release Velaptor Docs
     runs-on: ubuntu-latest
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests, run_release]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
     steps:
       - name: Execute Release
@@ -169,16 +199,16 @@ jobs:
           $workflowName = "${{ vars.VELAPTOR_DOCS_FULL_RELEASE_WORKFLOW_NAME }}";
           $orgName = "${{ vars.ORGANIZATION_NAME }}";
           $repoName = "${{ vars.VELAPTOR_DOCS_REPO_NAME }}";
+          $docSiteReleaseBranch = "${{ vars.DOC_SITE_RELEASE_BRANCH }}";
           $version = "v${{ needs.get_and_validate_version.outputs.version }}";
 
-          # TODO: Need to replace the name of the branch
-          gh workflow run $workflowName -R "$orgName/$repoName" --ref "main" --field "api-version=$version" --field "executed-externally=true";
+          gh workflow run $workflowName -R "$orgName/$repoName" --ref "$docSiteReleaseBranch" --field "api-version=$version" --field "executed-externally=true";
 
 
   send_release_announcements:
     name: Send Release Announcements
     runs-on: ubuntu-latest
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests, run_release]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
     steps:
       - name: Send X Release Announcement
