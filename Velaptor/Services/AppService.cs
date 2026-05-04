@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 /// <inheritdoc/>
@@ -102,10 +103,20 @@ internal class AppService : IAppService
             var processPath = Environment.ProcessPath ?? string.Empty;
             var sep = Path.DirectorySeparatorChar;
 
-            // Fast exit path: .NET always builds to bin/Debug/ or bin/Release/.
+            // todo: add anycpu paths as well
+            var processPaths = new[]
+            {
+                $"{sep}bin{sep}Debug{sep}",
+                $"{sep}bin{sep}x64{sep}Debug{sep}",
+                $"{sep}bin{sep}arm64{sep}Debug{sep}",
+                $"{sep}bin{sep}Release{sep}",
+                $"{sep}bin{sep}x64{sep}Release{sep}",
+                $"{sep}bin{sep}arm64{sep}Release{sep}",
+            };
+
+            // Fast exit path: Compare the process path to common paths
             // A distributed game will never have these in its path.
-            if (processPath.Contains($"{sep}bin{sep}Debug{sep}", StringComparison.OrdinalIgnoreCase) ||
-                processPath.Contains($"{sep}bin{sep}Release{sep}", StringComparison.OrdinalIgnoreCase))
+            if (processPaths.Any((p) => processPath.Contains(p, StringComparison.CurrentCultureIgnoreCase)))
             {
                 return true;
             }
@@ -116,8 +127,11 @@ internal class AppService : IAppService
 
             while (!string.IsNullOrEmpty(dir) && !string.Equals(dir, root, StringComparison.OrdinalIgnoreCase))
             {
-                if (Directory.GetFiles(dir, "*.csproj", SearchOption.TopDirectoryOnly).Length > 0 ||
-                    Directory.GetFiles(dir, "*.sln", SearchOption.TopDirectoryOnly).Length > 0)
+                var csprojFileExists = Directory.GetFiles(dir, "*.csproj", SearchOption.TopDirectoryOnly).Length > 0;
+                var slnFileExists = Directory.GetFiles(dir, "*.sln", SearchOption.TopDirectoryOnly).Length > 0;
+                var slnxFileExists = Directory.GetFiles(dir, "*.slnx", SearchOption.TopDirectoryOnly).Length > 0;
+
+                if (csprojFileExists || slnFileExists || slnxFileExists)
                 {
                     return true;
                 }
