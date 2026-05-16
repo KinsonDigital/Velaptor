@@ -359,3 +359,6 @@ MigrationBackup/
 # Coverlet coverage report files
 coverage.json
 coverage.xml
+
+# VSCode (C# Dev Kit)
+*.lscache
