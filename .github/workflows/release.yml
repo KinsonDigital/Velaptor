@@ -92,38 +92,15 @@ jobs:
 
 
   # Build with preview/debug build configs
-  build_preview:
-    name: Build Velaptor (PREVIEW)
+  build:
+    name: Build Velaptor
     if: ${{ inputs.release-type == 'Preview' }}
     needs: [validate_branch, get_and_validate_version]
     strategy:
       fail-fast: false
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
-        build_config: ["Debug", "Telemetry-Debug"]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
-
-      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
-        with:
-          dotnet-version: ${{ vars.NET_SDK_VERSION }}
-
-      - name: Run Build
-        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
-
-
-  # Build with production/release build configs
-  build_production:
-    name: Build Velaptor (PRODUCTION)
-    if: ${{ inputs.release-type == 'Production' }}
-    needs: [validate_branch, get_and_validate_version]
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
-        build_config: ["Release", "Telemetry-Release"]
+        build_config: [Debug, Telemetry-Debug, Release, Telemetry-Release]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
@@ -164,7 +141,7 @@ jobs:
 
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
@@ -187,7 +164,7 @@ jobs:
   release_velaptor_docs:
     name: Release Velaptor Docs
     runs-on: ubuntu-latest
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests, run_release]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
     steps:
       - name: Execute Release
@@ -206,7 +183,7 @@ jobs:
   send_release_announcements:
     name: Send Release Announcements
     runs-on: ubuntu-latest
-    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build_preview, build_production, run_tests, run_release]
+    needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests, run_release]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
     steps:
       - name: Send X Release Announcement
