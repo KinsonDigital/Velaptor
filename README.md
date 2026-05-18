@@ -29,18 +29,17 @@
 [![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=chat%20on%20discord&logo=discord&logoColor=white)](https://discord.gg/qewu6fNgv7)
 </div>
 
-<h2 style="font-weight:bold;" align="center" >!! NOTICE !!</h2>
+<h2 style="font-weight:bold;" align="center" >NOTICE</h2>
 
-This library is still under development and is not at v1.0.0 yet!! However, all major features are available, so we encourage you to use **Velaptor** and provide feedback. That is what open source is all about. 🥳
+This library is still under development and is not at v1.0.0 yet! However, all major features are available, so we encourage you to use **Velaptor** and provide feedback. That is what open source is all about. 
 
 <br/>
 
-<h2 style="font-weight:bold;" align="center">📖 About Velaptor 📖</h2>
-<h4 style="font-weight:bold;" align="left" >⭐ Don't forget to give us a star! ⭐</h4>
+<h2 style="font-weight:bold;" align="center">About Velaptor</h2>
 
 **Velaptor** is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult, which is one reason why **Velaptor** was developed. It takes care of all of the lower-level, more complicated things for creating a game, like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way, you can concentrate on developing your game or multi-media application.
 
-<h2 style="font-weight:bold;" align="center">✨ Features ✨</h2>
+<h2 style="font-weight:bold;" align="center">Features</h2>
 
 ### **Cross-Platform**
 
@@ -58,7 +57,7 @@ One of the goals of this library is to make it easy to use. We aim to ensure con
 
 Loaded content, such as images and sounds, is cached for better performance. Suppose the same content is attempting to be loaded from its source after it has already been loaded. In that case, it will be used from memory instead of reloading from disk. You can also load content by building your content loader.
 
-<h2 style="font-weight:bold;" align="center">📽️ Feature Demo 📽️</h2>
+<h2 style="font-weight:bold;" align="center">Feature Demo </h2>
 
 <div align="center">
 
@@ -68,19 +67,27 @@ Loaded content, such as images and sounds, is cached for better performance. Sup
 
 <br/>
 
-<h2 style="font-weight:bold;" align="center">📃 Documentation and Resources 📃</h2>
+<h2 style="font-weight:bold;" align="center">Documentation and Resources</h2>
 
-Complete API documentation and tutorials can be found at [docs.velaptor.io](https://docs.velaptor.io).**Velaptor**is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
+Complete API documentation, tutorials, and blogs can be found at the [Velaptor docs](https://docs.velaptor.io) website. **Velaptor** is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
 <br/>
 
-<h2 style="font-weight:bold;" align="center">🙏🏼 Contributing 🙏🏼</h2>
+<h2 style="font-weight:bold;" align="center">Contributing</h2>
 
-Are you interested in contributing? If so, click [here](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to learn how to contribute your time or [here](https://github.com/sponsors/KinsonDigital) if you are interested in contributing your funds via a one-time or recurring donation.
+These projects are fueled by personal passion and are actively maintained with regular updates, improvements as well as a commitment to code quality. As the ecosystem grows, I am looking to transition from a solo effort to a community-backed model. Whether you are interested in [contributing code](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to help build new features or providing [monetary support](https://github.com/sponsors/KinsonDigital) to help cover infrastructure and development time, your involvement makes a positive impact.
 
-![Alt](https://repobeats.axiom.co/api/embed/d74060d1c188027fa74890158952f6630f383b50.svg "Repobeats analytics image")
+We encourage and use early pull requests. Please do not wait until you are finished with your work before creating a PR!  Click [here](https://carlosperez.medium.com/pull-request-first-f6bb667a9b6) to learn how to create an early pull request.
 
-<h2 style="font-weight:bold;" align="center">🔧 Maintainers 🔧</h2>
+<h2 style="font-weight:bold;" align="center">Financial Support</h2>
+
+Maintaining these projects takes a significant amount of time and resources.  If you or your company rely on our software, please consider supporting the work financially.  This helps ensure regular updates, faster bug fixes, and long-term sustainability. 
+
+[Github Sponsors:](https://github.com/sponsors/KinsonDigital)  Support us directly through GitHub 
+
+[Open Collective - Kinson Digital](https://opencollective.com/search?q=kinson+digital) 
+
+<h2 style="font-weight:bold;" align="center">Maintainers</h2>
 
 ![x-logo-dark-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-dark-mode.svg#gh-dark-mode-only)
 ![x-logo-light-mode](https://raw.githubusercontent.com/KinsonDigital/.github/main/Images/x-logo-16x16-light-mode.svg#gh-light-mode-only)
@@ -91,7 +98,7 @@ Are you interested in contributing? If so, click [here](https://github.com/Kinso
 
 <br/>
 
-<h2 style="font-weight:bold;" align="center">🚔 Licensing And Governance 🚔</h2>
+<h2 style="font-weight:bold;" align="center">Licensing And Governance</h2>
 
 
 <div align="center">
