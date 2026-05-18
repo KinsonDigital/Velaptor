@@ -83,14 +83,12 @@ jobs:
         uses: KinsonDigital/Infrastructure/actions/get-version@v17.2.0
         with:
           version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
-          deno-version: "${{ vars.DENO_VERSION }}"
 
       - name: Validate Version
         uses: KinsonDigital/Infrastructure/actions/validate-version@v17.2.0
         with:
           version: "v${{ steps.get-version.outputs.version }}"
           release-type: "${{ inputs.release-type }}"
-          deno-version: "${{ vars.DENO_VERSION }}"
 
 
   # Build with preview/debug build configs
@@ -224,7 +222,6 @@ jobs:
           access-token-secret: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
           consumer-api-key: ${{ secrets.X_CONSUMER_API_KEY }}
           consumer-api-secret: ${{ secrets.X_CONSUMER_API_SECRET }}
-          deno-version: ${{ vars.DENO_VERSION }}
           github-token: ${{ secrets.CICD_TOKEN }}
 
       - name: Send Bluesky Release Announcement
@@ -239,5 +236,4 @@ jobs:
           service: ${{ vars.BLUESKY_SERVICE }}
           identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
           password:  ${{ secrets.BLUESKY_PASSWORD }}
-          deno-version: ${{ vars.DENO_VERSION }}
           github-token: ${{ secrets.CICD_TOKEN }}
