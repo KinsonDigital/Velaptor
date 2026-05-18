@@ -4,28 +4,24 @@
 
 // ReSharper disable once GrammarMistakeInComment
 
-// =============================================================================
-// macOS Native Framework Overview
-// =============================================================================
-//
-// This file uses two low-level Apple frameworks via P/Invoke: IOKit and
-// CoreFoundation. Understanding their roles and relationship is important for
-// reading and maintaining this code.
-//
-// ── CoreFoundation ────────────────────────────────────────────────────────────
-//
-//   Introduced: macOS 10.0 (2001) — one of Apple's oldest and most stable APIs.
-//
-//   Purpose: A pure-C library of fundamental data types and utilities:
-//     • CFString    — immutable Unicode strings; used here to pass property key
-//                     names into IOKit and to read the GPU name back out
-//     • CFRelease() — reference-counted memory management for all CF objects;
-//                     must be called on every CF object we own to avoid leaks
-//
-//   Think of it as Apple's C equivalent of .NET's System namespace primitives.
-//
-//   Stability: Extremely stable. These APIs are essentially unchanged since 2001.
-// =============================================================================
+/*
+    =============================================================================
+    macOS Native Framework Overview
+    =============================================================================
+    This file uses two low-level Apple frameworks via P/Invoke: IOKit and
+    CoreFoundation. Understanding their roles and relationship is important for
+    reading and maintaining this code.
+    ── CoreFoundation ────────────────────────────────────────────────────────────
+      Introduced: macOS 10.0 (2001) — one of Apple's oldest and most stable APIs.
+      Purpose: A pure-C library of fundamental data types and utilities:
+        • CFString    — immutable Unicode strings; used here to pass property key
+                        names into IOKit and to read the GPU name back out
+        • CFRelease() — reference-counted memory management for all CF objects;
+                        must be called on every CF object we own to avoid leaks
+      Think of it as Apple's C equivalent of .NET's System namespace primitives.
+      Stability: Extremely stable. These APIs are essentially unchanged since 2001.
+    =============================================================================
+*/
 
 // ReSharper enable once GrammarMistakeInComment
 namespace Velaptor.NativeInterop.MacOS;

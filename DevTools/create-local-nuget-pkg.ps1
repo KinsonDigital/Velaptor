@@ -12,12 +12,12 @@ param (
     [string]$EnableTelemetry
 )
 
-if ($BuildConfig -eq $null -or $BuildConfig -eq "") {
+if ($null -eq $BuildConfig -or $BuildConfig -eq "") {
     Write-Error "A build configuration parameter must be specified."
     exit 1;
 }
 
-if ($EnableTelemetry -eq $null -or $EnableTelemetry -eq "") {
+if ($null -eq $EnableTelemetry -or $EnableTelemetry -eq "") {
     Write-Error "A enable telemetry parameter must be specified."
     exit 1;
 }

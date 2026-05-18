@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 /// <param name="model">The name of the GPU.</param>
 /// <param name="ram">The RAM of the GPU in GB.</param>
 /// <param name="ramType">The architecture type of the RAM.</param>
-[ExcludeFromCodeCoverage(Justification = "Very minimal properties with no logic.")]///
+[ExcludeFromCodeCoverage(Justification = "Very minimal properties with no logic.")]
 internal readonly struct GpuInfo(
     uint gpuId,
     string model,

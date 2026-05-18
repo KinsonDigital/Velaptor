@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 /// <inheritdoc cref="ITelemetryClient"/>
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
-internal class TelemetryClient : ITelemetryClient, IDisposable
+internal sealed class TelemetryClient : ITelemetryClient, IDisposable
 {
 #if TELEMETRY_DEBUG || TELEMETRY_RELEASE
     private const string Protocol = "http";
@@ -85,7 +85,11 @@ internal class TelemetryClient : ITelemetryClient, IDisposable
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(true);
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>

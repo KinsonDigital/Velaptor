@@ -33,7 +33,7 @@ internal sealed class GpuService : IGpuService
     /// Gets information about the mac-based GPU.
     /// </summary>
     /// <returns>Information about the GPU.</returns>
-    private IReadOnlyCollection<GpuInfo> GetMacGpu()
+    private static IReadOnlyCollection<GpuInfo> GetMacGpu()
     {
         var gpu = MacGpu.GetGpu();
 
