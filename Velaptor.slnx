@@ -66,11 +66,10 @@
     </Folder>
 
     <Folder Name="/SolutionItems/Workflows/">
-        <File Path=".github/workflows/add-new-item-to-project.yml" />
         <File Path=".github/workflows/build-status-check.yml" />
         <File Path=".github/workflows/release.yml" />
+        <File Path=".github/workflows/sdk-status-check.yml" />
         <File Path=".github/workflows/sonar-scan-pr-status-check.yml" />
-        <File Path=".github/workflows/triage-issue.yml" />
         <File Path=".github/workflows/unit-test-status-check.yml" />
     </Folder>
 
