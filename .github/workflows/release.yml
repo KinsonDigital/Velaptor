@@ -45,7 +45,7 @@ jobs:
           $releaseType = $env:RELEASE_TYPE.ToLower();
           $branchName = $env:BRANCH_NAME.Trim();
           $expectedBranchName = $env:RELEASE_TYPE -eq "production" ? $env:PROD_BRANCH : $env:PREV_BRANCH;
-          $errorMsg = "::error::The branch name must be '$branchName' for a $releaseType release.";
+          $errorMsg = "::error::The branch name must be '$expectedBranchName' for a $releaseType release.";
 
           if ($releaseType -eq "preview") {
             if ($branchName -ne $expectedBranchName) {

@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using Hardware.Services;
 using System.Linq;
@@ -41,6 +42,8 @@ internal class TelemetryService : ITelemetryService
     private readonly IFile file;
 #endif
     private readonly IAppService appService;
+    private readonly IConsoleService consoleService;
+
 #if ENABLE_TELEMETRY
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryService"/> class.
@@ -50,22 +53,32 @@ internal class TelemetryService : ITelemetryService
     /// <param name="cpuService">Provides CPU services.</param>
     /// <param name="gpuService">Provides GPU services.</param>
     /// <param name="file">Performs operations with files.</param>
-    public TelemetryService(IAppService appService, ITelemetryClient telemetryClient, ICpuService cpuService, IGpuService gpuService, IFile file)
+    /// <param name="consoleService">Provides console services.</param>
+    public TelemetryService(
+        IAppService appService,
+        ITelemetryClient telemetryClient,
+        ICpuService cpuService,
+        IGpuService gpuService,
+        IFile file,
+        IConsoleService consoleService)
     {
         ArgumentNullException.ThrowIfNull(appService);
         ArgumentNullException.ThrowIfNull(telemetryClient);
         ArgumentNullException.ThrowIfNull(cpuService);
         ArgumentNullException.ThrowIfNull(gpuService);
         ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(consoleService);
+
         this.appService = appService;
         this.telemetryClient = telemetryClient;
         this.cpuService = cpuService;
         this.gpuService = gpuService;
         this.file = file;
+        this.consoleService = consoleService;
 
         // Has the user opted into telemetry?
         // Set by anyone (maintainer or game developer) to suppress telemetry.
-        // Game developers who do not want telemetry tracked should set this env var to 1 or true.
+        // Game developers who do not want telemetry tracked should set this env var to 0 or false.
         if (IsNotOptedIn())
         {
             ShowDisabledTelemetryMsg();
@@ -146,6 +159,16 @@ internal class TelemetryService : ITelemetryService
     public void TrackHardware()
     {
 #if ENABLE_TELEMETRY
+        if (IsNotOptedIn())
+        {
+            return;
+        }
+
+        if (!this.appService.ConsumerIsDebug)
+        {
+            return;
+        }
+
         // Only send telemetry when running in a developer environment.
         // A published game distributed to players will not be running in
         // a game development environment.
@@ -181,35 +204,35 @@ internal class TelemetryService : ITelemetryService
             return;
         }
 
-        Console.WriteLine("""
+        this.consoleService.WriteLine("""
 
-                          Velaptor Telemetry: Enabled
-                          ───────────────────────────────────────────────────────────────────────────────────
-                            You have opted in to telemetry, and Velaptor is collecting
-                            anonymous usage data to help us understand how the framework
-                            is being used to improve future versions.
+                                      Velaptor Telemetry: Enabled
+                                      ───────────────────────────────────────────────────────────────────────────────────
+                                        You have opted in to telemetry, and Velaptor is collecting
+                                        anonymous usage data to help us understand how the framework
+                                        is being used to improve future versions.
 
-                            What is being collected:
-                              • Various game lifecycle events
-                              • Velaptor features
-                              • Velaptor version
-                              • .NET runtime version
-                              • Language
-                              • Operating system
-                              • Operating system architecture
-                              • Hardware specs (CPU, GPU, RAM, etc.)
+                                        What is being collected:
+                                          • Various game lifecycle events
+                                          • Velaptor features
+                                          • Velaptor version
+                                          • .NET runtime version
+                                          • Language
+                                          • Operating system
+                                          • Operating system architecture
+                                          • Hardware specs (CPU, GPU, RAM, etc.)
 
-                            No personal information, project names, or game content is ever collected.
-                            Data is only collected from the developers that use Velaptor.
-                            Data is NOT collected in built/compiled games!
+                                        No personal information, project names, or game content is ever collected.
+                                        Data is only collected from the developers that use Velaptor.
+                                        Data is NOT collected in built/compiled games!
 
-                            Learn more: https://docs.velaptor.io/telemetry
+                                        Learn more: https://docs.velaptor.io/telemetry
 
-                            To opt out, set this environment variable:
-                                 VELAPTOR_OPT_IN_TELEMETRY=0 or VELAPTOR_OPT_IN_TELEMETRY=false 
-                          ───────────────────────────────────────────────────────────────────────────────────
+                                        To opt out, set this environment variable:
+                                             VELAPTOR_OPT_IN_TELEMETRY=0 or VELAPTOR_OPT_IN_TELEMETRY=false 
+                                      ───────────────────────────────────────────────────────────────────────────────────
 
-                          """);
+                                      """);
     }
 
     /// <summary>
@@ -223,38 +246,38 @@ internal class TelemetryService : ITelemetryService
             return;
         }
 
-        Console.WriteLine("""
+        this.consoleService.WriteLine("""
 
-                          Velaptor Telemetry: Disabled
-                          ────────────────────────────────────────────────────────────────────────────────────────────────────────
-                            Help us improve and evolve Velaptor!
+                                      Velaptor Telemetry: Disabled
+                                      ────────────────────────────────────────────────────────────────────────────────────────────────────────
+                                        Help us improve and evolve Velaptor!
 
-                            Velaptor is an open-source community-driven and independent project.
-                            Would you be willing to share anonymous technical telemetry and usage data?
+                                        Velaptor is an open-source community-driven and independent project.
+                                        Would you be willing to share anonymous technical telemetry and usage data?
 
-                            What would be collected:
-                              • Various game lifecycle events
-                              • Velaptor features
-                              • Velaptor version
-                              • .NET runtime version
-                              • Language
-                              • Operating system
-                              • Operating system architecture
-                              • Hardware specs (CPU, GPU, RAM, etc.)
+                                        What would be collected:
+                                          • Various game lifecycle events
+                                          • Velaptor features
+                                          • Velaptor version
+                                          • .NET runtime version
+                                          • Language
+                                          • Operating system
+                                          • Operating system architecture
+                                          • Hardware specs (CPU, GPU, RAM, etc.)
 
-                            Why? It helps us improve Velaptor by understanding what features are used, prioritize optimizations
-                            and catch TDR/lag issues before they hit your players.
+                                        Why? It helps us improve Velaptor by understanding what features are used, prioritize optimizations
+                                        and catch TDR/lag issues before they hit your players.
 
-                            Privacy: No PII, no project names, no tracking. Just usage and hardware spec data.
-                            Transparency: You can audit the telemetry code in the Velaptor.Telemetry namespace.
-                            Ownership: This is 100% Opt-In.
+                                        Privacy: No PII, no project names, no tracking. Just usage and hardware spec data.
+                                        Transparency: You can audit the telemetry code in the Velaptor.Telemetry namespace.
+                                        Ownership: This is 100% Opt-In.
 
-                            To opt in, add the environment variable VELAPTOR_OPT_IN_TELEMETRY=1 or VELAPTOR_OPT_IN_TELEMETRY=true.
+                                        To opt in, add the environment variable VELAPTOR_OPT_IN_TELEMETRY=1 or VELAPTOR_OPT_IN_TELEMETRY=true.
 
-                            Learn more: https://docs.velaptor.io/telemetry
-                          ────────────────────────────────────────────────────────────────────────────────────────────────────────
+                                        Learn more: https://docs.velaptor.io/telemetry
+                                      ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-                          """);
+                                      """);
     }
 
 #if ENABLE_TELEMETRY
@@ -264,7 +287,7 @@ internal class TelemetryService : ITelemetryService
     /// <returns>The hardware JSON data.</returns>
     private string GetHardwareData()
     {
-        var hardwareSpecsFilepath = $"{this.appService.AppDirectory}/{HardwareDataFileName}";
+        var hardwareSpecsFilepath = Path.Join(this.appService.AppDirectory, HardwareDataFileName);
         string jsonData;
 
         if (this.file.Exists(hardwareSpecsFilepath))

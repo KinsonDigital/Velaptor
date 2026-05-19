@@ -7,7 +7,7 @@ namespace Velaptor.Hardware;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// Represents information about a CPU.
+/// Represents information about a GPU.
 /// </summary>
 /// <param name="gpuId">The ID of the GPU.</param>
 /// <param name="model">The name of the GPU.</param>

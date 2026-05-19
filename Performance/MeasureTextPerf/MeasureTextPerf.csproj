@@ -20,11 +20,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|arm64' ">
-      <DefineConstants>TRACE;DEBUG</DefineConstants>
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|x64' ">
-      <DefineConstants>TRACE;DEBUG</DefineConstants>
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|arm64' ">

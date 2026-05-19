@@ -116,7 +116,7 @@ internal class AppService : IAppService
 
             // Fast exit path: Compare the process path to common paths
             // A distributed game will never have these in its path.
-            if (processPaths.Any((p) => processPath.Contains(p, StringComparison.CurrentCultureIgnoreCase)))
+            if (processPaths.Any((p) => processPath.Contains(p, StringComparison.OrdinalIgnoreCase)))
             {
                 return true;
             }
@@ -150,7 +150,7 @@ internal class AppService : IAppService
         }
         catch
         {
-            return true;
+            return false;
         }
 #else
         return false;

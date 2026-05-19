@@ -4,7 +4,6 @@
 
 namespace Velaptor.Telemetry;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
@@ -12,6 +11,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Services;
 
 /// <inheritdoc cref="ITelemetryClient"/>
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
@@ -26,22 +26,35 @@ internal sealed class TelemetryClient : ITelemetryClient
 #endif
     private readonly HttpClient httpClient;
     private readonly string? telemetryKey;
+    private readonly IConsoleService consoleService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryClient"/> class.
     /// </summary>
     /// <param name="client">Makes HTTP requests.</param>
-    public TelemetryClient(HttpClient client)
+    /// <param name="consoleService">Provides console services.</param>
+    public TelemetryClient(HttpClient client, IConsoleService consoleService)
     {
         this.httpClient = client;
+        this.consoleService = consoleService;
         this.telemetryKey = Assembly.GetExecutingAssembly()
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(a => a.Key == "TelemetryKey")?.Value;
+
+        if (string.IsNullOrEmpty(this.telemetryKey))
+        {
+            this.consoleService.WriteLine("Telemetry key is missing. Telemetry data will not be sent.");
+        }
     }
 
     /// <inheritdoc/>
     public async Task TrackEvent(string jsonPayload)
     {
+        if (string.IsNullOrEmpty(this.telemetryKey))
+        {
+            return;
+        }
+
         try
         {
             const string endpoint = "usage";
@@ -54,7 +67,7 @@ internal sealed class TelemetryClient : ITelemetryClient
             {
                 var responseText = await response.Content.ReadAsStringAsync();
 
-                Console.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
+                this.consoleService.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
             }
         }
         catch
@@ -66,6 +79,11 @@ internal sealed class TelemetryClient : ITelemetryClient
     /// <inheritdoc/>
     public async Task TrackHardware(string jsonPayload)
     {
+        if (string.IsNullOrEmpty(this.telemetryKey))
+        {
+            return;
+        }
+
         try
         {
             const string endpoint = "hardware";
@@ -78,7 +96,7 @@ internal sealed class TelemetryClient : ITelemetryClient
             {
                 var responseText = await response.Content.ReadAsStringAsync();
 
-                Console.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
+                this.consoleService.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
             }
         }
         catch

@@ -20,7 +20,7 @@ internal class SystemRamService
     /// <summary>
     /// Initializes a new instance of the <see cref="SystemRamService"/> class.
     /// </summary>
-    /// <param name="platform">Provides information about the current platform.</param>///
+    /// <param name="platform">Provides information about the current platform.</param>
     public SystemRamService(IPlatform platform)
     {
         ArgumentNullException.ThrowIfNull(platform);
