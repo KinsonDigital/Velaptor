@@ -15,29 +15,28 @@ using System.Threading.Tasks;
 
 /// <inheritdoc cref="ITelemetryClient"/>
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
-internal sealed class TelemetryClient : ITelemetryClient, IDisposable
+internal sealed class TelemetryClient : ITelemetryClient
 {
-#if TELEMETRY_DEBUG || TELEMETRY_RELEASE
+#if ENABLE_TELEMETRY && DEBUG
     private const string Protocol = "http";
     private const string ServerHost = "localhost:8500";
 #else
     private const string Protocol = "https";
     private const string ServerHost = "kinson-digital.kinsondigital.deno.net";
 #endif
-    private static readonly HttpClient HttpClient = new () { Timeout = TimeSpan.FromSeconds(5) };
-    private bool isDisposed;
+    private readonly HttpClient httpClient;
+    private readonly string? telemetryKey;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TelemetryClient"/> class.
     /// </summary>
-    public TelemetryClient()
+    /// <param name="client">Makes HTTP requests.</param>
+    public TelemetryClient(HttpClient client)
     {
-        var telemetryKey = Assembly.GetExecutingAssembly()
+        this.httpClient = client;
+        this.telemetryKey = Assembly.GetExecutingAssembly()
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(a => a.Key == "TelemetryKey")?.Value;
-
-        HttpClient.DefaultRequestHeaders.Add("Api-Key", telemetryKey);
-        HttpClient.DefaultRequestHeaders.Add("Origin", $"{Protocol}://{ServerHost}");
     }
 
     /// <inheritdoc/>
@@ -46,14 +45,16 @@ internal sealed class TelemetryClient : ITelemetryClient, IDisposable
         try
         {
             const string endpoint = "usage";
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{Protocol}://{ServerHost}/{endpoint}");
+            SetHeadersAndContent(request, jsonPayload);
 
-            using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await HttpClient.PostAsync($"{Protocol}://{ServerHost}/{endpoint}", content);
+            using var response = await this.httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                await response.Content.ReadAsStringAsync();
+                var responseText = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
             }
         }
         catch
@@ -68,14 +69,16 @@ internal sealed class TelemetryClient : ITelemetryClient, IDisposable
         try
         {
             const string endpoint = "hardware";
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{Protocol}://{ServerHost}/{endpoint}");
+            SetHeadersAndContent(request, jsonPayload);
 
-            using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await HttpClient.PostAsync($"{Protocol}://{ServerHost}/{endpoint}", content);
+            using var response = await this.httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                await response.Content.ReadAsStringAsync();
+                var responseText = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"Failed to send telemetry data. Status code: {response.StatusCode}, Response: {responseText}");
             }
         }
         catch
@@ -84,29 +87,15 @@ internal sealed class TelemetryClient : ITelemetryClient, IDisposable
         }
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
     /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// Sets the headers and content of the given <paramref name="request"/>.
     /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    private void Dispose(bool disposing)
+    /// <param name="request">The request.</param>
+    /// <param name="jsonPayload">The JSON payload to send with the request.</param>
+    private void SetHeadersAndContent(HttpRequestMessage request, string jsonPayload)
     {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            HttpClient.Dispose();
-        }
-
-        this.isDisposed = true;
+        request.Headers.Add("Api-Key", this.telemetryKey);
+        request.Headers.Add("Origin", $"{Protocol}://{ServerHost}");
+        request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
     }
 }

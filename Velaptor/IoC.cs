@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Net.Http;
 using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -126,6 +127,7 @@ internal static class IoC
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
+        IoCContainer.RegisterSingleton(() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
 
         isInitialized = true;
     }
