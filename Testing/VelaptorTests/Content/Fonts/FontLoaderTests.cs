@@ -25,7 +25,6 @@ using Velaptor.Services;
 using Xunit;
 using System.Runtime.InteropServices;
 
-
 /// <summary>
 /// Tests the <see cref="FontLoader"/> class.
 /// </summary>

@@ -29,15 +29,15 @@
         "Tech-Debt": "Tech Debt 📉"
     },
     "issueCategoryLabelMappings": {
-        "Breaking Changes 🧨": "🧨breaking-changes",
-        "Dependency Updates 📦": "📦dependency-update",
-        "Performance 🏎️": "🏎️performance"
+        "breaking-changes": "Breaking Changes 🧨",
+        "dependency-update": "Dependency Updates 📦",
+         "performance": "Performance 🏎️"
     },
     "prCategoryLabelMappings": {
-        "Dependency Updates 📦": "📦dependency-update"
+        "dependency-update": "Dependency Updates 📦"
     },
     "ignoreLabels": [
-        "🚀preview-release"
+        "preview-release"
     ],
     "wordReplacements": {
         "chore(deps): ": "",

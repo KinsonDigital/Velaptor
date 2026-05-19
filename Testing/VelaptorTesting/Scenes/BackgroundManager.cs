@@ -4,7 +4,6 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
@@ -54,7 +53,7 @@ public class BackgroundManager : IDrawable
     {
         if (this.background is null)
         {
-            throw new NullReferenceException("The background texture cannot be null");
+            return;
         }
 
         this.contentManager.Unload(this.background);

@@ -7,8 +7,8 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <Configurations>Release;Debug</Configurations>
-        <Platforms>x64</Platforms>
+        <Configurations>Release;Debug;Debug-Console;Release-Console;Telemetry-Debug;Telemetry-Release</Configurations>
+        <Platforms>x64;arm64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

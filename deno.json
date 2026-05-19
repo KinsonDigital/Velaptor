@@ -1,7 +1,7 @@
 {
     "tasks": {
-        "create-pr": "deno run -A jsr:@kinsondigital/sprocket@2.2.0 run-job ./DevTools/sprocket-config.ts --job-name Create-PR",
-        "prep-prev-release": "deno run -A jsr:@kinsondigital/sprocket@2.2.0 run-job ./DevTools/sprocket-config.ts --job-name Prep-Prev-Release"
+        "create-pr": "deno run -A jsr:@kinsondigital/sprocket@3.0.0 run-job ./DevTools/sprocket-config.ts --job-name Create-PR",
+        "prep-prev-release": "deno run -A jsr:@kinsondigital/sprocket@3.0.0 run-job ./DevTools/sprocket-config.ts --job-name Prep-Prev-Release"
     },
     "lint": {
         "include": [

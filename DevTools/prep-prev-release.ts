@@ -1,5 +1,5 @@
-import { existsSync } from "jsr:@std/fs@1.0.19";
-import { Input } from "jsr:@cliffy/prompt@1.0.0-rc.8";
+import { existsSync } from "jsr:@std/fs@1.0.23";
+import { Input } from "jsr:@cliffy/prompt@1.0.1";
 import {
 	branchExistsLocally,
 	branchExistsRemotely,
@@ -11,17 +11,16 @@ import {
 	pushToRemote,
 	stageFiles,
 	uncommittedChangesExist,
-} from "jsr:@kinsondigital/sprocket@2.1.0/git";
+} from "jsr:@kinsondigital/sprocket@3.0.0/git";
 import {
 	LabelClient,
 	MilestoneClient,
 	ProjectClient,
 	PullRequestClient,
-} from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15";
-import { IssueOrPRRequestData } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.15/core";
-import { printGray } from "jsr:@kinsondigital/sprocket@2.1.0/console";
-import { ReleaseNotesGenerator } from "https://jsr.io/@kinsondigital/sprocket/2.2.0/src/release-notes-generator.ts";
-import { GeneratorSettings } from "https://jsr.io/@kinsondigital/sprocket/2.2.0/src/core/releases.ts";
+} from "jsr:@kinsondigital/kd-clients@1.0.0-preview.16";
+import { IssueOrPRRequestData } from "jsr:@kinsondigital/kd-clients@1.0.0-preview.16/core";
+import { printGray } from "jsr:@kinsondigital/sprocket@3.0.0/console";
+import { GeneratorSettings, ReleaseNotesGenerator } from "jsr:@kinsondigital/sprocket@3.0.0/releases";
 
 const token = (Deno.env.get("CICD_TOKEN") ?? "").trim();
 
@@ -51,7 +50,7 @@ if (fileVersionMatch === null) {
 
 const ownerName = "KinsonDigital";
 const repoName = "Velaptor";
-const prevLabel = "🚀preview-release";
+const prevLabel = "preview-release";
 const baseBranch = "preview";
 const releaseType = "Preview";
 

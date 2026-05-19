@@ -2,12 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>12.0</LangVersion>
-    <Configurations>Release;Debug-Console;Debug;Release-Console</Configurations>
+    <Configurations>Release;Debug-Console;Debug;Release-Console;Telemetry-Debug;Telemetry-Release</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
