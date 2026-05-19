@@ -77,25 +77,25 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|arm64' ">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|x64' ">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|arm64' ">
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|x64' ">
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|arm64' ">
-    <DefineConstants>TRACE;ENABLE_TELEMETRY;DEBUG</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;ENABLE_TELEMETRY;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|arm64' ">
-    <DefineConstants>TRACE;ENABLE_TELEMETRY;RELEASE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;ENABLE_TELEMETRY;RELEASE</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
