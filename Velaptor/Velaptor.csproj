@@ -118,6 +118,7 @@
     <None Include="..\Images\velaptor-logo.png" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Remove="Velaptor.csproj.lscache" />
   </ItemGroup>
 
   <ItemGroup>
