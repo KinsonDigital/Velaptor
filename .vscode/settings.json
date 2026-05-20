@@ -92,6 +92,7 @@
 		"**/Thumbs.db": true,
 		"**/.idea": true,
 		"*.sln.DotSettings.user": true,
+		"**/*.lscache": true
 	},
 	"files.eol": "\n",
 	"window.title": "🦖Velaptor",
