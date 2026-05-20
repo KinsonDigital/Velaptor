@@ -24,7 +24,7 @@ internal sealed class EventLoggerService : IEventLoggerService
     /// </summary>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="file">Performs operations with files.</param>
-    /// <param name="consoleService">Writes to the console.</param>
+    /// <param name="consoleService">Provides console services.</param>
     /// <param name="dateTimeService">Gets the current date and time.</param>
     /// <param name="appSettingsService">Provides access to application settings.</param>
     public EventLoggerService(

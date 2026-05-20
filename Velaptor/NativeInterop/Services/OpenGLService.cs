@@ -222,22 +222,24 @@ internal sealed class OpenGLService : IOpenGLService
     /// <inheritdoc/>
     public void LabelVertexArray(uint vertexArrayId, string label)
     {
-#if DEBUG || DEBUG_CONSOLE
+#if RELEASE
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, 0, EMPTY_STRING);
+#else
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
         var newLabel = $"{label} VAO";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
-#else
-        this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, 0, EMPTY_STRING);
 #endif
     }
 
     /// <inheritdoc/>
     public void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType)
     {
-#if DEBUG || DEBUG_CONSOLE
+#if RELEASE
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, 0, EMPTY_STRING);
+#else
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
@@ -251,22 +253,20 @@ internal sealed class OpenGLService : IOpenGLService
         var newLabel = $"{label} {bufferTypeAcronym}";
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
-#else
-        this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, 0, EMPTY_STRING);
 #endif
     }
 
     /// <inheritdoc/>
     public void LabelTexture(uint textureId, string label)
     {
-#if DEBUG || DEBUG_CONSOLE
+#if RELEASE
+        this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, 0, EMPTY_STRING);
+#else
         label = string.IsNullOrEmpty(label)
             ? "NOT SET"
             : label;
 
         this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
-#else
-        this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, 0, EMPTY_STRING);
 #endif
     }
 

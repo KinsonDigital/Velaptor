@@ -26,30 +26,37 @@ on:
         default: false
         type: boolean
 
+# Set the permissions to an empty object to prevent the workflow from having any permissions by default.
+permissions: {}
+
 
 jobs:
   validate_branch:
     name: Validate Branch
     runs-on: ubuntu-latest
     steps:
-      - name: Check Preview Branch
-        if: ${{ inputs.release-type == 'Preview' }}
+      - name: Check Branch
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          PROD_BRANCH: ${{ vars.PROD_BRANCH }}
+          PREV_BRANCH: ${{ vars.PREV_BRANCH }}
+          RELEASE_TYPE: ${{ inputs.release-type }}
         run: |
-          $branchName = "${{ github.ref_name }}".Trim();
+          $releaseType = $env:RELEASE_TYPE.ToLower();
+          $branchName = $env:BRANCH_NAME.Trim();
+          $expectedBranchName = $env:RELEASE_TYPE -eq "production" ? $env:PROD_BRANCH : $env:PREV_BRANCH;
+          $errorMsg = "::error::The branch name must be '$expectedBranchName' for a $releaseType release.";
 
-          if ($branchName -ne "${{ vars.PREV_BRANCH }}") {
-            Write-Error "::error::The branch name must be 'release' for a preview release.";
-            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
-          }
-
-      - name: Check Production Branch
-        if: ${{ inputs.release-type == 'Production' }}
-        run: |
-          $branchName = "${{ github.ref_name }}".Trim();
-
-          if ($branchName -ne "${{ vars.PROD_BRANCH }}") {
-            Write-Host "::error::The branch name must be 'main' for a production release.";
-            exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+          if ($releaseType -eq "preview") {
+            if ($branchName -ne $expectedBranchName) {
+              Write-Host $errorMsg;
+              exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+            }
+          } elseif ($releaseType -eq "production") {
+            if ($branchName -ne $expectedBranchName) {
+              Write-Host $errorMsg;
+              exit "${{ inputs.dry-run }}" -eq "true" ? 0 : 1;
+            }
           }
 
 
@@ -74,40 +81,37 @@ jobs:
     steps:
       - name: Get Version
         id: get-version
-        uses: KinsonDigital/Infrastructure/actions/get-version@v17.1.0
+        uses: KinsonDigital/Infrastructure/actions/get-version@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
         with:
           version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
-          deno-version: "${{ vars.DENO_VERSION }}"
 
       - name: Validate Version
-        uses: KinsonDigital/Infrastructure/actions/validate-version@v17.1.0
+        uses: KinsonDigital/Infrastructure/actions/validate-version@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
         with:
           version: "v${{ steps.get-version.outputs.version }}"
           release-type: "${{ inputs.release-type }}"
-          deno-version: "${{ vars.DENO_VERSION }}"
 
 
+  # Build with preview/debug build configs
   build:
-    name: Build Velaptor Status Check
-    needs: validate_branch
+    name: Build Velaptor
+    needs: [validate_branch, get_and_validate_version]
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: "windows-latest"
-          - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+        build_config: [Debug, Telemetry-Debug, Release, Telemetry-Release]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
         with:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
       - name: Run Build
-        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
 
 
   run_tests:
@@ -119,13 +123,13 @@ jobs:
         include:
           - platform: "windows-latest"
           - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+          - platform: "macos-latest" # ARM-based (M1 and above).
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
         with:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
@@ -138,20 +142,22 @@ jobs:
   run_release:
     name: Performing ${{ inputs.release-type }} Release of ${{ vars.PROJECT_NAME }} (${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }})
     needs: [validate_branch, get_and_validate_version, determine_release_notes_path, build, run_tests]
-    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@v17.1.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
     with:
       project-name: "${{ vars.PROJECT_NAME}}"
       release-type: "${{ inputs.release-type }}"
       net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
-      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
+      release-notes-file-path: "${{ needs.determine_release_notes_path.outputs.release-notes-dir-path }}/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
       build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
       build-project: false
       dry-run: ${{ inputs.dry-run }}
       transpile-readme: true
       deno-version: "${{ vars.DENO_VERSION }}"
+      telemetry-enabled: true
     secrets:
-      cicd-pat: "${{ secrets.CICD_TOKEN }}"
-      nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
+        cicd-pat: "${{ secrets.CICD_TOKEN }}"
+        nuget-org-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
+        telemetry-key: "${{ secrets.TELEMETRY_KEY }}"
 
 
   # Execute the full Velaptor docs release workflow after the library release is done.
@@ -163,15 +169,16 @@ jobs:
     steps:
       - name: Execute Release
         env:
+          VERSION: "v${{ needs.get_and_validate_version.outputs.version }}"
           GH_TOKEN: ${{ secrets.CICD_TOKEN }}
         run: |
           $workflowName = "${{ vars.VELAPTOR_DOCS_FULL_RELEASE_WORKFLOW_NAME }}";
           $orgName = "${{ vars.ORGANIZATION_NAME }}";
           $repoName = "${{ vars.VELAPTOR_DOCS_REPO_NAME }}";
-          $version = "v${{ needs.get_and_validate_version.outputs.version }}";
+          $docSiteReleaseBranch = "${{ vars.DOC_SITE_RELEASE_BRANCH }}";
+          $version = $env:VERSION;
 
-          # TODO: Need to replace the name of the branch
-          gh workflow run $workflowName -R "$orgName/$repoName" --ref "main" --field "api-version=$version" --field "executed-externally=true";
+          gh workflow run $workflowName -R "$orgName/$repoName" --ref "$docSiteReleaseBranch" --field "api-version=$version" --field "executed-externally=true";
 
 
   send_release_announcements:
@@ -181,7 +188,7 @@ jobs:
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false }}
     steps:
       - name: Send X Release Announcement
-        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@v17.1.0
+        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
         with:
           repo-owner: ${{ vars.ORGANIZATION_NAME }}
           project-name: ${{ vars.PROJECT_NAME }}
@@ -193,11 +200,10 @@ jobs:
           access-token-secret: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
           consumer-api-key: ${{ secrets.X_CONSUMER_API_KEY }}
           consumer-api-secret: ${{ secrets.X_CONSUMER_API_SECRET }}
-          deno-version: ${{ vars.DENO_VERSION }}
           github-token: ${{ secrets.CICD_TOKEN }}
 
       - name: Send Bluesky Release Announcement
-        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@v17.1.0
+        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@f141c7680f051d4c2b03c4672b8fddbf7bda4a5e #v17.2.0
         with:
           repo-owner: ${{ vars.ORGANIZATION_NAME }}
           project-name: ${{ vars.PROJECT_NAME }}
@@ -208,5 +214,4 @@ jobs:
           service: ${{ vars.BLUESKY_SERVICE }}
           identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
           password:  ${{ secrets.BLUESKY_PASSWORD }}
-          deno-version: ${{ vars.DENO_VERSION }}
           github-token: ${{ secrets.CICD_TOKEN }}

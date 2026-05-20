@@ -30,6 +30,7 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using Telemetry;
 using Velaptor.Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
@@ -44,7 +45,6 @@ using VelaptorWindowBorder = WindowBorder;
 internal sealed class GLWindow : VelaptorIWindow
 {
     private const int WindowPadding = 10;
-    private readonly IAppService appService;
     private readonly SilkIWindow silkWindow;
     private readonly INativeInputFactory nativeInputFactory;
     private readonly IGLInvoker gl;
@@ -76,7 +76,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
-    /// <param name="appService">Provides application services.</param>
+    /// <param name="telemetryService">Provides telemetry services.</param>
     /// <param name="silkWindow">The <see cref="Silk"/> specific <see cref="Silk.NET.Windowing.IWindow"/> object.</param>
     /// <param name="nativeInputFactory">Creates a native input object.</param>
     /// <param name="glInvoker">Invokes OpenGL functions.</param>
@@ -93,7 +93,7 @@ internal sealed class GLWindow : VelaptorIWindow
     public GLWindow(
         uint width,
         uint height,
-        IAppService appService,
+        ITelemetryService telemetryService,
         SilkIWindow silkWindow,
         INativeInputFactory nativeInputFactory,
         IGLInvoker glInvoker,
@@ -108,7 +108,7 @@ internal sealed class GLWindow : VelaptorIWindow
         ITimerService timerService,
         IOpenGLService openGLService)
     {
-        ArgumentNullException.ThrowIfNull(appService);
+        ArgumentNullException.ThrowIfNull(telemetryService);
         ArgumentNullException.ThrowIfNull(silkWindow);
         ArgumentNullException.ThrowIfNull(nativeInputFactory);
         ArgumentNullException.ThrowIfNull(glInvoker);
@@ -123,7 +123,6 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(timerService);
         ArgumentNullException.ThrowIfNull(openGLService);
 
-        this.appService = appService;
         this.silkWindow = silkWindow;
         this.nativeInputFactory = nativeInputFactory;
         this.gl = glInvoker;
@@ -162,6 +161,9 @@ internal sealed class GLWindow : VelaptorIWindow
             PullNotifications.GetWindowSizeId,
             () => new WindowSizeData { Width = Width, Height = Height },
             () => this.pullWinSizeUnsubscriber?.Dispose());
+
+        telemetryService.TrackAppStart();
+        telemetryService.TrackHardware();
     }
 
     /// <inheritdoc/>
@@ -422,8 +424,6 @@ internal sealed class GLWindow : VelaptorIWindow
 
         // Manually invoke the resize to update the rest of the system, such as the viewport.
         GLWindow_Resize(new Vector2D<int>((int)width, (int)height));
-
-        this.appService.Init();
     }
 
     /// <summary>
