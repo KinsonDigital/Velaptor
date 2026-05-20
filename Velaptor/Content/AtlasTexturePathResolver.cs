@@ -18,7 +18,6 @@ internal sealed class AtlasTexturePathResolver : TexturePathResolver
     /// <param name="appService">Provides application services.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
-    /// <param name="platform">Provides information about the current platform.</param>
-    public AtlasTexturePathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
-        : base(appService, file, path, platform) => ContentDirectoryName = "Atlas";
+    public AtlasTexturePathResolver(IAppService appService, IFile file, IPath path)
+        : base(appService, file, path) => ContentDirectoryName = "Atlas";
 }

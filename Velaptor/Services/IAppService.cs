@@ -5,7 +5,7 @@
 namespace Velaptor.Services;
 
 /// <summary>
-/// Provides application wide services.
+/// Provides application-wide services.
 /// </summary>
 internal interface IAppService
 {
@@ -15,7 +15,22 @@ internal interface IAppService
     string AppDirectory { get; }
 
     /// <summary>
-    /// Starts the application initialization process.
+    /// Gets a value indicating whether the application is a debug build.
     /// </summary>
-    void Init();
+    bool IsDebug { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the consumer of the Velaptor library is a debug build.
+    /// </summary>
+    bool ConsumerIsDebug { get; }
+
+    /// <summary>
+    /// Gets the version of the application.
+    /// </summary>
+    string Version { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the application is running in a development environment.
+    /// </summary>
+    bool InDevelopmentEnvironment { get; }
 }

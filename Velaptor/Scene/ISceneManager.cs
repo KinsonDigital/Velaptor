@@ -43,7 +43,7 @@ public interface ISceneManager : IUpdatable, IDrawable, IDisposable
     int CurrentSceneIndex { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether navigation wrapping is used when navigating past the first or list scenes.
+    /// Gets or sets a value indicating whether navigation wrapping is used when navigating past the first or last scenes.
     /// </summary>
     bool UsesNavigationWrapping { get; set; }
 

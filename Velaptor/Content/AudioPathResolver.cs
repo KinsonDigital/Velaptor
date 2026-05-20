@@ -36,8 +36,11 @@ internal sealed class AudioPathResolver : ContentPathResolver
     /// </list>
     /// </exception>
     public AudioPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
-        : base(appService, file, path, platform)
+        : base(appService, file, path)
     {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(platform);
+
         this.path = path;
         this.platform = platform;
         ContentDirectoryName = "Audio";

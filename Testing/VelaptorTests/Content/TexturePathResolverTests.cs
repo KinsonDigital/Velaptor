@@ -7,10 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using Shouldly;
 using NSubstitute;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;
@@ -24,16 +22,12 @@ public class TexturePathResolverTests
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
-    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TexturePathResolverTests"/> class.
     /// </summary>
     public TexturePathResolverTests()
     {
-        this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
-
         this.mockAppService = Substitute.For<IAppService>();
         this.mockAppService.AppDirectory.Returns("AppHome");
 
@@ -43,8 +37,6 @@ public class TexturePathResolverTests
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.DirectorySeparatorChar.Returns(Path.DirectorySeparatorChar);
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
-
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Create("WINDOWS"));
     }
 
 #pragma warning disable SA1514
@@ -57,10 +49,10 @@ public class TexturePathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Graphics", $"test-content{Extension}") },
-            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Graphics", $"TEST-CONTENT{Extension}") },
-            { string.Empty, "test-content", Path.Join("AppHome", "Content", "Graphics", $"test-content{Extension}") },
-            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Graphics", "sub-dir", $"test-content{Extension}") },
+            { string.Empty, $"test-content{Extension}", $"AppHome/Content/Graphics/test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"AppHome/Content/Graphics/TEST-CONTENT{Extension}" },
+            { string.Empty, "test-content", $"AppHome/Content/Graphics/test-content{Extension}" },
+            { "sub-dir", $"test-content{Extension}", $"AppHome/Content/Graphics/sub-dir/test-content{Extension}" },
         };
     }
     #endregion
@@ -71,7 +63,7 @@ public class TexturePathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var resolver = new TexturePathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+        var resolver = new TexturePathResolver(this.mockAppService, this.mockFile, this.mockPath);
 
         // Act
         var actual = resolver.ContentDirectoryName;
@@ -122,7 +114,7 @@ public class TexturePathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
+        var actual = sut.ResolveFilePath(string.IsNullOrEmpty(subDir) ? contentName : $"{subDir}/{contentName}");
 
         // Assert
         actual.ShouldBe(expected);
@@ -134,5 +126,5 @@ public class TexturePathResolverTests
     /// Creates a new instance of <see cref="TexturePathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TexturePathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+    private TexturePathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
 }

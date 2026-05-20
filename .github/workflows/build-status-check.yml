@@ -18,10 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: "windows-latest"
-          - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+        build_config: [Debug, Telemetry-Debug]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -32,7 +30,7 @@ jobs:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
       - name: Run Build
-        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c Debug;
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
 
 
   build_velaptor_testing:
@@ -40,10 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: "windows-latest"
-          - platform: "ubuntu-latest"
-          - platform: "macos-latest" # for Arm based macs (M1 and above).
+        platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6

@@ -38,7 +38,7 @@ internal sealed class TextureLoader : ITextureLoader
     /// </summary>
     /// <param name="textureFactory">Creates textures.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    /// <param name="imageService">Provides image related services.</param>
+    /// <param name="imageService">Provides image-related services.</param>
     /// <param name="texturePathResolver">Resolves paths to texture content.</param>
     /// <param name="directory">Performs operations with directories.</param>
     /// <param name="path">Processes directory and file paths.</param>

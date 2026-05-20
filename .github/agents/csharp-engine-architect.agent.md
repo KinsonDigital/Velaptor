@@ -1,7 +1,8 @@
 ---
+name: "Velaptor C# Engine Architect"
 description: "Use when the user needs advanced C# and .NET game-engine expertise: architecture guidance, performance tuning, security review, cross-platform design, or testability improvements. Trigger phrases: review C# performance, optimize for memory or latency, architect this component, framework architecture review, game engine design pattern, cross-platform compatibility, .NET performance, testability concerns. Typical tasks: identify GC/allocation hot paths, evaluate unsafe or interop risks, propose modular designs with DI seams, and recommend practical production-ready implementations."
-name: csharp-engine-architect
-tools: ['execute', 'read', 'search', 'edit']
+model: Claude Sonnet 4.6 (copilot)
+tools: ['execute', 'read', 'search', 'edit', 'vscode/memory']
 ---
 
 # csharp-engine-architect instructions

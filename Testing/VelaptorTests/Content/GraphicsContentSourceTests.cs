@@ -7,7 +7,6 @@ namespace VelaptorTests.Content;
 using System.IO.Abstractions;
 using Shouldly;
 using NSubstitute;
-using Velaptor;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;
@@ -25,10 +24,9 @@ public class GraphicsContentSourceTests
         var mockAppService = Substitute.For<IAppService>();
         var mockFile = Substitute.For<IFile>();
         var mockPath = Substitute.For<IPath>();
-        var mockPlatform = Substitute.For<IPlatform>();
 
         // Act
-        var source = new TexturePathResolver(mockAppService, mockFile, mockPath, mockPlatform);
+        var source = new TexturePathResolver(mockAppService, mockFile, mockPath);
         var actual = source.ContentDirectoryName;
 
         // Assert

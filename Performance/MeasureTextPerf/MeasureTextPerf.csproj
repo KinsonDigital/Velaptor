@@ -6,9 +6,41 @@
         <LangVersion>12.0</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Configurations>Debug;Release</Configurations>
-        <Platforms>x64</Platforms>
+        <Configurations>Debug;Release;Debug-Console;Release-Console;Telemetry-Debug;Telemetry-Release</Configurations>
+        <Platforms>x64;arm64</Platforms>
         <NoWarn>CA1852</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|arm64' ">
+      <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|x64' ">
+      <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|arm64' ">
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|x64' ">
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|arm64' ">
+      <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|x64' ">
+      <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|arm64' ">
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|x64' ">
+      <DefineConstants>TRACE;RELEASE</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>

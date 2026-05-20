@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>12.0</LangVersion>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyTitle>ScorpionCoreTests</AssemblyTitle>
@@ -14,7 +14,7 @@
     <Company>Kinson Digital</Company>
     <AssemblyName>VelaptorTests</AssemblyName>
     <RootNamespace>VelaptorTests</RootNamespace>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;Debug-Console;Release-Console;Telemetry-Debug;Telemetry-Release</Configurations>
     <OutputType>Library</OutputType>
     <!--
         Warning Suppression Reasons:
@@ -130,7 +130,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.201">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.202">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -146,7 +146,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="22.1.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="22.1.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>

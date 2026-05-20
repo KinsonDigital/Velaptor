@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Net.Http;
 using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -18,6 +19,7 @@ using Content.Fonts.Services;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
+using Hardware.Services;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
@@ -33,6 +35,7 @@ using Services;
 using Silk.NET.OpenGL;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
+using Telemetry;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -46,7 +49,7 @@ internal static class IoC
     private static bool isInitialized;
 
     /// <summary>
-    /// Gets the inversion of control container used to get instances of objects.
+    /// Gets the (inversion of control) container used to get instances of objects.
     /// </summary>
     public static Container Container
     {
@@ -112,6 +115,7 @@ internal static class IoC
 
         SetupReactables();
 
+        IoCContainer.Register<ITelemetryClient, TelemetryClient>(Lifestyle.Singleton);
         IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);
@@ -123,6 +127,7 @@ internal static class IoC
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
         IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
+        IoCContainer.RegisterSingleton(() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
 
         isInitialized = true;
     }
@@ -267,6 +272,9 @@ internal static class IoC
     private static void SetupServices()
     {
         IoCContainer.Register<IAppService, AppService>(Lifestyle.Singleton);
+        IoCContainer.Register<IGpuService, GpuService>(Lifestyle.Singleton);
+        IoCContainer.Register<ICpuService, CpuService>(Lifestyle.Singleton);
+        IoCContainer.Register<ITelemetryService, TelemetryService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleService, ConsoleService>(Lifestyle.Singleton);
         IoCContainer.Register<IDateTimeService, DateTimeService>(Lifestyle.Singleton);
         IoCContainer.Register<IConsoleLoggerService, ConsoleLoggerService>(Lifestyle.Singleton);

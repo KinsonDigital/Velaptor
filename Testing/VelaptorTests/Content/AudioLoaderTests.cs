@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -25,7 +26,7 @@ using Xunit;
 /// Tests the <see cref="AudioLoader"/> class.
 /// </summary>
 [SuppressMessage("ReSharper", "ConvertToLocalFunction", Justification = "Improves readability")]
-[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Improves readability")]
+[SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514: Element documentation header requires it be preceded by a blank line", Justification = "Improves readability")]
 public class AudioLoaderTests
 {
     private const string OggFileExtension = ".ogg";
@@ -33,12 +34,12 @@ public class AudioLoaderTests
     private const string AudioContentName = "test-audio";
     private const string OggFileName = $"{AudioContentName}{OggFileExtension}";
     private const string Mp3FileName = $"{AudioContentName}{Mp3FileExtension}";
-    private const string BaseDirPath = "C:";
     private const uint AudioId = 123;
-    private static readonly string ContentDirPath = Path.Combine(BaseDirPath, "Content");
-    private static readonly string AudioDirPath = Path.Combine(ContentDirPath, "Audio");
-    private static readonly string OggFilePath = Path.Combine(AudioDirPath, OggFileName);
-    private static readonly string Mp3FilePath = Path.Combine(AudioDirPath, Mp3FileName);
+    private static readonly string BaseDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:" : "/";
+    private static readonly string ContentDirPath = $"{BaseDirPath}/Content";
+    private static readonly string AudioDirPath = $"{ContentDirPath}/Audio";
+    private static readonly string OggFilePath = $"{AudioDirPath}/{OggFileName}";
+    private static readonly string Mp3FilePath = $"{AudioDirPath}/{Mp3FileName}";
     private readonly IAudioFactory mockAudioFactory;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IContentPathResolver mockAudioPathResolver;
@@ -351,18 +352,16 @@ public class AudioLoaderTests
     public void Load_WithInvalidContentFileNameExtension_ThrowException()
     {
         // Arrange
-        const string oggFilePath = "C:/Content/Audio/test-audio.txt";
-
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(".txt");
 
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Load(oggFilePath, AudioBuffer.Full);
+        var act = () => sut.Load(OggFilePath, AudioBuffer.Full);
 
         // Assert
         var exception = act.ShouldThrow<LoadAudioException>();
-        exception.Message.ShouldBe($"The file '{oggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
+        exception.Message.ShouldBe($"The file '{OggFilePath}' must be an audio file with the extension '{OggFileExtension}' or '{Mp3FileExtension}'.");
     }
 
     [Fact]

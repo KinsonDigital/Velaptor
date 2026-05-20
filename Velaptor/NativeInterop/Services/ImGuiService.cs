@@ -28,6 +28,9 @@ internal sealed class ImGuiService : IImGuiService
     /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
     public ImGuiService(IImGuiInvoker imGuiInvoker, IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService)
     {
+        ArgumentNullException.ThrowIfNull(imGuiInvoker);
+        ArgumentNullException.ThrowIfNull(embeddedFontResourceService);
+
         this.imGuiInvoker = imGuiInvoker;
         this.embeddedFontResourceService = embeddedFontResourceService;
     }

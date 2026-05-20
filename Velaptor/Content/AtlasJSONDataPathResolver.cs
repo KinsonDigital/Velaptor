@@ -22,18 +22,16 @@ internal sealed class AtlasJSONDataPathResolver : ContentPathResolver
     /// <param name="appService">Provides application services.</param>
     /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
-    /// <param name="platform">Provides information about the current platform.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown if the following parameters are null:
     /// <list type="bullet">
     ///     <item><paramref name="appService"/></item>
     ///     <item><paramref name="file"/></item>
     ///     <item><paramref name="path"/></item>
-    ///     <item><paramref name="platform"/></item>
     /// </list>
     /// </exception>
-    public AtlasJSONDataPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
-        : base(appService, file, path, platform)
+    public AtlasJSONDataPathResolver(IAppService appService, IFile file, IPath path)
+        : base(appService, file, path)
     {
         this.path = path;
         ContentDirectoryName = "Atlas";

@@ -55,6 +55,42 @@ public class AudioPathResolverTests
         // Assert
         actual.ShouldBe("Audio");
     }
+
+    [Fact]
+    public void Ctor_WithNullFileParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AudioPathResolver(
+                this.mockAppService,
+                null,
+                this.mockPath,
+                this.mockPlatform);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>().Message
+            .ShouldBe("Value cannot be null. (Parameter 'file')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullPathParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new AudioPathResolver(
+                this.mockAppService,
+                this.mockFile,
+                null,
+                this.mockPlatform);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>().Message
+            .ShouldBe("Value cannot be null. (Parameter 'path')");
+    }
     #endregion
 
     #region Method Tests
@@ -117,7 +153,7 @@ public class AudioPathResolverTests
     {
         // Arrange
         var fullContentName = $"test-content{extension}";
-        var expected = Path.Join(this.mockAppService.AppDirectory, "Content", "Audio", fullContentName);
+        var expected = $"{this.mockAppService.AppDirectory}/Content/Audio/{fullContentName}";
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
         this.mockPath.GetExtension(Arg.Any<string>()).Returns(extension);
         this.mockFile.Exists(Arg.Any<string>()).Returns(true);

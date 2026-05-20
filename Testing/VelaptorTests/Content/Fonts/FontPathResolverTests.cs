@@ -7,10 +7,8 @@ namespace VelaptorTests.Content.Fonts;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using NSubstitute;
 using Shouldly;
-using Velaptor;
 using Velaptor.Content.Fonts;
 using Velaptor.Services;
 using Xunit;
@@ -24,16 +22,12 @@ public class FontPathResolverTests
     private readonly IAppService mockAppService;
     private readonly IFile mockFile;
     private readonly IPath mockPath;
-    private readonly IPlatform mockPlatform;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPathResolverTests"/> class.
     /// </summary>
     public FontPathResolverTests()
     {
-        this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockPlatform.CurrentPlatform.Returns(OSPlatform.Windows);
-
         this.mockAppService = Substitute.For<IAppService>();
         this.mockAppService.AppDirectory.Returns("AppHome");
 
@@ -55,9 +49,9 @@ public class FontPathResolverTests
     {
         return new TheoryData<string, string, string>
         {
-            { string.Empty, $"test-content{Extension}", Path.Join("AppHome", "Content", "Fonts", $"test-content{Extension}") },
-            { string.Empty, $"TEST-CONTENT{Extension}", Path.Join("AppHome", "Content", "Fonts", $"TEST-CONTENT{Extension}") },
-            { "sub-dir", $"test-content{Extension}", Path.Join("AppHome", "Content", "Fonts", "sub-dir", $"test-content{Extension}") },
+            { string.Empty, $"test-content{Extension}", $"AppHome/Content/Fonts/test-content{Extension}" },
+            { string.Empty, $"TEST-CONTENT{Extension}", $"AppHome/Content/Fonts/TEST-CONTENT{Extension}" },
+            { "sub-dir", $"test-content{Extension}", $"AppHome/Content/Fonts/sub-dir/test-content{Extension}" },
         };
     }
     #endregion
@@ -69,7 +63,7 @@ public class FontPathResolverTests
     public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
         // Arrange
-        var resolver = new FontPathResolver(this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+        var resolver = new FontPathResolver(this.mockAppService, this.mockFile, this.mockPath);
 
         // Act
         var actual = resolver.ContentDirectoryName;
@@ -120,7 +114,7 @@ public class FontPathResolverTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = sut.ResolveFilePath(Path.Join(subDir, contentName));
+        var actual = sut.ResolveFilePath(string.IsNullOrEmpty(subDir) ? contentName : $"{subDir}/{contentName}");
 
         // Assert
         actual.ShouldBe(expected);
@@ -132,5 +126,5 @@ public class FontPathResolverTests
     /// Creates a new instance of <see cref="FontPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath, this.mockPlatform);
+    private FontPathResolver CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
 }
