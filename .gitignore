@@ -52,6 +52,7 @@ nunit-*.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+bin/
 
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
@@ -358,3 +359,6 @@ MigrationBackup/
 # Coverlet coverage report files
 coverage.json
 coverage.xml
+
+# Files created by VSCode C# Dev Kit Extension
+*.lscache
