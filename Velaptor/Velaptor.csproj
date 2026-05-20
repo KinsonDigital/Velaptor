@@ -118,6 +118,7 @@
     <None Include="..\Images\velaptor-logo.png" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Remove="Velaptor.csproj.lscache" />
   </ItemGroup>
 
   <ItemGroup>
@@ -141,10 +142,10 @@
 
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="3.1.0" />
-    <PackageReference Include="Hardware.Info" Version="101.1.1.1" />
+    <PackageReference Include="Hardware.Info" Version="110.0.0" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
     <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.22" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.202">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.300">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
