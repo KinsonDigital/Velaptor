@@ -6,7 +6,7 @@
 - [ ] All unit tests have been executed locally and have passed. _(Check out the appropriate release branch before running tests)_.
 - [ ] Auto-generated release notes have been reviewed and updated if necessary.
 - [ ] Manual QA Testing completed _(if applicable)_.
-- [ ] Release to **_preview_** completed. _(The release is performed by running the `Release` workflow)_.
+- [ ] Release to **_preview_** completed. _(The release is performed by running the `🚀Release` workflow)_.
 
 ### Post-Release ToDo List
 - [ ] The GitHub release has been created and is correct.
