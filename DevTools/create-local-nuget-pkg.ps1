@@ -18,7 +18,12 @@ if ($null -eq $BuildConfig -or $BuildConfig -eq "") {
 }
 
 if ($null -eq $EnableTelemetry -or $EnableTelemetry -eq "") {
-    Write-Error "A enable telemetry parameter must be specified."
+    Write-Error "An enable telemetry parameter must be specified."
+    exit 1;
+}
+
+if ($null -eq $env:TELEMETRY_API_KEY -or $env:TELEMETRY_API_KEY -eq "") {
+    Write-Error "The 'TELEMETRY_API_KEY' environment variable must be set."
     exit 1;
 }
 
@@ -32,9 +37,9 @@ $projectPath = "$solutionPath/$projectName/$projectName.csproj";
 # Build the project
 dotnet build $projectPath -c $BuildConfig -o $outputPath;
 
-# Remove all Velaptor nuget packages from the local source directory
-Get-ChildItem -Path $outputPath -Filter "KinsonDigital.Velaptor.*" | Remove-Item -Force
+# Remove all non-nupkg files from the local source directory
+Get-ChildItem -Path $outputPath -File | Where-Object { $_.Extension -ne ".nupkg" } | Remove-Item -Force
 
 # Create the nuget package
 Write-Host "Creating nuget package using the '$BuildConfig' configuration..." -ForegroundColor Cyan;
-dotnet pack $projectPath -c $BuildConfig -o $outputPath -p:EnableTelemetry=$EnableTelemetry;
+dotnet pack $projectPath -c $BuildConfig -o $outputPath -p:EnableTelemetry=$EnableTelemetry -p:TelemetryKey=$env:TELEMETRY_API_KEY;

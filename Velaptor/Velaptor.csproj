@@ -69,7 +69,7 @@
     compiled out of the assembly when telemetry is disabled.
   -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Telemetry-Debug|x64'">
-    <DefineConstants>$(DefineConstants);ENABLE_TELEMETRY;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;TELEMETRY_DEBUG;ENABLE_TELEMETRY;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|x64' ">
@@ -91,7 +91,7 @@
     <DefineConstants>$(DefineConstants);TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Debug|arm64' ">
-    <DefineConstants>$(DefineConstants);TRACE;ENABLE_TELEMETRY;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;TELEMETRY_DEBUG;ENABLE_TELEMETRY;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Telemetry-Release|arm64' ">
