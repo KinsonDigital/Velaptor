@@ -32,8 +32,8 @@ $projectPath = "$solutionPath/$projectName/$projectName.csproj";
 # Build the project
 dotnet build $projectPath -c $BuildConfig -o $outputPath;
 
-# Remove all Velaptor nuget packages from the local source directory
-Get-ChildItem -Path $outputPath -Filter "KinsonDigital.Velaptor.*" | Remove-Item -Force
+# Remove all non-nupkg files from the local source directory
+Get-ChildItem -Path $outputPath -File | Where-Object { $_.Extension -ne ".nupkg" } | Remove-Item -Force
 
 # Create the nuget package
 Write-Host "Creating nuget package using the '$BuildConfig' configuration..." -ForegroundColor Cyan;
