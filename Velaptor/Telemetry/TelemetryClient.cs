@@ -17,7 +17,7 @@ using Services;
 [ExcludeFromCodeCoverage(Justification = "Telemetry code is challenging to test and provides minimal value to cover with unit tests.")]
 internal sealed class TelemetryClient : ITelemetryClient
 {
-#if ENABLE_TELEMETRY && DEBUG
+#if TELEMETRY_DEBUG
     private const string Protocol = "http";
     private const string ServerHost = "localhost:8500";
 #else
