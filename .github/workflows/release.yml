@@ -284,7 +284,6 @@ jobs:
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
         with:
           dotnet-version: "${{ vars.NET_SDK_VERSION }}"
-          cache: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
 
       - name: Set Up Nuget
         uses: NuGet/setup-nuget@fd55a6f3b34392fa83fde1454582407d8c714123 #v4.0.0
@@ -384,6 +383,9 @@ jobs:
     needs: [get_and_validate_version, run_prerelease_validation, build, run_tests, perform_release]
     if: ${{ inputs.dry-run == false }}
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+
       - name: Send X Release Announcement
         uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
         with:
@@ -399,7 +401,6 @@ jobs:
           consumer-api-secret: ${{ secrets.X_CONSUMER_API_SECRET }}
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
           github-token: ${{ secrets.CICD_TOKEN }}
-
 
       - name: Send Bluesky Release Announcement
         uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
