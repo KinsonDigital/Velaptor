@@ -11,4 +11,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 align="center" style="font-weight: bold;">Bug Fixes 🐛</h2>
 
-1. [#1235](https://github.com/KinsonDigital/Velaptor/issues/1235) - Fixed bug with telemetry.
+1. [#1235](https://github.com/KinsonDigital/Velaptor/issues/1235) - Fixed a bug with telemetry.
