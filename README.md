@@ -81,7 +81,7 @@ We encourage and use early pull requests. Please do not wait until you are finis
 
 <h2 style="font-weight:bold;" align="center">Financial Support</h2>
 
-Maintaining these projects takes a significant amount of time and resources. **Velaptor** is open source and free to use — but the work behind it isn't. Contributing toward development is the most direct way to keep it moving forward: faster bug fixes, new features, and continued cross-platform support.
+Maintaining these projects takes a significant amount of time and resources. **Velaptor** is open source and, but the work behind it isn't. Contributing toward development is the most direct way to keep it moving forward: faster bug fixes, new features, and continued cross-platform support.
 - [Github Sponsors](https://github.com/sponsors/KinsonDigital) 
 - [Open Collective - Kinson Digital](https://opencollective.com/search?q=kinson+digital) 
 - [Kofi](https://ko-fi.com/kinsondigital)
