@@ -43,7 +43,7 @@ This library is still under development and is not at v1.0.0 yet! However, all m
 
 ### **Cross-Platform**
 
-We strive for **Velaptor** to be cross-platform. We do this by using as many cross-platform dependencies as possible. If a cross-platform dependency cannot be found, then the appropriate platform-specific implementations will be used.
+Our architecture prioritizes cross-platform dependencies to deliver a consistent environment across all operating systems. In cases where unified libraries do not exist, Velaptor leverages native, platform-specific implementations without compromising the core API.
 
 ### **Easy To Use**
 
@@ -55,7 +55,7 @@ One of the goals of this library is to make it easy to use. We aim to ensure con
 
 ### **Content Caching**
 
-Loaded content, such as images and sounds, is cached for better performance. Suppose the same content is attempting to be loaded from its source after it has already been loaded. In that case, it will be used from memory instead of reloading from disk. You can also load content by building your content loader.
+Assets like images and sounds are cached in memory for optimal performance, preventing redundant disk I/O when the same content is requested again. For specialized workflows, you can easily build and integrate a custom content loader.
 
 <h2 style="font-weight:bold;" align="center">Feature Demo </h2>
 
@@ -75,17 +75,16 @@ Complete API documentation, tutorials, and blogs can be found at the [Velaptor d
 
 <h2 style="font-weight:bold;" align="center">Contributing</h2>
 
-These projects are fueled by personal passion and are actively maintained with regular updates, improvements as well as a commitment to code quality. As the ecosystem grows, I am looking to transition from a solo effort to a community-backed model. Whether you are interested in [contributing code](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to help build new features or providing [monetary support](https://github.com/sponsors/KinsonDigital) to help cover infrastructure and development time, your involvement makes a positive impact.
+These projects are fueled by personal passion and are actively maintained with regular updates, improvements as well as a commitment to code quality. As the ecosystem grows, I am looking to transition from a solo effort to a community-backed model. Whether you are interested in [contributing code](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to help build new features or providing monetary support to help cover infrastructure and development time, your involvement makes a positive impact.
 
 We encourage and use early pull requests. Please do not wait until you are finished with your work before creating a PR!  Click [here](https://carlosperez.medium.com/pull-request-first-f6bb667a9b6) to learn how to create an early pull request.
 
 <h2 style="font-weight:bold;" align="center">Financial Support</h2>
 
-Maintaining these projects takes a significant amount of time and resources.  If you or your company rely on our software, please consider supporting the work financially.  This helps ensure regular updates, faster bug fixes, and long-term sustainability. 
-
-[Github Sponsors:](https://github.com/sponsors/KinsonDigital)  Support us directly through GitHub 
-
-[Open Collective - Kinson Digital](https://opencollective.com/search?q=kinson+digital) 
+Maintaining these projects takes a significant amount of time and resources. **Velaptor** is open source and, but the work behind it isn't. Contributing toward development is the most direct way to keep it moving forward: faster bug fixes, new features, and continued cross-platform support.
+- [Github Sponsors](https://github.com/sponsors/KinsonDigital) 
+- [Open Collective - Kinson Digital](https://opencollective.com/search?q=kinson+digital) 
+- [Kofi](https://ko-fi.com/kinsondigital)
 
 <h2 style="font-weight:bold;" align="center">Maintainers</h2>
 

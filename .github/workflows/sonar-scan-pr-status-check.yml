@@ -9,7 +9,8 @@ defaults:
 on:
   pull_request:
     branches: [main, prod-release, prev-release]
-
+    paths-ignore:
+      - '.github/**'
 
 jobs:
   sonar_status_check:
