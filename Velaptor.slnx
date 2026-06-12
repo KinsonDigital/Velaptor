@@ -115,6 +115,12 @@
             <Platform Solution="*|x64" Project="x64" />
         </Project>
     </Folder>
+    <Project Path="csharp-webgpu/csharp-webgpu.csproj">
+        <BuildType Solution="Debug-Console|*" Project="Debug" />
+        <BuildType Solution="Release-Console|*" Project="Debug" />
+        <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+        <BuildType Solution="Telemetry-Release|*" Project="Debug" />
+    </Project>
 
     <Project Path="Velaptor/Velaptor.csproj">
         <BuildType Solution="Debug-Console|*" Project="Debug" />
