@@ -28,6 +28,7 @@ public sealed class Program
     private static IInputContext? input;
     private static int dinoWidth;
     private static int dinoHeight;
+    private static Vector2 dinoWorldPos = new (400f, 300f);
 
     private static void Main()
     {
@@ -110,15 +111,44 @@ public sealed class Program
                 camera.Update();
             }
 
-            if (key == Key.Left)
+            // Camera positioning
+            if (key == Key.A)
             {
                 camera.Position -= new Vector2(10f, 0f);
                 camera.Update();
             }
-            else if (key == Key.Right)
+            else if (key == Key.D)
             {
                 camera.Position += new Vector2(10f, 0f);
                 camera.Update();
+            }
+            else if (key == Key.W)
+            {
+                camera.Position -= new Vector2(0f, 10f);
+                camera.Update();
+            }
+            else if (key == Key.S)
+            {
+                camera.Position += new Vector2(0f, 10f);
+                camera.Update();
+            }
+
+            // Texture positioning
+            if (key == Key.Left)
+            {
+                dinoWorldPos -= new Vector2(10f, 0f);
+            }
+            else if (key == Key.Right)
+            {
+                dinoWorldPos += new Vector2(10f, 0f);
+            }
+            else if (key == Key.Up)
+            {
+                dinoWorldPos -= new Vector2(0f, 10f);
+            }
+            else if (key == Key.Down)
+            {
+                dinoWorldPos += new Vector2(0f, 10f);
             }
         };
     }
@@ -148,8 +178,6 @@ public sealed class Program
         // The camera transform shifts and scales it before NDC conversion.
         if (textureBuffer is not null && camera is not null)
         {
-            var dinoWorldPos = new Vector2(400f, 300f);
-
             var dinoQuad = new TextureQuad
             {
                 Position  = camera.TransformPosition(dinoWorldPos),

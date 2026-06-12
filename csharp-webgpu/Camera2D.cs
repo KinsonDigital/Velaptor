@@ -58,7 +58,7 @@ public sealed class Camera2D
     public Vector2 TransformPosition(Vector2 worldPos)
     {
         var center = WindowSize / 2f;
-        return center + (worldPos - center - Position) * Zoom;
+        return center + ((worldPos - center - Position) * Zoom);
     }
 
     /// <summary>
