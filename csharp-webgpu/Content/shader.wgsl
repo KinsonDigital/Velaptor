@@ -36,11 +36,23 @@ fn mapValue(value: f32, fromStart: f32, fromStop: f32, toStart: f32, toStop: f32
     return toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 }
 
+// Converts a single sRGB component [0, 1] to linear light using the IEC 61966-2-1 formula.
+// Needed because the swap-chain surface format is sRGB: the GPU applies linear→sRGB encoding
+// on every fragment output, so colours must be in linear space before they are written.
+fn srgbToLinear(c: f32) -> f32 {
+    if c <= 0.04045 {
+        return c / 12.92;
+    }
+    return pow((c + 0.055) / 1.055, 2.4);
+}
+
 fn toNDCColor(pixelColor: vec4<f32>) -> vec4<f32> {
+    // RGB: convert from sRGB 0-255 → linear [0, 1].
+    // Alpha: linear pass-through (alpha is never sRGB-encoded).
     return vec4<f32>(
-        mapValue(pixelColor.r, 0.0, 255.0, 0.0, 1.0),
-        mapValue(pixelColor.g, 0.0, 255.0, 0.0, 1.0),
-        mapValue(pixelColor.b, 0.0, 255.0, 0.0, 1.0),
+        srgbToLinear(mapValue(pixelColor.r, 0.0, 255.0, 0.0, 1.0)),
+        srgbToLinear(mapValue(pixelColor.g, 0.0, 255.0, 0.0, 1.0)),
+        srgbToLinear(mapValue(pixelColor.b, 0.0, 255.0, 0.0, 1.0)),
         mapValue(pixelColor.a, 0.0, 255.0, 0.0, 1.0));
 }
 

@@ -7,8 +7,8 @@
 #>
 
 # Clear the environment variables from the current process scope
-$env:COPILOT_API_URL = $null;
-$env:GITHUB_TOKEN = $null;
+$env:COPILOT_PROVIDER_BASE_URL = $null;
+$env:COPILOT_PROVIDER_API_KEY = $null;
 $env:COPILOT_MODEL = $null;
 $env:COPILOT_PROVIDER_TYPE = $null;
 

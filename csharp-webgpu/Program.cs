@@ -9,6 +9,7 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using StbImageSharp;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using NETColor = System.Drawing.Color;
 
 /// <summary>
@@ -16,6 +17,9 @@ using NETColor = System.Drawing.Color;
 /// </summary>
 public sealed class Program
 {
+    private static readonly int[] CtrlModeValues = Enum.GetValues<ControlMode>().Cast<int>().ToArray();
+    private static readonly int MinCtrlMode = 0;
+    private static readonly int MaxCtrlMode = CtrlModeValues.Max();
     private static IWindow? window;
     private static GraphicsDevice? gd;
     private static GraphicsSurface? surface;
@@ -26,18 +30,25 @@ public sealed class Program
     private static GraphicsRectBuffer? rectBuffer;
     private static Camera2D? camera;
     private static IInputContext? input;
+    private static IKeyboard keyboard;
+    private static bool shiftKeyDown;
     private static int dinoWidth;
     private static int dinoHeight;
     private static Vector2 dinoWorldPos = new (400f, 300f);
+    private static Vector2 rectPos = new (180f, 150f);
+    private static int rectWidth = 180;
+    private static int rectHeight = 100;
+    private static ControlMode ctrlMode = ControlMode.Texture;
+    private static RectShape rect;
 
     private static void Main()
     {
         var opts = WindowOptions.Default;
         opts.Size = new Vector2D<int>(800, 600);
-        opts.Title = "WebGPU — Cornflower Blue Rectangle";
         opts.API = GraphicsAPI.None;
 
         window = Window.Create(opts);
+        window.Title = "MODE: TEXTURE";
         window.Load += OnLoad;
         window.Render += OnRender;
         window.FramebufferResize += OnResize;
@@ -69,13 +80,13 @@ public sealed class Program
         {
             var imgInfo = ImageInfo.FromStream(imgStream)
                 ?? throw new InvalidOperationException("Could not read image header from dino.png.");
-            dinoWidth  = imgInfo.Width;
+            dinoWidth = imgInfo.Width;
             dinoHeight = imgInfo.Height;
         }
 
         using var shader = new GraphicsShader(gd, "Content/shader.wgsl", 0f, 0f);
         pipeline = new GraphicsPipeline(gd, surface, shader);
-        texture  = new GraphicsTexture(gd, "Content/dino.png", pipeline.BindGroupLayout);
+        texture = new GraphicsTexture(gd, "Content/dino.png", pipeline.BindGroupLayout);
 
         var fb = window!.FramebufferSize;
 
@@ -84,72 +95,25 @@ public sealed class Program
 
         using var rectShader = new GraphicsShader(gd, "Content/rect-shape.wgsl", 0f, 0f);
         rectPipeline = new GraphicsRectPipeline(gd, surface, rectShader);
-        rectBuffer   = new GraphicsRectBuffer(gd, initialRectCount: 64);
+        rectBuffer = new GraphicsRectBuffer(gd, initialRectCount: 64);
         rectBuffer.WindowSize = new Vector2(fb.X, fb.Y);
 
         camera = new Camera2D { WindowSize = new Vector2(fb.X, fb.Y) };
 
         // Set up keyboard controls for camera pan and zoom.
         input = window.CreateInput();
-        var keyboard = input.Keyboards[0];
+        keyboard = input.Keyboards[0];
+        keyboard.KeyDown += KeyboardKeyDown;
+        keyboard.KeyUp += KeyboardKeyUp;
 
-        keyboard.KeyDown += (kb, key, _) =>
+        rect = new RectShape
         {
-            if (camera is null)
-            {
-                return;
-            }
-
-            if (key == Key.R)
-            {
-                camera.Zoom += 0.10f;
-                camera.Update();
-            }
-            else if (key == Key.F)
-            {
-                camera.Zoom -= 0.10f;
-                camera.Update();
-            }
-
-            // Camera positioning
-            if (key == Key.A)
-            {
-                camera.Position -= new Vector2(10f, 0f);
-                camera.Update();
-            }
-            else if (key == Key.D)
-            {
-                camera.Position += new Vector2(10f, 0f);
-                camera.Update();
-            }
-            else if (key == Key.W)
-            {
-                camera.Position -= new Vector2(0f, 10f);
-                camera.Update();
-            }
-            else if (key == Key.S)
-            {
-                camera.Position += new Vector2(0f, 10f);
-                camera.Update();
-            }
-
-            // Texture positioning
-            if (key == Key.Left)
-            {
-                dinoWorldPos -= new Vector2(10f, 0f);
-            }
-            else if (key == Key.Right)
-            {
-                dinoWorldPos += new Vector2(10f, 0f);
-            }
-            else if (key == Key.Up)
-            {
-                dinoWorldPos -= new Vector2(0f, 10f);
-            }
-            else if (key == Key.Down)
-            {
-                dinoWorldPos += new Vector2(0f, 10f);
-            }
+            Position = camera.TransformPosition(rectPos),
+            Width = camera.TransformSize(rectWidth),
+            Height = camera.TransformSize(rectHeight),
+            Color = NETColor.Orange,
+            CornerRadius = new CornerRadius(camera.TransformSize(15f)),
+            IsSolid = true,
         };
     }
 
@@ -168,7 +132,7 @@ public sealed class Program
 
         using var frame = new Frame(gd, surface);
 
-        if (!frame.Begin(NETColor.FromArgb(100, 149, 237)))
+        if (!frame.Begin(NETColor.FromArgb(25, 26, 28)))
         {
             return;
         }
@@ -180,10 +144,10 @@ public sealed class Program
         {
             var dinoQuad = new TextureQuad
             {
-                Position  = camera.TransformPosition(dinoWorldPos),
-                Width     = dinoWidth,
-                Height    = dinoHeight,
-                Size      = camera.TransformSize(1f),  // scale by zoom
+                Position = camera.TransformPosition(dinoWorldPos),
+                Width = dinoWidth,
+                Height = dinoHeight,
+                Size = camera.TransformSize(1f), // scale by zoom
 
                 // ── Optional Velaptor-equivalent features ─────────────────────
                 // Angle     = 45f,
@@ -201,32 +165,10 @@ public sealed class Program
         // zooming affect all objects uniformly.
         if (rectBuffer is not null && rectPipeline is not null && camera is not null)
         {
-            const float rectW = 180f;
-            const float rectH = 100f;
-
-            var rect = new RectShape
-            {
-                Position     = camera.TransformPosition(new Vector2(180f, 150f)),
-                Width        = camera.TransformSize(rectW),
-                Height       = camera.TransformSize(rectH),
-                Color        = NETColor.Orange,
-                CornerRadius = new CornerRadius(camera.TransformSize(15f)),
-                IsSolid      = true,
-            };
-
+            rect.Position = camera.TransformPosition(rectPos);
+            rect.Width = camera.TransformSize(rectWidth);
+            rect.Height = camera.TransformSize(rectHeight);
             rectBuffer.Upload(rect, rectIndex: 0);
-
-            var borderRect = new RectShape
-            {
-                Position        = camera.TransformPosition(new Vector2(620f, 450f)),
-                Width           = camera.TransformSize(rectW),
-                Height          = camera.TransformSize(rectH),
-                Color           = NETColor.LimeGreen,
-                IsSolid         = false,
-                BorderThickness = camera.TransformSize(3f),
-            };
-
-            rectBuffer.Upload(borderRect, rectIndex: 1);
 
             frame.DrawRectangles(rectPipeline, rectBuffer, rectCount: 2);
         }
@@ -272,6 +214,7 @@ public sealed class Program
     /// </summary>
     private static void OnClose()
     {
+        keyboard.KeyDown -= KeyboardKeyDown;
         rectBuffer?.Dispose();
         rectPipeline?.Dispose();
         textureBuffer?.Dispose();
@@ -280,5 +223,165 @@ public sealed class Program
         surface?.Dispose();
         gd?.Dispose();
         input?.Dispose();
+    }
+
+    private static void KeyboardKeyDown(IKeyboard kb, Key key, int _)
+    {
+        var currentValue = (int)ctrlMode;
+        var nextValue = currentValue;
+
+        if (key == Key.PageUp)
+        {
+            nextValue = currentValue <= MinCtrlMode ? MaxCtrlMode : currentValue - 1;
+        }
+        else if (key == Key.PageDown)
+        {
+            nextValue = currentValue >= MaxCtrlMode ? MinCtrlMode : currentValue + 1;
+        }
+
+        if (key is Key.ShiftLeft or Key.ShiftRight)
+        {
+            shiftKeyDown = true;
+        }
+
+        ctrlMode = (ControlMode)nextValue;
+
+        switch (ctrlMode)
+        {
+            case ControlMode.Texture:
+                ControlTexture(key);
+                window?.Title = "MODE: TEXTURE";
+                break;
+            case ControlMode.Rectangle:
+                ControlRectangle(key);
+                window?.Title = "MODE: RECTANGLE";
+                break;
+            case ControlMode.Camera:
+                ControlCamera(key);
+                window?.Title = "MODE: CAMERA";
+                break;
+        }
+    }
+
+    private static void KeyboardKeyUp(IKeyboard kb, Key key, int _)
+    {
+        if (key is Key.ShiftLeft or Key.ShiftRight)
+        {
+            shiftKeyDown = false;
+        }
+    }
+
+    private static void ControlCamera(Key key)
+    {
+        if (camera is null)
+        {
+            return;
+        }
+
+        if (key == Key.I)
+        {
+            camera.Zoom += 0.10f;
+            camera.Update();
+        }
+        else if (key == Key.O)
+        {
+            camera.Zoom -= 0.10f;
+            camera.Update();
+        }
+
+        // Camera positioning
+        if (key == Key.Left)
+        {
+            camera.Position -= new Vector2(10f, 0f);
+            camera.Update();
+        }
+        else if (key == Key.Right)
+        {
+            camera.Position += new Vector2(10f, 0f);
+            camera.Update();
+        }
+        else if (key == Key.Up)
+        {
+            camera.Position -= new Vector2(0f, 10f);
+            camera.Update();
+        }
+        else if (key == Key.Down)
+        {
+            camera.Position += new Vector2(0f, 10f);
+            camera.Update();
+        }
+    }
+
+    private static void ControlTexture(Key key)
+    {
+        // Texture positioning
+        if (key == Key.Left)
+        {
+            dinoWorldPos -= new Vector2(10f, 0f);
+        }
+
+        if (key == Key.Right)
+        {
+            dinoWorldPos += new Vector2(10f, 0f);
+        }
+
+        if (key == Key.Up)
+        {
+            dinoWorldPos -= new Vector2(0f, 10f);
+        }
+
+        if (key == Key.Down)
+        {
+            dinoWorldPos += new Vector2(0f, 10f);
+        }
+    }
+
+    private static void ControlRectangle(Key key)
+    {
+        // Rectangle positioning
+        if (shiftKeyDown)
+        {
+            if (key == Key.Left)
+            {
+                rectWidth -= 10;
+            }
+
+            if (key == Key.Right)
+            {
+                rectWidth += 10;
+            }
+
+            if (key == Key.Up)
+            {
+                rectHeight -= 10;
+            }
+
+            if (key == Key.Down)
+            {
+                rectHeight += 10;
+            }
+        }
+        else
+        {
+            if (key == Key.Left)
+            {
+                rectPos -= new Vector2(10f, 0f);
+            }
+
+            if (key == Key.Right)
+            {
+                rectPos += new Vector2(10f, 0f);
+            }
+
+            if (key == Key.Up)
+            {
+                rectPos -= new Vector2(0f, 10f);
+            }
+
+            if (key == Key.Down)
+            {
+                rectPos += new Vector2(0f, 10f);
+            }
+        }
     }
 }

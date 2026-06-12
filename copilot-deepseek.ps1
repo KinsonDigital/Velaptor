@@ -20,9 +20,9 @@ if ($ApiKey -eq "your-deepseek-api-key-here") {
 
 # Inject the configurations into the current process environment
 $env:COPILOT_MODEL = "deepseek-v4-pro";
-$env:COPILOT_API_URL = "https://api.deepseek.com/v1";
+$env:COPILOT_PROVIDER_BASE_URL = "https://api.deepseek.com/v1";
 $env:COPILOT_PROVIDER_TYPE = "openai";
-$env:GITHUB_TOKEN = $ApiKey;
+$env:COPILOT_PROVIDER_API_KEY = $ApiKey;
 
 Write-Host "`nRunning GitHub Copilot with 'deepseek-v4-pro!" -ForegroundColor Green;
 copilot

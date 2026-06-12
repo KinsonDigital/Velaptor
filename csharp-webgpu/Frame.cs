@@ -7,6 +7,7 @@ namespace csharp_webgpu;
 using Handles;
 using Silk.NET.WebGPU;
 using NETColor = System.Drawing.Color;
+using SilkColor = Silk.NET.WebGPU.Color;
 
 /// <summary>
 /// Encapsulates all per-frame GPU work: acquiring a render target, recording draw
@@ -143,7 +144,7 @@ internal sealed class Frame : IDisposable
                 View = (TextureView*)this.textureViewHandle.DangerousGetHandle(),
                 LoadOp = LoadOp.Clear, // Fill with clearColor before any draw call
                 StoreOp = StoreOp.Store, // Preserve the result for presentation
-                ClearValue = new Color(clearColor.R / 255.0f, clearColor.G / 255.0f, clearColor.B / 255.0f, clearColor.A / 255.0f),
+                ClearValue = ToLinearClearColor(clearColor, this.surface.Format),
             };
 
             var passDesc = new RenderPassDescriptor
@@ -282,5 +283,50 @@ internal sealed class Frame : IDisposable
     {
         this.textureViewHandle?.Dispose();
         this.surfaceTextureHandle?.Dispose();
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when <paramref name="format"/> uses sRGB encoding,
+    /// meaning WebGPU will linearise clear values before writing them to the framebuffer.
+    /// </summary>
+    private static bool IsSrgbFormat(TextureFormat format)
+        => format is TextureFormat.Bgra8UnormSrgb or TextureFormat.Rgba8UnormSrgb;
+
+    /// <summary>
+    /// Converts a single sRGB component (0–1) to its linear-light equivalent using the
+    /// IEC 61966-2-1 piecewise formula.
+    /// </summary>
+    private static float SrgbToLinear(float c)
+        => c <= 0.04045f
+            ? c / 12.92f
+            : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
+
+    /// <summary>
+    /// Builds the <see cref="SilkColor"/> value used as the render-pass clear colour.
+    /// </summary>
+    /// <remarks>
+    /// When the swap-chain surface is in sRGB format (e.g. <c>Bgra8UnormSrgb</c>),
+    /// WebGPU interprets the clear value as <em>linear</em> and applies sRGB encoding
+    /// before writing it to the framebuffer.  The user-supplied colour is already in
+    /// sRGB space (the normal way humans and tools express colours), so the components
+    /// must be converted to linear first; the GPU then round-trips them back to the
+    /// expected sRGB value on screen.
+    /// Alpha is always linear and is never converted.
+    /// </remarks>
+    private static SilkColor ToLinearClearColor(NETColor color, TextureFormat format)
+    {
+        var r = color.R / 255.0f;
+        var g = color.G / 255.0f;
+        var b = color.B / 255.0f;
+        var a = color.A / 255.0f;
+
+        if (IsSrgbFormat(format))
+        {
+            r = SrgbToLinear(r);
+            g = SrgbToLinear(g);
+            b = SrgbToLinear(b);
+        }
+
+        return new SilkColor(r, g, b, a);
     }
 }

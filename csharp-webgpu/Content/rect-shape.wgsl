@@ -76,11 +76,22 @@ fn mapValue(value: f32, fromStart: f32, fromStop: f32, toStart: f32, toStop: f32
     return toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 }
 
+// ── Helper: sRGB component [0, 1] → linear light (IEC 61966-2-1) ─────────
+// The swap-chain surface is sRGB: the GPU applies linear→sRGB encoding on
+// every fragment output, so colour values must be in linear space first.
+fn srgbToLinear(c: f32) -> f32 {
+    if c <= 0.04045 {
+        return c / 12.92;
+    }
+    return pow((c + 0.055) / 1.055, 2.4);
+}
+
 // ── Helper: pixel 0‑255 color to normalized 0‑1 ──────────────────────────
+// RGB channels are converted sRGB→linear; alpha is always linear.
 fn toNDCColor(pixelColor: vec4<f32>) -> vec4<f32> {
-    let r = mapValue(pixelColor.r, 0.0, 255.0, 0.0, 1.0);
-    let g = mapValue(pixelColor.g, 0.0, 255.0, 0.0, 1.0);
-    let b = mapValue(pixelColor.b, 0.0, 255.0, 0.0, 1.0);
+    let r = srgbToLinear(mapValue(pixelColor.r, 0.0, 255.0, 0.0, 1.0));
+    let g = srgbToLinear(mapValue(pixelColor.g, 0.0, 255.0, 0.0, 1.0));
+    let b = srgbToLinear(mapValue(pixelColor.b, 0.0, 255.0, 0.0, 1.0));
     let a = mapValue(pixelColor.a, 0.0, 255.0, 0.0, 1.0);
     return vec4<f32>(r, g, b, a);
 }
@@ -124,12 +135,15 @@ fn createCornerCircle(rect: Rectangle, cornerType: u32, radii: vec4<f32>) -> Cir
 
 // ── Is the fragment inside the corner circle? ────────────────────────────
 fn containedByCircle(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
-    // If the radius is zero, no rounding → everything is "contained" (no clipping)
+    // If the radius is negative (should never happen after clamping), no rounding.
+    // Do NOT short-circuit for radius == 0.0 — the circle equation naturally
+    // produces false for division-by-zero (inf/NaN <= 1.0 evaluates to false),
+    // which is the correct result because a zero-radius circle contains nothing.
     switch (cornerType) {
-        case TOP_LEFT_CORNER:     { if (radii.x == 0.0) { return true; } }
-        case TOP_RIGHT_CORNER:    { if (radii.y == 0.0) { return true; } }
-        case BOTTOM_RIGHT_CORNER: { if (radii.z == 0.0) { return true; } }
-        case BOTTOM_LEFT_CORNER:  { if (radii.w == 0.0) { return true; } }
+        case TOP_LEFT_CORNER:     { if (radii.x < 0.0) { return true; } }
+        case TOP_RIGHT_CORNER:    { if (radii.y < 0.0) { return true; } }
+        case BOTTOM_RIGHT_CORNER: { if (radii.z < 0.0) { return true; } }
+        case BOTTOM_LEFT_CORNER:  { if (radii.w < 0.0) { return true; } }
         default {}
     }
 
@@ -142,21 +156,25 @@ fn containedByCircle(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos:
 
 // ── Is the fragment in the correct quadrant of the corner circle? ────────
 fn inCorrectCircleQuadrant(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
+    // When radius is zero, the circle centre sits exactly at the corner of the
+    // bounding box, so the quadrant checks below naturally identify the
+    // "outside" area that the corner tip needs to exclude.  Do not short-circuit
+    // for radius == 0.0 — let the quadrant check run.
     switch (cornerType) {
         case TOP_LEFT_CORNER: {
-            return radii.x == 0.0 ||
+            return radii.x < 0.0 ||
                 fragPos.x < circle.cx && fragPos.y < circle.cy;
         }
         case TOP_RIGHT_CORNER: {
-            return radii.y == 0.0 ||
+            return radii.y < 0.0 ||
                 fragPos.x > circle.cx && fragPos.y < circle.cy;
         }
         case BOTTOM_RIGHT_CORNER: {
-            return radii.z == 0.0 ||
+            return radii.z < 0.0 ||
                 fragPos.x > circle.cx && fragPos.y > circle.cy;
         }
         case BOTTOM_LEFT_CORNER: {
-            return radii.w == 0.0 ||
+            return radii.w < 0.0 ||
                 fragPos.x < circle.cx && fragPos.y > circle.cy;
         }
         default { return false; }
