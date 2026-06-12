@@ -1,28 +1,7 @@
-// ── Vertex / fragment shader for rounded-rectangle rendering ──────────────
+// Fragment shader for rounded-rectangle rendering.
 //
-// All shape properties arrive per-vertex via the vertex buffer.  The vertex
-// shader is a pass-through: positions are already in NDC and the fragment
-// shader receives the pixel-space bounding box and shape attributes, then
-// decides per-pixel whether it falls inside the rounded rectangle (filled
-// mode) or inside the border ring (border mode).
-//
-// NDC:          x ∈ [-1, +1] left→right,  y ∈ [-1, +1] bottom→top
 // PIXEL SPACE:  origin at window top-left, Y increases downward
 //               (matches @builtin(position) in the fragment shader)
-
-// ── Vertex input layout ──────────────────────────────────────────────────
-// stride = 64 bytes (16 × f32)
-struct VertexInput {
-    @location(0) position:          vec2<f32>,   // NDC vertex position
-    @location(1) shape:             vec4<f32>,   // (centerX, centerY, width, height) in pixel coords
-    @location(2) color:             vec4<f32>,   // RGBA as 0‑255 floats
-    @location(3) isFilled:          f32,         // 0.0 = hollow border, 1.0 = solid
-    @location(4) borderThickness:   f32,
-    @location(5) topLeftRadius:     f32,
-    @location(6) topRightRadius:    f32,
-    @location(7) bottomRightRadius: f32,
-    @location(8) bottomLeftRadius:  f32,
-};
 
 struct VertexOutput {
     @builtin(position) position:          vec4<f32>,
@@ -35,23 +14,6 @@ struct VertexOutput {
     @location(6)       bottomRightRadius: f32,
     @location(7)       bottomLeftRadius:  f32,
 };
-
-@vertex
-fn vs_main(vin: VertexInput) -> VertexOutput {
-    var vout: VertexOutput;
-    vout.position = vec4<f32>(vin.position, 0.0, 1.0);
-    vout.shape = vin.shape;
-    vout.color = vin.color;
-    vout.isFilled = vin.isFilled;
-    vout.borderThickness = vin.borderThickness;
-    vout.topLeftRadius = vin.topLeftRadius;
-    vout.topRightRadius = vin.topRightRadius;
-    vout.bottomRightRadius = vin.bottomRightRadius;
-    vout.bottomLeftRadius = vin.bottomLeftRadius;
-    return vout;
-}
-
-// ── Fragment shader ──────────────────────────────────────────────────────
 
 const TOP_LEFT_CORNER     = 1u;
 const TOP_RIGHT_CORNER    = 2u;
@@ -71,12 +33,12 @@ struct Circle {
     radius: f32,
 }
 
-// ── Helper: linear map from one range to another ─────────────────────────
+// Helper: linear map from one range to another
 fn mapValue(value: f32, fromStart: f32, fromStop: f32, toStart: f32, toStop: f32) -> f32 {
     return toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 }
 
-// ── Helper: sRGB component [0, 1] → linear light (IEC 61966-2-1) ─────────
+// Helper: sRGB component [0, 1] → linear light (IEC 61966-2-1)
 // The swap-chain surface is sRGB: the GPU applies linear→sRGB encoding on
 // every fragment output, so colour values must be in linear space first.
 fn srgbToLinear(c: f32) -> f32 {
@@ -86,7 +48,7 @@ fn srgbToLinear(c: f32) -> f32 {
     return pow((c + 0.055) / 1.055, 2.4);
 }
 
-// ── Helper: pixel 0‑255 color to normalized 0‑1 ──────────────────────────
+// Helper: pixel 0‑255 color to normalized 0‑1
 // RGB channels are converted sRGB→linear; alpha is always linear.
 fn toNDCColor(pixelColor: vec4<f32>) -> vec4<f32> {
     let r = srgbToLinear(mapValue(pixelColor.r, 0.0, 255.0, 0.0, 1.0));
@@ -96,7 +58,7 @@ fn toNDCColor(pixelColor: vec4<f32>) -> vec4<f32> {
     return vec4<f32>(r, g, b, a);
 }
 
-// ── Create a circle in a specific corner of the rectangle ────────────────
+// Create a circle in a specific corner of the rectangle
 fn createCornerCircle(rect: Rectangle, cornerType: u32, radii: vec4<f32>) -> Circle {
     let halfW = rect.width / 2.0;
     let halfH = rect.height / 2.0;
@@ -133,12 +95,8 @@ fn createCornerCircle(rect: Rectangle, cornerType: u32, radii: vec4<f32>) -> Cir
     return result;
 }
 
-// ── Is the fragment inside the corner circle? ────────────────────────────
+// Is the fragment inside the corner circle?
 fn containedByCircle(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
-    // If the radius is negative (should never happen after clamping), no rounding.
-    // Do NOT short-circuit for radius == 0.0 — the circle equation naturally
-    // produces false for division-by-zero (inf/NaN <= 1.0 evaluates to false),
-    // which is the correct result because a zero-radius circle contains nothing.
     switch (cornerType) {
         case TOP_LEFT_CORNER:     { if (radii.x < 0.0) { return true; } }
         case TOP_RIGHT_CORNER:    { if (radii.y < 0.0) { return true; } }
@@ -154,12 +112,8 @@ fn containedByCircle(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos:
            (dy * dy) / (circle.radius * circle.radius) <= 1.0;
 }
 
-// ── Is the fragment in the correct quadrant of the corner circle? ────────
+// Is the fragment in the correct quadrant of the corner circle?
 fn inCorrectCircleQuadrant(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
-    // When radius is zero, the circle centre sits exactly at the corner of the
-    // bounding box, so the quadrant checks below naturally identify the
-    // "outside" area that the corner tip needs to exclude.  Do not short-circuit
-    // for radius == 0.0 — let the quadrant check run.
     switch (cornerType) {
         case TOP_LEFT_CORNER: {
             return radii.x < 0.0 ||
@@ -181,19 +135,19 @@ fn inCorrectCircleQuadrant(circle: Circle, cornerType: u32, radii: vec4<f32>, fr
     }
 }
 
-// ── Is the fragment inside the corner (circle + quadrant check)? ─────────
+// Is the fragment inside the corner (circle + quadrant check)?
 fn inRectCorner(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
     return containedByCircle(circle, cornerType, radii, fragPos) &&
            inCorrectCircleQuadrant(circle, cornerType, radii, fragPos);
 }
 
-// ── Is the fragment in the corner tip (outside circle but in quadrant)? ───
+// Is the fragment in the corner tip (outside circle but in quadrant)?
 fn inRectCornerTip(circle: Circle, cornerType: u32, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
     return !containedByCircle(circle, cornerType, radii, fragPos) &&
            inCorrectCircleQuadrant(circle, cornerType, radii, fragPos);
 }
 
-// ── Is the fragment inside the rounded rectangle? ────────────────────────
+// Is the fragment inside the rounded rectangle?
 fn containedByRect(rect: Rectangle, radii: vec4<f32>, fragPos: vec2<f32>) -> bool {
     let tlCircle = createCornerCircle(rect, TOP_LEFT_CORNER, radii);
     let trCircle = createCornerCircle(rect, TOP_RIGHT_CORNER, radii);

@@ -42,17 +42,17 @@ internal sealed class GraphicsPipeline : IDisposable
     /// <param name="shader">The compiled shader providing the vertex and fragment entry points.</param>
     /// <remarks>
     /// Constructs the pipeline descriptor using the surface's pixel format and the
-    /// shader module from <paramref name="shader"/>. The pipeline retains its own internal
-    /// reference to the compiled code, so <paramref name="shader"/> may be disposed
-    /// immediately after this constructor returns.
+    /// separate vertex and fragment shader modules from <paramref name="shader"/>.
+    /// The pipeline retains its own internal reference to the compiled code, so
+    /// <paramref name="shader"/> may be disposed immediately after this constructor returns.
     /// </remarks>
     public GraphicsPipeline(GraphicsDevice gd, GraphicsSurface surface, GraphicsShader shader)
     {
         this.gd = gd;
 
-        // The pipeline retains its own internal reference to the compiled shader module.
-        // GraphicsShader.Dispose() releases the module handle once the caller is done with it.
-        Handle = BuildPipeline(shader.Handle, surface.Format);
+        // The pipeline retains its own internal reference to the compiled shader modules.
+        // GraphicsShader.Dispose() releases the module handles once the caller is done with it.
+        Handle = BuildPipeline(shader.VertexHandle, shader.FragmentHandle, surface.Format);
 
         if (Handle == null)
         {
@@ -101,7 +101,7 @@ internal sealed class GraphicsPipeline : IDisposable
         BindGroupLayout.Dispose();
     }
 
-    private unsafe SafeRenderPipelineHandle BuildPipeline(SafeShaderModuleHandle shaderModule, TextureFormat format)
+    private unsafe SafeRenderPipelineHandle BuildPipeline(SafeShaderModuleHandle vertModule, SafeShaderModuleHandle fragModule, TextureFormat format)
     {
         var vertexEntry = SilkMarshal.StringToPtr("vs_main");
         var fragmentEntry = SilkMarshal.StringToPtr("fs_main");
@@ -173,7 +173,7 @@ internal sealed class GraphicsPipeline : IDisposable
 
         var fragmentState = new FragmentState
         {
-            Module = (ShaderModule*)shaderModule.DangerousGetHandle(),
+            Module = (ShaderModule*)fragModule.DangerousGetHandle(),
             EntryPoint = (byte*)fragmentEntry,
             TargetCount = 1,
             Targets = &colorTarget,
@@ -185,7 +185,7 @@ internal sealed class GraphicsPipeline : IDisposable
 
             Vertex = new VertexState
             {
-                Module = (ShaderModule*)shaderModule.DangerousGetHandle(),
+                Module = (ShaderModule*)vertModule.DangerousGetHandle(),
                 EntryPoint = (byte*)vertexEntry,
                 BufferCount = 1,
                 Buffers = &vertexBufferLayout,

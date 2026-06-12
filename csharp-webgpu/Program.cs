@@ -88,7 +88,7 @@ public sealed class Program
             dinoHeight = imgInfo.Height;
         }
 
-        using var shader = new GraphicsShader(gd, "Content/shader.wgsl", 0f, 0f);
+        using var shader = new GraphicsShader(gd, "Content/texture.vert.wgsl", "Content/texture.frag.wgsl");
         pipeline = new GraphicsPipeline(gd, surface, shader);
         texture = new GraphicsTexture(gd, "Content/dino.png", pipeline.BindGroupLayout);
 
@@ -97,7 +97,7 @@ public sealed class Program
         textureBuffer = new GraphicsTextureBuffer(gd, initialQuadCount: 1);
         textureBuffer.WindowSize = new Vector2(fb.X, fb.Y);
 
-        using var rectShader = new GraphicsShader(gd, "Content/rect-shape.wgsl", 0f, 0f);
+        using var rectShader = new GraphicsShader(gd, "Content/rect-shape.vert.wgsl", "Content/rect-shape.frag.wgsl");
         rectPipeline = new GraphicsRectPipeline(gd, surface, rectShader);
         rectBuffer = new GraphicsRectBuffer(gd, initialRectCount: 64);
         rectBuffer.WindowSize = new Vector2(fb.X, fb.Y);

@@ -37,7 +37,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
     {
         this.gd = gd;
 
-        Handle = BuildPipeline(shader.Handle, surface.Format);
+        Handle = BuildPipeline(shader.VertexHandle, shader.FragmentHandle, surface.Format);
 
         if (Handle == null)
         {
@@ -73,7 +73,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
     /// <summary>
     /// Builds the render pipeline descriptor.
     /// </summary>
-    private unsafe SafeRenderPipelineHandle BuildPipeline(SafeShaderModuleHandle shaderModule, TextureFormat format)
+    private unsafe SafeRenderPipelineHandle BuildPipeline(SafeShaderModuleHandle vertModule, SafeShaderModuleHandle fragModule, TextureFormat format)
     {
         var vertexEntry = SilkMarshal.StringToPtr("vs_main");
         var fragmentEntry = SilkMarshal.StringToPtr("fs_main");
@@ -152,7 +152,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
 
         var fragmentState = new FragmentState
         {
-            Module = (ShaderModule*)shaderModule.DangerousGetHandle(),
+            Module = (ShaderModule*)fragModule.DangerousGetHandle(),
             EntryPoint = (byte*)fragmentEntry,
             TargetCount = 1,
             Targets = &colorTarget,
@@ -165,7 +165,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
 
             Vertex = new VertexState
             {
-                Module = (ShaderModule*)shaderModule.DangerousGetHandle(),
+                Module = (ShaderModule*)vertModule.DangerousGetHandle(),
                 EntryPoint = (byte*)vertexEntry,
                 BufferCount = 1,
                 Buffers = &vertexBufferLayout,
