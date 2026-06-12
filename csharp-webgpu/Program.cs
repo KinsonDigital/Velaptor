@@ -17,9 +17,10 @@ using NETColor = System.Drawing.Color;
 /// </summary>
 public sealed class Program
 {
-    private static readonly int[] CtrlModeValues = Enum.GetValues<ControlMode>().Cast<int>().ToArray();
-    private static readonly int MinCtrlMode = 0;
-    private static readonly int MaxCtrlMode = CtrlModeValues.Max();
+    private static readonly int MinEditMode = 0;
+    private static readonly int MaxEditMode = Enum.GetValues<EditMode>().Cast<int>().ToArray().Max();
+    private static readonly int MinRectCornerRadius = 0;
+    private static readonly int MaxRectCornerRadius = Enum.GetValues<RectCornerRadius>().Cast<int>().ToArray().Max();
     private static IWindow? window;
     private static GraphicsDevice? gd;
     private static GraphicsSurface? surface;
@@ -32,14 +33,16 @@ public sealed class Program
     private static IInputContext? input;
     private static IKeyboard keyboard;
     private static bool shiftKeyDown;
+    private static bool ctrlKeyDown;
     private static int dinoWidth;
     private static int dinoHeight;
     private static Vector2 dinoWorldPos = new (400f, 300f);
     private static Vector2 rectPos = new (180f, 150f);
     private static int rectWidth = 180;
     private static int rectHeight = 100;
-    private static ControlMode ctrlMode = ControlMode.Texture;
+    private static EditMode ctrlMode = EditMode.Texture;
     private static RectShape rect;
+    private static RectCornerRadius rectCornerToModify = RectCornerRadius.TopLeft;
 
     private static void Main()
     {
@@ -51,6 +54,7 @@ public sealed class Program
         window.Title = "MODE: TEXTURE";
         window.Load += OnLoad;
         window.Render += OnRender;
+        window.Update += Update;
         window.FramebufferResize += OnResize;
         window.Closing += OnClose;
 
@@ -115,6 +119,66 @@ public sealed class Program
             CornerRadius = new CornerRadius(camera.TransformSize(15f)),
             IsSolid = true,
         };
+    }
+
+    private static void Update(double _) => LimitCornerValues();
+
+    private static void LimitCornerValues()
+    {
+        // Limit the min and max values of the rect corner radius values
+        var smallestSizeValue = rect.Width < rect.Height ? rect.Width / 2f : rect.Height / 2f;
+        var topLeft = rect.CornerRadius.TopLeft;
+        var topRight = rect.CornerRadius.TopRight;
+        var bottomRight = rect.CornerRadius.BottomRight;
+        var bottomLeft = rect.CornerRadius.BottomLeft;
+
+        // TOP LEFT
+        if (rect.CornerRadius.TopLeft < 0)
+        {
+            topLeft = rect.CornerRadius.TopLeft < 0 ? 0 : rect.CornerRadius.TopLeft;
+        }
+        else if (rect.CornerRadius.TopLeft > smallestSizeValue)
+        {
+            topLeft = rect.CornerRadius.TopLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopLeft;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { TopLeft = topLeft, };
+
+        // TOP RIGHT
+        if (rect.CornerRadius.TopRight < 0)
+        {
+            topRight = rect.CornerRadius.TopRight < 0 ? 0 : rect.CornerRadius.TopRight;
+        }
+        else if (rect.CornerRadius.TopRight > smallestSizeValue)
+        {
+            topRight = rect.CornerRadius.TopRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopRight;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { TopRight = topLeft, };
+
+        // BOTTOM RIGHT
+        if (rect.CornerRadius.BottomRight < 0)
+        {
+            bottomRight = rect.CornerRadius.BottomRight < 0 ? 0 : rect.CornerRadius.BottomRight;
+        }
+        else if (rect.CornerRadius.BottomRight > smallestSizeValue)
+        {
+            bottomRight = rect.CornerRadius.BottomRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomRight;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { BottomRight = topLeft, };
+
+        // BOTTOM LEFT
+        if (rect.CornerRadius.BottomLeft < 0)
+        {
+            bottomLeft = rect.CornerRadius.BottomLeft < 0 ? 0 : rect.CornerRadius.BottomLeft;
+        }
+        else if (rect.CornerRadius.BottomLeft > smallestSizeValue)
+        {
+            bottomLeft = rect.CornerRadius.BottomLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomLeft;
+        }
+
+        rect.CornerRadius = new CornerRadius { TopLeft = topLeft, TopRight = topRight, BottomRight = bottomRight, BottomLeft = bottomLeft };
     }
 
     /// <summary>
@@ -232,11 +296,11 @@ public sealed class Program
 
         if (key == Key.PageUp)
         {
-            nextValue = currentValue <= MinCtrlMode ? MaxCtrlMode : currentValue - 1;
+            nextValue = currentValue <= MinEditMode ? MaxEditMode : currentValue - 1;
         }
         else if (key == Key.PageDown)
         {
-            nextValue = currentValue >= MaxCtrlMode ? MinCtrlMode : currentValue + 1;
+            nextValue = currentValue >= MaxEditMode ? MinEditMode : currentValue + 1;
         }
 
         if (key is Key.ShiftLeft or Key.ShiftRight)
@@ -244,19 +308,24 @@ public sealed class Program
             shiftKeyDown = true;
         }
 
-        ctrlMode = (ControlMode)nextValue;
+        if (key is Key.ControlLeft or Key.ControlRight)
+        {
+            ctrlKeyDown = true;
+        }
+
+        ctrlMode = (EditMode)nextValue;
 
         switch (ctrlMode)
         {
-            case ControlMode.Texture:
+            case EditMode.Texture:
                 ControlTexture(key);
                 window?.Title = "MODE: TEXTURE";
                 break;
-            case ControlMode.Rectangle:
+            case EditMode.Rectangle:
                 ControlRectangle(key);
-                window?.Title = "MODE: RECTANGLE";
+                window?.Title = $"MODE: RECTANGLE | Corner To Modify: {rectCornerToModify}";
                 break;
-            case ControlMode.Camera:
+            case EditMode.Camera:
                 ControlCamera(key);
                 window?.Title = "MODE: CAMERA";
                 break;
@@ -268,6 +337,11 @@ public sealed class Program
         if (key is Key.ShiftLeft or Key.ShiftRight)
         {
             shiftKeyDown = false;
+        }
+
+        if (key is Key.ControlLeft or Key.ControlRight)
+        {
+            ctrlKeyDown = false;
         }
     }
 
@@ -359,6 +433,65 @@ public sealed class Program
             if (key == Key.Down)
             {
                 rectHeight += 10;
+            }
+        }
+        else if (ctrlKeyDown) // CORNER RADIUS ADJUSTMENT
+        {
+            if (camera is null)
+            {
+                throw new Exception("Camera cannot be null.");
+            }
+
+            if (key == Key.Left)
+            {
+                rectCornerToModify = rectCornerToModify == (RectCornerRadius)MinRectCornerRadius
+                    ? (RectCornerRadius)MaxRectCornerRadius
+                    : rectCornerToModify - 1;
+            }
+
+            if (key == Key.Right)
+            {
+                rectCornerToModify = rectCornerToModify == (RectCornerRadius)MaxRectCornerRadius
+                    ? (RectCornerRadius)MinRectCornerRadius
+                    : rectCornerToModify + 1;
+            }
+
+            if (key == Key.Up)
+            {
+                switch (rectCornerToModify)
+                {
+                    case RectCornerRadius.TopLeft:
+                        rect.CornerRadius = CornerRadius.SetTopLeft(rect.CornerRadius, rect.CornerRadius.TopLeft + camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.TopRight:
+                        rect.CornerRadius = CornerRadius.SetTopRight(rect.CornerRadius, rect.CornerRadius.TopRight + camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.BottomRight:
+                        rect.CornerRadius = CornerRadius.SetBottomRight(rect.CornerRadius, rect.CornerRadius.BottomRight + camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.BottomLeft:
+                        rect.CornerRadius = CornerRadius.SetBottomLeft(rect.CornerRadius, rect.CornerRadius.BottomLeft + camera.TransformSize(5f));
+                        break;
+                }
+            }
+
+            if (key == Key.Down)
+            {
+                switch (rectCornerToModify)
+                {
+                    case RectCornerRadius.TopLeft:
+                        rect.CornerRadius = CornerRadius.SetTopLeft(rect.CornerRadius, rect.CornerRadius.TopLeft - camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.TopRight:
+                        rect.CornerRadius = CornerRadius.SetTopRight(rect.CornerRadius, rect.CornerRadius.TopRight - camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.BottomRight:
+                        rect.CornerRadius = CornerRadius.SetBottomRight(rect.CornerRadius, rect.CornerRadius.BottomRight - camera.TransformSize(5f));
+                        break;
+                    case RectCornerRadius.BottomLeft:
+                        rect.CornerRadius = CornerRadius.SetBottomLeft(rect.CornerRadius, rect.CornerRadius.BottomLeft - camera.TransformSize(5f));
+                        break;
+                }
             }
         }
         else

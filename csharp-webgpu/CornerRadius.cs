@@ -68,8 +68,7 @@ public readonly record struct CornerRadius
     /// <summary>
     /// Returns a new <see cref="CornerRadius"/> with only the top-left corner changed.
     /// </summary>
-    public static CornerRadius SetTopLeft(CornerRadius radius, float value) =>
-        radius with { TopLeft = value };
+    public static CornerRadius SetTopLeft(CornerRadius radius, float value) => radius with { TopLeft = value };
 
     /// <summary>
     /// Returns a new <see cref="CornerRadius"/> with only the top-right corner changed.

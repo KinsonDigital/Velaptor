@@ -4,9 +4,17 @@
 
 namespace csharp_webgpu;
 
-public enum ControlMode
+public enum EditMode
 {
     Texture,
     Rectangle,
     Camera
+}
+
+public enum RectCornerRadius
+{
+    TopLeft,
+    TopRight,
+    BottomRight,
+    BottomLeft,
 }
