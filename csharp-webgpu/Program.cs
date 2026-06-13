@@ -54,7 +54,7 @@ public sealed class Program
         window.Title = "MODE: TEXTURE";
         window.Load += OnLoad;
         window.Render += OnRender;
-        window.Update += Update;
+        window.Update += OnUpdate;
         window.FramebufferResize += OnResize;
         window.Closing += OnClose;
 
@@ -121,65 +121,7 @@ public sealed class Program
         };
     }
 
-    private static void Update(double _) => LimitCornerValues();
-
-    private static void LimitCornerValues()
-    {
-        // Limit the min and max values of the rect corner radius values
-        var smallestSizeValue = rect.Width < rect.Height ? rect.Width / 2f : rect.Height / 2f;
-        var topLeft = rect.CornerRadius.TopLeft;
-        var topRight = rect.CornerRadius.TopRight;
-        var bottomRight = rect.CornerRadius.BottomRight;
-        var bottomLeft = rect.CornerRadius.BottomLeft;
-
-        // TOP LEFT
-        if (rect.CornerRadius.TopLeft < 0)
-        {
-            topLeft = rect.CornerRadius.TopLeft < 0 ? 0 : rect.CornerRadius.TopLeft;
-        }
-        else if (rect.CornerRadius.TopLeft > smallestSizeValue)
-        {
-            topLeft = rect.CornerRadius.TopLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopLeft;
-        }
-
-        rect.CornerRadius = rect.CornerRadius with { TopLeft = topLeft, };
-
-        // TOP RIGHT
-        if (rect.CornerRadius.TopRight < 0)
-        {
-            topRight = rect.CornerRadius.TopRight < 0 ? 0 : rect.CornerRadius.TopRight;
-        }
-        else if (rect.CornerRadius.TopRight > smallestSizeValue)
-        {
-            topRight = rect.CornerRadius.TopRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopRight;
-        }
-
-        rect.CornerRadius = rect.CornerRadius with { TopRight = topLeft, };
-
-        // BOTTOM RIGHT
-        if (rect.CornerRadius.BottomRight < 0)
-        {
-            bottomRight = rect.CornerRadius.BottomRight < 0 ? 0 : rect.CornerRadius.BottomRight;
-        }
-        else if (rect.CornerRadius.BottomRight > smallestSizeValue)
-        {
-            bottomRight = rect.CornerRadius.BottomRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomRight;
-        }
-
-        rect.CornerRadius = rect.CornerRadius with { BottomRight = topLeft, };
-
-        // BOTTOM LEFT
-        if (rect.CornerRadius.BottomLeft < 0)
-        {
-            bottomLeft = rect.CornerRadius.BottomLeft < 0 ? 0 : rect.CornerRadius.BottomLeft;
-        }
-        else if (rect.CornerRadius.BottomLeft > smallestSizeValue)
-        {
-            bottomLeft = rect.CornerRadius.BottomLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomLeft;
-        }
-
-        rect.CornerRadius = new CornerRadius { TopLeft = topLeft, TopRight = topRight, BottomRight = bottomRight, BottomLeft = bottomLeft };
-    }
+    private static void OnUpdate(double _) => LimitCornerValues();
 
     /// <summary>
     /// Renders a frame: clears to cornflower blue, draws the texture, draws rectangles.
@@ -287,6 +229,64 @@ public sealed class Program
         surface?.Dispose();
         gd?.Dispose();
         input?.Dispose();
+    }
+
+    private static void LimitCornerValues()
+    {
+        // Limit the min and max values of the rect corner radius values
+        var smallestSizeValue = rect.Width < rect.Height ? rect.Width / 2f : rect.Height / 2f;
+        var topLeft = rect.CornerRadius.TopLeft;
+        var topRight = rect.CornerRadius.TopRight;
+        var bottomRight = rect.CornerRadius.BottomRight;
+        var bottomLeft = rect.CornerRadius.BottomLeft;
+
+        // TOP LEFT
+        if (rect.CornerRadius.TopLeft < 0)
+        {
+            topLeft = rect.CornerRadius.TopLeft < 0 ? 0 : rect.CornerRadius.TopLeft;
+        }
+        else if (rect.CornerRadius.TopLeft > smallestSizeValue)
+        {
+            topLeft = rect.CornerRadius.TopLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopLeft;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { TopLeft = topLeft, };
+
+        // TOP RIGHT
+        if (rect.CornerRadius.TopRight < 0)
+        {
+            topRight = rect.CornerRadius.TopRight < 0 ? 0 : rect.CornerRadius.TopRight;
+        }
+        else if (rect.CornerRadius.TopRight > smallestSizeValue)
+        {
+            topRight = rect.CornerRadius.TopRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.TopRight;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { TopRight = topLeft, };
+
+        // BOTTOM RIGHT
+        if (rect.CornerRadius.BottomRight < 0)
+        {
+            bottomRight = rect.CornerRadius.BottomRight < 0 ? 0 : rect.CornerRadius.BottomRight;
+        }
+        else if (rect.CornerRadius.BottomRight > smallestSizeValue)
+        {
+            bottomRight = rect.CornerRadius.BottomRight > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomRight;
+        }
+
+        rect.CornerRadius = rect.CornerRadius with { BottomRight = topLeft, };
+
+        // BOTTOM LEFT
+        if (rect.CornerRadius.BottomLeft < 0)
+        {
+            bottomLeft = rect.CornerRadius.BottomLeft < 0 ? 0 : rect.CornerRadius.BottomLeft;
+        }
+        else if (rect.CornerRadius.BottomLeft > smallestSizeValue)
+        {
+            bottomLeft = rect.CornerRadius.BottomLeft > smallestSizeValue ? smallestSizeValue : rect.CornerRadius.BottomLeft;
+        }
+
+        rect.CornerRadius = new CornerRadius { TopLeft = topLeft, TopRight = topRight, BottomRight = bottomRight, BottomLeft = bottomLeft };
     }
 
     private static void KeyboardKeyDown(IKeyboard kb, Key key, int _)
