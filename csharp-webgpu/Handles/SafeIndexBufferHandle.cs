@@ -5,7 +5,7 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 /// <summary>
 /// A safe handle for a WebGPU index buffer allocated on the device.
@@ -14,23 +14,19 @@ using Silk.NET.WebGPU;
 /// </summary>
 internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeIndexBufferHandle"/> class.
     /// </summary>
-    /// <param name="wgpu">The WebGPU API instance.</param>
+    /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="deviceHandle">The device handle.</param>
     /// <param name="bufferDescriptor">Description of the buffer to create.</param>
-    public SafeIndexBufferHandle(WebGPU wgpu, SafeDeviceHandle deviceHandle, in BufferDescriptor bufferDescriptor)
+    public SafeIndexBufferHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.BufferDescriptor bufferDescriptor)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
-        unsafe
-        {
-            SetHandle((nint)wgpu.DeviceCreateBuffer((Device*)deviceHandle.DangerousGetHandle(), in bufferDescriptor));
-        }
+        SetHandle(this.wgpu.DeviceCreateBuffer(deviceHandle, in bufferDescriptor));
     }
 
     /// <summary>
@@ -41,11 +37,8 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.BufferDestroy((Buffer*)this.handle);
-                this.wgpu.BufferRelease((Buffer*)this.handle);
-            }
+            this.wgpu.BufferDestroy(this.handle);
+            this.wgpu.BufferRelease(this.handle);
         }
 
         return true;

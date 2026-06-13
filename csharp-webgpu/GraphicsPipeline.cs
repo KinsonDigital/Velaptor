@@ -82,10 +82,7 @@ internal sealed class GraphicsPipeline : IDisposable
     /// <param name="pass">The active render pass encoder to bind to.</param>
     public void Bind(SafeRenderPassEncoderHandle pass)
     {
-        unsafe
-        {
-            this.gd.Wgpu.RenderPassEncoderSetPipeline((RenderPassEncoder*)pass.DangerousGetHandle(), (RenderPipeline*)Handle.DangerousGetHandle());
-        }
+        this.gd.Wgpu.RenderPassEncoderSetPipeline(pass, Handle);
     }
 
     /// <summary>
@@ -111,7 +108,7 @@ internal sealed class GraphicsPipeline : IDisposable
         var bindGrpLayout = (BindGroupLayout*)BindGroupLayout.DangerousGetHandle();
 
         ReadOnlySpan<byte> mainPipelineLayoutLabel = "Main Pipeline Layout"u8;
-        PipelineLayout* pipelineLayout;
+        SafePipelineLayoutHandle pipelineLayout;
 
         fixed (byte* mainPipelineLayoutStrPtr = mainPipelineLayoutLabel)
         {
@@ -122,7 +119,7 @@ internal sealed class GraphicsPipeline : IDisposable
                 BindGroupLayouts = &bindGrpLayout,
             };
 
-            pipelineLayout = this.gd.Wgpu.DeviceCreatePipelineLayout((Device*)this.gd.Handle.DangerousGetHandle(), in pipelineDescriptor);
+            pipelineLayout = this.gd.Wgpu.DeviceCreatePipelineLayout(this.gd.Handle, in pipelineDescriptor);
         }
 
         // ── Vertex buffer layout ─────────────────────────────────────────────
@@ -181,7 +178,7 @@ internal sealed class GraphicsPipeline : IDisposable
 
         var pipelineDesc = new RenderPipelineDescriptor
         {
-            Layout = pipelineLayout,
+            Layout = (PipelineLayout*)pipelineLayout.DangerousGetHandle(),
 
             Vertex = new VertexState
             {
@@ -213,10 +210,10 @@ internal sealed class GraphicsPipeline : IDisposable
             DepthStencil = null, // No depth testing — a flat 2D shape cannot occlude itself
         };
 
-        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, pipelineDesc);
+        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
 
         // The pipeline holds its own reference to the layout — release our handle.
-        this.gd.Wgpu.PipelineLayoutRelease(pipelineLayout);
+        pipelineLayout.Dispose();
 
         SilkMarshal.Free(vertexEntry);
         SilkMarshal.Free(fragmentEntry);
@@ -263,8 +260,8 @@ internal sealed class GraphicsPipeline : IDisposable
             Entries = entries,
         };
 
-        var handle = this.gd.Wgpu.DeviceCreateBindGroupLayout((Device*)this.gd.Handle.DangerousGetHandle(), in desc);
+        var handle = this.gd.Wgpu.DeviceCreateBindGroupLayout(this.gd.Handle, in desc);
 
-        return new SafeBindGroupLayoutHandle(this.gd, (nint)handle);
+        return new SafeBindGroupLayoutHandle(this.gd.Wgpu, handle);
     }
 }

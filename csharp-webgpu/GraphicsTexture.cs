@@ -127,7 +127,7 @@ internal sealed class GraphicsTexture : IDisposable
             SampleCount = 1,
         };
 
-        this.texture = new SafeTextureHandle(this.gd.Wgpu, this.gd.Handle, in textureDesc);
+        this.texture = new SafeTextureHandle(this.gd.Wgpu, this.gd.Handle, ref textureDesc);
 
         unsafe
         {
@@ -153,9 +153,9 @@ internal sealed class GraphicsTexture : IDisposable
                 var copySize = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1 };
 
                 this.gd.Wgpu.QueueWriteTexture(
-                    (Queue*)this.gd.Queue.DangerousGetHandle(),
+                    this.gd.Queue,
                     in destination,
-                    uploadPtr,
+                    (nint)uploadPtr,
                     (nuint)uploadBuffer.Length,
                     in dataLayout,
                     in copySize);
@@ -172,7 +172,7 @@ internal sealed class GraphicsTexture : IDisposable
             Aspect = TextureAspect.All,
         };
 
-        this.textureView = new SafeTextureViewHandle(this.gd.Wgpu, this.texture.DangerousGetHandle(), in viewDesc);
+        this.textureView = new SafeTextureViewHandle(this.gd.Wgpu, this.texture.DangerousGetHandle(), ref viewDesc);
 
         // Create a linear sampler. ClampToEdge prevents colour bleeding at the texture border.
         var samplerDesc = new SamplerDescriptor
@@ -189,7 +189,7 @@ internal sealed class GraphicsTexture : IDisposable
             MaxAnisotropy = 1,
         };
 
-        this.samplerHandle = new SafeSamplerHandle(this.gd, in samplerDesc);
+        this.samplerHandle = new SafeSamplerHandle(this.gd.Wgpu, this.gd.Handle, ref samplerDesc);
 
         unsafe
         {
@@ -206,7 +206,7 @@ internal sealed class GraphicsTexture : IDisposable
                 Entries = entries,
             };
 
-            BindGroup = new SafeBindGroupHandle(this.gd, in bgDesc);
+            BindGroup = new SafeBindGroupHandle(this.gd.Wgpu, this.gd.Handle, ref bgDesc);
         }
     }
 }

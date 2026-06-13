@@ -93,28 +93,23 @@ internal sealed class GraphicsTextureBuffer : IDisposable
     /// <param name="firstQuad">Index of the first quad to draw.</param>
     public void Draw(SafeRenderPassEncoderHandle pass, uint quadCount = 1, uint firstQuad = 0)
     {
-        unsafe
-        {
-            var encoder = (RenderPassEncoder*)pass.DangerousGetHandle();
+        this.gd.Wgpu.RenderPassEncoderSetVertexBuffer(
+            pass, 0,
+            this.vertexBuffer.DangerousGetHandle(),
+            0, this.vertexBufferSizeInBytes);
 
-            this.gd.Wgpu.RenderPassEncoderSetVertexBuffer(
-                encoder, 0,
-                (Buffer*)this.vertexBuffer.DangerousGetHandle(),
-                0, this.vertexBufferSizeInBytes);
+        this.gd.Wgpu.RenderPassEncoderSetIndexBuffer(
+            pass,
+            this.indexBuffer.DangerousGetHandle(),
+            IndexFormat.Uint32, 0, this.indexBufferSizeInBytes);
 
-            this.gd.Wgpu.RenderPassEncoderSetIndexBuffer(
-                encoder,
-                (Buffer*)this.indexBuffer.DangerousGetHandle(),
-                IndexFormat.Uint32, 0, this.indexBufferSizeInBytes);
-
-            this.gd.Wgpu.RenderPassEncoderDrawIndexed(
-                encoder,
-                indexCount: IndicesPerQuad * quadCount,
-                instanceCount: 1,
-                firstIndex: IndicesPerQuad * firstQuad,
-                baseVertex: 0,
-                firstInstance: 0);
-        }
+        this.gd.Wgpu.RenderPassEncoderDrawIndexed(
+            pass,
+            indexCount: IndicesPerQuad * quadCount,
+            instanceCount: 1,
+            firstIndex: IndicesPerQuad * firstQuad,
+            baseVertex: 0,
+            firstInstance: 0);
     }
 
     /// <inheritdoc/>
@@ -297,7 +292,7 @@ internal sealed class GraphicsTextureBuffer : IDisposable
                     MappedAtCreation = false,
                 };
 
-                this.vertexBuffer = new SafeVertexBufferHandle(this.gd.Wgpu, this.gd.Handle, vbDesc);
+                this.vertexBuffer = new SafeVertexBufferHandle(this.gd.Wgpu, this.gd.Handle, ref vbDesc);
             }
 
             ReadOnlySpan<byte> ibLabel = "Texture Index Buffer"u8;
@@ -312,7 +307,7 @@ internal sealed class GraphicsTextureBuffer : IDisposable
                     MappedAtCreation = false,
                 };
 
-                this.indexBuffer = new SafeIndexBufferHandle(this.gd.Wgpu, this.gd.Handle, ibDesc);
+                this.indexBuffer = new SafeIndexBufferHandle(this.gd.Wgpu, this.gd.Handle, ref ibDesc);
             }
         }
     }
@@ -324,10 +319,10 @@ internal sealed class GraphicsTextureBuffer : IDisposable
         fixed (float* vbPtr = vertexData)
         {
             this.gd.Wgpu.QueueWriteBuffer(
-                (Queue*)this.gd.Queue.DangerousGetHandle(),
-                (Buffer*)this.vertexBuffer.DangerousGetHandle(),
+                this.gd.Queue,
+                this.vertexBuffer.DangerousGetHandle(),
                 vbOffset,
-                vbPtr,
+                (nint)vbPtr,
                 (nuint)(vertexData.Length * sizeof(float)));
         }
 
@@ -336,10 +331,10 @@ internal sealed class GraphicsTextureBuffer : IDisposable
         fixed (uint* ibPtr = indexData)
         {
             this.gd.Wgpu.QueueWriteBuffer(
-                (Queue*)this.gd.Queue.DangerousGetHandle(),
-                (Buffer*)this.indexBuffer.DangerousGetHandle(),
+                this.gd.Queue,
+                this.indexBuffer.DangerousGetHandle(),
                 ibOffset,
-                ibPtr,
+                (nint)ibPtr,
                 (nuint)(indexData.Length * sizeof(uint)));
         }
     }

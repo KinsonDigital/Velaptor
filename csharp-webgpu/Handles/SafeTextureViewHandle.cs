@@ -4,17 +4,16 @@
 
 namespace csharp_webgpu.Handles;
 
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeTextureViewHandle : IDisposable
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
     private nint handle;
 
-    public SafeTextureViewHandle(WebGPU wgpu, nint texture, in TextureViewDescriptor textureViewDescriptor)
+    public SafeTextureViewHandle(WGPUInvoker wgpu, nint texture, ref readonly Silk.NET.WebGPU.TextureViewDescriptor textureViewDescriptor)
     {
         this.wgpu = wgpu;
-
         SetHandle(texture, in textureViewDescriptor);
     }
 
@@ -22,7 +21,7 @@ internal class SafeTextureViewHandle : IDisposable
 
     public nint DangerousGetHandle() => this.handle;
 
-    public void UpdateHandle(nint texture, in TextureViewDescriptor textureViewDescriptor) => SetHandle(texture, in textureViewDescriptor);
+    public void UpdateHandle(nint texture, ref readonly Silk.NET.WebGPU.TextureViewDescriptor textureViewDescriptor) => SetHandle(texture, in textureViewDescriptor);
 
     public void Dispose() => Dispose(disposing: true);
 
@@ -30,20 +29,14 @@ internal class SafeTextureViewHandle : IDisposable
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.TextureViewRelease((TextureView*)this.handle);
-            }
+            this.wgpu.TextureViewRelease(this.handle);
         }
 
         this.handle = IntPtr.Zero;
     }
 
-    private void SetHandle(nint texture, in TextureViewDescriptor textureViewDescriptor)
+    private void SetHandle(nint texture, ref readonly Silk.NET.WebGPU.TextureViewDescriptor textureViewDescriptor)
     {
-        unsafe
-        {
-            this.handle = (nint)this.wgpu.TextureCreateView((Texture*)texture, in textureViewDescriptor);
-        }
+        this.handle = this.wgpu.TextureCreateView(texture, in textureViewDescriptor);
     }
 }

@@ -105,11 +105,11 @@ internal sealed class Frame : IDisposable
 
         if (this.textureViewHandle is null)
         {
-            this.textureViewHandle = new SafeTextureViewHandle(this.gd.Wgpu, this.surfaceTextureHandle.DangerousGetHandle(), in viewDesc);
+            this.textureViewHandle = new SafeTextureViewHandle(this.gd.Wgpu, this.surfaceTextureHandle.DangerousGetHandle(), ref viewDesc);
         }
         else
         {
-            this.textureViewHandle.UpdateHandle(this.surfaceTextureHandle.DangerousGetHandle(), in viewDesc);
+            this.textureViewHandle.UpdateHandle(this.surfaceTextureHandle.DangerousGetHandle(), ref viewDesc);
         }
 
         if (this.textureViewHandle.IsInvalid)
@@ -125,11 +125,11 @@ internal sealed class Frame : IDisposable
 
         if (this.encoder is null)
         {
-            this.encoder = new SafeCommandEncoderHandle(this.gd, in encoderDesc);
+            this.encoder = new SafeCommandEncoderHandle(this.gd.Wgpu, this.gd.Handle, ref encoderDesc);
         }
         else
         {
-            this.encoder.UpdateHandle(in encoderDesc);
+            this.encoder.UpdateHandle(ref encoderDesc);
         }
 
         unsafe
@@ -153,7 +153,7 @@ internal sealed class Frame : IDisposable
                 ColorAttachments = &colorAttachment,
             };
 
-            this.renderPassHandle = new SafeRenderPassEncoderHandle(this.gd.Wgpu, this.encoder, in passDesc);
+            this.renderPassHandle = new SafeRenderPassEncoderHandle(this.gd.Wgpu, this.encoder, ref passDesc);
             IsValid = true;
 
             return true;
@@ -190,12 +190,7 @@ internal sealed class Frame : IDisposable
 
         pipeline.Bind(this.renderPassHandle);
 
-        unsafe
-        {
-            var renderPassEncoder = (RenderPassEncoder*)this.renderPassHandle.DangerousGetHandle();
-
-            this.gd.Wgpu.RenderPassEncoderSetBindGroup(renderPassEncoder, 0, (BindGroup*)textureBindGroup.DangerousGetHandle(), 0, null);
-        }
+        this.gd.Wgpu.RenderPassEncoderSetBindGroup(this.renderPassHandle, 0, textureBindGroup, 0, 0);
 
         textureBuffer.Draw(this.renderPassHandle, quadCount, firstQuad);
     }
@@ -262,15 +257,15 @@ internal sealed class Frame : IDisposable
             // Seal the command buffer and submit it to the GPU queue.
             // The encoder is released after Finish; only the sealed buffer is submitted.
             var cmdBufDesc = default(CommandBufferDescriptor);
-            var cmdBuf = this.gd.Wgpu.CommandEncoderFinish((CommandEncoder*)this.encoder.DangerousGetHandle(), in cmdBufDesc);
+            var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.encoder, in cmdBufDesc);
 
             this.encoder.Dispose();
 
-            this.gd.Wgpu.QueueSubmit((Queue*)this.gd.Queue.DangerousGetHandle(), 1, &cmdBuf);
+            this.gd.Wgpu.QueueSubmit(this.gd.Queue, 1, cmdBuf);
             this.gd.Wgpu.CommandBufferRelease(cmdBuf);
 
             // Swap the completed texture onto the display (waits for vertical blank in Fifo mode).
-            this.gd.Wgpu.SurfacePresent((Surface*)this.surface.Handle.DangerousGetHandle());
+            this.gd.Wgpu.SurfacePresent(this.surface.Handle);
         }
     }
 

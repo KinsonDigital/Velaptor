@@ -1,4 +1,4 @@
-﻿// <copyright file="SafeBindGroupLayoutHandle.cs" company="KinsonDigital">
+﻿// <copyright file="SafePipelineLayoutHandle.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,12 +6,13 @@ namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using NativeInterop.WebGPU;
+using Silk.NET.WebGPU;
 
-internal class SafeBindGroupLayoutHandle : SafeHandleZeroOrMinusOneIsInvalid
+internal class SafePipelineLayoutHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WGPUInvoker wgpu;
+    private WGPUInvoker wgpu;
 
-    public SafeBindGroupLayoutHandle(WGPUInvoker wgpu, nint handle)
+    public SafePipelineLayoutHandle(WGPUInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
@@ -22,7 +23,7 @@ internal class SafeBindGroupLayoutHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            this.wgpu.BindGroupLayoutRelease(this.handle);
+            this.wgpu.PipelineLayoutRelease(this.handle);
         }
 
         return true;

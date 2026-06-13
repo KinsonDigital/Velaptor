@@ -5,30 +5,24 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeSamplerHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly GraphicsDevice graphicsDevice;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeSamplerHandle(GraphicsDevice graphicsDevice, in SamplerDescriptor samplerDesc)
+    public SafeSamplerHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.SamplerDescriptor samplerDesc)
         : base(ownsHandle: true)
     {
-        unsafe
-        {
-            this.graphicsDevice = graphicsDevice;
-            SetHandle((nint)this.graphicsDevice.Wgpu.DeviceCreateSampler((Device*)this.graphicsDevice.Handle.DangerousGetHandle(), in samplerDesc));
-        }
+        this.wgpu = wgpu;
+        SetHandle(this.wgpu.DeviceCreateSampler(deviceHandle, in samplerDesc));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.graphicsDevice.Wgpu.SamplerRelease((Sampler*)this.handle);
-            }
+            this.wgpu.SamplerRelease(this.handle);
         }
 
         return true;

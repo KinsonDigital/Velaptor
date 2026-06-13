@@ -4,17 +4,18 @@
 
 namespace csharp_webgpu.Handles;
 
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeCommandEncoderHandle : IDisposable
 {
-    private readonly GraphicsDevice graphicsDevice;
+    private readonly WGPUInvoker wgpu;
+    private readonly SafeDeviceHandle deviceHandle;
     private nint handle;
 
-    public SafeCommandEncoderHandle(GraphicsDevice graphicsDevice, in CommandEncoderDescriptor commandEncoderDescriptor)
+    public SafeCommandEncoderHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.CommandEncoderDescriptor commandEncoderDescriptor)
     {
-        this.graphicsDevice = graphicsDevice;
-
+        this.wgpu = wgpu;
+        this.deviceHandle = deviceHandle;
         SetHandle(in commandEncoderDescriptor);
     }
 
@@ -22,7 +23,7 @@ internal class SafeCommandEncoderHandle : IDisposable
 
     public nint DangerousGetHandle() => this.handle;
 
-    public void UpdateHandle(in CommandEncoderDescriptor commandEncoderDescriptor) => SetHandle(in commandEncoderDescriptor);
+    public void UpdateHandle(ref readonly Silk.NET.WebGPU.CommandEncoderDescriptor commandEncoderDescriptor) => SetHandle(in commandEncoderDescriptor);
 
     public void Dispose() => Dispose(disposing: true);
 
@@ -33,21 +34,12 @@ internal class SafeCommandEncoderHandle : IDisposable
             return;
         }
 
-        unsafe
-        {
-            this.graphicsDevice.Wgpu.CommandEncoderRelease((CommandEncoder*)this.handle);
-        }
-
+        this.wgpu.CommandEncoderRelease(this.handle);
         this.handle = IntPtr.Zero;
     }
 
-    private void SetHandle(in CommandEncoderDescriptor commandEncoderDescriptor)
+    private void SetHandle(ref readonly Silk.NET.WebGPU.CommandEncoderDescriptor commandEncoderDescriptor)
     {
-        unsafe
-        {
-            this.handle = (nint)this.graphicsDevice.Wgpu.DeviceCreateCommandEncoder(
-                (Device*)this.graphicsDevice.Handle.DangerousGetHandle(),
-                in commandEncoderDescriptor);
-        }
+        this.handle = this.wgpu.DeviceCreateCommandEncoder(this.deviceHandle, in commandEncoderDescriptor);
     }
 }

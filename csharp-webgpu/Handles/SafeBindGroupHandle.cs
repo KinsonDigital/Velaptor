@@ -5,31 +5,24 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeBindGroupHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly GraphicsDevice graphicsDevice;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeBindGroupHandle(GraphicsDevice graphicsDevice, in BindGroupDescriptor bindGroupDescriptor)
+    public SafeBindGroupHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.BindGroupDescriptor bindGroupDescriptor)
         : base(ownsHandle: true)
     {
-        this.graphicsDevice = graphicsDevice;
-
-        unsafe
-        {
-            SetHandle((nint)graphicsDevice.Wgpu.DeviceCreateBindGroup((Device*)graphicsDevice.Handle.DangerousGetHandle(), in bindGroupDescriptor));
-        }
+        this.wgpu = wgpu;
+        SetHandle(this.wgpu.DeviceCreateBindGroup(deviceHandle, in bindGroupDescriptor));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.graphicsDevice.Wgpu.BindGroupRelease((BindGroup*)this.handle);
-            }
+            this.wgpu.BindGroupRelease(this.handle);
         }
 
         return true;

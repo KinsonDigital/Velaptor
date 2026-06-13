@@ -74,7 +74,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
         var fragmentEntry = SilkMarshal.StringToPtr("fs_main");
 
         // ── Empty pipeline layout: no bind groups ────────────────────────
-        PipelineLayout* pipelineLayout;
+        SafePipelineLayoutHandle pipelineLayoutHandle;
         ReadOnlySpan<byte> rectPipelineLayoutLabel = "Rect Pipeline Layout"u8;
 
         fixed (byte* rectPipelineLayoutStrPtr = rectPipelineLayoutLabel)
@@ -86,8 +86,8 @@ internal sealed class GraphicsRectPipeline : IDisposable
                 BindGroupLayouts = null,
             };
 
-            pipelineLayout = this.gd.Wgpu.DeviceCreatePipelineLayout(
-                (Device*)this.gd.Handle.DangerousGetHandle(),
+            pipelineLayoutHandle = this.gd.Wgpu.DeviceCreatePipelineLayout(
+                this.gd.Handle,
                 in pipelineDescriptor);
         }
 
@@ -103,15 +103,15 @@ internal sealed class GraphicsRectPipeline : IDisposable
         //   location 7: f32      bottomRightRadius  ( 4 bytes, offset 56)
         //   location 8: f32      bottomLeftRadius   ( 4 bytes, offset 60)
         var attributes = stackalloc VertexAttribute[9];
-        attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0,  ShaderLocation = 0 };
-        attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8,  ShaderLocation = 1 };
+        attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 };
+        attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8, ShaderLocation = 1 };
         attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 24, ShaderLocation = 2 };
-        attributes[3] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 40, ShaderLocation = 3 };
-        attributes[4] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 44, ShaderLocation = 4 };
-        attributes[5] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 48, ShaderLocation = 5 };
-        attributes[6] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 52, ShaderLocation = 6 };
-        attributes[7] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 56, ShaderLocation = 7 };
-        attributes[8] = new VertexAttribute { Format = VertexFormat.Float32,   Offset = 60, ShaderLocation = 8 };
+        attributes[3] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 40, ShaderLocation = 3 };
+        attributes[4] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 44, ShaderLocation = 4 };
+        attributes[5] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 48, ShaderLocation = 5 };
+        attributes[6] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 52, ShaderLocation = 6 };
+        attributes[7] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 56, ShaderLocation = 7 };
+        attributes[8] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 60, ShaderLocation = 8 };
 
         var vertexBufferLayout = new VertexBufferLayout
         {
@@ -156,8 +156,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
         // ── Pipeline descriptor ──────────────────────────────────────────
         var pipelineDesc = new RenderPipelineDescriptor
         {
-            Layout = pipelineLayout,
-
+            Layout = (PipelineLayout*)pipelineLayoutHandle.DangerousGetHandle(),
             Vertex = new VertexState
             {
                 Module = (ShaderModule*)vertModule.DangerousGetHandle(),
@@ -165,27 +164,24 @@ internal sealed class GraphicsRectPipeline : IDisposable
                 BufferCount = 1,
                 Buffers = &vertexBufferLayout,
             },
-
             Primitive = new PrimitiveState
             {
                 Topology = PrimitiveTopology.TriangleList,
                 FrontFace = FrontFace.Ccw,
                 CullMode = CullMode.None,
             },
-
             Multisample = new MultisampleState
             {
                 Count = 1,
                 Mask = uint.MaxValue,
             },
-
             Fragment = &fragmentState,
             DepthStencil = null,
         };
 
-        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, pipelineDesc);
+        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
 
-        this.gd.Wgpu.PipelineLayoutRelease(pipelineLayout);
+        pipelineLayoutHandle.Dispose();
 
         SilkMarshal.Free(vertexEntry);
         SilkMarshal.Free(fragmentEntry);

@@ -5,31 +5,24 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeRenderPipelineHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeRenderPipelineHandle(WebGPU wgpu, SafeDeviceHandle deviceHandle, RenderPipelineDescriptor pipelineDescriptor)
+    public SafeRenderPipelineHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.RenderPipelineDescriptor pipelineDescriptor)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
-        unsafe
-        {
-            SetHandle((nint)this.wgpu.DeviceCreateRenderPipeline((Device*)deviceHandle.DangerousGetHandle(), in pipelineDescriptor));
-        }
+        SetHandle(this.wgpu.DeviceCreateRenderPipeline(deviceHandle, in pipelineDescriptor));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.RenderPipelineRelease((RenderPipeline*)this.handle);
-            }
+            this.wgpu.RenderPipelineRelease(this.handle);
         }
 
         return true;

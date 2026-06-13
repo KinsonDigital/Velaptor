@@ -5,34 +5,25 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeRenderPassEncoderHandle(WebGPU wgpu, SafeCommandEncoderHandle cmdEncoderHandle, in RenderPassDescriptor renderPassDescriptor)
+    public SafeRenderPassEncoderHandle(WGPUInvoker wgpu, SafeCommandEncoderHandle cmdEncoderHandle, ref readonly Silk.NET.WebGPU.RenderPassDescriptor renderPassDescriptor)
         : base(ownsHandle: true)
     {
-        unsafe
-        {
-            this.wgpu = wgpu;
-
-            SetHandle((nint)this.wgpu.CommandEncoderBeginRenderPass(
-                (CommandEncoder*)cmdEncoderHandle.DangerousGetHandle(),
-                in renderPassDescriptor));
-        }
+        this.wgpu = wgpu;
+        SetHandle(this.wgpu.CommandEncoderBeginRenderPass(cmdEncoderHandle, in renderPassDescriptor));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.RenderPassEncoderEnd((RenderPassEncoder*)this.handle);
-                this.wgpu.RenderPassEncoderRelease((RenderPassEncoder*)this.handle);
-            }
+            this.wgpu.RenderPassEncoderEnd(this.handle);
+            this.wgpu.RenderPassEncoderRelease(this.handle);
         }
 
         return true;

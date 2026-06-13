@@ -5,31 +5,24 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeUniformBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeUniformBufferHandle(WebGPU wgpu, SafeDeviceHandle grfxDeviceHandle, in BufferDescriptor bufferDescriptor)
+    public SafeUniformBufferHandle(WGPUInvoker wgpu, SafeDeviceHandle grfxDeviceHandle, ref readonly Silk.NET.WebGPU.BufferDescriptor bufferDescriptor)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
-        unsafe
-        {
-            SetHandle((nint)wgpu.DeviceCreateBuffer((Device*)grfxDeviceHandle.DangerousGetHandle(), in bufferDescriptor));
-        }
+        SetHandle(this.wgpu.DeviceCreateBuffer(grfxDeviceHandle, in bufferDescriptor));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.BufferRelease((Buffer*)this.handle);
-            }
+            this.wgpu.BufferRelease(this.handle);
         }
 
         return true;

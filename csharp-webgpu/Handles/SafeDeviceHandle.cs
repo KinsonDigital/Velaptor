@@ -24,10 +24,7 @@ internal class SafeDeviceHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.DeviceRelease(this.handle);
-            }
+            this.wgpu.DeviceRelease(this.handle);
         }
 
         return true;

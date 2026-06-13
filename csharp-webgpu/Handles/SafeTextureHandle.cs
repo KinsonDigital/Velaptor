@@ -5,32 +5,25 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
+using NativeInterop.WebGPU;
 
 internal class SafeTextureHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeTextureHandle(WebGPU wgpu, SafeDeviceHandle deviceHandle, in TextureDescriptor textureDescriptor)
+    public SafeTextureHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle, ref readonly Silk.NET.WebGPU.TextureDescriptor textureDescriptor)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
-        unsafe
-        {
-            SetHandle((nint)this.wgpu.DeviceCreateTexture((Device*)deviceHandle.DangerousGetHandle(), in textureDescriptor));
-        }
+        SetHandle(this.wgpu.DeviceCreateTexture(deviceHandle, in textureDescriptor));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.TextureDestroy((Texture*)this.handle);
-                this.wgpu.TextureRelease((Texture*)this.handle);
-            }
+            this.wgpu.TextureDestroy(this.handle);
+            this.wgpu.TextureRelease(this.handle);
         }
 
         return true;
