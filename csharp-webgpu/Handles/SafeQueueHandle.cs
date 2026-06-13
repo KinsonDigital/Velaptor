@@ -5,31 +5,25 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using NativeInterop.WebGPU;
 using Silk.NET.WebGPU;
 
 internal class SafeQueueHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeQueueHandle(WebGPU wgpu, SafeDeviceHandle deviceHandle)
+    public SafeQueueHandle(WGPUInvoker wgpu, SafeDeviceHandle deviceHandle)
         : base(ownsHandle: true)
     {
-        unsafe
-        {
-            this.wgpu = wgpu;
-
-            SetHandle((nint)this.wgpu.DeviceGetQueue((Device*)deviceHandle.DangerousGetHandle()));
-        }
+        this.wgpu = wgpu;
+        SetHandle(this.wgpu.DeviceGetQueue(deviceHandle));
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.QueueRelease((Queue*)this.handle);
-            }
+            this.wgpu.QueueRelease(this.handle);
         }
 
         return true;

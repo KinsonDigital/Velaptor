@@ -4,14 +4,15 @@
 
 namespace csharp_webgpu.Handles;
 
+using NativeInterop.WebGPU;
 using Silk.NET.WebGPU;
 
 internal class SafeSurfaceTextureHandle : IDisposable
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
     private nint handle;
 
-    public SafeSurfaceTextureHandle(WebGPU wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
+    public SafeSurfaceTextureHandle(WGPUInvoker wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
     {
         this.wgpu = wgpu;
 
@@ -40,11 +41,7 @@ internal class SafeSurfaceTextureHandle : IDisposable
             return;
         }
 
-        unsafe
-        {
-            this.wgpu.TextureRelease((Texture*)this.handle);
-        }
-
+        this.wgpu.TextureRelease(this.handle);
         this.handle = IntPtr.Zero;
     }
 }

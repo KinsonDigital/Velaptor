@@ -10,6 +10,7 @@ using Silk.NET.Windowing;
 using StbImageSharp;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using NativeInterop.WebGPU;
 using NETColor = System.Drawing.Color;
 
 /// <summary>
@@ -43,6 +44,7 @@ public sealed class Program
     private static EditMode ctrlMode = EditMode.Texture;
     private static RectShape rect;
     private static RectCornerRadius rectCornerToModify = RectCornerRadius.TopLeft;
+    private static WGPUInvoker wgpu;
 
     private static void Main()
     {
@@ -71,7 +73,8 @@ public sealed class Program
             throw new Exception("Window failed to initialize.");
         }
 
-        gd = new GraphicsDevice();
+        wgpu = new WGPUInvoker();
+        gd = new GraphicsDevice(wgpu);
         surface = new GraphicsSurface(gd, window);
 
         gd.InitializeAdapter(surface.Handle);
@@ -198,20 +201,9 @@ public sealed class Program
 
             var size = new Vector2(newSize.X, newSize.Y);
 
-            if (textureBuffer is not null)
-            {
-                textureBuffer.WindowSize = size;
-            }
-
-            if (rectBuffer is not null)
-            {
-                rectBuffer.WindowSize = size;
-            }
-
-            if (camera is not null)
-            {
-                camera.WindowSize = size;
-            }
+            textureBuffer?.WindowSize = size;
+            rectBuffer?.WindowSize = size;
+            camera?.WindowSize = size;
         }
     }
 

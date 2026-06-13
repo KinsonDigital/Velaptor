@@ -1,20 +1,19 @@
+using csharp_webgpu.NativeInterop.WebGPU;
 using Microsoft.Win32.SafeHandles;
 using Silk.NET.WebGPU;
 
 internal sealed class SafeInstanceHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeInstanceHandle(WebGPU wgpu)
+    public SafeInstanceHandle(WGPUInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
 
-        var desc = default(InstanceDescriptor);
-
         unsafe
         {
-            SetHandle((nint)this.wgpu.CreateInstance(in desc));
+            SetHandle(handle);
         }
     }
 
@@ -22,10 +21,7 @@ internal sealed class SafeInstanceHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.InstanceRelease((Instance*)this.handle);
-            }
+            this.wgpu.InstanceRelease(this.handle);
         }
 
         return true;

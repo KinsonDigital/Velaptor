@@ -32,8 +32,8 @@ using Silk.NET.WebGPU;
 /// </remarks>
 internal sealed class GraphicsTextureBuffer : IDisposable
 {
-    private const uint VertexSizeInBytes = 32;   // 8 floats × 4 bytes
-    private const uint IndexItemSizeInBytes = 4;  // uint32
+    private const uint VertexSizeInBytes = 32; // 8 floats × 4 bytes
+    private const uint IndexItemSizeInBytes = 4; // uint32
     private const uint VerticesPerQuad = 4;
     private const uint IndicesPerQuad = 6;
     private const uint FloatsPerVertex = 8;
@@ -66,7 +66,7 @@ internal sealed class GraphicsTextureBuffer : IDisposable
     /// Gets or sets the window size in pixels used for NDC conversion.
     /// Update this and re-upload quads after a window resize.
     /// </summary>
-    public Vector2 WindowSize { get; set; } = new(800f, 600f);
+    public Vector2 WindowSize { get; set; } = new (800f, 600f);
 
     /// <summary>
     /// Uploads a single <see cref="TextureQuad"/> to the GPU at <paramref name="quadIndex"/>.
@@ -265,8 +265,8 @@ internal sealed class GraphicsTextureBuffer : IDisposable
         var screenH = WindowSize.Y;
 
         return new Vector2(
-            MapValue(pixelX, 0f, screenW, -1f,  1f),
-            MapValue(pixelY, 0f, screenH,  1f, -1f));
+            MapValue(pixelX, 0f, screenW, -1f, 1f),
+            MapValue(pixelY, 0f, screenH, 1f, -1f));
     }
 
     private static float MapValue(float value, float fromStart, float fromStop, float toStart, float toStop)
@@ -278,7 +278,7 @@ internal sealed class GraphicsTextureBuffer : IDisposable
         Capacity = newCapacity;
 
         this.vertexBufferSizeInBytes = Capacity * VerticesPerQuad * VertexSizeInBytes;
-        this.indexBufferSizeInBytes  = Capacity * IndicesPerQuad  * IndexItemSizeInBytes;
+        this.indexBufferSizeInBytes = Capacity * IndicesPerQuad * IndexItemSizeInBytes;
 
         this.vertexBuffer?.Dispose();
         this.indexBuffer?.Dispose();

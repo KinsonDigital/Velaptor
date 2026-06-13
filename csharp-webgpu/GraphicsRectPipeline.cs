@@ -57,12 +57,7 @@ internal sealed class GraphicsRectPipeline : IDisposable
     /// <param name="pass">The active render pass encoder.</param>
     public void Bind(SafeRenderPassEncoderHandle pass)
     {
-        unsafe
-        {
-            this.gd.Wgpu.RenderPassEncoderSetPipeline(
-                (RenderPassEncoder*)pass.DangerousGetHandle(),
-                (RenderPipeline*)Handle.DangerousGetHandle());
-        }
+        this.gd.Wgpu.RenderPassEncoderSetPipeline(pass, Handle);
     }
 
     /// <summary>

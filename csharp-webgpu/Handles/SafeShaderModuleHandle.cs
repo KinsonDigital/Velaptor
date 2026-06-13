@@ -5,31 +5,25 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using NativeInterop.WebGPU;
 using Silk.NET.WebGPU;
 
 internal class SafeShaderModuleHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeShaderModuleHandle(WebGPU wgpu, SafeDeviceHandle deviceHandle, ShaderModuleDescriptor shaderModuleDescriptor)
+    public SafeShaderModuleHandle(WGPUInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
-        unsafe
-        {
-            SetHandle((nint)this.wgpu.DeviceCreateShaderModule((Device*)deviceHandle.DangerousGetHandle(), in shaderModuleDescriptor));
-        }
+        SetHandle(handle);
     }
 
     protected override bool ReleaseHandle()
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.ShaderModuleRelease((ShaderModule*)this.handle);
-            }
+            this.wgpu.ShaderModuleRelease(this.handle);
         }
 
         return true;

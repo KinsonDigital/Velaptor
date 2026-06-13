@@ -46,5 +46,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="NativeInterop\" />
+  </ItemGroup>
 
 </Project>

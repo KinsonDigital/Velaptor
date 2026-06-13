@@ -5,6 +5,7 @@
 namespace csharp_webgpu;
 
 using Handles;
+using NativeInterop.WebGPU;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
 
@@ -48,11 +49,13 @@ internal sealed class GraphicsDevice : IDisposable
     /// and then <see cref="InitializeDevice"/>. This two-step split exists because the
     /// adapter must be selected based on which surface it will render to.
     /// </remarks>
-    public GraphicsDevice()
+    public GraphicsDevice(WGPUInvoker wgpu)
     {
-        Wgpu = WebGPU.GetApi();
+        Wgpu = wgpu;
 
-        Instance = new SafeInstanceHandle(Wgpu);
+        var desc = default(InstanceDescriptor);
+        Instance = Wgpu.CreateInstance(in desc);
+
         if (Instance == null)
         {
             throw new Exception("Failed to create WebGPU instance.");
@@ -63,7 +66,7 @@ internal sealed class GraphicsDevice : IDisposable
     /// Gets the Silk.NET wrapper around the wgpu-native C library. Every WebGPU API call
     /// in this project is made through this object.
     /// </summary>
-    public WebGPU Wgpu { get; }
+    public WGPUInvoker Wgpu { get; }
 
     /// <summary>
     /// Gets the WebGPU instance — the runtime entry point from which adapters are enumerated
@@ -127,10 +130,9 @@ internal sealed class GraphicsDevice : IDisposable
 
             // wgpu-native fires this callback synchronously, so Adapter is set
             // by the time InstanceRequestAdapter returns.
-            Wgpu.InstanceRequestAdapter((Instance*)Instance.DangerousGetHandle(),
+            Wgpu.InstanceRequestAdapter(Instance,
                 in opts,
-                new PfnRequestAdapterCallback(OnAdapterReceived),
-                null);
+                new PfnRequestAdapterCallback(OnAdapterReceived));
 
             if (Adapter == null)
             {
@@ -138,7 +140,7 @@ internal sealed class GraphicsDevice : IDisposable
             }
 
             SupportedLimits supportedLimits = default;
-            var success = Wgpu.AdapterGetLimits((Adapter*)Adapter.DangerousGetHandle(), &supportedLimits);
+            var success = Wgpu.AdapterGetLimits(Adapter, supportedLimits);
             if (!success)
             {
                 return;
@@ -168,17 +170,10 @@ internal sealed class GraphicsDevice : IDisposable
 
         unsafe
         {
-            Wgpu.AdapterRequestDevice((Adapter*)Adapter.DangerousGetHandle(), in desc, new PfnRequestDeviceCallback(OnDeviceReceived), null);
-
-            if (Handle == null)
-            {
-                throw new Exception("Failed to get a WebGPU device.");
-            }
+            Wgpu.AdapterRequestDevice(Adapter, in desc, new PfnRequestDeviceCallback(OnDeviceReceived));
 
             // Register an error callback so GPU-side errors surface in the console.
-            var deviceHandle = (Device*)Handle.DangerousGetHandle();
-
-            Wgpu.DeviceSetUncapturedErrorCallback(deviceHandle, new PfnErrorCallback(OnDeviceError), null);
+            Wgpu.DeviceSetUncapturedErrorCallback(Handle, new PfnErrorCallback(OnDeviceError));
 
             Queue = new SafeQueueHandle(Wgpu, Handle);
         }
@@ -212,7 +207,8 @@ internal sealed class GraphicsDevice : IDisposable
 
             var moduleDesc = new ShaderModuleDescriptor { NextInChain = (ChainedStruct*)&wgslDesc, };
 
-            var module = new SafeShaderModuleHandle(Wgpu, Handle, moduleDesc);
+            var moduleHandle = Wgpu.DeviceCreateShaderModule(Handle, in moduleDesc);
+            var module = new SafeShaderModuleHandle(Wgpu, moduleHandle);
 
             // DeviceCreateShaderModule copies the source internally, so the
             // temporary pointer is no longer needed after the module is created.
@@ -235,7 +231,6 @@ internal sealed class GraphicsDevice : IDisposable
         Handle.Dispose();
         Adapter.Dispose();
         Instance.Dispose();
-        Wgpu.Dispose();
     }
 
     /// <summary>
@@ -284,6 +279,11 @@ internal sealed class GraphicsDevice : IDisposable
     {
         if (status == RequestDeviceStatus.Success)
         {
+            if (d == null)
+            {
+                throw new Exception("Failed to get a WebGPU device.");
+            }
+
             Handle = new SafeDeviceHandle(Wgpu, (nint)d);
         }
         else

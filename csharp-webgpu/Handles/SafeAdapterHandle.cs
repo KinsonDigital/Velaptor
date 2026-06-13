@@ -5,17 +5,17 @@
 namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using NativeInterop.WebGPU;
 using Silk.NET.WebGPU;
 
 internal class SafeAdapterHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly WebGPU wgpu;
+    private readonly WGPUInvoker wgpu;
 
-    public SafeAdapterHandle(WebGPU wgpu, IntPtr handle)
+    public SafeAdapterHandle(WGPUInvoker wgpu, IntPtr handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;
-
         SetHandle(handle);
     }
 
@@ -23,10 +23,7 @@ internal class SafeAdapterHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            unsafe
-            {
-                this.wgpu.AdapterRelease((Adapter*)this.handle);
-            }
+            this.wgpu.AdapterRelease(this.handle);
         }
 
         return true;

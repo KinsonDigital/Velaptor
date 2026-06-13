@@ -102,12 +102,10 @@ internal sealed class GraphicsSurface : IDisposable
         {
             var size = this.window.FramebufferSize;
 
-            var surfaceHandle = (Surface*)Handle.DangerousGetHandle();
-
             // Using the adapter's preferred format avoids an implicit color conversion
             // on every presented frame. The format is a property of the adapter↔surface
             // pair and must match the format used by the pipeline's color target.
-            Format = this.gd.Wgpu.SurfaceGetPreferredFormat(surfaceHandle, (Adapter*)this.gd.Adapter.DangerousGetHandle());
+            Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
 
             var config = new SurfaceConfiguration
             {
@@ -119,7 +117,7 @@ internal sealed class GraphicsSurface : IDisposable
                 PresentMode = PresentMode.Fifo, // VSync — queues frames and swaps on vertical blank
             };
 
-            this.gd.Wgpu.SurfaceConfigure(surfaceHandle, in config);
+            this.gd.Wgpu.SurfaceConfigure(Handle, in config);
         }
     }
 
@@ -131,8 +129,8 @@ internal sealed class GraphicsSurface : IDisposable
             // A local variable is used for the pointer operation because the address of an
             // instance field (&this.surfaceTexture) would require a `fixed` block in unsafe C#,
             // whereas a local is stack-allocated and automatically pinned.
-            SurfaceTexture st;
-            this.gd.Wgpu.SurfaceGetCurrentTexture((Surface*)Handle.DangerousGetHandle(), &st);
+            SurfaceTexture st = default;
+            this.gd.Wgpu.SurfaceGetCurrentTexture(Handle, ref st);
 
             if (this.surfaceTextureHandle is null)
             {
