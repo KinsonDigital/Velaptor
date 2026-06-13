@@ -22,10 +22,22 @@ internal class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
-            this.wgpu.RenderPassEncoderEnd(this.handle);
             this.wgpu.RenderPassEncoderRelease(this.handle);
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Ends the render pass, signalling that all draw commands for this pass
+    /// are complete. Must be called explicitly before <see cref="Dispose()"/>
+    /// to properly finalize the pass on the GPU timeline.
+    /// </summary>
+    public void End()
+    {
+        if (!IsInvalid)
+        {
+            this.wgpu.RenderPassEncoderEnd(this.handle);
+        }
     }
 }

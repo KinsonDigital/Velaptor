@@ -23,7 +23,11 @@ internal class SafeTextureViewHandle : IDisposable
 
     public void UpdateHandle(nint texture, ref readonly Silk.NET.WebGPU.TextureViewDescriptor textureViewDescriptor) => SetHandle(texture, in textureViewDescriptor);
 
-    public void Dispose() => Dispose(disposing: true);
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 
     private void Dispose(bool disposing)
     {
@@ -37,6 +41,13 @@ internal class SafeTextureViewHandle : IDisposable
 
     private void SetHandle(nint texture, ref readonly Silk.NET.WebGPU.TextureViewDescriptor textureViewDescriptor)
     {
+        // Release the previous texture view before creating a new one.
+        // Without this, every call to UpdateHandle leaks the old view.
+        if (!IsInvalid)
+        {
+            this.wgpu.TextureViewRelease(this.handle);
+        }
+
         this.handle = this.wgpu.TextureCreateView(texture, in textureViewDescriptor);
     }
 }

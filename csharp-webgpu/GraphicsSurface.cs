@@ -146,9 +146,13 @@ internal sealed class GraphicsSurface : IDisposable
     }
 
     /// <summary>
-    /// Unconfigure the swap chain and releases the surface handle. After disposal
-    /// the window will no longer receive rendered output. Must be called before
-    /// <see cref="GraphicsDevice.Dispose"/>.
+    /// Unconfigure the swap chain and releases the surface handle and any cached
+    /// surface texture. After disposal the window will no longer receive rendered
+    /// output. Must be called before <see cref="GraphicsDevice.Dispose"/>.
     /// </summary>
-    public void Dispose() => Handle.Dispose();
+    public void Dispose()
+    {
+        this.surfaceTextureHandle?.Dispose();
+        Handle.Dispose();
+    }
 }

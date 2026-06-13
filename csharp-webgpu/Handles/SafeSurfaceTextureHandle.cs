@@ -28,11 +28,22 @@ internal class SafeSurfaceTextureHandle : IDisposable
 
     public void UpdateHandleAndStatus(nint newTexturePointer, SurfaceGetCurrentTextureStatus newStatus)
     {
+        // Release the previous surface texture before storing the new one.
+        // Without this, each frame leaks the old swap-chain texture.
+        if (!IsInvalid)
+        {
+            this.wgpu.TextureRelease(this.handle);
+        }
+
         this.handle = newTexturePointer;
         SurfaceTextureStatus = newStatus;
     }
 
-    public void Dispose() => Dispose(disposing: true);
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 
     private void Dispose(bool disposing)
     {

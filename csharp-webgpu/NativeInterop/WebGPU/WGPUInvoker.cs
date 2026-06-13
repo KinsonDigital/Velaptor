@@ -62,11 +62,14 @@ internal class WGPUInvoker
         }
     }
 
-    public Bool32 AdapterGetLimits(SafeAdapterHandle adapter, SupportedLimits limits)
+    public Bool32 AdapterGetLimits(SafeAdapterHandle adapter, ref SupportedLimits limits)
     {
         unsafe
         {
-            return Wgpu.AdapterGetLimits((Adapter*)adapter.DangerousGetHandle(), &limits);
+            fixed (SupportedLimits* pLimits = &limits)
+            {
+                return Wgpu.AdapterGetLimits((Adapter*)adapter.DangerousGetHandle(), pLimits);
+            }
         }
     }
 
@@ -475,7 +478,6 @@ internal class WGPUInvoker
         {
             fixed (ImageCopyTexture* destPtr = &destination)
             fixed (TextureDataLayout* layoutPtr = &dataLayout)
-            fixed (Extent3D* sizePtr = &writeSize)
             {
                 Wgpu.QueueWriteTexture(
                     (Queue*)queue.DangerousGetHandle(),

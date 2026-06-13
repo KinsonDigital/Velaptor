@@ -140,7 +140,7 @@ internal sealed class GraphicsDevice : IDisposable
             }
 
             SupportedLimits supportedLimits = default;
-            var success = Wgpu.AdapterGetLimits(Adapter, supportedLimits);
+            var success = Wgpu.AdapterGetLimits(Adapter, ref supportedLimits);
             if (!success)
             {
                 return;
@@ -227,10 +227,10 @@ internal sealed class GraphicsDevice : IDisposable
     /// </summary>
     public void Dispose()
     {
-        Queue.Dispose();
-        Handle.Dispose();
-        Adapter.Dispose();
-        Instance.Dispose();
+        Queue?.Dispose();
+        Handle?.Dispose();
+        Adapter?.Dispose();
+        Instance?.Dispose();
     }
 
     /// <summary>

@@ -22,6 +22,7 @@ internal class SafeUniformBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!IsInvalid)
         {
+            this.wgpu.BufferDestroy(this.handle);
             this.wgpu.BufferRelease(this.handle);
         }
 

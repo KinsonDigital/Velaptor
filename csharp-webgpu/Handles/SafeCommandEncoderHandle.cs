@@ -25,7 +25,11 @@ internal class SafeCommandEncoderHandle : IDisposable
 
     public void UpdateHandle(ref readonly Silk.NET.WebGPU.CommandEncoderDescriptor commandEncoderDescriptor) => SetHandle(in commandEncoderDescriptor);
 
-    public void Dispose() => Dispose(disposing: true);
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 
     private void Dispose(bool disposing)
     {
@@ -40,6 +44,13 @@ internal class SafeCommandEncoderHandle : IDisposable
 
     private void SetHandle(ref readonly Silk.NET.WebGPU.CommandEncoderDescriptor commandEncoderDescriptor)
     {
+        // Release the previous encoder before creating a new one.
+        // Without this, every call to UpdateHandle leaks the old encoder.
+        if (!IsInvalid)
+        {
+            this.wgpu.CommandEncoderRelease(this.handle);
+        }
+
         this.handle = this.wgpu.DeviceCreateCommandEncoder(this.deviceHandle, in commandEncoderDescriptor);
     }
 }

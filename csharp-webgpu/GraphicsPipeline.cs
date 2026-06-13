@@ -93,9 +93,8 @@ internal sealed class GraphicsPipeline : IDisposable
     /// </summary>
     public void Dispose()
     {
-        Handle.Dispose();
-
-        BindGroupLayout.Dispose();
+        Handle?.Dispose();
+        BindGroupLayout?.Dispose();
     }
 
     private unsafe SafeRenderPipelineHandle BuildPipeline(SafeShaderModuleHandle vertModule, SafeShaderModuleHandle fragModule, TextureFormat format)
@@ -122,103 +121,107 @@ internal sealed class GraphicsPipeline : IDisposable
             pipelineLayout = this.gd.Wgpu.DeviceCreatePipelineLayout(this.gd.Handle, in pipelineDescriptor);
         }
 
-        // ── Vertex buffer layout ─────────────────────────────────────────────
-        // stride = 32 bytes (8 × f32), matching GraphicsTextureBuffer:
-        //   location 0: vec2<f32> position   (8 bytes, offset  0)
-        //   location 1: vec2<f32> uv         (8 bytes, offset  8)
-        //   location 2: vec4<f32> tintColor  (16 bytes, offset 16)
-        var attributes = stackalloc VertexAttribute[3];
-        attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0,  ShaderLocation = 0 };
-        attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 8,  ShaderLocation = 1 };
-        attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 };
-
-        var vertexBufferLayout = new VertexBufferLayout
+        try
         {
-            ArrayStride = 32,
-            StepMode = VertexStepMode.Vertex,
-            AttributeCount = 3,
-            Attributes = attributes,
-        };
+            // stride = 32 bytes (8 × f32), matching GraphicsTextureBuffer:
+            //   location 0: vec2<f32> position   (8 bytes, offset  0)
+            //   location 1: vec2<f32> uv         (8 bytes, offset  8)
+            //   location 2: vec4<f32> tintColor  (16 bytes, offset 16)
+            var attributes = stackalloc VertexAttribute[3];
+            attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0,  ShaderLocation = 0 };
+            attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 8,  ShaderLocation = 1 };
+            attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 };
 
-        // Standard over-compositing blend: new pixels are blended over existing ones
-        // using their alpha value. Result = src × srcα + dst × (1 − srcα).
-        var blend = new BlendState
+            var vertexBufferLayout = new VertexBufferLayout
+            {
+                ArrayStride = 32,
+                StepMode = VertexStepMode.Vertex,
+                AttributeCount = 3,
+                Attributes = attributes,
+            };
+
+            // Standard over-compositing blend: new pixels are blended over existing ones
+            // using their alpha value. Result = src × srcα + dst × (1 − srcα).
+            var blend = new BlendState
+            {
+                Color = new BlendComponent
+                {
+                    SrcFactor = BlendFactor.SrcAlpha,
+                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                    Operation = BlendOperation.Add,
+                },
+                Alpha = new BlendComponent
+                {
+                    SrcFactor = BlendFactor.One,
+                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                    Operation = BlendOperation.Add,
+                },
+            };
+
+            // Describes the single render target this pipeline writes to.
+            // The format must match what the surface's swap chain was configured with,
+            // so that the GPU knows how to pack color values into each pixel.
+            var colorTarget = new ColorTargetState
+            {
+                Format = format,
+                WriteMask = ColorWriteMask.All,
+                Blend = &blend,
+            };
+
+            var fragmentState = new FragmentState
+            {
+                Module = (ShaderModule*)fragModule.DangerousGetHandle(),
+                EntryPoint = (byte*)fragmentEntry,
+                TargetCount = 1,
+                Targets = &colorTarget,
+            };
+
+            var pipelineDesc = new RenderPipelineDescriptor
+            {
+                Layout = (PipelineLayout*)pipelineLayout.DangerousGetHandle(),
+
+                Vertex = new VertexState
+                {
+                    Module = (ShaderModule*)vertModule.DangerousGetHandle(),
+                    EntryPoint = (byte*)vertexEntry,
+                    BufferCount = 1,
+                    Buffers = &vertexBufferLayout,
+                },
+
+                // TriangleList: every 3 consecutive vertices form one independent triangle.
+                // 6 vertices → triangle (0,1,2) + triangle (3,4,5) → one rectangle.
+                // CullMode.None means both front- and back-facing triangles are drawn.
+                Primitive = new PrimitiveState
+                {
+                    Topology = PrimitiveTopology.TriangleList,
+                    FrontFace = FrontFace.Ccw,
+                    CullMode = CullMode.None,
+                },
+
+                // 1 sample per pixel — no MSAA. Count=1 with all mask bits set is
+                // the minimum valid configuration required by the WebGPU spec.
+                Multisample = new MultisampleState
+                {
+                    Count = 1,
+                    Mask = uint.MaxValue,
+                },
+
+                Fragment = &fragmentState,
+                DepthStencil = null, // No depth testing — a flat 2D shape cannot occlude itself
+            };
+
+            var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
+
+            SilkMarshal.Free(vertexEntry);
+            SilkMarshal.Free(fragmentEntry);
+
+            return pipeline;
+        }
+        finally
         {
-            Color = new BlendComponent
-            {
-                SrcFactor = BlendFactor.SrcAlpha,
-                DstFactor = BlendFactor.OneMinusSrcAlpha,
-                Operation = BlendOperation.Add,
-            },
-            Alpha = new BlendComponent
-            {
-                SrcFactor = BlendFactor.One,
-                DstFactor = BlendFactor.OneMinusSrcAlpha,
-                Operation = BlendOperation.Add,
-            },
-        };
-
-        // Describes the single render target this pipeline writes to.
-        // The format must match what the surface's swap chain was configured with,
-        // so that the GPU knows how to pack color values into each pixel.
-        var colorTarget = new ColorTargetState
-        {
-            Format = format,
-            WriteMask = ColorWriteMask.All,
-            Blend = &blend,
-        };
-
-        var fragmentState = new FragmentState
-        {
-            Module = (ShaderModule*)fragModule.DangerousGetHandle(),
-            EntryPoint = (byte*)fragmentEntry,
-            TargetCount = 1,
-            Targets = &colorTarget,
-        };
-
-        var pipelineDesc = new RenderPipelineDescriptor
-        {
-            Layout = (PipelineLayout*)pipelineLayout.DangerousGetHandle(),
-
-            Vertex = new VertexState
-            {
-                Module = (ShaderModule*)vertModule.DangerousGetHandle(),
-                EntryPoint = (byte*)vertexEntry,
-                BufferCount = 1,
-                Buffers = &vertexBufferLayout,
-            },
-
-            // TriangleList: every 3 consecutive vertices form one independent triangle.
-            // 6 vertices → triangle (0,1,2) + triangle (3,4,5) → one rectangle.
-            // CullMode.None means both front- and back-facing triangles are drawn.
-            Primitive = new PrimitiveState
-            {
-                Topology = PrimitiveTopology.TriangleList,
-                FrontFace = FrontFace.Ccw,
-                CullMode = CullMode.None,
-            },
-
-            // 1 sample per pixel — no MSAA. Count=1 with all mask bits set is
-            // the minimum valid configuration required by the WebGPU spec.
-            Multisample = new MultisampleState
-            {
-                Count = 1,
-                Mask = uint.MaxValue,
-            },
-
-            Fragment = &fragmentState,
-            DepthStencil = null, // No depth testing — a flat 2D shape cannot occlude itself
-        };
-
-        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
-
-        // The pipeline holds its own reference to the layout — release our handle.
-        pipelineLayout.Dispose();
-
-        SilkMarshal.Free(vertexEntry);
-        SilkMarshal.Free(fragmentEntry);
-
-        return pipeline;
+            // The pipeline holds its own reference to the layout — release ours.
+            pipelineLayout.Dispose();
+        }
     }
 
     /// <summary>

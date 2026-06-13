@@ -82,6 +82,14 @@ internal sealed class Frame : IDisposable
     /// </remarks>
     public bool Begin(NETColor clearColor)
     {
+        // If Begin() was previously called without a corresponding Submit(),
+        // release any leftover GPU resources before starting a new frame.
+        // Without this, re-entering Begin() leaks the previous encoder and render pass.
+        this.renderPassHandle?.Dispose();
+        this.renderPassHandle = null;
+        this.encoder?.Dispose();
+        this.encoder = null;
+
         this.surfaceTextureHandle = this.surface.GetSurfaceTexture();
 
         if (this.surfaceTextureHandle.SurfaceTextureStatus != SurfaceGetCurrentTextureStatus.Success)
@@ -250,19 +258,28 @@ internal sealed class Frame : IDisposable
         }
 
         // End the render pass — all draw commands for this pass are now finalized.
+        this.renderPassHandle.End();
         this.renderPassHandle.Dispose();
+        this.renderPassHandle = null;
 
         unsafe
         {
             // Seal the command buffer and submit it to the GPU queue.
-            // The encoder is released after Finish; only the sealed buffer is submitted.
             var cmdBufDesc = default(CommandBufferDescriptor);
             var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.encoder, in cmdBufDesc);
 
             this.encoder.Dispose();
+            this.encoder = null;
 
-            this.gd.Wgpu.QueueSubmit(this.gd.Queue, 1, cmdBuf);
-            this.gd.Wgpu.CommandBufferRelease(cmdBuf);
+            try
+            {
+                this.gd.Wgpu.QueueSubmit(this.gd.Queue, 1, cmdBuf);
+            }
+            finally
+            {
+                // The command buffer must be released regardless of submit success.
+                this.gd.Wgpu.CommandBufferRelease(cmdBuf);
+            }
 
             // Swap the completed texture onto the display (waits for vertical blank in Fifo mode).
             this.gd.Wgpu.SurfacePresent(this.surface.Handle);
@@ -270,12 +287,16 @@ internal sealed class Frame : IDisposable
     }
 
     /// <summary>
-    /// Releases the per-frame texture view and surface texture back to the runtime.
-    /// The command encoder and render pass encoder are already released inside
-    /// <see cref="Submit"/>, so only the texture handles need cleanup here.
+    /// Releases the per-frame resources: render pass, command encoder, texture view,
+    /// and surface texture. If <see cref="Submit"/> was already called, the encoder
+    /// and render pass were already released and will be null — the null-conditional
+    /// calls are no-ops in that case. If the frame was never submitted (invalid frame
+    /// or exception), this ensures all GPU resources are still cleaned up.
     /// </summary>
     public void Dispose()
     {
+        this.renderPassHandle?.Dispose();
+        this.encoder?.Dispose();
         this.textureViewHandle?.Dispose();
         this.surfaceTextureHandle?.Dispose();
     }

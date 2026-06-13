@@ -91,101 +91,106 @@ internal sealed class GraphicsRectPipeline : IDisposable
                 in pipelineDescriptor);
         }
 
-        // ── Vertex buffer layout ─────────────────────────────────────────
-        // 9 attributes packed into a 64-byte stride:
-        //   location 0: vec2<f32> position          (8 bytes,  offset  0)
-        //   location 1: vec4<f32> shape             (16 bytes, offset  8)
-        //   location 2: vec4<f32> color             (16 bytes, offset 24)
-        //   location 3: f32      isFilled           ( 4 bytes, offset 40)
-        //   location 4: f32      borderThickness    ( 4 bytes, offset 44)
-        //   location 5: f32      topLeftRadius      ( 4 bytes, offset 48)
-        //   location 6: f32      topRightRadius     ( 4 bytes, offset 52)
-        //   location 7: f32      bottomRightRadius  ( 4 bytes, offset 56)
-        //   location 8: f32      bottomLeftRadius   ( 4 bytes, offset 60)
-        var attributes = stackalloc VertexAttribute[9];
-        attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 };
-        attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8, ShaderLocation = 1 };
-        attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 24, ShaderLocation = 2 };
-        attributes[3] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 40, ShaderLocation = 3 };
-        attributes[4] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 44, ShaderLocation = 4 };
-        attributes[5] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 48, ShaderLocation = 5 };
-        attributes[6] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 52, ShaderLocation = 6 };
-        attributes[7] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 56, ShaderLocation = 7 };
-        attributes[8] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 60, ShaderLocation = 8 };
-
-        var vertexBufferLayout = new VertexBufferLayout
+        try
         {
-            ArrayStride = 64,
-            StepMode = VertexStepMode.Vertex,
-            AttributeCount = 9,
-            Attributes = attributes,
-        };
+            // 9 attributes packed into a 64-byte stride:
+            //   location 0: vec2<f32> position          (8 bytes,  offset  0)
+            //   location 1: vec4<f32> shape             (16 bytes, offset  8)
+            //   location 2: vec4<f32> color             (16 bytes, offset 24)
+            //   location 3: f32      isFilled           ( 4 bytes, offset 40)
+            //   location 4: f32      borderThickness    ( 4 bytes, offset 44)
+            //   location 5: f32      topLeftRadius      ( 4 bytes, offset 48)
+            //   location 6: f32      topRightRadius     ( 4 bytes, offset 52)
+            //   location 7: f32      bottomRightRadius  ( 4 bytes, offset 56)
+            //   location 8: f32      bottomLeftRadius   ( 4 bytes, offset 60)
+            var attributes = stackalloc VertexAttribute[9];
+            attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 };
+            attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8, ShaderLocation = 1 };
+            attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 24, ShaderLocation = 2 };
+            attributes[3] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 40, ShaderLocation = 3 };
+            attributes[4] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 44, ShaderLocation = 4 };
+            attributes[5] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 48, ShaderLocation = 5 };
+            attributes[6] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 52, ShaderLocation = 6 };
+            attributes[7] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 56, ShaderLocation = 7 };
+            attributes[8] = new VertexAttribute { Format = VertexFormat.Float32, Offset = 60, ShaderLocation = 8 };
 
-        // ── Blend state (same as texture pipeline) ───────────────────────
-        var blend = new BlendState
+            var vertexBufferLayout = new VertexBufferLayout
+            {
+                ArrayStride = 64,
+                StepMode = VertexStepMode.Vertex,
+                AttributeCount = 9,
+                Attributes = attributes,
+            };
+
+            // ── Blend state (same as texture pipeline) ───────────────────────
+            var blend = new BlendState
+            {
+                Color = new BlendComponent
+                {
+                    SrcFactor = BlendFactor.SrcAlpha,
+                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                    Operation = BlendOperation.Add,
+                },
+                Alpha = new BlendComponent
+                {
+                    SrcFactor = BlendFactor.One,
+                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                    Operation = BlendOperation.Add,
+                },
+            };
+
+            var colorTarget = new ColorTargetState
+            {
+                Format = format,
+                WriteMask = ColorWriteMask.All,
+                Blend = &blend,
+            };
+
+            var fragmentState = new FragmentState
+            {
+                Module = (ShaderModule*)fragModule.DangerousGetHandle(),
+                EntryPoint = (byte*)fragmentEntry,
+                TargetCount = 1,
+                Targets = &colorTarget,
+            };
+
+            // ── Pipeline descriptor ──────────────────────────────────────────
+            var pipelineDesc = new RenderPipelineDescriptor
+            {
+                Layout = (PipelineLayout*)pipelineLayoutHandle.DangerousGetHandle(),
+                Vertex = new VertexState
+                {
+                    Module = (ShaderModule*)vertModule.DangerousGetHandle(),
+                    EntryPoint = (byte*)vertexEntry,
+                    BufferCount = 1,
+                    Buffers = &vertexBufferLayout,
+                },
+                Primitive = new PrimitiveState
+                {
+                    Topology = PrimitiveTopology.TriangleList,
+                    FrontFace = FrontFace.Ccw,
+                    CullMode = CullMode.None,
+                },
+                Multisample = new MultisampleState
+                {
+                    Count = 1,
+                    Mask = uint.MaxValue,
+                },
+                Fragment = &fragmentState,
+                DepthStencil = null,
+            };
+
+            var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
+
+            SilkMarshal.Free(vertexEntry);
+            SilkMarshal.Free(fragmentEntry);
+
+            return pipeline;
+        }
+        finally
         {
-            Color = new BlendComponent
-            {
-                SrcFactor = BlendFactor.SrcAlpha,
-                DstFactor = BlendFactor.OneMinusSrcAlpha,
-                Operation = BlendOperation.Add,
-            },
-            Alpha = new BlendComponent
-            {
-                SrcFactor = BlendFactor.One,
-                DstFactor = BlendFactor.OneMinusSrcAlpha,
-                Operation = BlendOperation.Add,
-            },
-        };
-
-        var colorTarget = new ColorTargetState
-        {
-            Format = format,
-            WriteMask = ColorWriteMask.All,
-            Blend = &blend,
-        };
-
-        var fragmentState = new FragmentState
-        {
-            Module = (ShaderModule*)fragModule.DangerousGetHandle(),
-            EntryPoint = (byte*)fragmentEntry,
-            TargetCount = 1,
-            Targets = &colorTarget,
-        };
-
-        // ── Pipeline descriptor ──────────────────────────────────────────
-        var pipelineDesc = new RenderPipelineDescriptor
-        {
-            Layout = (PipelineLayout*)pipelineLayoutHandle.DangerousGetHandle(),
-            Vertex = new VertexState
-            {
-                Module = (ShaderModule*)vertModule.DangerousGetHandle(),
-                EntryPoint = (byte*)vertexEntry,
-                BufferCount = 1,
-                Buffers = &vertexBufferLayout,
-            },
-            Primitive = new PrimitiveState
-            {
-                Topology = PrimitiveTopology.TriangleList,
-                FrontFace = FrontFace.Ccw,
-                CullMode = CullMode.None,
-            },
-            Multisample = new MultisampleState
-            {
-                Count = 1,
-                Mask = uint.MaxValue,
-            },
-            Fragment = &fragmentState,
-            DepthStencil = null,
-        };
-
-        var pipeline = new SafeRenderPipelineHandle(this.gd.Wgpu, this.gd.Handle, ref pipelineDesc);
-
-        pipelineLayoutHandle.Dispose();
-
-        SilkMarshal.Free(vertexEntry);
-        SilkMarshal.Free(fragmentEntry);
-
-        return pipeline;
+            // The pipeline holds its own reference to the layout — release ours.
+            pipelineLayoutHandle.Dispose();
+        }
     }
 }
