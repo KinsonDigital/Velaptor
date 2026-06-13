@@ -23,6 +23,7 @@ internal sealed class SilkWindowFactory : IWindowFactory
 
         var windowOptions = WindowOptions.Default;
         windowOptions.ShouldSwapAutomatically = false;
+        windowOptions.API = GraphicsAPI.None;
 
         this.window = Window.Create(windowOptions);
 

@@ -1,0 +1,41 @@
+// <copyright file="SafeTextureViewHandle.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.NativeInterop.WebGPU.Handles;
+
+using System;
+using Microsoft.Win32.SafeHandles;
+using Silk.NET.WebGPU;
+
+/// <summary>
+/// A safe handle for a WebGPU texture view.
+/// </summary>
+internal sealed class SafeTextureViewHandle : SafeHandleZeroOrMinusOneIsInvalid
+{
+    private readonly IWGPUInvoker wgpu;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SafeTextureViewHandle"/> class.
+    /// </summary>
+    /// <param name="wgpu">The WebGPU invoker.</param>
+    /// <param name="texture">The texture pointer.</param>
+    /// <param name="descriptor">The texture view descriptor.</param>
+    public SafeTextureViewHandle(IWGPUInvoker wgpu, nint texture, in TextureViewDescriptor descriptor = default)
+        : base(ownsHandle: true)
+    {
+        this.wgpu = wgpu;
+        SetHandle(this.wgpu.TextureCreateView(texture, in descriptor));
+    }
+
+    /// <inheritdoc/>
+    protected override bool ReleaseHandle()
+    {
+        if (!IsInvalid)
+        {
+            this.wgpu.TextureViewRelease(this.handle);
+        }
+
+        return true;
+    }
+}

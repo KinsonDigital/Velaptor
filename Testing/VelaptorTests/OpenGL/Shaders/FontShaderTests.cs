@@ -42,6 +42,7 @@ public class FontShaderTests
     public FontShaderTests()
     {
         this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.HasGLContext.Returns(true);
         this.mockGLService = Substitute.For<IOpenGLService>();
         this.mockShaderLoader = Substitute.For<IShaderLoaderService>();
 

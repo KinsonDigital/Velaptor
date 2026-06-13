@@ -158,6 +158,13 @@ internal abstract class ShaderProgram : IShaderProgram
             return;
         }
 
+        // In WebGPU mode, the GL context is never created. Skip OpenGL
+        // shader compilation to avoid NREs on the unset GL handle.
+        if (!GL.HasGLContext)
+        {
+            return;
+        }
+
         OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
         var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name);

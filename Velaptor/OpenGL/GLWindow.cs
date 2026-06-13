@@ -388,21 +388,31 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
     private void Init(uint width, uint height)
     {
-        var glObj = this.silkWindow.CreateOpenGL();
-        this.glReactable.Push(PushNotifications.GLContextCreatedId, glObj);
-        this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
+        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
+
+        GL? glObj = null;
+
+        if (useOpenGL)
+        {
+            glObj = this.silkWindow.CreateOpenGL();
+            this.glReactable.Push(PushNotifications.GLContextCreatedId, glObj);
+            this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
+        }
 
         this.silkWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
 
-        var glObjData = new GLObjectsData
+        if (useOpenGL && glObj is not null)
         {
-            GL = glObj,
-            Window = this.silkWindow,
-            InputContext = this.glInputContext,
-        };
-        this.glObjectsReactable.Push(PushNotifications.GLObjectsCreatedId, glObjData);
-        this.glObjectsReactable.Unsubscribe(PushNotifications.GLObjectsCreatedId);
+            var glObjData = new GLObjectsData
+            {
+                GL = glObj,
+                Window = this.silkWindow,
+                InputContext = this.glInputContext,
+            };
+            this.glObjectsReactable.Push(PushNotifications.GLObjectsCreatedId, glObjData);
+            this.glObjectsReactable.Unsubscribe(PushNotifications.GLObjectsCreatedId);
+        }
 
         if (this.glInputContext.Keyboards.Count <= 0)
         {
@@ -431,14 +441,19 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void GLWindow_Load()
     {
+        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
+
         // OpenGL is ready to take function calls after this Init() call has executed
         Init(Width, Height);
 
-        this.openGLService.SetupErrorCallback();
-        this.gl.Enable(GLEnableCap.DebugOutput);
-        this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
+        if (useOpenGL)
+        {
+            this.openGLService.SetupErrorCallback();
+            this.gl.Enable(GLEnableCap.DebugOutput);
+            this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
 
-        this.openGLService.GLError += GL_GLError;
+            this.openGLService.GLError += GL_GLError;
+        }
 
         CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -448,15 +463,20 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
 
-        Initialize?.Invoke();
-
-        /* Send a push notification to all subscribers that OpenGL is initialized.
-         * The context of initialized here is that the OpenGL context is set
-         * and the related GLFW window has been created and is ready to go.
+        /* Send a push notification to all subscribers that the window is initialized.
+         * For OpenGL: the OpenGL context is set and the GLFW window is ready.
+         * For WebGPU: the window is ready for surface creation (adapter/device init
+         * happens in the subscriber).
+         *
+         * This MUST happen BEFORE Initialize?.Invoke() because content loading
+         * (SceneManager.LoadContent) may trigger texture creation which needs the
+         * WebGPU device and pipelines to already be initialized.
          */
 
         this.pushReactable.Push(PushNotifications.GLInitializedId);
         this.pushReactable.Unsubscribe(PushNotifications.GLInitializedId);
+
+        Initialize?.Invoke();
 
         Initialized = true;
     }
@@ -495,8 +515,22 @@ internal sealed class GLWindow : VelaptorIWindow
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
 
+        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
+
         // Updates the viewport to the same size as the window
-        this.gl.Viewport(0, 0, width, height);
+        if (useOpenGL)
+        {
+            this.gl.Viewport(0, 0, width, height);
+        }
+        else
+        {
+            // In WebGPU mode the swap chain must be recreated so that
+            // its textures match the new framebuffer dimensions. This
+            // notification tells the batcher to call frame.Reconfigure()
+            // before the next render pass is opened.
+            this.pushReactable.Push(PushNotifications.SurfaceReconfigureId);
+        }
+
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
 
@@ -560,7 +594,9 @@ internal sealed class GLWindow : VelaptorIWindow
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
         };
 
-        if (AutoClearBuffer)
+        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
+
+        if (useOpenGL && AutoClearBuffer)
         {
             this.gl.Clear(GLClearBufferMask.ColorBufferBit);
         }
@@ -574,7 +610,18 @@ internal sealed class GLWindow : VelaptorIWindow
 
         this.imGuiFacade.Render();
 
-        this.silkWindow.SwapBuffers();
+        if (useOpenGL)
+        {
+            this.silkWindow.SwapBuffers();
+        }
+        else
+        {
+            // In WebGPU mode the render pass stays open across sequential
+            // Begin/End cycles so that scene and control rendering all
+            // contribute to the same swap-chain texture. Tell the batcher
+            // to close the pass and present now that all drawing is done.
+            this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
+        }
 
         this.timerService.Stop();
         Fps = 1000f / this.timerService.MillisecondsPassed;

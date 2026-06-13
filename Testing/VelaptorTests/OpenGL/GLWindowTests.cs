@@ -87,6 +87,7 @@ public class GLWindowTests : TestsBase
         this.mockGLContext = Substitute.For<IGLContext>();
         this.mockSilkWindow = Substitute.For<SilkIWindow>();
         this.mockSilkWindow.GLContext.Returns(this.mockGLContext);
+        this.mockSilkWindow.API.Returns(GraphicsAPI.Default);
 
         // Mock the input context
         this.mockSilkInputContext = Substitute.For<IInputContext>();

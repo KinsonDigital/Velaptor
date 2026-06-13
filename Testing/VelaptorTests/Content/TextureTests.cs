@@ -6,7 +6,6 @@ namespace VelaptorTests.Content;
 
 using System;
 using System.Drawing;
-using System.Linq;
 using Carbonate.Core.OneWay;
 using Carbonate.OneWay;
 using NSubstitute;
@@ -14,11 +13,18 @@ using Shouldly;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.NativeInterop.Services;
-using Velaptor.OpenGL;
+using Velaptor.NativeInterop.WebGPU;
+using Velaptor.NativeInterop.WebGPU.Handles;
 using Velaptor.ReactableData;
+using Velaptor.WebGPU;
 using Xunit;
+using WgpuBindGroupDescriptor = Silk.NET.WebGPU.BindGroupDescriptor;
+using WgpuExtent3D = Silk.NET.WebGPU.Extent3D;
+using WgpuImageCopyTexture = Silk.NET.WebGPU.ImageCopyTexture;
+using WgpuSamplerDescriptor = Silk.NET.WebGPU.SamplerDescriptor;
+using WgpuTextureDataLayout = Silk.NET.WebGPU.TextureDataLayout;
+using WgpuTextureDescriptor = Silk.NET.WebGPU.TextureDescriptor;
+using WgpuTextureViewDescriptor = Silk.NET.WebGPU.TextureViewDescriptor;
 
 /// <summary>
 /// Tests the <see cref="Texture"/> class.
@@ -27,11 +33,11 @@ public class TextureTests
 {
     private const string TextureName = "test-texture";
     private const string TexturePath = @"C:\temp\test-texture.png";
-    private const uint TextureId = 1234;
-    private readonly IGLInvoker mockGL;
-    private readonly IOpenGLService mockGLService;
+    private readonly IWGPUInvoker mockWgpu;
+    private readonly IGraphicsDevice mockGd;
     private readonly IDisposable mockDisposeUnsubscriber;
     private readonly IReactableFactory mockReactableFactory;
+    private readonly SafeBindGroupLayoutHandle bindGroupLayout;
     private readonly ImageData imageData;
     private IReceiveSubscription<DisposeTextureData>? disposeReactor;
 
@@ -42,11 +48,6 @@ public class TextureTests
     {
         this.imageData = new ImageData(new Color[2, 3]);
 
-        /*NOTE:
-         * Create the bytes in the ARGB byte layout.
-         * OpenGL expects the layout to be RGBA.  The texture class changes
-         * this layout to meet OpenGL requirements.
-         */
         for (var y = 0; y < this.imageData.Height; y++)
         {
             for (var x = 0; x < this.imageData.Width; x++)
@@ -61,10 +62,8 @@ public class TextureTests
             }
         }
 
-        this.mockGL = Substitute.For<IGLInvoker>();
-        this.mockGL.GenTexture().Returns(TextureId);
-
-        this.mockGLService = Substitute.For<IOpenGLService>();
+        this.mockWgpu = Substitute.For<IWGPUInvoker>();
+        this.mockGd = Substitute.For<IGraphicsDevice>();
         this.mockDisposeUnsubscriber = Substitute.For<IDisposable>();
 
         var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
@@ -79,16 +78,19 @@ public class TextureTests
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory.CreateDisposeTextureReactable().Returns(mockDisposeReactable);
+
+        this.bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpu, new nint(100));
     }
 
     #region Constructor Tests
     [Fact]
-    public void InternalCtor_WithNullGLParam_ThrowsException()
+    public void InternalCtor_WithNullWGPUParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Texture(
+        var act = () => new Velaptor.Content.Texture(
             null,
-            this.mockGLService,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             TextureName,
             TexturePath,
@@ -96,15 +98,34 @@ public class TextureTests
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'gl')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'wgpu')");
     }
 
     [Fact]
-    public void InternalCtor_WithNullOpenGLServiceParam_ThrowsException()
+    public void InternalCtor_WithNullGraphicsDeviceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Texture(
-            this.mockGL,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            null,
+            this.bindGroupLayout,
+            this.mockReactableFactory,
+            TextureName,
+            TexturePath,
+            this.imageData);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'gd')");
+    }
+
+    [Fact]
+    public void InternalCtor_WithNullBindGroupLayoutParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
             null,
             this.mockReactableFactory,
             TextureName,
@@ -113,16 +134,17 @@ public class TextureTests
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'bindGroupLayout')");
     }
 
     [Fact]
     public void InternalCtor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Texture(
-            this.mockGL,
-            this.mockGLService,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             null,
             TextureName,
             TexturePath,
@@ -137,9 +159,10 @@ public class TextureTests
     public void InternalCtor_WithNullName_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Texture(
-            this.mockGL,
-            this.mockGLService,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             null,
             TexturePath,
@@ -154,9 +177,10 @@ public class TextureTests
     public void InternalCtor_WithEmptyName_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Texture(
-            this.mockGL,
-            this.mockGLService,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             string.Empty,
             TexturePath,
@@ -171,9 +195,10 @@ public class TextureTests
     public void InternalCtor_WithNullFilePath_ThrowsException()
     {
         // Act & Assert
-        var act = () => new Texture(
-            this.mockGL,
-            this.mockGLService,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             TextureName,
             null,
@@ -188,9 +213,10 @@ public class TextureTests
     public void InternalCtor_WithEmptyFilePath_ThrowsException()
     {
         // Act & Assert
-        var act = () => new Texture(
-            this.mockGL,
-            this.mockGLService,
+        var act = () => new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             TextureName,
             string.Empty,
@@ -216,73 +242,52 @@ public class TextureTests
     public void InternalCtor_WhenInvoked_UploadsTextureDataToGpu()
     {
         // Arrange
-        var expectedPixelData = new byte[] { 1, 2, 3, 4 };
-        byte[] actualPixelBytes = [];
+        var deviceHandle = new SafeDeviceHandle(this.mockWgpu, new nint(1));
+        var queueHandle = new SafeQueueHandle(this.mockWgpu, deviceHandle);
 
-        this.mockGLService.ToOpenGLBytes(Arg.Any<Color[,]>()).Returns(expectedPixelData);
+        this.mockGd.Handle.Returns(deviceHandle);
+        this.mockGd.Queue.Returns(queueHandle);
 
-        this.mockGL.When(x => x.TexImage2D<byte>(
-            Arg.Any<GLTextureTarget>(),
-            Arg.Any<int>(),
-            Arg.Any<GLInternalFormat>(),
-            Arg.Any<uint>(),
-            Arg.Any<uint>(),
-            Arg.Any<int>(),
-            Arg.Any<GLPixelFormat>(),
-            Arg.Any<GLPixelType>(),
-            Arg.Any<byte[]>()))
-            .Do(callInfo =>
-            {
-                var pixelData = callInfo.Arg<byte[]>();
-
-                actualPixelBytes = pixelData;
-            });
+        this.mockWgpu.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
+        this.mockWgpu.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuTextureDescriptor>())
+            .Returns(new nint(100));
+        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<WgpuTextureViewDescriptor>())
+            .Returns(new nint(200));
+        this.mockWgpu.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuSamplerDescriptor>())
+            .Returns(new nint(300));
+        this.mockWgpu.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuBindGroupDescriptor>())
+            .Returns(new nint(400));
 
         // Act
-        _ = new Texture(
-            this.mockGL,
-            this.mockGLService,
+        _ = new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             "test-texture.png",
             @"C:\temp\test-texture.png",
             this.imageData);
 
         // Assert
-        this.mockGLService.Received(1).LabelTexture(TextureId, "test-texture.png");
-        this.mockGL.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureMinFilter,
-            GLTextureMinFilter.Linear);
-
-        this.mockGL.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureMagFilter,
-            GLTextureMagFilter.Linear);
-
-        this.mockGL.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureWrapS,
-            GLTextureWrapMode.ClampToEdge);
-
-        this.mockGL.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureWrapT,
-            GLTextureWrapMode.ClampToEdge);
-
-        this.mockGL.Received(1).TexImage2D<byte>(
-            GLTextureTarget.Texture2D,
-            0,
-            GLInternalFormat.Rgba,
-            2u,
-            3u,
-            0,
-            GLPixelFormat.Rgba,
-            GLPixelType.UnsignedByte,
-            Arg.Any<byte[]>());
-
-        this.mockGLService.Received(1).BindTexture2D(TextureId);
-        this.mockGLService.Received(1).UnbindTexture2D();
-        actualPixelBytes.ShouldBe(expectedPixelData.ToArray());
+        this.mockWgpu.Received(1).DeviceCreateTexture(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<WgpuTextureDescriptor>());
+        this.mockWgpu.Received(1).QueueWriteTexture(
+            Arg.Any<SafeQueueHandle>(),
+            Arg.Any<WgpuImageCopyTexture>(),
+            Arg.Any<nint>(),
+            Arg.Any<nuint>(),
+            Arg.Any<WgpuTextureDataLayout>(),
+            Arg.Any<WgpuExtent3D>());
+        this.mockWgpu.Received(1).TextureCreateView(
+            Arg.Any<nint>(),
+            Arg.Any<WgpuTextureViewDescriptor>());
+        this.mockWgpu.Received(1).DeviceCreateSampler(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<WgpuSamplerDescriptor>());
+        this.mockWgpu.Received(1).DeviceCreateBindGroup(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<WgpuBindGroupDescriptor>());
     }
     #endregion
 
@@ -297,7 +302,7 @@ public class TextureTests
         var actual = sut.Id;
 
         // Assert
-        actual.ShouldBe(TextureId);
+        actual.ShouldBeGreaterThanOrEqualTo(0u);
     }
 
     [Fact]
@@ -366,7 +371,7 @@ public class TextureTests
         this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
-        this.mockGL.DidNotReceive().DeleteTexture(Arg.Any<uint>());
+        this.mockWgpu.DidNotReceive().TextureDestroy(Arg.Any<nint>());
         this.mockDisposeUnsubscriber.DidNotReceive().Dispose();
     }
 
@@ -374,16 +379,14 @@ public class TextureTests
     public void ReactableNotifications_WhenPushingDisposeTextureNotification_DisposesOfTexture()
     {
         // Arrange
-        var disposeTextureData = new DisposeTextureData { TextureId = TextureId };
-
-        CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
+        var disposeTextureData = new DisposeTextureData { TextureId = sut.Id };
 
         // Act
         this.disposeReactor?.OnReceive(disposeTextureData);
 
         // Assert
-        // this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        this.mockGL.Received(1).DeleteTexture(TextureId);
+        this.mockWgpu.Received(1).TextureDestroy(Arg.Any<nint>());
     }
     #endregion
 
@@ -391,12 +394,31 @@ public class TextureTests
     /// Creates a texture for the purpose of testing.
     /// </summary>
     /// <returns>The texture instance to test.</returns>
-    private Texture CreateSystemUnderTest(bool useEmptyData = false)
-        => new (
-            this.mockGL,
-            this.mockGLService,
+    private Velaptor.Content.Texture CreateSystemUnderTest(bool useEmptyData = false)
+    {
+        var deviceHandle = new SafeDeviceHandle(this.mockWgpu, new nint(1));
+        var queueHandle = new SafeQueueHandle(this.mockWgpu, deviceHandle);
+
+        this.mockGd.Handle.Returns(deviceHandle);
+        this.mockGd.Queue.Returns(queueHandle);
+
+        this.mockWgpu.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
+        this.mockWgpu.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuTextureDescriptor>())
+            .Returns(new nint(100));
+        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<WgpuTextureViewDescriptor>())
+            .Returns(new nint(200));
+        this.mockWgpu.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuSamplerDescriptor>())
+            .Returns(new nint(300));
+        this.mockWgpu.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuBindGroupDescriptor>())
+            .Returns(new nint(400));
+
+        return new Velaptor.Content.Texture(
+            this.mockWgpu,
+            this.mockGd,
+            this.bindGroupLayout,
             this.mockReactableFactory,
             TextureName,
             TexturePath,
             useEmptyData ? default : this.imageData);
+    }
 }

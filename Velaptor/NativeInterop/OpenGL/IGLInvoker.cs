@@ -591,4 +591,10 @@ internal interface IGLInvoker : IDisposable
         [Flow(FlowDirection.In), PinObject(PinMode.UntilNextCall)] DebugProc callback,
         [Flow(FlowDirection.In)] in T0 userParam)
         where T0 : unmanaged;
-}
+
+        /// <summary>
+        /// Gets a value indicating whether the underlying OpenGL context has been initialized.
+        /// When <c>false</c>, no OpenGL calls should be made — the backend is likely using WebGPU instead.
+        /// </summary>
+        bool HasGLContext { get; }
+    }

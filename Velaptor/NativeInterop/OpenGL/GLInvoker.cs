@@ -47,6 +47,9 @@ internal sealed class GLInvoker : IGLInvoker
     /// </summary>
     ~GLInvoker() => Dispose();
 
+    /// <inheritdoc/>
+    public bool HasGLContext => this.gl is not null;
+
     /// <summary>
     /// Gets the list of OpenGL function calls.
     /// </summary>

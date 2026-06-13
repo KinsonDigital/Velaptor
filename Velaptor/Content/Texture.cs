@@ -10,52 +10,66 @@ using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Graphics;
-using NativeInterop.OpenGL;
-using NativeInterop.Services;
-using OpenGL;
+using NativeInterop.WebGPU;
+using NativeInterop.WebGPU.Handles;
 using ReactableData;
+using Silk.NET.WebGPU;
 using Velaptor.Factories;
+using WebGPU;
 
 /// <summary>
 /// The texture to render to a screen.
 /// </summary>
 public sealed class Texture : ITexture
 {
-    private readonly IGLInvoker gl;
-    private readonly IOpenGLService openGLService;
+    private const uint BytesPerRowAlignment = 256;
+    private static uint nextId = 1;
+
+    private readonly IWGPUInvoker wgpu;
+    private readonly IGraphicsDevice gd;
+    private readonly TextureBindGroupRegistry? bindGroupRegistry;
+    private SafeTextureHandle? gpuTexture;
+    private SafeTextureViewHandle? textureView;
+    private SafeSamplerHandle? sampler;
     private IDisposable? unsubscriber;
     private int isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Texture"/> class.
     /// </summary>
-    /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+    /// <param name="wgpu">Invokes WebGPU functions.</param>
+    /// <param name="gd">The WebGPU graphics device.</param>
+    /// <param name="bindGroupLayout">The bind group layout matching the texture pipeline.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
+    /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
     internal Texture(
-        IGLInvoker gl,
-        IOpenGLService openGLService,
+        IWGPUInvoker wgpu,
+        IGraphicsDevice gd,
+        SafeBindGroupLayoutHandle bindGroupLayout,
         IReactableFactory reactableFactory,
         string name,
         string filePath,
-        ImageData imageData)
+        ImageData imageData,
+        TextureBindGroupRegistry? bindGroupRegistry = null)
     {
-        ArgumentNullException.ThrowIfNull(gl);
-        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(wgpu);
+        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(bindGroupLayout);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentException.ThrowIfNullOrEmpty(filePath);
 
-        this.gl = gl;
-        this.openGLService = openGLService;
+        this.wgpu = wgpu;
+        this.gd = gd;
+        this.bindGroupRegistry = bindGroupRegistry;
 
         FilePath = filePath;
 
         var disposeReactable = reactableFactory.CreateDisposeTextureReactable();
-        Init(disposeReactable, name, imageData);
+        Init(disposeReactable, bindGroupLayout, name, imageData);
     }
 
     /// <summary>
@@ -88,6 +102,12 @@ public sealed class Texture : ITexture
     public uint Height { get; private set; }
 
     /// <summary>
+    /// Gets the WebGPU bind group that wires the texture view to binding 0 and the
+    /// sampler to binding 1, compatible with the texture pipeline's bind group layout.
+    /// </summary>
+    internal SafeBindGroupHandle? BindGroup { get; private set; }
+
+    /// <summary>
     /// Disposes of the texture if this texture's <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
@@ -103,16 +123,25 @@ public sealed class Texture : ITexture
             return;
         }
 
-        this.gl.DeleteTexture(Id);
+        BindGroup?.Dispose();
+        this.bindGroupRegistry?.Unregister(Id);
+        this.sampler?.Dispose();
+        this.textureView?.Dispose();
+        this.gpuTexture?.Dispose();
     }
 
     /// <summary>
     /// Initializes the <see cref="Texture"/>.
     /// </summary>
     /// <param name="disposeReactable">Sends and receives push notifications.</param>
+    /// <param name="bindGroupLayout">The bind group layout from the texture pipeline.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void Init(IPushReactable<DisposeTextureData> disposeReactable, string name, ImageData imageData)
+    private void Init(
+        IPushReactable<DisposeTextureData> disposeReactable,
+        SafeBindGroupLayoutHandle bindGroupLayout,
+        string name,
+        ImageData imageData)
     {
         this.unsubscriber = disposeReactable.CreateOneWayReceive(
             PushNotifications.TextureDisposedId,
@@ -124,64 +153,142 @@ public sealed class Texture : ITexture
             throw new ArgumentException("The image data must not be empty.", nameof(imageData));
         }
 
-        Id = this.gl.GenTexture();
-
-        this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
-        this.openGLService.BindTexture2D(Id);
+        Id = Interlocked.Increment(ref nextId) - 1;
 
         Width = imageData.Width;
         Height = imageData.Height;
-
         Name = name;
 
-        UploadDataToGpu(name, imageData);
-
-        this.openGLService.UnbindTexture2D();
+        UploadDataToGpu(bindGroupLayout, imageData);
     }
 
     /// <summary>
     /// Uploads the given pixel data to the GPU.
     /// </summary>
-    /// <param name="name">The name of the texture.</param>
+    /// <param name="bindGroupLayout">The bind group layout for the bind group.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private void UploadDataToGpu(string name, ImageData imageData)
+    private unsafe void UploadDataToGpu(SafeBindGroupLayoutHandle bindGroupLayout, ImageData imageData)
     {
-        var pixelData = this.openGLService.ToOpenGLBytes(imageData.Pixels);
+        var width = imageData.Width;
+        var height = imageData.Height;
 
-        this.openGLService.LabelTexture(Id, name);
+        // Convert Color[,] to a flat RGBA byte array
+        var unalignedBytesPerRow = width * 4;
+        var alignedBytesPerRow = (unalignedBytesPerRow + (BytesPerRowAlignment - 1)) & ~(BytesPerRowAlignment - 1);
 
-        // Set the min and mag filters to linear
-        this.gl.TexParameter(
-            target: GLTextureTarget.Texture2D,
-            pname: GLTextureParameterName.TextureMinFilter,
-            param: GLTextureMinFilter.Linear);
+        var pixels = imageData.Pixels;
+        var rawPixels = new byte[alignedBytesPerRow * height];
 
-        this.gl.TexParameter(
-            target: GLTextureTarget.Texture2D,
-            pname: GLTextureParameterName.TextureMagFilter,
-            param: GLTextureMagFilter.Linear);
+        for (var y = 0u; y < height; y++)
+        {
+            for (var x = 0u; x < width; x++)
+            {
+                var pixel = pixels[x, y];
+                var srcIdx = (int)((y * width) + x) * 4;
+                var dstIdx = (int)((y * alignedBytesPerRow) + (x * 4));
+                rawPixels[dstIdx] = pixel.R;
+                rawPixels[dstIdx + 1] = pixel.G;
+                rawPixels[dstIdx + 2] = pixel.B;
+                rawPixels[dstIdx + 3] = pixel.A;
+            }
+        }
 
-        // Set the x(S) and y(T) axis wrap mode to repeat
-        this.gl.TexParameter(
-            target: GLTextureTarget.Texture2D,
-            pname: GLTextureParameterName.TextureWrapS,
-            param: GLTextureWrapMode.ClampToEdge);
+        // Create the GPU texture: 2-D, RGBA8 sRGB, with TextureBinding + CopyDst usage.
+        var textureDesc = new TextureDescriptor
+        {
+            Usage = TextureUsage.TextureBinding | TextureUsage.CopyDst,
+            Dimension = TextureDimension.Dimension2D,
+            Size = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1 },
+            Format = TextureFormat.Rgba8UnormSrgb,
+            MipLevelCount = 1,
+            SampleCount = 1,
+        };
 
-        this.gl.TexParameter(
-            target: GLTextureTarget.Texture2D,
-            pname: GLTextureParameterName.TextureWrapT,
-            param: GLTextureWrapMode.ClampToEdge);
+        this.gpuTexture = new SafeTextureHandle(this.wgpu, this.gd.Handle!, in textureDesc);
 
-        // Load the texture data to the GPU for the currently active texture slot
-        this.gl.TexImage2D<byte>(
-            target: GLTextureTarget.Texture2D,
-            level: 0,
-            GLInternalFormat.Rgba,
-            width: imageData.Width,
-            height: imageData.Height,
-            border: 0,
-            format: GLPixelFormat.Rgba,
-            type: GLPixelType.UnsignedByte,
-            pixels: pixelData);
+        fixed (byte* uploadPtr = rawPixels)
+        {
+            var destination = new ImageCopyTexture
+            {
+                Texture = (Silk.NET.WebGPU.Texture*)this.gpuTexture.DangerousGetHandle(),
+                MipLevel = 0,
+                Origin = new Origin3D { X = 0, Y = 0, Z = 0 },
+                Aspect = TextureAspect.All,
+            };
+
+            var dataLayout = new TextureDataLayout
+            {
+                Offset = 0,
+                BytesPerRow = alignedBytesPerRow,
+                RowsPerImage = height,
+            };
+
+            var copySize = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1 };
+
+            this.wgpu.QueueWriteTexture(
+                this.gd.Queue!,
+                in destination,
+                (nint)uploadPtr,
+                (nuint)rawPixels.Length,
+                in dataLayout,
+                in copySize);
+        }
+
+        // Create a texture view
+        var viewDesc = new TextureViewDescriptor
+        {
+            Format = TextureFormat.Rgba8UnormSrgb,
+            Dimension = TextureViewDimension.Dimension2D,
+            MipLevelCount = 1,
+            ArrayLayerCount = 1,
+            Aspect = TextureAspect.All,
+        };
+
+        this.textureView = new SafeTextureViewHandle(
+            this.wgpu,
+            this.gpuTexture.DangerousGetHandle(),
+            in viewDesc);
+
+        // Create a linear sampler. ClampToEdge prevents colour bleeding at the texture border.
+        var samplerDesc = new SamplerDescriptor
+        {
+            AddressModeU = AddressMode.ClampToEdge,
+            AddressModeV = AddressMode.ClampToEdge,
+            AddressModeW = AddressMode.ClampToEdge,
+            MagFilter = FilterMode.Linear,
+            MinFilter = FilterMode.Linear,
+            MipmapFilter = MipmapFilterMode.Nearest,
+            LodMinClamp = 0f,
+            LodMaxClamp = 1f,
+            Compare = CompareFunction.Undefined,
+            MaxAnisotropy = 1,
+        };
+
+        this.sampler = new SafeSamplerHandle(this.wgpu, this.wgpu.DeviceCreateSampler(this.gd.Handle!, in samplerDesc));
+
+        // Create the bind group: binding 0 = texture view, binding 1 = sampler
+        var entries = stackalloc BindGroupEntry[2];
+        entries[0] = new BindGroupEntry
+        {
+            Binding = 0,
+            TextureView = (Silk.NET.WebGPU.TextureView*)this.textureView.DangerousGetHandle(),
+        };
+        entries[1] = new BindGroupEntry
+        {
+            Binding = 1,
+            Sampler = (Silk.NET.WebGPU.Sampler*)this.sampler.DangerousGetHandle(),
+        };
+
+        var bgDesc = new BindGroupDescriptor
+        {
+            Layout = (BindGroupLayout*)bindGroupLayout.DangerousGetHandle(),
+            EntryCount = 2,
+            Entries = entries,
+        };
+
+        var bindGroupHandle = this.wgpu.DeviceCreateBindGroup(this.gd.Handle!, in bgDesc);
+        BindGroup = new SafeBindGroupHandle(this.wgpu, bindGroupHandle);
+
+        this.bindGroupRegistry?.Register(Id, BindGroup);
     }
 }

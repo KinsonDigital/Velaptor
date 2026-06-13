@@ -1,0 +1,623 @@
+// <copyright file="WGPUInvoker.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.NativeInterop.WebGPU;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using Silk.NET.Core;
+using Silk.NET.WebGPU;
+using Velaptor.NativeInterop.WebGPU.Handles;
+using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
+
+/// <summary>
+/// Invokes WebGPU calls.
+/// </summary>
+[ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the Silk.NET library.")]
+internal sealed class WGPUInvoker : IWGPUInvoker
+{
+    private bool isDisposed;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WGPUInvoker"/> class.
+    /// </summary>
+    public WGPUInvoker()
+    {
+        Wgpu = WebGPU.GetApi();
+    }
+
+    /// <inheritdoc/>
+    public WebGPU Wgpu { get; }
+
+    /// <inheritdoc/>
+    public SafeDeviceHandle Device { get; set; } = null!;
+
+    /// <inheritdoc/>
+    public SafeQueueHandle Queue { get; set; } = null!;
+
+    /// <inheritdoc/>
+    public SafeInstanceHandle CreateInstance(in InstanceDescriptor descriptor)
+    {
+        unsafe
+        {
+            var pointer = Wgpu.CreateInstance(in descriptor);
+
+            return new SafeInstanceHandle(this, (nint)pointer);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void InstanceRelease(nint instance)
+    {
+        unsafe
+        {
+            Wgpu.InstanceRelease((Instance*)instance);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void InstanceRequestAdapter(
+        SafeInstanceHandle instance,
+        in RequestAdapterOptions options,
+        PfnRequestAdapterCallback callback)
+    {
+        unsafe
+        {
+            Wgpu.InstanceRequestAdapter(
+                (Instance*)instance.DangerousGetHandle(),
+                in options,
+                new PfnRequestAdapterCallback(callback),
+                null);
+        }
+    }
+
+    /// <inheritdoc/>
+    public Bool32 AdapterGetLimits(SafeAdapterHandle adapter, ref SupportedLimits limits)
+    {
+        unsafe
+        {
+            fixed (SupportedLimits* pLimits = &limits)
+            {
+                return Wgpu.AdapterGetLimits((Adapter*)adapter.DangerousGetHandle(), pLimits);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void AdapterRequestDevice(
+        SafeAdapterHandle adapter,
+        in DeviceDescriptor descriptor,
+        PfnRequestDeviceCallback callback)
+    {
+        unsafe
+        {
+            Wgpu.AdapterRequestDevice((Adapter*)adapter.DangerousGetHandle(), in descriptor, callback, null);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void DeviceSetUncapturedErrorCallback(SafeDeviceHandle device, PfnErrorCallback callback)
+    {
+        unsafe
+        {
+            Wgpu.DeviceSetUncapturedErrorCallback((Device*)device.DangerousGetHandle(), callback, null);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceGetQueue(SafeDeviceHandle device)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceGetQueue((Device*)device.DangerousGetHandle());
+        }
+    }
+
+    /// <inheritdoc/>
+    public void DeviceRelease(nint device)
+    {
+        unsafe
+        {
+            Wgpu.DeviceRelease((Device*)device);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueRelease(nint queue)
+    {
+        unsafe
+        {
+            Wgpu.QueueRelease((Queue*)queue);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateShaderModule(SafeDeviceHandle device, in ShaderModuleDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateShaderModule((Device*)device.DangerousGetHandle(), in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void ShaderModuleRelease(nint handle)
+    {
+        unsafe
+        {
+            Wgpu.ShaderModuleRelease((ShaderModule*)handle);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void AdapterRelease(nint adapter)
+    {
+        unsafe
+        {
+            Wgpu.AdapterRelease((Adapter*)adapter);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SurfaceConfigure(SafeSurfaceHandle surface, in SurfaceConfiguration config)
+    {
+        unsafe
+        {
+            Wgpu.SurfaceConfigure((Surface*)surface.DangerousGetHandle(), in config);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SurfaceGetCurrentTexture(SafeSurfaceHandle surface, ref SurfaceTexture surfaceTexture)
+    {
+        unsafe
+        {
+            fixed (SurfaceTexture* ptr = &surfaceTexture)
+            {
+                Wgpu.SurfaceGetCurrentTexture((Surface*)surface.DangerousGetHandle(), ptr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SurfaceUnconfigure(nint surface)
+    {
+        unsafe
+        {
+            Wgpu.SurfaceUnconfigure((Surface*)surface);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SurfaceRelease(nint surface)
+    {
+        unsafe
+        {
+            Wgpu.SurfaceRelease((Surface*)surface);
+        }
+    }
+
+    /// <inheritdoc/>
+    public TextureFormat SurfaceGetPreferredFormat(SafeSurfaceHandle surface, SafeAdapterHandle adapter)
+    {
+        unsafe
+        {
+            return Wgpu.SurfaceGetPreferredFormat(
+                (Surface*)surface.DangerousGetHandle(),
+                (Adapter*)adapter.DangerousGetHandle());
+        }
+    }
+
+    /// <inheritdoc/>
+    public void TextureRelease(nint texture)
+    {
+        unsafe
+        {
+            Wgpu.TextureRelease((Texture*)texture);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderSetPipeline(
+        SafeRenderPassEncoderHandle renderPassEncoder,
+        SafeRenderPipelineHandle pipeline)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderSetPipeline(
+                (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
+                (RenderPipeline*)pipeline.DangerousGetHandle());
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, in PipelineLayoutDescriptor descriptor)
+    {
+        unsafe
+        {
+            var handle = (nint)Wgpu.DeviceCreatePipelineLayout(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+
+            return new SafePipelineLayoutHandle(this, handle);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void PipelineLayoutRelease(nint pipelineLayout)
+    {
+        unsafe
+        {
+            Wgpu.PipelineLayoutRelease((PipelineLayout*)pipelineLayout);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateRenderPipeline(SafeDeviceHandle device, in RenderPipelineDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateRenderPipeline(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPipelineRelease(nint pipeline)
+    {
+        unsafe
+        {
+            Wgpu.RenderPipelineRelease((RenderPipeline*)pipeline);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateBindGroup(SafeDeviceHandle device, in BindGroupDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateBindGroup(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void BindGroupRelease(nint bindGroup)
+    {
+        unsafe
+        {
+            Wgpu.BindGroupRelease((BindGroup*)bindGroup);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateBindGroupLayout(SafeDeviceHandle device, in BindGroupLayoutDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateBindGroupLayout(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void BindGroupLayoutRelease(nint bindGroupLayout)
+    {
+        unsafe
+        {
+            Wgpu.BindGroupLayoutRelease((BindGroupLayout*)bindGroupLayout);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateSampler(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SamplerRelease(nint sampler)
+    {
+        unsafe
+        {
+            Wgpu.SamplerRelease((Sampler*)sampler);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateTexture(SafeDeviceHandle device, in TextureDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateTexture(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void TextureDestroy(nint texture)
+    {
+        unsafe
+        {
+            Wgpu.TextureDestroy((Texture*)texture);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateCommandEncoder(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void CommandEncoderRelease(nint encoder)
+    {
+        unsafe
+        {
+            Wgpu.CommandEncoderRelease((CommandEncoder*)encoder);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint DeviceCreateBuffer(SafeDeviceHandle device, in BufferDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.DeviceCreateBuffer(
+                (Device*)device.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void BufferDestroy(nint buffer)
+    {
+        unsafe
+        {
+            Wgpu.BufferDestroy((WebGpuBuffer*)buffer);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void BufferRelease(nint buffer)
+    {
+        unsafe
+        {
+            Wgpu.BufferRelease((WebGpuBuffer*)buffer);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint TextureCreateView(nint texture, in TextureViewDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.TextureCreateView((Texture*)texture, in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void TextureViewRelease(nint textureView)
+    {
+        unsafe
+        {
+            Wgpu.TextureViewRelease((TextureView*)textureView);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint CommandEncoderBeginRenderPass(SafeCommandEncoderHandle encoder, in RenderPassDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.CommandEncoderBeginRenderPass(
+                (CommandEncoder*)encoder.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderEnd(nint renderPassEncoder)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderEnd((RenderPassEncoder*)renderPassEncoder);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderRelease(nint renderPassEncoder)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderRelease((RenderPassEncoder*)renderPassEncoder);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint CommandEncoderFinish(SafeCommandEncoderHandle encoder, in CommandBufferDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.CommandEncoderFinish(
+                (CommandEncoder*)encoder.DangerousGetHandle(),
+                in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void CommandBufferRelease(nint commandBuffer)
+    {
+        unsafe
+        {
+            Wgpu.CommandBufferRelease((CommandBuffer*)commandBuffer);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueSubmit(SafeQueueHandle queue, uint commandCount, nint commands)
+    {
+        unsafe
+        {
+            var cmdBufPtr = (CommandBuffer*)commands;
+            Wgpu.QueueSubmit((Queue*)queue.DangerousGetHandle(), commandCount, &cmdBufPtr);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SurfacePresent(SafeSurfaceHandle surface)
+    {
+        unsafe
+        {
+            Wgpu.SurfacePresent((Surface*)surface.DangerousGetHandle());
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderSetVertexBuffer(
+        SafeRenderPassEncoderHandle renderPassEncoder,
+        uint slot,
+        nint buffer,
+        ulong offset,
+        ulong size)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderSetVertexBuffer(
+                (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
+                slot,
+                (WebGpuBuffer*)buffer,
+                offset,
+                size);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderSetIndexBuffer(
+        SafeRenderPassEncoderHandle renderPassEncoder,
+        nint buffer,
+        IndexFormat format,
+        ulong offset,
+        ulong size)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderSetIndexBuffer(
+                (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
+                (WebGpuBuffer*)buffer,
+                format,
+                offset,
+                size);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderDrawIndexed(
+        SafeRenderPassEncoderHandle renderPassEncoder,
+        uint indexCount,
+        uint instanceCount,
+        uint firstIndex,
+        int baseVertex,
+        uint firstInstance)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderDrawIndexed(
+                (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
+                indexCount,
+                instanceCount,
+                firstIndex,
+                baseVertex,
+                firstInstance);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RenderPassEncoderSetBindGroup(
+        SafeRenderPassEncoderHandle renderPassEncoder,
+        uint groupIndex,
+        SafeBindGroupHandle bindGroup,
+        nuint dynamicOffsetCount,
+        nint dynamicOffsets)
+    {
+        unsafe
+        {
+            Wgpu.RenderPassEncoderSetBindGroup(
+                (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
+                groupIndex,
+                (BindGroup*)bindGroup.DangerousGetHandle(),
+                dynamicOffsetCount,
+                (uint*)dynamicOffsets);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, nint data, nuint size)
+    {
+        unsafe
+        {
+            Wgpu.QueueWriteBuffer(
+                (Queue*)queue.DangerousGetHandle(),
+                (WebGpuBuffer*)buffer,
+                bufferOffset,
+                (void*)data,
+                size);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueWriteTexture(
+        SafeQueueHandle queue,
+        in ImageCopyTexture destination,
+        nint data,
+        nuint dataSize,
+        in TextureDataLayout dataLayout,
+        in Extent3D writeSize)
+    {
+        unsafe
+        {
+            fixed (ImageCopyTexture* destPtr = &destination)
+            fixed (TextureDataLayout* layoutPtr = &dataLayout)
+            {
+                Wgpu.QueueWriteTexture(
+                    (Queue*)queue.DangerousGetHandle(),
+                    destPtr,
+                    (void*)data,
+                    dataSize,
+                    layoutPtr,
+                    in writeSize);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+
+        this.Device?.Dispose();
+        this.Queue?.Dispose();
+        Wgpu.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}

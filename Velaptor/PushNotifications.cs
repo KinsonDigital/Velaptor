@@ -105,4 +105,18 @@ internal static class PushNotifications
     /// Gets the unique <see cref="Guid"/> for push notifications when the state of a text box changes.
     /// </summary>
     public static Guid TextBoxStateId { get; } = new ("71931561-826b-431b-bce6-b139034a1ff4");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications to submit the WebGPU render pass
+    /// and present the frame to the display. This is pushed once per logical frame after all
+    /// draw calls have been recorded, keeping the render pass open across sequential Begin/End cycles.
+    /// </summary>
+    public static Guid SubmitRenderPassId { get; } = new ("d4e5f6a7-b8c9-4d01-a2b3-c4d5e6f7a8b9");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications to reconfigure the WebGPU
+    /// swap chain surface. Pushed when the window framebuffer size changes so that the
+    /// swap chain textures match the new dimensions.
+    /// </summary>
+    public static Guid SurfaceReconfigureId { get; } = new ("e5f6a7b8-c9d0-4e12-b3c4-d5e6f7a8b9c0");
 }

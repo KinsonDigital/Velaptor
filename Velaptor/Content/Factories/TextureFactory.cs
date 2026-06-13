@@ -7,9 +7,10 @@ namespace Velaptor.Content.Factories;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Graphics;
-using NativeInterop.OpenGL;
-using NativeInterop.Services;
+using NativeInterop.WebGPU;
+using NativeInterop.WebGPU.Handles;
 using Velaptor.Factories;
+using WebGPU;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.
@@ -17,35 +18,48 @@ using Velaptor.Factories;
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class TextureFactory : ITextureFactory
 {
-    private readonly IGLInvoker gl;
-    private readonly IOpenGLService mockGLService;
+    private readonly IWGPUInvoker wgpu;
+    private readonly IGraphicsDevice gd;
     private readonly IReactableFactory reactableFactory;
+    private SafeBindGroupLayoutHandle? bindGroupLayout;
+    private readonly TextureBindGroupRegistry? bindGroupRegistry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
     public TextureFactory()
     {
-        this.gl = IoC.Container.GetInstance<IGLInvoker>();
-        this.mockGLService = IoC.Container.GetInstance<IOpenGLService>();
+        this.wgpu = IoC.Container.GetInstance<IWGPUInvoker>();
+        this.gd = IoC.Container.GetInstance<IGraphicsDevice>();
         this.reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
+        this.bindGroupRegistry = IoC.Container.GetInstance<TextureBindGroupRegistry>();
+        this.bindGroupLayout = null; // Deferred until first Create() — pipeline may not be initialized yet.
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
     /// </summary>
-    /// <param name="gl">Invokes OpenGL functions.</param>
-    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+    /// <param name="wgpu">Invokes WebGPU functions.</param>
+    /// <param name="gd">The WebGPU graphics device.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactableFactory reactableFactory)
+    /// <param name="bindGroupLayout">The bind group layout from the texture pipeline. Optional.</param>
+    /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
+    internal TextureFactory(
+        IWGPUInvoker wgpu,
+        IGraphicsDevice gd,
+        IReactableFactory reactableFactory,
+        SafeBindGroupLayoutHandle? bindGroupLayout = null,
+        TextureBindGroupRegistry? bindGroupRegistry = null)
     {
-        ArgumentNullException.ThrowIfNull(gl);
-        ArgumentNullException.ThrowIfNull(openGLService);
+        ArgumentNullException.ThrowIfNull(wgpu);
+        ArgumentNullException.ThrowIfNull(gd);
         ArgumentNullException.ThrowIfNull(reactableFactory);
 
-        this.gl = gl;
-        this.mockGLService = openGLService;
+        this.wgpu = wgpu;
+        this.gd = gd;
         this.reactableFactory = reactableFactory;
+        this.bindGroupLayout = bindGroupLayout;
+        this.bindGroupRegistry = bindGroupRegistry;
     }
 
     /// <inheritdoc/>
@@ -54,6 +68,18 @@ internal sealed class TextureFactory : ITextureFactory
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentException.ThrowIfNullOrEmpty(filePath);
 
-        return new Texture(this.gl, this.mockGLService, this.reactableFactory, name, filePath, imageData);
+        // Resolve bind group layout lazily — the pipeline may not be initialized
+        // during DI resolution but will be ready by the time content is loaded.
+        this.bindGroupLayout ??= IoC.Container.GetInstance<GraphicsTexturePipeline>().BindGroupLayout;
+
+        return new Texture(
+            this.wgpu,
+            this.gd,
+            this.bindGroupLayout,
+            this.reactableFactory,
+            name,
+            filePath,
+            imageData,
+            this.bindGroupRegistry);
     }
 }

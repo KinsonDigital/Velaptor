@@ -41,6 +41,7 @@ public class TextureShaderTests
     public TextureShaderTests()
     {
         this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.HasGLContext.Returns(true);
         this.mockGLService = Substitute.For<IOpenGLService>();
         this.mockShaderLoader = Substitute.For<IShaderLoaderService>();
 

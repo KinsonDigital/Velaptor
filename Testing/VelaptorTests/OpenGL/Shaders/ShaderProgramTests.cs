@@ -55,6 +55,7 @@ public class ShaderProgramTests
         this.mockShaderLoader.LoadFragSource(ShaderName).Returns(FragShaderSrc);
 
         this.mockGL = Substitute.For<IGLInvoker>();
+        this.mockGL.HasGLContext.Returns(true);
         this.mockGLService = Substitute.For<IOpenGLService>();
 
         const int getShaderStatusCode = 1;
