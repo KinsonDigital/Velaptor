@@ -30,6 +30,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
+    private uint batchOffset;
     private bool hasBegun;
     private bool isDisposed;
 
@@ -67,7 +68,11 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () => this.hasBegun = true,
+            () =>
+            {
+                this.hasBegun = true;
+                this.batchOffset = 0;
+            },
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderShapeReactable();
@@ -132,10 +137,15 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
             return;
         }
 
+        // Ensure the GPU buffer is large enough before any upload to avoid
+        // mid-render-pass resizes that invalidate previously recorded draw commands.
+        var requiredCapacity = this.batchOffset + (uint)itemsToRender.Length;
+        this.buffer.EnsureCapacity(requiredCapacity);
+
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;
-        var gpuDataIndex = -1;
+        var gpuDataIndex = (int)this.batchOffset - 1;
 
         // Only if items are available to render
         for (var i = 0u; i < itemsToRender.Length; i++)
@@ -148,7 +158,8 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
             this.buffer.UploadData(batchItem, (uint)gpuDataIndex);
         }
 
-        this.buffer.Draw(renderPass, totalItemsToRender, 0);
+        this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
+        this.batchOffset += totalItemsToRender;
     }
 
     /// <inheritdoc/>

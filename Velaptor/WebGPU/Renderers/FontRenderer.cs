@@ -37,6 +37,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
+    private uint batchOffset;
     private bool hasBegun;
     private bool isDisposed;
 
@@ -78,7 +79,11 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
 
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () => this.hasBegun = true,
+            () =>
+            {
+                this.hasBegun = true;
+                this.batchOffset = 0;
+            },
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderFontReactable();
@@ -471,10 +476,15 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     {
         var renderPass = this.frame.RenderPass;
 
+        // Ensure the GPU buffer is large enough before any upload to avoid
+        // mid-render-pass resizes that invalidate previously recorded draw commands.
+        var requiredCapacity = this.batchOffset + (uint)itemsToRender.Length;
+        this.buffer.EnsureCapacity(requiredCapacity);
+
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;
-        var gpuDataIndex = -1;
+        var gpuDataIndex = (int)this.batchOffset - 1;
 
         for (var i = 0u; i < itemsToRender.Length; i++)
         {
@@ -501,10 +511,11 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             var bindGroup = this.bindGroupRegistry.GetBindGroup(batchItem.TextureId);
 
             this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
-            this.buffer.Draw(renderPass, totalItemsToRender, 0);
+            this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
 
+            this.batchOffset += totalItemsToRender;
             totalItemsToRender = 0;
-            gpuDataIndex = -1;
+            gpuDataIndex = (int)this.batchOffset - 1;
         }
 
         this.hasBegun = false;

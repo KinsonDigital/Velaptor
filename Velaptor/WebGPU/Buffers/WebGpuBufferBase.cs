@@ -49,6 +49,22 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     public uint Capacity { get; private set; }
 
     /// <summary>
+    /// Ensures the GPU buffers can hold at least <paramref name="itemCount"/> items,
+    /// re-allocating if necessary. Call this before starting an upload loop to avoid
+    /// mid-loop resizes that would invalidate previously recorded draw commands.
+    /// </summary>
+    /// <param name="itemCount">The minimum number of batch items the buffer must support.</param>
+    public void EnsureCapacity(uint itemCount)
+    {
+        EnsureInitialized();
+
+        if (itemCount > Capacity)
+        {
+            Allocate(itemCount);
+        }
+    }
+
+    /// <summary>
     /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
     /// has been initialized.
     /// </summary>

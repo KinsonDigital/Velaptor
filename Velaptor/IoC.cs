@@ -325,12 +325,19 @@ internal static class IoC
     /// </summary>
     private static void SetupBuffers()
     {
+        // GPU buffers must be pre-sized to match the batching manager's initial capacity.
+        // WebGPU records draw commands (SetVertexBuffer, SetIndexBuffer, DrawIndexed) into
+        // the command encoder; QueueWriteBuffer executes immediately.  If the buffer resizes
+        // mid-render-pass (Allocate disposes old handles and creates new ones), previously
+        // recorded commands reference disposed handles, causing a native crash on submit.
+        const uint gpuBufferInitialCapacity = 1000;
+
         IoCContainer.Register(
             () =>
         {
             var gd = IoCContainer.GetInstance<Velaptor.WebGPU.GraphicsDevice>();
 
-            return new Velaptor.WebGPU.Buffers.TextureGpuBuffer(gd);
+            return new Velaptor.WebGPU.Buffers.TextureGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -338,7 +345,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<Velaptor.WebGPU.GraphicsDevice>();
 
-            return new Velaptor.WebGPU.Buffers.FontGpuBuffer(gd);
+            return new Velaptor.WebGPU.Buffers.FontGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -346,7 +353,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<Velaptor.WebGPU.GraphicsDevice>();
 
-            return new Velaptor.WebGPU.Buffers.ShapeGpuBuffer(gd);
+            return new Velaptor.WebGPU.Buffers.ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -354,7 +361,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<Velaptor.WebGPU.GraphicsDevice>();
 
-            return new Velaptor.WebGPU.Buffers.LineGpuBuffer(gd);
+            return new Velaptor.WebGPU.Buffers.LineGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
     }
 
