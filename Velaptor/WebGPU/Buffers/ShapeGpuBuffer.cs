@@ -4,8 +4,6 @@
 
 namespace Velaptor.WebGPU.Buffers;
 
-using System;
-using System.Numerics;
 using OpenGL.Batching;
 
 /// <summary>

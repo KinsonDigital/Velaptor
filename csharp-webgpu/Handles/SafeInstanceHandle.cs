@@ -1,6 +1,5 @@
 using csharp_webgpu.NativeInterop.WebGPU;
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
 
 internal sealed class SafeInstanceHandle : SafeHandleZeroOrMinusOneIsInvalid
 {

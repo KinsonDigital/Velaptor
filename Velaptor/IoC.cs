@@ -34,10 +34,7 @@ using Silk.NET.OpenGL;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Telemetry;
-using UI;
 using Velaptor.WebGPU;
-using WgpuGraphicsDevice = Velaptor.WebGPU.GraphicsDevice;
-using WgpuGraphicsSurface = Velaptor.WebGPU.GraphicsSurface;
 using WgpuFrame = Velaptor.WebGPU.Frame;
 using WgpuTextureBindGroupRegistry = Velaptor.WebGPU.TextureBindGroupRegistry;
 

@@ -5,9 +5,7 @@
 namespace Velaptor.WebGPU;
 
 using System;
-using System.Drawing;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGPU;
 using NativeInterop.WebGPU.Handles;
 using NETColor = System.Drawing.Color;
 using SilkColor = Silk.NET.WebGPU.Color;

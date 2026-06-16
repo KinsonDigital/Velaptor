@@ -4,13 +4,13 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System.Drawing;
 using System.Numerics;
 using System.Text;
-using KdGui;
-using KdGui.Factories;
 using Velaptor;
+using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 
@@ -19,10 +19,14 @@ using Velaptor.Scene;
 /// </summary>
 public class KeyboardScene : SceneBase
 {
+    private const string Instructions = "Hit a key on the keyboard to see if it is correct.";
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly BackgroundManager backgroundManager;
-    private IControlGroup? grpControls;
-    private string? downKeysName;
+    private readonly IContentManager contentManager;
+    private readonly IFontRenderer fontRenderer;
+    private readonly StringBuilder downKeyText = new (Instructions);
+    private IFont? font;
+    private Vector2 textPos = Vector2.Zero;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -31,6 +35,8 @@ public class KeyboardScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
+        this.contentManager = ContentManager.Create();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
@@ -43,23 +49,8 @@ public class KeyboardScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var ctrlFactory = new ControlFactory();
-        var instructions = ctrlFactory.CreateLabel();
-        instructions.Name = nameof(instructions);
-
-        instructions.Text = "Hit a key on the keyboard to see if it is correct.";
-
-        var downKeys = ctrlFactory.CreateLabel();
-        downKeys.Name = nameof(downKeys);
-        this.downKeysName = nameof(downKeys);
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Keyboard Info";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(instructions);
-        this.grpControls.Add(downKeys);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.textPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         base.LoadContent();
     }
@@ -72,9 +63,8 @@ public class KeyboardScene : SceneBase
             return;
         }
 
+        this.contentManager.Unload(this.font);
         this.backgroundManager.Unload();
-        this.grpControls.Dispose();
-        this.grpControls = null;
 
         base.UnloadContent();
     }
@@ -84,26 +74,23 @@ public class KeyboardScene : SceneBase
     {
         var currentKeyState = this.keyboard.GetState();
 
-        var downKeysCtrl = this.grpControls.GetControl<ILabel>(this.downKeysName);
-
         if (currentKeyState.GetDownKeys().Length > 0)
         {
-            var downKeyText = new StringBuilder();
+            this.downKeyText.Clear();
 
             foreach (var key in currentKeyState.GetDownKeys())
             {
-                downKeyText.Append(key);
-                downKeyText.Append(", ");
+                this.downKeyText.Append(key);
+                this.downKeyText.Append(", ");
             }
 
-            downKeysCtrl.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
+            this.downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
         }
         else
         {
-            downKeysCtrl.Text = "No Keys Pressed";
+            this.downKeyText.Clear();
+            this.downKeyText.Append("No Keys Pressed");
         }
-
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
 
         base.Update(frameTime);
     }
@@ -113,7 +100,10 @@ public class KeyboardScene : SceneBase
     {
         this.backgroundManager.Render();
 
-        this.grpControls.Render();
+        var instructionsPos = new Vector2(WindowCenter.X, WindowCenter.Y - 50);
+        this.fontRenderer.Render(this.font, Instructions, instructionsPos);
+        this.fontRenderer.Render(this.font, this.downKeyText.ToString(), this.textPos);
+
         base.Render();
     }
 

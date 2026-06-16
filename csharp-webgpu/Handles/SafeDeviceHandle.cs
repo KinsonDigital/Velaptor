@@ -6,7 +6,6 @@ namespace csharp_webgpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using NativeInterop.WebGPU;
-using Silk.NET.WebGPU;
 
 internal class SafeDeviceHandle : SafeHandleZeroOrMinusOneIsInvalid
 {

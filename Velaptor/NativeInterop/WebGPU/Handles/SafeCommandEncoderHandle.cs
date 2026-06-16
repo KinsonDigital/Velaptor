@@ -4,7 +4,6 @@
 
 namespace Velaptor.NativeInterop.WebGPU.Handles;
 
-using System;
 using Microsoft.Win32.SafeHandles;
 using Silk.NET.WebGPU;
 

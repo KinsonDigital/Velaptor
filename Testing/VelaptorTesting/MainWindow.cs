@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using KdGui;
 using KdGui.Factories;
 using Scenes;
 using Velaptor;
@@ -66,26 +65,29 @@ public class MainWindow : Window
 
         // this.grpSceneCtrls.Add(nextPrevious);
 
+        // WORKS
         // var textRenderingScene = new TextRenderingScene
         // {
         //     Name = SplitByUpperCase(nameof(TextRenderingScene)),
         // };
 
-        var layeredTextRenderingScene = new LayeredTextRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
-        };
+        // WORKS
+        // var layeredTextRenderingScene = new LayeredTextRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        // };
 
+        // WORKS
         // var keyboardScene = new KeyboardScene
         // {
         //     Name = SplitByUpperCase(nameof(KeyboardScene)),
         // };
-        //
-        // var mouseScene = new MouseScene
-        // {
-        //     Name = SplitByUpperCase(nameof(MouseScene)),
-        // };
-        //
+
+        var mouseScene = new MouseScene
+        {
+            Name = SplitByUpperCase(nameof(MouseScene)),
+        };
+
         // var layeredRenderingScene = new LayeredTextureRenderingScene
         // {
         //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
@@ -127,9 +129,9 @@ public class MainWindow : Window
         // };
 
         // SceneManager.AddScene(textRenderingScene, true);
-        SceneManager.AddScene(layeredTextRenderingScene);
+        // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(keyboardScene);
-        // SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);

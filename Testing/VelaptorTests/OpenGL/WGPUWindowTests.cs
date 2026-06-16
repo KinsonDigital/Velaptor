@@ -27,7 +27,6 @@ using Velaptor.Input;
 using Velaptor.Input.Exceptions;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
-using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.ReactableData;
 using Velaptor.Scene;

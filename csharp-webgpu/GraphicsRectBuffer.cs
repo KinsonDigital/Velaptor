@@ -4,7 +4,6 @@
 
 namespace csharp_webgpu;
 
-using System.Drawing;
 using System.Numerics;
 using Handles;
 using Silk.NET.WebGPU;

@@ -11,14 +11,12 @@ using System.Linq;
 using System.Numerics;
 using Batching;
 using Carbonate;
-using Carbonate.OneWay;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
 using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
 using OpenGL.Batching;
 using Velaptor.WebGPU.Buffers;
 

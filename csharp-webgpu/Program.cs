@@ -9,7 +9,6 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using StbImageSharp;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using NativeInterop.WebGPU;
 using NETColor = System.Drawing.Color;
 

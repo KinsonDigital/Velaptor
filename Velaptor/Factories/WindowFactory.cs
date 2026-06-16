@@ -7,7 +7,6 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
-using NativeInterop.Services;
 using OpenGL;
 using Scene;
 using Services;
