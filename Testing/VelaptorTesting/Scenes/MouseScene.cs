@@ -5,12 +5,13 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
-using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using System.Text;
 using Velaptor;
+using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
+using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 
@@ -20,15 +21,24 @@ using Velaptor.Scene;
 public class MouseScene : SceneBase
 {
     private readonly BackgroundManager backgroundManager;
-    private IAppInput<MouseState>? mouse;
-    private IControlGroup? grpControls;
+    private readonly IContentManager contentManager;
+    private readonly IFontRenderer fontRenderer;
+    private readonly IAppInput<MouseState>? mouse;
+    private readonly StringBuilder mouseText = new ();
     private MouseScrollDirection scrollDirection;
-    private string? mouseStateLabelName;
+    private IFont? font;
+    private Vector2 textPos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseScene"/> class.
     /// </summary>
-    public MouseScene() => this.backgroundManager = new BackgroundManager();
+    public MouseScene()
+    {
+        this.mouse = HardwareFactory.GetMouse();
+        this.backgroundManager = new BackgroundManager();
+        this.contentManager = ContentManager.Create();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+    }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
@@ -39,20 +49,8 @@ public class MouseScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-
-        this.mouse = HardwareFactory.GetMouse();
-
-        var ctrlFactory = new ControlFactory();
-        var mouseStateLabel = ctrlFactory.CreateLabel();
-        mouseStateLabel.Name = nameof(mouseStateLabel);
-        this.mouseStateLabelName = nameof(mouseStateLabel);
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Mouse State";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(mouseStateLabel);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.textPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         base.LoadContent();
     }
@@ -62,26 +60,19 @@ public class MouseScene : SceneBase
     {
         var currentMouseState = this.mouse.GetState();
 
-        var mouseState = "Mouse State";
-        mouseState += $"Mouse Position: {currentMouseState.GetX()}, {currentMouseState.GetY()}";
-        mouseState += $"{Environment.NewLine}Left Button: {(currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-        mouseState += $"{Environment.NewLine}Right Button: {(currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-        mouseState += $"{Environment.NewLine}Middle Button: {(currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
+        this.mouseText.Clear();
+        this.mouseText.Append("Mouse State");
+        this.mouseText.Append($"Mouse Position: {currentMouseState.GetX()}, {currentMouseState.GetY()}");
+        this.mouseText.Append($"{Environment.NewLine}Left Button: {(currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}");
+        this.mouseText.Append($"{Environment.NewLine}Right Button: {(currentMouseState.IsRightButtonDown() ? "Down" : "Up")}");
+        this.mouseText.Append($"{Environment.NewLine}Middle Button: {(currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}");
 
         if (currentMouseState.GetScrollWheelValue() != 0)
         {
             this.scrollDirection = currentMouseState.GetScrollDirection();
         }
 
-        mouseState += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
-
-        var mouseStateLabelCtrl = this.grpControls.GetControl<ILabel>(this.mouseStateLabelName);
-        mouseStateLabelCtrl.Text = mouseState;
-
-        this.grpControls.AutoSizeToFitContent = false;
-        this.grpControls.AutoSizeToFitContent = true;
-
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
+        this.mouseText.Append($"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}");
 
         base.Update(frameTime);
     }
@@ -90,7 +81,7 @@ public class MouseScene : SceneBase
     public override void Render()
     {
         this.backgroundManager.Render();
-        this.grpControls.Render();
+        this.fontRenderer.Render(this.font, this.mouseText.ToString(), this.textPos);
 
         base.Render();
     }
@@ -103,12 +94,8 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.scrollDirection = MouseScrollDirection.None;
-        this.mouse = null;
-
+        this.contentManager.Unload(this.font);
         this.backgroundManager.Unload();
-        this.grpControls.Dispose();
-        this.grpControls = null;
 
         base.UnloadContent();
     }
