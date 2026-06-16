@@ -24,12 +24,9 @@ using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
-using NativeInterop.OpenGL;
 using NativeInterop.Services;
 using NativeInterop.WebGPU;
 using OpenGL.Batching;
-using OpenGL.Buffers;
-using OpenGL.Services;
 using ReactableData;
 using Scene;
 using Services;
@@ -240,9 +237,7 @@ internal static class IoC
         IoCContainer.Register(() => FileStream, Lifestyle.Singleton);
         IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
-        IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IWGPUInvoker, WGPUInvoker>(Lifestyle.Singleton);
-        IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
         IoCContainer.Register<IGlfwInvoker, GlfwInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IImGuiInvoker, ImGuiInvoker>(Lifestyle.Singleton);
@@ -374,7 +369,6 @@ internal static class IoC
         IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IFontFactory, FontFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
-        IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IRenderMediator, RenderMediator>(Lifestyle.Singleton);
         IoCContainer.Register<IPathResolverFactory, PathResolverFactory>(Lifestyle.Singleton);
     }
@@ -397,7 +391,6 @@ internal static class IoC
         IoCContainer.Register<IAppSettingsService, AppSettingsService>(Lifestyle.Singleton);
         IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
-        IoCContainer.Register<IShaderLoaderService, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
         IoCContainer.Register<ISystemDisplayService, SystemDisplayService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         IoCContainer.Register<IJsonService, JSONService>(Lifestyle.Singleton);
@@ -461,3 +454,5 @@ internal static class IoC
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
     }
 }
+
+

@@ -12,6 +12,14 @@ using System;
 internal interface IImGuiManager : IDisposable
 {
     /// <summary>
+    /// Gets a value indicating whether ImGui is backed by an OpenGL rendering context.
+    /// When <c>false</c>, the engine is running in WebGPU mode: ImGui state is maintained
+    /// (so UI libraries such as KdGui can call ImGui freely) but draw data is never uploaded
+    /// to the GPU.
+    /// </summary>
+    bool IsOpenGlMode { get; }
+
+    /// <summary>
     /// Updates ImGui input and IO configuration state.
     /// </summary>
     /// <param name="timeSeconds">The current frame time in seconds.</param>

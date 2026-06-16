@@ -5,6 +5,7 @@
 namespace Velaptor.WebGPU.Renderers;
 
 using System;
+using System.Numerics;
 using Batching;
 using Carbonate;
 using Carbonate.OneWay;
@@ -28,6 +29,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     private readonly IBatchingManager batchManager;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
+    private readonly IDisposable viewportUnsubscriber;
     private bool hasBegun;
     private bool isDisposed;
 
@@ -74,10 +76,23 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
             PushNotifications.RenderShapesId,
             RenderBatch,
             () => this.renderUnsubscriber?.Dispose());
+
+        var viewportReactable = reactableFactory.CreateViewPortReactable();
+
+        this.viewportUnsubscriber = viewportReactable.CreateOneWayReceive(
+            PushNotifications.ViewPortSizeChangedId,
+            data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
+            () => this.viewportUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
     public void Render(RectShape rect, int layer = 0) => RenderBase(rect.ToBatchItem(), layer);
+
+    /// <summary>
+    /// Gets the current window size used by the GPU buffer for NDC conversion.
+    /// </summary>
+    /// <remarks>For testing purposes.</remarks>
+    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
 
     /// <inheritdoc/>
     public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
@@ -147,5 +162,6 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
         this.isDisposed = true;
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
     }
 }

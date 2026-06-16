@@ -24,7 +24,7 @@ using Velaptor.WebGPU.Buffers;
 using NETRect = System.Drawing.Rectangle;
 
 /// <inheritdoc cref="ITextureRenderer"/>
-internal sealed class TextureRenderer : ITextureRenderer
+internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 {
     private readonly IWGPUInvoker wgpu;
     private readonly IBatchingManager batchManager;
@@ -34,7 +34,9 @@ internal sealed class TextureRenderer : ITextureRenderer
     private readonly TextureBindGroupRegistry bindGroupRegistry;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderTexturesUnsubscriber;
+    private readonly IDisposable viewportUnsubscriber;
     private bool hasBegun;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureRenderer"/> class.
@@ -86,6 +88,13 @@ internal sealed class TextureRenderer : ITextureRenderer
             PushNotifications.RenderTexturesId,
             RenderBatch,
             () => this.renderTexturesUnsubscriber?.Dispose());
+
+        var viewportReactable = reactableFactory.CreateViewPortReactable();
+
+        this.viewportUnsubscriber = viewportReactable.CreateOneWayReceive(
+            PushNotifications.ViewPortSizeChangedId,
+            data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
+            () => this.viewportUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
@@ -95,6 +104,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     /// </exception>
     public void Render(ITexture texture, int x, int y, int layer = 0) =>
         Render(texture, x, y, Color.White, RenderEffects.None, layer);
+
+    /// <summary>
+    /// Gets the current window size used by the GPU buffer for NDC conversion.
+    /// </summary>
+    /// <remarks>For testing purposes.</remarks>
+    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
@@ -701,14 +716,27 @@ internal sealed class TextureRenderer : ITextureRenderer
             if (bindGroup is not null)
             {
                 this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
+                this.buffer.Draw(renderPass, totalItemsToRender, 0);
             }
-
-            this.buffer.Draw(renderPass, totalItemsToRender, 0);
 
             totalItemsToRender = 0;
             gpuDataIndex = -1;
         }
 
         this.hasBegun = false;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.batchBeginUnsubscriber.Dispose();
+        this.renderTexturesUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
     }
 }

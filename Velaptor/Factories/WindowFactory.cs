@@ -1,4 +1,4 @@
-﻿// <copyright file="WindowFactory.cs" company="KinsonDigital">
+// <copyright file="WindowFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,6 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
-using NativeInterop.OpenGL;
 using NativeInterop.Services;
 using OpenGL;
 using Scene;
@@ -44,13 +43,12 @@ internal static class WindowFactory
     /// <returns>A Velaptor framework window implementation.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
     public static VelaptorIWindow CreateWindow(uint width, uint height)
-        => new GLWindow(
+        => new WGPUWindow(
             width,
             height,
             IoC.Container.GetInstance<ITelemetryService>(),
             IoC.Container.GetInstance<SilkIWindow>(),
             IoC.Container.GetInstance<INativeInputFactory>(),
-            IoC.Container.GetInstance<IGLInvoker>(),
             IoC.Container.GetInstance<IGlfwInvoker>(),
             IoC.Container.GetInstance<ISystemDisplayService>(),
             IoC.Container.GetInstance<IPlatform>(),
@@ -59,6 +57,6 @@ internal static class WindowFactory
             IoC.Container.GetInstance<IImGuiFacade>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
-            IoC.Container.GetInstance<ITimerService>(),
-            IoC.Container.GetInstance<IOpenGLService>());
+            IoC.Container.GetInstance<ITimerService>());
 }
+

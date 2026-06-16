@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="WGPUWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,10 +17,8 @@ using Carbonate.OneWay;
 using Shouldly;
 using Helpers;
 using NSubstitute;
-using Silk.NET.Core.Contexts;
 using Silk.NET.Input;
 using Silk.NET.Maths;
-using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Velaptor;
 using Velaptor.Factories;
@@ -29,10 +27,8 @@ using Velaptor.Input;
 using Velaptor.Input.Exceptions;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.NativeInterop.ImGui;
-using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
 using Velaptor.Scene;
 using Velaptor.Services;
@@ -45,17 +41,14 @@ using SysVector2 = System.Numerics.Vector2;
 using VelaptorMouseButton = Velaptor.Input.MouseButton;
 using VelaptorWindowBorder = Velaptor.WindowBorder;
 using WindowBorder = Velaptor.WindowBorder;
-using GLObjectsReactable = Carbonate.OneWay.IPushReactable<Velaptor.ReactableData.GLObjectsData>;
 
 /// <summary>
-/// Tests the <see cref="GLWindow"/> class.
+/// Tests the <see cref="WGPUWindow"/> class.
 /// </summary>
-public class GLWindowTests : TestsBase
+public class WGPUWindowTests : TestsBase
 {
     private readonly ITelemetryService mockTelemetryService;
-    private readonly IGLInvoker mockGL;
     private readonly IGlfwInvoker mockGlfw;
-    private readonly IGLContext mockGLContext;
     private readonly ISystemDisplayService mockDisplayService;
     private readonly IPlatform mockPlatform;
     private readonly ISceneManager mockSceneManager;
@@ -68,26 +61,20 @@ public class GLWindowTests : TestsBase
     private readonly IPushReactable<KeyboardKeyStateData> mockKeyboardReactable;
     private readonly IPushReactable<WindowSizeData> mockPushWinSizeReactable;
     private readonly IPullReactable<WindowSizeData> mockPullWinSizeReactable;
-    private readonly IPushReactable<GL> mockGLReactable;
-    private readonly GLObjectsReactable mockGLObjectsReactable;
     private readonly SilkIWindow mockSilkWindow;
     private readonly ITimerService mockTimerService;
     private readonly INativeInputFactory? mockNativeInputFactory;
     private readonly IInputContext? mockSilkInputContext;
     private readonly IKeyboard? mockSilkKeyboard;
     private readonly IMouse? mockSilkMouse;
-    private readonly IOpenGLService mockOpenGLService;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
+    /// Initializes a new instance of the <see cref="WGPUWindowTests"/> class.
     /// </summary>
-    public GLWindowTests()
+    public WGPUWindowTests()
     {
         this.mockTelemetryService = Substitute.For<ITelemetryService>();
-        this.mockGLContext = Substitute.For<IGLContext>();
         this.mockSilkWindow = Substitute.For<SilkIWindow>();
-        this.mockSilkWindow.GLContext.Returns(this.mockGLContext);
-        this.mockSilkWindow.API.Returns(GraphicsAPI.Default);
 
         // Mock the input context
         this.mockSilkInputContext = Substitute.For<IInputContext>();
@@ -104,7 +91,6 @@ public class GLWindowTests : TestsBase
         var mice = new List<IMouse> { this.mockSilkMouse };
         this.mockSilkInputContext.Mice.Returns(mice.AsReadOnly());
 
-        this.mockGL = Substitute.For<IGLInvoker>();
         this.mockGlfw = Substitute.For<IGlfwInvoker>();
         this.mockDisplayService = Substitute.For<ISystemDisplayService>();
         this.mockPlatform = Substitute.For<IPlatform>();
@@ -112,13 +98,10 @@ public class GLWindowTests : TestsBase
         this.mockTaskService = Substitute.For<ITaskService>();
         this.mockStatsWindowService = Substitute.For<IStatsWindowService>();
         this.mockImGuiFacade = Substitute.For<IImGuiFacade>();
-        this.mockOpenGLService = Substitute.For<IOpenGLService>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
         this.mockMouseReactable = Substitute.For<IPushReactable<MouseStateData>>();
         this.mockKeyboardReactable = Substitute.For<IPushReactable<KeyboardKeyStateData>>();
-        this.mockGLReactable = Substitute.For<IPushReactable<GL>>();
-        this.mockGLObjectsReactable = Substitute.For<GLObjectsReactable>();
 
         var mockViewPortReactable = Substitute.For<IPushReactable<ViewPortSizeData>>();
         this.mockPushWinSizeReactable = Substitute.For<IPushReactable<WindowSizeData>>();
@@ -128,8 +111,6 @@ public class GLWindowTests : TestsBase
         this.mockReactableFactory.CreateNoDataPushReactable().Returns(this.mockPushReactable);
         this.mockReactableFactory.CreateMouseReactable().Returns(this.mockMouseReactable);
         this.mockReactableFactory.CreateKeyboardReactable().Returns(this.mockKeyboardReactable);
-        this.mockReactableFactory.CreateGLReactable().Returns(this.mockGLReactable);
-        this.mockReactableFactory.CreateGLObjectsReactable().Returns(this.mockGLObjectsReactable);
         this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
         this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(this.mockPushWinSizeReactable);
         this.mockReactableFactory.CreatePullWindowSizeReactable().Returns(this.mockPullWinSizeReactable);
@@ -143,13 +124,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullTelemetryServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 null,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -158,8 +138,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -171,13 +150,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullSilkWindowParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 null,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -186,8 +164,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -199,13 +176,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullNativeInputFactoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 null,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -214,54 +190,25 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'nativeInputFactory')");
     }
 
-    [Fact]
-    [Trait("Category", Ctor)]
-    public void Ctor_WithNullGLInvokerParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () => _ = new GLWindow(
-                100,
-                200,
-                this.mockTelemetryService,
-                this.mockSilkWindow,
-                this.mockNativeInputFactory,
-                null,
-                this.mockGlfw,
-                this.mockDisplayService,
-                this.mockPlatform,
-                this.mockTaskService,
-                this.mockStatsWindowService,
-                this.mockImGuiFacade,
-                this.mockSceneManager,
-                this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
-
-        // Assert
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'glInvoker')");
-    }
 
     [Fact]
     [Trait("Category", Ctor)]
     public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 null,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -270,8 +217,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -283,13 +229,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullSystemDisplayServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 null,
                 this.mockPlatform,
@@ -298,8 +243,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -311,13 +255,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 null,
@@ -326,8 +269,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -339,13 +281,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullTaskServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -354,8 +295,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -367,13 +307,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullStatsWindowServiceServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -382,8 +321,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -395,13 +333,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullImGuiFacadeParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
             100,
             200,
             this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
-            this.mockGL,
             this.mockGlfw,
             this.mockDisplayService,
             this.mockPlatform,
@@ -410,8 +347,7 @@ public class GLWindowTests : TestsBase
             null,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService,
-            this.mockOpenGLService);
+            this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -423,13 +359,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullSceneManagerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -438,8 +373,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 null,
                 this.mockReactableFactory,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -451,13 +385,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -466,8 +399,7 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 null,
-                this.mockTimerService,
-                this.mockOpenGLService);
+                this.mockTimerService);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
@@ -479,13 +411,12 @@ public class GLWindowTests : TestsBase
     public void Ctor_WithNullTimerServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => _ = new GLWindow(
+        var act = () => _ = new WGPUWindow(
                 100,
                 200,
                 this.mockTelemetryService,
                 this.mockSilkWindow,
                 this.mockNativeInputFactory,
-                this.mockGL,
                 this.mockGlfw,
                 this.mockDisplayService,
                 this.mockPlatform,
@@ -494,41 +425,13 @@ public class GLWindowTests : TestsBase
                 this.mockImGuiFacade,
                 this.mockSceneManager,
                 this.mockReactableFactory,
-                null,
-                this.mockOpenGLService);
+                null);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'timerService')");
     }
 
-    [Fact]
-    [Trait("Category", Ctor)]
-    public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () => _ = new GLWindow(
-            100,
-            200,
-            this.mockTelemetryService,
-            this.mockSilkWindow,
-            this.mockNativeInputFactory,
-            this.mockGL,
-            this.mockGlfw,
-            this.mockDisplayService,
-            this.mockPlatform,
-            this.mockTaskService,
-            this.mockStatsWindowService,
-            this.mockImGuiFacade,
-            this.mockSceneManager,
-            this.mockReactableFactory,
-            this.mockTimerService,
-            null);
-
-        // Assert
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'openGLService')");
-    }
 
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToPullWinSizeRequests()
@@ -549,7 +452,6 @@ public class GLWindowTests : TestsBase
         // Assert
         subscription.ShouldNotBeNull();
         subscription.Id.ShouldBe(PullNotifications.GetWindowSizeId);
-        subscription.Name.ShouldBe($"{nameof(GLWindow)}.ctor() - {PullNotifications.GetWindowSizeId}");
         this.mockPullWinSizeReactable.Received(1).Subscribe(subscription);
         pulledWinSize.ShouldBe(new WindowSizeData { Width = 100, Height = 200 });
         mockUnsubscriber.Received(1).Dispose();
@@ -1111,7 +1013,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         var exception = act.ShouldThrow<ObjectDisposedException>();
-        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'GLWindow'.");
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'WGPUWindow'.");
     }
 
     [Fact]
@@ -1131,22 +1033,6 @@ public class GLWindowTests : TestsBase
         this.mockSilkWindow.Received().Render += Arg.Any<Action<double>>();
     }
 
-    [Fact]
-    public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Show();
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        var act = () => this.mockOpenGLService.Received(1).GLError += Raise.EventWith(new GLErrorEventArgs("test-msg"));
-
-        // Assert
-        var exception = act.ShouldThrow<GLException>();
-        exception.Message.ShouldBe("test-msg");
-    }
 
     [Fact]
     public async Task ShowAsync_WhileDisposed_ThrowsException()
@@ -1166,7 +1052,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         var exception = await act.ShouldThrowAsync<ObjectDisposedException>();
-        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'GLWindow'.");
+        exception.Message.ShouldBe($"Cannot access a disposed object.{Environment.NewLine}Object name: 'WGPUWindow'.");
     }
 
     [Fact]
@@ -1240,7 +1126,6 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockPushReactable.Received(1).UnsubscribeAll();
-        this.mockOpenGLService.Received(1).GLError -= Arg.Any<EventHandler<GLErrorEventArgs>>();
 
         // Assert unsubscriptions from keyboard and mouse
         this.mockSilkKeyboard.Received().KeyDown -= Arg.Any<Action<IKeyboard, Key, int>>();
@@ -1262,7 +1147,6 @@ public class GLWindowTests : TestsBase
         this.mockTaskService.Received(1).Dispose();
         this.mockImGuiFacade.Received(1).Dispose();
         this.mockGlfw.Received(1).Dispose();
-        this.mockGL.Received(1).Dispose();
     }
 
     [Fact]
@@ -1281,106 +1165,9 @@ public class GLWindowTests : TestsBase
     #endregion
 
     #region Internal Tests
-    [Fact]
-    public void GLWindow_WhenInternalLoadEventIsInvoked_RunsInitialization()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest(123, 456);
-        GLObjectsData glObjectsData = default;
-
-        this.mockGLObjectsReactable
-            .When(x => x.Push(PushNotifications.GLObjectsCreatedId, in Arg.Any<GLObjectsData>()))
-            .Do(callInfo =>
-            {
-                glObjectsData = callInfo.Arg<GLObjectsData>();
-            });
-
-        // Act
-        sut.Show();
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        // Assert
-        this.mockSilkWindow.Size.ShouldBe(new Vector2D<int>(123, 456));
-        this.mockNativeInputFactory.Received(1).CreateInput();
-
-        glObjectsData.GL.Context.ShouldBeSameAs(this.mockGLContext);
-        glObjectsData.Window.ShouldBeSameAs(this.mockSilkWindow);
-        glObjectsData.InputContext.ShouldBeSameAs(this.mockSilkInputContext);
-
-        this.mockGLObjectsReactable.Received(1).Push(PushNotifications.GLObjectsCreatedId, glObjectsData);
-        this.mockGLObjectsReactable.Received(1).Unsubscribe(PushNotifications.GLObjectsCreatedId);
-
-        this.mockSilkKeyboard.Received().KeyDown += Arg.Any<Action<IKeyboard, Key, int>>();
-        this.mockSilkKeyboard.Received().KeyUp += Arg.Any<Action<IKeyboard, Key, int>>();
-
-        this.mockSilkMouse.Received().MouseDown += Arg.Any<Action<IMouse, SilkMouseButton>>();
-        this.mockSilkMouse.Received().MouseUp += Arg.Any<Action<IMouse, SilkMouseButton>>();
-        this.mockSilkMouse.Received().MouseMove += Arg.Any<Action<IMouse, SysVector2>>();
-        this.mockSilkMouse.Received().Scroll += Arg.Any<Action<IMouse, ScrollWheel>>();
-
-        // Assert that the window has been set to the correct size
-        this.mockGL.Received(1).Viewport(0, 0, 123, 456);
-        this.mockPushWinSizeReactable.Received(1)
-            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 123u, Height = 456u });
-    }
 
     [Fact]
-    public void GLWindow_WhenInternalLoadEventIsInvoked_LoadsWindow()
-    {
-        // Arrange
-        var initInvoked = false;
-        var sut = CreateSystemUnderTest();
-        sut.Initialize = () => initInvoked = true;
-
-        // Act
-        sut.Show();
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        // Assert
-        this.mockGL.Received(1).Enable(GLEnableCap.DebugOutput);
-        this.mockGL.Received(1).Enable(GLEnableCap.DebugOutputSynchronous);
-
-        // Assert that all properties caching has been disabled
-        sut.CachedStringProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
-        sut.CachedBoolProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
-        sut.CachedIntProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
-        sut.CachedUIntProps.Values.ShouldAllBe(prop => prop.IsCaching == false);
-        sut.CachedPosition.IsCaching.ShouldBeFalse();
-        sut.CachedWindowState.IsCaching.ShouldBeFalse();
-        sut.CachedTypeOfBorder.IsCaching.ShouldBeFalse();
-
-        initInvoked.ShouldBeTrue();
-        this.mockPushReactable.Received(1).Push(PushNotifications.GLInitializedId);
-        this.mockPushReactable.Received(1).Unsubscribe(PushNotifications.GLInitializedId);
-        sut.Initialized.ShouldBeTrue();
-
-        this.mockGLReactable.Received(1).Push(PushNotifications.GLContextCreatedId, in Arg.Any<GL>());
-        this.mockGLReactable.Received(1).Unsubscribe(PushNotifications.GLContextCreatedId);
-        this.mockNativeInputFactory.Received(1).CreateInput();
-    }
-
-    [Fact]
-    public void GLWindow_WhenWindowResizes_SetsGLViewportAndTriggersResizeEvent()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        var actualSize = default(SizeU);
-        sut.WinResize = u => actualSize = u;
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Resize += Raise.Event<Action<Vector2D<int>>>(new Vector2D<int>(11, 22));
-
-        // Assert
-        this.mockGL.Viewport(0, 0, 11, 22);
-        this.mockPushWinSizeReactable.Received(1)
-            .Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = 11u, Height = 22u });
-        actualSize.Width.ShouldBe(11u);
-        actualSize.Height.ShouldBe(22u);
-    }
-
-    [Fact]
-    public void GLWindow_WhenUpdatingWhileShuttingDown_DoesNotUpdateAnything()
+    public void WGPUWindow_WhenUpdatingWhileShuttingDown_DoesNotUpdateAnything()
     {
         // Arrange
         var sutUpdateInvoked = false;
@@ -1393,12 +1180,12 @@ public class GLWindowTests : TestsBase
         this.mockSilkWindow.Update += Raise.Event<Action<double>>(0.016);
 
         // Assert
-        sutUpdateInvoked.ShouldBeFalse($"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
+        sutUpdateInvoked.ShouldBeFalse($"{nameof(WGPUWindow.Update)} should not of been invoked during sut shutdown.");
         this.mockMouseReactable.DidNotReceive().Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
     }
 
     [Fact]
-    public void GLWindow_WhileUpdatingWhenNotShuttingDown_PerformsUpdate()
+    public void WGPUWindow_WhileUpdatingWhenNotShuttingDown_PerformsUpdate()
     {
         // Arrange
         var expected = new MouseStateData
@@ -1432,7 +1219,7 @@ public class GLWindowTests : TestsBase
 
         // Assert
         this.mockTimerService.Received(1).Start();
-        sutUpdateInvoked.ShouldBeTrue($"{nameof(GLWindow.Update)} was not invoked.");
+        sutUpdateInvoked.ShouldBeTrue($"{nameof(WGPUWindow.Update)} was not invoked.");
         this.mockMouseReactable.Received(1).Push(PushNotifications.MouseStateChangedId, Arg.Any<MouseStateData>());
 
         actual.ShouldNotBeNull();
@@ -1440,7 +1227,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhileUpdatingWhenNotShuttingDown_UpdatesStatsWindow()
+    public void WGPUWindow_WhileUpdatingWhenNotShuttingDown_UpdatesStatsWindow()
     {
         // Arrange
         var expectedFrameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(16), };
@@ -1455,52 +1242,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenRenderingFrameWithAutoClearEnabled_ClearsGLBuffer()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
-
-        // Assert
-        this.mockGL.Received(1).Clear(GLClearBufferMask.ColorBufferBit);
-    }
-
-    [Fact]
-    public void GLWindow_WhenRenderingFrameWithAutoClearDisabled_ClearsGLBuffer()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.AutoClearBuffer = false;
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
-
-        // Assert
-        this.mockGL.DidNotReceive().Clear(Arg.Any<GLClearBufferMask>());
-    }
-
-    [Fact]
-    public void GLWindow_WhenRenderingFrame_RendersStatsWindow()
-    {
-        // Arrange
-        this.mockTimerService.MillisecondsPassed.Returns(4);
-        var sut = CreateSystemUnderTest();
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.0);
-
-        // Assert
-        this.mockStatsWindowService.Received(1).UpdateFpsStat(Arg.Any<float>());
-        this.mockStatsWindowService.Received(1).Render();
-    }
-
-    [Fact]
-    public void GLWindow_WhenRenderingFrameWhileInitializingStatsWindow_SetsStatsWindowPosition()
+    public void WGPUWindow_WhenRenderingFrameWhileInitializingStatsWindow_SetsStatsWindowPosition()
     {
         // Arrange
         var eventInitializedInvoked = false;
@@ -1521,55 +1263,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenRenderingFrame_InvokesDrawAndSwapsBuffer()
-    {
-        // Arrange
-        this.mockTimerService.MillisecondsPassed.Returns(4);
-        var drawInvoked = false;
-        var sut = CreateSystemUnderTest();
-        sut.Draw = time =>
-        {
-            drawInvoked = true;
-            time.ElapsedTime.ShouldBe(new TimeSpan(0, 0, 0, 0, 16));
-        };
-        sut.AutoClearBuffer = false;
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
-
-        // Assert
-        drawInvoked.ShouldBeTrue($"the '{nameof(GLWindow.Draw)}()' method should of been invoked.");
-        this.mockGLContext.Received(1).SwapBuffers();
-        this.mockTimerService.Received(1).Stop();
-        sut.Fps.ShouldBe(250);
-    }
-
-    [Fact]
-    public void GLWindow_WhenRenderingFrameDuringShutdown_DoesNotPerformRenderProcess()
-    {
-        // Arrange
-        var drawInvoked = false;
-        var sut = CreateSystemUnderTest();
-        sut.Draw = _ =>
-        {
-            drawInvoked = true;
-        };
-        sut.AutoClearBuffer = true;
-        sut.Show();
-
-        // Act
-        this.mockSilkWindow.Closing += Raise.Event<Action>();
-        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
-
-        // Assert
-        this.mockGL.DidNotReceive().Clear(Arg.Any<GLClearBufferMask>());
-        drawInvoked.ShouldBeFalse($"the '{nameof(GLWindow.Draw)}()' method should not of been invoked.");
-        this.mockGLContext.DidNotReceive().SwapBuffers();
-    }
-
-    [Fact]
-    public void GLWindow_WhenClosingWindow_ShutsDownWindow()
+    public void WGPUWindow_WhenClosingWindow_ShutsDownWindow()
     {
         // Arrange
         var uninitializeInvoked = false;
@@ -1586,7 +1280,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardState()
+    public void WGPUWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardState()
     {
         // Arrange
         var expected = new KeyboardKeyStateData { Key = KeyCode.Space, IsDown = true };
@@ -1610,7 +1304,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardState()
+    public void WGPUWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardState()
     {
         // Arrange
         var expected = new KeyboardKeyStateData { Key = KeyCode.K, IsDown = false };
@@ -1633,7 +1327,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenMouseButtonIsPressedDown_UpdatesMouseInputState()
+    public void WGPUWindow_WhenMouseButtonIsPressedDown_UpdatesMouseInputState()
     {
         // Arrange
         var expected = new MouseStateData
@@ -1663,7 +1357,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenMouseButtonIsReleased_UpdatesMouseInputState()
+    public void WGPUWindow_WhenMouseButtonIsReleased_UpdatesMouseInputState()
     {
         // Arrange
         var expected = new MouseStateData
@@ -1695,7 +1389,7 @@ public class GLWindowTests : TestsBase
     [InlineData(123, MouseScrollDirection.ScrollUp)]
     [InlineData(-123, MouseScrollDirection.ScrollDown)]
     [InlineData(0, MouseScrollDirection.None)]
-    public void GLWindow_WhenMouseIsScrolled_UpdatesMouseInputState(int wheelValue, MouseScrollDirection expected)
+    public void WGPUWindow_WhenMouseIsScrolled_UpdatesMouseInputState(int wheelValue, MouseScrollDirection expected)
     {
         // Arrange
         var expectedStateData = new MouseStateData
@@ -1724,7 +1418,7 @@ public class GLWindowTests : TestsBase
     }
 
     [Fact]
-    public void GLWindow_WhenMouseMoves_UpdatesMouseInputState()
+    public void WGPUWindow_WhenMouseMoves_UpdatesMouseInputState()
     {
         // Arrange
         var expected = new MouseStateData { X = 11, Y = 22 };
@@ -1751,17 +1445,62 @@ public class GLWindowTests : TestsBase
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="GLWindow"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="WGPUWindow"/> for the purpose of testing.
     /// </summary>
     /// <param name="width">The width of the sut.</param>
     /// <param name="height">The height of the sut.</param>
     /// <returns>The instance to test.</returns>
-    private GLWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
+    [Fact]
+    [Trait("Category", Method)]
+    public void WGPUWindow_WhenRenderingFrameInWebGpuMode_InvokesImGuiFacadeUpdateAndRender()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+
+        // Act
+        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
+
+        // Assert — ImGui facade must still be driven in WebGPU mode so KdGui can use ImGui
+        this.mockImGuiFacade.Received().Update(Arg.Any<double>());
+        this.mockImGuiFacade.Received().Render();
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void WGPUWindow_WhenRenderingFrameInWebGpuMode_DoesNotRenderStatsWindow()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+
+        // Act
+        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
+
+        // Assert
+        this.mockStatsWindowService.DidNotReceive().Render();
+    }
+
+    [Fact]
+    [Trait("Category", Method)]
+    public void WGPUWindow_WhenRenderingFrameInWebGpuMode_PushesSubmitRenderPassNotification()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+
+        // Act
+        this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
+
+        // Assert
+        this.mockPushReactable.Received(1).Push(PushNotifications.SubmitRenderPassId);
+    }
+
+    private WGPUWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
         => new (width, height,
             this.mockTelemetryService,
             this.mockSilkWindow,
             this.mockNativeInputFactory,
-            this.mockGL,
             this.mockGlfw,
             this.mockDisplayService,
             this.mockPlatform,
@@ -1770,6 +1509,8 @@ public class GLWindowTests : TestsBase
             this.mockImGuiFacade,
             this.mockSceneManager,
             this.mockReactableFactory,
-            this.mockTimerService,
-            this.mockOpenGLService);
+            this.mockTimerService);
 }
+
+
+

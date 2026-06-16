@@ -108,10 +108,14 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
         var trNdc = ToNDC(topRight.X, topRight.Y);
         var brNdc = ToNDC(bottomRight.X, bottomRight.Y);
 
+        // Font atlas images are vertically flipped during loading (see FontLoader.FlipVertically).
+        // V coordinates must be inverted to compensate: the original top of the glyph
+        // (lower V in screen space) maps to a higher UV value in the flipped texture.
+        // This mirrors OpenGL's ToNDCTextureCoordY: y.MapValue(0f, textureHeight, 1f, 0f).
         var uLeft = item.SrcRect.Left / item.DestRect.Width;
         var uRight = item.SrcRect.Right / item.DestRect.Width;
-        var vTop = item.SrcRect.Top / item.DestRect.Height;
-        var vBottom = item.SrcRect.Bottom / item.DestRect.Height;
+        var vTop = 1.0f - (item.SrcRect.Top / item.DestRect.Height);
+        var vBottom = 1.0f - (item.SrcRect.Bottom / item.DestRect.Height);
 
         switch (item.Effects)
         {

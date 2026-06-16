@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Batching;
 using Factories;
+using Graphics;
 using Scene;
 
 /// <summary>
@@ -29,6 +30,18 @@ public abstract class Window : IWindow
     {
         this.nativeWindow = WindowFactory.CreateWindow();
         this.batcher = IoC.Container.GetInstance<IBatcher>();
+
+        // Eagerly create the render coordinator and batch manager so they subscribe
+        // to their reactables BEFORE the window fires GLInitializedId.
+        // Without this:
+        //   • RenderMediator is never created (IRenderMediator has no explicit consumer),
+        //     so BatchHasEndedId goes unhandled and no render-batch notifications are ever
+        //     pushed to the individual renderers.
+        //   • BatchingManager misses the BatchSizeChangedId notification that WgpuBatcher
+        //     pushes inside its GLInitializedId handler, leaving all batch arrays at
+        //     length-zero and causing IndexOutOfRangeException on the first AddXxxItem call.
+        IoC.Container.GetInstance<IRenderMediator>();
+        IoC.Container.GetInstance<IBatchingManager>();
 
         Init();
     }

@@ -116,6 +116,12 @@ internal sealed class Frame : IDisposable
         this.encoder?.Dispose();
         this.encoder = null;
 
+        // The texture view holds a reference to the surface texture. Dispose the
+        // view before acquiring a new surface texture so that wgpu-native's reference
+        // count for the old texture reaches zero only after the view is released.
+        this.textureViewHandle?.Dispose();
+        this.textureViewHandle = null;
+
         this.surfaceTextureHandle = this.surface.GetSurfaceTexture();
 
         if (this.surfaceTextureHandle.SurfaceTextureStatus != SurfaceGetCurrentTextureStatus.Success)
@@ -132,8 +138,6 @@ internal sealed class Frame : IDisposable
             ArrayLayerCount = 1,
             Aspect = TextureAspect.All,
         };
-
-        this.textureViewHandle?.Dispose();
 
         this.textureViewHandle = new SafeTextureViewHandle(
             this.gd.Wgpu,

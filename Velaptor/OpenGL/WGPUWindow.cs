@@ -1,12 +1,12 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="WGPUWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.OpenGL;
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -15,20 +15,16 @@ using System.Threading.Tasks;
 using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using Exceptions;
 using Factories;
-using ImGuiNET;
 using Input;
 using Input.Exceptions;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
-using NativeInterop.OpenGL;
 using NativeInterop.Services;
 using ReactableData;
 using Scene;
 using Silk.NET.Input;
 using Silk.NET.Maths;
-using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Telemetry;
 using Velaptor.Services;
@@ -40,14 +36,13 @@ using VelaptorMouseButton = Input.MouseButton;
 using VelaptorWindowBorder = WindowBorder;
 
 /// <summary>
-/// An OpenGL window implementation to be used inside the <see cref="Velaptor.UI.Window"/> class.
+/// A WebGPU-backed window implementation used inside the <see cref="Velaptor.UI.Window"/> class.
 /// </summary>
-internal sealed class GLWindow : VelaptorIWindow
+internal sealed class WGPUWindow : VelaptorIWindow
 {
     private const int WindowPadding = 10;
     private readonly SilkIWindow silkWindow;
     private readonly INativeInputFactory nativeInputFactory;
-    private readonly IGLInvoker gl;
     private readonly IGlfwInvoker glfw;
     private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
@@ -57,13 +52,10 @@ internal sealed class GLWindow : VelaptorIWindow
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
-    private readonly IPushReactable<GL> glReactable;
-    private readonly IPushReactable<GLObjectsData> glObjectsReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly ITimerService timerService;
     private readonly IDisposable pullWinSizeUnsubscriber;
-    private readonly IOpenGLService openGLService;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -72,31 +64,28 @@ internal sealed class GLWindow : VelaptorIWindow
     private Action? afterUnloadAction;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GLWindow"/> class.
+    /// Initializes a new instance of the <see cref="WGPUWindow"/> class.
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
     /// <param name="telemetryService">Provides telemetry services.</param>
-    /// <param name="silkWindow">The <see cref="Silk"/> specific <see cref="Silk.NET.Windowing.IWindow"/> object.</param>
-    /// <param name="nativeInputFactory">Creates a native input object.</param>
-    /// <param name="glInvoker">Invokes OpenGL functions.</param>
+    /// <param name="silkWindow">The Silk.NET window object.</param>
+    /// <param name="nativeInputFactory">Creates native input objects.</param>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
-    /// <param name="systemDisplayService">Provides information about the system's displays.</param>
+    /// <param name="systemDisplayService">Provides information about system displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
-    /// <param name="statsWindowServiceService">Manages an <see cref="ImGui"/> window to render runtime stats.</param>
-    /// <param name="imGuiFacade">Performs ImGui related operations.</param>
+    /// <param name="statsWindowServiceService">Manages the ImGui stats window.</param>
+    /// <param name="imGuiFacade">Performs ImGui-related operations.</param>
     /// <param name="sceneManager">Manages scenes.</param>
-    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    /// <param name="timerService">Measures the time it takes to process the game loop.</param>
-    /// <param name="openGLService">Provides OpenGL-related helper methods.</param>
-    public GLWindow(
+    /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
+    /// <param name="timerService">Measures game-loop frame time.</param>
+    public WGPUWindow(
         uint width,
         uint height,
         ITelemetryService telemetryService,
         SilkIWindow silkWindow,
         INativeInputFactory nativeInputFactory,
-        IGLInvoker glInvoker,
         IGlfwInvoker glfwInvoker,
         ISystemDisplayService systemDisplayService,
         IPlatform platform,
@@ -105,13 +94,11 @@ internal sealed class GLWindow : VelaptorIWindow
         IImGuiFacade imGuiFacade,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
-        ITimerService timerService,
-        IOpenGLService openGLService)
+        ITimerService timerService)
     {
         ArgumentNullException.ThrowIfNull(telemetryService);
         ArgumentNullException.ThrowIfNull(silkWindow);
         ArgumentNullException.ThrowIfNull(nativeInputFactory);
-        ArgumentNullException.ThrowIfNull(glInvoker);
         ArgumentNullException.ThrowIfNull(glfwInvoker);
         ArgumentNullException.ThrowIfNull(systemDisplayService);
         ArgumentNullException.ThrowIfNull(platform);
@@ -121,11 +108,9 @@ internal sealed class GLWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(timerService);
-        ArgumentNullException.ThrowIfNull(openGLService);
 
         this.silkWindow = silkWindow;
         this.nativeInputFactory = nativeInputFactory;
-        this.gl = glInvoker;
         this.glfw = glfwInvoker;
         this.systemDisplayService = systemDisplayService;
         this.platform = platform;
@@ -137,13 +122,10 @@ internal sealed class GLWindow : VelaptorIWindow
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
         this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
-        this.glReactable = reactableFactory.CreateGLReactable();
-        this.glObjectsReactable = reactableFactory.CreateGLObjectsReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
         this.timerService = timerService;
-        this.openGLService = openGLService;
 
         this.mouseStateData = default;
 
@@ -325,7 +307,7 @@ internal sealed class GLWindow : VelaptorIWindow
 
         await this.taskService.ContinueWith(
             _ => { },
-            TaskContinuationOptions.ExecuteSynchronously, // Execute the continuation on the same thread as the show task
+            TaskContinuationOptions.ExecuteSynchronously,
             TaskScheduler.Default);
     }
 
@@ -336,12 +318,7 @@ internal sealed class GLWindow : VelaptorIWindow
     public void Dispose() => Dispose(true);
 
     /// <summary>
-    /// Invoked when an OpenGL error occurs.
-    /// </summary>
-    private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new GLException(e.ErrorMessage);
-
-    /// <summary>
-    /// Runs the OpenGL window.
+    /// Runs the window.
     /// </summary>
     private void RunGLWindow()
     {
@@ -360,14 +337,13 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Initializes window related setup before the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="IView.Load"/>
-    /// event is fired.
+    /// Initializes window-related setup before the Silk.NET window Load event fires.
     /// </summary>
     private void PreInit()
     {
         if (this.isDisposed)
         {
-            throw new ObjectDisposedException(nameof(GLWindow));
+            throw new ObjectDisposedException(nameof(WGPUWindow));
         }
 
         this.silkWindow.UpdatesPerSecond = 60;
@@ -379,40 +355,12 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Initializes window related setup after the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="IView.Load"/>
-    /// event is fired.
+    /// Sets up input and fires the initial viewport resize after the Silk.NET window has loaded.
     /// </summary>
-    /// <param name="width">The width of the window.</param>
-    /// <param name="height">The height of the window.</param>
-    /// <exception cref="NoKeyboardException">Thrown if no keyboard could be created.</exception>
-    /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
     private void Init(uint width, uint height)
     {
-        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
-
-        GL? glObj = null;
-
-        if (useOpenGL)
-        {
-            glObj = this.silkWindow.CreateOpenGL();
-            this.glReactable.Push(PushNotifications.GLContextCreatedId, glObj);
-            this.glReactable.Unsubscribe(PushNotifications.GLContextCreatedId);
-        }
-
         this.silkWindow.Size = new Vector2D<int>((int)width, (int)height);
         this.glInputContext = this.nativeInputFactory.CreateInput();
-
-        if (useOpenGL && glObj is not null)
-        {
-            var glObjData = new GLObjectsData
-            {
-                GL = glObj,
-                Window = this.silkWindow,
-                InputContext = this.glInputContext,
-            };
-            this.glObjectsReactable.Push(PushNotifications.GLObjectsCreatedId, glObjData);
-            this.glObjectsReactable.Unsubscribe(PushNotifications.GLObjectsCreatedId);
-        }
 
         if (this.glInputContext.Keyboards.Count <= 0)
         {
@@ -441,19 +389,7 @@ internal sealed class GLWindow : VelaptorIWindow
     /// </summary>
     private void GLWindow_Load()
     {
-        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
-
-        // OpenGL is ready to take function calls after this Init() call has executed
         Init(Width, Height);
-
-        if (useOpenGL)
-        {
-            this.openGLService.SetupErrorCallback();
-            this.gl.Enable(GLEnableCap.DebugOutput);
-            this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
-
-            this.openGLService.GLError += GL_GLError;
-        }
 
         CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
         CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -463,26 +399,27 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedWindowState.IsCaching = false;
         CachedTypeOfBorder.IsCaching = false;
 
-        /* Send a push notification to all subscribers that the window is initialized.
-         * For OpenGL: the OpenGL context is set and the GLFW window is ready.
-         * For WebGPU: the window is ready for surface creation (adapter/device init
-         * happens in the subscriber).
-         *
-         * This MUST happen BEFORE Initialize?.Invoke() because content loading
-         * (SceneManager.LoadContent) may trigger texture creation which needs the
-         * WebGPU device and pipelines to already be initialized.
-         */
-
+        // Notify all subscribers that the window is ready. For WebGPU this is the signal
+        // for WgpuBatcher to initialize the WebGPU surface, adapter, device and pipelines.
+        // This MUST happen BEFORE Initialize?.Invoke() because content loading may trigger
+        // texture creation which needs the WebGPU device to be initialized first.
         this.pushReactable.Push(PushNotifications.GLInitializedId);
         this.pushReactable.Unsubscribe(PushNotifications.GLInitializedId);
 
         Initialize?.Invoke();
 
+        // Re-push the viewport size so any GPU buffers created during Initialize?.Invoke()
+        // receive the correct window dimensions (the earlier push in Init() fires before
+        // content is loaded so those renderers miss it).
+        this.viewPortReactable.Push(
+            PushNotifications.ViewPortSizeChangedId,
+            new ViewPortSizeData { Width = Width, Height = Height });
+
         Initialized = true;
     }
 
     /// <summary>
-    /// Invoked when the window is in the process of closing and invokes the <see cref="Uninitialize"/> action.
+    /// Invoked when the window is closing.
     /// </summary>
     private void GLWindow_Closing()
     {
@@ -490,46 +427,24 @@ internal sealed class GLWindow : VelaptorIWindow
 
         Uninitialize?.Invoke();
 
-        /* NOTE:
-         * Pushing this notification is very important.  The reason is that
-         * currently in this method, the GL context still exists.  After leaving this method,
-         * the GL context will be destroyed.  Any further disposal attempts to the texture
-         * will fail due to the GL context being destroyed.  Sending this push notification
-         * will trigger subscriptions in the texture cache, which in turn will send
-         * disposal notifications to all textures.
-         *
-         * Other types that depend on this shutdown process occurring before the GL context
-         * is destroyed are the shaders and gpu buffers.
-         */
+        // Triggers cache clean-up in texture/audio loaders and GPU resource release
+        // before the WebGPU device is torn down.
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
         this.afterUnloadAction?.Invoke();
     }
 
     /// <summary>
-    /// Invoked every time the native window size changes and invokes the
-    /// <see cref="VelaptorIWindow.WinResize"/> event.
+    /// Invoked every time the native window size changes.
     /// </summary>
     private void GLWindow_Resize(Vector2D<int> obj)
     {
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
 
-        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
-
-        // Updates the viewport to the same size as the window
-        if (useOpenGL)
-        {
-            this.gl.Viewport(0, 0, width, height);
-        }
-        else
-        {
-            // In WebGPU mode the swap chain must be recreated so that
-            // its textures match the new framebuffer dimensions. This
-            // notification tells the batcher to call frame.Reconfigure()
-            // before the next render pass is opened.
-            this.pushReactable.Push(PushNotifications.SurfaceReconfigureId);
-        }
+        // Signal the WebGPU batcher to reconfigure the swap chain so its textures
+        // match the new framebuffer dimensions before the next render pass opens.
+        this.pushReactable.Push(PushNotifications.SurfaceReconfigureId);
 
         var size = new SizeU { Width = width, Height = height };
         WinResize?.Invoke(size);
@@ -539,9 +454,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked once per frame and invokes the <see cref="Update"/> action.
+    /// Invoked once per frame for the update step.
     /// </summary>
-    /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Update(double time)
     {
         this.timerService.Start();
@@ -570,9 +484,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked once per frame and invokes the <see cref="Draw"/> action.
+    /// Invoked once per frame for the render step.
     /// </summary>
-    /// <param name="time">The amount of time that has passed for the current frame.</param>
     private void GLWindow_Render(double time)
     {
         if (!this.firstRenderInvoked)
@@ -594,45 +507,24 @@ internal sealed class GLWindow : VelaptorIWindow
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
         };
 
-        var useOpenGL = !this.silkWindow.API.Equals(GraphicsAPI.None);
-
-        if (useOpenGL && AutoClearBuffer)
-        {
-            this.gl.Clear(GLClearBufferMask.ColorBufferBit);
-        }
-
         this.imGuiFacade.Update(time);
 
         Draw?.Invoke(frameTime);
 
         this.statsWindowServiceService.UpdateFpsStat(Fps);
-        this.statsWindowServiceService.Render();
 
+        // Finalise the ImGui frame (draw data is discarded — no WebGPU ImGui backend yet)
+        // then close the render pass and present the completed frame.
         this.imGuiFacade.Render();
-
-        if (useOpenGL)
-        {
-            this.silkWindow.SwapBuffers();
-        }
-        else
-        {
-            // In WebGPU mode the render pass stays open across sequential
-            // Begin/End cycles so that scene and control rendering all
-            // contribute to the same swap-chain texture. Tell the batcher
-            // to close the pass and present now that all drawing is done.
-            this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
-        }
+        this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
 
         this.timerService.Stop();
         Fps = 1000f / this.timerService.MillisecondsPassed;
     }
 
     /// <summary>
-    /// Invoked when any keyboard input key transitions from the up position to the down position.
+    /// Invoked when a keyboard key transitions to the down position.
     /// </summary>
-    /// <param name="keyboard">Manages keyboard input.</param>
-    /// <param name="key">The key that was pushed down.</param>
-    /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
@@ -641,11 +533,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when any keyboard input key transitions from the down position to the up position.
+    /// Invoked when a keyboard key transitions to the up position.
     /// </summary>
-    /// <param name="keyboard">The system keyboard input.</param>
-    /// <param name="key">The key that was released.</param>
-    /// <param name="arg3">Additional argument from OpenGL.</param>
     private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
@@ -654,10 +543,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when any of the mouse buttons are in the down position over the window.
+    /// Invoked when a mouse button is pressed.
     /// </summary>
-    /// <param name="mouse">The system mouse object.</param>
-    /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
         this.mouseStateData = this.mouseStateData with
@@ -670,10 +557,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
+    /// Invoked when a mouse button is released.
     /// </summary>
-    /// <param name="mouse">The system mouse object.</param>
-    /// <param name="button">The button that was pushed down.</param>
     private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
         this.mouseStateData = this.mouseStateData with
@@ -686,10 +571,8 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when there is mouse scroll-wheel input.
+    /// Invoked when the mouse scroll wheel is used.
     /// </summary>
-    /// <param name="mouse">The system mouse object.</param>
-    /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
     private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
     {
         this.mouseStateData = this.mouseStateData with
@@ -709,8 +592,6 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when the mouse moves over the window.
     /// </summary>
-    /// <param name="mouse">The system mouse object.</param>
-    /// <param name="position">The position of the mouse input.</param>
     private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
     {
         this.mouseStateData = this.mouseStateData with
@@ -722,10 +603,7 @@ internal sealed class GLWindow : VelaptorIWindow
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
     private void Dispose(bool disposing)
     {
         if (this.isDisposed)
@@ -740,8 +618,6 @@ internal sealed class GLWindow : VelaptorIWindow
             CachedStringProps.Clear();
             CachedIntProps.Clear();
             CachedBoolProps.Clear();
-
-            this.openGLService.GLError -= GL_GLError;
 
             if (this.glInputContext is not null)
             {
@@ -764,7 +640,6 @@ internal sealed class GLWindow : VelaptorIWindow
             this.imGuiFacade.Dispose();
 
             this.glfw.Dispose();
-            this.gl.Dispose();
         }
 
         this.isDisposed = true;
@@ -773,13 +648,11 @@ internal sealed class GLWindow : VelaptorIWindow
     /// <summary>
     /// Sets up caching for the <see cref="Width"/> and <see cref="Height"/> properties.
     /// </summary>
-    /// <param name="width">The window width.</param>
-    /// <param name="height">The window height.</param>
     private void SetupWidthHeightPropCaches(uint width, uint height)
     {
         CachedUIntProps.Add(
-            nameof(Width), // key
-            new CachedValue<uint>( // value
+            nameof(Width),
+            new CachedValue<uint>(
                 defaultValue: width,
                 getterWhenNotCaching: () => (uint)this.silkWindow.Size.X,
                 setterWhenNotCaching: value =>
@@ -788,8 +661,8 @@ internal sealed class GLWindow : VelaptorIWindow
                 }));
 
         CachedUIntProps.Add(
-            nameof(Height), // key
-            new CachedValue<uint>( // value
+            nameof(Height),
+            new CachedValue<uint>(
                 defaultValue: height,
                 getterWhenNotCaching: () => (uint)this.silkWindow.Size.Y,
                 setterWhenNotCaching: value =>
@@ -799,13 +672,13 @@ internal sealed class GLWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Set up all the caching for the properties that need caching.
+    /// Sets up caching for all remaining window properties.
     /// </summary>
     private void SetupOtherPropCaches()
     {
         CachedStringProps.Add(
-            nameof(Title), // key
-            new CachedValue<string>( // value
+            nameof(Title),
+            new CachedValue<string>(
                 defaultValue: "Velaptor Application",
                 getterWhenNotCaching: () => this.silkWindow.Title,
                 setterWhenNotCaching: value =>
@@ -824,7 +697,6 @@ internal sealed class GLWindow : VelaptorIWindow
         var halfWidth = ToDisplayScale(Width / 2f);
         var halfHeight = ToDisplayScale(Height / 2f);
 
-        // Set the default position to be in the center of the display
         var defaultPosition = new Vector2(mainDisplay.Center.X - halfWidth, mainDisplay.Center.Y - halfHeight);
 
         CachedPosition = new CachedValue<Vector2>(
@@ -836,8 +708,8 @@ internal sealed class GLWindow : VelaptorIWindow
             });
 
         CachedIntProps.Add(
-            nameof(UpdateFrequency), // key
-            new CachedValue<int>( // value
+            nameof(UpdateFrequency),
+            new CachedValue<int>(
                 defaultValue: 60,
                 getterWhenNotCaching: () => (int)this.silkWindow.UpdatesPerSecond,
                 setterWhenNotCaching: value =>
@@ -846,8 +718,8 @@ internal sealed class GLWindow : VelaptorIWindow
                 }));
 
         CachedBoolProps.Add(
-            nameof(MouseCursorVisible), // key
-            new CachedValue<bool>( // value
+            nameof(MouseCursorVisible),
+            new CachedValue<bool>(
                 defaultValue: true,
                 getterWhenNotCaching: () => this.glInputContext?.Mice.Count > 0 &&
                                             this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
@@ -858,72 +730,63 @@ internal sealed class GLWindow : VelaptorIWindow
                         return;
                     }
 
-                    var cursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
-                    this.glInputContext.Mice[0].Cursor.CursorMode = cursorMode;
+                    foreach (var mouse in this.glInputContext.Mice)
+                    {
+                        mouse.Cursor.CursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
+                    }
                 }));
 
         CachedWindowState = new CachedValue<StateOfWindow>(
             defaultValue: StateOfWindow.Normal,
             getterWhenNotCaching: () =>
             {
-                const string argName = $"this.{nameof(this.silkWindow)}.{nameof(this.silkWindow.WindowState)}";
-
-                return this.silkWindow.WindowState switch
+                var silkState = this.silkWindow.WindowState;
+                if (!Enum.IsDefined(typeof(WindowState), silkState))
                 {
-                    Silk.NET.Windowing.WindowState.Normal => StateOfWindow.Normal,
-                    Silk.NET.Windowing.WindowState.Minimized => StateOfWindow.Minimized,
-                    Silk.NET.Windowing.WindowState.Maximized => StateOfWindow.Maximized,
-                    Silk.NET.Windowing.WindowState.Fullscreen => StateOfWindow.FullScreen,
-                    _ => throw new InvalidEnumArgumentException(
-                        argName,
-                        (int)this.silkWindow.WindowState,
-                        typeof(WindowState)),
-                };
+                    throw new InvalidEnumArgumentException(
+                        $"this.silkWindow.{nameof(WindowState)}",
+                        (int)silkState,
+                        typeof(WindowState));
+                }
+
+                return (StateOfWindow)silkState;
             },
             setterWhenNotCaching: value =>
             {
-                this.silkWindow.WindowState = value switch
+                if (!Enum.IsDefined(typeof(StateOfWindow), value))
                 {
-                    StateOfWindow.Normal => Silk.NET.Windowing.WindowState.Normal,
-                    StateOfWindow.Minimized => Silk.NET.Windowing.WindowState.Minimized,
-                    StateOfWindow.Maximized => Silk.NET.Windowing.WindowState.Maximized,
-                    StateOfWindow.FullScreen => Silk.NET.Windowing.WindowState.Fullscreen,
-                    _ => throw new InvalidEnumArgumentException(
-                        nameof(value),
-                        (int)value,
-                        typeof(StateOfWindow)),
-                };
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(StateOfWindow));
+                }
+
+                this.silkWindow.WindowState = (WindowState)value;
             });
 
         CachedTypeOfBorder = new CachedValue<VelaptorWindowBorder>(
             defaultValue: VelaptorWindowBorder.Resizable,
             getterWhenNotCaching: () =>
             {
-                const string argName = $"this.{nameof(this.silkWindow)}.{nameof(this.silkWindow.WindowBorder)}";
-
-                return this.silkWindow.WindowBorder switch
+                var silkBorder = this.silkWindow.WindowBorder;
+                if (!Enum.IsDefined(typeof(SilkWindowBorder), silkBorder))
                 {
-                    SilkWindowBorder.Fixed => VelaptorWindowBorder.Fixed,
-                    SilkWindowBorder.Hidden => VelaptorWindowBorder.Hidden,
-                    SilkWindowBorder.Resizable => VelaptorWindowBorder.Resizable,
-                    _ => throw new InvalidEnumArgumentException(
-                        argName,
-                        (int)this.silkWindow.WindowBorder,
-                        typeof(SilkWindowBorder)),
-                };
+                    throw new InvalidEnumArgumentException(
+                        $"this.silkWindow.{nameof(WindowBorder)}",
+                        (int)silkBorder,
+                        typeof(SilkWindowBorder));
+                }
+
+                return (VelaptorWindowBorder)silkBorder;
             },
             setterWhenNotCaching: value =>
             {
-                this.silkWindow.WindowBorder = value switch
+                if (!Enum.IsDefined(typeof(VelaptorWindowBorder), value))
                 {
-                    VelaptorWindowBorder.Fixed => SilkWindowBorder.Fixed,
-                    VelaptorWindowBorder.Hidden => SilkWindowBorder.Hidden,
-                    VelaptorWindowBorder.Resizable => SilkWindowBorder.Resizable,
-                    _ => throw new InvalidEnumArgumentException(
-                        nameof(value),
-                        (int)value,
-                        typeof(SilkWindowBorder)),
-                };
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(VelaptorWindowBorder));
+                }
+
+                this.silkWindow.WindowBorder = (SilkWindowBorder)value;
             });
     }
 }
+
+
+

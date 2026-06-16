@@ -1,4 +1,4 @@
-﻿// <copyright file="ImGuiFacadeTests.cs" company="KinsonDigital">
+// <copyright file="ImGuiFacadeTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,9 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using NSubstitute;
 using Shouldly;
 using Velaptor.NativeInterop.ImGui;
-using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
-using Velaptor.OpenGL;
 using Xunit;
 
 /// <summary>
@@ -19,7 +17,6 @@ using Xunit;
 /// </summary>
 public class ImGuiFacadeTests
 {
-    private readonly IGLInvoker mockGlInvoker;
     private readonly IImGuiManager mockImGuiManager;
     private readonly IImGuiService mockImGuiService;
 
@@ -28,39 +25,18 @@ public class ImGuiFacadeTests
     /// </summary>
     public ImGuiFacadeTests()
     {
-        this.mockGlInvoker = Substitute.For<IGLInvoker>();
         this.mockImGuiManager = Substitute.For<IImGuiManager>();
         this.mockImGuiService = Substitute.For<IImGuiService>();
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullGlInvokerParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new ImGuiFacade(
-                null,
-                this.mockImGuiManager,
-                this.mockImGuiService);
-        };
-
-        // Assert
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'glInvoker')");
-    }
-
-    [Fact]
     public void Ctor_WithNullImGuiMangerParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImGuiFacade(
-                this.mockGlInvoker,
-                null,
-                this.mockImGuiService);
+            _ = new ImGuiFacade(null, this.mockImGuiService);
         };
 
         // Assert
@@ -74,10 +50,7 @@ public class ImGuiFacadeTests
         // Arrange & Act
         var act = () =>
         {
-            _ = new ImGuiFacade(
-                this.mockGlInvoker,
-                this.mockImGuiManager,
-                null);
+            _ = new ImGuiFacade(this.mockImGuiManager, null);
         };
 
         // Assert
@@ -104,53 +77,19 @@ public class ImGuiFacadeTests
     }
 
     [Fact]
-    public void Update_WhenInvokedForTheFirstTime_RebuildsFontAtlas()
+    public void Update_WhenInvokedForTheFirstTime_BuildsFontAtlasWithDummyTextureId()
     {
         // Arrange
-        const uint textureId = 123;
-        var expectedPixelData = new byte[] { 10, 20, 30 };
-        const int expectedWidth = 100;
-        const int expectedHeight = 200;
-        this.mockGlInvoker.GenTexture().Returns(_ => textureId);
-        this.mockImGuiService.GetTexDataAsRGBA32().Returns((expectedPixelData, expectedWidth, expectedHeight));
+        this.mockImGuiService.GetTexDataAsRGBA32().Returns((new byte[] { 10, 20, 30 }, 100, 200));
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.Update(0.5);
 
         // Assert
-        // Was the texture data was retrieved
         this.mockImGuiService.Received(1).GetTexDataAsRGBA32();
-
-        // Was the texture data was uploaded to the GPU
-        this.mockGlInvoker.Received(1).GenTexture();
-        this.mockGlInvoker.Received(1).PixelStore(GLPixelStoreParameter.UnpackAlignment, 1);
-        this.mockGlInvoker.Received(1).BindTexture(GLTextureTarget.Texture2D, textureId);
-        this.mockGlInvoker.Received(1).TexImage2D<byte>(
-            GLTextureTarget.Texture2D,
-            0,
-            GLInternalFormat.Rgba,
-            expectedWidth,
-            expectedHeight,
-            0,
-            GLPixelFormat.Rgba,
-            GLPixelType.UnsignedByte,
-            expectedPixelData);
-        this.mockGlInvoker.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureMinFilter,
-            GLTextureMinFilter.Linear);
-        this.mockGlInvoker.Received(1).TexParameter(
-            GLTextureTarget.Texture2D,
-            GLTextureParameterName.TextureMagFilter,
-            GLTextureMagFilter.Linear);
-        this.mockGlInvoker.Received(1).BindTexture(GLTextureTarget.Texture2D, 0);
-
-        // Assert that the texture ID has been set
-        this.mockImGuiService.Received(1).SetTexID(textureId);
-
-        // Assert that the temporary texture data was cleared
-        this.mockImGuiService.ClearTexData();
+        this.mockImGuiService.Received(1).SetTexID(1u);  // dummy ID so IsBuilt() passes
+        this.mockImGuiService.Received(1).ClearTexData();
     }
 
     [Fact]
@@ -222,9 +161,8 @@ public class ImGuiFacadeTests
     #endregion
 
     /// <summary>
-    /// Creates a new instance of <see cref="ImGuiFacade"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="ImGuiFacade"/> for testing.
     /// </summary>
-    /// <returns>The instance to test.</returns>
     private ImGuiFacade CreateSystemUnderTest()
-        => new (this.mockGlInvoker, this.mockImGuiManager, this.mockImGuiService);
+        => new (this.mockImGuiManager, this.mockImGuiService);
 }

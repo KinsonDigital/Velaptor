@@ -30,6 +30,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     private readonly IBatchingManager batchManager;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
+    private readonly IDisposable viewportUnsubscriber;
     private bool hasBegun;
     private bool isDisposed;
 
@@ -76,11 +77,24 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
             PushNotifications.RenderLinesId,
             RenderBatch,
             () => this.renderUnsubscriber?.Dispose());
+
+        var viewportReactable = reactableFactory.CreateViewPortReactable();
+
+        this.viewportUnsubscriber = viewportReactable.CreateOneWayReceive(
+            PushNotifications.ViewPortSizeChangedId,
+            data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
+            () => this.viewportUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
     public void Render(Line line, int layer = 0) =>
         RenderBase(line.P1, line.P2, line.Color, (uint)line.Thickness, layer);
+
+    /// <summary>
+    /// Gets the current window size used by the GPU buffer for NDC conversion.
+    /// </summary>
+    /// <remarks>For testing purposes.</remarks>
+    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
 
     /// <inheritdoc/>
     public void RenderLine(Vector2 start, Vector2 end, int layer = 0) =>
@@ -169,5 +183,6 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
         this.isDisposed = true;
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
     }
 }

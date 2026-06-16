@@ -36,6 +36,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     private readonly IBatchingManager batchManager;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
+    private readonly IDisposable viewportUnsubscriber;
     private bool hasBegun;
     private bool isDisposed;
 
@@ -86,11 +87,24 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             PushNotifications.RenderFontsId,
             RenderBatch,
             () => this.renderUnsubscriber?.Dispose());
+
+        var viewportReactable = reactableFactory.CreateViewPortReactable();
+
+        this.viewportUnsubscriber = viewportReactable.CreateOneWayReceive(
+            PushNotifications.ViewPortSizeChangedId,
+            data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
+            () => this.viewportUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, int x, int y, int layer = 0)
         => RenderBase(font, text, x, y, 1f, 0f, Color.White, layer);
+
+    /// <summary>
+    /// Gets the current window size used by the GPU buffer for NDC conversion.
+    /// </summary>
+    /// <remarks>For testing purposes.</remarks>
+    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, Vector2 position, int layer = 0)
@@ -482,13 +496,14 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             if (bindGroup is not null)
             {
                 this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
+                this.buffer.Draw(renderPass, totalItemsToRender, 0);
             }
-
-            this.buffer.Draw(renderPass, totalItemsToRender, 0);
 
             totalItemsToRender = 0;
             gpuDataIndex = -1;
         }
+
+        this.hasBegun = false;
     }
 
     /// <inheritdoc/>
@@ -502,5 +517,6 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         this.isDisposed = true;
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
     }
 }
