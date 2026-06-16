@@ -192,7 +192,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             glyphItems,
             font,
             new Vector2(x, y),
-            normalizedSize,
+            renderSize,
             angle,
             atlasWidth,
             atlasHeight);
@@ -432,7 +432,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
                 glyphLines.ToArray()[i],
                 font,
                 new Vector2(x, y),
-                normalizedSize,
+                renderSize,
                 angle,
                 color,
                 atlasWidth,
@@ -452,17 +452,24 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     /// </summary>
     private void RenderBatch(Memory<RenderItem<FontGlyphBatchItem>> itemsToRender)
     {
-        if (itemsToRender.Length <= 0)
+        try
         {
-            return;
+            RenderBatchCore(itemsToRender);
         }
+        catch (Exception ex)
+        {
+            var crashLog = System.IO.Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop),
+                "velaptor_crash.log");
+            System.IO.File.AppendAllText(crashLog,
+                $"[CRASH] FontRenderer.RenderBatch: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}\n");
+            throw;
+        }
+    }
 
+    private void RenderBatchCore(Memory<RenderItem<FontGlyphBatchItem>> itemsToRender)
+    {
         var renderPass = this.frame.RenderPass;
-
-        if (renderPass is null)
-        {
-            return;
-        }
 
         this.pipeline.Bind(renderPass);
 
@@ -493,11 +500,8 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
 
             var bindGroup = this.bindGroupRegistry.GetBindGroup(batchItem.TextureId);
 
-            if (bindGroup is not null)
-            {
-                this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
-                this.buffer.Draw(renderPass, totalItemsToRender, 0);
-            }
+            this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
+            this.buffer.Draw(renderPass, totalItemsToRender, 0);
 
             totalItemsToRender = 0;
             gpuDataIndex = -1;

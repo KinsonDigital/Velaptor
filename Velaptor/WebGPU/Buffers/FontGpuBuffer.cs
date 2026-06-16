@@ -51,57 +51,39 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
         out float[] vertexData,
         out uint[] indexData)
     {
-        var center = new Vector2(item.DestRect.X, item.DestRect.Y);
-
-        float srcRectWidth;
-        float srcRectHeight;
-
-        switch (item.Effects)
-        {
-            case RenderEffects.None:
-                srcRectWidth = item.SrcRect.Width * -1;
-                srcRectHeight = item.SrcRect.Height * -1;
-                break;
-            case RenderEffects.FlipHorizontally:
-                srcRectWidth = item.SrcRect.Width;
-                srcRectHeight = item.SrcRect.Height * -1;
-                break;
-            case RenderEffects.FlipVertically:
-                srcRectWidth = item.SrcRect.Width * -1;
-                srcRectHeight = item.SrcRect.Height;
-                break;
-            case RenderEffects.FlipBothDirections:
-                srcRectWidth = item.SrcRect.Width;
-                srcRectHeight = item.SrcRect.Height;
-                break;
-            default:
-                srcRectWidth = 0;
-                srcRectHeight = 0;
-                break;
-        }
-
-        var resolvedSize = item.Size - 1f;
-        var totalWidth = srcRectWidth + (srcRectWidth * resolvedSize);
-        var totalHeight = srcRectHeight + (srcRectHeight * resolvedSize);
-
-        var halfW = totalWidth / 2f;
-        var halfH = totalHeight / 2f;
-
-        var left = center.X - halfW;
-        var bottom = center.Y + halfH;
-        var right = center.X + halfW;
-        var top = center.Y - halfH;
+        // Match OpenGL's UploadVertexData positioning logic:
+        // DestRect is the bottom-left anchor of the quad, NOT the center.
+        // The quad extends right by SrcRect.Width and upward by SrcRect.Height.
+        //
+        // Glyph metrics are pre-scaled by the renderer (ApplySize), so the
+        // buffer uses SrcRect values as-is without additional size adjustment.
+        var left = item.DestRect.X;
+        var bottom = item.DestRect.Y + item.SrcRect.Height;
+        var right = item.DestRect.X + item.SrcRect.Width;
+        var top = item.DestRect.Y;
 
         var topLeft = new Vector2(left, top);
         var bottomLeft = new Vector2(left, bottom);
         var bottomRight = new Vector2(right, bottom);
         var topRight = new Vector2(right, top);
 
-        var angle = item.Angle + 180;
-        topLeft = RotateAround(topLeft, center, angle);
-        bottomLeft = RotateAround(bottomLeft, center, angle);
-        bottomRight = RotateAround(bottomRight, center, angle);
-        topRight = RotateAround(topRight, center, angle);
+        // Shift all Y coordinates upward by the glyph height (matching OpenGL).
+        // This compensates for the pixel-space Y-down convention so that
+        // DestRect.Y becomes the bottom edge in NDC space.
+        var quadH = item.SrcRect.Height;
+        topLeft.Y -= quadH;
+        bottomLeft.Y -= quadH;
+        bottomRight.Y -= quadH;
+        topRight.Y -= quadH;
+
+        // Rotate around the quad's origin (top-left corner of DestRect)
+        var origin = new Vector2(item.DestRect.X, item.DestRect.Y);
+        var angle = item.Angle;
+
+        topLeft = RotateAround(topLeft, origin, angle);
+        bottomLeft = RotateAround(bottomLeft, origin, angle);
+        bottomRight = RotateAround(bottomRight, origin, angle);
+        topRight = RotateAround(topRight, origin, angle);
 
         var tlNdc = ToNDC(topLeft.X, topLeft.Y);
         var blNdc = ToNDC(bottomLeft.X, bottomLeft.Y);

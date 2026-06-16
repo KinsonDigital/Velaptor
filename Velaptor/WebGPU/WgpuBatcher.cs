@@ -141,20 +141,12 @@ internal sealed class WgpuBatcher : IBatcher
             throw new RendererException(RenderExceptionMsg);
         }
 
-        // If this is the outermost Begin, acquire a surface texture and open a render pass.
-        // Nested Begin calls (e.g., for manual rendering after automatic scene rendering)
-        // reuse the same render pass rather than creating a second one, which avoids
-        // consuming multiple swapchain textures and presenting twice per logical frame.
-        if (this.frameDepth == 0)
-        {
-            if (!this.frame.Begin(this.clearColor))
-            {
-                return;
-            }
-        }
-
         this.frameDepth++;
         HasBegun = true;
+
+        // Acquire the render pass from the swap chain if one isn't already
+        // active (nested Begin calls reuse the existing pass).
+        this.frame.Begin(this.clearColor);
 
         this.pushReactable.Push(PushNotifications.BatchHasBegunId);
     }
@@ -177,13 +169,6 @@ internal sealed class WgpuBatcher : IBatcher
         HasBegun = false;
 
         this.pushReactable.Push(PushNotifications.BatchHasEndedId);
-
         this.frameDepth--;
-
-        // Don't clamp below 0 in case of mismatched Begin/End calls.
-        if (this.frameDepth < 0)
-        {
-            this.frameDepth = 0;
-        }
     }
 }

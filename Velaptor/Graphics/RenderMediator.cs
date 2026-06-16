@@ -83,9 +83,6 @@ internal sealed class RenderMediator : IRenderMediator
         }
     }
 
-    /// <summary>
-    /// Coordinates the rendering between each of the renderers.
-    /// </summary>
     private void CoordinateRenders()
     {
         var textureItems = this.texturePullReactable.Pull(PullResponses.GetTextureItemsId);

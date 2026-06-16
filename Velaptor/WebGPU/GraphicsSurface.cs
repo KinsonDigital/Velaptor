@@ -138,19 +138,18 @@ internal sealed class GraphicsSurface : IDisposable
     /// <returns>The surface texture handle for this frame.</returns>
     public SafeSurfaceTextureHandle GetSurfaceTexture()
     {
+        // Per WebGPU spec: the previously-obtained surface texture and all texture
+        // views created from it must be released BEFORE calling getCurrentTexture
+        // again. Release the old texture first, then acquire the new one.
+        this.surfaceTextureHandle?.Dispose();
+        this.surfaceTextureHandle = null;
+
         unsafe
         {
             SurfaceTexture st = default;
             this.gd.Wgpu.SurfaceGetCurrentTexture(Handle, ref st);
 
-            if (this.surfaceTextureHandle is null)
-            {
-                this.surfaceTextureHandle = new SafeSurfaceTextureHandle(this.gd.Wgpu, (nint)st.Texture, st.Status);
-            }
-            else
-            {
-                this.surfaceTextureHandle.UpdateHandleAndStatus((nint)st.Texture, st.Status);
-            }
+            this.surfaceTextureHandle = new SafeSurfaceTextureHandle(this.gd.Wgpu, (nint)st.Texture, st.Status);
         }
 
         return this.surfaceTextureHandle;

@@ -513,7 +513,7 @@ internal sealed class WGPUWindow : VelaptorIWindow
 
         this.statsWindowServiceService.UpdateFpsStat(Fps);
 
-        // Finalise the ImGui frame (draw data is discarded — no WebGPU ImGui backend yet)
+        // Finalize the ImGui frame (draw data is discarded — no WebGPU ImGui backend yet)
         // then close the render pass and present the completed frame.
         this.imGuiFacade.Render();
         this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
@@ -787,6 +787,3 @@ internal sealed class WGPUWindow : VelaptorIWindow
             });
     }
 }
-
-
-

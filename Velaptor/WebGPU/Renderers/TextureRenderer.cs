@@ -679,11 +679,6 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var renderPass = this.frame.RenderPass;
 
-        if (renderPass is null)
-        {
-            return;
-        }
-
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;

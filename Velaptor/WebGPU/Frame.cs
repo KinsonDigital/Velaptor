@@ -102,6 +102,22 @@ internal sealed class Frame : IDisposable
             return true;
         }
 
+        // Release all references to the previous frame's swap-chain texture
+        // BEFORE reconfiguring the surface.  WebGPU requires that no views or
+        // handles to the old swap chain remain alive when Configure() is called.
+        this.textureViewHandle?.Dispose();
+        this.textureViewHandle = null;
+        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
+        // ensure we don't leak if Begin() is called again without going through
+        // the normal Submit() → Begin() cycle.
+        this.surfaceTextureHandle?.Dispose();
+        this.surfaceTextureHandle = null;
+
+        this.renderPassHandle?.Dispose();
+        this.renderPassHandle = null;
+        this.encoder?.Dispose();
+        this.encoder = null;
+
         // Configure the swap chain on first frame, or after a resize.
         // This is deferred from Initialize() because the native window
         // may not have reached its final framebuffer size yet at that point.
@@ -111,17 +127,6 @@ internal sealed class Frame : IDisposable
             this.surfaceConfigured = true;
         }
 
-        this.renderPassHandle?.Dispose();
-        this.renderPassHandle = null;
-        this.encoder?.Dispose();
-        this.encoder = null;
-
-        // The texture view holds a reference to the surface texture. Dispose the
-        // view before acquiring a new surface texture so that wgpu-native's reference
-        // count for the old texture reaches zero only after the view is released.
-        this.textureViewHandle?.Dispose();
-        this.textureViewHandle = null;
-
         this.surfaceTextureHandle = this.surface.GetSurfaceTexture();
 
         if (this.surfaceTextureHandle.SurfaceTextureStatus != SurfaceGetCurrentTextureStatus.Success)
@@ -129,6 +134,7 @@ internal sealed class Frame : IDisposable
             IsValid = false;
             return false;
         }
+
 
         var viewDesc = new TextureViewDescriptor
         {
@@ -150,6 +156,7 @@ internal sealed class Frame : IDisposable
             return false;
         }
 
+
         var encoderDesc = default(CommandEncoderDescriptor);
 
         if (this.encoder is null)
@@ -161,6 +168,7 @@ internal sealed class Frame : IDisposable
         {
             this.encoder.UpdateHandle(in encoderDesc);
         }
+
 
         unsafe
         {
@@ -194,11 +202,6 @@ internal sealed class Frame : IDisposable
     /// </summary>
     public void Submit()
     {
-        if (this.encoder is null || this.renderPassHandle is null)
-        {
-            return;
-        }
-
         this.renderPassHandle.End();
         this.renderPassHandle.Dispose();
         this.renderPassHandle = null;

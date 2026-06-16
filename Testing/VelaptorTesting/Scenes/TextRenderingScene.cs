@@ -183,7 +183,7 @@ public class TextRenderingScene : SceneBase
             this.angle,
             this.isBlue ? Color.CornflowerBlue : Color.White);
 
-        this.grpControls.Render();
+        // this.grpControls.Render();
 
         base.Render();
     }
