@@ -46,7 +46,7 @@ public class MainWindow : Window
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        var ctrlFactory = new ControlFactory();
+        // var ctrlFactory = new ControlFactory();
 
         // this.grpSceneCtrls = ctrlFactory.CreateControlGroup();
         // this.grpSceneCtrls.Title = "Scene Group";
@@ -59,9 +59,9 @@ public class MainWindow : Window
         //         (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
         // };
 
-        var nextPrevious = ctrlFactory.CreateNextPrevious();
-        nextPrevious.Next += (_, _) => SceneManager.NextScene();
-        nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
+        // var nextPrevious = ctrlFactory.CreateNextPrevious();
+        // nextPrevious.Next += (_, _) => SceneManager.NextScene();
+        // nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
 
         // this.grpSceneCtrls.Add(nextPrevious);
 
@@ -83,21 +83,23 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(KeyboardScene)),
         // };
 
-        var mouseScene = new MouseScene
-        {
-            Name = SplitByUpperCase(nameof(MouseScene)),
-        };
+        // WORKS
+        // var mouseScene = new MouseScene
+        // {
+        //     Name = SplitByUpperCase(nameof(MouseScene)),
+        // };
 
-        // var layeredRenderingScene = new LayeredTextureRenderingScene
+        // WORKS
+        // var layeredTextureRenderingScene = new LayeredTextureRenderingScene
         // {
         //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         // };
-        //
-        // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
-        // {
-        //     Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
-        // };
-        //
+
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
+        {
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        };
+
         // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
         // {
         //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
@@ -131,9 +133,9 @@ public class MainWindow : Window
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(keyboardScene);
-        SceneManager.AddScene(mouseScene);
-        // SceneManager.AddScene(layeredRenderingScene);
-        // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        // SceneManager.AddScene(mouseScene);
+        // SceneManager.AddScene(layeredTextureRenderingScene);
+        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);
         // SceneManager.AddScene(shapeScene);
         // SceneManager.AddScene(layeredRectScene);

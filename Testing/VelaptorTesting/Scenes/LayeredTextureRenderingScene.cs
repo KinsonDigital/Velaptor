@@ -6,12 +6,11 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using System.Text;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -29,9 +28,12 @@ public class LayeredTextureRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
+    private readonly IFontRenderer fontRenderer;
     private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
+    private readonly StringBuilder whiteBoxStateText = new (string.Empty);
     private IAtlasData? atlas;
+    private IFont? font;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
     private Vector2 blueBoxPos;
@@ -39,11 +41,10 @@ public class LayeredTextureRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private AtlasSubTextureData whiteBoxData;
     private AtlasSubTextureData orangeBoxData;
-    private IControlGroup? grpInstructions;
-    private IControlGroup? grpTextureState;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private string? lblBoxStateName;
-    private bool isFirstRender = true;
+    private string instructionsText = string.Empty;
+    private Vector2 instructionsTextPos = Vector2.Zero;
+    private Vector2 whiteBoxStateTextPos = Vector2.Zero;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -53,6 +54,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
     }
 
@@ -64,10 +66,10 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
-        this.isFirstRender = true;
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.atlas = this.contentManager.Load<IAtlasData>("layered-rendering-atlas");
+        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
@@ -90,31 +92,11 @@ public class LayeredTextureRenderingScene : SceneBase
             "Use the 'L' key to change the layer that the white box is rendered on.",
         };
 
-        var ctrlFactory = new ControlFactory();
+        this.instructionsText = string.Join(Environment.NewLine, textLines);
 
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Position = WindowCenter with { Y = 50 };
-        lblInstructions.Text = string.Join(Environment.NewLine, textLines);
-
-        var lblBoxState = ctrlFactory.CreateLabel();
-        lblBoxState.Name = nameof(lblBoxState);
-        this.lblBoxStateName = nameof(lblBoxState);
-
-        this.grpInstructions = ctrlFactory.CreateControlGroup();
-        this.grpInstructions.Title = "Instructions";
-        this.grpInstructions.AutoSizeToFitContent = true;
-        this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Initialized += (_, _) =>
-        {
-            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-        };
-        this.grpInstructions.Add(lblInstructions);
-
-        this.grpTextureState = ctrlFactory.CreateControlGroup();
-        this.grpTextureState.Title = "Texture State";
-        this.grpTextureState.AutoSizeToFitContent = true;
-        this.grpTextureState.Add(lblBoxState);
+        // Set the position of the instructions text to be centered at the top of the screen
+        var instTextSize = this.font.Measure(this.instructionsText);
+        this.instructionsTextPos = new Vector2(WindowCenter.X, instTextSize.Height + WindowPadding);
 
         base.LoadContent();
     }
@@ -122,10 +104,12 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
+        var whiteBoxStateTextSize = this.font.Measure(this.whiteBoxStateText.ToString());
+        this.whiteBoxStateTextPos = new Vector2((whiteBoxStateTextSize.Width / 2f) + WindowPadding, WindowCenter.Y);
         this.currentKeyState = this.keyboard.GetState();
 
         UpdateWhiteBoxLayer();
-        UpdateBoxStateText();
+        UpdateWhiteBoxStateText();
 
         MoveWhiteBox(frameTime);
 
@@ -147,15 +131,9 @@ public class LayeredTextureRenderingScene : SceneBase
         // WHITE
         this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, 0, (int)this.whiteLayer);
 
-        this.grpInstructions.Render();
-        this.grpTextureState.Render();
-
-        if (this.isFirstRender)
-        {
-            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-            this.grpTextureState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpTextureState.HalfHeight);
-            this.isFirstRender = false;
-        }
+        // The instructions text
+        this.fontRenderer.Render(this.font, this.instructionsText, this.instructionsTextPos);
+        this.fontRenderer.Render(this.font, this.whiteBoxStateText.ToString(), this.whiteBoxStateTextPos);
 
         base.Render();
     }
@@ -168,14 +146,11 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
+        this.contentManager.Unload(this.font);
         this.backgroundManager.Unload();
         this.contentManager.Unload(this.atlas);
 
         this.atlas = null;
-        this.grpInstructions.Dispose();
-        this.grpTextureState.Dispose();
-        this.grpInstructions = null;
-        this.grpTextureState = null;
 
         base.UnloadContent();
     }
@@ -194,18 +169,13 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <summary>
     /// Updates the text for the state of the white box.
     /// </summary>
-    private void UpdateBoxStateText()
+    private void UpdateWhiteBoxStateText()
     {
-        // Render the current enabled box text
-        var textLines = new[]
-        {
-            $"1. White Box Layer: {this.whiteLayer}",
-            $"2. Orange Box Layer: {OrangeLayer}",
-            $"3. Blue Box Layer: {BlueLayer}",
-        };
-
-        var lblBoxStateCtrl = this.grpTextureState.GetControl<ILabel>(this.lblBoxStateName);
-        lblBoxStateCtrl.Text = string.Join(Environment.NewLine, textLines);
+        this.whiteBoxStateText.Clear();
+        this.whiteBoxStateText.AppendLine("Texture State");
+        this.whiteBoxStateText.AppendLine($"  - White Box Layer: {this.whiteLayer}");
+        this.whiteBoxStateText.AppendLine($"  - Orange Box Layer: {OrangeLayer}");
+        this.whiteBoxStateText.AppendLine($"  - Blue Box Layer: {BlueLayer}");
     }
 
     /// <summary>
