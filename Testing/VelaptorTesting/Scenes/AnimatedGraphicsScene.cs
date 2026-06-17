@@ -4,15 +4,16 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System.Drawing;
+using System;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using System.Text;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.Scene;
 
 /// <summary>
@@ -20,18 +21,23 @@ using Velaptor.Scene;
 /// </summary>
 public class AnimatedGraphicsScene : SceneBase
 {
-    private const int WindowPadding = 10;
+    private const int WindowPadding = 100;
     private readonly ITextureRenderer textureRenderer;
+    private readonly IFontRenderer fontRenderer;
     private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
+    private readonly IAppInput<KeyboardState> keyboard;
+    private readonly StringBuilder animationFps = new ("Speed(fps): 60.00");
+    private string instructions = string.Empty;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
-    private IControlGroup? grpInstructions;
-    private IControlGroup? grpAnimation;
+    private IFont? font;
     private int elapsedTime;
     private int currentFrame;
     private float animSpeed = 32;
     private bool runningForward = true;
+    private KeyboardState prevKeyState;
+    private float speed = 60;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
@@ -40,7 +46,9 @@ public class AnimatedGraphicsScene : SceneBase
     {
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
+        this.keyboard = HardwareFactory.GetKeyboard();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -55,60 +63,17 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
+        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
 
-        var ctrlFactory = new ControlFactory();
-        var instructions = ctrlFactory.CreateLabel();
-        instructions.Text = "Verify that the Samus is running.";
-
-        this.grpInstructions = ctrlFactory.CreateControlGroup();
-        this.grpInstructions.Title = "Instructions";
-        this.grpInstructions.AutoSizeToFitContent = true;
-        this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Add(instructions);
-
-        var optForward = ctrlFactory.CreateRadioButton();
-        optForward.Name = "optForward";
-        optForward.Text = "Forwards";
-        optForward.IsSelected = true;
-
-        var optBackward = ctrlFactory.CreateRadioButton();
-        optBackward.Name = "optBackward";
-        optBackward.Text = "Backwards";
-        optBackward.IsSelected = false;
-
-        var sldSpeed = ctrlFactory.CreateSlider();
-        sldSpeed.Name = "sldSpeed";
-        sldSpeed.Text = "Speed(fps):";
-        sldSpeed.Min = 0;
-        sldSpeed.Max = 60;
-        sldSpeed.Value = 60;
-        sldSpeed.ValueChanged += (_, speed) =>
+        var textLines = new string[]
         {
-            this.animSpeed = 1000f / speed;
+            "Verify that the Samus is running.",
+            "Use the controls to change the direction and speed of the animation.",
+            "1. Press right arrow key to run forwards",
+            "2. Press left arrow key to run backwards",
+            "3. Press up/down arrow keys to change the speed of the animation",
         };
-
-        optForward.Selected += (_, _) =>
-        {
-            optBackward.IsSelected = false;
-            this.runningForward = !this.runningForward;
-        };
-
-        optBackward.Selected += (_, _) =>
-        {
-            optForward.IsSelected = false;
-            this.runningForward = !this.runningForward;
-        };
-
-        this.grpAnimation = ctrlFactory.CreateControlGroup();
-        this.grpAnimation.Title = "Animation";
-        this.grpAnimation.AutoSizeToFitContent = true;
-        this.grpAnimation.Initialized += (_, _) =>
-        {
-            this.grpAnimation.Position = new Point(WindowPadding, WindowCenter.Y + WindowPadding);
-        };
-        this.grpAnimation.Add(optForward);
-        this.grpAnimation.Add(optBackward);
-        this.grpAnimation.Add(sldSpeed);
+        this.instructions = string.Join(Environment.NewLine, textLines);
 
         base.LoadContent();
     }
@@ -122,13 +87,11 @@ public class AnimatedGraphicsScene : SceneBase
         }
 
         this.contentManager.Unload(this.mainAtlas);
+        this.contentManager.Unload(this.font);
         this.mainAtlas = null;
+        this.font = null;
 
         this.backgroundManager.Unload();
-        this.grpInstructions.Dispose();
-        this.grpInstructions = null;
-        this.grpAnimation.Dispose();
-        this.grpAnimation = null;
 
         base.UnloadContent();
     }
@@ -158,7 +121,11 @@ public class AnimatedGraphicsScene : SceneBase
             this.elapsedTime += frameTime.ElapsedTime.Milliseconds;
         }
 
-        this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        this.animSpeed = 1000f / this.speed;
+        this.animationFps.Clear();
+        this.animationFps.Append($"Speed(fps): {Math.Round(this.speed, 2):F2}");
+
+        ProcessInput();
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
@@ -174,8 +141,8 @@ public class AnimatedGraphicsScene : SceneBase
             3f,
             this.currentFrame);
 
-        this.grpInstructions.Render();
-        this.grpAnimation.Render();
+        this.fontRenderer.Render(this.font, this.instructions, new Vector2(WindowCenter.X, WindowPadding));
+        this.fontRenderer.Render(this.font, this.animationFps.ToString(), new Vector2(WindowCenter.X, WindowPadding + 300));
 
         base.Render();
     }
@@ -189,5 +156,35 @@ public class AnimatedGraphicsScene : SceneBase
         }
 
         base.Dispose(disposing);
+    }
+
+    private void ProcessInput()
+    {
+        var currentKeyState = this.keyboard.GetState();
+
+        if (currentKeyState.IsKeyUp(KeyCode.Right) && this.prevKeyState.IsKeyDown(KeyCode.Right))
+        {
+            this.runningForward = true;
+        }
+
+        if (currentKeyState.IsKeyUp(KeyCode.Left) && this.prevKeyState.IsKeyDown(KeyCode.Left))
+        {
+            this.runningForward = false;
+        }
+
+        if (currentKeyState.IsKeyDown(KeyCode.Up))
+        {
+            this.speed += 0.5f;
+        }
+
+        if (currentKeyState.IsKeyDown(KeyCode.Down))
+        {
+            this.speed -= 0.5f;
+        }
+
+        this.speed = this.speed < 0 ? 0 : this.speed;
+        this.speed = this.speed > 60 ? 60 : this.speed;
+
+        this.prevKeyState = currentKeyState;
     }
 }

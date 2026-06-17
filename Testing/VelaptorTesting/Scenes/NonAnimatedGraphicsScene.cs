@@ -5,11 +5,8 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -61,7 +58,7 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        var textLines = new List<string>
+        var textLines = new string[]
         {
             "Use arrow keys to flip the texture horizontally and vertically.",
             "1. Left to flip horizontally",

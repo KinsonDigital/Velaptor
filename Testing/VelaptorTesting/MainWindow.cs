@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using KdGui.Factories;
 using Scenes;
 using Velaptor;
 using Velaptor.Batching;
@@ -95,20 +94,22 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         // };
 
-        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
-        {
-            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
-        };
+        // WORKS
+        // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
+        // {
+        //     Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        // };
 
+        // WORKS
         // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
         // {
         //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         // };
-        //
-        // var shapeScene = new ShapeScene
-        // {
-        //     Name = SplitByUpperCase(nameof(ShapeScene)),
-        // };
+
+        var shapeScene = new ShapeScene
+        {
+            Name = SplitByUpperCase(nameof(ShapeScene)),
+        };
         //
         // var layeredRectScene = new LayeredRectRenderingScene
         // {
@@ -135,9 +136,9 @@ public class MainWindow : Window
         // SceneManager.AddScene(keyboardScene);
         // SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredTextureRenderingScene);
-        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);
-        // SceneManager.AddScene(shapeScene);
+        SceneManager.AddScene(shapeScene);
         // SceneManager.AddScene(layeredRectScene);
         // SceneManager.AddScene(lineScene);
         // SceneManager.AddScene(layeredLineScene);
