@@ -5,6 +5,7 @@
 	"cSpell.words": [
 		"Analyers",
 		"andymckay",
+		"Argb",
 		"Aseprite",
 		"Avalonia",
 		"backticks",
@@ -97,7 +98,9 @@
 		"**/Thumbs.db": true,
 		"**/.idea": true,
 		"*.sln.DotSettings.user": true,
-		"**/*.lscache": true
+		"**/*.lscache": true,
+		"**/bin": false,
+		"**/obj": false,
 	},
 	"files.eol": "\n",
 	"window.title": "🦖Velaptor",
@@ -118,7 +121,7 @@
 	},
 	"workbench.editor.titleScrollbarSizing": "large",
 	"workbench.editor.wrapTabs": true,
-	"dotnet.defaultSolution": "Velaptor.sln",
+	"dotnet.defaultSolution": "Velaptor.slnx",
 	"[csharp]": {
 		"editor.insertSpaces": true,
 		"editor.indentSize": 4,

@@ -64,6 +64,12 @@ public class MainWindow : Window
 
         // this.grpSceneCtrls.Add(nextPrevious);
 
+        // DEBUG - This is only for testing WebGPU rendering and should be removed when done.
+        var webGpuTestingScene = new WebGPUTestingScene
+        {
+            Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
+        };
+
         // WORKS
         // var textRenderingScene = new TextRenderingScene
         // {
@@ -106,10 +112,10 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         // };
 
-        var shapeScene = new ShapeScene
-        {
-            Name = SplitByUpperCase(nameof(ShapeScene)),
-        };
+        // var shapeScene = new ShapeScene
+        // {
+        //     Name = SplitByUpperCase(nameof(ShapeScene)),
+        // };
         //
         // var layeredRectScene = new LayeredRectRenderingScene
         // {
@@ -131,6 +137,7 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(AudioScene)),
         // };
 
+        SceneManager.AddScene(webGpuTestingScene);
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(keyboardScene);
@@ -138,7 +145,7 @@ public class MainWindow : Window
         // SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);
-        SceneManager.AddScene(shapeScene);
+        // SceneManager.AddScene(shapeScene);
         // SceneManager.AddScene(layeredRectScene);
         // SceneManager.AddScene(lineScene);
         // SceneManager.AddScene(layeredLineScene);

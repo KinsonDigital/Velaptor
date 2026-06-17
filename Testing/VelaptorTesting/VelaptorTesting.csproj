@@ -84,6 +84,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
+    <ProjectReference Include="..\UILib\UILib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
