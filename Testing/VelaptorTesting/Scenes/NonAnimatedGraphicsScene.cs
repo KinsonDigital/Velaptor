@@ -12,6 +12,7 @@ using KdGui;
 using KdGui.Factories;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -23,15 +24,17 @@ using Velaptor.Scene;
 /// </summary>
 public class NonAnimatedGraphicsScene : SceneBase
 {
-    private const int WindowPadding = 10;
+    private const int WindowPadding = 100;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
+    private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
     private IAtlasData? mainAtlas;
-    private IControlGroup? grpControls;
+    private IFont? font;
     private KeyboardState prevKeyState;
     private RenderEffects renderEffects = RenderEffects.None;
+    private string instructions = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
@@ -40,6 +43,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
     }
@@ -53,6 +57,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
+        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
@@ -65,20 +70,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             "4. Down to flip vertically",
         };
 
-        var instructions = string.Join(Environment.NewLine, textLines);
-
-        var ctrlFactory = new ControlFactory();
-
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Text = instructions;
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Instructions";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(lblInstructions);
+        this.instructions = string.Join(Environment.NewLine, textLines);
 
         base.LoadContent();
     }
@@ -97,6 +89,9 @@ public class NonAnimatedGraphicsScene : SceneBase
 
         this.contentManager.Unload(this.mainAtlas);
         this.mainAtlas = null;
+
+        this.contentManager.Unload(this.font);
+        this.font = null;
 
         base.UnloadContent();
     }
@@ -146,8 +141,6 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
-
         this.prevKeyState = currentKeyState;
     }
 
@@ -170,7 +163,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             Color.White,
             this.renderEffects);
 
-        this.grpControls.Render();
+        this.fontRenderer.Render(this.font, this.instructions, new Vector2(WindowCenter.X, WindowPadding));
 
         base.Render();
     }
