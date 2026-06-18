@@ -23,7 +23,7 @@ jobs:
         build_config: [Debug, Telemetry-Debug]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -42,7 +42,7 @@ jobs:
         platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -57,7 +57,7 @@ jobs:
     name: Build Avalonia Testing Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -72,7 +72,7 @@ jobs:
     name: Build Playground Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -87,7 +87,7 @@ jobs:
     name: Build Keyboard Performance Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -102,7 +102,7 @@ jobs:
     name: Build Measure Text Performance Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
@@ -117,7 +117,7 @@ jobs:
     name: Build Mouse Performance Status Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@v5
