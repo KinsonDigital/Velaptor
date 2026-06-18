@@ -10,8 +10,7 @@ defaults:
 on:
   pull_request:
     branches: [main, preview]
-    paths-ignore:
-      - '.github/**'
+
 
 jobs:
   sdk_status_check:
@@ -19,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate SDK Versions
-        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 # v17.2.0
         with:
           base-search-dir-path: "${{ github.workspace }}"
           net-sdk-version: "${{ vars.NET_SDK_VERSION }}"

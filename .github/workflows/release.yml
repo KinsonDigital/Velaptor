@@ -44,14 +44,14 @@ jobs:
     steps:
       - name: Get Version
         id: get-version
-        uses: KinsonDigital/Infrastructure/actions/get-version@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/get-version@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           version-file-path: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj"
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
 
       - name: Validate Version
         id: validate-version
-        uses: KinsonDigital/Infrastructure/actions/validate-version@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/validate-version@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           version: "v${{ steps.get-version.outputs.version }}"
           release-type: "${{ inputs.release-type }}"
@@ -82,7 +82,7 @@ jobs:
           }
 
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set Up Deno (${{ vars.DENO_VERSION }})
         uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 #v2.0.4
@@ -92,7 +92,7 @@ jobs:
 
       - name: Validate Tag
         id: tag-check
-        uses: KinsonDigital/Infrastructure/actions/validate-tag@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/validate-tag@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           repo-owner: "${{ vars.ORGANIZATION_NAME }}"
           repo-name: "${{ vars.PROJECT_NAME }}"
@@ -104,7 +104,7 @@ jobs:
 
       - name: Validate SDK Versions
         id: sdk-check
-        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           base-search-dir-path: "${{ github.workspace }}"
           net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
@@ -112,7 +112,7 @@ jobs:
 
       - name: Release Notes Exist
         id: release-notes-check
-        uses: KinsonDigital/Infrastructure/actions/release-notes-exist@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/release-notes-exist@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           release-notes-file-path: "${{ github.workspace }}/ReleaseNotes/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
           fail-if-does-not-exist: true
@@ -120,7 +120,7 @@ jobs:
         continue-on-error: true
 
       - name: Nuget Package Does Not Exist
-        uses: KinsonDigital/Infrastructure/actions/nuget-pkg-exists@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/nuget-pkg-exists@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         id: package-check
         with:
           nuget-pkg-name: "${{ vars.ORGANIZATION_NAME }}.${{ vars.PROJECT_NAME }}"
@@ -130,7 +130,7 @@ jobs:
 
       - name: Milestone Exists
         id: milestone-exists
-        uses: KinsonDigital/Infrastructure/actions/milestone-exists@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/milestone-exists@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           owner-name: "${{ vars.ORGANIZATION_NAME }}"
           repo-name: "${{ vars.PROJECT_NAME }}"
@@ -141,7 +141,7 @@ jobs:
 
       - name: Validate Milestone Items
         id: milestone-items-check
-        uses: KinsonDigital/Infrastructure/actions/milestone-items-closed@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/milestone-items-closed@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           owner-name: "${{ vars.ORGANIZATION_NAME }}"
           repo-name: "${{ vars.PROJECT_NAME }}"
@@ -153,7 +153,7 @@ jobs:
 
       - name: GitHub Release Does Not Exist
         id: github-release-check
-        uses: KinsonDigital/Infrastructure/actions/github-release-exists@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/github-release-exists@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           owner-name: "${{ vars.ORGANIZATION_NAME }}"
           repo-name: "${{ vars.PROJECT_NAME }}"
@@ -236,10 +236,10 @@ jobs:
         build_config: [Debug, Telemetry-Debug, Release, Telemetry-Release]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
         with:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
@@ -259,10 +259,10 @@ jobs:
           - platform: "macos-latest" # ARM-based (M1 and above).
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
         with:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
@@ -278,10 +278,10 @@ jobs:
     needs: [get_and_validate_version, run_prerelease_validation, build, run_tests]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set Up .NET SDK
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 #v5.2.0
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
         with:
           dotnet-version: "${{ vars.NET_SDK_VERSION }}"
 
@@ -295,13 +295,13 @@ jobs:
           cache: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
 
       - name: Transpile README
-        uses: KinsonDigital/Infrastructure/actions/transpile-readme@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/transpile-readme@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           base-dir-path: "${{ github.workspace }}"
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
 
       - name: Update Copyright
-        uses: KinsonDigital/Infrastructure/actions/update-copyright@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/update-copyright@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           cs-proj-file-name: "${{ vars.PROJECT_NAME }}.csproj"
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
@@ -348,7 +348,7 @@ jobs:
 
       - name: Close Milestone ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
         if: inputs.dry-run == false
-        uses: KinsonDigital/Infrastructure/actions/close-milestone@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/close-milestone@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           repo-owner: "${{ vars.ORGANIZATION_NAME }}"
           repo-name: "${{ vars.PROJECT_NAME }}"
@@ -384,10 +384,10 @@ jobs:
     if: ${{ inputs.dry-run == false }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Send X Release Announcement
-        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           repo-owner: ${{ vars.ORGANIZATION_NAME }}
           project-name: ${{ vars.PROJECT_NAME }}
@@ -403,7 +403,7 @@ jobs:
           github-token: ${{ secrets.CICD_TOKEN }}
 
       - name: Send Bluesky Release Announcement
-        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@4696536bb04fa2c157e30732d758296d73364248 #v17.2.0
+        uses: KinsonDigital/Infrastructure/actions/send-bluesky-release-announcement@9c4f1702ed7e5f785415d7db14796b1dde7c6a16 #v17.2.0
         with:
           repo-owner: ${{ vars.ORGANIZATION_NAME }}
           project-name: ${{ vars.PROJECT_NAME }}
