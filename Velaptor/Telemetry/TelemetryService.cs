@@ -93,11 +93,14 @@ internal class TelemetryService : ITelemetryService
     /// Initializes a new instance of the <see cref="TelemetryService"/> class.
     /// </summary>
     /// <param name="appService">Provides application services.</param>
-    public TelemetryService(IAppService appService)
+    /// <param name="consoleService">Provides console services.</param>
+    public TelemetryService(IAppService appService, IConsoleService consoleService)
     {
         ArgumentNullException.ThrowIfNull(appService);
+        ArgumentNullException.ThrowIfNull(consoleService);
 
         this.appService = appService;
+        this.consoleService = consoleService;
 
         // Has the user opted into telemetry?
         // Set by anyone (maintainer or game developer) to suppress telemetry.
