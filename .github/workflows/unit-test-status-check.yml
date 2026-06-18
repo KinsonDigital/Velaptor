@@ -11,8 +11,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main, preview]
-    paths-ignore:
-      - '.github/**'
+
 
 jobs:
   run_tests:

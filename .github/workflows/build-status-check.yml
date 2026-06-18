@@ -10,8 +10,7 @@ defaults:
 on:
   pull_request:
     branches: [main, preview]
-    paths-ignore:
-      - '.github/**'
+
 
 jobs:
   build_velaptor:
