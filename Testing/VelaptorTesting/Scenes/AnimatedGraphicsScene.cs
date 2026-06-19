@@ -63,7 +63,7 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
 
         var textLines = new string[]
         {

@@ -83,6 +83,12 @@ public class MainWindow : Window
         // };
 
         // WORKS
+        // var cameraScene = new CameraScene
+        // {
+        //     Name = SplitByUpperCase(nameof(CameraScene)),
+        // };
+
+        // WORKS
         // var keyboardScene = new KeyboardScene
         // {
         //     Name = SplitByUpperCase(nameof(KeyboardScene)),
@@ -140,6 +146,7 @@ public class MainWindow : Window
         SceneManager.AddScene(webGpuTestingScene);
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
+        // SceneManager.AddScene(cameraScene);
         // SceneManager.AddScene(keyboardScene);
         // SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredTextureRenderingScene);

@@ -69,7 +69,7 @@ public class LayeredTextureRenderingScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.atlas = this.contentManager.Load<IAtlasData>("layered-rendering-atlas");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];

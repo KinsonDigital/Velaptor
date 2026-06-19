@@ -49,7 +49,7 @@ public class MouseScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
         this.textPos = new Vector2(WindowCenter.X, WindowCenter.Y);
 
         base.LoadContent();

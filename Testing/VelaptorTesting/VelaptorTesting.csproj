@@ -47,6 +47,9 @@
     <None Update="Content\Graphics\layered-rendering-background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Graphics\zelda-light-world.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Atlas\Main-Atlas.pdn">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -119,6 +119,7 @@ internal static class IoC
         SetupReactables();
 
         IoCContainer.Register<ITelemetryClient, TelemetryClient>(Lifestyle.Singleton);
+        IoCContainer.Register<ICamera2D, Camera2D>(Lifestyle.Singleton);
         IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<TextureBatchItem>>, RenderItemComparer<TextureBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<FontGlyphBatchItem>>, RenderItemComparer<FontGlyphBatchItem>>(Lifestyle.Singleton);

@@ -15,7 +15,8 @@ public static class Program
 {
     private static MainWindow? gameWindow;
 
-    public static string DefaultFontName => $"TimesNewRoman-Regular.ttf";
+    public static string DefaultFontRegular => $"TimesNewRoman-Regular.ttf";
+    public static string DefaultFontBold => $"TimesNewRoman-Bold.ttf";
 
     public static async Task Main(string[] args)
     {
