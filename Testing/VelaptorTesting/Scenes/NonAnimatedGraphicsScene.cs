@@ -54,7 +54,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontName, 12);
+        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 

@@ -2,10 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Numerics;
+using Silk.NET.Windowing;
 using UILib;
+using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.Scene;
 
 public class WebGPUTestingScene : SceneBase
@@ -14,20 +18,109 @@ public class WebGPUTestingScene : SceneBase
     private readonly ILineRenderer lineRenderer;
     private readonly UIContainer container;
     private readonly IBatcher batcher;
+    private readonly CheckBox checkbox;
+    private readonly Slider slider;
+    private readonly Button button;
+    private readonly Label label;
+    private readonly ArrowButton arrowButton;
+    private readonly DropDown dropdown;
 
     public WebGPUTestingScene()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.batcher = RendererFactory.CreateBatcher();
+
         this.container = new UIContainer();
+        this.container.Position = new Vector2(300, 300);
+
+        this.checkbox = new CheckBox
+        {
+            Position = new (0, 0),
+            IsChecked = true,
+        };
+        this.slider = new Slider();
+
+        this.button = new Button();
+        this.button.Click += (sender, args) => this.checkbox.IsChecked = !this.checkbox.IsChecked;
+
+        this.label = new Label();
+
+        this.arrowButton = new ArrowButton();
+
+        this.dropdown = new DropDown();
+        this.dropdown.AddItem("Item 1");
+        this.dropdown.AddItem("Item 2");
+
+        // this.container.AddControl(this.checkbox);
+        // this.container.AddControl(this.slider);
+        // this.container.AddControl(this.button);
+        // this.container.AddControl(this.label);
+    }
+
+    public override void LoadContent()
+    {
+        // this.container.Load();
+        // this.checkbox.Load();
+        // this.slider.Load();
+        // this.button.Load();
+        // this.label.Load();
+        // this.arrowButton.Load();
+        this.dropdown.Load();
+
+        base.LoadContent();
+    }
+
+    public override void UnloadContent()
+    {
+        // this.container.Unload();
+        // this.checkbox.Unload();
+        // this.slider.Unload();
+        // this.button.Unload();
+        // this.arrowButton.Unload();
+        // this.label.Unload();
+        this.dropdown.Unload();
+
+        base.UnloadContent();
+    }
+
+    public override void Update(FrameTime frameTime)
+    {
+        // this.container.Update();
+
+        // this.checkbox.Position = new (50, 50);
+        // this.checkbox.Update();
+
+        // this.slider.Position = new (0, 0);
+        // this.slider.Update();
+
+        // this.button.Position = new (0, 0);
+        // this.button.Update();
+
+        // this.arrowButton.Position = new (0, 0);
+        // this.arrowButton.Update();
+
+        // this.label.Position = new (600, 600);
+        // this.label.Update();
+
+        this.dropdown.Position = new (0, 0);
+        this.dropdown.Update();
+
+        base.Update(frameTime);
     }
 
     public override void Render()
     {
         this.batcher.Begin();
 
-        this.container.Render();
+        // this.container.Render();
+        // this.checkbox.Render();
+        // this.slider.Render();
+        // this.button.Render();
+        // this.arrowButton.Render();
+        // this.label.Render();
+        this.dropdown.Render();
+
         // var rect = new RectShape
         // {
         //     Position = new (300, 300),
