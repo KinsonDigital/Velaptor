@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -7,26 +9,29 @@ using Velaptor.Input;
 
 public class CheckBox : Control
 {
+    private const int BoxTextPadding = 5;
     private const float MarkOffset = 2;
     private const float BoxWidthHeight = 20;
     private readonly IShapeRenderer shapeRenderer;
     private readonly ILineRenderer lineRenderer;
+    private readonly IFontRenderer fontRenderer;
+    private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
-    private readonly Label label;
     private RectShape box;
     private Line mark1;
     private Line mark2;
+    private Vector2 textPos;
     private MouseState prevMouseState;
     private string text = "Check box";
+    private IFont font;
 
     public CheckBox()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
+        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
-        this.label = new Label();
-        this.label.Click += LabelOn_Click;
-        this.label.Text = "Check box";
     }
 
     public bool IsChecked { get; set; }
@@ -39,21 +44,22 @@ public class CheckBox : Control
 
     public override void Load()
     {
-        this.label.Load();
+        this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
 
         base.Load();
     }
 
     public override void Unload()
     {
-        this.label.Click -= LabelOn_Click;
-        this.label.Unload();
+        this.contentManager.Unload(this.font);
 
         base.Unload();
     }
 
     public override void Update()
     {
+        var currentMouseState = this.mouse.GetState();
+
         var scrnPos = Position.ToScreen(BoxWidthHeight, BoxWidthHeight);
 
         this.box = new RectShape
@@ -61,7 +67,7 @@ public class CheckBox : Control
             Position = scrnPos,
             Width = BoxWidthHeight,
             Height = BoxWidthHeight,
-            Color = Color.Yellow,// Color.FromArgb(255, 32, 49, 72),
+            Color = Color.FromArgb(255, 32, 49, 72),
             IsSolid = true,
         };
 
@@ -91,60 +97,42 @@ public class CheckBox : Control
             Thickness = 3,
         };
 
-        this.label.Position = new Vector2(Position.X + this.box.Width + (this.label.TextSize.Width / 2f) + 5, Position.Y + (this.label.TextSize.Height / 2f));
-        this.label.Update();
+        var textSize = this.font.Measure(this.text);
+        this.textPos = new Vector2(
+            Position.X + this.box.Width + (textSize.Width / 2f) + BoxTextPadding,
+            Position.Y + (textSize.Height / 2f) + 2);
 
-        ProcessCheckState();
+        var mousePos = currentMouseState.GetPosition().ToVector2();
+        var textRectPos = new Vector2(
+            Position.X + this.box.Width + BoxTextPadding,
+            Position.Y);
+        var textRect = new Rectangle((int)textRectPos.X, (int)textRectPos.Y, (int)textSize.Width, (int)textSize.Height);
+        var isMouseOver = this.box.Contains(mousePos) || textRect.Contains((int)mousePos.X, (int)mousePos.Y);
+
+        // If the mouse if over any part of the checkbox and the left mouse button was just released
+        if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+        {
+            IsChecked = !IsChecked;
+        }
+
+        this.prevMouseState = currentMouseState;
 
         base.Update();
     }
 
-    public override void Render()
+    public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.box);
 
         if (IsChecked)
         {
-            var mark1Temp = this.mark1 with
-            {
-                P1 = this.mark1.P1.ToScreen(this.box.HalfWidth + MarkOffset, this.box.HalfHeight + MarkOffset),
-                P2 = this.mark1.P2.ToScreen(this.box.HalfWidth - MarkOffset, this.box.HalfHeight - MarkOffset)
-            };
-
-            var mark2Temp = this.mark2 with
-            {
-                P1 = this.mark2.P1.ToScreen(this.box.HalfWidth - MarkOffset, this.box.HalfHeight + MarkOffset),
-                P2 = this.mark2.P2.ToScreen(this.box.HalfWidth + MarkOffset, this.box.HalfHeight - MarkOffset)
-            };
-
             this.lineRenderer.Render(this.mark1);
             this.lineRenderer.Render(this.mark2);
         }
 
-        this.label.Render();
+        this.fontRenderer.Render(this.font, Text, this.textPos, Color.White);
 
         base.Render();
-    }
-
-    private void ProcessCheckState()
-    {
-        var currentMouseState = this.mouse.GetState();
-
-        if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
-        {
-            var mousePos = currentMouseState.GetPosition();
-            var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
-
-            var isOverCheck = this.box.Contains(mousePosVector);
-
-            // If the mouse is over the checkbox
-            if (isOverCheck)
-            {
-                IsChecked = !IsChecked;
-            }
-        }
-
-        this.prevMouseState = currentMouseState;
     }
 
     private void LabelOn_Click(object? sender, EventArgs e)

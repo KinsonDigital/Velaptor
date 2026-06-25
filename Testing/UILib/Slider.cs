@@ -108,21 +108,23 @@ public class Slider : Control
             IsSolid = true,
         };
 
-        this.label.Position = new Vector2(scrnPos.X, scrnPos.Y);
+        this.label.Position = new Vector2(
+            Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
+            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));
 
         base.Update();
     }
 
-    public override void Render()
+    public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.sliderArea, -10);
 
-        this.label.Text = $"{Value:0.00}";
-        this.label.Render();
-
         this.shapeRenderer.Render(this.sliderHandle);
 
-        base.Render();
+        this.label.Text = $"{Value:0.00}";
+        this.label.Render(10);
+
+        base.Render(layer);
     }
 
     private float CalcNewValue(float value)

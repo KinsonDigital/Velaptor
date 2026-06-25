@@ -12,7 +12,7 @@ public class Control : IControl
 
     public virtual int HalfHeight => Height / 2;
 
-    public Vector2 Position { get; set; }
+    public virtual Vector2 Position { get; set; }
 
     public virtual void Load()
     {
@@ -22,7 +22,7 @@ public class Control : IControl
     {
     }
 
-    public virtual void Render()
+    public virtual void Render(int layer = 0)
     {
     }
 

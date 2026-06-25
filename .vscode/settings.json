@@ -115,7 +115,7 @@
 		"tab.activeBorderTop": "#e0bb98"
 	},
 	"workbench.editor.customLabels.patterns": {
-		"**/Testing/**/*.cs": "${filename}🧪",
+		"**/Testing/**/*Tests.cs": "${filename}🧪",
 		"**/Velaptor/**/*.cs": "${filename}👾",
 		"**/DevTools/**/*.ts": "${filename}🔧",
 		"**/.github/workflows/**/*.yml": "${filename}⚙️",

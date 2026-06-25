@@ -87,7 +87,10 @@ public class Button : Control
             this.face.Color = this.face.Color.DecreaseBrightness(0.0f);
         }
 
-        this.label.Position = new Vector2(scrnPos.X, scrnPos.Y);
+        this.label.Position = new Vector2(
+            Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
+            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));
+
         this.label.Update();
 
         this.prevMouseState = currentMouseState;
@@ -95,7 +98,7 @@ public class Button : Control
         base.Update();
     }
 
-    public override void Render()
+    public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.face, -10);
 

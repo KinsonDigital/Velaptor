@@ -2,5 +2,5 @@ namespace UILib;
 
 public interface IRenderable
 {
-    void Render();
+    void Render(int layer = 0);
 }

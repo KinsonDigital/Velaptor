@@ -70,15 +70,14 @@ public class ArrowButton : Control
         base.Update();
     }
 
-    public override void Render()
+    public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.face, -10);
 
         var scrnPos = Position.ToScreen(Width, Height);
         var halfWidth = Width / 2f;
-        var halfHeight = Height / 2f;
 
-        var leftPadding = PaddingRatio <= 0 ? halfWidth : halfWidth * PaddingRatio;
+        var leftPadding = this.PaddingRatio <= 0 ? halfWidth : halfWidth * this.PaddingRatio;
         var topLeft = new Vector2(scrnPos.X - leftPadding, scrnPos.Y - leftPadding);
         var topRight = new Vector2(scrnPos.X + leftPadding, scrnPos.Y - leftPadding);
         var bottomCenter = new Vector2(scrnPos.X, scrnPos.Y + leftPadding);
@@ -89,6 +88,6 @@ public class ArrowButton : Control
         this.lineRenderer.RenderLine(topRight, bottomCenter, arrowColor, 2, -9);
         this.lineRenderer.RenderLine(bottomCenter, topLeft, arrowColor, 2, -9);
 
-        base.Render();
+        base.Render(layer);
     }
 }

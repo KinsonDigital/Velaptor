@@ -28,9 +28,6 @@ public class Label : Control
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
-
-        Width = 200;
-        Height = 30;
     }
 
     public string Text
@@ -43,8 +40,22 @@ public class Label : Control
             if (this.font is not null)
             {
                 TextSize = this.font.Measure(this.text);
+                Width = (int)TextSize.Width;
+                Height = (int)TextSize.Height;
             }
         }
+    }
+
+    public override int Width
+    {
+        get => base.Width;
+        set => base.Width = value >= TextSize.Width ? value : (int)TextSize.Width;
+    }
+
+    public override int Height
+    {
+        get => base.Height;
+        set => base.Height = value >= TextSize.Height ? value : (int)TextSize.Height;
     }
 
     public SizeF TextSize { get; private set; }
@@ -62,6 +73,8 @@ public class Label : Control
 
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
         TextSize = this.font.Measure(this.text);
+        Width = (int)TextSize.Width;
+        Height = (int)TextSize.Height;
 
         this.isLoaded = true;
 
@@ -77,23 +90,36 @@ public class Label : Control
 
     public override void Update()
     {
+        var scrnPos = Position.ToScreen(Width, Height);
+
         var currentMouseState = this.mouse.GetState();
 
         this.background = new RectShape
         {
-            Position = Position,
+            Position = scrnPos,
             Width = Width,
             Height = Height,
             Color = BackgroundColor,
             IsSolid = true,
         };
 
-        var mousePos = currentMouseState.GetPosition();
-        var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
-        IsMouseOver = this.background.Contains(mousePosVector);
+        var mousePos = currentMouseState.GetPosition().ToVector2();
+
+        var labelRect = new Rectangle((int)scrnPos.X, (int)scrnPos.Y, (int)TextSize.Width, (int)TextSize.Height);
+        IsMouseOver = labelRect.Contains((int)mousePos.X, (int)mousePos.Y);
 
         if (IsMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
         {
+            // TODO: DEBUG - REMOVE THIS
+            if (BackgroundColor == Color.Transparent)
+            {
+                BackgroundColor = Color.CornflowerBlue;
+            }
+            else if (BackgroundColor == Color.CornflowerBlue)
+            {
+                BackgroundColor = Color.Transparent;
+            }
+
             this.Click?.Invoke(this, new LabelClickEventArgs(this));
         }
 
@@ -102,15 +128,17 @@ public class Label : Control
         base.Update();
     }
 
-    public override void Render()
+    public override void Render(int layer = 0)
     {
+        var scrnPos = Position.ToScreen(TextSize.Width, TextSize.Height);
+        scrnPos.Y += 1; // Slightly offset the text to ensure the top of the text is not past the top of the label's rectangle area
+
         if (BackgroundColor != Color.Transparent)
         {
             this.shapeRenderer.Render(this.background, -10);
         }
 
-        var textPos = new Vector2(Position.X, Position.Y);
-        this.fontRenderer.Render(this.font, Text, textPos, Color.White);
+        this.fontRenderer.Render(this.font, Text, scrnPos, Color.White, layer);
 
         base.Render();
     }
