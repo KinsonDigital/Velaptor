@@ -3,15 +3,11 @@
 // </copyright>
 
 using System.Drawing;
-using System.Numerics;
-using Silk.NET.Windowing;
 using UILib;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
-using Velaptor.Input;
 using Velaptor.Scene;
 
 public class WebGPUTestingScene : SceneBase
@@ -25,9 +21,12 @@ public class WebGPUTestingScene : SceneBase
     private readonly Button button;
     private readonly Label label;
     private readonly ArrowButton arrowButton;
-    private readonly Option option;
     private readonly DropDown dropdown;
     private readonly CheckBox otherCheckbox;
+    private readonly Option option1;
+    private readonly Option option4;
+    private readonly Option option3;
+    private readonly Option option2;
 
     public WebGPUTestingScene()
     {
@@ -61,8 +60,21 @@ public class WebGPUTestingScene : SceneBase
 
         this.arrowButton = new ArrowButton();
 
-        this.option = new Option();
-        this.option.Position = new (400, 400);
+        this.option1 = new Option();
+        this.option1.Position = new (400, 400);
+        this.option1.GroupNumber = 200;
+
+        this.option2 = new Option();
+        this.option2.Position = new (400, this.option1.Position.Y + this.option1.Height);
+        this.option2.GroupNumber = 200;
+
+        this.option3 = new Option();
+        this.option3.Position = new (400, this.option2.Position.Y + this.option2.Height);
+        this.option3.GroupNumber = 200;
+
+        this.option4 = new Option();
+        this.option4.Position = new (400, this.option3.Position.Y + this.option3.Height);
+        this.option4.GroupNumber = 200;
 
         this.dropdown = new DropDown();
         this.dropdown.AddItem("Item 1");
@@ -85,7 +97,10 @@ public class WebGPUTestingScene : SceneBase
     {
         this.container.Load();
 
-        this.option.Load();
+        this.option1.Load();
+        this.option2.Load();
+        this.option3.Load();
+        this.option4.Load();
         // this.checkbox.Load();
         // this.otherCheckbox.Load();
         // this.slider.Load();
@@ -100,7 +115,11 @@ public class WebGPUTestingScene : SceneBase
     public override void UnloadContent()
     {
         this.container.Unload();
-        this.option.Unload();
+        this.option1.Unload();
+        this.option2.Unload();
+        this.option3.Unload();
+        this.option4.Unload();
+
         // this.checkbox.Unload();
         // this.otherCheckbox.Unload();
         // this.slider.Unload();
@@ -115,7 +134,10 @@ public class WebGPUTestingScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         this.container.Update();
-        this.option.Update();
+        this.option1.Update();
+        this.option2.Update();
+        this.option3.Update();
+        this.option4.Update();
 
         // this.slider.Position = new (50, 100);
         // this.slider.Update();
@@ -149,7 +171,11 @@ public class WebGPUTestingScene : SceneBase
         this.batcher.Begin();
 
         this.container.Render();
-        this.option.Render();
+        this.option1.Render();
+        this.option2.Render();
+        this.option3.Render();
+        this.option4.Render();
+
         // this.checkbox.Render();
         // this.otherCheckbox.Render();
 

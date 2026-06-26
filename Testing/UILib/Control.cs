@@ -22,12 +22,16 @@ public class Control : IControl
 
     public int Bottom => Position.Y + Height;
 
+    protected bool IsLoaded { get; set; }
+
     public virtual void Load()
     {
+        IsLoaded = true;
     }
 
     public virtual void Unload()
     {
+        IsLoaded = false;
     }
 
     public virtual void Render(int layer = 0)

@@ -11,15 +11,17 @@ public class Option : Control
 {
     private const int BoxTextPadding = 5;
     private const float BoxWidthHeight = 20;
+    private static readonly List<(int, Guid, bool)> checkStates = new();
+    private readonly Guid id;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
+    private readonly Color OptionColor = Color.FromArgb(255, 89, 149, 224);
     private CircleShape circle;
     private Vector2 textPos;
     private MouseState prevMouseState;
-    private readonly Color OptionColor = Color.FromArgb(255, 89, 149, 224);
-    private string text = "Check box";
+    private string text = "Option";
     private IFont font;
 
     public Option()
@@ -30,6 +32,7 @@ public class Option : Control
         this.mouse = HardwareFactory.GetMouse();
 
         Height = (int)BoxWidthHeight;
+        this.id = Guid.NewGuid();
     }
 
     public bool IsChecked { get; set; }
@@ -40,8 +43,17 @@ public class Option : Control
         set => this.text = value ?? string.Empty;
     }
 
+    public int GroupNumber { get; set; }
+
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
+        checkStates.Add((GroupNumber, this.id, checkStates.Count == 0));
+
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
         var textWidth = this.font.Measure(this.text).Width;
         Width = (int)(BoxWidthHeight + BoxTextPadding + textWidth);
@@ -51,6 +63,13 @@ public class Option : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        checkStates.RemoveAll(x => x.Item2 == this.id);
+
         this.contentManager.Unload(this.font);
 
         base.Unload();
@@ -83,7 +102,26 @@ public class Option : Control
         // If the mouse if over any part of the checkbox and the left mouse button was just released
         if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
         {
-            IsChecked = !IsChecked;
+            // Set the state of each item in the group
+            for (var i = 0; i < checkStates.Count; i++)
+            {
+                var itemToUpdate = checkStates[i];
+
+                if (itemToUpdate.Item1 == GroupNumber)
+                {
+                    itemToUpdate.Item3 = itemToUpdate.Item2 == this.id;
+                }
+
+                checkStates[i] = itemToUpdate;
+            }
+        }
+
+        for (var i = 0; i < checkStates.Count; i++)
+        {
+            if (checkStates[i].Item1 == GroupNumber && checkStates[i].Item2 == this.id)
+            {
+                IsChecked = checkStates[i].Item3;
+            }
         }
 
         this.circle.IsSolid = IsChecked;
