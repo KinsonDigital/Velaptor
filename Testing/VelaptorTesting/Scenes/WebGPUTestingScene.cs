@@ -25,6 +25,7 @@ public class WebGPUTestingScene : SceneBase
     private readonly Button button;
     private readonly Label label;
     private readonly ArrowButton arrowButton;
+    private readonly Option option;
     private readonly DropDown dropdown;
     private readonly CheckBox otherCheckbox;
 
@@ -60,6 +61,9 @@ public class WebGPUTestingScene : SceneBase
 
         this.arrowButton = new ArrowButton();
 
+        this.option = new Option();
+        this.option.Position = new (400, 400);
+
         this.dropdown = new DropDown();
         this.dropdown.AddItem("Item 1");
         this.dropdown.AddItem("Item 2");
@@ -75,18 +79,13 @@ public class WebGPUTestingScene : SceneBase
         this.container.AddControl(this.slider);
         this.container.AddControl(this.button);
         this.container.AddControl(this.label);
-
-        for (var i = 0; i < 4; i++)
-        {
-            // this.label = new Label();
-            // this.label.Text = "This is a label";
-            // this.container.AddControl(this.label);
-        }
     }
 
     public override void LoadContent()
     {
         this.container.Load();
+
+        this.option.Load();
         // this.checkbox.Load();
         // this.otherCheckbox.Load();
         // this.slider.Load();
@@ -101,6 +100,7 @@ public class WebGPUTestingScene : SceneBase
     public override void UnloadContent()
     {
         this.container.Unload();
+        this.option.Unload();
         // this.checkbox.Unload();
         // this.otherCheckbox.Unload();
         // this.slider.Unload();
@@ -115,6 +115,7 @@ public class WebGPUTestingScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         this.container.Update();
+        this.option.Update();
 
         // this.slider.Position = new (50, 100);
         // this.slider.Update();
@@ -148,6 +149,7 @@ public class WebGPUTestingScene : SceneBase
         this.batcher.Begin();
 
         this.container.Render();
+        this.option.Render();
         // this.checkbox.Render();
         // this.otherCheckbox.Render();
 
