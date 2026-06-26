@@ -1,4 +1,4 @@
-using System.Numerics;
+using System.Drawing;
 
 public class Control : IControl
 {
@@ -12,7 +12,15 @@ public class Control : IControl
 
     public virtual int HalfHeight => Height / 2;
 
-    public virtual Vector2 Position { get; set; }
+    public virtual Point Position { get; set; }
+
+    public int Left => Position.X;
+
+    public int Top => Position.Y;
+
+    public int Right => Position.X + Width;
+
+    public int Bottom => Position.Y + Height;
 
     public virtual void Load()
     {

@@ -89,7 +89,7 @@ public class Button : Control
 
         this.label.Position = new Vector2(
             Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
-            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));
+            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f))).ToPoint();
 
         this.label.Update();
 

@@ -1,8 +1,6 @@
 using System.Drawing;
 using System.Numerics;
 using Velaptor;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -13,20 +11,18 @@ public class Slider : Control
     private const int HandleWidth = 16;
     private const int HandleHalfWidth = HandleWidth / 2;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
     private readonly IAppInput<MouseState> mouse;
-    private readonly IAppInput<KeyboardState> keyboard;
     private readonly Label label;
     private RectShape sliderHandle;
     private RectShape sliderArea;
     private Vector2 handlePos;
+    private bool isDragging;
+    private bool wasMouseDownLastFrame;
 
     public Slider()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.mouse = HardwareFactory.GetMouse();
-        this.keyboard = HardwareFactory.GetKeyboard();
         this.label = new Label();
 
         Width = 200;
@@ -70,9 +66,18 @@ public class Slider : Control
         var mousePos = currentMouseState.GetPosition();
         var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
         var mouseIsDown = currentMouseState.IsButtonDown(MouseButton.LeftButton);
+        var isInsideSlider = this.sliderArea.Contains(mousePosVector);
 
-        // If the mouse position is inside of the slider area
-        if (mouseIsDown && this.sliderArea.Contains(mousePosVector))
+        if (mouseIsDown)
+        {
+            // Only start dragging if the mouse was first pressed down inside the slider area
+            if (!this.isDragging && !this.wasMouseDownLastFrame && isInsideSlider)
+            {
+                this.isDragging = true;
+            }
+        }
+
+        if (mouseIsDown && this.isDragging && isInsideSlider)
         {
             this.handlePos = new Vector2(mousePos.X, scrnPos.Y);
 
@@ -99,6 +104,13 @@ public class Slider : Control
             this.handlePos = new Vector2(posX, posY);
         }
 
+        if (!mouseIsDown)
+        {
+            this.isDragging = false;
+        }
+
+        this.wasMouseDownLastFrame = mouseIsDown;
+
         this.sliderHandle = new RectShape
         {
             Position = this.handlePos,
@@ -110,7 +122,7 @@ public class Slider : Control
 
         this.label.Position = new Vector2(
             Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
-            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));
+            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f))).ToPoint();
 
         base.Update();
     }

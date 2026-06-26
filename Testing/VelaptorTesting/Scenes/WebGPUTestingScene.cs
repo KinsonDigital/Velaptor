@@ -34,11 +34,11 @@ public class WebGPUTestingScene : SceneBase
         this.batcher = RendererFactory.CreateBatcher();
 
         this.container = new UIContainer();
-        this.container.Position = new Vector2(300, 300);
+        this.container.Position = new Point(0, 0);
 
         this.checkbox = new CheckBox
         {
-            Position = new (0, 0),
+            Position = new (50, 50),
             IsChecked = true,
         };
         this.slider = new Slider();
@@ -61,22 +61,21 @@ public class WebGPUTestingScene : SceneBase
         this.dropdown.AddItem("Item 7");
         this.dropdown.AddItem("Item 8");
 
-
         this.container.AddControl(this.checkbox);
-        // this.container.AddControl(this.slider);
+        this.container.AddControl(this.slider);
         // this.container.AddControl(this.button);
-        // this.container.AddControl(this.label);
+        this.container.AddControl(this.label);
     }
 
     public override void LoadContent()
     {
         this.container.Load();
-        this.checkbox.Load();
-        this.slider.Load();
-        this.button.Load();
-        this.label.Load();
-        this.arrowButton.Load();
-        this.dropdown.Load();
+        // this.checkbox.Load();
+        // this.slider.Load();
+        // this.button.Load();
+        // this.label.Load();
+        // this.arrowButton.Load();
+        // this.dropdown.Load();
 
         base.LoadContent();
     }
@@ -84,12 +83,12 @@ public class WebGPUTestingScene : SceneBase
     public override void UnloadContent()
     {
         this.container.Unload();
-        this.checkbox.Unload();
-        this.slider.Unload();
-        this.button.Unload();
-        this.arrowButton.Unload();
-        this.label.Unload();
-        this.dropdown.Unload();
+        // this.checkbox.Unload();
+        // this.slider.Unload();
+        // this.button.Unload();
+        // this.arrowButton.Unload();
+        // this.label.Unload();
+        // this.dropdown.Unload();
 
         base.UnloadContent();
     }
@@ -99,22 +98,22 @@ public class WebGPUTestingScene : SceneBase
         this.container.Update();
 
         // this.checkbox.Position = new (50, 50);
-        this.checkbox.Update();
+        // this.checkbox.Update();
 
-        this.slider.Position = new (100, 100);
-        this.slider.Update();
+        // this.slider.Position = new (100, 100);
+        // this.slider.Update();
 
-        this.button.Position = new (500, 250);
-        this.button.Update();
+        // this.button.Position = new (500, 250);
+        // this.button.Update();
 
-        this.arrowButton.Position = new (600, 300);
-        this.arrowButton.Update();
+        // this.arrowButton.Position = new (600, 300);
+        // this.arrowButton.Update();
 
-        this.label.Position = new (300, 50);
-        this.label.Update();
+        // this.label.Position = new (300, 50);
+        // this.label.Update();
 
-        this.dropdown.Position = new (500, 500);
-        this.dropdown.Update();
+        // this.dropdown.Position = new (500, 500);
+        // this.dropdown.Update();
 
         base.Update(frameTime);
     }
@@ -125,12 +124,12 @@ public class WebGPUTestingScene : SceneBase
 
         this.container.Render();
 
-        this.checkbox.Render();
-        this.slider.Render();
-        this.button.Render();
-        this.arrowButton.Render();
-        this.label.Render();
-        this.dropdown.Render();
+        // this.checkbox.Render();
+        // this.slider.Render();
+        // this.button.Render();
+        // this.arrowButton.Render();
+        // this.label.Render();
+        // this.dropdown.Render();
 
         // var rect = new RectShape
         // {

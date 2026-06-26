@@ -8,6 +8,16 @@ public static class ExtensionMethods
         return new Vector2(value.X + (width / 2f), value.Y + (height / 2f));
     }
 
+    public static Vector2 ToScreen(this Point value, float width, float height)
+    {
+        return new Vector2(value.X + (width / 2f), value.Y + (height / 2f));
+    }
+
+    public static Point ToPoint(this Vector2 value)
+    {
+        return new Point((int)value.X, (int)value.Y);
+    }
+
     public static Vector2 ToVector2(this Point value)
     {
         return new Vector2(value.X, value.Y);

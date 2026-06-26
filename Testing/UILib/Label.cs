@@ -18,7 +18,6 @@ public class Label : Control
     private IFont? font;
     private string text = string.Empty;
     private bool isLoaded;
-    private bool deferLoadingItems = true;
 
     public EventHandler<LabelClickEventArgs>? Click;
 
@@ -110,16 +109,6 @@ public class Label : Control
 
         if (IsMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
         {
-            // TODO: DEBUG - REMOVE THIS
-            if (BackgroundColor == Color.Transparent)
-            {
-                BackgroundColor = Color.CornflowerBlue;
-            }
-            else if (BackgroundColor == Color.CornflowerBlue)
-            {
-                BackgroundColor = Color.Transparent;
-            }
-
             this.Click?.Invoke(this, new LabelClickEventArgs(this));
         }
 

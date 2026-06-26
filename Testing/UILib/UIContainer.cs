@@ -9,7 +9,9 @@ using Velaptor.Input;
 
 public class UIContainer : Control
 {
-    private const int TitleBarPaddingLeft = 5;
+    private const int TitleBarLeftTextPadding = 5;
+    private const int ControlLeftPadding = 10;
+    private const int ControlTopPadding = 10;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label titleBarText;
@@ -17,7 +19,8 @@ public class UIContainer : Control
     private RectShape background;
     private RectShape titleBar;
     private MouseState prevMouseState;
-    private Vector2 dragStartPos = new(float.MinValue, float.MinValue);
+    private bool isDragging;
+    private Vector2 lastMousePos;
 
     public UIContainer()
     {
@@ -66,9 +69,11 @@ public class UIContainer : Control
 
     public override void Update()
     {
+        var scrnPos = Position.ToScreen(Width, Height);
+
         this.background = new RectShape
         {
-            Position = Position,
+            Position = scrnPos,
             Width = Width,
             Height = Height,
             Color = Color.FromArgb(255, 17, 17, 17),
@@ -79,7 +84,7 @@ public class UIContainer : Control
         var titleBarHalfHeight = titleBarHeight / 2f;
         this.titleBar = new RectShape
         {
-            Position = new Vector2(Position.X, Position.Y - (this.background.HalfHeight - titleBarHalfHeight)),
+            Position = new Vector2(scrnPos.X, scrnPos.Y - (this.background.HalfHeight - titleBarHalfHeight)),
             Width = Width,
             Height = titleBarHeight,
             Color = Color.FromArgb(255, 45, 74, 117),
@@ -87,14 +92,30 @@ public class UIContainer : Control
         };
 
         this.titleBarText.Position = new Vector2(
-            this.titleBar.Position.X - (Width / 2f) + TitleBarPaddingLeft,
-            this.titleBar.Position.Y - (this.titleBarText.TextSize.Height / 2f));
+            this.titleBar.Position.X - (Width / 2f) + TitleBarLeftTextPadding,
+            this.titleBar.Position.Y - (this.titleBarText.TextSize.Height / 2f)).ToPoint();
+
         this.titleBarText.Update();
 
+        var titleBarBottomLeftCorner = new Vector2(this.titleBar.Left, this.titleBar.Bottom);
+
         // Update all of the controls
-        foreach (var control in this.controls)
+        for (var i = 0; i < this.controls.Count; i++)
         {
-            control.Position = Position;
+            var control = this.controls[i];
+
+            if (i == 0)
+            {
+                control.Position = (titleBarBottomLeftCorner + new Vector2(ControlLeftPadding, ControlTopPadding)).ToPoint();
+            }
+            else
+            {
+                var prevControl = this.controls[i - 1];
+                control.Position = new Vector2(
+                    titleBarBottomLeftCorner.X + ControlLeftPadding,
+                    prevControl.Position.Y + prevControl.Height + (ControlTopPadding * (i + 0))).ToPoint();
+            }
+
             control.Update();
         }
 
@@ -119,22 +140,28 @@ public class UIContainer : Control
         var currentMouseState = this.mouse.GetState();
         var mousePos = currentMouseState.GetPosition().ToVector2();
 
-        // If the mouse is in the title bar
-        if (this.titleBar.Contains(mousePos))
+        // Start dragging if the left mouse button is pressed while in the title bar
+        if (currentMouseState.IsButtonDown(MouseButton.LeftButton) &&
+            this.prevMouseState.IsButtonUp(MouseButton.LeftButton) &&
+            this.titleBar.Contains(mousePos))
         {
-            // If the mouse is in the down position, move the container based on the delta movement of the mouse
-            if (currentMouseState.IsButtonDown(MouseButton.LeftButton) && this.prevMouseState.IsButtonUp(MouseButton.LeftButton))
-            {
-                this.dragStartPos = mousePos;
-                var delta = mousePos - this.dragStartPos;
-                Position += delta;
-            }
+            this.isDragging = true;
+            this.lastMousePos = mousePos;
         }
 
-        // If the mouse is button has been lifted
-        if (this.prevMouseState.IsButtonDown(MouseButton.LeftButton) && currentMouseState.IsButtonUp(MouseButton.LeftButton))
+        // While dragging, move the container by the mouse delta each frame
+        if (this.isDragging && currentMouseState.IsButtonDown(MouseButton.LeftButton))
         {
-            this.dragStartPos = new Vector2(float.MinValue, float.MinValue);
+            var delta = mousePos - this.lastMousePos;
+            Position = (Position.ToVector2() + delta).ToPoint();
+            this.lastMousePos = mousePos;
+        }
+
+        // Stop dragging when the mouse button is released
+        if (this.prevMouseState.IsButtonDown(MouseButton.LeftButton) &&
+            currentMouseState.IsButtonUp(MouseButton.LeftButton))
+        {
+            this.isDragging = false;
         }
 
         this.prevMouseState = currentMouseState;
