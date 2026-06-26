@@ -65,16 +65,16 @@ public class MainWindow : Window
         // this.grpSceneCtrls.Add(nextPrevious);
 
         // DEBUG - This is only for testing WebGPU rendering and should be removed when done.
-        var webGpuTestingScene = new WebGPUTestingScene
-        {
-            Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
-        };
+        // var webGpuTestingScene = new WebGPUTestingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
+        // };
 
         // WORKS
-        // var textRenderingScene = new TextRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(TextRenderingScene)),
-        // };
+        var textRenderingScene = new TextRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(TextRenderingScene)),
+        };
 
         // WORKS
         // var layeredTextRenderingScene = new LayeredTextRenderingScene
@@ -143,8 +143,9 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(AudioScene)),
         // };
 
-        SceneManager.AddScene(webGpuTestingScene);
-        // SceneManager.AddScene(textRenderingScene, true);
+        // TODO: Remove this testing scene
+        // SceneManager.AddScene(webGpuTestingScene);
+        SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(cameraScene);
         // SceneManager.AddScene(keyboardScene);

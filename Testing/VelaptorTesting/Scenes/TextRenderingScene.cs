@@ -35,7 +35,6 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private IControlGroup? grpControls;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private string text = SingleLineText;
@@ -67,80 +66,81 @@ public class TextRenderingScene : SceneBase
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, 12);
 
-        var ctrlFactory = new ControlFactory();
+        // TODO: Remove this
+        // var ctrlFactory = new ControlFactory();
 
-        // Rotate Button
-        var sldRotate = ctrlFactory.CreateSlider();
-        sldRotate.Name = nameof(sldRotate);
-        sldRotate.Text = "Rotate:";
-        sldRotate.Value = 0;
-        sldRotate.Min = 0;
-        sldRotate.Max = 360;
-        sldRotate.ValueChanged += (_, newValue) => this.angle = newValue;
+        // // Rotate Button
+        // var sldRotate = ctrlFactory.CreateSlider();
+        // sldRotate.Name = nameof(sldRotate);
+        // sldRotate.Text = "Rotate:";
+        // sldRotate.Value = 0;
+        // sldRotate.Min = 0;
+        // sldRotate.Max = 360;
+        // sldRotate.ValueChanged += (_, newValue) => this.angle = newValue;
 
-        // Increase Render Size Button
-        var sldRenderSize = ctrlFactory.CreateSlider();
-        sldRenderSize.Name = nameof(sldRenderSize);
-        sldRenderSize.Text = "Render Size:";
-        sldRenderSize.Value = 1;
-        sldRenderSize.Min = 0.1f;
-        sldRenderSize.Max = 4;
-        sldRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
+        // // Increase Render Size Button
+        // var sldRenderSize = ctrlFactory.CreateSlider();
+        // sldRenderSize.Name = nameof(sldRenderSize);
+        // sldRenderSize.Text = "Render Size:";
+        // sldRenderSize.Value = 1;
+        // sldRenderSize.Min = 0.1f;
+        // sldRenderSize.Max = 4;
+        // sldRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
 
-        // Set Multi-Line
-        var chkSetMultiLine = ctrlFactory.CreateCheckbox();
-        chkSetMultiLine.Name = nameof(chkSetMultiLine);
-        chkSetMultiLine.LabelWhenChecked = "Multi-Line";
-        chkSetMultiLine.LabelWhenUnchecked = "Single-Line";
-        chkSetMultiLine.CheckedChanged += (_, isChecked) => this.text = isChecked ? this.multiLineText : SingleLineText;
+        // // Set Multi-Line
+        // var chkSetMultiLine = ctrlFactory.CreateCheckbox();
+        // chkSetMultiLine.Name = nameof(chkSetMultiLine);
+        // chkSetMultiLine.LabelWhenChecked = "Multi-Line";
+        // chkSetMultiLine.LabelWhenUnchecked = "Single-Line";
+        // chkSetMultiLine.CheckedChanged += (_, isChecked) => this.text = isChecked ? this.multiLineText : SingleLineText;
 
-        // Set Color
-        var chkSetColor = ctrlFactory.CreateCheckbox();
-        chkSetColor.Name = nameof(chkSetColor);
-        chkSetColor.LabelWhenChecked = "Color On";
-        chkSetColor.LabelWhenUnchecked = "Color Off";
-        chkSetColor.CheckedChanged += (_, isChecked) => this.isBlue = isChecked;
+        // // Set Color
+        // var chkSetColor = ctrlFactory.CreateCheckbox();
+        // chkSetColor.Name = nameof(chkSetColor);
+        // chkSetColor.LabelWhenChecked = "Color On";
+        // chkSetColor.LabelWhenUnchecked = "Color Off";
+        // chkSetColor.CheckedChanged += (_, isChecked) => this.isBlue = isChecked;
 
-        // Font size
-        var sldFontSize = ctrlFactory.CreateSlider();
-        sldFontSize.Name = nameof(sldFontSize);
-        sldFontSize.Text = "Font Size:";
-        sldFontSize.Value = 12;
-        sldFontSize.Min = 1;
-        sldFontSize.Max = 50;
-        sldFontSize.ValueChanged += (_, value) =>
-        {
-            value = value > 100 ? 100 : value;
-            value = value < 0 ? 0 : value;
+        // // Font size
+        // var sldFontSize = ctrlFactory.CreateSlider();
+        // sldFontSize.Name = nameof(sldFontSize);
+        // sldFontSize.Text = "Font Size:";
+        // sldFontSize.Value = 12;
+        // sldFontSize.Min = 1;
+        // sldFontSize.Max = 50;
+        // sldFontSize.ValueChanged += (_, value) =>
+        // {
+        //     value = value > 100 ? 100 : value;
+        //     value = value < 0 ? 0 : value;
 
-            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
-        };
+        //     this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
+        // };
 
-        // Set the font style to bold
-        var cmbSetStyle = ctrlFactory.CreateComboBox();
-        cmbSetStyle.Name = nameof(cmbSetStyle);
-        cmbSetStyle.Label = "Style:";
-        cmbSetStyle.Width = 150;
-        cmbSetStyle.Items = this.fontFileNames.Select(i => i.DisplayName).ToList();
-        cmbSetStyle.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.currentChosenFontFileName = this.fontFileNames[selectedIndex].FileName;
-            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
-        };
+        // // Set the font style to bold
+        // var cmbSetStyle = ctrlFactory.CreateComboBox();
+        // cmbSetStyle.Name = nameof(cmbSetStyle);
+        // cmbSetStyle.Label = "Style:";
+        // cmbSetStyle.Width = 150;
+        // cmbSetStyle.Items = this.fontFileNames.Select(i => i.DisplayName).ToList();
+        // cmbSetStyle.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.currentChosenFontFileName = this.fontFileNames[selectedIndex].FileName;
+        //     this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
+        // };
 
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Font Properties";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpControls.HalfHeight);
-        };
-        this.grpControls.Add(sldRotate);
-        this.grpControls.Add(sldRenderSize);
-        this.grpControls.Add(chkSetMultiLine);
-        this.grpControls.Add(chkSetColor);
-        this.grpControls.Add(sldFontSize);
-        this.grpControls.Add(cmbSetStyle);
+        // this.grpControls = ctrlFactory.CreateControlGroup();
+        // this.grpControls.Title = "Font Properties";
+        // this.grpControls.AutoSizeToFitContent = true;
+        // this.grpControls.Initialized += (_, _) =>
+        // {
+        //     this.grpControls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpControls.HalfHeight);
+        // };
+        // this.grpControls.Add(sldRotate);
+        // this.grpControls.Add(sldRenderSize);
+        // this.grpControls.Add(chkSetMultiLine);
+        // this.grpControls.Add(chkSetColor);
+        // this.grpControls.Add(sldFontSize);
+        // this.grpControls.Add(cmbSetStyle);
 
         base.LoadContent();
     }
@@ -155,8 +155,10 @@ public class TextRenderingScene : SceneBase
 
         this.backgroundManager.Unload();
         this.contentManager.Unload(this.textFont);
-        this.grpControls.Dispose();
-        this.grpControls = null;
+
+        // TODO: Remove this
+        // this.grpControls.Dispose();
+        // this.grpControls = null;
 
         base.UnloadContent();
     }
@@ -169,7 +171,8 @@ public class TextRenderingScene : SceneBase
 
         if (this.isFirstRender)
         {
-            this.grpControls.Position = new Point(WindowPadding, ((int)WindowSize.Height / 2) - this.grpControls.HalfHeight);
+            // TODO: Remove this
+            // this.grpControls.Position = new Point(WindowPadding, ((int)WindowSize.Height / 2) - this.grpControls.HalfHeight);
             this.isFirstRender = false;
         }
 
