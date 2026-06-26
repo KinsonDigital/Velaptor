@@ -32,6 +32,8 @@ public class CheckBox : Control
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
+
+        Height = (int)BoxWidthHeight;
     }
 
     public bool IsChecked { get; set; }
@@ -45,6 +47,8 @@ public class CheckBox : Control
     public override void Load()
     {
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
+        var textWidth = this.font.Measure(this.text).Width;
+        Width = (int)(BoxWidthHeight + BoxTextPadding + textWidth);
 
         base.Load();
     }

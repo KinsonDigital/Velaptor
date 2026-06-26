@@ -113,7 +113,7 @@ public class UIContainer : Control
                 var prevControl = this.controls[i - 1];
                 control.Position = new Vector2(
                     titleBarBottomLeftCorner.X + ControlLeftPadding,
-                    prevControl.Position.Y + prevControl.Height + (ControlTopPadding * (i + 0))).ToPoint();
+                    prevControl.Position.Y + prevControl.Height + ControlTopPadding).ToPoint();
             }
 
             control.Update();

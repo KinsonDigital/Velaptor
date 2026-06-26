@@ -26,6 +26,7 @@ public class WebGPUTestingScene : SceneBase
     private readonly Label label;
     private readonly ArrowButton arrowButton;
     private readonly DropDown dropdown;
+    private readonly CheckBox otherCheckbox;
 
     public WebGPUTestingScene()
     {
@@ -41,6 +42,14 @@ public class WebGPUTestingScene : SceneBase
             Position = new (50, 50),
             IsChecked = true,
         };
+
+        this.otherCheckbox = new CheckBox
+        {
+            Position = new (70, 50),
+            Text = "Other checkbox",
+            IsChecked = false,
+        };
+
         this.slider = new Slider();
 
         this.button = new Button();
@@ -62,15 +71,24 @@ public class WebGPUTestingScene : SceneBase
         this.dropdown.AddItem("Item 8");
 
         this.container.AddControl(this.checkbox);
+        this.container.AddControl(this.otherCheckbox);
         this.container.AddControl(this.slider);
-        // this.container.AddControl(this.button);
+        this.container.AddControl(this.button);
         this.container.AddControl(this.label);
+
+        for (var i = 0; i < 4; i++)
+        {
+            // this.label = new Label();
+            // this.label.Text = "This is a label";
+            // this.container.AddControl(this.label);
+        }
     }
 
     public override void LoadContent()
     {
         this.container.Load();
         // this.checkbox.Load();
+        // this.otherCheckbox.Load();
         // this.slider.Load();
         // this.button.Load();
         // this.label.Load();
@@ -84,6 +102,7 @@ public class WebGPUTestingScene : SceneBase
     {
         this.container.Unload();
         // this.checkbox.Unload();
+        // this.otherCheckbox.Unload();
         // this.slider.Unload();
         // this.button.Unload();
         // this.arrowButton.Unload();
@@ -97,11 +116,17 @@ public class WebGPUTestingScene : SceneBase
     {
         this.container.Update();
 
-        // this.checkbox.Position = new (50, 50);
+        // this.slider.Position = new (50, 100);
+        // this.slider.Update();
+
+        // this.checkbox.Position = new (this.slider.Position.X, this.slider.Position.Y + this.slider.Height);
         // this.checkbox.Update();
 
-        // this.slider.Position = new (100, 100);
-        // this.slider.Update();
+        // this.otherCheckbox.Position = new (50, this.checkbox.Position.Y + this.checkbox.Height);
+        // this.otherCheckbox.Update();
+
+        // this.checkbox.Position = new (50, 50);
+        // this.checkbox.Update();
 
         // this.button.Position = new (500, 250);
         // this.button.Update();
@@ -123,6 +148,8 @@ public class WebGPUTestingScene : SceneBase
         this.batcher.Begin();
 
         this.container.Render();
+        // this.checkbox.Render();
+        // this.otherCheckbox.Render();
 
         // this.checkbox.Render();
         // this.slider.Render();
