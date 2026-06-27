@@ -220,8 +220,8 @@ public class UIContainer : Control
 
         if (AutoSize)
         {
-            Width = maxRight - Position.X + ControlLeftPadding;
-            Height = maxBottom - Position.Y + ControlTopPadding;
+            Width = maxRight - (float)Math.Round(Position.X, 0) + ControlLeftPadding;
+            Height = maxBottom - (float)Math.Round(Position.Y, 0) + ControlTopPadding;
         }
     }
 
