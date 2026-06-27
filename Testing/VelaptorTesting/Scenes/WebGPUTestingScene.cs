@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Drawing;
+using System.Numerics;
 using UILib;
 using Velaptor;
 using Velaptor.Batching;
@@ -35,7 +36,7 @@ public class WebGPUTestingScene : SceneBase
         this.batcher = RendererFactory.CreateBatcher();
 
         this.container = new UIContainer();
-        this.container.Position = new Point(0, 0);
+        this.container.Position = new (0, 0);
 
         this.checkbox = new CheckBox
         {

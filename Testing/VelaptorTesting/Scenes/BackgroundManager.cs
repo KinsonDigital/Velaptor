@@ -15,7 +15,7 @@ using Velaptor.Graphics.Renderers;
 /// </summary>
 public class BackgroundManager : IDrawable
 {
-    private const int BackgroundLayer = -50;
+    private const int BackgroundLayer = -1000;
     private const string BackgroundTextureName = "layered-rendering-background";
     private readonly IContentManager contentManager;
     private ITextureRenderer? textureRenderer;

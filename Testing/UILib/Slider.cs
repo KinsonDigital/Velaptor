@@ -51,7 +51,7 @@ public class Slider : Control
 
     public override void Update()
     {
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
 
         this.sliderArea = new RectShape
         {
@@ -63,7 +63,7 @@ public class Slider : Control
         };
 
         var currentMouseState = this.mouse.GetState();
-        var mousePos = currentMouseState.GetPosition();
+        var mousePos = currentMouseState.GetPosition().ToVector2();
         var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
         var mouseIsDown = currentMouseState.IsButtonDown(MouseButton.LeftButton);
         var isInsideSlider = this.sliderArea.Contains(mousePosVector);
@@ -122,7 +122,7 @@ public class Slider : Control
 
         this.label.Position = new Vector2(
             Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
-            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f))).ToPoint();
+            Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));
 
         base.Update();
     }

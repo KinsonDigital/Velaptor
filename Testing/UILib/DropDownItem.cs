@@ -50,7 +50,7 @@ public class DropDownItem : Control
     {
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
 
         this.background = new RectShape
         {

@@ -1,26 +1,27 @@
 using System.Drawing;
+using System.Numerics;
 
 public class Control : IControl
 {
     public static readonly string DefaultBoldFontName = "TimesNewRoman-Regular.ttf";
 
-    public virtual int Width { get; set; }
+    public virtual float Width { get; set; }
 
-    public virtual int Height { get; set; }
+    public virtual float Height { get; set; }
 
-    public virtual int HalfWidth => Width / 2;
+    public virtual float HalfWidth => Width / 2f;
 
-    public virtual int HalfHeight => Height / 2;
+    public virtual float HalfHeight => Height / 2f;
 
-    public virtual Point Position { get; set; }
+    public virtual Vector2 Position { get; set; }
 
-    public int Left => Position.X;
+    public float Left => Position.X;
 
-    public int Top => Position.Y;
+    public float Top => Position.Y;
 
-    public int Right => Position.X + Width;
+    public float Right => Position.X + Width;
 
-    public int Bottom => Position.Y + Height;
+    public float Bottom => Position.Y + Height;
 
     protected bool IsLoaded { get; set; }
 

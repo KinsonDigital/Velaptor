@@ -79,7 +79,7 @@ public class Option : Control
     {
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToScreen(BoxWidthHeight, BoxWidthHeight);
+        var scrnPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
 
         this.circle = new CircleShape
         {

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Numerics;
 using KdGui;
 using KdGui.Factories;
+using UILib;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -35,8 +36,12 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
+    private readonly UIContainer sliderContainer;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
+    private UIContainer mainContainer;
+    private Label lblRotate;
+    private Slider sldRotate;
     private string text = SingleLineText;
     private float renderSize = 1;
     private float angle;
@@ -51,6 +56,27 @@ public class TextRenderingScene : SceneBase
     {
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
+
+        this.mainContainer = new UIContainer();
+        // this.mainContainer.Position = new Point(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
+        this.mainContainer.Position = new Vector2(0, 0);
+        this.mainContainer.Width = 500;
+        this.mainContainer.Height = 500;
+
+        this.lblRotate = new Label();
+        this.lblRotate.Text = "Rotate:";
+        this.sldRotate = new Slider();
+
+        this.sliderContainer = new UIContainer();
+        this.sliderContainer.Position = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.sliderContainer.AutoSize = true;
+        this.sliderContainer.TitleBarVisible = true;
+        this.sliderContainer.BorderVisible = true;
+
+        this.sliderContainer.AddControl(this.lblRotate);
+        this.sliderContainer.AddControl(this.sldRotate);
+
+        this.mainContainer.AddControl(this.sliderContainer);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -65,6 +91,9 @@ public class TextRenderingScene : SceneBase
 
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, 12);
+
+        this.mainContainer.Load();
+        // this.sliderContainer.Load();
 
         // TODO: Remove this
         // var ctrlFactory = new ControlFactory();
@@ -160,7 +189,19 @@ public class TextRenderingScene : SceneBase
         // this.grpControls.Dispose();
         // this.grpControls = null;
 
+        this.mainContainer.Unload();
+        // this.sliderContainer.Unload();
+
         base.UnloadContent();
+    }
+
+    public override void Update(FrameTime frameTime)
+    {
+        this.mainContainer.Update();
+        this.mainContainer.Position = new Vector2(0, 0);
+        // this.sliderContainer.Update();
+
+        base.Update(frameTime);
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
@@ -186,6 +227,8 @@ public class TextRenderingScene : SceneBase
             this.angle,
             this.isBlue ? Color.CornflowerBlue : Color.White);
 
+        this.mainContainer.Render();
+        // this.sliderContainer.Render();
         // this.grpControls.Render();
 
         base.Render();

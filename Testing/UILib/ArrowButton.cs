@@ -9,7 +9,7 @@ using Velaptor.Input;
 
 public class ArrowButton : Control
 {
-    private float PaddingRatio = 0.5f;
+    private float paddingRatio = 0.5f;
     private readonly IShapeRenderer shapeRenderer;
     private readonly ILineRenderer lineRenderer;
     private readonly IAppInput<MouseState> mouse;
@@ -30,9 +30,9 @@ public class ArrowButton : Control
 
     public override void Update()
     {
-        PaddingRatio = 0.50f;
+        this.paddingRatio = 0.50f;
 
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
 
         this.face = new RectShape
         {
@@ -44,7 +44,7 @@ public class ArrowButton : Control
         };
 
         var currentMouseState = this.mouse.GetState();
-        var mousePos = currentMouseState.GetPosition();
+        var mousePos = currentMouseState.GetPosition().ToVector2();
         var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
         var mouseIsOver = this.face.Contains(mousePosVector);
 
@@ -74,10 +74,10 @@ public class ArrowButton : Control
     {
         this.shapeRenderer.Render(this.face, -10);
 
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
         var halfWidth = Width / 2f;
 
-        var leftPadding = this.PaddingRatio <= 0 ? halfWidth : halfWidth * this.PaddingRatio;
+        var leftPadding = this.paddingRatio <= 0 ? halfWidth : halfWidth * this.paddingRatio;
         var topLeft = new Vector2(scrnPos.X - leftPadding, scrnPos.Y - leftPadding);
         var topRight = new Vector2(scrnPos.X + leftPadding, scrnPos.Y - leftPadding);
         var bottomCenter = new Vector2(scrnPos.X, scrnPos.Y + leftPadding);

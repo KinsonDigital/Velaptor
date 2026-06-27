@@ -4,17 +4,17 @@ using UILib;
 
 public interface IControl : IRenderable, IUpdatable, ILoadable
 {
-    Point Position { get; set; }
+    Vector2 Position { get; set; }
 
-    int Width { get; set; }
+    float Width { get; set; }
 
-    int Height { get; set; }
+    float Height { get; set; }
 
-    int Left { get; }
+    float Left { get; }
 
-    int Top { get; }
+    float Top { get; }
 
-    int Right { get; }
+    float Right { get; }
 
-    int Bottom { get; }
+    float Bottom { get; }
 }

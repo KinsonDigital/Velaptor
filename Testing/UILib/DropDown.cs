@@ -42,7 +42,7 @@ public class DropDown : Control
 
         this.listArea = new RectShape
         {
-            Position = Position.ToVector2(),
+            Position = Position,
             Width = Width,
             Height = Height,
             Color = this.listAreaBackgroundClr,
@@ -110,7 +110,7 @@ public class DropDown : Control
     {
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
 
         this.selectedItemArea = new RectShape
         {
@@ -123,7 +123,7 @@ public class DropDown : Control
 
         this.arrowBtn.Position = new Vector2(
             scrnPos.X + (this.selectedItemArea.HalfWidth - this.arrowBtn.Width),
-            scrnPos.Y - this.selectedItemArea.HalfHeight).ToPoint();
+            scrnPos.Y - this.selectedItemArea.HalfHeight);
         this.arrowBtn.Update();
 
         if (this.listItems.Count >= 1)
@@ -140,7 +140,7 @@ public class DropDown : Control
                 var item = this.listItems[i];
                 item.Position = new Vector2(
                         Position.X,
-                        Position.Y + (Height * (i + 1)) + ListDividerHeight).ToPoint();
+                        Position.Y + (Height * (i + 1)) + ListDividerHeight);
 
                 if (this.selectedItemText == item.Text)
                 {

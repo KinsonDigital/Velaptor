@@ -45,16 +45,16 @@ public class Label : Control
         }
     }
 
-    public override int Width
+    public override float Width
     {
         get => base.Width;
-        set => base.Width = value >= TextSize.Width ? value : (int)TextSize.Width;
+        set => base.Width = value >= TextSize.Width ? value : TextSize.Width;
     }
 
-    public override int Height
+    public override float Height
     {
         get => base.Height;
-        set => base.Height = value >= TextSize.Height ? value : (int)TextSize.Height;
+        set => base.Height = value >= TextSize.Height ? value : TextSize.Height;
     }
 
     public SizeF TextSize { get; private set; }
@@ -89,7 +89,7 @@ public class Label : Control
 
     public override void Update()
     {
-        var scrnPos = Position.ToScreen(Width, Height);
+        var scrnPos = Position.ToWorld(Width, Height);
 
         var currentMouseState = this.mouse.GetState();
 
@@ -119,7 +119,13 @@ public class Label : Control
 
     public override void Render(int layer = 0)
     {
-        var scrnPos = Position.ToScreen(TextSize.Width, TextSize.Height);
+        // TODO: Add this if block with exception to all control render calls
+        if (!this.isLoaded)
+        {
+            throw new InvalidOperationException($"The {nameof(Label)} must be loaded before it can be rendered.");
+        }
+
+        var scrnPos = Position.ToWorld(TextSize.Width, TextSize.Height);
         scrnPos.Y += 1; // Slightly offset the text to ensure the top of the text is not past the top of the label's rectangle area
 
         if (BackgroundColor != Color.Transparent)
