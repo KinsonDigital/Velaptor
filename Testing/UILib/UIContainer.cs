@@ -72,9 +72,14 @@ public class UIContainer : Control
 
     public override float Height
     {
-        get => TitleBarVisible
-            ? this.titleBar.Height + this.area.Height
-            : this.area.Height;
+        get
+        {
+            var borderHeight = BorderVisible ? BorderThickness : 0f;
+
+            return TitleBarVisible
+                ? TitleBarHeight + this.area.Height + borderHeight
+                : this.area.Height + (borderHeight * 2f);
+        }
         set
         {
             if (AutoSize)
@@ -82,14 +87,16 @@ public class UIContainer : Control
                 return;
             }
 
-            // if (TitleBarVisible)
-            // {
-            //     this.area.Height = value - TitleBarHeight;
-            // }
-            // else
-            // {
-            //     this.area.Height = value;
-            // }
+            var borderHeight = BorderVisible ? BorderThickness : 0f;
+
+            if (TitleBarVisible)
+            {
+                this.area.Height = value - TitleBarHeight - borderHeight;
+            }
+            else
+            {
+                this.area.Height = value - (borderHeight * 2f);
+            }
         }
     }
 
@@ -111,16 +118,6 @@ public class UIContainer : Control
     public bool AutoSize { get; set; } = false;
 
     public bool TitleBarVisible { get; set; } = true;
-
-    // public bool TitleBarVisible
-    // {
-    //     get => this.titleBarVisible;
-    //     set
-    //     {
-    //         this.titleBarVisible = value;
-    //         this.area.Height = value ? 
-    //     }
-    // }
 
     public bool BorderVisible { get; set; } = true;
 
@@ -161,6 +158,9 @@ public class UIContainer : Control
 
     public override void Update()
     {
+        // Process drag first — may change logicalPosition/baseAreaTop
+        ProcessDragState();
+
         // Resolve area center position from logical (top-left) coordinates + current dimensions.
         // Deferred here so that Width/Height set after Position still produce correct results.
         this.area.Position = this.logicalPosition.ToWorld(this.area.Width, this.area.Height);
@@ -198,7 +198,6 @@ public class UIContainer : Control
 
         ProcessLayout();
         ProcessBorder();
-        ProcessDragState();
     }
 
     public override void Render(int layer = 0)
@@ -216,7 +215,11 @@ public class UIContainer : Control
             this.lineRenderer.Render(this.leftLine, -100);
             this.lineRenderer.Render(this.bottomLine, -100);
             this.lineRenderer.Render(this.rightLine, -100);
-            this.lineRenderer.Render(this.topLine, -100);
+
+            if (!TitleBarVisible)
+            {
+                this.lineRenderer.Render(this.topLine, -100);
+            }
         }
 
         // Render all of the controls
@@ -307,7 +310,8 @@ public class UIContainer : Control
         if (this.isDragging && currentMouseState.IsButtonDown(MouseButton.LeftButton))
         {
             var delta = mousePos - this.lastMousePos;
-            Position += delta;
+            this.logicalPosition += delta;
+            this.baseAreaTop = this.logicalPosition.Y;
             this.lastMousePos = mousePos;
         }
 
@@ -334,29 +338,28 @@ public class UIContainer : Control
         // internally and overlapping any of the edges of controls when rendering
 
         const float halfBorderThickness = BorderThickness / 2f;
-
-        var topBottomOffset = TitleBarVisible ? TitleBarHeight : 0f;
+        var titleBarOffset = TitleBarVisible ? TitleBarHeight : 0f;
 
         this.leftLine = new Line
         {
-            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top - topBottomOffset),
-            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom - topBottomOffset),
+            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top - titleBarOffset),
+            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.bottomLine = new Line
         {
-            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness - topBottomOffset),
-            P2 = new Vector2(this.area.Right + BorderThickness, this.area.Bottom + halfBorderThickness - topBottomOffset),
+            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness),
+            P2 = new Vector2(this.area.Right + BorderThickness, this.area.Bottom + halfBorderThickness),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.rightLine = new Line
         {
-            P1 = new Vector2(this.area.Right + halfBorderThickness, this.area.Bottom - topBottomOffset),
-            P2 = new Vector2(this.area.Right + halfBorderThickness, this.area.Top - topBottomOffset),
+            P1 = new Vector2(this.area.Right + halfBorderThickness, this.area.Bottom),
+            P2 = new Vector2(this.area.Right + halfBorderThickness, this.area.Top - titleBarOffset),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
