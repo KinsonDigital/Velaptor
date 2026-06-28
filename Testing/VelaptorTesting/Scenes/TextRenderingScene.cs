@@ -62,6 +62,7 @@ public class TextRenderingScene : SceneBase
         this.mainContainer.Position = new Vector2(0, 0);
         this.mainContainer.Width = 500;
         this.mainContainer.Height = 500;
+        this.mainContainer.Draggable = true;
 
         this.lblRotate = new Label();
         this.lblRotate.Text = "Rotate:";

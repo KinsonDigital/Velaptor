@@ -278,23 +278,17 @@ public class UIContainer : Control
     {
         if (!Draggable || !TitleBarVisible)
         {
-            // return;
+            return;
         }
 
         var currentMouseState = this.mouse.GetState();
         var mousePos = currentMouseState.GetPosition().ToVector2();
-
-        // DEBUG / REMOVE ME
-        if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
-        {
-        }
 
         // Start dragging if the left mouse button is pressed while in the title bar
         if (currentMouseState.IsButtonDown(MouseButton.LeftButton) &&
             this.prevMouseState.IsButtonUp(MouseButton.LeftButton) &&
             this.titleBar.Contains(mousePos))
         {
-            TitleBarVisible = !TitleBarVisible;
             this.isDragging = true;
             this.lastMousePos = mousePos;
         }
