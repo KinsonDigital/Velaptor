@@ -32,6 +32,7 @@ public class UIContainer : Control
     private Line topLine;
     private Line bottomLine;
     private bool isDragging;
+    private float baseAreaTop;
 
     public UIContainer()
     {
@@ -48,6 +49,8 @@ public class UIContainer : Control
             Color = this.areaClr,
             IsSolid = true,
         };
+
+        this.baseAreaTop = this.area.Top;
     }
 
     public string Title { get; set; }
@@ -92,7 +95,11 @@ public class UIContainer : Control
     public override Vector2 Position
     {
         get => this.area.Position;
-        set => this.area.Position = value.ToWorld(this.area.Width, this.area.Height);
+        set
+        {
+            this.area.Position = value.ToWorld(this.area.Width, this.area.Height);
+            this.baseAreaTop = this.area.Top;
+        }
     }
 
     public bool AutoSize { get; set; } = false;
@@ -148,9 +155,22 @@ public class UIContainer : Control
 
     public override void Update()
     {
+        // Position area based on title bar visibility
+        if (TitleBarVisible)
+        {
+            // Stack: title bar at the top, area sits below it
+            this.area.Top = this.baseAreaTop + TitleBarHeight;
+        }
+        else
+        {
+            // No title bar: area fills the entire container from the top
+            this.area.Top = this.baseAreaTop;
+        }
+
+        // Create title bar at the container top (always created for bounds/border calcs)
         this.titleBar = new RectShape
         {
-            Position = new Vector2(Position.X, Position.Y - (this.area.HalfHeight - TitleBarHalfHeight)),
+            Position = new Vector2(this.area.Position.X, this.baseAreaTop + TitleBarHalfHeight),
             Width = Width,
             Height = TitleBarHeight,
             Color = this.titleBarClr,
@@ -198,7 +218,7 @@ public class UIContainer : Control
 
     private void ProcessLayout()
     {
-        var titleBarBottomLeftCorner = new Vector2(this.titleBar.Left, this.titleBar.Bottom);
+        var layoutOrigin = new Vector2(this.area.Left, this.area.Top);
         var maxRight = 0f;
         var maxBottom = 0f;
 
@@ -212,27 +232,27 @@ public class UIContainer : Control
                 case StackDirection.Horizontal:
                     if (i == 0)
                     {
-                        control.Position = titleBarBottomLeftCorner + new Vector2(ControlLeftPadding, ControlTopPadding);
+                        control.Position = layoutOrigin + new Vector2(ControlLeftPadding, ControlTopPadding);
                     }
                     else
                     {
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
                             prevControl.Right + ControlLeftPadding,
-                            titleBarBottomLeftCorner.Y + ControlTopPadding);
+                            layoutOrigin.Y + ControlTopPadding);
                     }
 
                     break;
                 case StackDirection.Vertical:
                     if (i == 0)
                     {
-                        control.Position = titleBarBottomLeftCorner + new Vector2(ControlLeftPadding, ControlTopPadding);
+                        control.Position = layoutOrigin + new Vector2(ControlLeftPadding, ControlTopPadding);
                     }
                     else
                     {
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
-                            titleBarBottomLeftCorner.X + ControlLeftPadding,
+                            layoutOrigin.X + ControlLeftPadding,
                             prevControl.Bottom + ControlTopPadding);
                     }
 
@@ -311,34 +331,36 @@ public class UIContainer : Control
 
         const float halfBorderThickness = BorderThickness / 2f;
 
+        var topBottomOffset = TitleBarVisible ? TitleBarHeight : 0f;
+
         this.leftLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Left - halfBorderThickness, this.titleBar.Bottom),
-            P2 = new Vector2(this.titleBar.Left - halfBorderThickness, this.area.Bottom),
+            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top - topBottomOffset),
+            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom - topBottomOffset),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.bottomLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness),
-            P2 = new Vector2(this.titleBar.Right + BorderThickness, this.area.Bottom + halfBorderThickness),
+            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness - topBottomOffset),
+            P2 = new Vector2(this.area.Right + BorderThickness, this.area.Bottom + halfBorderThickness - topBottomOffset),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.rightLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Right + halfBorderThickness, this.area.Bottom),
-            P2 = new Vector2(this.titleBar.Right + halfBorderThickness, this.titleBar.Bottom),
+            P1 = new Vector2(this.area.Right + halfBorderThickness, this.area.Bottom - topBottomOffset),
+            P2 = new Vector2(this.area.Right + halfBorderThickness, this.area.Top - topBottomOffset),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.topLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Right + halfBorderThickness, this.titleBar.Bottom),
-            P2 = new Vector2(this.titleBar.Left - halfBorderThickness, this.titleBar.Bottom),
+            P1 = new Vector2(this.area.Right + halfBorderThickness, this.area.Top),
+            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
