@@ -29,6 +29,7 @@ public class UIContainer : Control
     private Vector2 lastMousePos;
     private Line leftLine;
     private Line rightLine;
+    private Line topLine;
     private Line bottomLine;
     private bool isDragging;
 
@@ -54,22 +55,37 @@ public class UIContainer : Control
     public override float Width
     {
         get => this.area.Width;
-        set => this.area.Width = value;
+        set
+        {
+            if (AutoSize)
+            {
+                return;
+            }
+
+            this.area.Width = value;
+        }
     }
 
     public override float Height
     {
-        get => TitleBarVisible ? this.titleBar.Height + this.area.Height : this.area.Height;
+        get => TitleBarVisible
+            ? this.titleBar.Height + this.area.Height
+            : this.area.Height;
         set
         {
-            if (TitleBarVisible)
+            if (AutoSize)
             {
-                this.area.Height = value - this.titleBar.Height;
+                return;
             }
-            else
-            {
-                this.area.Height = value;
-            }
+
+            // if (TitleBarVisible)
+            // {
+            //     this.area.Height = value - TitleBarHeight;
+            // }
+            // else
+            // {
+            //     this.area.Height = value;
+            // }
         }
     }
 
@@ -82,6 +98,16 @@ public class UIContainer : Control
     public bool AutoSize { get; set; } = false;
 
     public bool TitleBarVisible { get; set; } = true;
+
+    // public bool TitleBarVisible
+    // {
+    //     get => this.titleBarVisible;
+    //     set
+    //     {
+    //         this.titleBarVisible = value;
+    //         this.area.Height = value ? 
+    //     }
+    // }
 
     public bool BorderVisible { get; set; } = true;
 
@@ -160,6 +186,7 @@ public class UIContainer : Control
             this.lineRenderer.Render(this.leftLine, -100);
             this.lineRenderer.Render(this.bottomLine, -100);
             this.lineRenderer.Render(this.rightLine, -100);
+            this.lineRenderer.Render(this.topLine, -100);
         }
 
         // Render all of the controls
@@ -220,8 +247,10 @@ public class UIContainer : Control
 
         if (AutoSize)
         {
-            Width = maxRight - (float)Math.Round(Position.X, 0) + ControlLeftPadding;
-            Height = maxBottom - (float)Math.Round(Position.Y, 0) + ControlTopPadding;
+            AutoSize = false;
+            Width = maxRight;
+            Height = maxBottom;
+            AutoSize = true;
         }
     }
 
@@ -229,17 +258,23 @@ public class UIContainer : Control
     {
         if (!Draggable || !TitleBarVisible)
         {
-            return;
+            // return;
         }
 
         var currentMouseState = this.mouse.GetState();
         var mousePos = currentMouseState.GetPosition().ToVector2();
+
+        // DEBUG / REMOVE ME
+        if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+        {
+        }
 
         // Start dragging if the left mouse button is pressed while in the title bar
         if (currentMouseState.IsButtonDown(MouseButton.LeftButton) &&
             this.prevMouseState.IsButtonUp(MouseButton.LeftButton) &&
             this.titleBar.Contains(mousePos))
         {
+            TitleBarVisible = !TitleBarVisible;
             this.isDragging = true;
             this.lastMousePos = mousePos;
         }
@@ -274,26 +309,36 @@ public class UIContainer : Control
         // the border as long as the border is set to visible.  This is to prevent half of the border being rendered
         // internally and overlapping any of the edges of controls when rendering
 
+        const float halfBorderThickness = BorderThickness / 2f;
+
         this.leftLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Left + (BorderThickness / 2f), this.titleBar.Bottom),
-            P2 = new Vector2(this.titleBar.Left + (BorderThickness / 2f), this.area.Bottom),
+            P1 = new Vector2(this.titleBar.Left - halfBorderThickness, this.titleBar.Bottom),
+            P2 = new Vector2(this.titleBar.Left - halfBorderThickness, this.area.Bottom),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.bottomLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Left, this.area.Bottom - (BorderThickness / 2f)),
-            P2 = new Vector2(this.titleBar.Right, this.area.Bottom - (BorderThickness / 2f)),
+            P1 = new Vector2(this.titleBar.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness),
+            P2 = new Vector2(this.titleBar.Right + BorderThickness, this.area.Bottom + halfBorderThickness),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
 
         this.rightLine = new Line
         {
-            P1 = new Vector2(this.titleBar.Right - (BorderThickness / 2f), this.area.Bottom),
-            P2 = new Vector2(this.titleBar.Right - (BorderThickness / 2f), this.titleBar.Bottom),
+            P1 = new Vector2(this.titleBar.Right + halfBorderThickness, this.area.Bottom),
+            P2 = new Vector2(this.titleBar.Right + halfBorderThickness, this.titleBar.Bottom),
+            Color = this.borderClr,
+            Thickness = BorderThickness,
+        };
+
+        this.topLine = new Line
+        {
+            P1 = new Vector2(this.titleBar.Right + halfBorderThickness, this.titleBar.Bottom),
+            P2 = new Vector2(this.titleBar.Left - halfBorderThickness, this.titleBar.Bottom),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };

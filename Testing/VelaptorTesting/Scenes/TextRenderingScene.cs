@@ -76,7 +76,7 @@ public class TextRenderingScene : SceneBase
         this.sliderContainer.AddControl(this.lblRotate);
         this.sliderContainer.AddControl(this.sldRotate);
 
-        this.mainContainer.AddControl(this.sliderContainer);
+        // this.mainContainer.AddControl(this.sliderContainer);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -198,7 +198,7 @@ public class TextRenderingScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         this.mainContainer.Update();
-        this.mainContainer.Position = new Vector2(0, 0);
+        this.mainContainer.Position = new Vector2(50, 50);
         // this.sliderContainer.Update();
 
         base.Update(frameTime);
