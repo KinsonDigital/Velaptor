@@ -25,6 +25,7 @@ public class UIContainer : Control
     private readonly Color areaClr = Color.FromArgb(255, 17, 17, 17);
     private RectShape area;
     private RectShape titleBar;
+    private Vector2 logicalPosition;
     private MouseState prevMouseState;
     private Vector2 lastMousePos;
     private Line leftLine;
@@ -50,7 +51,7 @@ public class UIContainer : Control
             IsSolid = true,
         };
 
-        this.baseAreaTop = this.area.Top;
+        this.baseAreaTop = this.logicalPosition.Y;
     }
 
     public string Title { get; set; }
@@ -94,11 +95,16 @@ public class UIContainer : Control
 
     public override Vector2 Position
     {
-        get => this.area.Position;
+        get => this.logicalPosition;
         set
         {
+            this.logicalPosition = value;
+            this.baseAreaTop = value.Y;
+
+            // Resolve the area position immediately using current width/height.
+            // This is correct if width/height were set before position.
+            // If not, Update() will re-resolve with the current dimensions.
             this.area.Position = value.ToWorld(this.area.Width, this.area.Height);
-            this.baseAreaTop = this.area.Top;
         }
     }
 
@@ -155,7 +161,11 @@ public class UIContainer : Control
 
     public override void Update()
     {
-        // Position area based on title bar visibility
+        // Resolve area center position from logical (top-left) coordinates + current dimensions.
+        // Deferred here so that Width/Height set after Position still produce correct results.
+        this.area.Position = this.logicalPosition.ToWorld(this.area.Width, this.area.Height);
+
+        // Position area based on title bar visibility (overrides Y from resolution above)
         if (TitleBarVisible)
         {
             // Stack: title bar at the top, area sits below it

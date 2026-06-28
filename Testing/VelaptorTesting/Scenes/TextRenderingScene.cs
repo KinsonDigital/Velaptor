@@ -58,10 +58,10 @@ public class TextRenderingScene : SceneBase
         this.backgroundManager = new BackgroundManager();
 
         this.mainContainer = new UIContainer();
-        // this.mainContainer.Position = new Point(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
-        this.mainContainer.Position = new Vector2(0, 0);
+        this.mainContainer.Position = new Vector2(50, 50);
         this.mainContainer.Width = 500;
         this.mainContainer.Height = 500;
+        // this.mainContainer.Position = new Point(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
         this.mainContainer.Draggable = true;
 
         this.lblRotate = new Label();
@@ -199,7 +199,6 @@ public class TextRenderingScene : SceneBase
     public override void Update(FrameTime frameTime)
     {
         this.mainContainer.Update();
-        this.mainContainer.Position = new Vector2(50, 50);
         // this.sliderContainer.Update();
 
         base.Update(frameTime);
