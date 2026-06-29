@@ -87,11 +87,6 @@ public class WebGPUTestingScene : SceneBase
         this.dropdown.AddItem("Item 7");
         this.dropdown.AddItem("Item 8");
 
-        this.container.AddControl(this.checkbox);
-        this.container.AddControl(this.otherCheckbox);
-        this.container.AddControl(this.slider);
-        this.container.AddControl(this.button);
-        this.container.AddControl(this.label);
     }
 
     public override void LoadContent()

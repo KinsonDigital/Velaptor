@@ -19,6 +19,8 @@ public class Slider : Control
     private bool isDragging;
     private bool wasMouseDownLastFrame;
 
+    public event EventHandler<ValueChangedEventArgs>? ValueChanged;
+
     public Slider()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -29,7 +31,7 @@ public class Slider : Control
         Height = 30;
     }
 
-    public float Value { get; set; } = 50f;
+    public float Value { get; set; }
 
     public float Min { get; set; } = 0f;
 
@@ -89,12 +91,16 @@ public class Slider : Control
                 ? this.sliderArea.Right - HandleHalfWidth
                 : this.handlePos.X;
 
+            var oldValue = Value;
+
             var newValue = CalcNewValue(this.handlePos.X);
             Value = newValue < Min
                 ? (float)Math.Round((float)Min, 2)
                 : newValue > Max
                     ? (float)Math.Round((float)Max, 2)
                     : (float)Math.Round((float)newValue, 2);
+
+            ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, Value));
         }
         else
         {

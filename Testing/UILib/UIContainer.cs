@@ -17,7 +17,7 @@ public class UIContainer : Control
     private readonly ILineRenderer lineRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label titleBarText;
-    private readonly List<IControl> controls = new();
+    private readonly List<Layout> controls = new ();
     private readonly Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
     private readonly Color borderClr = Color.FromArgb(255, 45, 74, 117);
     private RectShape area;
@@ -146,7 +146,7 @@ public class UIContainer : Control
 
     public bool Centered { get; set; } = false;
 
-    public void AddControl(IControl control)
+    public void AddControl(Layout control)
     {
         ArgumentNullException.ThrowIfNull(control);
 
@@ -217,7 +217,7 @@ public class UIContainer : Control
             this.titleBarText.Update();
         }
 
-        ProcessLayout();
+        // ProcessLayout();
         ProcessBorder();
     }
 

@@ -25,6 +25,8 @@ public class CheckBox : Control
     private string text = "Check box";
     private IFont font;
 
+    public event EventHandler<CheckChangedEventArgs>? CheckedChanged;
+
     public CheckBox()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -117,6 +119,7 @@ public class CheckBox : Control
         if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
         {
             IsChecked = !IsChecked;
+            CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
         }
 
         this.prevMouseState = currentMouseState;

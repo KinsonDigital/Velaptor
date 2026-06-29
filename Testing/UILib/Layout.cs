@@ -42,19 +42,7 @@ public class Layout : Control
 
     public string Title { get; set; }
 
-    public override float Width
-    {
-        get => this.area.Width;
-        set// TODO: This should go away
-        {
-            if (AutoSize)
-            {
-                return;
-            }
-
-            this.area.Width = value;
-        }
-    }
+    public override float Width => this.area.Width;
 
     public override float Height
     {
@@ -63,17 +51,6 @@ public class Layout : Control
             var borderHeight = DebugBorderVisible ? BorderThickness : 0f;
 
             return this.area.Height + (borderHeight * 2f);
-        }
-        set // TODO: This should go away
-        {
-            if (AutoSize)
-            {
-                return;
-            }
-
-            var borderHeight = DebugBorderVisible ? BorderThickness : 0f;
-
-            this.area.Height = value - (borderHeight * 2f);
         }
     }
 
@@ -98,11 +75,9 @@ public class Layout : Control
         set => this.area.Color = value;
     }
 
-    public bool AutoSize { get; set; } = false;
+    public bool DebugBorderVisible { get; set; }
 
-    public bool DebugBorderVisible { get; set; } = true;
-
-    public int AreaPadding { get; set; } = 10;
+    public int AreaPadding { get; set; }
 
     public int HorizontalSpacing
     {
@@ -258,29 +233,22 @@ public class Layout : Control
             control.Update();
         }
 
-        if (AutoSize)
+        switch (StackDirection)
         {
-            AutoSize = false;
+            case StackDirection.Horizontal:
+                var horizontalPaddingEachSide = AreaPadding * 2;
+                var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
 
-            switch (StackDirection)
-            {
-                case StackDirection.Horizontal:
-                    var horizontalPaddingEachSide = AreaPadding * 2;
-                    var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
+                this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + totalHorizontalSpacing);
+                this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
+                break;
+            case StackDirection.Vertical:
+                var verticalPaddingEachSide = AreaPadding * 2;
+                var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
 
-                    this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + totalHorizontalSpacing);
-                    this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
-                    break;
-                case StackDirection.Vertical:
-                    var verticalPaddingEachSide = AreaPadding * 2;
-                    var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
-
-                    this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
-                    this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + totalVerticalSpacing);
-                    break;
-            }
-
-            AutoSize = true;
+                this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
+                this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + totalVerticalSpacing);
+                break;
         }
     }
 

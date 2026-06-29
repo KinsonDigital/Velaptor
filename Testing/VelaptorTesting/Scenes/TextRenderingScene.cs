@@ -36,7 +36,10 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private readonly Layout layRotate;
+    private readonly Layout layMain;
+    private Slider sldRenderSize;
+    private Layout layRenderSize;
+    private Layout layRotate;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private UIContainer mainContainer;
@@ -48,8 +51,10 @@ public class TextRenderingScene : SceneBase
     private bool isBlue;
     private bool isFirstRender = true;
     private string currentChosenFontFileName = $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf";
-    private Label lblOther1;
-    private Button btnOther2;
+    private Label lblRenderSize;
+    private Label lblSingleLine;
+    private CheckBox chkSingleLine;
+    private Layout laySingleLine;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
@@ -63,37 +68,18 @@ public class TextRenderingScene : SceneBase
         this.mainContainer.Position = new Vector2(50, 50);
         this.mainContainer.Width = 500;
         this.mainContainer.Height = 500;
-        // this.mainContainer.Position = new Point(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
+        this.mainContainer.Position = new Vector2(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
         this.mainContainer.Draggable = true;
 
-        this.lblRotate = new Label();
-        this.lblRotate.Text = "Rotate:";
+        CreateRotateCtrls();
+        CreateRenderSizeCtrls();
+        CreateSingleLineCtrls();
 
-        this.lblOther1 = new Label();
-        this.lblOther1.Text = "Other 1:";
+        this.layMain = new Layout();
+        this.layMain.AddControl(this.layRotate);
+        this.layMain.AddControl(this.layRenderSize);
 
-        this.btnOther2 = new Button();
-        this.btnOther2.Text = "Other 2:";
-
-        this.sldRotate = new Slider();
-
-        this.layRotate = new Layout();
-        this.layRotate.Position = new Vector2(WindowCenter.X, WindowCenter.Y);
-        this.layRotate.AutoSize = true;
-        this.layRotate.DebugBorderVisible = false;
-        this.layRotate.StackDirection = StackDirection.Vertical;
-        this.layRotate.Centered = true;
-        // this.sliderContainer.AreaPadding = 0;
-        // this.sliderContainer.VerticalSpacing = 0;
-        // this.sliderContainer.HorizontalSpacing = 0;
-        this.layRotate.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
-
-        this.layRotate.AddControl(this.lblRotate);
-        this.layRotate.AddControl(this.sldRotate);
-        this.layRotate.AddControl(this.lblOther1);
-        this.layRotate.AddControl(this.btnOther2);
-
-        this.mainContainer.AddControl(this.layRotate);
+        this.mainContainer.AddControl(this.layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -253,5 +239,59 @@ public class TextRenderingScene : SceneBase
         // this.grpControls.Render();
 
         base.Render();
+    }
+
+    private void CreateRotateCtrls()
+    {
+        this.lblRotate = new Label();
+        this.lblRotate.Text = "Rotate:";
+
+        this.sldRotate = new Slider();
+        this.sldRotate.Max = 360f;
+        this.sldRotate.ValueChanged += (_, e) => this.angle = e.NewValue;
+
+        this.layRotate = new Layout();
+        this.layRotate.StackDirection = StackDirection.Horizontal;
+        this.layRotate.Centered = true;
+        this.layRotate.HorizontalSpacing = 5;
+        this.layRotate.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
+
+        this.layRotate.AddControl(this.lblRotate);
+        this.layRotate.AddControl(this.sldRotate);
+    }
+
+    private void CreateRenderSizeCtrls()
+    {
+        this.lblRenderSize = new Label();
+        this.lblRenderSize.Text = "Render Size:";
+
+        this.sldRenderSize = new Slider();
+
+        this.layRenderSize = new Layout();
+        this.layRenderSize.StackDirection = StackDirection.Horizontal;
+        this.layRenderSize.Centered = true;
+        this.layRenderSize.HorizontalSpacing = 5;
+        this.layRenderSize.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
+
+        this.layRenderSize.AddControl(this.lblRenderSize);
+        this.layRenderSize.AddControl(this.sldRenderSize);
+    }
+
+    private void CreateSingleLineCtrls()
+    {
+        this.lblSingleLine = new Label();
+        this.lblSingleLine.Text = "Single-Line:";
+
+        this.chkSingleLine = new CheckBox();
+        this.chkSingleLine.CheckedChanged += (_, e) => this.text = e.IsChecked ? SingleLineText : this.multiLineText;
+
+        this.laySingleLine = new Layout();
+        this.laySingleLine.StackDirection = StackDirection.Horizontal;
+        this.laySingleLine.Centered = true;
+        this.laySingleLine.HorizontalSpacing = 5;
+        this.laySingleLine.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
+
+        this.laySingleLine.AddControl(this.lblSingleLine);
+        this.laySingleLine.AddControl(this.chkSingleLine);
     }
 }
