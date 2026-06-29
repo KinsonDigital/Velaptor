@@ -142,7 +142,7 @@ public class UIContainer : Control
         set => this.verticalSpacing = value;
     }
 
-    public Layout Layout { get; set; } = new Layout { LayoutGroup = 0, StackDirection = StackDirection.Vertical };
+    public LayoutSettings Layout { get; set; } = new LayoutSettings { LayoutGroup = 0, StackDirection = StackDirection.Vertical };
 
     public bool Centered { get; set; } = false;
 

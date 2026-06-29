@@ -82,7 +82,7 @@ public class TextRenderingScene : SceneBase
         this.sliderContainer.AutoSize = true;
         this.sliderContainer.TitleBarVisible = false;
         this.sliderContainer.BorderVisible = false;
-        this.sliderContainer.Layout = new Layout { StackDirection = StackDirection.Vertical };
+        this.sliderContainer.Layout = new LayoutSettings { StackDirection = StackDirection.Vertical };
         this.sliderContainer.Centered = true;
         // this.sliderContainer.AreaPadding = 0;
         // this.sliderContainer.VerticalSpacing = 0;
