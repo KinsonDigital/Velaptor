@@ -45,6 +45,12 @@ public class Label : Control
         }
     }
 
+    public override Vector2 Position
+    {
+        get => new Vector2(base.Position.X, base.Position.Y);
+        set => base.Position = new Vector2(value.X, value.Y);
+    }
+
     public override float Width
     {
         get => base.Width;
@@ -53,7 +59,7 @@ public class Label : Control
 
     public override float Height
     {
-        get => base.Height;
+        get => base.Height + 1;
         set => base.Height = value >= TextSize.Height ? value : TextSize.Height;
     }
 

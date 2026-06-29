@@ -12,8 +12,6 @@ public class UIContainer : Control
     private const int TitleBarLeftTextPadding = 5;
     private const int TitleBarHeight = 30;
     private const int TitleBarHalfHeight = TitleBarHeight / 2;
-    private const int ControlLeftPadding = 10;
-    private const int ControlTopPadding = 10;
     private const float BorderThickness = 3f;
     private readonly IShapeRenderer shapeRenderer;
     private readonly ILineRenderer lineRenderer;
@@ -34,6 +32,8 @@ public class UIContainer : Control
     private Line bottomLine;
     private bool isDragging;
     private float baseAreaTop;
+    private int verticalSpacing = 10;
+    private int horizontalSpacing = 10;
 
     public UIContainer()
     {
@@ -123,7 +123,23 @@ public class UIContainer : Control
 
     public bool Draggable { get; set; }
 
+    public int AreaPadding { get; set; } = 10;
+
+    public int HorizontalSpacing
+    {
+        get => this.horizontalSpacing;
+        set => this.horizontalSpacing = value;
+    }
+
+    public int VerticalSpacing
+    {
+        get => this.verticalSpacing;
+        set => this.verticalSpacing = value;
+    }
+
     public Layout Layout { get; set; } = new Layout { LayoutGroup = 0, StackDirection = StackDirection.Vertical };
+
+    public bool Centered { get; set; } = false;
 
     public void AddControl(IControl control)
     {
@@ -232,57 +248,97 @@ public class UIContainer : Control
     private void ProcessLayout()
     {
         var layoutOrigin = new Vector2(this.area.Left, this.area.Top);
-        var maxRight = 0f;
-        var maxBottom = 0f;
+
+        var maxHeight = this.controls.Max(c => c.Height);
+
 
         // Update all of the controls
         for (var i = 0; i < this.controls.Count; i++)
         {
+            var isFirstItem = i == 0;
             var control = this.controls[i];
+            var overlapOffset = control is Label ? 1 : 0;
+            var centeredOffset = 0f;
 
             switch (Layout.StackDirection)
             {
                 case StackDirection.Horizontal:
-                    if (i == 0)
+                    if (Centered)
                     {
-                        control.Position = layoutOrigin + new Vector2(ControlLeftPadding, ControlTopPadding);
+                        centeredOffset = this.area.HalfHeight - (control.Height / 2f);
+                    }
+                    else
+                    {
+                        centeredOffset = 0f;
+                    }
+
+                    if (isFirstItem)
+                    {
+                        control.Position = new Vector2(AreaPadding + overlapOffset, AreaPadding);
+
+                        // Take centering into account
+                        control.Position = new Vector2(control.Position.X, centeredOffset);
+                        control.Position += layoutOrigin;
                     }
                     else
                     {
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
-                            prevControl.Right + ControlLeftPadding,
-                            layoutOrigin.Y + ControlTopPadding);
+                            prevControl.Right + this.horizontalSpacing + overlapOffset,
+                            layoutOrigin.Y + AreaPadding + centeredOffset);
                     }
 
                     break;
                 case StackDirection.Vertical:
-                    if (i == 0)
+                    if (Centered)
                     {
-                        control.Position = layoutOrigin + new Vector2(ControlLeftPadding, ControlTopPadding);
+                        centeredOffset = this.area.HalfWidth - (control.Width / 2f);
+                    }
+                    else
+                    {
+                        centeredOffset = 0f;
+                    }
+
+                    if (isFirstItem)
+                    {
+                        control.Position = new Vector2(AreaPadding + overlapOffset, AreaPadding);
+
+                        // Take centering into account
+                        control.Position = new Vector2(centeredOffset, control.Position.Y);
+                        control.Position += layoutOrigin;
                     }
                     else
                     {
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
-                            layoutOrigin.X + ControlLeftPadding,
-                            prevControl.Bottom + ControlTopPadding);
+                            layoutOrigin.X + AreaPadding + overlapOffset + centeredOffset,
+                            prevControl.Bottom + this.verticalSpacing + overlapOffset);
                     }
 
                     break;
             }
 
             control.Update();
-
-            maxRight = Math.Max(maxRight, control.Right);
-            maxBottom = Math.Max(maxBottom, control.Bottom);
         }
 
         if (AutoSize)
         {
             AutoSize = false;
-            Width = maxRight;
-            Height = maxBottom;
+
+            switch (Layout.StackDirection)
+            {
+                case StackDirection.Horizontal:
+                    var horizontalPaddingEachSide = AreaPadding * 2;
+                    this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + this.horizontalSpacing);
+                    this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
+                    break;
+                case StackDirection.Vertical:
+                    var verticalPaddingEachSide = AreaPadding * 2;
+                    this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
+                    this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + this.verticalSpacing);
+                    break;
+            }
+
             AutoSize = true;
         }
     }
@@ -350,7 +406,7 @@ public class UIContainer : Control
 
         this.bottomLine = new Line
         {
-            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom + halfBorderThickness),
+            P1 = new Vector2(this.area.Left - BorderThickness, this.area.Bottom + halfBorderThickness),
             P2 = new Vector2(this.area.Right + BorderThickness, this.area.Bottom + halfBorderThickness),
             Color = this.borderClr,
             Thickness = BorderThickness,
@@ -366,8 +422,8 @@ public class UIContainer : Control
 
         this.topLine = new Line
         {
-            P1 = new Vector2(this.area.Right + halfBorderThickness, this.area.Top),
-            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
+            P1 = new Vector2(this.area.Right + BorderThickness, this.area.Top - halfBorderThickness),
+            P2 = new Vector2(this.area.Left - BorderThickness, this.area.Top - halfBorderThickness),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
