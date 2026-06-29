@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
@@ -10,16 +11,22 @@ using Velaptor.Input;
 public class DropDown : Control
 {
     private const int ListDividerHeight = 5;
+    private const float PaddingRatio = 0.5f;
+    private const float ArrowButtonWidthHeight = 30f;
+    private const float ArrowButtonHalfWidthHeight = ArrowButtonWidthHeight / 2f;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
+    private readonly ILineRenderer lineRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly List<DropDownItem> listItems = [];
-    private readonly ArrowButton arrowBtn;
+    // private readonly ArrowButton arrowBtn;
     private readonly Color listAreaBackgroundClr = Color.FromArgb(255, 17, 17, 17);
-    private readonly Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
     private readonly Color hoverListItemClr = Color.FromArgb(255, 57, 124, 204);
+    private Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
     private RectShape selectedItemArea;
+    private RectShape arrowFace;
+    private Color arrowDefaultClr  = Color.FromArgb(255, 41, 72, 109);
     private string selectedItemText;
     private Vector2 selectedItemTextPos;
     private RectShape listArea;
@@ -28,14 +35,17 @@ public class DropDown : Control
     private IFont? font;
     private MouseState prevMouseState;
 
+    public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
+
     public DropDown()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
-        this.arrowBtn = new ArrowButton();
-        this.arrowBtn.Click += ArrowBtn_Click;
+        // this.arrowBtn = new ArrowButton();
+        // this.arrowBtn.Click += ArrowBtn_Click;
 
         Width = 200;
         Height = 30;
@@ -80,7 +90,7 @@ public class DropDown : Control
 
     public override void Load()
     {
-        this.arrowBtn.Load();
+        // this.arrowBtn.Load();
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
 
         foreach (var item in this.listItems)
@@ -94,8 +104,6 @@ public class DropDown : Control
 
     public override void Unload()
     {
-        this.arrowBtn.Click -= ArrowBtn_Click;
-        this.arrowBtn.Unload();
         this.contentManager.Unload(this.font);
 
         foreach (var item in this.listItems)
@@ -121,15 +129,40 @@ public class DropDown : Control
             IsSolid = true,
         };
 
-        this.arrowBtn.Position = new Vector2(
-            scrnPos.X + (this.selectedItemArea.HalfWidth - this.arrowBtn.Width),
-            scrnPos.Y - this.selectedItemArea.HalfHeight);
-        this.arrowBtn.Update();
+        this.arrowFace = new RectShape
+        {
+            Position = new Vector2(this.selectedItemArea.Right - ArrowButtonHalfWidthHeight, this.selectedItemArea.Top + ArrowButtonHalfWidthHeight),
+            Width = ArrowButtonWidthHeight,
+            Height = ArrowButtonWidthHeight,
+            Color = this.arrowDefaultClr,
+            IsSolid = true,
+        };
+
+        // this.arrowBtn.Update();
+
+        var mousePos = currentMouseState.GetPosition().ToVector2();
+        var isMouseOver = this.selectedItemArea.Contains(mousePos) || this.arrowFace.Contains(mousePos);
+
+        if (isMouseOver)
+        {
+            this.selectedItemArea.Color = this.selectedItemClr.IncreaseBrightness(0.4f);
+            this.arrowFace.Color = this.arrowFace.Color.IncreaseBrightness(0.4f);
+
+            if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+            {
+                this.isExpanded = !this.isExpanded;
+            }
+        }
+        else
+        {
+            this.selectedItemArea.Color = this.selectedItemClr;
+            this.arrowFace.Color = this.arrowDefaultClr;
+        }
 
         if (this.listItems.Count >= 1)
         {
             this.selectedItemTextPos = new Vector2(
-                Position.X + ((Width / 2f) - (this.arrowBtn.Width / 2f)),
+                Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
                 Position.Y + (Height / 2f));
         }
 
@@ -151,11 +184,10 @@ public class DropDown : Control
                     item.BackgroundColor = this.listAreaBackgroundClr;
                 }
 
-                var mousePos = currentMouseState.GetPosition().ToVector2();
                 var itemArea = new RectangleF(item.Position.X, item.Position.Y, item.Width, item.Height);
-                var isMouseOver = itemArea.Contains(mousePos.X, mousePos.Y);
+                var isMouseOverItem = itemArea.Contains(mousePos.X, mousePos.Y);
 
-                if (isMouseOver)
+                if (isMouseOverItem)
                 {
                     item.BackgroundColor = this.hoverListItemClr;
                 }
@@ -163,9 +195,6 @@ public class DropDown : Control
                 item.Update();
                 this.listItems[i] = item;
             }
-
-            // TODO: Remove
-            // this.listArea.Position = new Vector2(Position.X, scrnPos.Y + (Height * (i + 1)) + ListDividerHeight);
 
             this.listDividerRest = new RectShape
             {
@@ -185,9 +214,8 @@ public class DropDown : Control
     public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.selectedItemArea, -10);
-        this.arrowBtn.Render();
-        
-        // this.shapeRenderer.Render(this.listArea, -10);
+        this.shapeRenderer.Render(this.arrowFace, -10);
+        RenderArrowButton();
 
         if (Items.Count >= 1)
         {
@@ -199,12 +227,29 @@ public class DropDown : Control
                 {
                     item.Render();
                 }
-
-                // this.shapeRenderer.Render(this.listDividerRest, 10);
             }
         }
 
         base.Render(layer);
+    }
+
+    private void RenderArrowButton()
+    {
+        this.shapeRenderer.Render(this.arrowFace, -10);
+
+        var scrnPos = this.arrowFace.Position;//.ToWorld(Width, Height);
+        var halfWidth = this.arrowFace.Width / 2f;
+
+        var leftPadding = PaddingRatio <= 0 ? halfWidth : halfWidth * PaddingRatio;
+        var topLeft = new Vector2(scrnPos.X - leftPadding, scrnPos.Y - leftPadding);
+        var topRight = new Vector2(scrnPos.X + leftPadding, scrnPos.Y - leftPadding);
+        var bottomCenter = new Vector2(scrnPos.X, scrnPos.Y + leftPadding);
+
+        var arrowColor = Color.White;
+
+        this.lineRenderer.RenderLine(topLeft, topRight, arrowColor, 2, -9);
+        this.lineRenderer.RenderLine(topRight, bottomCenter, arrowColor, 2, -9);
+        this.lineRenderer.RenderLine(bottomCenter, topLeft, arrowColor, 2, -9);
     }
 
     private void ArrowBtn_Click(object? sender, EventArgs e)
@@ -216,7 +261,10 @@ public class DropDown : Control
     {
         if (sender is DropDownItem item)
         {
+            var oldItem = this.selectedItemText;
             this.selectedItemText = item.Text;
+
+            SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, this.selectedItemText));
         }
 
         this.isExpanded = false;

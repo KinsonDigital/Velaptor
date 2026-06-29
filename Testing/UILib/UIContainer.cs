@@ -17,9 +17,9 @@ public class UIContainer : Control
     private readonly ILineRenderer lineRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label titleBarText;
-    private readonly List<Layout> controls = new ();
     private readonly Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
     private readonly Color borderClr = Color.FromArgb(255, 45, 74, 117);
+    private Layout layout = new ();
     private RectShape area;
     private RectShape titleBar;
     private Vector2 logicalPosition;
@@ -146,21 +146,18 @@ public class UIContainer : Control
 
     public bool Centered { get; set; } = false;
 
-    public void AddControl(Layout control)
+    public void AddLayoutControl(Layout control)
     {
         ArgumentNullException.ThrowIfNull(control);
 
-        this.controls.Add(control);
+        this.layout = control;
     }
 
     public override void Load()
     {
         this.titleBarText.Load();
 
-        foreach (var control in this.controls)
-        {
-            control.Load();
-        }
+        this.layout.Load();
 
         base.Load();
     }
@@ -169,10 +166,7 @@ public class UIContainer : Control
     {
         this.titleBarText.Unload();
 
-        foreach (var control in this.controls)
-        {
-            control.Unload();
-        }
+        this.layout.Unload();
 
         base.Unload();
     }
@@ -217,7 +211,10 @@ public class UIContainer : Control
             this.titleBarText.Update();
         }
 
-        // ProcessLayout();
+        this.layout.Position = new Vector2(this.logicalPosition.X + AreaPadding, this.logicalPosition.Y + TitleBarHeight + AreaPadding);
+
+        this.layout.Update();
+
         ProcessBorder();
     }
 
@@ -244,116 +241,7 @@ public class UIContainer : Control
         }
 
         // Render all of the controls
-        foreach (var control in this.controls)
-        {
-            control.Render();
-        }
-    }
-
-    private void ProcessLayout()
-    {
-        var layoutOrigin = new Vector2(this.area.Left, this.area.Top);
-
-        var maxHeight = this.controls.Max(c => c.Height);
-
-
-        // Update all of the controls
-        for (var i = 0; i < this.controls.Count; i++)
-        {
-            var isFirstItem = i == 0;
-            var control = this.controls[i];
-            var overlapOffset = control is Label ? 1 : 0;
-            var centeredOffset = 0f;
-
-            switch (Layout.StackDirection)
-            {
-                case StackDirection.Horizontal:
-                    if (Centered)
-                    {
-                        centeredOffset = this.area.HalfHeight - (control.Height / 2f);
-                    }
-                    else
-                    {
-                        centeredOffset = 0f;
-                    }
-
-                    if (isFirstItem)
-                    {
-                        var posY = Centered ? centeredOffset : AreaPadding + overlapOffset;
-                        control.Position = new Vector2(AreaPadding, posY);
-
-                        // Take centering into account
-                        control.Position += layoutOrigin;
-                    }
-                    else
-                    {
-                        var posY = Centered ? centeredOffset : AreaPadding + overlapOffset;
-
-                        var prevControl = this.controls[i - 1];
-                        control.Position = new Vector2(
-                            prevControl.Right + this.horizontalSpacing + overlapOffset,
-                            layoutOrigin.Y + posY);
-                    }
-
-                    break;
-                case StackDirection.Vertical:
-                    if (Centered)
-                    {
-                        centeredOffset = this.area.HalfWidth - (control.Width / 2f);
-                    }
-                    else
-                    {
-                        centeredOffset = 0f;
-                    }
-
-                    if (isFirstItem)
-                    {
-                        var posX = Centered ? centeredOffset : AreaPadding + overlapOffset;
-                        control.Position = new Vector2(posX, AreaPadding);
-
-                        // Take centering into account
-                        control.Position += layoutOrigin;
-                    }
-                    else
-                    {
-                        var posX = Centered ? centeredOffset : AreaPadding + overlapOffset;
-
-                        var prevControl = this.controls[i - 1];
-                        control.Position = new Vector2(
-                            layoutOrigin.X + posX,
-                            prevControl.Bottom + this.verticalSpacing + overlapOffset);
-                    }
-
-                    break;
-            }
-
-            control.Update();
-        }
-
-        if (AutoSize)
-        {
-            AutoSize = false;
-
-            switch (Layout.StackDirection)
-            {
-                case StackDirection.Horizontal:
-                    var horizontalPaddingEachSide = AreaPadding * 2;
-                    var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
-
-                    this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + totalHorizontalSpacing);
-                    this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
-                    break;
-                case StackDirection.Vertical:
-                    var verticalPaddingEachSide = AreaPadding * 2;
-                    var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
-
-                    this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
-                    this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + totalVerticalSpacing);
-                    break;
-            }
-
-            AutoSize = true;
-        }
+        this.layout.Render();
     }
 
     private void ProcessDragState()

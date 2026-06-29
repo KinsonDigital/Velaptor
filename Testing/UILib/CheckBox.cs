@@ -17,7 +17,7 @@ public class CheckBox : Control
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
-    private RectShape box;
+    private RectShape mainArea;
     private Line mark1;
     private Line mark2;
     private Vector2 textPos;
@@ -68,7 +68,7 @@ public class CheckBox : Control
 
         var scrnPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
 
-        this.box = new RectShape
+        this.mainArea = new RectShape
         {
             Position = scrnPos,
             Width = BoxWidthHeight,
@@ -79,8 +79,8 @@ public class CheckBox : Control
 
         var mark1StartX = Position.X + MarkOffset;
         var mark1StartY = Position.Y + MarkOffset;
-        var mark1EndX = Position.X + (this.box.Width - MarkOffset);
-        var mark1EndY = Position.Y + (this.box.Height - MarkOffset);
+        var mark1EndX = Position.X + (this.mainArea.Width - MarkOffset);
+        var mark1EndY = Position.Y + (this.mainArea.Height - MarkOffset);
 
         this.mark1 = new Line
         {
@@ -90,10 +90,10 @@ public class CheckBox : Control
             Thickness = 3,
         };
 
-        var mark2StartX = Position.X + (this.box.Width - MarkOffset);
+        var mark2StartX = Position.X + (this.mainArea.Width - MarkOffset);
         var mark2StartY = Position.Y + MarkOffset;
         var mark2EndX = Position.X + MarkOffset;
-        var mark2EndY = Position.Y + (this.box.Height - MarkOffset);
+        var mark2EndY = Position.Y + (this.mainArea.Height - MarkOffset);
 
         this.mark2 = new Line
         {
@@ -105,15 +105,15 @@ public class CheckBox : Control
 
         var textSize = this.font.Measure(this.text);
         this.textPos = new Vector2(
-            Position.X + this.box.Width + (textSize.Width / 2f) + BoxTextPadding,
+            Position.X + this.mainArea.Width + (textSize.Width / 2f) + BoxTextPadding,
             Position.Y + (textSize.Height / 2f) + 2);
 
         var mousePos = currentMouseState.GetPosition().ToVector2();
         var textRectPos = new Vector2(
-            Position.X + this.box.Width + BoxTextPadding,
+            Position.X + this.mainArea.Width + BoxTextPadding,
             Position.Y);
         var textRect = new Rectangle((int)textRectPos.X, (int)textRectPos.Y, (int)textSize.Width, (int)textSize.Height);
-        var isMouseOver = this.box.Contains(mousePos) || textRect.Contains((int)mousePos.X, (int)mousePos.Y);
+        var isMouseOver = this.mainArea.Contains(mousePos) || textRect.Contains((int)mousePos.X, (int)mousePos.Y);
 
         // If the mouse if over any part of the checkbox and the left mouse button was just released
         if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
@@ -129,7 +129,7 @@ public class CheckBox : Control
 
     public override void Render(int layer = 0)
     {
-        this.shapeRenderer.Render(this.box);
+        this.shapeRenderer.Render(this.mainArea);
 
         if (IsChecked)
         {

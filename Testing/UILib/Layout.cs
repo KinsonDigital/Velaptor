@@ -157,9 +157,6 @@ public class Layout : Control
     {
         var layoutOrigin = new Vector2(this.area.Left, this.area.Top);
 
-        var maxHeight = this.controls.Max(c => c.Height);
-
-
         // Update all of the controls
         for (var i = 0; i < this.controls.Count; i++)
         {
@@ -238,16 +235,21 @@ public class Layout : Control
             case StackDirection.Horizontal:
                 var horizontalPaddingEachSide = AreaPadding * 2;
                 var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
+                var totalWidth = this.controls.Count <= 0 ? 0 : this.controls.Sum(c => c.Width);
+                var maxHeight = this.controls.Count <= 0 ? 0 : this.controls.Max(c => c.Height);
 
-                this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + totalHorizontalSpacing);
-                this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
+                this.area.Width = totalWidth + (horizontalPaddingEachSide + totalHorizontalSpacing);
+                this.area.Height = maxHeight + horizontalPaddingEachSide;
                 break;
             case StackDirection.Vertical:
                 var verticalPaddingEachSide = AreaPadding * 2;
                 var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
 
-                this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
-                this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + totalVerticalSpacing);
+                var maxWidth = this.controls.Count <= 0 ? 0 : this.controls.Max(c => c.Width);
+                var totalHeight = this.controls.Count <= 0 ? 0 : this.controls.Sum(c => c.Height);
+
+                this.area.Width = maxWidth + verticalPaddingEachSide;
+                this.area.Height = totalHeight + (verticalPaddingEachSide + totalVerticalSpacing);
                 break;
         }
     }

@@ -60,14 +60,6 @@ public class MainWindow : Window
 
         // var nextPrevious = ctrlFactory.CreateNextPrevious();
         // nextPrevious.Next += (_, _) => SceneManager.NextScene();
-        // nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
-
-        // this.grpSceneCtrls.Add(nextPrevious);
-
-        // DEBUG - This is only for testing WebGPU rendering and should be removed when done.
-        // var webGpuTestingScene = new WebGPUTestingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
         // };
 
         // WORKS
