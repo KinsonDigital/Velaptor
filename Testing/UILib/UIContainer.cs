@@ -20,7 +20,6 @@ public class UIContainer : Control
     private readonly List<IControl> controls = new();
     private readonly Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
     private readonly Color borderClr = Color.FromArgb(255, 45, 74, 117);
-    private readonly Color areaClr = Color.FromArgb(255, 17, 17, 17);
     private RectShape area;
     private RectShape titleBar;
     private Vector2 logicalPosition;
@@ -47,7 +46,7 @@ public class UIContainer : Control
         {
             Width = 300,
             Height = 270,
-            Color = this.areaClr,
+            Color = Color.FromArgb(255, 17, 17, 17),
             IsSolid = true,
         };
 
@@ -113,6 +112,12 @@ public class UIContainer : Control
             // If not, Update() will re-resolve with the current dimensions.
             this.area.Position = value.ToWorld(this.area.Width, this.area.Height);
         }
+    }
+
+    public Color BackgroundColor
+    {
+        get => this.area.Color;
+        set => this.area.Color = value;
     }
 
     public bool AutoSize { get; set; } = false;
@@ -274,18 +279,20 @@ public class UIContainer : Control
 
                     if (isFirstItem)
                     {
-                        control.Position = new Vector2(AreaPadding + overlapOffset, AreaPadding);
+                        var posY = Centered ? centeredOffset : AreaPadding + overlapOffset;
+                        control.Position = new Vector2(AreaPadding, posY);
 
                         // Take centering into account
-                        control.Position = new Vector2(control.Position.X, centeredOffset);
                         control.Position += layoutOrigin;
                     }
                     else
                     {
+                        var posY = Centered ? centeredOffset : AreaPadding + overlapOffset;
+
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
                             prevControl.Right + this.horizontalSpacing + overlapOffset,
-                            layoutOrigin.Y + AreaPadding + centeredOffset);
+                            layoutOrigin.Y + posY);
                     }
 
                     break;
@@ -301,17 +308,19 @@ public class UIContainer : Control
 
                     if (isFirstItem)
                     {
-                        control.Position = new Vector2(AreaPadding + overlapOffset, AreaPadding);
+                        var posX = Centered ? centeredOffset : AreaPadding + overlapOffset;
+                        control.Position = new Vector2(posX, AreaPadding);
 
                         // Take centering into account
-                        control.Position = new Vector2(centeredOffset, control.Position.Y);
                         control.Position += layoutOrigin;
                     }
                     else
                     {
+                        var posX = Centered ? centeredOffset : AreaPadding + overlapOffset;
+
                         var prevControl = this.controls[i - 1];
                         control.Position = new Vector2(
-                            layoutOrigin.X + AreaPadding + overlapOffset + centeredOffset,
+                            layoutOrigin.X + posX,
                             prevControl.Bottom + this.verticalSpacing + overlapOffset);
                     }
 
@@ -329,13 +338,17 @@ public class UIContainer : Control
             {
                 case StackDirection.Horizontal:
                     var horizontalPaddingEachSide = AreaPadding * 2;
-                    this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + this.horizontalSpacing);
+                    var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
+
+                    this.area.Width = this.controls.Sum(c => c.Width) + (horizontalPaddingEachSide + totalHorizontalSpacing);
                     this.area.Height = this.controls.Max(c => c.Height) + horizontalPaddingEachSide;
                     break;
                 case StackDirection.Vertical:
                     var verticalPaddingEachSide = AreaPadding * 2;
+                    var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
+
                     this.area.Width = this.controls.Max(c => c.Width) + verticalPaddingEachSide;
-                    this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + this.verticalSpacing);
+                    this.area.Height = this.controls.Sum(c => c.Height) + (verticalPaddingEachSide + totalVerticalSpacing);
                     break;
             }
 

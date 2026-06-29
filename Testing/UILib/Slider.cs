@@ -134,7 +134,7 @@ public class Slider : Control
         this.shapeRenderer.Render(this.sliderHandle);
 
         // TODO: Only update the text property if the value has changed since the last frame
-        // this.label.Text = $"{Value:0.00}";
+        this.label.Text = $"{Value:0.00}";
         this.label.Render(10);
 
         base.Render(layer);

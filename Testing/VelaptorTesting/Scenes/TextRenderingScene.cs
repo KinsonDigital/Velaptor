@@ -48,7 +48,8 @@ public class TextRenderingScene : SceneBase
     private bool isBlue;
     private bool isFirstRender = true;
     private string currentChosenFontFileName = $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf";
-    private Label lblOther;
+    private Label lblOther1;
+    private Button btnOther2;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
@@ -68,8 +69,11 @@ public class TextRenderingScene : SceneBase
         this.lblRotate = new Label();
         this.lblRotate.Text = "Rotate:";
 
-        this.lblOther = new Label();
-        this.lblOther.Text = "Other:";
+        this.lblOther1 = new Label();
+        this.lblOther1.Text = "Other 1:";
+
+        this.btnOther2 = new Button();
+        this.btnOther2.Text = "Other 2:";
 
         this.sldRotate = new Slider();
 
@@ -77,16 +81,18 @@ public class TextRenderingScene : SceneBase
         this.sliderContainer.Position = new Vector2(WindowCenter.X, WindowCenter.Y);
         this.sliderContainer.AutoSize = true;
         this.sliderContainer.TitleBarVisible = false;
-        this.sliderContainer.BorderVisible = true;
+        this.sliderContainer.BorderVisible = false;
         this.sliderContainer.Layout = new Layout { StackDirection = StackDirection.Vertical };
         this.sliderContainer.Centered = true;
-        this.sliderContainer.AreaPadding = 0;
-        this.sliderContainer.VerticalSpacing = 0;
-        this.sliderContainer.HorizontalSpacing = 0;
+        // this.sliderContainer.AreaPadding = 0;
+        // this.sliderContainer.VerticalSpacing = 0;
+        // this.sliderContainer.HorizontalSpacing = 0;
+        this.sliderContainer.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
 
         this.sliderContainer.AddControl(this.lblRotate);
         this.sliderContainer.AddControl(this.sldRotate);
-        this.sliderContainer.AddControl(this.lblOther);
+        this.sliderContainer.AddControl(this.lblOther1);
+        this.sliderContainer.AddControl(this.btnOther2);
 
         this.mainContainer.AddControl(this.sliderContainer);
     }
@@ -209,6 +215,7 @@ public class TextRenderingScene : SceneBase
 
     public override void Update(FrameTime frameTime)
     {
+        this.mainContainer.AreaPadding = 10;
         this.mainContainer.Update();
         // this.lblRotate.Update();
         // this.lblRotate.Position = new Vector2(600, 50); // TODO: Remove me
