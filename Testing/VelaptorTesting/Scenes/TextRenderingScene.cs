@@ -36,7 +36,7 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private readonly UIContainer sliderContainer;
+    private readonly Layout layRotate;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
     private UIContainer mainContainer;
@@ -77,24 +77,23 @@ public class TextRenderingScene : SceneBase
 
         this.sldRotate = new Slider();
 
-        this.sliderContainer = new UIContainer();
-        this.sliderContainer.Position = new Vector2(WindowCenter.X, WindowCenter.Y);
-        this.sliderContainer.AutoSize = true;
-        this.sliderContainer.TitleBarVisible = false;
-        this.sliderContainer.BorderVisible = false;
-        this.sliderContainer.Layout = new LayoutSettings { StackDirection = StackDirection.Vertical };
-        this.sliderContainer.Centered = true;
+        this.layRotate = new Layout();
+        this.layRotate.Position = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.layRotate.AutoSize = true;
+        this.layRotate.DebugBorderVisible = false;
+        this.layRotate.StackDirection = StackDirection.Vertical;
+        this.layRotate.Centered = true;
         // this.sliderContainer.AreaPadding = 0;
         // this.sliderContainer.VerticalSpacing = 0;
         // this.sliderContainer.HorizontalSpacing = 0;
-        this.sliderContainer.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
+        this.layRotate.BackgroundColor = Color.FromArgb(255, 30, 30, 30);
 
-        this.sliderContainer.AddControl(this.lblRotate);
-        this.sliderContainer.AddControl(this.sldRotate);
-        this.sliderContainer.AddControl(this.lblOther1);
-        this.sliderContainer.AddControl(this.btnOther2);
+        this.layRotate.AddControl(this.lblRotate);
+        this.layRotate.AddControl(this.sldRotate);
+        this.layRotate.AddControl(this.lblOther1);
+        this.layRotate.AddControl(this.btnOther2);
 
-        this.mainContainer.AddControl(this.sliderContainer);
+        this.mainContainer.AddControl(this.layRotate);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
