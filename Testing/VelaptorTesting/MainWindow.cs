@@ -81,16 +81,16 @@ public class MainWindow : Window
         // };
 
         // WORKS
-        var keyboardScene = new KeyboardScene
-        {
-            Name = SplitByUpperCase(nameof(KeyboardScene)),
-        };
+        // var keyboardScene = new KeyboardScene
+        // {
+        //     Name = SplitByUpperCase(nameof(KeyboardScene)),
+        // };
 
         // WORKS
-        // var mouseScene = new MouseScene
-        // {
-        //     Name = SplitByUpperCase(nameof(MouseScene)),
-        // };
+        var mouseScene = new MouseScene
+        {
+            Name = SplitByUpperCase(nameof(MouseScene)),
+        };
 
         // WORKS
         // var layeredTextureRenderingScene = new LayeredTextureRenderingScene
@@ -140,8 +140,8 @@ public class MainWindow : Window
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(cameraScene);
-        SceneManager.AddScene(keyboardScene);
-        // SceneManager.AddScene(mouseScene);
+        // SceneManager.AddScene(keyboardScene);
+        SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);

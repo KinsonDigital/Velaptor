@@ -8,10 +8,7 @@ using System;
 using System.Numerics;
 using System.Text;
 using Velaptor;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
-using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 
@@ -21,13 +18,10 @@ using Velaptor.Scene;
 public class MouseScene : SceneBase
 {
     private readonly BackgroundManager backgroundManager;
-    private readonly IContentManager contentManager;
-    private readonly IFontRenderer fontRenderer;
+    private readonly Label lblMouseState;
     private readonly IAppInput<MouseState>? mouse;
     private readonly StringBuilder mouseText = new ();
     private MouseScrollDirection scrollDirection;
-    private IFont? font;
-    private Vector2 textPos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseScene"/> class.
@@ -36,8 +30,8 @@ public class MouseScene : SceneBase
     {
         this.mouse = HardwareFactory.GetMouse();
         this.backgroundManager = new BackgroundManager();
-        this.contentManager = ContentManager.Create();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+
+        this.lblMouseState = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -49,8 +43,7 @@ public class MouseScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
-        this.textPos = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.lblMouseState.Load();
 
         base.LoadContent();
     }
@@ -74,6 +67,10 @@ public class MouseScene : SceneBase
 
         this.mouseText.Append($"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}");
 
+        this.lblMouseState.Text = this.mouseText.ToString();
+        this.lblMouseState.Position = new Vector2(WindowCenter.X - this.lblMouseState.HalfWidth, WindowCenter.Y - this.lblMouseState.HalfHeight);
+        this.lblMouseState.Update();
+
         base.Update(frameTime);
     }
 
@@ -81,7 +78,7 @@ public class MouseScene : SceneBase
     public override void Render()
     {
         this.backgroundManager.Render();
-        this.fontRenderer.Render(this.font, this.mouseText.ToString(), this.textPos);
+        this.lblMouseState.Render();
 
         base.Render();
     }
@@ -94,8 +91,8 @@ public class MouseScene : SceneBase
             return;
         }
 
-        this.contentManager.Unload(this.font);
         this.backgroundManager.Unload();
+        this.lblMouseState.Unload();
 
         base.UnloadContent();
     }
