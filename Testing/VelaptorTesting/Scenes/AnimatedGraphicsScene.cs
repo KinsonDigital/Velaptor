@@ -6,10 +6,9 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Numerics;
-using System.Text;
+using UILib;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -21,23 +20,27 @@ using Velaptor.Scene;
 /// </summary>
 public class AnimatedGraphicsScene : SceneBase
 {
-    private const int WindowPadding = 100;
+    private const int WindowPadding = 25;
     private readonly ITextureRenderer textureRenderer;
-    private readonly IFontRenderer fontRenderer;
     private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly StringBuilder animationFps = new ("Speed(fps): 60.00");
-    private string instructions = string.Empty;
+    private readonly Layout layMain;
+    private readonly UIContainer conMain;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
-    private IFont? font;
     private int elapsedTime;
     private int currentFrame;
     private float animSpeed = 32;
     private bool runningForward = true;
     private KeyboardState prevKeyState;
     private float speed = 60;
+    private Layout layDirection;
+    private Option optForward;
+    private Option optBackward;
+    private Label lblSpeed;
+    private Slider sldSpeed;
+    private Layout laySpeed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
@@ -46,9 +49,18 @@ public class AnimatedGraphicsScene : SceneBase
     {
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.keyboard = HardwareFactory.GetKeyboard();
+
+        CreateOptionCtrls();
+        CreateSpeedCtrls();
+
+        this.layMain = new Layout();
+        this.layMain.AddControl(this.layDirection);
+        this.layMain.AddControl(this.laySpeed);
+
+        this.conMain = new UIContainer();
+        this.conMain.AddLayoutControl(this.layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -63,17 +75,9 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
 
-        var textLines = new string[]
-        {
-            "Verify that the Samus is running.",
-            "Use the controls to change the direction and speed of the animation.",
-            "1. Press right arrow key to run forwards",
-            "2. Press left arrow key to run backwards",
-            "3. Press up/down arrow keys to change the speed of the animation",
-        };
-        this.instructions = string.Join(Environment.NewLine, textLines);
+        this.conMain.Load();
+        this.conMain.Position = new Vector2(WindowPadding, WindowCenter.Y - this.conMain.HalfHeight);
 
         base.LoadContent();
     }
@@ -87,11 +91,9 @@ public class AnimatedGraphicsScene : SceneBase
         }
 
         this.contentManager.Unload(this.mainAtlas);
-        this.contentManager.Unload(this.font);
         this.mainAtlas = null;
-        this.font = null;
-
         this.backgroundManager.Unload();
+        this.conMain.Unload();
 
         base.UnloadContent();
     }
@@ -121,9 +123,11 @@ public class AnimatedGraphicsScene : SceneBase
             this.elapsedTime += frameTime.ElapsedTime.Milliseconds;
         }
 
+        this.conMain.Update();
+
         this.animSpeed = 1000f / this.speed;
-        this.animationFps.Clear();
-        this.animationFps.Append($"Speed(fps): {Math.Round(this.speed, 2):F2}");
+
+        this.sldSpeed.Value = (float)Math.Round(this.speed, 2);
 
         ProcessInput();
     }
@@ -141,8 +145,7 @@ public class AnimatedGraphicsScene : SceneBase
             3f,
             this.currentFrame);
 
-        this.fontRenderer.Render(this.font, this.instructions, new Vector2(WindowCenter.X, WindowPadding));
-        this.fontRenderer.Render(this.font, this.animationFps.ToString(), new Vector2(WindowCenter.X, WindowPadding + 300));
+        this.conMain.Render();
 
         base.Render();
     }
@@ -156,6 +159,50 @@ public class AnimatedGraphicsScene : SceneBase
         }
 
         base.Dispose(disposing);
+    }
+
+    private void CreateOptionCtrls()
+    {
+        this.optForward = new Option
+        {
+            Text = "Forwards",
+            IsChecked = true,
+            GroupNumber = 1,
+        };
+        this.optForward.CheckChanged += (sender, args) => this.runningForward = !args.IsChecked;
+
+        this.optBackward = new Option
+        {
+            Text = "Backwards",
+            GroupNumber = 1,
+        };
+        this.optBackward.CheckChanged += (sender, args) => this.runningForward = args.IsChecked;
+
+        this.layDirection = new Layout();
+        this.layDirection.StackDirection = StackDirection.Vertical;
+
+        this.layDirection.AddControl(this.optForward);
+        this.layDirection.AddControl(this.optBackward);
+    }
+
+    private void CreateSpeedCtrls()
+    {
+        this.lblSpeed = new Label
+        {
+            Text = "Speed(fps):",
+        };
+
+        this.sldSpeed = new Slider
+        {
+            Max = 60,
+            Value = 60,
+        };
+        this.sldSpeed.ValueChanged += (sender, args) => this.speed = args.NewValue;
+
+        this.laySpeed = new Layout();
+        this.laySpeed.StackDirection = StackDirection.Horizontal;
+        this.laySpeed.AddControl(this.lblSpeed);
+        this.laySpeed.AddControl(this.sldSpeed);
     }
 
     private void ProcessInput()

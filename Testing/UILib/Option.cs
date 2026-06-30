@@ -11,7 +11,7 @@ public class Option : Control
 {
     private const int BoxTextPadding = 5;
     private const float BoxWidthHeight = 20;
-    private static readonly List<(int, Guid, bool)> checkStates = new();
+    private static readonly List<(int, Guid, bool)> checkStates = new ();
     private readonly Guid id;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
@@ -23,6 +23,8 @@ public class Option : Control
     private MouseState prevMouseState;
     private string text = "Option";
     private IFont font;
+
+    public event EventHandler<CheckChangedEventArgs>? CheckChanged;
 
     public Option()
     {
@@ -114,8 +116,11 @@ public class Option : Control
 
                 checkStates[i] = itemToUpdate;
             }
+
+            CheckChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
         }
 
+        // Find the current item and set the check state.
         for (var i = 0; i < checkStates.Count; i++)
         {
             if (checkStates[i].Item1 == GroupNumber && checkStates[i].Item2 == this.id)
