@@ -9,7 +9,6 @@ using System.Drawing;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -24,14 +23,12 @@ public class NonAnimatedGraphicsScene : SceneBase
     private const int WindowPadding = 100;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
-    private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
+    private readonly Label lblInstructions;
     private IAtlasData? mainAtlas;
-    private IFont? font;
     private KeyboardState prevKeyState;
     private RenderEffects renderEffects = RenderEffects.None;
-    private string instructions = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
@@ -40,9 +37,10 @@ public class NonAnimatedGraphicsScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
+
+        this.lblInstructions = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -54,9 +52,8 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
-
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+        this.lblInstructions.Load();
 
         var textLines = new string[]
         {
@@ -67,7 +64,8 @@ public class NonAnimatedGraphicsScene : SceneBase
             "4. Down to flip vertically",
         };
 
-        this.instructions = string.Join(Environment.NewLine, textLines);
+        this.lblInstructions.Text = string.Join(Environment.NewLine, textLines);
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
 
         base.LoadContent();
     }
@@ -81,14 +79,12 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager.Unload();
+        this.lblInstructions.Unload();
 
         this.renderEffects = RenderEffects.None;
 
         this.contentManager.Unload(this.mainAtlas);
         this.mainAtlas = null;
-
-        this.contentManager.Unload(this.font);
-        this.font = null;
 
         base.UnloadContent();
     }
@@ -160,7 +156,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             Color.White,
             this.renderEffects);
 
-        this.fontRenderer.Render(this.font, this.instructions, new Vector2(WindowCenter.X, WindowPadding));
+        this.lblInstructions.Render();
 
         base.Render();
     }
