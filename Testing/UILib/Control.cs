@@ -25,6 +25,8 @@ public class Control : IControl
 
     protected bool IsLoaded { get; set; }
 
+    public bool Visible { get; set; } = true;
+
     public virtual void Load()
     {
         IsLoaded = true;

@@ -124,6 +124,11 @@ public class Layout : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         // Resolve area center position from logical (top-left) coordinates + current dimensions.
         // Deferred here so that Width/Height set after Position still produce correct results.
         this.area.Position = this.logicalPosition.ToWorld(this.area.Width, this.area.Height);
@@ -135,6 +140,11 @@ public class Layout : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.area, -100);
 
         // TODO: Only be taken into account internally in this control if in debug mode

@@ -15,7 +15,7 @@ public class WebGPUTestingScene : SceneBase
 {
     private readonly IShapeRenderer shapeRenderer;
     private readonly ILineRenderer lineRenderer;
-    private readonly UIContainer container;
+    private readonly Container container;
     private readonly IBatcher batcher;
     private readonly CheckBox checkbox;
     private readonly Slider slider;
@@ -35,7 +35,7 @@ public class WebGPUTestingScene : SceneBase
         this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.batcher = RendererFactory.CreateBatcher();
 
-        this.container = new UIContainer();
+        this.container = new Container();
         this.container.Position = new (0, 0);
 
         this.checkbox = new CheckBox

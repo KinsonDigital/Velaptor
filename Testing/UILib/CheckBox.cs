@@ -64,6 +64,11 @@ public class CheckBox : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var currentMouseState = this.mouse.GetState();
 
         var scrnPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
@@ -129,6 +134,11 @@ public class CheckBox : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.mainArea);
 
         if (IsChecked)

@@ -79,6 +79,11 @@ public class Option : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var currentMouseState = this.mouse.GetState();
 
         var scrnPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
@@ -139,6 +144,11 @@ public class Option : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.circle);
         this.fontRenderer.Render(this.font, Text, this.textPos, Color.White);
 

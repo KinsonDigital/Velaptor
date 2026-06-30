@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Numerics;
 using KdGui;
 using KdGui.Factories;
+using UILib;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -43,12 +44,11 @@ public class ShapeScene : SceneBase
     private readonly IContentManager contentManager;
     private readonly IShapeRenderer shapeRenderer;
     private readonly BackgroundManager backgroundManager;
+    private Label lblInstructions;
     private IFont? font;
     private KeyboardState currentKeyState;
     private RectShape rectangle;
     private CircleShape circle;
-    private IControlGroup? grpRectInstructions;
-    private IControlGroup? grpCircleInstructions;
     private IControlGroup? grpShapeType;
     private IControlGroup? grpCircleCtrls;
     private IControlGroup? grpCircleClrGradCtrls;
@@ -65,6 +65,21 @@ public class ShapeScene : SceneBase
     private string? sldTopRightRadiusName;
     private string? sldBottomRightRadiusName;
     private string? sldBottomLeftRadiusName;
+    private string circleInstructionText;
+    private string rectInstructionText;
+    private Label lblShapeType;
+    private DropDown cmbShapeType;
+    private Layout layShapeType;
+    private Layout layMain;
+    private UILib.Container conMain;
+    private CheckBox chkCircleIsSolid;
+    private Label lblCircleClr;
+    private DropDown drpCircleClr;
+    private Layout layCircleClr;
+    private Label lblBorderThickness;
+    private Slider sldBorderThickness;
+    private Layout layCircleProps;
+    private Layout layBorderThickness;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -76,13 +91,6 @@ public class ShapeScene : SceneBase
         this.contentManager = ContentManager.Create();
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.backgroundManager = new BackgroundManager();
-    }
-
-    /// <inheritdoc cref="IScene.LoadContent"/>
-    public override void LoadContent()
-    {
-        this.shapeType = ShapeType.Circle;
-        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
         this.rectangle = new RectShape
         {
@@ -108,16 +116,37 @@ public class ShapeScene : SceneBase
             IsSolid = false,
         };
 
+        CreateInstructions();
+        CreateShapeTypeCtrls();
+        CreateCircleCtrls();
+
+        this.layMain = new Layout();
+        this.layMain.AddControl(this.layShapeType);
+        this.layMain.AddControl(this.layCircleProps);
+
+        this.conMain = new UILib.Container();
+        this.conMain.AddLayoutControl(this.layMain);
+    }
+
+    /// <inheritdoc cref="IScene.LoadContent"/>
+    public override void LoadContent()
+    {
+        this.shapeType = ShapeType.Circle;
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+
         this.font = this.contentManager.LoadFont(DefaultRegularFont, 12);
 
-        CreateCircleInstructions();
-        CreateRectInstructions();
-        CreateShapeTypeCtrls();
-        CreateRectCtrls();
-        CreateCircleGradCtrls();
-        CreateRectGradCtrls();
-        CreateCircleCtrls();
-        CreateRadiusCtrls();
+        this.lblInstructions.Load();
+
+        // CreateRectInstructions();
+        // CreateShapeTypeCtrls();
+        // CreateRectCtrls();
+        // CreateCircleGradCtrls();
+        // CreateRectGradCtrls();
+        // CreateCircleCtrls();
+        // CreateRadiusCtrls();
+
+        this.conMain.Load();
 
         base.LoadContent();
     }
@@ -127,6 +156,8 @@ public class ShapeScene : SceneBase
     {
         this.backgroundManager.Unload();
         this.contentManager.Unload(this.font);
+        this.lblInstructions.Unload();
+        this.conMain.Unload();
 
         base.UnloadContent();
     }
@@ -136,10 +167,14 @@ public class ShapeScene : SceneBase
     {
         this.currentKeyState = this.keyboard.GetState();
 
+        // DEBUG START
+        // DEBUG END
+
         MoveShape(frameTime);
         ChangeShapeSize(frameTime);
 
-        this.grpCircleInstructions.Position = new Point(WindowCenter.X - this.grpCircleInstructions.HalfWidth, WindowPadding);
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
+        this.conMain.Update();
 
         base.Update(frameTime);
     }
@@ -163,64 +198,71 @@ public class ShapeScene : SceneBase
         }
 
         this.backgroundManager.Render();
-        this.grpCircleInstructions.Render();
-        this.grpRectInstructions.Render();
-        this.grpShapeType.Render();
-        this.grpCircleCtrls.Render();
-        this.grpCircleClrGradCtrls.Render();
-        this.grpRectClrGradCtrls.Render();
-        this.grpRectCtrls.Render();
-        this.grpRectCornerRadiusCtrls.Render();
+        this.lblInstructions.Render();
+        this.conMain.Render();
+
+        // this.grpRectInstructions.Render();
+        // this.grpShapeType.Render();
+        // this.grpCircleCtrls.Render();
+        // this.grpCircleClrGradCtrls.Render();
+        // this.grpRectClrGradCtrls.Render();
+        // this.grpRectCtrls.Render();
+        // this.grpRectCornerRadiusCtrls.Render();
 
         base.Render();
     }
 
-    private void CreateCircleInstructions()
+    private void CreateInstructions()
     {
-        var textLines = new[]
+        var circleTextLines = new[]
         {
             "----Circle Instructions----", "1. Movement: Arrow Keys", "2. Size:", "   - Increase Diameter: Shift + Up Or Right Arrow",
             "   - Decrease Diameter: Shift + Down Or Left Arrow",
         };
-        var circleInstructions = string.Join(Environment.NewLine, textLines);
-        var lblCircleInstructions = this.ctrlFactory.CreateLabel();
-        lblCircleInstructions.Name = nameof(lblCircleInstructions);
-        lblCircleInstructions.Text = circleInstructions;
-
-        this.grpCircleInstructions = this.ctrlFactory.CreateControlGroup();
-        this.grpCircleInstructions.Title = "Circle Instructions";
-        this.grpCircleInstructions.AutoSizeToFitContent = true;
-        this.grpCircleInstructions.TitleBarVisible = false;
-        this.grpCircleInstructions.Add(lblCircleInstructions);
-    }
-
-    private void CreateRectInstructions()
-    {
-        var textLines = new[]
+        var rectTextLines = new[]
         {
             "----Rectangle Instructions----", "1. Movement: Arrow Keys", "2. Size:", "   - Increase Width: Shift + Right Arrow",
             "   - Decrease Width: Shift + Left Arrow", "   - Increase Height: Shift + Up Arrow", "   - Decrease Height: Shift + Down Arrow",
         };
 
-        var rectInstructions = string.Join(Environment.NewLine, textLines);
-        var lblRectInstructions = this.ctrlFactory.CreateLabel();
-        lblRectInstructions.Name = nameof(lblRectInstructions);
-        lblRectInstructions.Text = rectInstructions;
-
-        this.grpRectInstructions = this.ctrlFactory.CreateControlGroup();
-        this.grpRectInstructions.Title = "Rect Instructions";
-        this.grpRectInstructions.AutoSizeToFitContent = true;
-        this.grpRectInstructions.TitleBarVisible = false;
-        this.grpRectInstructions.Visible = false;
-        this.grpRectInstructions.SizeChanged += (_, size) =>
+        this.circleInstructionText = string.Join(Environment.NewLine, circleTextLines);
+        this.rectInstructionText = string.Join(Environment.NewLine, rectTextLines);
+        this.lblInstructions = new Label
         {
-            this.grpRectInstructions.Position = new Point(WindowCenter.X - (size.Width / 2), WindowPadding);
+            Text = this.circleInstructionText,
         };
-        this.grpRectInstructions.Add(lblRectInstructions);
     }
 
     private void CreateShapeTypeCtrls()
     {
+        this.lblShapeType = new Label
+        {
+            Text = "Shape Type:",
+        };
+        this.cmbShapeType = new DropDown();
+        this.cmbShapeType.AddItem(nameof(ShapeType.Rectangle));
+        this.cmbShapeType.AddItem(nameof(ShapeType.Circle));
+        this.cmbShapeType.SelectedItemChanged += (_, e) =>
+        {
+            this.shapeType = Enum.Parse<ShapeType>(e.NewValue);
+
+            switch (this.shapeType)
+            {
+                case ShapeType.Circle:
+                    this.lblInstructions.Text = this.circleInstructionText;
+                    break;
+                case ShapeType.Rectangle:
+                    this.lblInstructions.Text = this.rectInstructionText;
+                    break;
+            }
+        };
+
+        this.layShapeType = new Layout();
+        this.layShapeType.StackDirection = StackDirection.Horizontal;
+        this.layShapeType.AddControl(this.lblShapeType);
+        this.layShapeType.AddControl(this.cmbShapeType);
+
+        return;
         var cmbShapeType = this.ctrlFactory.CreateComboBox();
         cmbShapeType.Name = nameof(cmbShapeType);
         cmbShapeType.Label = "Shape Type:";
@@ -233,16 +275,12 @@ public class ShapeScene : SceneBase
         cmbShapeType.SelectedItemIndex = 1;
         cmbShapeType.SelectedItemIndexChanged += (_, selectedIndex) =>
         {
-            this.shapeType = (ShapeType)selectedIndex;
+            // this.grpCircleCtrls.Visible = this.shapeType == ShapeType.Circle;
+            // this.grpCircleClrGradCtrls.Visible = this.shapeType == ShapeType.Circle;
 
-            this.grpCircleInstructions.Visible = this.shapeType == ShapeType.Circle;
-            this.grpCircleCtrls.Visible = this.shapeType == ShapeType.Circle;
-            this.grpCircleClrGradCtrls.Visible = this.shapeType == ShapeType.Circle;
-
-            this.grpRectInstructions.Visible = this.shapeType == ShapeType.Rectangle;
-            this.grpRectCtrls.Visible = this.shapeType == ShapeType.Rectangle;
-            this.grpRectClrGradCtrls.Visible = this.shapeType == ShapeType.Rectangle;
-            this.grpRectCornerRadiusCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+            // this.grpRectCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+            // this.grpRectClrGradCtrls.Visible = this.shapeType == ShapeType.Rectangle;
+            // this.grpRectCornerRadiusCtrls.Visible = this.shapeType == ShapeType.Rectangle;
         };
 
         this.grpShapeType = this.ctrlFactory.CreateControlGroup();
@@ -256,8 +294,56 @@ public class ShapeScene : SceneBase
         this.grpShapeType.Add(cmbShapeType);
     }
 
-    private void CreateCircleCtrls()
+    private void CreateCircleCtrls() // ❌
     {
+        this.chkCircleIsSolid = new CheckBox();
+        this.chkCircleIsSolid.IsChecked = true;
+        this.chkCircleIsSolid.Text = "Solid";
+        this.chkCircleIsSolid.CheckedChanged += (_, e) =>
+        {
+            this.circle.IsSolid = e.IsChecked;
+        };
+
+        // Circle color controls
+        this.lblCircleClr = new Label();
+        this.lblCircleClr.Text = "Color:";
+
+        this.drpCircleClr = new DropDown();
+        this.drpCircleClr.AddItem("Red");
+        this.drpCircleClr.AddItem("Green");
+        this.drpCircleClr.AddItem("Blue");
+
+        // Circle color layout
+        this.layCircleClr = new Layout();
+        this.layCircleClr.StackDirection = StackDirection.Horizontal;
+        this.layCircleClr.Centered = true;
+        this.layCircleClr.AddControl(this.lblCircleClr);
+        this.layCircleClr.AddControl(this.drpCircleClr);
+
+        // Border thickness controls
+        this.lblBorderThickness = new Label();
+        this.lblBorderThickness.Text = "Border Thickness:";
+
+        this.sldBorderThickness = new Slider();
+        this.sldBorderThickness.Min = 1;
+        this.sldBorderThickness.Max = DefaultCircleDiameter / 2;
+        this.sldBorderThickness.ValueChanged += (_, e) => this.circle.BorderThickness = e.NewValue;
+
+        // Border thickness layout
+        this.layBorderThickness = new Layout();
+        this.layBorderThickness.StackDirection = StackDirection.Horizontal;
+        this.layBorderThickness.Centered = true;
+        this.layBorderThickness.AddControl(this.lblBorderThickness);
+        this.layBorderThickness.AddControl(this.sldBorderThickness);
+
+        // Circle properties layout
+        this.layCircleProps = new Layout();
+        this.layCircleProps.StackDirection = StackDirection.Vertical;
+        this.layCircleProps.AddControl(this.chkCircleIsSolid);
+        this.layCircleProps.AddControl(this.layCircleClr);
+        this.layCircleProps.AddControl(this.layBorderThickness);
+
+        return;
         var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
         sldCircleBorderThickness.Name = nameof(sldCircleBorderThickness);
         sldCircleBorderThickness.Text = "Border Thickness:";
@@ -322,7 +408,7 @@ public class ShapeScene : SceneBase
         this.grpCircleCtrls.Add(sldCircleDiameter);
     }
 
-    private void CreateCircleGradCtrls()
+    private void CreateCircleGradCtrls() // ❌
     {
         var cmbCircleGradType = this.ctrlFactory.CreateComboBox();
         cmbCircleGradType.Name = nameof(cmbCircleGradType);
@@ -390,7 +476,7 @@ public class ShapeScene : SceneBase
         this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
     }
 
-    private void CreateRectGradCtrls()
+    private void CreateRectGradCtrls() // ❌
     {
         var cmbRectGradType = this.ctrlFactory.CreateComboBox();
         cmbRectGradType.Name = nameof(cmbRectGradType);
@@ -459,7 +545,7 @@ public class ShapeScene : SceneBase
         this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
     }
 
-    private void CreateRectCtrls()
+    private void CreateRectCtrls() // ❌
     {
         var sldRectBorderThickness = this.ctrlFactory.CreateSlider();
         sldRectBorderThickness.Name = nameof(sldRectBorderThickness);

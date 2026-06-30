@@ -105,15 +105,15 @@ public class MainWindow : Window
         // };
 
         // WORKS
-        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
-        {
-            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
-        };
-
-        // var shapeScene = new ShapeScene
+        // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
         // {
-        //     Name = SplitByUpperCase(nameof(ShapeScene)),
+        //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         // };
+
+        var shapeScene = new ShapeScene
+        {
+            Name = SplitByUpperCase(nameof(ShapeScene)),
+        };
         //
         // var layeredRectScene = new LayeredRectRenderingScene
         // {
@@ -144,8 +144,8 @@ public class MainWindow : Window
         // SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
-        SceneManager.AddScene(renderAnimatedGraphicsScene);
-        // SceneManager.AddScene(shapeScene);
+        // SceneManager.AddScene(renderAnimatedGraphicsScene);
+        SceneManager.AddScene(shapeScene);
         // SceneManager.AddScene(layeredRectScene);
         // SceneManager.AddScene(lineScene);
         // SceneManager.AddScene(layeredLineScene);

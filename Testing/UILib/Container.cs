@@ -7,7 +7,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class UIContainer : Control
+public class Container : Control
 {
     private const int TitleBarLeftTextPadding = 5;
     private const int TitleBarHeight = 30;
@@ -34,7 +34,7 @@ public class UIContainer : Control
     private int verticalSpacing = 10;
     private int horizontalSpacing = 10;
 
-    public UIContainer()
+    public Container()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
@@ -205,7 +205,7 @@ public class UIContainer : Control
 
     public override void Render(int layer = 0)
     {
-        this.shapeRenderer.Render(this.area, -100);
+        this.shapeRenderer.Render(this.area, -1000);
 
         if (TitleBarVisible)
         {

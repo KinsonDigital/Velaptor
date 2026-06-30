@@ -13,4 +13,8 @@
     <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
+  </ItemGroup>
+
 </Project>

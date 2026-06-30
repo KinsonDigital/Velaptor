@@ -17,4 +17,6 @@ public interface IControl : IRenderable, IUpdatable, ILoadable
     float Right { get; }
 
     float Bottom { get; }
+
+    bool Visible { get; set; }
 }

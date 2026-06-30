@@ -26,7 +26,7 @@ public class AnimatedGraphicsScene : SceneBase
     private readonly IContentManager contentManager;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly Layout layMain;
-    private readonly UIContainer conMain;
+    private readonly Container conMain;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
     private int elapsedTime;
@@ -59,7 +59,7 @@ public class AnimatedGraphicsScene : SceneBase
         this.layMain.AddControl(this.layDirection);
         this.layMain.AddControl(this.laySpeed);
 
-        this.conMain = new UIContainer();
+        this.conMain = new Container();
         this.conMain.AddLayoutControl(this.layMain);
     }
 

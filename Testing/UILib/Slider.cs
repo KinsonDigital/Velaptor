@@ -1,15 +1,21 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate.NonDirectional;
+using Carbonate.Fluent;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
+using Carbonate;
+using Carbonate.OneWay;
 
 public class Slider : Control
 {
     private const int HandleWidth = 16;
     private const int HandleHalfWidth = HandleWidth / 2;
+    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label label;
@@ -17,12 +23,22 @@ public class Slider : Control
     private RectShape sliderArea;
     private Vector2 handlePos;
     private bool isDragging;
+    private bool mouseClickDisabled;
     private bool wasMouseDownLastFrame;
 
     public event EventHandler<ValueChangedEventArgs>? ValueChanged;
 
     public Slider()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.DisableMouseClickId,
+            nameof(SubscriptionIds.DisableMouseClickId),
+            (data) => this.mouseClickDisabled = data.MouseDisabled,
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.mouse = HardwareFactory.GetMouse();
         this.label = new Label();
@@ -53,6 +69,11 @@ public class Slider : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var scrnPos = Position.ToWorld(Width, Height);
 
         this.sliderArea = new RectShape
@@ -67,7 +88,7 @@ public class Slider : Control
         var currentMouseState = this.mouse.GetState();
         var mousePos = currentMouseState.GetPosition().ToVector2();
         var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
-        var mouseIsDown = currentMouseState.IsButtonDown(MouseButton.LeftButton);
+        var mouseIsDown = !this.mouseClickDisabled && currentMouseState.IsButtonDown(MouseButton.LeftButton);
         var isInsideSlider = this.sliderArea.Contains(mousePosVector);
 
         if (mouseIsDown)
@@ -135,6 +156,11 @@ public class Slider : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.sliderArea, -10);
 
         this.shapeRenderer.Render(this.sliderHandle);

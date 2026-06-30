@@ -49,6 +49,11 @@ public class Button : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var scrnPos = Position.ToWorld(Width, Height);
 
         this.face = new RectShape
@@ -100,6 +105,11 @@ public class Button : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.face, -10);
 
         this.label.Text = Text;

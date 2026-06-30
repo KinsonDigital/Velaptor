@@ -97,6 +97,11 @@ public class Label : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var scrnPos = Position.ToWorld(Width, Height);
 
         var currentMouseState = this.mouse.GetState();
@@ -127,6 +132,11 @@ public class Label : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         // TODO: Add this if block with exception to all control render calls
         if (!this.isLoaded)
         {

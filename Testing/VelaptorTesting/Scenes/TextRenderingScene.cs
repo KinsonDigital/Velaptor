@@ -42,7 +42,7 @@ public class TextRenderingScene : SceneBase
     private Layout layRotate;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
-    private UIContainer mainContainer;
+    private Container mainContainer;
     private Label lblRotate;
     private Slider sldRotate;
     private string text = SingleLineText;
@@ -71,7 +71,7 @@ public class TextRenderingScene : SceneBase
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
 
-        this.mainContainer = new UIContainer();
+        this.mainContainer = new Container();
         this.mainContainer.Position = new Vector2(50, 50);
         this.mainContainer.Position = new Vector2(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
         this.mainContainer.Draggable = true;

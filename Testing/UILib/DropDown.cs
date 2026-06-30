@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate.OneWay;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -8,28 +9,35 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
+/* TODO:
+    1. Need to add the ability to disable mouse clicks for other controls
+    as long as a dropdown is expanded. This will prevent other controls from
+    being clicked when choosing an item from the dropdown list.
+        - This can be achieved using Carbonate to send a notification to all
+        controls that mouse clicking is disabled or enabled based on the dropdown's expanded state.
+*/
+
 public class DropDown : Control
 {
     private const int ListDividerHeight = 5;
     private const float PaddingRatio = 0.5f;
     private const float ArrowButtonWidthHeight = 30f;
     private const float ArrowButtonHalfWidthHeight = ArrowButtonWidthHeight / 2f;
+    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly ILineRenderer lineRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly List<DropDownItem> listItems = [];
-    // private readonly ArrowButton arrowBtn;
     private readonly Color listAreaBackgroundClr = Color.FromArgb(255, 17, 17, 17);
     private readonly Color hoverListItemClr = Color.FromArgb(255, 57, 124, 204);
-    private Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
+    private readonly Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
+    private readonly Color arrowDefaultClr  = Color.FromArgb(255, 41, 72, 109);
     private RectShape selectedItemArea;
     private RectShape arrowFace;
-    private Color arrowDefaultClr  = Color.FromArgb(255, 41, 72, 109);
     private string selectedItemText;
     private Vector2 selectedItemTextPos;
-    private RectShape listArea;
     private bool isExpanded;
     private RectShape listDividerRest;
     private IFont? font;
@@ -39,25 +47,16 @@ public class DropDown : Control
 
     public DropDown()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
-        // this.arrowBtn = new ArrowButton();
-        // this.arrowBtn.Click += ArrowBtn_Click;
 
         Width = 200;
         Height = 30;
-
-        this.listArea = new RectShape
-        {
-            Position = Position,
-            Width = Width,
-            Height = Height,
-            Color = this.listAreaBackgroundClr,
-            IsSolid = true,
-        };
     }
 
     public List<string> Items => [.. this.listItems.Select(x => x.Text)];
@@ -116,6 +115,11 @@ public class DropDown : Control
 
     public override void Update()
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         var currentMouseState = this.mouse.GetState();
 
         var scrnPos = Position.ToWorld(Width, Height);
@@ -151,6 +155,9 @@ public class DropDown : Control
             if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
             {
                 this.isExpanded = !this.isExpanded;
+                this.disableMouseClickReactable.Push(
+                    SubscriptionIds.DisableMouseClickId,
+                    new DisableMouseSubscriptionData { MouseDisabled = true });
             }
         }
         else
@@ -213,8 +220,14 @@ public class DropDown : Control
 
     public override void Render(int layer = 0)
     {
+        if (!Visible)
+        {
+            return;
+        }
+
         this.shapeRenderer.Render(this.selectedItemArea, -10);
         this.shapeRenderer.Render(this.arrowFace, -10);
+
         RenderArrowButton();
 
         if (Items.Count >= 1)
