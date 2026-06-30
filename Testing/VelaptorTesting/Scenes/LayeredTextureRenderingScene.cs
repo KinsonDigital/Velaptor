@@ -10,7 +10,6 @@ using System.Numerics;
 using System.Text;
 using Velaptor;
 using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -28,12 +27,12 @@ public class LayeredTextureRenderingScene : SceneBase
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
-    private readonly IFontRenderer fontRenderer;
-    private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
-    private readonly StringBuilder whiteBoxStateText = new (string.Empty);
+    private readonly BackgroundManager backgroundManager;
+    private readonly StringBuilder boxStateText = new (string.Empty);
+    private readonly Label lblInstructions;
+    private readonly Label lblBoxState;
     private IAtlasData? atlas;
-    private IFont? font;
     private Vector2 whiteBoxPos;
     private Vector2 orangeBoxPos;
     private Vector2 blueBoxPos;
@@ -42,9 +41,6 @@ public class LayeredTextureRenderingScene : SceneBase
     private AtlasSubTextureData whiteBoxData;
     private AtlasSubTextureData orangeBoxData;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private string instructionsText = string.Empty;
-    private Vector2 instructionsTextPos = Vector2.Zero;
-    private Vector2 whiteBoxStateTextPos = Vector2.Zero;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -54,8 +50,21 @@ public class LayeredTextureRenderingScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
+
+        var textLines = new[]
+        {
+            "Use the arrow keys to move the white box.",
+            "Use the 'L' key to change the layer that the white box is rendered on.",
+        };
+
+        var instructionsText = string.Join(Environment.NewLine, textLines);
+        this.lblInstructions = new Label
+        {
+            Text = instructionsText,
+        };
+
+        this.lblBoxState = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -67,9 +76,12 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+        this.lblInstructions.Load();
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
+
+        this.lblBoxState.Load();
 
         this.atlas = this.contentManager.Load<IAtlasData>("layered-rendering-atlas");
-        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
 
         this.whiteBoxData = this.atlas.GetFrames("white-box")[0];
         this.orangeBoxData = this.atlas.GetFrames("orange-box")[0];
@@ -86,26 +98,31 @@ public class LayeredTextureRenderingScene : SceneBase
         this.whiteBoxPos.X = this.orangeBoxPos.X - (this.orangeBoxData.Bounds.Width / 4f);
         this.whiteBoxPos.Y = this.orangeBoxPos.Y + (this.orangeBoxData.Bounds.Height / 4f);
 
-        var textLines = new[]
-        {
-            "Use the arrow keys to move the white box.",
-            "Use the 'L' key to change the layer that the white box is rendered on.",
-        };
-
-        this.instructionsText = string.Join(Environment.NewLine, textLines);
-
-        // Set the position of the instructions text to be centered at the top of the screen
-        var instTextSize = this.font.Measure(this.instructionsText);
-        this.instructionsTextPos = new Vector2(WindowCenter.X, instTextSize.Height + WindowPadding);
-
         base.LoadContent();
+    }
+
+    /// <inheritdoc cref="IScene.UnloadContent"/>
+    public override void UnloadContent()
+    {
+        if (!IsLoaded || IsDisposed)
+        {
+            return;
+        }
+
+        this.backgroundManager.Unload();
+        this.contentManager.Unload(this.atlas);
+        this.lblInstructions.Unload();
+        this.lblBoxState.Unload();
+
+        this.atlas = null;
+
+        base.UnloadContent();
     }
 
     /// <inheritdoc cref="IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
-        var whiteBoxStateTextSize = this.font.Measure(this.whiteBoxStateText.ToString());
-        this.whiteBoxStateTextPos = new Vector2((whiteBoxStateTextSize.Width / 2f) + WindowPadding, WindowCenter.Y);
+        this.lblBoxState.Position = new Vector2(WindowPadding, WindowCenter.Y - this.lblBoxState.HalfHeight);
         this.currentKeyState = this.keyboard.GetState();
 
         UpdateWhiteBoxLayer();
@@ -132,27 +149,10 @@ public class LayeredTextureRenderingScene : SceneBase
         this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, 0, (int)this.whiteLayer);
 
         // The instructions text
-        this.fontRenderer.Render(this.font, this.instructionsText, this.instructionsTextPos);
-        this.fontRenderer.Render(this.font, this.whiteBoxStateText.ToString(), this.whiteBoxStateTextPos);
+        this.lblInstructions.Render();
+        this.lblBoxState.Render();
 
         base.Render();
-    }
-
-    /// <inheritdoc cref="IScene.UnloadContent"/>
-    public override void UnloadContent()
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        this.contentManager.Unload(this.font);
-        this.backgroundManager.Unload();
-        this.contentManager.Unload(this.atlas);
-
-        this.atlas = null;
-
-        base.UnloadContent();
     }
 
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
@@ -171,11 +171,12 @@ public class LayeredTextureRenderingScene : SceneBase
     /// </summary>
     private void UpdateWhiteBoxStateText()
     {
-        this.whiteBoxStateText.Clear();
-        this.whiteBoxStateText.AppendLine("Texture State");
-        this.whiteBoxStateText.AppendLine($"  - White Box Layer: {this.whiteLayer}");
-        this.whiteBoxStateText.AppendLine($"  - Orange Box Layer: {OrangeLayer}");
-        this.whiteBoxStateText.AppendLine($"  - Blue Box Layer: {BlueLayer}");
+        this.boxStateText.Clear();
+        this.boxStateText.AppendLine("Texture State");
+        this.boxStateText.AppendLine($"  - White Box Layer: {this.whiteLayer}");
+        this.boxStateText.AppendLine($"  - Orange Box Layer: {OrangeLayer}");
+        this.boxStateText.AppendLine($"  - Blue Box Layer: {BlueLayer}");
+        this.lblBoxState.Text = this.boxStateText.ToString();
     }
 
     /// <summary>

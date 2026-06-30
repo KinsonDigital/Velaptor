@@ -87,16 +87,16 @@ public class MainWindow : Window
         // };
 
         // WORKS
-        var mouseScene = new MouseScene
-        {
-            Name = SplitByUpperCase(nameof(MouseScene)),
-        };
+        // var mouseScene = new MouseScene
+        // {
+        //     Name = SplitByUpperCase(nameof(MouseScene)),
+        // };
 
         // WORKS
-        // var layeredTextureRenderingScene = new LayeredTextureRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
-        // };
+        var layeredTextureRenderingScene = new LayeredTextureRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
+        };
 
         // WORKS
         // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
@@ -141,8 +141,8 @@ public class MainWindow : Window
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(cameraScene);
         // SceneManager.AddScene(keyboardScene);
-        SceneManager.AddScene(mouseScene);
-        // SceneManager.AddScene(layeredTextureRenderingScene);
+        // SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);
         // SceneManager.AddScene(shapeScene);
