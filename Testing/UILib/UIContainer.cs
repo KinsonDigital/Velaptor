@@ -57,15 +57,12 @@ public class UIContainer : Control
 
     public override float Width
     {
-        get => this.area.Width;
-        set
+        get
         {
-            if (AutoSize)
-            {
-                return;
-            }
+            var totalBorderWidth = BorderVisible ? BorderThickness * 2f : 0f;
+            var totalAreaPadding = AreaPadding * 2f;
 
-            this.area.Width = value;
+            return this.area.Width + totalBorderWidth + totalAreaPadding;
         }
     }
 
@@ -73,29 +70,16 @@ public class UIContainer : Control
     {
         get
         {
-            var borderHeight = BorderVisible ? BorderThickness : 0f;
+            var totalBorderHeight = 0f;
+
+            if (BorderVisible)
+            {
+                totalBorderHeight = TitleBarVisible ? BorderThickness : BorderThickness * 2f;
+            }
 
             return TitleBarVisible
-                ? TitleBarHeight + this.area.Height + borderHeight
-                : this.area.Height + (borderHeight * 2f);
-        }
-        set
-        {
-            if (AutoSize)
-            {
-                return;
-            }
-
-            var borderHeight = BorderVisible ? BorderThickness : 0f;
-
-            if (TitleBarVisible)
-            {
-                this.area.Height = value - TitleBarHeight - borderHeight;
-            }
-            else
-            {
-                this.area.Height = value - (borderHeight * 2f);
-            }
+                ? TitleBarHeight + this.area.Height + totalBorderHeight
+                : this.area.Height + totalBorderHeight;
         }
     }
 
@@ -120,15 +104,13 @@ public class UIContainer : Control
         set => this.area.Color = value;
     }
 
-    public bool AutoSize { get; set; } = false;
-
     public bool TitleBarVisible { get; set; } = true;
 
     public bool BorderVisible { get; set; } = true;
 
     public bool Draggable { get; set; }
 
-    public int AreaPadding { get; set; } = 10;
+    public uint AreaPadding { get; set; } = 10;
 
     public int HorizontalSpacing
     {
@@ -176,6 +158,9 @@ public class UIContainer : Control
         // Process drag first — may change logicalPosition/baseAreaTop
         ProcessDragState();
 
+        this.area.Width = this.layout.Width + (AreaPadding * 2f);
+        this.area.Height = this.layout.Height + (AreaPadding * 2f);
+
         // Resolve area center position from logical (top-left) coordinates + current dimensions.
         // Deferred here so that Width/Height set after Position still produce correct results.
         this.area.Position = this.logicalPosition.ToWorld(this.area.Width, this.area.Height);
@@ -196,14 +181,14 @@ public class UIContainer : Control
         this.titleBar = new RectShape
         {
             Position = new Vector2(this.area.Position.X, this.baseAreaTop + TitleBarHalfHeight),
-            Width = Width,
+            Width = this.area.Width,
             Height = TitleBarHeight,
             Color = this.titleBarClr,
             IsSolid = true,
         };
 
         this.titleBarText.Position = new Vector2(
-            this.titleBar.Position.X - (Width / 2f) + TitleBarLeftTextPadding,
+            this.titleBar.Position.X - (this.area.Width / 2f) + TitleBarLeftTextPadding,
             this.titleBar.Position.Y - (this.titleBarText.TextSize.Height / 2f));
 
         if (TitleBarVisible)

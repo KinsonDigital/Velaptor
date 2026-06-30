@@ -52,10 +52,8 @@ public class TextRenderingScene : SceneBase
     private bool isFirstRender = true;
     private string currentChosenFontFileName = $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf";
     private Label lblRenderSize;
-    private Label lblSingleLine;
     private CheckBox chkSingleLine;
     private Layout laySingleLine;
-    private Label lblColor;
     private CheckBox chkColor;
     private Layout layColor;
     private Slider sldFontSize;
@@ -75,8 +73,6 @@ public class TextRenderingScene : SceneBase
 
         this.mainContainer = new UIContainer();
         this.mainContainer.Position = new Vector2(50, 50);
-        this.mainContainer.Width = 500;
-        this.mainContainer.Height = 500;
         this.mainContainer.Position = new Vector2(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
         this.mainContainer.Draggable = true;
 
@@ -204,10 +200,9 @@ public class TextRenderingScene : SceneBase
 
     private void CreateSingleLineCtrls()
     {
-        this.lblSingleLine = new Label();
-        this.lblSingleLine.Text = "Single-Line:";
-
         this.chkSingleLine = new CheckBox();
+        this.chkSingleLine.Text = "Single-Line";
+        this.chkSingleLine.IsChecked = true;
         this.chkSingleLine.CheckedChanged += (_, e) =>
         {
             this.text = e.IsChecked ? SingleLineText : this.multiLineText;
@@ -219,16 +214,13 @@ public class TextRenderingScene : SceneBase
         this.laySingleLine.Centered = true;
         this.laySingleLine.HorizontalSpacing = 5;
 
-        this.laySingleLine.AddControl(this.lblSingleLine);
         this.laySingleLine.AddControl(this.chkSingleLine);
     }
 
     private void CreateColorCtrls()
     {
-        this.lblColor = new Label();
-        this.lblColor.Text = "Color:";
-
         this.chkColor = new CheckBox();
+        this.chkColor.Text = "Color Off";
         this.chkColor.CheckedChanged += (_, e) =>
         {
             this.isBlue = e.IsChecked;
@@ -240,7 +232,6 @@ public class TextRenderingScene : SceneBase
         this.layColor.Centered = true;
         this.layColor.HorizontalSpacing = 5;
 
-        this.layColor.AddControl(this.lblColor);
         this.layColor.AddControl(this.chkColor);
     }
 
