@@ -22,11 +22,9 @@ public class KeyboardScene : SceneBase
     private const string Instructions = "Hit a key on the keyboard to see if it is correct.";
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly BackgroundManager backgroundManager;
-    private readonly IContentManager contentManager;
-    private readonly IFontRenderer fontRenderer;
+    private readonly Label lblInstructions;
+    private readonly Label lblDownKeys;
     private readonly StringBuilder downKeyText = new (Instructions);
-    private IFont? font;
-    private Vector2 textPos = Vector2.Zero;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -35,8 +33,13 @@ public class KeyboardScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
-        this.contentManager = ContentManager.Create();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+
+        this.lblInstructions = new Label
+        {
+            Text = Instructions,
+        };
+
+        this.lblDownKeys = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
@@ -48,9 +51,10 @@ public class KeyboardScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+        this.lblInstructions.Load();
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowCenter.Y - this.lblInstructions.HalfHeight);
 
-        this.font = this.contentManager.LoadFont(Program.DefaultFontRegular, 12);
-        this.textPos = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.lblDownKeys.Load();
 
         base.LoadContent();
     }
@@ -63,7 +67,8 @@ public class KeyboardScene : SceneBase
             return;
         }
 
-        this.contentManager.Unload(this.font);
+        this.lblInstructions.Unload();
+        this.lblDownKeys.Unload();
         this.backgroundManager.Unload();
 
         base.UnloadContent();
@@ -78,19 +83,23 @@ public class KeyboardScene : SceneBase
         {
             this.downKeyText.Clear();
 
-            foreach (var key in currentKeyState.GetDownKeys())
+            var keys = currentKeyState.GetDownKeys();
+            for (var i = 0; i < keys.Length; i++)
             {
-                this.downKeyText.Append(key);
-                this.downKeyText.Append(", ");
+                this.downKeyText.Append(keys[i]);
+                this.downKeyText.Append(i == keys.Length - 1 ? string.Empty : ", ");
             }
-
-            this.downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
         }
         else
         {
             this.downKeyText.Clear();
             this.downKeyText.Append("No Keys Pressed");
         }
+
+        this.lblDownKeys.Text = this.downKeyText.ToString();
+        this.lblDownKeys.Position = new Vector2(WindowCenter.X - this.lblDownKeys.HalfWidth, WindowCenter.Y - this.lblDownKeys.HalfHeight + 50);
+        this.lblDownKeys.Update();
+        this.lblInstructions.Update();
 
         base.Update(frameTime);
     }
@@ -100,9 +109,8 @@ public class KeyboardScene : SceneBase
     {
         this.backgroundManager.Render();
 
-        var instructionsPos = new Vector2(WindowCenter.X, WindowCenter.Y - 50);
-        this.fontRenderer.Render(this.font, Instructions, instructionsPos);
-        this.fontRenderer.Render(this.font, this.downKeyText.ToString(), this.textPos);
+        this.lblInstructions.Render();
+        this.lblDownKeys.Render();
 
         base.Render();
     }

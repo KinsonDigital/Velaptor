@@ -75,16 +75,16 @@ public class MainWindow : Window
         // };
 
         // WORKS
-        var cameraScene = new CameraScene
-        {
-            Name = SplitByUpperCase(nameof(CameraScene)),
-        };
+        // var cameraScene = new CameraScene
+        // {
+        //     Name = SplitByUpperCase(nameof(CameraScene)),
+        // };
 
         // WORKS
-        // var keyboardScene = new KeyboardScene
-        // {
-        //     Name = SplitByUpperCase(nameof(KeyboardScene)),
-        // };
+        var keyboardScene = new KeyboardScene
+        {
+            Name = SplitByUpperCase(nameof(KeyboardScene)),
+        };
 
         // WORKS
         // var mouseScene = new MouseScene
@@ -139,8 +139,8 @@ public class MainWindow : Window
         // SceneManager.AddScene(webGpuTestingScene);
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
-        SceneManager.AddScene(cameraScene);
-        // SceneManager.AddScene(keyboardScene);
+        // SceneManager.AddScene(cameraScene);
+        SceneManager.AddScene(keyboardScene);
         // SceneManager.AddScene(mouseScene);
         // SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
