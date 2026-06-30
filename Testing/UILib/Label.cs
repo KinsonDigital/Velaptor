@@ -65,6 +65,8 @@ public class Label : Control
 
     public SizeF TextSize { get; private set; }
 
+    public Color TextColor { get; set; } = Color.White;
+
     public Color BackgroundColor { get; set; } = Color.Transparent;
 
     public bool IsMouseOver { get; private set; }
@@ -139,7 +141,7 @@ public class Label : Control
             this.shapeRenderer.Render(this.background, -10);
         }
 
-        this.fontRenderer.Render(this.font, Text, scrnPos, Color.White, layer);
+        this.fontRenderer.Render(this.font, Text, scrnPos, TextColor, layer);
 
         base.Render();
     }
