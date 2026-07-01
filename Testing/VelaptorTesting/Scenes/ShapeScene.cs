@@ -5,6 +5,7 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -20,6 +21,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
+using Container = UILib.Container;
 
 /// <summary>
 /// Tests out rectangle rendering.
@@ -36,10 +38,12 @@ public class ShapeScene : SceneBase
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ControlFactory ctrlFactory;
 
-    private readonly Color[] clrList =
-    [
-        Color.IndianRed, Color.SeaGreen, Color.CornflowerBlue
-    ];
+    private readonly Dictionary<string, Color> clrList = new()
+    {
+        { nameof(Color.Red), Color.IndianRed },
+        { nameof(Color.Green), Color.SeaGreen },
+        { nameof(Color.Blue), Color.CornflowerBlue },
+    };
 
     private readonly IContentManager contentManager;
     private readonly IShapeRenderer shapeRenderer;
@@ -68,7 +72,7 @@ public class ShapeScene : SceneBase
     private string circleInstructionText;
     private string rectInstructionText;
     private Label lblShapeType;
-    private DropDown cmbShapeType;
+    private DropDown drpShapeType;
     private Layout layShapeType;
     private Layout layMain;
     private UILib.Container conMain;
@@ -80,6 +84,18 @@ public class ShapeScene : SceneBase
     private Slider sldBorderThickness;
     private Layout layCircleProps;
     private Layout layBorderThickness;
+    private Label lblDiameter;
+    private Slider sldDiameter;
+    private Layout layDiameter;
+    private Label lblGradType;
+    private DropDown drpGradType;
+    private DropDown drpGradStopClr;
+    private Label lblGradStopClr;
+    private DropDown drpGradStartClr;
+    private Layout layGradType;
+    private Label lblGradStartClr;
+    private Layout layGradStartClr;
+    private Layout layGradStopClr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -123,8 +139,12 @@ public class ShapeScene : SceneBase
         this.layMain = new Layout();
         this.layMain.AddControl(this.layShapeType);
         this.layMain.AddControl(this.layCircleProps);
+        this.layMain.AddControl(this.layDiameter);
+        this.layMain.AddControl(this.layGradType);
+        this.layMain.AddControl(this.layGradStartClr);
+        this.layMain.AddControl(this.layGradStopClr);
 
-        this.conMain = new UILib.Container();
+        this.conMain = new Container();
         this.conMain.AddLayoutControl(this.layMain);
     }
 
@@ -239,10 +259,10 @@ public class ShapeScene : SceneBase
         {
             Text = "Shape Type:",
         };
-        this.cmbShapeType = new DropDown();
-        this.cmbShapeType.AddItem(nameof(ShapeType.Rectangle));
-        this.cmbShapeType.AddItem(nameof(ShapeType.Circle));
-        this.cmbShapeType.SelectedItemChanged += (_, e) =>
+        this.drpShapeType = new DropDown();
+        this.drpShapeType.AddItem(nameof(ShapeType.Rectangle));
+        this.drpShapeType.AddItem(nameof(ShapeType.Circle));
+        this.drpShapeType.SelectedItemChanged += (_, e) =>
         {
             this.shapeType = Enum.Parse<ShapeType>(e.NewValue);
 
@@ -260,7 +280,7 @@ public class ShapeScene : SceneBase
         this.layShapeType = new Layout();
         this.layShapeType.StackDirection = StackDirection.Horizontal;
         this.layShapeType.AddControl(this.lblShapeType);
-        this.layShapeType.AddControl(this.cmbShapeType);
+        this.layShapeType.AddControl(this.drpShapeType);
 
         return;
         var cmbShapeType = this.ctrlFactory.CreateComboBox();
@@ -309,9 +329,26 @@ public class ShapeScene : SceneBase
         this.lblCircleClr.Text = "Color:";
 
         this.drpCircleClr = new DropDown();
+        this.drpCircleClr.SelectedItemChanged += (_, e) =>
+        {
+            var selectedColor = e.NewValue;
+
+            switch (selectedColor)
+            {
+                case "Red":
+                    this.circle.Color = Color.IndianRed;
+                    break;
+                case "Green":
+                    this.circle.Color = Color.SeaGreen;
+                    break;
+                case "Blue":
+                    this.circle.Color = Color.CornflowerBlue;
+                    break;
+            }
+        };
+        this.drpCircleClr.AddItem("Blue");
         this.drpCircleClr.AddItem("Red");
         this.drpCircleClr.AddItem("Green");
-        this.drpCircleClr.AddItem("Blue");
 
         // Circle color layout
         this.layCircleClr = new Layout();
@@ -333,6 +370,8 @@ public class ShapeScene : SceneBase
         this.layBorderThickness = new Layout();
         this.layBorderThickness.StackDirection = StackDirection.Horizontal;
         this.layBorderThickness.Centered = true;
+        this.sldBorderThickness.Min = 1;
+        this.sldBorderThickness.Max = DefaultCircleDiameter / 2;
         this.layBorderThickness.AddControl(this.lblBorderThickness);
         this.layBorderThickness.AddControl(this.sldBorderThickness);
 
@@ -343,314 +382,384 @@ public class ShapeScene : SceneBase
         this.layCircleProps.AddControl(this.layCircleClr);
         this.layCircleProps.AddControl(this.layBorderThickness);
 
+        // Diameter controls
+        this.lblDiameter = new Label();
+        this.lblDiameter.Text = "Diameter:";
+
+        this.sldDiameter = new Slider();
+        this.sldDiameter.Min = 10;
+        this.sldDiameter.Max = 500;
+        this.sldDiameter.Value = DefaultCircleDiameter;
+        this.sldDiameter.ValueChanged += (_, e) => this.circle.Diameter = e.NewValue;
+
+        // Diameter layout
+        this.layDiameter = new Layout();
+        this.layDiameter.StackDirection = StackDirection.Horizontal;
+        this.layDiameter.Centered = true;
+        this.layDiameter.AddControl(this.lblDiameter);
+        this.layDiameter.AddControl(this.sldDiameter);
+
+        // Gradient type controls
+        this.lblGradType = new Label();
+        this.lblGradType.Text = "Gradient Type:";
+
+        this.drpGradType = new DropDown();
+        this.drpGradType.SelectedItemChanged += (_, e) =>
+        {
+            var selectedGradType = Enum.Parse<ColorGradient>(e.NewValue);
+            this.circle.GradientType = selectedGradType;
+        };
+        this.drpGradType.AddItem(nameof(ColorGradient.None));
+        this.drpGradType.AddItem(nameof(ColorGradient.Horizontal));
+        this.drpGradType.AddItem(nameof(ColorGradient.Vertical));
+
+        this.layGradType = new Layout();
+        this.layGradType.StackDirection = StackDirection.Horizontal;
+        this.layGradType.Centered = true;
+        this.layGradType.AddControl(this.lblGradType);
+        this.layGradType.AddControl(this.drpGradType);
+
+        // Gradient start color
+        this.lblGradStartClr = new Label();
+        this.lblGradStartClr.Text = "Gradient Start Color:";
+
+        this.drpGradStartClr = new DropDown();
+        this.drpGradStartClr.SelectedItemChanged += (_, e) => this.circle.GradientStart = this.clrList[e.NewValue];
+        this.drpGradStartClr.AddItem(nameof(Color.Red));
+        this.drpGradStartClr.AddItem(nameof(Color.Green));
+        this.drpGradStartClr.AddItem(nameof(Color.Blue));
+
+        this.layGradStartClr = new Layout();
+        this.layGradStartClr.StackDirection = StackDirection.Horizontal;
+        this.layGradStartClr.Centered = true;
+        this.layGradStartClr.AddControl(this.lblGradStartClr);
+        this.layGradStartClr.AddControl(this.drpGradStartClr);
+
+        // Gradient stop color
+        this.lblGradStopClr = new Label();
+        this.lblGradStopClr.Text = "Gradient Stop Color:";
+
+        this.drpGradStopClr = new DropDown();
+        this.drpGradStopClr.SelectedItemChanged += (_, e) => this.circle.GradientStop = this.clrList[e.NewValue];
+        this.drpGradStopClr.AddItem(nameof(Color.Red));
+        this.drpGradStopClr.AddItem(nameof(Color.Green));
+        this.drpGradStopClr.AddItem(nameof(Color.Blue));
+
+        this.layGradStopClr = new Layout();
+        this.layGradStopClr.StackDirection = StackDirection.Horizontal;
+        this.layGradStopClr.Centered = true;
+        this.layGradStopClr.AddControl(this.lblGradStopClr);
+        this.layGradStopClr.AddControl(this.drpGradStopClr);
+
         return;
-        var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
-        sldCircleBorderThickness.Name = nameof(sldCircleBorderThickness);
-        sldCircleBorderThickness.Text = "Border Thickness:";
-        sldCircleBorderThickness.Value = DefaultBorderThickness;
-        sldCircleBorderThickness.Min = 1;
-        sldCircleBorderThickness.Max = DefaultCircleDiameter / 2;
-        sldCircleBorderThickness.ValueChanged += (_, newValue) =>
-        {
-            this.circle.BorderThickness = newValue;
-        };
+        // var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
+        // sldCircleBorderThickness.Name = nameof(sldCircleBorderThickness);
+        // sldCircleBorderThickness.Text = "Border Thickness:";
+        // sldCircleBorderThickness.Value = DefaultBorderThickness;
+        // sldCircleBorderThickness.Min = 1;
+        // sldCircleBorderThickness.Max = DefaultCircleDiameter / 2;
+        // sldCircleBorderThickness.ValueChanged += (_, newValue) =>
+        // {
+        //     this.circle.BorderThickness = newValue;
+        // };
 
-        var sldCircleDiameter = this.ctrlFactory.CreateSlider();
-        this.sldCircleDiameterName = nameof(sldCircleDiameter);
-        sldCircleDiameter.Name = nameof(sldCircleDiameter);
-        sldCircleDiameter.Text = "Diameter:";
-        sldCircleDiameter.Value = DefaultCircleDiameter;
-        sldCircleDiameter.Min = 10;
-        sldCircleDiameter.Max = 500;
-        sldCircleDiameter.ValueChanged += (_, newValue) =>
-        {
-            var sldBorderThickness = this.grpCircleCtrls.GetControl<ISlider>(nameof(sldCircleBorderThickness));
-            sldBorderThickness.Max = newValue / 2;
-            this.circle.Diameter = newValue;
-        };
+        // var sldCircleDiameter = this.ctrlFactory.CreateSlider();
+        // this.sldCircleDiameterName = nameof(sldCircleDiameter);
+        // sldCircleDiameter.Name = nameof(sldCircleDiameter);
+        // sldCircleDiameter.Text = "Diameter:";
+        // sldCircleDiameter.Value = DefaultCircleDiameter;
+        // sldCircleDiameter.Min = 10;
+        // sldCircleDiameter.Max = 500;
+        // sldCircleDiameter.ValueChanged += (_, newValue) =>
+        // {
+        //     var sldBorderThickness = this.grpCircleCtrls.GetControl<ISlider>(nameof(sldCircleBorderThickness));
+        //     sldBorderThickness.Max = newValue / 2;
+        //     this.circle.Diameter = newValue;
+        // };
 
-        var cmbCircleSolidColor = this.ctrlFactory.CreateComboBox();
-        cmbCircleSolidColor.Name = nameof(cmbCircleSolidColor);
-        this.cmbCircleSolidColorName = nameof(cmbCircleSolidColor);
-        cmbCircleSolidColor.Label = "Color:";
-        cmbCircleSolidColor.Width = 100;
-        cmbCircleSolidColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbCircleSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.circle.Color = this.clrList[selectedIndex];
-        };
-        cmbCircleSolidColor.SelectedItemIndex = 2;
+        // var cmbCircleSolidColor = this.ctrlFactory.CreateComboBox();
+        // cmbCircleSolidColor.Name = nameof(cmbCircleSolidColor);
+        // this.cmbCircleSolidColorName = nameof(cmbCircleSolidColor);
+        // cmbCircleSolidColor.Label = "Color:";
+        // cmbCircleSolidColor.Width = 100;
+        // cmbCircleSolidColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbCircleSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.circle.Color = this.clrList[selectedIndex];
+        // };
+        // cmbCircleSolidColor.SelectedItemIndex = 2;
 
-        var chkCircleIsSolid = this.ctrlFactory.CreateCheckbox();
-        chkCircleIsSolid.Name = nameof(chkCircleIsSolid);
-        chkCircleIsSolid.LabelWhenChecked = "Solid";
-        chkCircleIsSolid.LabelWhenUnchecked = "Not Solid";
-        chkCircleIsSolid.CheckedChanged += (_, isChecked) =>
-        {
-            this.circle.IsSolid = isChecked;
-        };
+        // var chkCircleIsSolid = this.ctrlFactory.CreateCheckbox();
+        // chkCircleIsSolid.Name = nameof(chkCircleIsSolid);
+        // chkCircleIsSolid.LabelWhenChecked = "Solid";
+        // chkCircleIsSolid.LabelWhenUnchecked = "Not Solid";
+        // chkCircleIsSolid.CheckedChanged += (_, isChecked) =>
+        // {
+        //     this.circle.IsSolid = isChecked;
+        // };
 
-        this.grpCircleCtrls = this.ctrlFactory.CreateControlGroup();
-        this.grpCircleCtrls.Title = "Circle Props";
-        this.grpCircleCtrls.AutoSizeToFitContent = true;
-        this.grpCircleCtrls.Initialized += (_, _) =>
-        {
-            this.grpCircleCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
-        };
-        this.grpCircleCtrls.Add(chkCircleIsSolid);
-        this.grpCircleCtrls.Add(cmbCircleSolidColor);
-        this.grpCircleCtrls.Add(sldCircleBorderThickness);
-        this.grpCircleCtrls.Add(sldCircleDiameter);
+        // this.grpCircleCtrls = this.ctrlFactory.CreateControlGroup();
+        // this.grpCircleCtrls.Title = "Circle Props";
+        // this.grpCircleCtrls.AutoSizeToFitContent = true;
+        // this.grpCircleCtrls.Initialized += (_, _) =>
+        // {
+        //     this.grpCircleCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+        // };
+        // this.grpCircleCtrls.Add(chkCircleIsSolid);
+        // this.grpCircleCtrls.Add(cmbCircleSolidColor);
+        // this.grpCircleCtrls.Add(sldCircleBorderThickness);
+        // this.grpCircleCtrls.Add(sldCircleDiameter);
     }
 
     private void CreateCircleGradCtrls() // ❌
     {
-        var cmbCircleGradType = this.ctrlFactory.CreateComboBox();
-        cmbCircleGradType.Name = nameof(cmbCircleGradType);
-        cmbCircleGradType.Label = "Gradient Type:";
-        cmbCircleGradType.Width = 125;
-        cmbCircleGradType.Items =
-        [
-            nameof(ColorGradient.None),
-            nameof(ColorGradient.Horizontal),
-            nameof(ColorGradient.Vertical),
-        ];
-        cmbCircleGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            var selectedGradType = (ColorGradient)selectedIndex;
-            var cmbSolidClr = this.grpCircleCtrls.GetControl<IComboBox>(this.cmbCircleSolidColorName);
+        // var cmbCircleGradType = this.ctrlFactory.CreateComboBox();
+        // cmbCircleGradType.Name = nameof(cmbCircleGradType);
+        // cmbCircleGradType.Label = "Gradient Type:";
+        // cmbCircleGradType.Width = 125;
+        // cmbCircleGradType.Items =
+        // [
+        //     nameof(ColorGradient.None),
+        //     nameof(ColorGradient.Horizontal),
+        //     nameof(ColorGradient.Vertical),
+        // ];
+        // cmbCircleGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     var selectedGradType = (ColorGradient)selectedIndex;
+        //     var cmbSolidClr = this.grpCircleCtrls.GetControl<IComboBox>(this.cmbCircleSolidColorName);
 
-            if (cmbSolidClr is not null)
-            {
-                cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
-            }
+        //     if (cmbSolidClr is not null)
+        //     {
+        //         cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
+        //     }
 
-            this.circle.GradientType = selectedGradType;
-        };
+        //     this.circle.GradientType = selectedGradType;
+        // };
 
-        var cmbCircleGradStartColor = this.ctrlFactory.CreateComboBox();
-        cmbCircleGradStartColor.Name = nameof(cmbCircleGradStartColor);
-        cmbCircleGradStartColor.Label = "Grad Start Color:";
-        cmbCircleGradStartColor.Width = 100;
-        cmbCircleGradStartColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbCircleGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.circle.GradientStart = this.clrList[selectedIndex];
-        };
+        // var cmbCircleGradStartColor = this.ctrlFactory.CreateComboBox();
+        // cmbCircleGradStartColor.Name = nameof(cmbCircleGradStartColor);
+        // cmbCircleGradStartColor.Label = "Grad Start Color:";
+        // cmbCircleGradStartColor.Width = 100;
+        // cmbCircleGradStartColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbCircleGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.circle.GradientStart = this.clrList[selectedIndex];
+        // };
 
-        var cmbCircleGradStopColor = this.ctrlFactory.CreateComboBox();
-        cmbCircleGradStopColor.Name = nameof(cmbCircleGradStopColor);
-        cmbCircleGradStopColor.Label = "Grad Stop Color:";
-        cmbCircleGradStopColor.Width = 100;
-        cmbCircleGradStopColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbCircleGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.circle.GradientStop = this.clrList[selectedIndex];
-        };
-        cmbCircleGradStopColor.SelectedItemIndex = 1;
+        // var cmbCircleGradStopColor = this.ctrlFactory.CreateComboBox();
+        // cmbCircleGradStopColor.Name = nameof(cmbCircleGradStopColor);
+        // cmbCircleGradStopColor.Label = "Grad Stop Color:";
+        // cmbCircleGradStopColor.Width = 100;
+        // cmbCircleGradStopColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbCircleGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.circle.GradientStop = this.clrList[selectedIndex];
+        // };
+        // cmbCircleGradStopColor.SelectedItemIndex = 1;
 
-        this.grpCircleClrGradCtrls = this.ctrlFactory.CreateControlGroup();
-        this.grpCircleClrGradCtrls.Title = "Circle Color Gradient Props";
-        this.grpCircleClrGradCtrls.AutoSizeToFitContent = true;
-        this.grpCircleClrGradCtrls.Initialized += (_, _) =>
-        {
-            this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpCircleClrGradCtrls.HalfHeight);
-        };
-        this.grpCircleClrGradCtrls.Add(cmbCircleGradType);
-        this.grpCircleClrGradCtrls.Add(cmbCircleGradStartColor);
-        this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
+        // this.grpCircleClrGradCtrls = this.ctrlFactory.CreateControlGroup();
+        // this.grpCircleClrGradCtrls.Title = "Circle Color Gradient Props";
+        // this.grpCircleClrGradCtrls.AutoSizeToFitContent = true;
+        // this.grpCircleClrGradCtrls.Initialized += (_, _) =>
+        // {
+        //     this.grpCircleClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpCircleClrGradCtrls.HalfHeight);
+        // };
+        // this.grpCircleClrGradCtrls.Add(cmbCircleGradType);
+        // this.grpCircleClrGradCtrls.Add(cmbCircleGradStartColor);
+        // this.grpCircleClrGradCtrls.Add(cmbCircleGradStopColor);
     }
 
     private void CreateRectGradCtrls() // ❌
+  
     {
-        var cmbRectGradType = this.ctrlFactory.CreateComboBox();
-        cmbRectGradType.Name = nameof(cmbRectGradType);
-        cmbRectGradType.Label = "Gradient Type:";
-        cmbRectGradType.Width = 125;
-        cmbRectGradType.Items =
-        [
-            nameof(ColorGradient.None),
-            nameof(ColorGradient.Horizontal),
-            nameof(ColorGradient.Vertical),
-        ];
-        cmbRectGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            var selectedGradType = (ColorGradient)selectedIndex;
-            var cmbSolidClr = this.grpRectCtrls.GetControl<IComboBox>(this.cmbRectSolidColorName);
+        // var cmbRectGradType = this.ctrlFactory.CreateComboBox();
+        // cmbRectGradType.Name = nameof(cmbRectGradType);
+        // cmbRectGradType.Label = "Gradient Type:";
+        // cmbRectGradType.Width = 125;
+        // cmbRectGradType.Items =
+        // [
+        //     nameof(ColorGradient.None),
+        //     nameof(ColorGradient.Horizontal),
+        //     nameof(ColorGradient.Vertical),
+        // ];
+        // cmbRectGradType.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     var selectedGradType = (ColorGradient)selectedIndex;
+        //     var cmbSolidClr = this.grpRectCtrls.GetControl<IComboBox>(this.cmbRectSolidColorName);
 
-            if (cmbSolidClr is not null)
-            {
-                cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
-            }
+        //     if (cmbSolidClr is not null)
+        //     {
+        //         cmbSolidClr.Enabled = selectedGradType == ColorGradient.None;
+        //     }
 
-            this.rectangle.GradientType = selectedGradType;
-        };
+        //     this.rectangle.GradientType = selectedGradType;
+        // };
 
-        var cmbRectGradStartColor = this.ctrlFactory.CreateComboBox();
-        cmbRectGradStartColor.Name = nameof(cmbRectGradStartColor);
-        cmbRectGradStartColor.Label = "Grad Start Color:";
-        cmbRectGradStartColor.Width = 100;
-        cmbRectGradStartColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbRectGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.rectangle.GradientStart = this.clrList[selectedIndex];
-        };
+        // var cmbRectGradStartColor = this.ctrlFactory.CreateComboBox();
+        // cmbRectGradStartColor.Name = nameof(cmbRectGradStartColor);
+        // cmbRectGradStartColor.Label = "Grad Start Color:";
+        // cmbRectGradStartColor.Width = 100;
+        // cmbRectGradStartColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbRectGradStartColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.rectangle.GradientStart = this.clrList[selectedIndex];
+        // };
 
-        var cmbRectGradStopColor = this.ctrlFactory.CreateComboBox();
-        cmbRectGradStopColor.Name = nameof(cmbRectGradStopColor);
-        cmbRectGradStopColor.Label = "Grad Stop Color:";
-        cmbRectGradStopColor.Width = 100;
-        cmbRectGradStopColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbRectGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.rectangle.GradientStop = this.clrList[selectedIndex];
-        };
-        cmbRectGradStopColor.SelectedItemIndex = 1;
+        // var cmbRectGradStopColor = this.ctrlFactory.CreateComboBox();
+        // cmbRectGradStopColor.Name = nameof(cmbRectGradStopColor);
+        // cmbRectGradStopColor.Label = "Grad Stop Color:";
+        // cmbRectGradStopColor.Width = 100;
+        // cmbRectGradStopColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbRectGradStopColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.rectangle.GradientStop = this.clrList[selectedIndex];
+        // };
+        // cmbRectGradStopColor.SelectedItemIndex = 1;
 
-        this.grpRectClrGradCtrls = this.ctrlFactory.CreateControlGroup();
-        this.grpRectClrGradCtrls.Title = "Rect Color Gradient Props";
-        this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
-        this.grpRectClrGradCtrls.Visible = false;
-        this.grpRectClrGradCtrls.Initialized += (_, _) =>
-        {
-            this.grpRectClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectClrGradCtrls.HalfHeight);
-        };
-        this.grpRectClrGradCtrls.Add(cmbRectGradType);
-        this.grpRectClrGradCtrls.Add(cmbRectGradStartColor);
-        this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
+        // this.grpRectClrGradCtrls = this.ctrlFactory.CreateControlGroup();
+        // this.grpRectClrGradCtrls.Title = "Rect Color Gradient Props";
+        // this.grpRectClrGradCtrls.AutoSizeToFitContent = true;
+        // this.grpRectClrGradCtrls.Visible = false;
+        // this.grpRectClrGradCtrls.Initialized += (_, _) =>
+        // {
+        //     this.grpRectClrGradCtrls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectClrGradCtrls.HalfHeight);
+        // };
+        // this.grpRectClrGradCtrls.Add(cmbRectGradType);
+        // this.grpRectClrGradCtrls.Add(cmbRectGradStartColor);
+        // this.grpRectClrGradCtrls.Add(cmbRectGradStopColor);
     }
 
     private void CreateRectCtrls() // ❌
     {
-        var sldRectBorderThickness = this.ctrlFactory.CreateSlider();
-        sldRectBorderThickness.Name = nameof(sldRectBorderThickness);
-        sldRectBorderThickness.Text = "Border Thickness:";
-        sldRectBorderThickness.Value = DefaultBorderThickness;
-        sldRectBorderThickness.Min = 1;
-        sldRectBorderThickness.Max = 125;
-        sldRectBorderThickness.ValueChanged += (_, newValue) =>
-        {
-            this.rectangle.BorderThickness = newValue;
-        };
+        // var sldRectBorderThickness = this.ctrlFactory.CreateSlider();
+        // sldRectBorderThickness.Name = nameof(sldRectBorderThickness);
+        // sldRectBorderThickness.Text = "Border Thickness:";
+        // sldRectBorderThickness.Value = DefaultBorderThickness;
+        // sldRectBorderThickness.Min = 1;
+        // sldRectBorderThickness.Max = 125;
+        // sldRectBorderThickness.ValueChanged += (_, newValue) =>
+        // {
+        //     this.rectangle.BorderThickness = newValue;
+        // };
 
-        var sldRectWidth = this.ctrlFactory.CreateSlider();
-        sldRectWidth.Name = nameof(sldRectWidth);
-        this.sldRectWidthName = nameof(sldRectWidth);
-        sldRectWidth.Text = "Width:";
-        sldRectWidth.Value = DefaultRectWidth;
-        sldRectWidth.Min = 50;
-        sldRectWidth.Max = 500;
-        sldRectWidth.ValueChanged += (_, newWidth) =>
-        {
-            this.rectangle.Width = newWidth;
-            var newValue = (this.rectangle.Width < this.rectangle.Height
-                ? this.rectangle.Width
-                : this.rectangle.Height) / 2;
+        // var sldRectWidth = this.ctrlFactory.CreateSlider();
+        // sldRectWidth.Name = nameof(sldRectWidth);
+        // this.sldRectWidthName = nameof(sldRectWidth);
+        // sldRectWidth.Text = "Width:";
+        // sldRectWidth.Value = DefaultRectWidth;
+        // sldRectWidth.Min = 50;
+        // sldRectWidth.Max = 500;
+        // sldRectWidth.ValueChanged += (_, newWidth) =>
+        // {
+        //     this.rectangle.Width = newWidth;
+        //     var newValue = (this.rectangle.Width < this.rectangle.Height
+        //         ? this.rectangle.Width
+        //         : this.rectangle.Height) / 2;
 
-            var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
-            var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
-            var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
-            var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
-            var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
+        //     var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
+        //     var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
+        //     var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
+        //     var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
+        //     var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
 
-            sldBorderThicknessCtrl.Max = newValue;
-            sldTopLeftRadiusCtrl.Max = newValue;
-            sldTopRightRadiusCtrl.Max = newValue;
-            sldBottomRightRadiusCtrl.Max = newValue;
-            sldBottomLeftRadiusCtrl.Max = newValue;
-        };
+        //     sldBorderThicknessCtrl.Max = newValue;
+        //     sldTopLeftRadiusCtrl.Max = newValue;
+        //     sldTopRightRadiusCtrl.Max = newValue;
+        //     sldBottomRightRadiusCtrl.Max = newValue;
+        //     sldBottomLeftRadiusCtrl.Max = newValue;
+        // };
 
-        var sldRectHeight = this.ctrlFactory.CreateSlider();
-        sldRectHeight.Name = nameof(sldRectHeight);
-        this.sldRectHeightName = nameof(sldRectHeight);
-        sldRectHeight.Text = "Height:";
-        sldRectHeight.Value = DefaultRectHeight;
-        sldRectHeight.Min = 50;
-        sldRectHeight.Max = 500;
-        sldRectHeight.ValueChanged += (_, newHeight) =>
-        {
-            this.rectangle.Height = newHeight;
-            var newValue = (this.rectangle.Height < this.rectangle.Width
-                ? this.rectangle.Height
-                : this.rectangle.Width) / 2;
+        // var sldRectHeight = this.ctrlFactory.CreateSlider();
+        // sldRectHeight.Name = nameof(sldRectHeight);
+        // this.sldRectHeightName = nameof(sldRectHeight);
+        // sldRectHeight.Text = "Height:";
+        // sldRectHeight.Value = DefaultRectHeight;
+        // sldRectHeight.Min = 50;
+        // sldRectHeight.Max = 500;
+        // sldRectHeight.ValueChanged += (_, newHeight) =>
+        // {
+        //     this.rectangle.Height = newHeight;
+        //     var newValue = (this.rectangle.Height < this.rectangle.Width
+        //         ? this.rectangle.Height
+        //         : this.rectangle.Width) / 2;
 
-            var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
-            var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
-            var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
-            var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
-            var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
+        //     var sldBorderThicknessCtrl = this.grpRectCtrls.GetControl<ISlider>(nameof(sldRectBorderThickness));
+        //     var sldTopLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopLeftRadiusName);
+        //     var sldTopRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldTopRightRadiusName);
+        //     var sldBottomRightRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomRightRadiusName);
+        //     var sldBottomLeftRadiusCtrl = this.grpRectCornerRadiusCtrls.GetControl<ISlider>(this.sldBottomLeftRadiusName);
 
-            sldBorderThicknessCtrl.Max = newValue;
-            sldTopLeftRadiusCtrl.Max = newValue;
-            sldTopRightRadiusCtrl.Max = newValue;
-            sldBottomRightRadiusCtrl.Max = newValue;
-            sldBottomLeftRadiusCtrl.Max = newValue;
-        };
+        //     sldBorderThicknessCtrl.Max = newValue;
+        //     sldTopLeftRadiusCtrl.Max = newValue;
+        //     sldTopRightRadiusCtrl.Max = newValue;
+        //     sldBottomRightRadiusCtrl.Max = newValue;
+        //     sldBottomLeftRadiusCtrl.Max = newValue;
+        // };
 
-        var cmbRectSolidColor = this.ctrlFactory.CreateComboBox();
-        cmbRectSolidColor.Name = nameof(cmbRectSolidColor);
-        this.cmbRectSolidColorName = nameof(cmbRectSolidColor);
-        cmbRectSolidColor.Label = "Color:";
-        cmbRectSolidColor.Width = 100;
-        cmbRectSolidColor.Items =
-        [
-            "Red",
-            "Green",
-            "Blue",
-        ];
-        cmbRectSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.rectangle.Color = this.clrList[selectedIndex];
-        };
-        cmbRectSolidColor.SelectedItemIndex = 2;
+        // var cmbRectSolidColor = this.ctrlFactory.CreateComboBox();
+        // cmbRectSolidColor.Name = nameof(cmbRectSolidColor);
+        // this.cmbRectSolidColorName = nameof(cmbRectSolidColor);
+        // cmbRectSolidColor.Label = "Color:";
+        // cmbRectSolidColor.Width = 100;
+        // cmbRectSolidColor.Items =
+        // [
+        //     "Red",
+        //     "Green",
+        //     "Blue",
+        // ];
+        // cmbRectSolidColor.SelectedItemIndexChanged += (_, selectedIndex) =>
+        // {
+        //     this.rectangle.Color = this.clrList[selectedIndex];
+        // };
+        // cmbRectSolidColor.SelectedItemIndex = 2;
 
-        var chkRectIsSolid = this.ctrlFactory.CreateCheckbox();
-        chkRectIsSolid.Name = nameof(chkRectIsSolid);
-        chkRectIsSolid.LabelWhenChecked = "Solid";
-        chkRectIsSolid.LabelWhenUnchecked = "Not Solid";
-        chkRectIsSolid.CheckedChanged += (_, isChecked) =>
-        {
-            this.rectangle.IsSolid = isChecked;
-        };
+        // var chkRectIsSolid = this.ctrlFactory.CreateCheckbox();
+        // chkRectIsSolid.Name = nameof(chkRectIsSolid);
+        // chkRectIsSolid.LabelWhenChecked = "Solid";
+        // chkRectIsSolid.LabelWhenUnchecked = "Not Solid";
+        // chkRectIsSolid.CheckedChanged += (_, isChecked) =>
+        // {
+        //     this.rectangle.IsSolid = isChecked;
+        // };
 
-        this.grpRectCtrls = this.ctrlFactory.CreateControlGroup();
-        this.grpRectCtrls.Title = "Rectangle Props";
-        this.grpRectCtrls.AutoSizeToFitContent = true;
-        this.grpRectCtrls.Visible = false;
-        this.grpRectCtrls.Initialized += (_, _) =>
-        {
-            this.grpRectCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
-        };
-        this.grpRectCtrls.Add(chkRectIsSolid);
-        this.grpRectCtrls.Add(cmbRectSolidColor);
-        this.grpRectCtrls.Add(sldRectBorderThickness);
-        this.grpRectCtrls.Add(sldRectHeight);
-        this.grpRectCtrls.Add(sldRectWidth);
+        // this.grpRectCtrls = this.ctrlFactory.CreateControlGroup();
+        // this.grpRectCtrls.Title = "Rectangle Props";
+        // this.grpRectCtrls.AutoSizeToFitContent = true;
+        // this.grpRectCtrls.Visible = false;
+        // this.grpRectCtrls.Initialized += (_, _) =>
+        // {
+        //     this.grpRectCtrls.Position = new Point(WindowPadding, this.grpShapeType.Bottom + WindowPadding);
+        // };
+        // this.grpRectCtrls.Add(chkRectIsSolid);
+        // this.grpRectCtrls.Add(cmbRectSolidColor);
+        // this.grpRectCtrls.Add(sldRectBorderThickness);
+        // this.grpRectCtrls.Add(sldRectHeight);
+        // this.grpRectCtrls.Add(sldRectWidth);
     }
 
     [SuppressMessage("csharpsquid", "S2583", Justification = "Need to leave as is in case of constant value change.")]

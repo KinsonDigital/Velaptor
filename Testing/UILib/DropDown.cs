@@ -205,10 +205,14 @@ public class DropDown : Control
 
             if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
             {
-                this.isExpanded = true;
+                this.isExpanded = !this.isExpanded;
                 this.dropDownReactable.Push(
                     SubscriptionIds.OverDropDownItemId,
-                    new DisableMouseSubscriptionData { IsExpanded = true, ExpandedDropDownId = this.id });
+                    new DisableMouseSubscriptionData
+                    {
+                        IsExpanded = this.isExpanded,
+                        ExpandedDropDownId = this.isExpanded ? this.id : 0,
+                    });
             }
         }
         else

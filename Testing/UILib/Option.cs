@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
+using Carbonate.OneWay;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
@@ -18,16 +20,28 @@ public class Option : Control
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly Color OptionColor = Color.FromArgb(255, 89, 149, 224);
+    private readonly IDisposable subscription;
     private CircleShape circle;
     private Vector2 textPos;
     private MouseState prevMouseState;
     private string text = "Option";
     private IFont font;
+    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private bool mouseClickDisabled;
 
     public event EventHandler<CheckChangedEventArgs>? CheckChanged;
 
     public Option()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
@@ -105,9 +119,11 @@ public class Option : Control
             Position.Y);
         var textRect = new Rectangle((int)textRectPos.X, (int)textRectPos.Y, (int)textSize.Width, (int)textSize.Height);
         var isMouseOver = this.circle.Contains(mousePos) || textRect.Contains((int)mousePos.X, (int)mousePos.Y);
+        var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
+        var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
 
         // If the mouse if over any part of the checkbox and the left mouse button was just released
-        if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+        if (isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
             // Set the state of each item in the group
             for (var i = 0; i < checkStates.Count; i++)
@@ -128,7 +144,7 @@ public class Option : Control
         // Find the current item and set the check state.
         for (var i = 0; i < checkStates.Count; i++)
         {
-            if (checkStates[i].Item1 == GroupNumber && checkStates[i].Item2 == this.id)
+            if (!this.mouseClickDisabled && checkStates[i].Item1 == GroupNumber && checkStates[i].Item2 == this.id)
             {
                 IsChecked = checkStates[i].Item3;
             }

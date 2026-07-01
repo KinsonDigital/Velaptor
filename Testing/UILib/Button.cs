@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
+using Carbonate.OneWay;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -8,15 +10,28 @@ using Velaptor.Input;
 
 public class Button : Control
 {
+    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label label;
     private RectShape face;
     private MouseState prevMouseState;
+    private bool mouseClickDisabled;
+
     public EventHandler<EventArgs>? Click;
 
     public Button()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
+            () => this.subscription.Dispose()
+        );
+        
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.mouse = HardwareFactory.GetMouse();
         
@@ -82,7 +97,10 @@ public class Button : Control
 
             this.face.Color = this.face.Color.IncreaseBrightness(0.2f);
 
-            if (this.prevMouseState.IsButtonDown(MouseButton.LeftButton) && !mouseIsDown)
+            var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
+            var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
+
+            if (!this.mouseClickDisabled && prevLeftBtnDown && currentLeftBtnUp)
             {
                 this.Click?.Invoke(this, EventArgs.Empty);
             }

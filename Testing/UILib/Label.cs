@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
+using Carbonate.OneWay;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
@@ -13,16 +15,28 @@ public class Label : Control
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
+    private readonly IDisposable subscription;
+    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private RectShape background;
     private MouseState prevMouseState;
     private IFont? font;
     private string text = string.Empty;
     private bool isLoaded;
+    private bool mouseClickDisabled;
 
     public EventHandler<LabelClickEventArgs>? Click;
 
     public Label()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
@@ -119,8 +133,10 @@ public class Label : Control
 
         var labelRect = new Rectangle((int)scrnPos.X, (int)scrnPos.Y, (int)TextSize.Width, (int)TextSize.Height);
         IsMouseOver = labelRect.Contains((int)mousePos.X, (int)mousePos.Y);
+        var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
+        var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
 
-        if (IsMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+        if (IsMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
             this.Click?.Invoke(this, new LabelClickEventArgs(this));
         }

@@ -193,6 +193,13 @@ public class MainWindow : Window
         this.batcher.End();
     }
 
+    protected override void OnUnload()
+    {
+        ReactableFactory.Dispose();
+
+        base.OnUnload();
+    }
+
     /// <summary>
     /// Splits the given <param name="value"></param> based on uppercase characters.
     /// </summary>

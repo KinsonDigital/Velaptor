@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
+using Carbonate.OneWay;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
@@ -17,6 +19,7 @@ public class CheckBox : Control
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
+    private readonly IDisposable subscription;
     private RectShape mainArea;
     private Line mark1;
     private Line mark2;
@@ -24,11 +27,22 @@ public class CheckBox : Control
     private MouseState prevMouseState;
     private string text = "Check box";
     private IFont font;
+    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private bool mouseClickDisabled;
 
     public event EventHandler<CheckChangedEventArgs>? CheckedChanged;
 
     public CheckBox()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
@@ -119,9 +133,11 @@ public class CheckBox : Control
             Position.Y);
         var textRect = new Rectangle((int)textRectPos.X, (int)textRectPos.Y, (int)textSize.Width, (int)textSize.Height);
         var isMouseOver = this.mainArea.Contains(mousePos) || textRect.Contains((int)mousePos.X, (int)mousePos.Y);
+        var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
+        var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
 
         // If the mouse if over any part of the checkbox and the left mouse button was just released
-        if (isMouseOver && currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+        if (isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
             IsChecked = !IsChecked;
             CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));

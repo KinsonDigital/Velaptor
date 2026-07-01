@@ -1,8 +1,9 @@
-using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 
 internal static class ReactableFactory
 {
+    private static bool isDisposed;
+
     private static IPushReactable<DisableMouseSubscriptionData>? disableMouseClickReactable;
 
     public static IPushReactable<DisableMouseSubscriptionData> CreateDisableMouseClickReactable()
@@ -15,5 +16,18 @@ internal static class ReactableFactory
         disableMouseClickReactable = new PushReactable<DisableMouseSubscriptionData>();
 
         return disableMouseClickReactable;
+    }
+
+    public static void Dispose()
+    {
+        if (isDisposed)
+        {
+            return;
+        }
+
+        disableMouseClickReactable?.Dispose();
+        disableMouseClickReactable = null;
+
+        isDisposed = true;
     }
 }

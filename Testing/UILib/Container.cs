@@ -2,6 +2,8 @@
 
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
+using Carbonate.OneWay;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -17,8 +19,11 @@ public class Container : Control
     private readonly ILineRenderer lineRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label titleBarText;
-    private readonly Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
+    private Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
+    private readonly Color titleBarMouseNotOverClr = Color.FromArgb(255, 45, 74, 117);
+    private readonly Color titleBarMouseOverClr = Color.FromArgb(255, 55, 91, 142);
     private readonly Color borderClr = Color.FromArgb(255, 45, 74, 117);
+    private readonly IDisposable subscription;
     private Layout layout = new ();
     private RectShape area;
     private RectShape titleBar;
@@ -33,9 +38,20 @@ public class Container : Control
     private float baseAreaTop;
     private int verticalSpacing = 10;
     private int horizontalSpacing = 10;
+    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private bool mouseClickDisabled;
 
     public Container()
     {
+        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.mouse = HardwareFactory.GetMouse();
@@ -231,7 +247,7 @@ public class Container : Control
 
     private void ProcessDragState()
     {
-        if (!Draggable || !TitleBarVisible)
+        if (!Draggable || !TitleBarVisible || this.mouseClickDisabled)
         {
             return;
         }
@@ -239,10 +255,20 @@ public class Container : Control
         var currentMouseState = this.mouse.GetState();
         var mousePos = currentMouseState.GetPosition().ToVector2();
 
+        var isMouseOver = this.titleBar.Contains(mousePos);
+
+        if (isMouseOver)
+        {
+            this.titleBarClr = this.titleBarMouseOverClr;
+        }
+        else
+        {
+            this.titleBarClr = this.titleBarMouseNotOverClr;
+        }
+
         // Start dragging if the left mouse button is pressed while in the title bar
-        if (currentMouseState.IsButtonDown(MouseButton.LeftButton) &&
-            this.prevMouseState.IsButtonUp(MouseButton.LeftButton) &&
-            this.titleBar.Contains(mousePos))
+        if (isMouseOver && currentMouseState.IsButtonDown(MouseButton.LeftButton) &&
+            this.prevMouseState.IsButtonUp(MouseButton.LeftButton))
         {
             this.isDragging = true;
             this.lastMousePos = mousePos;

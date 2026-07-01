@@ -63,6 +63,7 @@ public class Slider : Control
     public override void Unload()
     {
         this.label.Unload();
+        this.disableMouseClickReactable.Dispose();
 
         base.Unload();
     }
