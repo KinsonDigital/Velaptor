@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Carbonate;
 using Carbonate.OneWay;
 using Velaptor;
 using Velaptor.Content;
@@ -9,21 +10,16 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-/* TODO:
-    1. Need to add the ability to disable mouse clicks for other controls
-    as long as a dropdown is expanded. This will prevent other controls from
-    being clicked when choosing an item from the dropdown list.
-        - This can be achieved using Carbonate to send a notification to all
-        controls that mouse clicking is disabled or enabled based on the dropdown's expanded state.
-*/
-
 public class DropDown : Control
 {
     private const int ListDividerHeight = 5;
     private const float PaddingRatio = 0.5f;
     private const float ArrowButtonWidthHeight = 30f;
     private const float ArrowButtonHalfWidthHeight = ArrowButtonWidthHeight / 2f;
-    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private static int nextId = 1;
+    private readonly int id;
+    private readonly IPushReactable<DisableMouseSubscriptionData> dropDownReactable;
+    private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly ILineRenderer lineRenderer;
@@ -33,12 +29,14 @@ public class DropDown : Control
     private readonly Color listAreaBackgroundClr = Color.FromArgb(255, 17, 17, 17);
     private readonly Color hoverListItemClr = Color.FromArgb(255, 57, 124, 204);
     private readonly Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
-    private readonly Color arrowDefaultClr  = Color.FromArgb(255, 41, 72, 109);
+    private readonly Color arrowDefaultClr = Color.FromArgb(255, 41, 72, 109);
     private RectShape selectedItemArea;
     private RectShape arrowFace;
     private string selectedItemText;
     private Vector2 selectedItemTextPos;
     private bool isExpanded;
+    private bool mouseClickDisabled;
+    private bool clickConsumedThisFrame;
     private RectShape listDividerRest;
     private IFont? font;
     private MouseState prevMouseState;
@@ -47,8 +45,21 @@ public class DropDown : Control
 
     public DropDown()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
-        
+        this.id = nextId++;
+
+        this.dropDownReactable = ReactableFactory.CreateDisableMouseClickReactable();
+
+        this.subscription = this.dropDownReactable.CreateOneWayReceive(
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) =>
+            {
+                this.mouseClickDisabled = data.IsExpanded && data.ExpandedDropDownId != this.id;
+                this.clickConsumedThisFrame = data.ConsumedClick;
+            },
+            () => this.subscription.Dispose()
+        );
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.lineRenderer = RendererFactory.CreateLineRenderer();
@@ -142,36 +153,7 @@ public class DropDown : Control
             IsSolid = true,
         };
 
-        // this.arrowBtn.Update();
-
         var mousePos = currentMouseState.GetPosition().ToVector2();
-        var isMouseOver = this.selectedItemArea.Contains(mousePos) || this.arrowFace.Contains(mousePos);
-
-        if (isMouseOver)
-        {
-            this.selectedItemArea.Color = this.selectedItemClr.IncreaseBrightness(0.4f);
-            this.arrowFace.Color = this.arrowFace.Color.IncreaseBrightness(0.4f);
-
-            if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
-            {
-                this.isExpanded = !this.isExpanded;
-                this.disableMouseClickReactable.Push(
-                    SubscriptionIds.DisableMouseClickId,
-                    new DisableMouseSubscriptionData { MouseDisabled = true });
-            }
-        }
-        else
-        {
-            this.selectedItemArea.Color = this.selectedItemClr;
-            this.arrowFace.Color = this.arrowDefaultClr;
-        }
-
-        if (this.listItems.Count >= 1)
-        {
-            this.selectedItemTextPos = new Vector2(
-                Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
-                Position.Y + (Height / 2f));
-        }
 
         if (this.isExpanded)
         {
@@ -200,6 +182,7 @@ public class DropDown : Control
                 }
 
                 item.Update();
+
                 this.listItems[i] = item;
             }
 
@@ -213,7 +196,36 @@ public class DropDown : Control
             };
         }
 
+        var isMouseOver = this.selectedItemArea.Contains(mousePos) || this.arrowFace.Contains(mousePos);
+
+        if (isMouseOver && !this.mouseClickDisabled && !this.clickConsumedThisFrame)
+        {
+            this.selectedItemArea.Color = this.selectedItemClr.IncreaseBrightness(0.4f);
+            this.arrowFace.Color = this.arrowFace.Color.IncreaseBrightness(0.4f);
+
+            if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
+            {
+                this.isExpanded = true;
+                this.dropDownReactable.Push(
+                    SubscriptionIds.OverDropDownItemId,
+                    new DisableMouseSubscriptionData { IsExpanded = true, ExpandedDropDownId = this.id });
+            }
+        }
+        else
+        {
+            this.selectedItemArea.Color = this.selectedItemClr;
+            this.arrowFace.Color = this.arrowDefaultClr;
+        }
+
+        if (this.listItems.Count >= 1)
+        {
+            this.selectedItemTextPos = new Vector2(
+                Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
+                Position.Y + (Height / 2f));
+        }
+
         this.prevMouseState = currentMouseState;
+        this.clickConsumedThisFrame = false;
 
         base.Update();
     }
@@ -281,5 +293,8 @@ public class DropDown : Control
         }
 
         this.isExpanded = false;
+        this.dropDownReactable.Push(
+            SubscriptionIds.OverDropDownItemId,
+            new DisableMouseSubscriptionData { IsExpanded = false, ExpandedDropDownId = 0, ConsumedClick = true });
     }
 }

@@ -33,9 +33,9 @@ public class Slider : Control
         this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
 
         this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
-            SubscriptionIds.DisableMouseClickId,
-            nameof(SubscriptionIds.DisableMouseClickId),
-            (data) => this.mouseClickDisabled = data.MouseDisabled,
+            SubscriptionIds.OverDropDownItemId,
+            nameof(SubscriptionIds.OverDropDownItemId),
+            (data) => this.mouseClickDisabled = data.IsExpanded,
             () => this.subscription.Dispose()
         );
 
