@@ -25,6 +25,8 @@ public class Slider : Control
     private bool isDragging;
     private bool mouseClickDisabled;
     private bool wasMouseDownLastFrame;
+    private float max = 100;
+    private float value;
 
     public event EventHandler<ValueChangedEventArgs>? ValueChanged;
 
@@ -47,11 +49,53 @@ public class Slider : Control
         Height = 30;
     }
 
-    public float Value { get; set; }
+    public float Value
+    {
+        get => this.value;
+        set
+        {
+            var oldValue = this.value;
+
+            if (value < Min)
+            {
+                this.value = Min;
+            }
+            else if (value > Max)
+            {
+                this.value = Max;
+            }
+            else
+            {
+                this.value = value;
+            }
+
+            if (this.value != oldValue)
+            {
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, this.value));
+            }
+        }
+    }
 
     public float Min { get; set; } = 0f;
 
-    public float Max { get; set; } = 100f;
+    public float Max
+    {
+        get => this.max;
+        set
+        {
+            var scrnPos = Position.ToWorld(Width, Height);
+
+            var minLeft = this.sliderArea.Left + HandleHalfWidth;
+            var maxRight = this.sliderArea.Right - HandleHalfWidth;
+
+            var posX = value.MapValue(Min, value, minLeft, maxRight);
+            posX = posX < minLeft ? minLeft : posX;
+
+            this.handlePos = new Vector2(posX, scrnPos.Y);
+
+            this.max = value;
+        }
+    }
 
     public override void Load()
     {

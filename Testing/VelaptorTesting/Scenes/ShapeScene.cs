@@ -96,6 +96,12 @@ public class ShapeScene : SceneBase
     private Label lblGradStartClr;
     private Layout layGradStartClr;
     private Layout layGradStopClr;
+    private Label lblRectWidth;
+    private Slider sldRectWidth;
+    private Layout layRectWidth;
+    private Slider sldRectHeight;
+    private Layout layRectHeight;
+    private Label lblRectHeight;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -117,7 +123,7 @@ public class ShapeScene : SceneBase
             GradientType = ColorGradient.None,
             GradientStart = Color.IndianRed,
             GradientStop = Color.SeaGreen,
-            IsSolid = false,
+            IsSolid = true,
         };
 
         this.circle = new CircleShape
@@ -129,7 +135,7 @@ public class ShapeScene : SceneBase
             GradientStart = Color.IndianRed,
             GradientStop = Color.SeaGreen,
             BorderThickness = DefaultBorderThickness,
-            IsSolid = false,
+            IsSolid = true,
         };
 
         CreateInstructions();
@@ -143,6 +149,8 @@ public class ShapeScene : SceneBase
         this.layMain.AddControl(this.layGradType);
         this.layMain.AddControl(this.layGradStartClr);
         this.layMain.AddControl(this.layGradStopClr);
+        this.layMain.AddControl(this.layRectWidth);
+        this.layMain.AddControl(this.layRectHeight);
 
         this.conMain = new Container();
         this.conMain.AddLayoutControl(this.layMain);
@@ -331,9 +339,7 @@ public class ShapeScene : SceneBase
         this.drpCircleClr = new DropDown();
         this.drpCircleClr.SelectedItemChanged += (_, e) =>
         {
-            var selectedColor = e.NewValue;
-
-            switch (selectedColor)
+            switch (e.NewValue)
             {
                 case "Red":
                     this.circle.Color = Color.IndianRed;
@@ -370,8 +376,6 @@ public class ShapeScene : SceneBase
         this.layBorderThickness = new Layout();
         this.layBorderThickness.StackDirection = StackDirection.Horizontal;
         this.layBorderThickness.Centered = true;
-        this.sldBorderThickness.Min = 1;
-        this.sldBorderThickness.Max = DefaultCircleDiameter / 2;
         this.layBorderThickness.AddControl(this.lblBorderThickness);
         this.layBorderThickness.AddControl(this.sldBorderThickness);
 
@@ -390,7 +394,11 @@ public class ShapeScene : SceneBase
         this.sldDiameter.Min = 10;
         this.sldDiameter.Max = 500;
         this.sldDiameter.Value = DefaultCircleDiameter;
-        this.sldDiameter.ValueChanged += (_, e) => this.circle.Diameter = e.NewValue;
+        this.sldDiameter.ValueChanged += (_, e) =>
+        {
+            this.circle.Diameter = e.NewValue;
+            // this.sldBorderThickness.Max = e.NewValue / 2;
+        };
 
         // Diameter layout
         this.layDiameter = new Layout();
@@ -450,6 +458,63 @@ public class ShapeScene : SceneBase
         this.layGradStopClr.Centered = true;
         this.layGradStopClr.AddControl(this.lblGradStopClr);
         this.layGradStopClr.AddControl(this.drpGradStopClr);
+
+        // Rectangle width
+        this.lblRectWidth = new Label();
+        this.lblRectWidth.Text = "Width:";
+
+        this.sldRectWidth = new Slider();
+        this.sldRectWidth.Value = 0;
+        this.sldRectWidth.Min = 50;
+        this.sldRectWidth.Max = 500;
+        this.sldRectWidth.ValueChanged += (_, e) =>
+        {
+            // TODO: Only run this if the shape type is set to rectangle
+            this.rectangle.Height = e.NewValue;
+            var newMaxValue = (this.rectangle.Height < this.rectangle.Width
+                ? this.rectangle.Height
+                : this.rectangle.Width) / 2;
+
+            this.sldBorderThickness.Max = newMaxValue;
+            //     sldTopLeftRadiusCtrl.Max = newMaxValue;
+            //     sldTopRightRadiusCtrl.Max = newMaxValue;
+            //     sldBottomRightRadiusCtrl.Max = newMaxValue;
+            //     sldBottomLeftRadiusCtrl.Max = newMaxValue;
+        };
+
+        this.layRectWidth = new Layout();
+        this.layRectWidth.StackDirection = StackDirection.Horizontal;
+        this.layRectWidth.Centered = true;
+        this.layRectWidth.AddControl(this.lblRectWidth);
+        this.layRectWidth.AddControl(this.sldRectWidth);
+
+        this.lblRectHeight = new Label();
+        this.lblRectHeight.Text = "Width:";
+
+        // Rectangle height
+        this.sldRectHeight = new Slider();
+        this.sldRectHeight.Value = 0;
+        this.sldRectHeight.Min = 50;
+        this.sldRectHeight.Max = 500;
+        this.sldRectHeight.ValueChanged += (_, e) =>
+        {
+            this.rectangle.Height = e.NewValue;
+            var newMaxValue = (this.rectangle.Width < this.rectangle.Height
+                ? this.rectangle.Width
+                : this.rectangle.Height) / 2;
+
+            this.sldBorderThickness.Max = newMaxValue;
+            //     sldTopLeftRadiusCtrl.Max = newMaxValue;
+            //     sldTopRightRadiusCtrl.Max = newMaxValue;
+            //     sldBottomRightRadiusCtrl.Max = newMaxValue;
+            //     sldBottomLeftRadiusCtrl.Max = newMaxValue;
+        };
+
+        this.layRectHeight = new Layout();
+        this.layRectHeight.StackDirection = StackDirection.Horizontal;
+        this.layRectHeight.Centered = true;
+        this.layRectHeight.AddControl(this.lblRectHeight);
+        this.layRectHeight.AddControl(this.sldRectHeight);
 
         return;
         // var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
@@ -585,7 +650,7 @@ public class ShapeScene : SceneBase
     }
 
     private void CreateRectGradCtrls() // ❌
-  
+
     {
         // var cmbRectGradType = this.ctrlFactory.CreateComboBox();
         // cmbRectGradType.Name = nameof(cmbRectGradType);
