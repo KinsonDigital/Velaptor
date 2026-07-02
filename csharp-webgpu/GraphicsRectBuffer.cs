@@ -151,10 +151,13 @@ internal sealed class GraphicsRectBuffer : IDisposable
         var br = rect.CornerRadius.BottomRight;
         var bl = rect.CornerRadius.BottomLeft;
 
-        var r = (float)rect.Color.R;
-        var g = (float)rect.Color.G;
-        var b = (float)rect.Color.B;
-        var aVal = (float)rect.Color.A;
+        // Per-vertex colors for gradient support.
+        // Vertex layout: 0=bottom-left, 1=bottom-right, 2=top-left, 3=top-right.
+        // The GPU interpolates between per-vertex colors to produce the gradient effect.
+        var (v0r, v0g, v0b, v0a) = GetVertexColor(rect, 0);
+        var (v1r, v1g, v1b, v1a) = GetVertexColor(rect, 1);
+        var (v2r, v2g, v2b, v2a) = GetVertexColor(rect, 2);
+        var (v3r, v3g, v3b, v3a) = GetVertexColor(rect, 3);
 
         var isFilled = rect.IsSolid ? 1f : 0f;
         var borderThickness = rect.BorderThickness;
@@ -172,19 +175,19 @@ internal sealed class GraphicsRectBuffer : IDisposable
 
         // Vertex 0: bottom-left
         var blNdc = ToNDC(left, bottom);
-        SetVertex(vertexData, 0, blNdc.X, blNdc.Y, centerX, centerY, w, h, r, g, b, aVal, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(vertexData, 0, blNdc.X, blNdc.Y, centerX, centerY, w, h, v0r, v0g, v0b, v0a, isFilled, borderThickness, tl, tr, br, bl);
 
         // Vertex 1: bottom-right
         var brNdc = ToNDC(right, bottom);
-        SetVertex(vertexData, 1, brNdc.X, brNdc.Y, centerX, centerY, w, h, r, g, b, aVal, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(vertexData, 1, brNdc.X, brNdc.Y, centerX, centerY, w, h, v1r, v1g, v1b, v1a, isFilled, borderThickness, tl, tr, br, bl);
 
         // Vertex 2: top-left
         var tlNdc = ToNDC(left, top);
-        SetVertex(vertexData, 2, tlNdc.X, tlNdc.Y, centerX, centerY, w, h, r, g, b, aVal, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(vertexData, 2, tlNdc.X, tlNdc.Y, centerX, centerY, w, h, v2r, v2g, v2b, v2a, isFilled, borderThickness, tl, tr, br, bl);
 
         // Vertex 3: top-right
         var trNdc = ToNDC(right, top);
-        SetVertex(vertexData, 3, trNdc.X, trNdc.Y, centerX, centerY, w, h, r, g, b, aVal, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(vertexData, 3, trNdc.X, trNdc.Y, centerX, centerY, w, h, v3r, v3g, v3b, v3a, isFilled, borderThickness, tl, tr, br, bl);
 
         // Indices: 2 triangles forming a quad
         var baseV = rectIndex * VerticesPerRect;
@@ -196,6 +199,35 @@ internal sealed class GraphicsRectBuffer : IDisposable
             baseV + 2,      // top-left (reused)
             baseV + 1,      // bottom-right (reused)
             baseV + 3,      // top-right
+        };
+    }
+
+    /// <summary>
+    /// Gets the RGBA color for the specified vertex, applying gradient logic.
+    /// </summary>
+    /// <param name="rect">The rectangle shape containing color and gradient data.</param>
+    /// <param name="vertexIndex">
+    /// The vertex index: 0=bottom-left, 1=bottom-right, 2=top-left, 3=top-right.
+    /// </param>
+    /// <returns>A tuple of (R, G, B, A) for the vertex.</returns>
+    private static (float R, float G, float B, float A) GetVertexColor(RectShape rect, int vertexIndex)
+    {
+        return rect.GradientType switch
+        {
+            ColorGradient.None => ((float)rect.Color.R, (float)rect.Color.G, (float)rect.Color.B, (float)rect.Color.A),
+            ColorGradient.Horizontal => vertexIndex switch
+            {
+                0 or 2 => ((float)rect.GradientStart.R, (float)rect.GradientStart.G, (float)rect.GradientStart.B, (float)rect.GradientStart.A),
+                1 or 3 => ((float)rect.GradientStop.R, (float)rect.GradientStop.G, (float)rect.GradientStop.B, (float)rect.GradientStop.A),
+                _ => ((float)rect.Color.R, (float)rect.Color.G, (float)rect.Color.B, (float)rect.Color.A),
+            },
+            ColorGradient.Vertical => vertexIndex switch
+            {
+                2 or 3 => ((float)rect.GradientStart.R, (float)rect.GradientStart.G, (float)rect.GradientStart.B, (float)rect.GradientStart.A),
+                0 or 1 => ((float)rect.GradientStop.R, (float)rect.GradientStop.G, (float)rect.GradientStop.B, (float)rect.GradientStop.A),
+                _ => ((float)rect.Color.R, (float)rect.Color.G, (float)rect.Color.B, (float)rect.Color.A),
+            },
+            _ => ((float)rect.Color.R, (float)rect.Color.G, (float)rect.Color.B, (float)rect.Color.A),
         };
     }
 
