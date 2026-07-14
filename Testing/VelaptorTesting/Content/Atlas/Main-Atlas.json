@@ -62,7 +62,7 @@
   },
   {
     "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
-    "Bounds": "0, 39, 100, 100",
+    "Bounds": "0, 39, 147, 166",
     "FrameIndex": -1,
     "Name": "logo-flip"
   }
