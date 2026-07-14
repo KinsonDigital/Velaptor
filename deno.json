@@ -3,8 +3,7 @@
         "create-local-nuget-pkg-debug": "pwsh -File ./DevTools/create-local-nuget-pkg.ps1 -BuildConfig Debug -EnableTelemetry \"true\"",
         "create-local-nuget-pkg-release": "pwsh -File ./DevTools/create-local-nuget-pkg.ps1 -BuildConfig Release -EnableTelemetry \"true\"",
         "create-pr": "deno run -A jsr:@kinsondigital/sprocket@3.0.0 run-job ./DevTools/sprocket-config.ts --job-name Create-PR",
-        "prep-prev-release": "deno run -A jsr:@kinsondigital/sprocket@3.0.0 run-job ./DevTools/sprocket-config.ts --job-name Prep-Prev-Release",
-        "deepseek-copilot": "deno run -E --allow-run ./DevTools/deepseek-copilot.ts"
+        "prep-prev-release": "deno run -A jsr:@kinsondigital/sprocket@3.0.0 run-job ./DevTools/sprocket-config.ts --job-name Prep-Prev-Release"
     },
     "lint": {
         "include": [
