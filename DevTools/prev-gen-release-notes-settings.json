@@ -19,20 +19,18 @@
         "🔬"
     ],
     "issueCategoryIssueTypeMappings": {
-        "Feature": "New Features ✨",
+        "Feature": "Features ✨",
         "Enhancement": "Enhancements 💎",
         "Bug": "Bug Fixes 🐛",
         "Tech-Debt": "Tech Debt 📉",
-        "Documentation": "Documentation 📄",
         "Project-Config": "Configuration 🛠️",
-        "Research": "Research 🔬",
         "CICD": "CICD ⚙️",
-        "QA-Testing": "Testing 🧪"
+        "Dependency-Update": "Dependency Updates 📦"
     },
     "issueCategoryLabelMappings": {
         "breaking-changes": "Breaking Changes 🧨",
         "dependency-update": "Dependency Updates 📦",
-         "performance": "Performance 🏎️"
+        "performance": "Performance 🏎️"
     },
     "prCategoryLabelMappings": {
         "dependency-update": "Dependency Updates 📦"
