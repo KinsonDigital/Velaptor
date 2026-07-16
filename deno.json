@@ -31,5 +31,10 @@
         "indentWidth": 4,
         "semiColons": true,
         "singleQuote": false
+    },
+    "imports": {
+        "@std/fs": "jsr:@std/fs@^1.0.24",
+        "@cliffy/prompt": "jsr:@cliffy/prompt@1.2.1",
+        "@kd-clients/github": "jsr:@kinsondigital/kd-clients@1.0.0-preview.16/github"
     }
 }
