@@ -16,7 +16,9 @@
     },
     "fmt": {
         "include": [
-            "DevTools/"
+            "DevTools/",
+            ".github/actions/",
+            ".github/cicd-scripts/"
         ],
         "exclude": [
             "**/*.md",
