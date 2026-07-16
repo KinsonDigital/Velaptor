@@ -201,6 +201,7 @@ jobs:
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
           github-token: "${{ secrets.CICD_TOKEN }}"
 
+
   # Execute the full Velaptor docs release workflow after the library release is done.
   release_velaptor_docs:
     name: Release Velaptor Docs
@@ -233,6 +234,7 @@ jobs:
 
       - name: Send X Release Announcement
         uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+        continue-on-error: true
         with:
           repo-owner: ${{ vars.ORGANIZATION_NAME }}
           project-name: ${{ vars.PROJECT_NAME }}
