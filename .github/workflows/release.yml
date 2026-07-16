@@ -1,4 +1,4 @@
-name: 🚀Release
+name: 🚀 Release
 run-name: ${{ vars.PROJECT_NAME }} ${{ inputs.release-type }} Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
 
 

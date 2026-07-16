@@ -1,5 +1,5 @@
-name: ✅Build Status Check
-run-name: ✅Build Status Check (${{ github.base_ref }} branch)
+name: ✅ Build Status Check
+run-name: ✅ Build Status Check (${{ github.base_ref }} branch)
 
 
 defaults:

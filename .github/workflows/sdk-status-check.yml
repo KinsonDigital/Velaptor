@@ -1,5 +1,5 @@
-name: ✅SDK Status Check
-run-name: ✅SDK Status Check (${{ github.base_ref }} branch)
+name: ✅ SDK Status Check
+run-name: ✅ SDK Status Check (${{ github.base_ref }} branch)
 
 
 defaults:
