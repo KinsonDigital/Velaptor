@@ -2,6 +2,9 @@ name: 🚀 Release
 run-name: ${{ vars.PROJECT_NAME }} ${{ inputs.release-type }} Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
 
 
+permissions: {} # Set the permissions to an empty object to prevent the workflow from having any permissions by default.
+
+
 defaults:
   run:
     shell: pwsh
@@ -30,9 +33,6 @@ on:
         required: false
         default: false
         type: boolean
-
-
-permissions: {} # Set the permissions to an empty object to prevent the workflow from having any permissions by default.
 
 
 jobs:
@@ -73,7 +73,6 @@ jobs:
       cicd-pat: "${{ secrets.CICD_TOKEN }}"
 
 
-  # Build with all build configurations
   build:
     name: Build Velaptor
     needs: [get_and_validate_version, validate_release]
