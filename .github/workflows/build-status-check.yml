@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows-2025, ubuntu-24.04, macos-26]
         build_config: [Debug, Telemetry-Debug]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows-2025, ubuntu-24.04, macos-26]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v7.0.0
@@ -54,7 +54,7 @@ jobs:
 
   build_avalonia_testing:
     name: Build Avalonia Testing Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.0
 
@@ -69,7 +69,7 @@ jobs:
 
   build_playground:
     name: Build Playground Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.0
 
@@ -84,7 +84,7 @@ jobs:
 
   build_keyboard_perf:
     name: Build Keyboard Performance Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.0
 
@@ -99,7 +99,7 @@ jobs:
 
   build_measure_text_perf:
     name: Build Measure Text Performance Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.0
 
@@ -114,7 +114,7 @@ jobs:
 
   build_mouse_perf:
     name: Build Mouse Performance Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.0
 

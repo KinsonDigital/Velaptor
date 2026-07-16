@@ -38,7 +38,7 @@ permissions: {} # Set the permissions to an empty object to prevent the workflow
 jobs:
   get_and_validate_version:
     name: Get And Validate Version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
@@ -61,7 +61,7 @@ jobs:
   run_prerelease_validation:
     name: Run Pre-Release Validation
     needs: [get_and_validate_version]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check Branch
         env:
@@ -232,7 +232,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows-2025, ubuntu-24.04, macos-26]
         build_config: [Debug, Telemetry-Debug, Release, Telemetry-Release]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -253,10 +253,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: "windows-latest"
-          - platform: "ubuntu-latest"
-          - platform: "macos-latest" # ARM-based (M1 and above).
+        platform: [windows-2025, ubuntu-24.04, macos-26]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -274,7 +271,7 @@ jobs:
 
   perform_release:
     name: Perform ${{ inputs.release-type }} Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [get_and_validate_version, run_prerelease_validation, build, run_tests]
     steps:
       - name: Checkout Repository
@@ -359,7 +356,7 @@ jobs:
   # Execute the full Velaptor docs release workflow after the library release is done.
   release_velaptor_docs:
     name: Release Velaptor Docs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [get_and_validate_version, run_prerelease_validation, build, run_tests, perform_release]
     if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
     steps:
@@ -379,7 +376,7 @@ jobs:
 
   send_release_announcements:
     name: Send Release Announcements
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [get_and_validate_version, run_prerelease_validation, build, run_tests, perform_release]
     if: ${{ inputs.dry-run == false }}
     steps:

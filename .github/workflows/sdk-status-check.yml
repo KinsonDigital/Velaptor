@@ -15,7 +15,7 @@ on:
 jobs:
   sdk_status_check:
     name: ${{ vars.PROJECT_NAME }} SDK Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Validate SDK Versions
         uses: KinsonDigital/Infrastructure/actions/validate-sdk-versions@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
