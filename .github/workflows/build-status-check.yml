@@ -2,6 +2,10 @@ name: ✅ Build Status Check
 run-name: ✅ Build Status Check (${{ github.base_ref }} branch)
 
 
+permissions:
+  contents: read
+
+
 defaults:
   run:
     shell: pwsh

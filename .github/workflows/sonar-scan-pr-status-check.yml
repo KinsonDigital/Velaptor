@@ -1,6 +1,11 @@
 name: ✅ Sonar Scan Status Check
 
 
+permissions:
+  contents: read
+  pull-requests: write
+
+
 defaults:
   run:
     shell: pwsh
