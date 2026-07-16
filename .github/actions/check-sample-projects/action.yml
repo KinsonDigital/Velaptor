@@ -1,0 +1,78 @@
+name: "Check Sample Projects"
+description: "Builds and tests the sample projects"
+inputs:
+  velaptor-branch:
+    description: "The Velaptor branch to checkout and use for validation."
+    required: true
+  dotnet-sdk-version:
+    description: "The version of the dotnet SDK to use."
+    required: true
+  deno-version:
+    description: "The version of deno to use to execute the script."
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout VelaptorDocs
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        repository: KinsonDigital/VelaptorDocs
+        ref: main
+        path: "VelaptorDocsRepo"
+
+    - name: Checkout Velaptor
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        repository: KinsonDigital/Velaptor
+        ref: "${{ inputs.velaptor-branch }}"
+        path: "VelaptorRepo"
+
+    - name: Set Up .NET SDK (${{ inputs.dotnet-sdk-version }})
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      with:
+        dotnet-version: ${{ inputs.dotnet-sdk-version }}
+
+    - name: Setup Deno (v2.9.x)
+      uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed #v2.0.5
+      with:
+        deno-version: "${{ inputs.deno-version }}"
+
+    - name: Update Velaptor Version
+      id: validate-trim-version
+      shell: pwsh
+      env:
+        NEW_VERSION: "1.2.3-preview.456789" # Hard coded to value that will never exist on purpose
+        SEARCH_DIR_PATH: "${{ github.workspace }}/Velaptor"
+      run: deno run -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-version.ts";
+
+    - name: Run Build
+      shell: pwsh
+      run: dotnet build "$env:GITHUB_WORKSPACE/VelaptorRepo/Velaptor/Velaptor.csproj" -c Debug;
+
+    - name: Create Local Nuget Source
+      shell: pwsh
+      run: |
+        $localFeedDirPath = "$env:GITHUB_WORKSPACE/LocalFeed";
+        mkdir $localFeedDirPath;
+
+        dotnet nuget add source "$localFeedDirPath" --name LocalFeed;
+
+    - name: Create Local Nuget Package
+      shell: pwsh
+      run: |
+        $localFeedDirPath = "$env:GITHUB_WORKSPACE/LocalFeed";
+
+        dotnet pack `
+          "$env:GITHUB_WORKSPACE/VelaptorRepo/Velaptor/Velaptor.csproj" `
+          -o "$localFeedDirPath" `
+          -c Debug;
+
+    - name: Update Sample Project Nuget Versions
+      shell: pwsh
+      env:
+        ROOT_DIR_PATH: "${{ github.workspace }}/VelaptorDocsRepo/VelaptorDocs/SampleProjects"
+      run: deno -ERWN "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-nuget-versions.ts";
+
+    - name: Build Sample Projects Solution
+      shell: pwsh
+      run: dotnet run "$env:GITHUB_WORKSPACE/VelaptorDocsRepo/VelaptorDocs/SampleProjects/SampleProjects.sln";
