@@ -117,5 +117,12 @@
     "@std/text@1.0.16": {
       "integrity": "ddb9853b75119a2473857d691cf1ec02ad90793a2e8b4a4ac49d7354281a0cf8"
     }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@cliffy/prompt@1.2.1",
+      "jsr:@kinsondigital/kd-clients@1.0.0-preview.16",
+      "jsr:@std/fs@^1.0.24"
+    ]
   }
 }

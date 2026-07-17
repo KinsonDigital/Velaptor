@@ -6,12 +6,12 @@ import { getEnvVar } from "./core/utils.ts";
 
 const scriptName = `\n\tScript Name : ${import.meta.url.split("/").pop()}`;
 
-const searchDirPath = getEnvVar("SEARCH_DIR_PATH", scriptName);
+const searchDirPath = getEnvVar("SEARCH_DIR_PATH", scriptName).replaceAll("\\", "/");
 const newVersion = getEnvVar("NEW_VERSION", scriptName);
 
 // If the base dir path does not exist
-if (!existsSync(searchDirPath)) {
-	printGitHubError(`The 'CS_PROJ_FILE_PATH' does not exist.`);
+if (!existsSync(searchDirPath, { isDirectory: true })) {
+	printGitHubError(`The 'SEARCH_DIR_PATH' does not exist.`);
 
 	Deno.exit(1);
 }
@@ -30,7 +30,7 @@ const csProjFilePath = searchResults[0];
 
 const newVersionRegex = /^([1-9]\d*|0)\.([1-9]\d*|0)\.([1-9]\d*|0)(-preview\.([1-9]\d*))?$/;
 
-if (newVersionRegex.test(newVersion)) {
+if (!newVersionRegex.test(newVersion)) {
 	printGitHubError(`The version '${newVersion}' is invalid.  Must be of type '#.#.#[-preview.#]'.`);
 
 	Deno.exit(1);

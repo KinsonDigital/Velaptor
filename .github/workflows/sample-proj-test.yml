@@ -1,18 +1,37 @@
-name: "Check Sample Projects"
-description: "Builds and tests the sample projects"
-inputs:
-  velaptor-branch:
-    description: "The Velaptor branch to checkout and use for validation."
-    required: true
-  dotnet-sdk-version:
-    description: "The version of the dotnet SDK to use."
-    required: true
-  deno-version:
-    description: "The version of deno to use to execute the script."
-    required: true
-runs:
-  using: "composite"
-  steps:
+name: 🧪 Test Sample Projects
+
+
+permissions:
+  contents: read
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      velaptor-branch:
+        description: "The Velaptor branch to checkout and use for validation."
+        required: false
+        default: "feature/1195-sample-project-checks"
+      dotnet-sdk-version:
+        description: "The version of the dotnet SDK to use."
+        required: true
+        default: "9.0.307"
+      deno-version:
+        description: "The version of deno to use to execute the script."
+        required: true
+        default: "v2.9.3"
+
+
+jobs:
+  test_sample_projects:
+    name: Test Sample Projects
+    runs-on: ubuntu-latest
+    steps:
     - name: Checkout VelaptorDocs
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
@@ -38,11 +57,10 @@ runs:
         deno-version: "${{ inputs.deno-version }}"
 
     - name: Update Velaptor Version
-      id: validate-trim-version
       shell: pwsh
       env:
         NEW_VERSION: "1.2.3-preview.456789" # Hard coded to value that will never exist on purpose
-        SEARCH_DIR_PATH: "${{ github.workspace }}/Velaptor"
+        SEARCH_DIR_PATH: "${{ github.workspace }}/VelaptorRepo"
       run: deno run -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-version.ts";
 
     - name: Run Build
@@ -70,9 +88,11 @@ runs:
     - name: Update Sample Project Nuget Versions
       shell: pwsh
       env:
-        ROOT_DIR_PATH: "${{ github.workspace }}/VelaptorDocsRepo/VelaptorDocs/SampleProjects"
+        ROOT_DIR_PATH: "${{ github.workspace }}/VelaptorDocsRepo/SampleProjects"
+        NEW_VERSION: "1.2.3-preview.456789" # Hard coded to value that will never exist on purpose
+        NUGET_PKG_NAME: "KinsonDigital.Velaptor"
       run: deno -ERWN "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-nuget-versions.ts";
 
     - name: Build Sample Projects Solution
       shell: pwsh
-      run: dotnet run "$env:GITHUB_WORKSPACE/VelaptorDocsRepo/VelaptorDocs/SampleProjects/SampleProjects.sln";
+      run: dotnet build "$env:GITHUB_WORKSPACE/VelaptorDocsRepo/SampleProjects/SampleProjects.sln";
