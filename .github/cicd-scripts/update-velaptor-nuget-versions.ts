@@ -5,9 +5,12 @@ import { getEnvVar } from "./core/utils.ts";
 
 const scriptName = `\n\tScript Name : ${import.meta.url.split("/").pop()}`;
 
-const rootDirPath = getEnvVar("ROOT_DIR_PATH", scriptName).replaceAll("\\", "/");
+let rootDirPath = getEnvVar("ROOT_DIR_PATH", scriptName).replaceAll("\\", "/");
 let newVersion = getEnvVar("NEW_VERSION", scriptName).toLowerCase();
 const nugetPkgName = getEnvVar("NUGET_PKG_NAME", scriptName);
+
+// Remove the '/' from the end of the path if it exists
+rootDirPath = rootDirPath.endsWith("/") ? rootDirPath.substring(0, rootDirPath.length - 1) : rootDirPath;
 
 // If the directory does not exist, throw and error
 if (!existsSync(rootDirPath, { isDirectory: true })) {

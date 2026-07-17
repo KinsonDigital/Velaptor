@@ -17,7 +17,8 @@ inputs:
     description: |
       "The relative directory path of the target repository to search for dotnet projects
       to update the Velaptor nuget packages and to build to solution."
-    required: true
+    required: false
+    default: 
   velaptor-branch:
     description: "The Velaptor branch to checkout and use for validation."
     required: true
@@ -30,12 +31,20 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout Target Repository
+    - name: Checkout Target Repository (Console Section)
+      shell: pwsh
+      run: Write-Host "`e[36m -----Checkout Target Repository------ `e[0m" -ForegroundColor Cyan;
+
+    - name: Checkout Target Repository (${{ inputs.target-owner-name }}/${{ inputs.target-repo-name }})
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         repository: "${{ inputs.target-owner-name }}/${{ inputs.target-repo-name }}"
         ref: "${{ inputs.target-ref }}"
         path: "TargetRepo"
+
+    - name: Checkout Velaptor Repository (Console Section)
+      shell: pwsh
+      run: Write-Host "`e[36m ----- Checkout Velaptor Repository ------ `e[0m" -ForegroundColor Cyan;
 
     - name: Checkout Velaptor Repository
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -44,10 +53,18 @@ runs:
         ref: "${{ inputs.velaptor-branch }}"
         path: "VelaptorRepo"
 
+    - name: Set Up .NET SDK (${{ inputs.dotnet-sdk-version }}) (Console Section)
+      shell: pwsh
+      run: Write-Host "`e[36m ----- Set Up .NET SDK (${{ inputs.dotnet-sdk-version }}) ------ `e[0m" -ForegroundColor Cyan;
+
     - name: Set Up .NET SDK (${{ inputs.dotnet-sdk-version }})
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
       with:
         dotnet-version: ${{ inputs.dotnet-sdk-version }}
+
+    - name: Setup Deno (v2.9.x) (Console Section)
+      shell: pwsh
+      run: Write-Host "`e[36m ----- Setup Deno (v2.9.x) ------ `e[0m" -ForegroundColor Cyan;
 
     - name: Setup Deno (v2.9.x)
       uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed #v2.0.5
@@ -59,15 +76,21 @@ runs:
       env:
         NEW_VERSION: "1.2.3-preview.456789" # Hard coded to value that will never exist on purpose
         SEARCH_DIR_PATH: "${{ github.workspace }}/VelaptorRepo"
-      run: deno run -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-version.ts";
+      run: |
+        Write-Host "`e[36m ----- Update Velaptor Version ------ `e[0m" -ForegroundColor Cyan;
+        deno run -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-version.ts";
 
     - name: Run Build
       shell: pwsh
-      run: dotnet build "$env:GITHUB_WORKSPACE/VelaptorRepo/Velaptor/Velaptor.csproj" -c Debug;
+      run: |
+        Write-Host "`e[36m ----- Run Build ------ `e[0m" -ForegroundColor Cyan;
+        dotnet build "$env:GITHUB_WORKSPACE/VelaptorRepo/Velaptor/Velaptor.csproj" -c Debug;
 
     - name: Create Local Nuget Source
       shell: pwsh
       run: |
+        Write-Host "`e[36m ----- Create Local Nuget Source ------ `e[0m" -ForegroundColor Cyan;
+
         $localFeedDirPath = "$env:GITHUB_WORKSPACE/LocalFeed";
         mkdir $localFeedDirPath;
 
@@ -76,6 +99,8 @@ runs:
     - name: Create Local Nuget Package
       shell: pwsh
       run: |
+        Write-Host "`e[36m ----- Create Local Nuget Package ------ `e[0m" -ForegroundColor Cyan;
+
         $localFeedDirPath = "$env:GITHUB_WORKSPACE/LocalFeed";
 
         dotnet pack `
@@ -89,7 +114,9 @@ runs:
         ROOT_DIR_PATH: "${{ github.workspace }}/TargetRepo/${{ inputs.target-relative-dir-path }}"
         NEW_VERSION: "1.2.3-preview.456789" # Hard coded to value that will never exist on purpose
         NUGET_PKG_NAME: "KinsonDigital.Velaptor"
-      run: deno -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-nuget-versions.ts";
+      run: |
+        Write-Host "`e[36m ----- Update Target Project Nuget Versions ------ `e[0m" -ForegroundColor Cyan;
+        deno -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-nuget-versions.ts";
 
     - name: Build Sample Projects Solution
       shell: pwsh
@@ -97,9 +124,14 @@ runs:
         TARGET_RELATIVE_DIR_PATH: "${{ inputs.target-relative-dir-path }}"
         TARGET_SOLUTION_NAME: "${{ inputs.target-solution-name }}"
       run: |
-        $dirPath = $env:TARGET_RELATIVE_DIR_PATH.Trim();
+        Write-Host "`e[36m ----- Build Sample Projects Solution ------ `e[0m" -ForegroundColor Cyan;
+
+        $dirPath = "$env:TARGET_RELATIVE_DIR_PATH".Trim();
+
+        $dirPath = $dirPath.Replace("\", "/");
+        $dirPath = $dirPath.StartsWith("./") ? $dirPath.Substring(2, $dirPath.Length - 2) : $dirPath;
         $dirPath = $dirPath.EndsWith('/') ? $dirPath.TrimEnd('/') : $dirPath;
-        $dirPath = $dirPath.EndsWith('\') ? $dirPath.TrimEnd('\') : $dirPath;
+
         $solutionName = "$env:TARGET_SOLUTION_NAME".Trim();
 
         if ($solutionName.EndsWith(".sln")) {
