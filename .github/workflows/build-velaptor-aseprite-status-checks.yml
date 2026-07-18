@@ -30,6 +30,6 @@ jobs:
         target-owner-name: "KinsonDigital"
         target-repo-name: "VelaptorAseprite"
         target-ref: "main"
-        velaptor-branch: "${{ github.ref_name }}"
+        velaptor-branch: "${{ github.head_ref }}"
         dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
         deno-version: "${{ vars.DENO_VERSION }}"

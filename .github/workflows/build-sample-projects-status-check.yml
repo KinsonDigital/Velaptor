@@ -31,6 +31,6 @@ jobs:
         target-repo-name: "VelaptorDocs"
         target-ref: "main"
         target-relative-dir-path: "SampleProjects"
-        velaptor-branch: "${{ github.ref_name }}"
+        velaptor-branch: "${{ github.head_ref }}"
         dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
         deno-version: "${{ vars.DENO_VERSION }}"
