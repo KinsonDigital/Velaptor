@@ -130,6 +130,23 @@ jobs:
           deno-version: "${{ vars.DENO_VERSION }}"
 
 
+  # Ensure that the VelaptorAseprite project builds
+  build_velaptor_aseprite:
+    name: Build Velaptor Aseprite
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build VelaptorDocs Sample Projects
+        uses: ./.github/actions/build-target-projects
+        with:
+          target-solution-name: "VelaptorAseprite"
+          target-owner-name: "KinsonDigital"
+          target-repo-name: "VelaptorAseprite"
+          target-ref: "main"
+          velaptor-branch: "${{ github.ref_name }}"
+          dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+
   run_tests:
     name: Run Unit Tests
     needs: [get_and_validate_version, validate_release]
