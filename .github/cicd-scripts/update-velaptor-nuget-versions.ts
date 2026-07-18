@@ -30,10 +30,12 @@ if (!newVersionRegex.test(newVersion)) {
 }
 
 const newNugetPackage = `<PackageReference Include="${nugetPkgName}" Version="${newVersion}" />`;
-const velaptorNuGetRegex = new RegExp(`<PackageReference\\s+Include\\s*=\\s*"${nugetPkgName}"\\s+Version\\s*=\\s*"([1-9]\\d*|0)\\.([1-9]\\d*|0)\\.([1-9]\\d*|0)(-preview\\.([1-9]\\d*))?"\\s*/>`);
+const velaptorNuGetRegex = new RegExp(
+	`<PackageReference\\s+Include\\s*=\\s*"${nugetPkgName}"\\s+Version\\s*=\\s*"([1-9]\\d*|0)\\.([1-9]\\d*|0)\\.([1-9]\\d*|0)(-preview\\.([1-9]\\d*))?"\\s*/>`,
+);
 
 // Get all the csproj files
-const csprojFiles = Array.from(walkSync(rootDirPath, { includeFiles: true, exts: [".csproj"],})).map((e) => e.path);
+const csprojFiles = Array.from(walkSync(rootDirPath, { includeFiles: true, exts: [".csproj"] })).map((e) => e.path);
 
 // Replace the nuget package reference with the new version
 csprojFiles.forEach((csProjFile) => {
