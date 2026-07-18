@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-import-prefix
+
 import { existsSync } from "jsr:@std/fs@1.0.23";
 import { Input } from "jsr:@cliffy/prompt@1.0.1";
 import {

@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-import-prefix
+
 import type {
 	ScriptTask,
 	SprocketConfig,
