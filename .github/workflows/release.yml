@@ -73,7 +73,7 @@ jobs:
       cicd-pat: "${{ secrets.CICD_TOKEN }}"
 
 
-  build:
+  build_velaptor:
     name: Build Velaptor
     needs: [get_and_validate_version, validate_release]
     strategy:
@@ -257,3 +257,17 @@ jobs:
           password: ${{ secrets.BLUESKY_PASSWORD }}
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
           github-token: ${{ secrets.CICD_TOKEN }}
+
+
+  process_milestone:
+    name: Process Milestone ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
+    needs: [get_and_validate_version, validate_release, build_velaptor, build_sample_projects,
+      build_velaptor_aseprite, build_velaptor_templates, perform_release]
+    if: ${{ inputs.dry-run == false }}
+    uses: KinsonDigital/Infrastructure/.github/workflows/process-milestone.yml@acc7aa3997697717943e56c439f7b529d1e1d1ba # v19.0.0
+    with:
+      owner-name: ${{ vars.ORGANIZATION_NAME }}
+      repo-name: ${{ vars.PROJECT_NAME }}
+      version: ${{ needs.get_and_validate_version.outputs.version }}
+    secrets:
+      cicd-pat: ${{ secrets.CICD_TOKEN }}
