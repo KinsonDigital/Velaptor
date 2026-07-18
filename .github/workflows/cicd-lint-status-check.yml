@@ -1,0 +1,33 @@
+name: ✅ CICD Lint Status Check
+run-name: ✅ CICD Lint Status Check (${{ github.base_ref }} branch)
+
+
+permissions:
+  contents: read
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  pull_request:
+    branches: [main, preview]
+
+
+jobs:
+  lint:
+    name: CICD Lint Status Check
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set Up Deno (${{ vars.DENO_VERSION }})
+        uses: denoland/setup-deno@909cc5acb0fdd60627fb858598759246509fa755 # v2.0.0
+        with:
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+      - name: Lint Scripts
+        run: deno lint .github/cicd-scripts/**/*.ts;
