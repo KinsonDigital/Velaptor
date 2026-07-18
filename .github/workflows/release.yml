@@ -95,6 +95,24 @@ jobs:
         run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
 
 
+  # Ensure that the sample projects in the VelaptorDocs repo build
+  build_sample_projects:
+    name: Build Sample Projects
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build VelaptorDocs Sample Projects
+        uses: ./.github/actions/build-target-projects
+        with:
+          target-solution-name: "VelaptorDocs"
+          target-owner-name: "KinsonDigital"
+          target-repo-name: "VelaptorDocs"
+          target-ref: "main"
+          target-relative-dir-path: "SampleProjects"
+          velaptor-branch: "${{ github.ref_name }}"
+          dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+          deno-version: "${{ vars.DENO_VERSION }}"
+
+
   run_tests:
     name: Run Unit Tests
     needs: [get_and_validate_version, validate_release]
