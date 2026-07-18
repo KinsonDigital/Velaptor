@@ -196,8 +196,10 @@ jobs:
   release_velaptor_docs:
     name: Release Velaptor Docs
     runs-on: ubuntu-24.04
-    needs: [get_and_validate_version, validate_release, build, run_tests, perform_release]
-    if: ${{ inputs.release-type == 'Production' && inputs.dry-run == false && inputs.trigger-docs-release == true }}
+    needs: [get_and_validate_version, validate_release, build_velaptor,
+      build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
+      run_tests, perform_release]
+    if: ${{ inputs.dry-run == false && inputs.trigger-docs-release == true }}
     steps:
       - name: Execute Release
         env:
@@ -216,7 +218,9 @@ jobs:
   send_release_announcements:
     name: Send Release Announcements
     runs-on: ubuntu-24.04
-    needs: [get_and_validate_version, validate_release, build, run_tests, perform_release]
+    needs: [get_and_validate_version, validate_release, build_velaptor,
+      build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
+      run_tests, perform_release]
     if: ${{ inputs.dry-run == false }}
     steps:
       - name: Checkout Repository
