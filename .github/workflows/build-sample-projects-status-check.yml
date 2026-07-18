@@ -1,4 +1,4 @@
-name: 🧪 Test Sample Projects
+name: ✅ Build Sample Projects Status Check
 
 
 permissions:
@@ -11,25 +11,26 @@ defaults:
 
 
 on:
-  workflow_dispatch:
+  pull_request: 
+    branches: [main, preview]
 
 
 jobs:
-  test_sample_projects:
-    name: Test Sample Projects
-    runs-on: ubuntu-latest
+  build_sample_projects:
+    name: Build Sample Projects
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Velaptor (for composite action)
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-    - name: Build VelaptorDocs Sample Projects
+    - name: Build
       uses: ./.github/actions/build-target-projects
       with:
-        target-solution-name: "VelaptorAseprite"
+        target-solution-name: "VelaptorDocs"
         target-owner-name: "KinsonDigital"
-        target-repo-name: "VelaptorAseprite"
+        target-repo-name: "VelaptorDocs"
         target-ref: "main"
-        # target-relative-dir-path: "SampleProjects"
+        target-relative-dir-path: "SampleProjects"
         velaptor-branch: "${{ github.ref_name }}"
         dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
         deno-version: "${{ vars.DENO_VERSION }}"
