@@ -172,87 +172,24 @@ jobs:
 
   perform_release:
     name: Perform ${{ inputs.release-type }} Release
-    runs-on: ubuntu-24.04
-    needs: [get_and_validate_version, validate_release, build, run_tests]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Set Up .NET SDK
-        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
-        with:
-          dotnet-version: "${{ vars.NET_SDK_VERSION }}"
-
-      - name: Set Up Nuget
-        uses: NuGet/setup-nuget@fd55a6f3b34392fa83fde1454582407d8c714123 #v4.0.0
-
-      - name: Set Up Deno (${{ vars.DENO_VERSION }})
-        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 #v2.0.4
-        with:
-          deno-version: ${{ vars.DENO_VERSION }}
-          cache: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
-
-      - name: Transpile README
-        uses: KinsonDigital/Infrastructure/actions/transpile-readme@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
-        with:
-          base-dir-path: "${{ github.workspace }}"
-          cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
-
-      - name: Update Copyright
-        uses: KinsonDigital/Infrastructure/actions/update-copyright@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
-        with:
-          cs-proj-file-name: "${{ vars.PROJECT_NAME }}.csproj"
-          cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
-
-      - name: Create Nuget Package
-        env:
-          TELEMETRY_KEY: ${{ secrets.TELEMETRY_KEY }}
-        run: |
-          dotnet pack `
-            "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" `
-            -o "${{ github.workspace }}" `
-            -c ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }} `
-            -p:IncludeSymbols=true `
-            -p:SymbolPackageFormat=snupkg `
-            -p:EnableTelemetry="${{ vars.TELEMETRY_ENABLED }}" `
-            -p:TelemetryKey="$env:TELEMETRY_KEY";
-
-      - name: Publish Nuget Package ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
-        if: inputs.dry-run == false
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_ORG_API_KEY }}
-        run: |
-          $version = "${{ needs.get_and_validate_version.outputs.version }}";
-          $version = $version.StartsWith("v") ? $version.Substring(1) : $version;
-
-          # Push the nuget package
-          dotnet nuget push `
-            "${{ github.workspace }}/${{ vars.ORGANIZATION_NAME }}.${{ vars.PROJECT_NAME }}.$version.nupkg" `
-            --api-key "$env:NUGET_API_KEY" `
-            --source https://api.nuget.org/v3/index.json;
-
-      - name: Create GitHub Release ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
-        if: inputs.dry-run == false
-        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd #v1
-        with:
-          name: "🚀${{ inputs.release-type }} - v${{ needs.get_and_validate_version.outputs.version }}"
-          tag: "v${{ needs.get_and_validate_version.outputs.version }}"
-          owner: ${{ vars.ORGANIZATION_NAME }}
-          repo: ${{ vars.PROJECT_NAME }}
-          bodyFile: "${{ github.workspace }}/ReleaseNotes/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
-          artifacts: "${{ github.workspace }}/ReleaseNotes/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}v${{ needs.get_and_validate_version.outputs.version }}.md"
-          prerelease: ${{ inputs.release-type == 'Preview' }}
-          token: ${{ secrets.CICD_TOKEN }}
-
-      - name: Close Milestone ${{ inputs.dry-run == true && '(Dry Run)' || '' }}
-        if: inputs.dry-run == false
-        uses: KinsonDigital/Infrastructure/actions/close-milestone@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
-        with:
-          repo-owner: "${{ vars.ORGANIZATION_NAME }}"
-          repo-name: "${{ vars.PROJECT_NAME }}"
-          milestone-title: "v${{ needs.get_and_validate_version.outputs.version }}"
-          cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
-          github-token: "${{ secrets.CICD_TOKEN }}"
+    needs: [get_and_validate_version, validate_release, build_velaptor,
+      build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
+      run_tests]
+    uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+    with:      
+      owner-name: "${{ vars.ORGANIZATION_NAME }}" 
+      repo-name: "${{ vars.PROJECT_NAME }}"
+      project-name: "${{ vars.PROJECT_NAME }}"
+      release-type: "${{ inputs.release-type }}"
+      net-sdk-version: "${{ vars.NET_SDK_VERSION }}"
+      build-config: ${{ inputs.release-type == 'Production' && 'Release' || 'Debug' }}
+      version: ${{ needs.get_and_validate_version.outputs.version }}
+      transpile-readme: true
+      dry-run: ${{ inputs.dry-run }}
+      relative-release-notes-file-path: "ReleaseNotes/${{ inputs.release-type }}Releases/${{ vars.RELEASE_NOTES_FILE_NAME_PREFIX }}${{ needs.get_and_validate_version.outputs.version }}.md"
+    secrets: 
+      cicd-pat: "${{ secrets.CICD_TOKEN }}"
+      nuget-api-key: "${{ secrets.NUGET_ORG_API_KEY }}"
 
 
   # Execute the full Velaptor docs release workflow after the library release is done.
