@@ -30,4 +30,4 @@ jobs:
           deno-version: "${{ vars.DENO_VERSION }}"
 
       - name: Lint Scripts
-        run: deno lint .github/cicd-scripts/*.ts;
+        run: deno lint .github/cicd-scripts/**/*.ts;

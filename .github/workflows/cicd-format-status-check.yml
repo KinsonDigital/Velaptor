@@ -30,4 +30,4 @@ jobs:
           deno-version: "${{ vars.DENO_VERSION }}"
 
       - name: Check Scripts
-        run: deno fmt --check .github/cicd-scripts/*.ts;
+        run: deno fmt --check .github/cicd-scripts/**/*.ts;
