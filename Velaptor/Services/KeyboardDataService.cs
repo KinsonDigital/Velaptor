@@ -7,6 +7,8 @@ namespace Velaptor.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Carbonate;
 using Carbonate.OneWay;
 using Input;
@@ -30,7 +32,14 @@ internal sealed class KeyboardDataService : IKeyboardDataService
 
         this.unsubscriber = keyboardDataReactable.CreateOneWayReceive(
             PushNotifications.KeyboardStateChangedId,
-            (data) => this.keyStates[data.Key] = data.IsDown,
+            (data) =>
+            {
+                ref var stateRef = ref CollectionsMarshal.GetValueRefOrNullRef(this.keyStates, data.Key);
+                if (!Unsafe.IsNullRef(ref stateRef))
+                {
+                    stateRef = data.IsDown;
+                }
+            },
             () => this.unsubscriber?.Dispose());
 
         InitializeKeyStates();

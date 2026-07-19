@@ -5,10 +5,11 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
@@ -25,7 +26,7 @@ internal sealed class AudioLoader : IAudioLoader
 {
     private const string OggFileExtension = ".ogg";
     private const string Mp3FileExtension = ".mp3";
-    private readonly ConcurrentDictionary<string, IAudio> audioCache = new ();
+    private readonly Dictionary<string, IAudio> audioCache = new ();
     private readonly IPushReactable<DisposeAudioData> disposeReactable;
     private readonly IDisposable unsubscriber;
     private readonly IAudioFactory audioFactory;
@@ -146,7 +147,13 @@ internal sealed class AudioLoader : IAudioLoader
 
         var cacheKey = BuildCacheKey(filePath, bufferType);
 
-        return this.audioCache.GetOrAdd(cacheKey, (_) => this.audioFactory.Create(filePath, bufferType));
+        ref var cacheItem = ref CollectionsMarshal.GetValueRefOrAddDefault(this.audioCache, cacheKey, out var exists);
+        if (!exists || cacheItem is null)
+        {
+            cacheItem = this.audioFactory.Create(filePath, bufferType);
+        }
+
+        return cacheItem!;
     }
 
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
@@ -154,7 +161,7 @@ internal sealed class AudioLoader : IAudioLoader
     {
         var cacheKey = BuildCacheKey(audio.FilePath, audio.BufferType);
         this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
-        this.audioCache.TryRemove(cacheKey, out _);
+        this.audioCache.Remove(cacheKey);
     }
 
     /// <summary>

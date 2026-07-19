@@ -5,11 +5,12 @@
 namespace Velaptor.Content;
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
@@ -26,7 +27,7 @@ internal sealed class AtlasLoader : IAtlasLoader
 {
     private const string TextureExtension = ".png";
     private const string AtlasDataExtension = ".json";
-    private readonly ConcurrentDictionary<string, (ITexture atlasTexture, AtlasSubTextureData[] subTextureData)> atlasCache = new ();
+    private readonly Dictionary<string, (ITexture atlasTexture, AtlasSubTextureData[] subTextureData)> atlasCache = new ();
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IDisposable unsubscriber;
     private readonly ITextureFactory textureFactory;
@@ -186,18 +187,18 @@ internal sealed class AtlasLoader : IAtlasLoader
             ? name
             : atlasPathOrName;
 
-        (ITexture atlasTexture, AtlasSubTextureData[] subTextureData) = this.atlasCache.GetOrAdd(atlasImageFilePath, (_) =>
+        ref var cacheItem = ref CollectionsMarshal.GetValueRefOrAddDefault(this.atlasCache, atlasImageFilePath, out var exists);
+        if (!exists || cacheItem.atlasTexture is null)
         {
             var rawData = this.file.ReadAllText(atlasDataFilePath);
             var subTextureData = this.jsonService.Deserialize<AtlasSubTextureData[]>(rawData)
                 ?? throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.");
             var atlasImageData = this.imageService.Load(atlasImageFilePath);
             var atlasTexture = this.textureFactory.Create(atlasName, atlasImageFilePath, atlasImageData);
+            cacheItem = (atlasTexture, subTextureData);
+        }
 
-            return (atlasTexture, subTextureData);
-        });
-
-        return this.atlasDataFactory.Create(atlasTexture, subTextureData, contentDirPath, atlasName);
+        return this.atlasDataFactory.Create(cacheItem.atlasTexture, cacheItem.subTextureData, contentDirPath, atlasName);
     }
 
     /// <inheritdoc/>
@@ -205,7 +206,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     {
         this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = atlasData.Texture.Id });
         var cacheKey = atlasData.FilePath;
-        this.atlasCache.TryRemove(cacheKey, out _);
+        this.atlasCache.Remove(cacheKey);
     }
 
     /// <summary>
