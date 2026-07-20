@@ -85,6 +85,23 @@ public class Label : Control
 
     public bool IsMouseOver { get; private set; }
 
+    public override bool Enabled
+    {
+        get => base.Enabled;
+        set
+        {
+            if (value)
+            {
+                
+            }
+            else
+            {
+            }
+
+            base.Enabled = value;
+        }
+    }
+
     public override void Load()
     {
         if (this.isLoaded)
@@ -167,7 +184,7 @@ public class Label : Control
             this.shapeRenderer.Render(this.background, -10);
         }
 
-        this.fontRenderer.Render(this.font, Text, scrnPos, TextColor, layer);
+        this.fontRenderer.Render(this.font, Text, scrnPos, Enabled ? TextColor : DisabledColor, layer);
 
         base.Render();
     }

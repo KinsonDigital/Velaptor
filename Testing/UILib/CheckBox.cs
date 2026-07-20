@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Numerics;
 using Carbonate;
 using Carbonate.OneWay;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
@@ -24,6 +25,8 @@ public class CheckBox : Control
     private Line mark1;
     private Line mark2;
     private Vector2 textPos;
+    private Color markEnabledClr = Color.FromArgb(255, 89, 149, 224);
+    private Color markDisabledClr;
     private MouseState prevMouseState;
     private string text = "Check box";
     private IFont font;
@@ -50,6 +53,7 @@ public class CheckBox : Control
         this.mouse = HardwareFactory.GetMouse();
 
         Height = (int)BoxWidthHeight;
+        this.markDisabledClr = DisabledColor.IncreaseBrightness(0.5f);
     }
 
     public bool IsChecked { get; set; }
@@ -105,7 +109,7 @@ public class CheckBox : Control
         {
             P1 = new Vector2(mark1StartX, mark1StartY),
             P2 = new Vector2(mark1EndX, mark1EndY),
-            Color = Color.FromArgb(255, 89, 149, 224),
+            Color = Enabled ? this.markEnabledClr : this.markDisabledClr,
             Thickness = 3,
         };
 
@@ -118,7 +122,7 @@ public class CheckBox : Control
         {
             P1 = new Vector2(mark2StartX, mark2StartY),
             P2 = new Vector2(mark2EndX, mark2EndY),
-            Color = Color.FromArgb(255, 89, 149, 224),
+            Color = Enabled ? this.markEnabledClr : this.markDisabledClr,
             Thickness = 3,
         };
 
@@ -137,7 +141,7 @@ public class CheckBox : Control
         var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
 
         // If the mouse if over any part of the checkbox and the left mouse button was just released
-        if (isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
+        if (Enabled && isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
             IsChecked = !IsChecked;
             CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
@@ -163,7 +167,7 @@ public class CheckBox : Control
             this.lineRenderer.Render(this.mark2);
         }
 
-        this.fontRenderer.Render(this.font, Text, this.textPos, Color.White);
+        this.fontRenderer.Render(this.font, Text, this.textPos, Enabled ? Color.White : DisabledColor);
 
         base.Render();
     }

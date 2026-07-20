@@ -95,6 +95,7 @@
 		"Unsubscriber",
 		"Velaptor",
 		"Vorbis",
+		"Wgpu",
 		"xunit"
 	],
 	"files.exclude": {

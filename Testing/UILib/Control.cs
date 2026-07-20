@@ -5,6 +5,8 @@ public class Control : IControl
 {
     public static readonly string DefaultBoldFontName = "TimesNewRoman-Regular.ttf";
 
+    public string Name { get; set; }
+
     public virtual float Width { get; set; }
 
     public virtual float Height { get; set; }
@@ -26,6 +28,10 @@ public class Control : IControl
     protected bool IsLoaded { get; set; }
 
     public bool Visible { get; set; } = true;
+
+    public virtual bool Enabled { get; set; } = true;
+    
+    public virtual Color DisabledColor { get; set; } = Color.FromArgb(76, 76, 76);
 
     public virtual void Load()
     {

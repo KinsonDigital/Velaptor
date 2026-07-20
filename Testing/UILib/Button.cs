@@ -17,6 +17,10 @@ public class Button : Control
     private readonly Label label;
     private RectShape face;
     private MouseState prevMouseState;
+    private readonly Color faceClr = Color.FromArgb(255, 35, 48, 70);
+    private readonly Color textDisabledColor = Color.FromArgb(255, 175, 175, 175);
+    private readonly Color faceMouseDownClr;
+    private readonly Color faceHoverClr;
     private bool mouseClickDisabled;
 
     public EventHandler<EventArgs>? Click;
@@ -40,6 +44,9 @@ public class Button : Control
 
         Width = 200;
         Height = 30;
+
+        this.faceMouseDownClr = this.faceClr.IncreaseBrightness(0.4f);
+        this.faceHoverClr = this.faceClr.IncreaseBrightness(0.2f);
     }
 
     public string Text
@@ -76,7 +83,7 @@ public class Button : Control
             Position = scrnPos,
             Width = Width,
             Height = Height,
-            Color = Color.FromArgb(255, 35, 48, 70),
+            Color = Enabled ? this.faceClr : DisabledColor,
             IsSolid = true,
         };
 
@@ -86,16 +93,18 @@ public class Button : Control
         var mouseIsOver = this.face.Contains(mousePosVector);
 
         // If the mouse position is inside of the slider area
-        if (mouseIsOver)
+        if (Enabled && mouseIsOver)
         {
             var mouseIsDown = currentMouseState.IsButtonDown(MouseButton.LeftButton);
 
             if (mouseIsDown)
             {
-                this.face.Color = this.face.Color.IncreaseBrightness(0.4f);
+                this.face.Color = this.faceMouseDownClr;
             }
-
-            this.face.Color = this.face.Color.IncreaseBrightness(0.2f);
+            else
+            {
+                this.face.Color = this.faceHoverClr;
+            }
 
             var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
             var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
@@ -105,11 +114,8 @@ public class Button : Control
                 this.Click?.Invoke(this, EventArgs.Empty);
             }
         }
-        else
-        {
-            this.face.Color = this.face.Color.DecreaseBrightness(0.0f);
-        }
 
+        this.label.TextColor = Enabled ? Color.White : this.textDisabledColor;
         this.label.Position = new Vector2(
             Position.X + ((Width / 2f) - (this.label.TextSize.Width / 2f)),
             Position.Y + ((Height / 2f) - (this.label.TextSize.Height / 2f)));

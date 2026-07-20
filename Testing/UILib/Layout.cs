@@ -5,7 +5,6 @@ using System.Numerics;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
-using Velaptor.Input;
 
 public class Layout : Control
 {
@@ -21,8 +20,6 @@ public class Layout : Control
     private Line topLine;
     private Line bottomLine;
     private float baseAreaTop;
-    private int verticalSpacing = 10;
-    private int horizontalSpacing = 10;
 
     public Layout()
     {
@@ -79,25 +76,38 @@ public class Layout : Control
 
     public int AreaPadding { get; set; }
 
-    public int HorizontalSpacing
-    {
-        get => this.horizontalSpacing;
-        set => this.horizontalSpacing = value;
-    }
+    public int HorizontalSpacing { get; set; } = 10;
 
-    public int VerticalSpacing
-    {
-        get => this.verticalSpacing;
-        set => this.verticalSpacing = value;
-    }
+    public int VerticalSpacing { get; set; } = 10;
 
     public StackDirection StackDirection { get; set; } = StackDirection.Vertical;
 
     public bool Centered { get; set; } = false;
 
+    public override bool Enabled
+    {
+        get => base.Enabled;
+        set
+        {
+            foreach (var ctrl in this.controls)
+            {
+                ctrl.Enabled = value;
+            }
+
+            base.Enabled = value;
+        }
+    }
+
     public void AddControl(IControl control)
     {
         ArgumentNullException.ThrowIfNull(control);
+
+        // As long as the control is not a layout control, match the enabled and visible state
+        if (control is not Layout)
+        {
+            control.Enabled = Enabled;
+            control.Visible = Visible;
+        }
 
         this.controls.Add(control);
     }
@@ -147,7 +157,7 @@ public class Layout : Control
 
         this.shapeRenderer.Render(this.area, -100);
 
-        // TODO: Only be taken into account internally in this control if in debug mode
+        // TODO: Add debug preprocess directive to only be taken into account internally in this control if in debug mode
         if (DebugBorderVisible)
         {
             this.lineRenderer.Render(this.leftLine, -100);
@@ -172,6 +182,12 @@ public class Layout : Control
         {
             var isFirstItem = i == 0;
             var control = this.controls[i];
+
+            if (!control.Visible)
+            {
+                continue;
+            }
+
             var overlapOffset = control is Label ? 1 : 0;
             var centeredOffset = 0f;
 
@@ -199,9 +215,9 @@ public class Layout : Control
                     {
                         var posY = Centered ? centeredOffset : AreaPadding + overlapOffset;
 
-                        var prevControl = this.controls[i - 1];
+                        var prevCtrl = this.controls[i - 1];
                         control.Position = new Vector2(
-                            prevControl.Right + this.horizontalSpacing + overlapOffset,
+                            prevCtrl.Right + HorizontalSpacing + overlapOffset,
                             layoutOrigin.Y + posY);
                     }
 
@@ -228,10 +244,10 @@ public class Layout : Control
                     {
                         var posX = Centered ? centeredOffset : AreaPadding + overlapOffset;
 
-                        var prevControl = this.controls[i - 1];
+                        var prevCtrl = this.controls[i - 1];
                         control.Position = new Vector2(
                             layoutOrigin.X + posX,
-                            prevControl.Bottom + this.verticalSpacing + overlapOffset);
+                            prevCtrl.Bottom + VerticalSpacing + overlapOffset);
                     }
 
                     break;
@@ -244,7 +260,7 @@ public class Layout : Control
         {
             case StackDirection.Horizontal:
                 var horizontalPaddingEachSide = AreaPadding * 2;
-                var totalHorizontalSpacing = (this.controls.Count - 1) * this.horizontalSpacing;
+                var totalHorizontalSpacing = (this.controls.Count - 1) * HorizontalSpacing;
                 var totalWidth = this.controls.Count <= 0 ? 0 : this.controls.Sum(c => c.Width);
                 var maxHeight = this.controls.Count <= 0 ? 0 : this.controls.Max(c => c.Height);
 
@@ -253,7 +269,7 @@ public class Layout : Control
                 break;
             case StackDirection.Vertical:
                 var verticalPaddingEachSide = AreaPadding * 2;
-                var totalVerticalSpacing = (this.controls.Count - 1) * this.verticalSpacing;
+                var totalVerticalSpacing = (this.controls.Count - 1) * VerticalSpacing;
 
                 var maxWidth = this.controls.Count <= 0 ? 0 : this.controls.Max(c => c.Width);
                 var totalHeight = this.controls.Count <= 0 ? 0 : this.controls.Sum(c => c.Height);

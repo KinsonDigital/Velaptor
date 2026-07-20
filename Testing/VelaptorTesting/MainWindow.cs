@@ -63,10 +63,10 @@ public class MainWindow : Window
         // };
 
         // DEBUGGING SCENE
-        var webGpuTestingScene = new WebGPUTestingScene
-        {
-            Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
-        };
+        // var webGpuTestingScene = new WebGPUTestingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
+        // };
 
         // WORKS
         // var textRenderingScene = new TextRenderingScene
@@ -116,10 +116,10 @@ public class MainWindow : Window
         //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         // };
 
-        // var shapeScene = new ShapeScene
-        // {
-        //     Name = SplitByUpperCase(nameof(ShapeScene)),
-        // };
+        var shapeScene = new ShapeScene
+        {
+            Name = SplitByUpperCase(nameof(ShapeScene)),
+        };
         //
         // var layeredRectScene = new LayeredRectRenderingScene
         // {
@@ -142,7 +142,7 @@ public class MainWindow : Window
         // };
 
         // TODO: Remove this testing scene
-        SceneManager.AddScene(webGpuTestingScene);
+        // SceneManager.AddScene(webGpuTestingScene);
         // SceneManager.AddScene(textRenderingScene, true);
         // SceneManager.AddScene(layeredTextRenderingScene);
         // SceneManager.AddScene(cameraScene);
@@ -151,7 +151,7 @@ public class MainWindow : Window
         // SceneManager.AddScene(layeredTextureRenderingScene);
         // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         // SceneManager.AddScene(renderAnimatedGraphicsScene);
-        // SceneManager.AddScene(shapeScene);
+        SceneManager.AddScene(shapeScene);
         // SceneManager.AddScene(layeredRectScene);
         // SceneManager.AddScene(lineScene);
         // SceneManager.AddScene(layeredLineScene);

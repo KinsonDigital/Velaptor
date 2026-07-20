@@ -29,7 +29,8 @@ public class DropDown : Control
     private readonly Color listAreaBackgroundClr = Color.FromArgb(255, 17, 17, 17);
     private readonly Color hoverListItemClr = Color.FromArgb(255, 57, 124, 204);
     private readonly Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
-    private readonly Color arrowDefaultClr = Color.FromArgb(255, 41, 72, 109);
+    private readonly Color arrowFaceClr = Color.FromArgb(255, 41, 72, 109);
+    private readonly Color arrowFaceDisabledClr;
     private RectShape selectedItemArea;
     private RectShape arrowFace;
     private string selectedItemText;
@@ -40,6 +41,9 @@ public class DropDown : Control
     private RectShape listDividerRest;
     private IFont? font;
     private MouseState prevMouseState;
+    private Color selectedItemAreaHoverClr;
+    private Color arrowFaceHoverClr;
+    private Color itemTextDisabledClr = Color.FromArgb(255, 175, 175, 175);
 
     public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
 
@@ -68,6 +72,9 @@ public class DropDown : Control
 
         Width = 200;
         Height = 30;
+        this.selectedItemAreaHoverClr = this.selectedItemClr.IncreaseBrightness(0.4f);
+        this.arrowFaceHoverClr = this.arrowFaceClr.IncreaseBrightness(0.4f);
+        this.arrowFaceDisabledClr = DisabledColor.IncreaseBrightness(0.4f);
     }
 
     public List<string> Items => [.. this.listItems.Select(x => x.Text)];
@@ -149,7 +156,7 @@ public class DropDown : Control
             Position = new Vector2(this.selectedItemArea.Right - ArrowButtonHalfWidthHeight, this.selectedItemArea.Top + ArrowButtonHalfWidthHeight),
             Width = ArrowButtonWidthHeight,
             Height = ArrowButtonWidthHeight,
-            Color = this.arrowDefaultClr,
+            Color = this.arrowFaceClr,
             IsSolid = true,
         };
 
@@ -198,10 +205,10 @@ public class DropDown : Control
 
         var isMouseOver = this.selectedItemArea.Contains(mousePos) || this.arrowFace.Contains(mousePos);
 
-        if (isMouseOver && !this.mouseClickDisabled && !this.clickConsumedThisFrame)
+        if (Enabled && isMouseOver && !this.mouseClickDisabled && !this.clickConsumedThisFrame)
         {
-            this.selectedItemArea.Color = this.selectedItemClr.IncreaseBrightness(0.4f);
-            this.arrowFace.Color = this.arrowFace.Color.IncreaseBrightness(0.4f);
+            this.selectedItemArea.Color = this.selectedItemAreaHoverClr;
+            this.arrowFace.Color = this.arrowFaceHoverClr;
 
             if (currentMouseState.IsButtonUp(MouseButton.LeftButton) && this.prevMouseState.IsButtonDown(MouseButton.LeftButton))
             {
@@ -217,8 +224,8 @@ public class DropDown : Control
         }
         else
         {
-            this.selectedItemArea.Color = this.selectedItemClr;
-            this.arrowFace.Color = this.arrowDefaultClr;
+            this.selectedItemArea.Color = Enabled ? this.selectedItemClr : DisabledColor;
+            this.arrowFace.Color = Enabled ? this.arrowFaceClr : this.arrowFaceDisabledClr;
         }
 
         if (this.listItems.Count >= 1)
@@ -248,7 +255,7 @@ public class DropDown : Control
 
         if (Items.Count >= 1)
         {
-            this.fontRenderer.Render(this.font, this.selectedItemText, this.selectedItemTextPos, Color.White);
+            this.fontRenderer.Render(this.font, this.selectedItemText, this.selectedItemTextPos, Enabled ? Color.White : this.itemTextDisabledClr);
 
             if (this.isExpanded)
             {

@@ -22,6 +22,10 @@ public class Slider : Control
     private RectShape sliderHandle;
     private RectShape sliderArea;
     private Vector2 handlePos;
+    private Color sliderAreaClr = Color.FromArgb(255, 35, 48, 70);
+    private Color sliderHandleEnabledClr = Color.FromArgb(255, 45, 74, 117);
+    private Color valueTextDisabledColor = Color.FromArgb(255, 175, 175, 175);
+    private Color sliderDisabledClr;
     private bool isDragging;
     private bool mouseClickDisabled;
     private bool wasMouseDownLastFrame;
@@ -47,6 +51,7 @@ public class Slider : Control
 
         Width = 200;
         Height = 30;
+        this.sliderDisabledClr = DisabledColor.IncreaseBrightness(0.5f);
     }
 
     public float Value
@@ -97,6 +102,8 @@ public class Slider : Control
         }
     }
 
+    public Color TextColor { get; set; } = Color.White;
+
     public override void Load()
     {
         this.label.Load();
@@ -126,7 +133,7 @@ public class Slider : Control
             Position = scrnPos,
             Width = Width,
             Height = Height,
-            Color = Color.FromArgb(255, 35, 48, 70),
+            Color = Enabled ? this.sliderAreaClr : DisabledColor,
             IsSolid = true,
         };
 
@@ -145,7 +152,7 @@ public class Slider : Control
             }
         }
 
-        if (mouseIsDown && this.isDragging && isInsideSlider)
+        if (Enabled && mouseIsDown && this.isDragging && isInsideSlider)
         {
             this.handlePos = new Vector2(mousePos.X, scrnPos.Y);
 
@@ -188,7 +195,7 @@ public class Slider : Control
             Position = this.handlePos,
             Width = HandleWidth,
             Height = Height,
-            Color = Color.FromArgb(255, 45, 74, 117),
+            Color = Enabled ? this.sliderHandleEnabledClr : this.sliderDisabledClr,
             IsSolid = true,
         };
 
@@ -209,6 +216,8 @@ public class Slider : Control
         this.shapeRenderer.Render(this.sliderArea, -10);
 
         this.shapeRenderer.Render(this.sliderHandle);
+
+        this.label.TextColor = Enabled ? TextColor : this.valueTextDisabledColor;
 
         // TODO: Only update the text property if the value has changed since the last frame
         this.label.Text = $"{Value:0.00}";

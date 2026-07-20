@@ -76,7 +76,7 @@ public class ShapeScene : SceneBase
     private Layout layShapeType;
     private Layout layMain;
     private UILib.Container conMain;
-    private CheckBox chkCircleIsSolid;
+    private CheckBox chkShapeIsSolid;
     private Label lblCircleClr;
     private DropDown drpCircleClr;
     private Layout layCircleClr;
@@ -84,9 +84,6 @@ public class ShapeScene : SceneBase
     private Slider sldBorderThickness;
     private Layout layCircleProps;
     private Layout layBorderThickness;
-    private Label lblDiameter;
-    private Slider sldDiameter;
-    private Layout layDiameter;
     private Label lblGradType;
     private DropDown drpGradType;
     private DropDown drpGradStopClr;
@@ -102,6 +99,9 @@ public class ShapeScene : SceneBase
     private Slider sldRectHeight;
     private Layout layRectHeight;
     private Label lblRectHeight;
+    private Label lblCircleDiameter;
+    private Slider sldCircleDiameter;
+    private Layout layCircleDiameter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeScene"/> class.
@@ -140,19 +140,22 @@ public class ShapeScene : SceneBase
 
         CreateInstructions();
         CreateShapeTypeCtrls();
-        CreateCircleCtrls();
+        CreateCtrls();
 
         this.layMain = new Layout();
+        this.layMain.Name = "Main Layout";
         this.layMain.AddControl(this.layShapeType);
         this.layMain.AddControl(this.layCircleProps);
-        this.layMain.AddControl(this.layDiameter);
         this.layMain.AddControl(this.layGradType);
         this.layMain.AddControl(this.layGradStartClr);
         this.layMain.AddControl(this.layGradStopClr);
         this.layMain.AddControl(this.layRectWidth);
         this.layMain.AddControl(this.layRectHeight);
+        this.layMain.AddControl(this.layCircleDiameter);
 
         this.conMain = new Container();
+        this.conMain.Title = "Shape Settings";
+        this.conMain.Position = new Vector2(15, 15);
         this.conMain.AddLayoutControl(this.layMain);
     }
 
@@ -268,8 +271,8 @@ public class ShapeScene : SceneBase
             Text = "Shape Type:",
         };
         this.drpShapeType = new DropDown();
-        this.drpShapeType.AddItem(nameof(ShapeType.Rectangle));
         this.drpShapeType.AddItem(nameof(ShapeType.Circle));
+        this.drpShapeType.AddItem(nameof(ShapeType.Rectangle));
         this.drpShapeType.SelectedItemChanged += (_, e) =>
         {
             this.shapeType = Enum.Parse<ShapeType>(e.NewValue);
@@ -278,9 +281,21 @@ public class ShapeScene : SceneBase
             {
                 case ShapeType.Circle:
                     this.lblInstructions.Text = this.circleInstructionText;
+                    this.chkShapeIsSolid.IsChecked = this.circle.IsSolid;
+                    this.sldBorderThickness.Value = this.circle.BorderThickness;
+                    this.layRectWidth.Enabled = false;
+                    this.layRectHeight.Enabled = false;
+                    this.layCircleDiameter.Enabled = true;
+
                     break;
                 case ShapeType.Rectangle:
                     this.lblInstructions.Text = this.rectInstructionText;
+                    this.sldBorderThickness.Value = this.rectangle.BorderThickness;
+                    this.chkShapeIsSolid.IsChecked = this.rectangle.IsSolid;
+                    this.layRectWidth.Enabled = true;
+                    this.layRectHeight.Enabled = true;
+                    this.layCircleDiameter.Enabled = false;
+
                     break;
             }
         };
@@ -322,14 +337,21 @@ public class ShapeScene : SceneBase
         this.grpShapeType.Add(cmbShapeType);
     }
 
-    private void CreateCircleCtrls() // ❌
+    private void CreateCtrls() // ✅
     {
-        this.chkCircleIsSolid = new CheckBox();
-        this.chkCircleIsSolid.IsChecked = true;
-        this.chkCircleIsSolid.Text = "Solid";
-        this.chkCircleIsSolid.CheckedChanged += (_, e) =>
+        this.chkShapeIsSolid = new CheckBox();
+        this.chkShapeIsSolid.IsChecked = true;
+        this.chkShapeIsSolid.Text = "Solid";
+        this.chkShapeIsSolid.CheckedChanged += (_, e) =>
         {
-            this.circle.IsSolid = e.IsChecked;
+            if (this.shapeType == ShapeType.Circle)
+            {
+                this.circle.IsSolid = e.IsChecked;
+            }
+            else
+            {
+                this.rectangle.IsSolid = e.IsChecked;
+            }
         };
 
         // Circle color controls
@@ -370,7 +392,17 @@ public class ShapeScene : SceneBase
         this.sldBorderThickness = new Slider();
         this.sldBorderThickness.Min = 1;
         this.sldBorderThickness.Max = DefaultCircleDiameter / 2;
-        this.sldBorderThickness.ValueChanged += (_, e) => this.circle.BorderThickness = e.NewValue;
+        this.sldBorderThickness.ValueChanged += (_, e) =>
+        {
+            if (this.shapeType == ShapeType.Circle)
+            {
+                this.circle.BorderThickness = e.NewValue;
+            }
+            else
+            {
+                this.rectangle.BorderThickness = e.NewValue;
+            }
+        };
 
         // Border thickness layout
         this.layBorderThickness = new Layout();
@@ -382,30 +414,9 @@ public class ShapeScene : SceneBase
         // Circle properties layout
         this.layCircleProps = new Layout();
         this.layCircleProps.StackDirection = StackDirection.Vertical;
-        this.layCircleProps.AddControl(this.chkCircleIsSolid);
+        this.layCircleProps.AddControl(this.chkShapeIsSolid);
         this.layCircleProps.AddControl(this.layCircleClr);
         this.layCircleProps.AddControl(this.layBorderThickness);
-
-        // Diameter controls
-        this.lblDiameter = new Label();
-        this.lblDiameter.Text = "Diameter:";
-
-        this.sldDiameter = new Slider();
-        this.sldDiameter.Min = 10;
-        this.sldDiameter.Max = 500;
-        this.sldDiameter.Value = DefaultCircleDiameter;
-        this.sldDiameter.ValueChanged += (_, e) =>
-        {
-            this.circle.Diameter = e.NewValue;
-            // this.sldBorderThickness.Max = e.NewValue / 2;
-        };
-
-        // Diameter layout
-        this.layDiameter = new Layout();
-        this.layDiameter.StackDirection = StackDirection.Horizontal;
-        this.layDiameter.Centered = true;
-        this.layDiameter.AddControl(this.lblDiameter);
-        this.layDiameter.AddControl(this.sldDiameter);
 
         // Gradient type controls
         this.lblGradType = new Label();
@@ -484,12 +495,13 @@ public class ShapeScene : SceneBase
 
         this.layRectWidth = new Layout();
         this.layRectWidth.StackDirection = StackDirection.Horizontal;
+        this.layRectWidth.Enabled = false;
         this.layRectWidth.Centered = true;
         this.layRectWidth.AddControl(this.lblRectWidth);
         this.layRectWidth.AddControl(this.sldRectWidth);
 
         this.lblRectHeight = new Label();
-        this.lblRectHeight.Text = "Width:";
+        this.lblRectHeight.Text = "Height:";
 
         // Rectangle height
         this.sldRectHeight = new Slider();
@@ -511,10 +523,32 @@ public class ShapeScene : SceneBase
         };
 
         this.layRectHeight = new Layout();
+        this.layRectHeight.Name = "debug";
         this.layRectHeight.StackDirection = StackDirection.Horizontal;
+        this.layRectHeight.Enabled = false;
         this.layRectHeight.Centered = true;
         this.layRectHeight.AddControl(this.lblRectHeight);
         this.layRectHeight.AddControl(this.sldRectHeight);
+
+        // Circle diameter
+        this.lblCircleDiameter = new Label();
+        this.lblCircleDiameter.Text = "Diameter:";
+
+        this.sldCircleDiameter = new Slider();
+        this.sldCircleDiameter.Min = 10;
+        this.sldCircleDiameter.Max = 500;
+        this.sldCircleDiameter.Value = DefaultCircleDiameter;
+        this.sldCircleDiameter.ValueChanged += (_, e) =>
+        {
+            this.circle.Diameter = e.NewValue;
+            this.sldBorderThickness.Max = e.NewValue / 2;
+        };
+
+        this.layCircleDiameter = new Layout();
+        this.layCircleDiameter.StackDirection = StackDirection.Horizontal;
+        this.layCircleDiameter.Centered = true;
+        this.layCircleDiameter.AddControl(this.lblCircleDiameter);
+        this.layCircleDiameter.AddControl(this.sldCircleDiameter);
 
         return;
         // var sldCircleBorderThickness = this.ctrlFactory.CreateSlider();
