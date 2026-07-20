@@ -1,7 +1,10 @@
 {
 	"deno.enablePaths": [
-		"./DevTools/"
+		"./DevTools/",
+		"./.github/actions/",
+		"./.github/cicd-scripts/"
 	],
+	"deno.config": "./deno.json",
 	"cSpell.words": [
 		"Analyers",
 		"andymckay",
@@ -26,6 +29,7 @@
 		"denoland",
 		"dodgerblue",
 		"editorconfig",
+		"ERWN",
 		"ethomson",
 		"finalizer",
 		"fkamau1",
@@ -56,6 +60,7 @@
 		"Newtonsoft",
 		"nsubstitute",
 		"Nuget",
+		"nugets",
 		"nupkg",
 		"prereleases",
 		"pwsh",
