@@ -8,8 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using UILib;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -36,11 +35,9 @@ public class LayeredRectRenderingScene : SceneBase
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
     private IShapeRenderer? shapeRenderer;
-    private IControlGroup? grpInstructions;
-    private IControlGroup? grpRectState;
+    private Label? lblInstructions;
+    private Label? lblRectState;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private string? lblRectStateName;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
     /// </summary>
@@ -53,11 +50,6 @@ public class LayeredRectRenderingScene : SceneBase
     /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
-        if (IsLoaded)
-        {
-            return;
-        }
-
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
 
@@ -69,29 +61,11 @@ public class LayeredRectRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, textLines);
 
-        var ctrlFactory = new ControlFactory();
+        this.lblInstructions = new Label { Text = instructions };
+        this.lblRectState = new Label();
 
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Text = instructions;
-
-        var lblRectState = ctrlFactory.CreateLabel();
-        lblRectState.Name = nameof(lblRectState);
-        this.lblRectStateName = nameof(lblRectState);
-
-        this.grpInstructions = ctrlFactory.CreateControlGroup();
-        this.grpInstructions.Title = "Instructions";
-        this.grpInstructions.AutoSizeToFitContent = true;
-        this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Initialized += (_, _) =>
-        this.grpInstructions.Add(lblInstructions);
-
-        this.grpRectState = ctrlFactory.CreateControlGroup();
-        this.grpRectState.Title = "Rect State";
-        this.grpRectState.AutoSizeToFitContent = true;
-        this.grpRectState.Initialized += (_, _) =>
-
-        this.grpRectState.Add(lblRectState);
+        this.lblInstructions.Load();
+        this.lblRectState.Load();
 
         this.orangeRect = this.orangeRect with
         {
@@ -139,8 +113,8 @@ public class LayeredRectRenderingScene : SceneBase
         UpdateRectStateText();
         MoveWhiteRect(frameTime);
 
-        this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-        this.grpRectState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpRectState.HalfHeight);
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
+        this.lblRectState.Position = new Vector2(WindowPadding, WindowCenter.Y - this.lblRectState.HalfHeight);
 
         this.prevKeyState = this.currentKeyState;
         base.Update(frameTime);
@@ -155,8 +129,8 @@ public class LayeredRectRenderingScene : SceneBase
 
         this.backgroundManager.Render();
 
-        this.grpInstructions.Render();
-        this.grpRectState.Render();
+        this.lblInstructions.Render();
+        this.lblRectState.Render();
 
         base.Render();
     }
@@ -164,29 +138,11 @@ public class LayeredRectRenderingScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
         this.backgroundManager.Unload();
-        this.grpInstructions.Dispose();
-        this.grpRectState.Dispose();
-        this.grpInstructions = null;
-        this.grpRectState = null;
+        this.lblInstructions.Unload();
+        this.lblRectState.Unload();
 
         base.UnloadContent();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
     }
 
     /// <summary>
@@ -194,21 +150,14 @@ public class LayeredRectRenderingScene : SceneBase
     /// </summary>
     private void UpdateRectStateText()
     {
-        // Render the current enabled box text
         var textLines = new[]
         {
             $"White Rectangle Layer: {this.whiteLayer}",
             $"Orange Rectangle Layer: {OrangeLayer}",
             $"Blue Rectangle Layer: {BlueLayer}",
         };
-        var rectStateText = string.Join(Environment.NewLine, textLines);
 
-        var lblRectStateCtl = this.grpRectState.GetControl<ILabel>(this.lblRectStateName);
-
-        if (lblRectStateCtl is not null)
-        {
-            lblRectStateCtl.Text = rectStateText;
-        }
+        this.lblRectState.Text = string.Join(Environment.NewLine, textLines);
     }
 
     /// <summary>

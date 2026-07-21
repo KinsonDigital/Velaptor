@@ -8,8 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using UILib;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -35,11 +34,9 @@ public class LayeredLineRenderingScene : SceneBase
     private Line blueLine;
     private KeyboardState currentKeyState;
     private KeyboardState prevKeyState;
-    private IControlGroup? grpInstructions;
-    private IControlGroup? grpLineState;
+    private Label? lblInstructions;
+    private Label? lblLineState;
     private RenderLayer whiteLayer = RenderLayer.One;
-    private string? lblLineStateName;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
     /// </summary>
@@ -52,11 +49,6 @@ public class LayeredLineRenderingScene : SceneBase
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
-        if (IsLoaded)
-        {
-            return;
-        }
-
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.lineRenderer = RendererFactory.CreateLineRenderer();
 
@@ -68,34 +60,11 @@ public class LayeredLineRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, textLines);
 
-        var ctrlFactory = new ControlFactory();
+        this.lblInstructions = new Label { Text = instructions };
+        this.lblLineState = new Label();
 
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Text = instructions;
-
-        this.grpInstructions = ctrlFactory.CreateControlGroup();
-        this.grpInstructions.Title = "Instructions";
-        this.grpInstructions.AutoSizeToFitContent = true;
-        this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Initialized += (_, _) =>
-        {
-            this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
-        };
-        this.grpInstructions.Add(lblInstructions);
-
-        var lblLineState = ctrlFactory.CreateLabel();
-        lblLineState.Name = nameof(lblLineState);
-        this.lblLineStateName = nameof(lblLineState);
-
-        this.grpLineState = ctrlFactory.CreateControlGroup();
-        this.grpLineState.Title = "Line State";
-        this.grpLineState.AutoSizeToFitContent = true;
-        this.grpLineState.Initialized += (_, _) =>
-        {
-            this.grpLineState.Position = new Point(WindowPadding, WindowCenter.Y - this.grpLineState.HalfHeight);
-        };
-        this.grpLineState.Add(lblLineState);
+        this.lblInstructions.Load();
+        this.lblLineState.Load();
 
         this.orangeLine = default;
         this.orangeLine.Color = Color.FromArgb(255, 193, 105, 46);
@@ -124,8 +93,46 @@ public class LayeredLineRenderingScene : SceneBase
         this.currentKeyState = this.keyboard.GetState();
 
         UpdateWhiteLineLayer();
+        UpdateLineStateText();
+        MoveWhiteLine(frameTime);
 
-        // Render the current enabled box text
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
+        this.lblLineState.Position = new Vector2(WindowPadding, WindowCenter.Y - this.lblLineState.HalfHeight);
+
+        this.prevKeyState = this.currentKeyState;
+        base.Update(frameTime);
+    }
+
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render()
+    {
+        this.backgroundManager.Render();
+
+        this.lineRenderer.Render(this.blueLine, (int)BlueLayer);
+        this.lineRenderer.Render(this.orangeLine, (int)OrangeLayer);
+        this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
+
+        // Render the background
+        this.lblInstructions.Render();
+        this.lblLineState.Render();
+        base.Render();
+    }
+
+    /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
+    public override void UnloadContent()
+    {
+        this.backgroundManager.Unload();
+        this.lblInstructions.Unload();
+        this.lblLineState.Unload();
+
+        base.UnloadContent();
+    }
+
+    /// <summary>
+    /// Updates the text for the state of the white line.
+    /// </summary>
+    private void UpdateLineStateText()
+    {
         var textLines = new[]
         {
             $"White Line Layer: {this.whiteLayer}",
@@ -133,63 +140,7 @@ public class LayeredLineRenderingScene : SceneBase
             $"Blue Line Layer: {BlueLayer}",
         };
 
-        var lblLineStateCtrl = this.grpLineState.GetControl<ILabel>(this.lblLineStateName);
-        lblLineStateCtrl.Text = string.Join(Environment.NewLine, textLines);
-
-        MoveWhiteLine(frameTime);
-
-        this.prevKeyState = this.currentKeyState;
-
-        base.Update(frameTime);
-    }
-
-    /// <inheritdoc cref="IDrawable.Render"/>
-    public override void Render()
-    {
-        this.lineRenderer.Render(this.blueLine, (int)BlueLayer);
-        this.lineRenderer.Render(this.orangeLine, (int)OrangeLayer);
-        this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
-
-        // Render the background
-        this.backgroundManager.Render();
-
-        this.grpInstructions.Render();
-        this.grpLineState.Render();
-
-        base.Render();
-    }
-
-    /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
-    public override void UnloadContent()
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        this.backgroundManager.Unload();
-        this.grpInstructions.Dispose();
-        this.grpLineState.Dispose();
-        this.grpInstructions = null;
-        this.grpLineState = null;
-
-        base.UnloadContent();
-    }
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            UnloadContent();
-        }
-
-        base.Dispose(disposing);
+        this.lblLineState.Text = string.Join(Environment.NewLine, textLines);
     }
 
     /// <summary>

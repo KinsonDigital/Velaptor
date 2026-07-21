@@ -105,6 +105,16 @@ public class DropDown : Control
 
     }
 
+    public void SelectItem(string text)
+    {
+        if (!this.listItems.Any((i) => i.Text == text))
+        {
+            throw new Exception($"The item '{text}' does not exist.");
+        }
+
+        this.selectedItemText = text;
+    }
+
     public override void Load()
     {
         // this.arrowBtn.Load();
@@ -167,6 +177,8 @@ public class DropDown : Control
             for (var i = 0; i < this.listItems.Count; i++)
             {
                 var item = this.listItems[i];
+                item.Width = Width;
+                item.Height = Height;
                 item.Position = new Vector2(
                         Position.X,
                         Position.Y + (Height * (i + 1)) + ListDividerHeight);
@@ -230,9 +242,14 @@ public class DropDown : Control
 
         if (this.listItems.Count >= 1)
         {
+            var selectedItemTextSize = this.font.Measure(this.selectedItemText);
+
             this.selectedItemTextPos = new Vector2(
                 Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
                 Position.Y + (Height / 2f));
+
+            // TODO: Need to vertically center the text using measured values
+            throw new Exception("FOLLOW THE TODO ABOVE");
         }
 
         this.prevMouseState = currentMouseState;
