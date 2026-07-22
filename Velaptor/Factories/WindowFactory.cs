@@ -7,12 +7,12 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
 using NativeInterop.ImGui;
-using OpenGL;
 using Scene;
 using Services;
 using Telemetry;
 using VelaptorIWindow = UI.IWindow;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
+using Velaptor.WebGPU;
 
 /// <summary>
 /// Velaptor application-specific functionality.

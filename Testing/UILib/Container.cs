@@ -69,7 +69,11 @@ public class Container : Control
         this.baseAreaTop = this.logicalPosition.Y;
     }
 
-    public string Title { get; set; }
+    public string Title
+    {
+        get => this.titleBarText.Text;
+        set => this.titleBarText.Text = value;
+    }
 
     public override float Width
     {

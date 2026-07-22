@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL;
+namespace Velaptor.WebGPU;
 
 using System;
 using System.ComponentModel;

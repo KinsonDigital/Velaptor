@@ -4,11 +4,14 @@
 
 namespace VelaptorTesting;
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using Scenes;
+using UILib;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
@@ -29,7 +32,8 @@ public class MainWindow : Window
     ];
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
-    // private readonly IControlGroup grpSceneCtrls;
+    private readonly Button btnPrevScene;
+    private readonly Button btnNextScene;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -40,123 +44,120 @@ public class MainWindow : Window
         Width = 1920;
         Height = 1080;
 
+        AutoSceneRendering = false;
+
         this.batcher = RendererFactory.CreateBatcher();
         this.keyboard = HardwareFactory.GetKeyboard();
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        // var ctrlFactory = new ControlFactory();
+        this.btnPrevScene = new Button();
+        this.btnPrevScene.Text = "<=";
+        this.btnPrevScene.Width = 50;
+        this.btnPrevScene.Click += PrevScene_OnClick;
 
-        // this.grpSceneCtrls = ctrlFactory.CreateControlGroup();
-        // this.grpSceneCtrls.Title = "Scene Group";
-        // this.grpSceneCtrls.TitleBarVisible = false;
-        // this.grpSceneCtrls.AutoSizeToFitContent = true;
-        // this.grpSceneCtrls.Initialized += (_, _) =>
-        // {
-        //     this.grpSceneCtrls.Position = new Point(
-        //         (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
-        //         (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
-        // };
+        this.btnNextScene = new Button();
+        this.btnNextScene.Text = "=>";
+        this.btnNextScene.Width = 50;
+        this.btnNextScene.Click += NextScene_OnClick;
 
-        // var nextPrevious = ctrlFactory.CreateNextPrevious();
-        // nextPrevious.Next += (_, _) => SceneManager.NextScene();
-        // };
+        var textRenderingScene = new TextRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(TextRenderingScene)),
+        };
 
-        // DEBUGGING SCENE
-        // var webGpuTestingScene = new WebGPUTestingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(WebGPUTestingScene)),
-        // };
+        var layeredTextRenderingScene = new LayeredTextRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        };
 
-        // WORKS
-        // var textRenderingScene = new TextRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(TextRenderingScene)),
-        // };
+        var cameraScene = new CameraScene
+        {
+            Name = SplitByUpperCase(nameof(CameraScene)),
+        };
 
-        // WORKS
-        // var layeredTextRenderingScene = new LayeredTextRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
-        // };
+        var keyboardScene = new KeyboardScene
+        {
+            Name = SplitByUpperCase(nameof(KeyboardScene)),
+        };
 
-        // WORKS
-        // var cameraScene = new CameraScene
-        // {
-        //     Name = SplitByUpperCase(nameof(CameraScene)),
-        // };
+        var mouseScene = new MouseScene
+        {
+            Name = SplitByUpperCase(nameof(MouseScene)),
+        };
 
-        // WORKS
-        // var keyboardScene = new KeyboardScene
-        // {
-        //     Name = SplitByUpperCase(nameof(KeyboardScene)),
-        // };
+        var layeredTextureRenderingScene = new LayeredTextureRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
+        };
 
-        // WORKS
-        // var mouseScene = new MouseScene
-        // {
-        //     Name = SplitByUpperCase(nameof(MouseScene)),
-        // };
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
+        {
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        };
 
-        // WORKS
-        // var layeredTextureRenderingScene = new LayeredTextureRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
-        // };
+        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
+        {
+            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
+        };
 
-        // WORKS
-        // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
-        // {
-        //     Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
-        // };
+        var shapeScene = new ShapeScene
+        {
+            Name = SplitByUpperCase(nameof(ShapeScene)),
+        };
 
-        // WORKS
-        // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
-        // {
-        //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
-        // };
+        var layeredRectScene = new LayeredRectRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
+        };
 
-        // var shapeScene = new ShapeScene
-        // {
-        //     Name = SplitByUpperCase(nameof(ShapeScene)),
-        // };
+        var lineScene = new LineRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LineRenderingScene)),
+        };
 
-        //
-        // var layeredRectScene = new LayeredRectRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
-        // };
-        //
-        // var lineScene = new LineRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LineRenderingScene)),
-        // };
-        //
-        // var layeredLineScene = new LayeredLineRenderingScene
-        // {
-        //     Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
-        // };
-        //
+        var layeredLineScene = new LayeredLineRenderingScene
+        {
+            Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
+        };
+
         var audioScene = new AudioScene
         {
             Name = SplitByUpperCase(nameof(AudioScene)),
         };
 
-        // TODO: Remove this testing scene
-        // SceneManager.AddScene(webGpuTestingScene);
-        // SceneManager.AddScene(textRenderingScene, true);
-        // SceneManager.AddScene(layeredTextRenderingScene);
-        // SceneManager.AddScene(cameraScene);
-        // SceneManager.AddScene(keyboardScene);
-        // SceneManager.AddScene(mouseScene);
-        // SceneManager.AddScene(layeredTextureRenderingScene);
-        // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
-        // SceneManager.AddScene(renderAnimatedGraphicsScene);
-        // SceneManager.AddScene(shapeScene);
-        // SceneManager.AddScene(layeredRectScene);
-        // SceneManager.AddScene(lineScene);
-        // SceneManager.AddScene(layeredLineScene);
+        SceneManager.AddScene(textRenderingScene, true);
+        SceneManager.AddScene(layeredTextRenderingScene);
+        SceneManager.AddScene(cameraScene);
+        SceneManager.AddScene(keyboardScene);
+        SceneManager.AddScene(mouseScene);
+        SceneManager.AddScene(layeredTextureRenderingScene);
+        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        SceneManager.AddScene(renderAnimatedGraphicsScene);
+        SceneManager.AddScene(shapeScene);
+        SceneManager.AddScene(layeredRectScene);
+        SceneManager.AddScene(lineScene);
+        SceneManager.AddScene(layeredLineScene);
         SceneManager.AddScene(audioScene);
+    }
+
+    protected override void OnLoad()
+    {
+        this.btnPrevScene.Load();
+        this.btnNextScene.Load();
+
+        base.OnLoad();
+    }
+
+    protected override void OnUnload()
+    {
+        this.btnPrevScene.Click -= PrevScene_OnClick;
+        this.btnNextScene.Click -= NextScene_OnClick;
+
+        this.btnPrevScene.Unload();
+        this.btnNextScene.Unload();
+
+        base.OnUnload();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
@@ -176,9 +177,14 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        // this.grpSceneCtrls.Position = new Point(
-        //     (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
-        //     (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
+        this.btnNextScene.Position = new Vector2(
+            Width - (this.btnNextScene.Width + WindowPadding),
+            Height - (this.btnNextScene.Height + WindowPadding));
+
+        this.btnPrevScene.Position = new Vector2(this.btnNextScene.Left - this.btnNextScene.Width - WindowPadding, this.btnNextScene.Top);
+
+        this.btnPrevScene.Update();
+        this.btnNextScene.Update();
 
         this.prevKeyState = currentKeyState;
 
@@ -188,23 +194,14 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnDraw"/>
     protected override void OnDraw(FrameTime frameTime)
     {
-        base.OnDraw(frameTime);
-
-        // Render the buttons after the 'base.OnDraw()'.  With the rendering being set to auto,
-        // additional drawings have to be done after the base.OnDraw() call with the use of
-        // the 'Begin()' and 'End()` methods.
         this.batcher.Begin();
 
-        // this.grpSceneCtrls.Render();
+        SceneManager.Render();
+
+        this.btnPrevScene.Render();
+        this.btnNextScene.Render();
 
         this.batcher.End();
-    }
-
-    protected override void OnUnload()
-    {
-        ReactableFactory.Dispose();
-
-        base.OnUnload();
     }
 
     /// <summary>
@@ -240,5 +237,15 @@ public class MainWindow : Window
         var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
 
         return result.TrimEnd(' ');
+    }
+
+    private void PrevScene_OnClick(object? sender, EventArgs e)
+    {
+        SceneManager.PreviousScene();
+    }
+
+    private void NextScene_OnClick(object? sender, EventArgs e)
+    {
+        SceneManager.NextScene();
     }
 }

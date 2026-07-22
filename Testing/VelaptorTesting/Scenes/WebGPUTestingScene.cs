@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// TODO: Remove the scene entirely.
+
 using System.Drawing;
 using System.Numerics;
 using UILib;

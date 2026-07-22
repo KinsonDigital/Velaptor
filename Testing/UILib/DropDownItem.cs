@@ -21,7 +21,6 @@ public class DropDownItem : Control
     private MouseState prevMouseState;
 
     public EventHandler<EventArgs>? Click;
-    private SizeF textSize;
 
     public DropDownItem()
     {
@@ -53,7 +52,6 @@ public class DropDownItem : Control
     {
         var currentMouseState = this.mouse.GetState();
 
-        this.textSize = this.font.Measure(Text);
         var scrnPos = Position.ToWorld(Width, Height);
 
         this.background = new RectShape
@@ -87,7 +85,7 @@ public class DropDownItem : Control
 
         var renderPos = new Vector2(
             Position.X + (Width / 2f),
-            Position.Y + (this.textSize.Height / 2f));
+            Position.Y + HalfHeight);
 
         this.fontRenderer.Render(this.font, Text, renderPos, Color.White, TopLayer);
 

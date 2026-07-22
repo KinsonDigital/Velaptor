@@ -38,7 +38,6 @@ public class DropDown : Control
     private readonly Color itemTextDisabledClr = Color.FromArgb(255, 175, 175, 175);
     private RectShape selectedItemArea;
     private RectShape arrowFace;
-    private SizeF selectedItemTextSize;
     private Vector2 selectedItemTextPos;
     private bool isExpanded;
     private bool mouseClickDisabled;
@@ -136,6 +135,7 @@ public class DropDown : Control
 
         foreach (var item in this.listItems)
         {
+            item.Click -= ItemOn_Click;
             item.Unload();
         }
 
@@ -151,7 +151,6 @@ public class DropDown : Control
 
         var currentMouseState = this.mouse.GetState();
 
-        this.selectedItemTextSize = this.font.Measure(SelectedItem);
         var scrnPos = Position.ToWorld(Width, Height);
 
         this.selectedItemArea = new RectShape
@@ -237,7 +236,7 @@ public class DropDown : Control
         {
             this.selectedItemTextPos = new Vector2(
                 Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
-                Position.Y + (this.selectedItemTextSize.Height / 2f));
+                Position.Y + HalfHeight);//(this.selectedItemTextSize.Height / 2f));
         }
 
         this.prevMouseState = currentMouseState;
@@ -291,11 +290,6 @@ public class DropDown : Control
         this.lineRenderer.RenderLine(topLeft, topRight, arrowColor, 2, -9);
         this.lineRenderer.RenderLine(topRight, bottomCenter, arrowColor, 2, -9);
         this.lineRenderer.RenderLine(bottomCenter, topLeft, arrowColor, 2, -9);
-    }
-
-    private void ArrowBtn_Click(object? sender, EventArgs e)
-    {
-        this.isExpanded = !this.isExpanded;
     }
 
     private void ItemOn_Click(object? sender, EventArgs e)

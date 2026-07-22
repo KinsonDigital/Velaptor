@@ -40,6 +40,7 @@ using SysVector2 = System.Numerics.Vector2;
 using VelaptorMouseButton = Velaptor.Input.MouseButton;
 using VelaptorWindowBorder = Velaptor.WindowBorder;
 using WindowBorder = Velaptor.WindowBorder;
+using Velaptor.WebGPU;
 
 /// <summary>
 /// Tests the <see cref="WGPUWindow"/> class.

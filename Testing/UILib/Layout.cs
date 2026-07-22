@@ -256,6 +256,11 @@ public class Layout : Control
             control.Update();
         }
 
+        if (this.controls.Count <= 0)
+        {
+            return;
+        }
+
         switch (StackDirection)
         {
             case StackDirection.Horizontal:
@@ -296,8 +301,10 @@ public class Layout : Control
 
         this.leftLine = new Line
         {
-            P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
-            P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom),
+            // P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
+            // P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom),
+            P1 = new Vector2(this.area.Left, this.area.Top),
+            P2 = new Vector2(this.area.Left, this.area.Bottom),
             Color = this.borderClr,
             Thickness = BorderThickness,
         };
