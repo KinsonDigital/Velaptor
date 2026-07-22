@@ -23,7 +23,7 @@ public record struct RectShape
     private float borderThickness = 1f;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RectShape"/> struct.
+    /// Initializes a new instance of the <see cref="RectShape"/> class.
     /// </summary>
     public RectShape()
     {

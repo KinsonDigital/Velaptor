@@ -23,12 +23,12 @@ public class CheckBox : Control
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly IDisposable subscription;
+    private readonly Color markEnabledClr = Color.FromArgb(255, 89, 149, 224);
+    private readonly Color markDisabledClr;
     private RectShape mainArea;
     private Line mark1;
     private Line mark2;
     private Vector2 textPos;
-    private Color markEnabledClr = Color.FromArgb(255, 89, 149, 224);
-    private Color markDisabledClr;
     private MouseState prevMouseState;
     private string text = "Check box";
     private IFont font;
@@ -68,6 +68,11 @@ public class CheckBox : Control
 
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
         var textWidth = this.font.Measure(this.text).Width;
         Width = (int)(BoxWidthHeight + BoxTextPadding + textWidth);
@@ -77,6 +82,11 @@ public class CheckBox : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.contentManager.Unload(this.font);
 
         base.Unload();

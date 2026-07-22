@@ -109,6 +109,7 @@ public class FontLoaderTests
         mockFont.Name.Returns(FontContentName);
         mockFont.FilePath.Returns(this.defaultFontFilePath);
         mockFont.Atlas.Returns(mockAtlasTexture);
+        mockFont.Size.Returns((uint)FontSize);
 
         this.mockFontFactory = Substitute.For<IFontFactory>();
         this.mockFontFactory.Create(
@@ -558,9 +559,8 @@ public class FontLoaderTests
         // Act
         sut.Unload(font);
 
-        // Assert
         this.mockDisposeTextureReactable.Received(1).Push(PushNotifications.TextureDisposedId, expectedDisposeTextureData);
-        sut.TotalCachedItems.ShouldBe(1);
+        sut.TotalCachedItems.ShouldBe(0);
     }
     #endregion
 

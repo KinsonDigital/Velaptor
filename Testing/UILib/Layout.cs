@@ -114,6 +114,11 @@ public class Layout : Control
 
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
         foreach (var control in this.controls)
         {
             control.Load();
@@ -124,6 +129,11 @@ public class Layout : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         foreach (var control in this.controls)
         {
             control.Unload();

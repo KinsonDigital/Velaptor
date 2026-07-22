@@ -157,6 +157,11 @@ public class Container : Control
 
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
         this.titleBarText.Load();
 
         this.layout.Load();
@@ -166,6 +171,11 @@ public class Container : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.titleBarText.Unload();
 
         this.layout.Unload();

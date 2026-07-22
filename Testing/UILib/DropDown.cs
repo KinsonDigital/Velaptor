@@ -39,11 +39,11 @@ public class DropDown : Control
     private RectShape selectedItemArea;
     private RectShape arrowFace;
     private Vector2 selectedItemTextPos;
+    private IFont? font;
+    private MouseState prevMouseState;
     private bool isExpanded;
     private bool mouseClickDisabled;
     private bool clickConsumedThisFrame;
-    private IFont? font;
-    private MouseState prevMouseState;
 
     public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
 
@@ -117,7 +117,11 @@ public class DropDown : Control
 
     public override void Load()
     {
-        // this.arrowBtn.Load();
+        if (IsLoaded)
+        {
+            return;
+        }
+
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
 
         foreach (var item in this.listItems)
@@ -131,6 +135,11 @@ public class DropDown : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.contentManager.Unload(this.font);
 
         foreach (var item in this.listItems)

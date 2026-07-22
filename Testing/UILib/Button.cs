@@ -59,6 +59,11 @@ public class Button : Control
 
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
         this.label.Load();
 
         base.Load();
@@ -66,6 +71,11 @@ public class Button : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.label.Unload();
 
         base.Unload();

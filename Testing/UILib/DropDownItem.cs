@@ -36,6 +36,11 @@ public class DropDownItem : Control
 
     public override void Load()
     {
+        if (IsLoaded)
+        {
+            return;
+        }
+
         this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
 
         base.Load();
@@ -43,6 +48,11 @@ public class DropDownItem : Control
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.contentManager.Unload(this.font);
 
         base.Unload();

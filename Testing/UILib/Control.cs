@@ -35,15 +35,9 @@ public class Control : IControl
     
     public virtual Color DisabledColor { get; set; } = Color.FromArgb(76, 76, 76);
 
-    public virtual void Load()
-    {
-        IsLoaded = true;
-    }
+    public virtual void Load() => IsLoaded = true;
 
-    public virtual void Unload()
-    {
-        IsLoaded = false;
-    }
+    public virtual void Unload() => IsLoaded = false;
 
     public virtual void Render(int layer = 0)
     {

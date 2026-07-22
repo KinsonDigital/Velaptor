@@ -16,19 +16,19 @@ public class Option : Control
     private const int BoxTextPadding = 5;
     private const float BoxWidthHeight = 20;
     private static readonly List<(int, Guid, bool)> checkStates = new ();
+    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private readonly Guid id;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
-    private readonly Color OptionColor = Color.FromArgb(255, 89, 149, 224);
+    private readonly Color optionColor = Color.FromArgb(255, 89, 149, 224);
     private readonly IDisposable subscription;
+    private IFont? font;
     private CircleShape circle;
     private Vector2 textPos;
     private MouseState prevMouseState;
     private string text = "Option";
-    private IFont font;
-    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private bool mouseClickDisabled;
 
     public event EventHandler<CheckChangedEventArgs>? CheckChanged;
@@ -153,7 +153,7 @@ public class Option : Control
         }
 
         this.circle.IsSolid = IsChecked;
-        this.circle.Color = Color.FromArgb(255, 89, 149, 224);
+        this.circle.Color = this.optionColor;
 
         this.prevMouseState = currentMouseState;
 
@@ -171,10 +171,5 @@ public class Option : Control
         this.fontRenderer.Render(this.font, Text, this.textPos, Color.White);
 
         base.Render();
-    }
-
-    private void LabelOn_Click(object? sender, EventArgs e)
-    {
-        IsChecked = !IsChecked;
     }
 }

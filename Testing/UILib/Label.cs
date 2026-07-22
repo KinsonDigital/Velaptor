@@ -124,6 +124,7 @@ public class Label : Control
     public override void Unload()
     {
         this.contentManager.Unload(this.font);
+        this.isLoaded = false;
 
         base.Unload();
     }
