@@ -508,8 +508,11 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
 
             var bindGroup = this.bindGroupRegistry.GetBindGroup(batchItem.TextureId);
 
-            this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
-            this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
+            if (bindGroup is not null)
+            {
+                this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, bindGroup, 0, 0);
+                this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
+            }
 
             this.batchOffset += totalItemsToRender;
             totalItemsToRender = 0;

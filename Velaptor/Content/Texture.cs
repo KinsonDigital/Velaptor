@@ -123,8 +123,8 @@ public sealed class Texture : ITexture
             return;
         }
 
-        BindGroup?.Dispose();
         this.bindGroupRegistry?.Unregister(Id);
+        BindGroup?.Dispose();
         this.sampler?.Dispose();
         this.textureView?.Dispose();
         this.gpuTexture?.Dispose();
