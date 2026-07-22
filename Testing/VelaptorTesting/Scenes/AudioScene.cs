@@ -277,15 +277,15 @@ public class AudioScene : SceneBase
         {
             StackDirection = StackDirection.Vertical,
         };
-        // this.layMain.AddControl(this.layAudioFile);
-        // this.layMain.AddControl(this.layVolume);
-        // this.layMain.AddControl(this.layPosition);
-        // this.layMain.AddControl(this.btnRewind);
-        // this.layMain.AddControl(this.btnFastForward);
-        // this.layMain.AddControl(this.btnPause);
-        // this.layMain.AddControl(this.btnStop);
-        // this.layMain.AddControl(this.btnPlay);
-        // this.layMain.AddControl(this.chkRepeat);
+        this.layMain.AddControl(this.layAudioFile);
+        this.layMain.AddControl(this.layVolume);
+        this.layMain.AddControl(this.layPosition);
+        this.layMain.AddControl(this.btnRewind);
+        this.layMain.AddControl(this.btnFastForward);
+        this.layMain.AddControl(this.btnPause);
+        this.layMain.AddControl(this.btnStop);
+        this.layMain.AddControl(this.btnPlay);
+        this.layMain.AddControl(this.chkRepeat);
 
         // Container
         this.conAudio = new Container
