@@ -1,3 +1,5 @@
+namespace UILib;
+
 internal struct DisableMouseSubscriptionData
 {
     /// <summary>

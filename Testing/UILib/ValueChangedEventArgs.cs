@@ -1,3 +1,5 @@
+namespace UILib;
+
 public class ValueChangedEventArgs : EventArgs
 {
     public ValueChangedEventArgs(float oldValue, float newValue)

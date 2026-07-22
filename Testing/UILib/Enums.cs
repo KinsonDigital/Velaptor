@@ -1,3 +1,5 @@
+namespace UILib;
+
 public enum Alignment {
     Left,
     Center,

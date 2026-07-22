@@ -1,3 +1,5 @@
+namespace UILib;
+
 using Carbonate.OneWay;
 
 internal static class ReactableFactory

@@ -1,3 +1,5 @@
+namespace UILib;
+
 public class LabelClickEventArgs : EventArgs
 {
     public LabelClickEventArgs(Label label) => Label = label;

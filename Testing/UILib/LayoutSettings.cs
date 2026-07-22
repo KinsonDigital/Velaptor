@@ -1,3 +1,5 @@
+namespace UILib;
+
 public readonly struct LayoutSettings
 {
     public readonly int LayoutGroup { get; init; }

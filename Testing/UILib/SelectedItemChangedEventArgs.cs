@@ -1,3 +1,5 @@
+namespace UILib;
+
 public class SelectedItemChangedEventArgs : EventArgs
 {
     public SelectedItemChangedEventArgs(string oldValue, string newValue)
