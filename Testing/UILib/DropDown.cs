@@ -33,19 +33,18 @@ public class DropDown : Control
     private readonly Color selectedItemClr = Color.FromArgb(255, 35, 48, 70);
     private readonly Color arrowFaceClr = Color.FromArgb(255, 41, 72, 109);
     private readonly Color arrowFaceDisabledClr;
+    private readonly Color selectedItemAreaHoverClr;
+    private readonly Color arrowFaceHoverClr;
+    private readonly Color itemTextDisabledClr = Color.FromArgb(255, 175, 175, 175);
     private RectShape selectedItemArea;
     private RectShape arrowFace;
-    private string selectedItemText;
+    private SizeF selectedItemTextSize;
     private Vector2 selectedItemTextPos;
     private bool isExpanded;
     private bool mouseClickDisabled;
     private bool clickConsumedThisFrame;
-    private RectShape listDividerRest;
     private IFont? font;
     private MouseState prevMouseState;
-    private Color selectedItemAreaHoverClr;
-    private Color arrowFaceHoverClr;
-    private Color itemTextDisabledClr = Color.FromArgb(255, 175, 175, 175);
 
     public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
 
@@ -81,7 +80,7 @@ public class DropDown : Control
 
     public List<string> Items => [.. this.listItems.Select(x => x.Text)];
 
-    public string SelectedItem => this.selectedItemText;
+    public string SelectedItem { get; private set; } = string.Empty;
 
     public void AddItem(string text)
     {
@@ -98,7 +97,7 @@ public class DropDown : Control
         // that the dropdown has a default selection.
         if (this.listItems.Count == 1)
         {
-            this.selectedItemText = text;
+            SelectedItem = text;
         }
     }
 
@@ -114,7 +113,7 @@ public class DropDown : Control
             throw new Exception($"The item '{text}' does not exist.");
         }
 
-        this.selectedItemText = text;
+        SelectedItem = text;
     }
 
     public override void Load()
@@ -152,6 +151,7 @@ public class DropDown : Control
 
         var currentMouseState = this.mouse.GetState();
 
+        this.selectedItemTextSize = this.font.Measure(SelectedItem);
         var scrnPos = Position.ToWorld(Width, Height);
 
         this.selectedItemArea = new RectShape
@@ -185,7 +185,7 @@ public class DropDown : Control
                         Position.X,
                         Position.Y + (Height * (i + 1)) + ListDividerHeight);
 
-                if (this.selectedItemText == item.Text)
+                if (SelectedItem == item.Text)
                 {
                     item.BackgroundColor = this.selectedItemClr;
                 }
@@ -206,15 +206,6 @@ public class DropDown : Control
 
                 this.listItems[i] = item;
             }
-
-            this.listDividerRest = new RectShape
-            {
-                Position = new Vector2(scrnPos.X, scrnPos.Y + this.selectedItemArea.HalfHeight + (ListDividerHeight / 2f)),
-                Width = Width,
-                Height = ListDividerHeight,
-                Color = this.listAreaBackgroundClr,
-                IsSolid = true,
-            };
         }
 
         var isMouseOver = this.selectedItemArea.Contains(mousePos) || this.arrowFace.Contains(mousePos);
@@ -244,14 +235,9 @@ public class DropDown : Control
 
         if (this.listItems.Count >= 1)
         {
-            var selectedItemTextSize = this.font.Measure(this.selectedItemText);
-
             this.selectedItemTextPos = new Vector2(
                 Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
-                Position.Y + (Height / 2f));
-
-            // TODO: Need to vertically center the text using measured values
-            throw new Exception("FOLLOW THE TODO ABOVE");
+                Position.Y + (this.selectedItemTextSize.Height / 2f));
         }
 
         this.prevMouseState = currentMouseState;
@@ -274,7 +260,7 @@ public class DropDown : Control
 
         if (Items.Count >= 1)
         {
-            this.fontRenderer.Render(this.font, this.selectedItemText, this.selectedItemTextPos, Enabled ? Color.White : this.itemTextDisabledClr);
+            this.fontRenderer.Render(this.font, SelectedItem, this.selectedItemTextPos, Enabled ? Color.White : this.itemTextDisabledClr);
 
             if (this.isExpanded)
             {
@@ -316,10 +302,10 @@ public class DropDown : Control
     {
         if (sender is DropDownItem item)
         {
-            var oldItem = this.selectedItemText;
-            this.selectedItemText = item.Text;
+            var oldItem = SelectedItem;
+            SelectedItem = item.Text;
 
-            SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, this.selectedItemText));
+            SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, SelectedItem));
         }
 
         this.isExpanded = false;
