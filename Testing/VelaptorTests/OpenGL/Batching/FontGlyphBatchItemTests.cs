@@ -9,6 +9,7 @@ using System.Drawing;
 using Shouldly;
 using Velaptor.Graphics;
 using Velaptor.OpenGL.Batching;
+using Velaptor.WebGPU.Batching;
 using Xunit;
 using Xunit.Abstractions;
 

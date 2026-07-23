@@ -23,6 +23,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;
+using Velaptor.WebGPU.Batching;
 using Xunit;
 
 /// <summary>

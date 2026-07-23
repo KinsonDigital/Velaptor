@@ -20,6 +20,7 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
+using WebGPU.Batching;
 
 /// <inheritdoc cref="IFontRenderer"/>
 internal sealed class FontRenderer : IFontRenderer

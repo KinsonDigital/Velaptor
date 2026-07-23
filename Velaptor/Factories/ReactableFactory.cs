@@ -12,6 +12,7 @@ using Graphics;
 using OpenGL.Batching;
 using ReactableData;
 using Silk.NET.OpenGL;
+using Velaptor.WebGPU.Batching;
 
 /// <summary>
 /// Creates singleton reactables.

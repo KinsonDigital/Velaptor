@@ -11,6 +11,7 @@ using Carbonate.OneWay;
 using Factories;
 using OpenGL.Batching;
 using ReactableData;
+using WebGPU.Batching;
 
 /// <inheritdoc/>
 internal sealed class BatchingManager : IBatchingManager

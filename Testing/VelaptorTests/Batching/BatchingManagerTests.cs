@@ -21,6 +21,7 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
+using Velaptor.WebGPU.Batching;
 using Xunit;
 using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
 

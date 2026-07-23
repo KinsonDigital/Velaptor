@@ -277,27 +277,4 @@ internal sealed class FontLoader : IFontLoader
 
         this.fontCache.Clear();
     }
-
-    // /// <summary>
-    // /// Holds a cached font atlas entry with a reference count to track how many
-    // /// <see cref="IFont"/> instances share the same atlas texture.
-    // /// </summary>
-    // private sealed class FontCacheEntry
-    // {
-    //     /// <summary>
-    //     /// Gets or sets the font atlas texture containing bitmap data for all glyphs.
-    //     /// </summary>
-    //     public ITexture FontTextureAtlas { get; init; } = null!;
-
-    //     /// <summary>
-    //     /// Gets or sets the glyph metrics for all characters in the atlas.
-    //     /// </summary>
-    //     public GlyphMetrics[] Metrics { get; init; } = null!;
-
-    //     /// <summary>
-    //     /// The number of <see cref="IFont"/> instances referencing this cache entry.
-    //     /// When this reaches zero, the atlas texture is disposed and the entry is removed.
-    //     /// </summary>
-    //     public int RefCount;
-    // }
 }

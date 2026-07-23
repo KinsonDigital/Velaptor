@@ -35,6 +35,7 @@ using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Telemetry;
 using Velaptor.WebGPU;
+using WebGPU.Batching;
 using WgpuFrame = Velaptor.WebGPU.Frame;
 using WgpuTextureBindGroupRegistry = Velaptor.WebGPU.TextureBindGroupRegistry;
 

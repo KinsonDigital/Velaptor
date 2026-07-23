@@ -16,6 +16,7 @@ using Factories;
 using GpuData;
 using NativeInterop.OpenGL;
 using NativeInterop.Services;
+using WebGPU.Batching;
 
 /// <summary>
 /// Updates font data in the GPU buffer.

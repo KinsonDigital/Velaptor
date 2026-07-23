@@ -654,20 +654,14 @@ internal sealed class WGPUWindow : VelaptorIWindow
             new CachedValue<uint>(
                 defaultValue: width,
                 getterWhenNotCaching: () => (uint)this.silkWindow.Size.X,
-                setterWhenNotCaching: value =>
-                {
-                    this.silkWindow.Size = new Vector2D<int>((int)value, this.silkWindow.Size.Y);
-                }));
+                setterWhenNotCaching: value => this.silkWindow.Size = new Vector2D<int>((int)value, this.silkWindow.Size.Y)));
 
         CachedUIntProps.Add(
             nameof(Height),
             new CachedValue<uint>(
                 defaultValue: height,
                 getterWhenNotCaching: () => (uint)this.silkWindow.Size.Y,
-                setterWhenNotCaching: value =>
-                {
-                    this.silkWindow.Size = new Vector2D<int>(this.silkWindow.Size.X, (int)value);
-                }));
+                setterWhenNotCaching: value => this.silkWindow.Size = new Vector2D<int>(this.silkWindow.Size.X, (int)value)));
     }
 
     /// <summary>
@@ -680,18 +674,12 @@ internal sealed class WGPUWindow : VelaptorIWindow
             new CachedValue<string>(
                 defaultValue: "Velaptor Application",
                 getterWhenNotCaching: () => this.silkWindow.Title,
-                setterWhenNotCaching: value =>
-                {
-                    this.silkWindow.Title = value;
-                }));
+                setterWhenNotCaching: value => this.silkWindow.Title = value));
 
         var mainDisplay = this.systemDisplayService.MainDisplay;
 
-        float ToDisplayScale(float value)
-        {
-            return value * mainDisplay.HorizontalDPI /
+        float ToDisplayScale(float value) => value * mainDisplay.HorizontalDPI /
                    (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
-        }
 
         var halfWidth = ToDisplayScale(Width / 2f);
         var halfHeight = ToDisplayScale(Height / 2f);
@@ -701,20 +689,14 @@ internal sealed class WGPUWindow : VelaptorIWindow
         CachedPosition = new CachedValue<Vector2>(
             defaultValue: defaultPosition,
             getterWhenNotCaching: () => new Vector2(this.silkWindow.Position.X, this.silkWindow.Position.Y),
-            setterWhenNotCaching: value =>
-            {
-                this.silkWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y);
-            });
+            setterWhenNotCaching: value => this.silkWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y));
 
         CachedIntProps.Add(
             nameof(UpdateFrequency),
             new CachedValue<int>(
                 defaultValue: 60,
                 getterWhenNotCaching: () => (int)this.silkWindow.UpdatesPerSecond,
-                setterWhenNotCaching: value =>
-                {
-                    this.silkWindow.UpdatesPerSecond = value;
-                }));
+                setterWhenNotCaching: value => this.silkWindow.UpdatesPerSecond = value));
 
         CachedBoolProps.Add(
             nameof(MouseCursorVisible),
