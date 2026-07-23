@@ -32,7 +32,7 @@ using RectRenderItem = Carbonate
     .Core.OneWay.IReceiveSubscription<
         System.Memory<
             Velaptor.WebGPU.Batching.RenderItem<
-                Velaptor.OpenGL.Batching.ShapeBatchItem
+                Velaptor.WebGPU.Batching.ShapeBatchItem
             >
         >
     >;

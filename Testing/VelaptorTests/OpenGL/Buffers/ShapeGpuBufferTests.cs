@@ -24,7 +24,7 @@ using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.Batching;
+using Velaptor.WebGPU.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.ReactableData;

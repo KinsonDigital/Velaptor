@@ -6,7 +6,7 @@ namespace Velaptor.WebGPU.Buffers;
 
 using System.Drawing;
 using Graphics;
-using OpenGL.Batching;
+using Batching;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering rounded rectangles.

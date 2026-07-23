@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using Batching;
+using Velaptor.WebGPU.Batching;
 using Carbonate;
 using Exceptions;
 using ExtensionMethods;

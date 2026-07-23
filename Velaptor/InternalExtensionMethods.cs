@@ -16,7 +16,6 @@ using System.Runtime.CompilerServices;
 using Graphics;
 using Input;
 using WebGPU.Batching;
-using OpenGL.Batching;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;

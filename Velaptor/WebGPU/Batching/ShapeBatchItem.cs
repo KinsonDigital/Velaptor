@@ -1,8 +1,8 @@
-﻿// <copyright file="ShapeBatchItem.cs" company="KinsonDigital">
+// <copyright file="ShapeBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.Batching;
+namespace Velaptor.WebGPU.Batching;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
