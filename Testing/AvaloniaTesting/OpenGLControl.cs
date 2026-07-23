@@ -17,6 +17,7 @@ using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
+using Velaptor.WebGPU.Batching;
 
 /// <summary>
 /// Control used for OpenGL rendering.

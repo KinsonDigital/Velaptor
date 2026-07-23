@@ -12,6 +12,7 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Scene;
+using Velaptor.WebGPU.Batching;
 
 public class WebGPUTestingScene : SceneBase
 {

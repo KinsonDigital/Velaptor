@@ -17,6 +17,7 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
+using Velaptor.WebGPU.Batching;
 
 /// <summary>
 /// The main window to the testing application.
