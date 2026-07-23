@@ -25,7 +25,6 @@ using NativeInterop.WebGpu.Handles;
 internal sealed class GraphicsShader : IDisposable
 {
     private readonly IEmbeddedResourceLoaderService<string> resourceLoaderService;
-    private readonly IPath path;
     private readonly string shaderName;
     private SafeShaderModuleHandle? vertexHandle;
     private SafeShaderModuleHandle? fragmentHandle;
@@ -54,7 +53,6 @@ internal sealed class GraphicsShader : IDisposable
         ArgumentNullException.ThrowIfNull(path);
 
         this.resourceLoaderService = resourceLoaderService;
-        this.path = path;
         this.shaderName = shaderName;
     }
 
@@ -109,8 +107,8 @@ internal sealed class GraphicsShader : IDisposable
 
         ArgumentNullException.ThrowIfNull(gd);
 
-        var vertSource = LoadWgslSource($"{this.shaderName}.vert");
-        var fragSource = LoadWgslSource($"{this.shaderName}.frag");
+        var vertSource = this.resourceLoaderService.LoadResource($"{this.shaderName}.vert.wgsl");
+        var fragSource = this.resourceLoaderService.LoadResource($"{this.shaderName}.frag.wgsl");
 
         this.vertexHandle = gd.CreateShaderModule(vertSource);
         this.fragmentHandle = gd.CreateShaderModule(fragSource);
@@ -133,18 +131,5 @@ internal sealed class GraphicsShader : IDisposable
         this.isDisposed = true;
         this.vertexHandle?.Dispose();
         this.fragmentHandle?.Dispose();
-    }
-
-    /// <summary>
-    /// Loads the WGSL source for a shader stage from embedded resources.
-    /// </summary>
-    /// <param name="shaderName">
-    ///     The embedded resource name suffix (e.g., <c>"texture.vert"</c>).
-    /// </param>
-    /// <returns>The WGSL source code string.</returns>
-    private string LoadWgslSource(string shaderName)
-    {
-        var wgslFileName = $"{shaderName}.wgsl";
-        return this.resourceLoaderService.LoadResource(wgslFileName);
     }
 }
