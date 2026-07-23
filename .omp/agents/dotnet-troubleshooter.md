@@ -1,7 +1,24 @@
 ---
-description: "Use this agent when the user asks to debug, diagnose, or troubleshoot .NET applications, libraries, or build failures.\n\nTrigger phrases include:\n- \"debug this error\" / \"debug this exception\"\n- \"troubleshoot this issue\"\n- \"why is this crashing?\"\n- \"fix this bug\"\n- \"diagnose the problem\"\n- \"investigate this failure\"\n- \"what's causing this NRE / stack overflow / deadlock?\"\n- \"find the memory leak\"\n- \"why is this test failing?\"\n- \"trace this issue\"\n\nExamples:\n- User pastes a stack trace and says \"what's going on here?\" → invoke this agent to analyze and diagnose\n- User says \"the build is failing with CSxxxx\" → invoke this agent to troubleshoot compiler errors\n- User reports \"performance degraded after the last refactor\" → invoke this agent to profile and identify regressions\n- During a PR review, the user says \"this occasionally throws on CI but not locally\" → invoke this agent to investigate flaky behavior"
-name: dotnet-troubleshooter
-tools: ['search', 'read', 'edit', 'execute', 'agent/runSubagent', 'todo', 'vscode/memory']
+name: csharp-dotnet-troubleshooter
+description: |
+    "Use this agent when the user asks to debug, diagnose, or troubleshoot .NET applications, libraries, or build failures.Trigger phrases include:
+        - debug this error
+        - debug this exception
+        - troubleshoot this issue
+        - why is this crashing?
+        - fix this bug
+        - diagnose the problem
+        - investigate this failure
+        - what's causing this NRE / stack overflow / deadlock?
+        - find the memory leak
+        - why is this test failing?
+        - trace this issue
+          - Examples:- User pastes a stack trace and says "what's going on here?" → invoke this agent to analyze and diagnose
+        - User says "the build is failing with CSxxxx" → invoke this agent to troubleshoot compiler errors
+        - User reports "performance degraded after the last refactor" → invoke this agent to profile and identify regressions
+        - During a PR review, the user says "this occasionally throws on CI but not locally" → invoke this agent to investigate flaky behavior"
+model: deepseek/deepseek-v4-pro
+tools: read, grep, glob, lsp, bash, web_search
 ---
 
 # dotnet-troubleshooter instructions
