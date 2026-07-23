@@ -25,12 +25,13 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
+using Velaptor.WebGPU.Batching;
 
 // Type aliases
 using RectRenderItem = Carbonate
     .Core.OneWay.IReceiveSubscription<
         System.Memory<
-            Velaptor.OpenGL.Batching.RenderItem<
+            Velaptor.WebGPU.Batching.RenderItem<
                 Velaptor.OpenGL.Batching.ShapeBatchItem
             >
         >

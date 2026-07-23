@@ -21,6 +21,7 @@ using Velaptor.Input;
 using Velaptor.OpenGL.Batching;
 using Xunit;
 using NETColor = System.Drawing.Color;
+using Velaptor.WebGPU.Batching;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
 

@@ -29,7 +29,7 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.WebGPU.Batching;
 using Xunit;
-using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using FontRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.WebGPU.Batching.RenderItem<
             Velaptor.WebGPU.Batching.FontGlyphBatchItem
         >
     >

@@ -23,7 +23,7 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
 using Velaptor.WebGPU.Batching;
 using Xunit;
-using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
+using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.WebGPU.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
 
 /// <summary>
 /// Tests the <see cref="BatchingManager"/> class.

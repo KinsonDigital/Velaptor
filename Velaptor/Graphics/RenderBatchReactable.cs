@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.OneWay;
-using OpenGL.Batching;
+using WebGPU.Batching;
 
 /// <inheritdoc cref="IRenderBatchReactable{TBatchItem}"/>
 /// <typeparam name="TBatchItem">The type of batch item to send.</typeparam>

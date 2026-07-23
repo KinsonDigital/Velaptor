@@ -17,7 +17,6 @@ using Factories;
 using Graphics;
 using Graphics.Renderers;
 using NativeInterop.WebGPU;
-using OpenGL.Batching;
 using Velaptor.Batching;
 using Velaptor.WebGPU.Buffers;
 

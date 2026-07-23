@@ -1,13 +1,13 @@
-﻿// <copyright file="RenderItem.cs" company="KinsonDigital">
+// <copyright file="RenderItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.Batching;
+namespace Velaptor.WebGPU.Batching;
 
 using System;
 
 /// <summary>
-/// A single batch item with associated meta-data about how it should be rendered.
+/// A single batch item with associated metadata about how it should be rendered.
 /// </summary>
 /// <typeparam name="T">The <c>struct</c> that represents the batch item.</typeparam>
 internal readonly record struct RenderItem<T>

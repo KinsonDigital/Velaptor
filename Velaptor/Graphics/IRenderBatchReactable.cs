@@ -7,7 +7,7 @@ namespace Velaptor.Graphics;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.OneWay;
-using OpenGL.Batching;
+using WebGPU.Batching;
 
 /// <summary>
 /// Sends batch data to a renderer for the purpose of rendering.

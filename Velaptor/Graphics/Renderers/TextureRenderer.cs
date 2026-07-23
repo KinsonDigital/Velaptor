@@ -18,6 +18,7 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
+using WebGPU.Batching;
 using NETRect = System.Drawing.Rectangle;
 
 /// <inheritdoc cref="ITextureRenderer"/>

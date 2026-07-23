@@ -27,7 +27,8 @@ using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
-using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
+using Velaptor.WebGPU.Batching;
+using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.WebGPU.Batching.RenderItem<
             Velaptor.OpenGL.Batching.TextureBatchItem
         >
     >

@@ -14,6 +14,7 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
+using WebGPU.Batching;
 
 /// <inheritdoc cref="IShapeRenderer"/>
 internal sealed class ShapeRenderer : IShapeRenderer
