@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.WebGpu;
 
 using System;
 using Handles;
+using Structures;
 using Silk.NET.Core;
 using Silk.NET.WebGPU;
 
@@ -166,6 +167,16 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The pipeline layout descriptor.</param>
     /// <returns>The pipeline layout handle.</returns>
+
+    /// <summary>
+    /// Creates a pipeline layout whose only resource is a debug label.
+    /// Convenience overload that eliminates the <c>fixed(byte*)</c> ceremony
+    /// for the most common case (zero bind groups).
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
+    /// <returns>The pipeline layout handle.</returns>
+    SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, string? label);
     SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, in PipelineLayoutDescriptor descriptor);
 
     /// <summary>
@@ -180,6 +191,16 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The render pipeline descriptor.</param>
     /// <returns>A pointer to the render pipeline.</returns>
+
+    /// <summary>
+    /// Creates a render pipeline from a safe descriptor. All pointer marshaling
+    /// (entry-point strings, handle casts, address-of for nested structs) is
+    /// performed inside the implementation so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="descriptor">The safe pipeline descriptor.</param>
+    /// <returns>A safe handle to the compiled render pipeline.</returns>
+    SafeRenderPipelineHandle DeviceCreateRenderPipeline(SafeDeviceHandle device, in SafeRenderPipelineDescriptor descriptor);
     nint DeviceCreateRenderPipeline(SafeDeviceHandle device, in RenderPipelineDescriptor descriptor);
 
     /// <summary>

@@ -7,6 +7,7 @@ namespace Velaptor.NativeInterop.WebGpu;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Handles;
+using Structures;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
@@ -54,6 +55,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
+    /// <inheritdoc/>
     public void InstanceRequestAdapter(
         SafeInstanceHandle instance,
         SafeSurfaceHandle surface,
@@ -144,6 +146,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
+    /// <inheritdoc/>
     public SafeShaderModuleHandle DeviceCreateShaderModule(SafeDeviceHandle device, string wgsl)
     {
         var wgslPtr = SilkMarshal.StringToPtr(wgsl);
@@ -273,6 +276,121 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                 in descriptor);
 
             return new SafePipelineLayoutHandle(this, handle);
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, string? label)
+    {
+        var labelPtr = label is not null ? SilkMarshal.StringToPtr(label) : 0;
+
+        try
+        {
+            unsafe
+            {
+                var desc = new PipelineLayoutDescriptor
+                {
+                    Label = (byte*)labelPtr,
+                    BindGroupLayoutCount = 0,
+                    BindGroupLayouts = null,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreatePipelineLayout(
+                    (Device*)device.DangerousGetHandle(),
+                    in desc);
+
+                return new SafePipelineLayoutHandle(this, handle);
+            }
+        }
+        finally
+        {
+            if (labelPtr != 0)
+            {
+                SilkMarshal.Free(labelPtr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafeRenderPipelineHandle DeviceCreateRenderPipeline(
+        SafeDeviceHandle device,
+        in SafeRenderPipelineDescriptor descriptor)
+    {
+        var vertEntryPtr = SilkMarshal.StringToPtr(descriptor.Vertex.EntryPoint);
+        var fragEntryPtr = SilkMarshal.StringToPtr(descriptor.Fragment.EntryPoint);
+
+        try
+        {
+            unsafe
+            {
+                var vertBuffers = descriptor.Vertex.Buffers;
+                var fragTargets = descriptor.Fragment.Targets;
+
+                // Pin the vertex attribute arrays, build the buffer layout,
+                // then construct the full descriptor tree on the stack.
+                fixed (VertexAttribute* pAttribs = vertBuffers[0].Attributes)
+                {
+                    var vbLayout = new VertexBufferLayout
+                    {
+                        ArrayStride = vertBuffers[0].ArrayStride,
+                        StepMode = vertBuffers[0].StepMode,
+                        AttributeCount = (uint)vertBuffers[0].Attributes.Length,
+                        Attributes = pAttribs,
+                    };
+
+                    BlendState* pBlend = null;
+
+                    if (fragTargets[0].Blend is { } blendValue)
+                    {
+                        BlendState blend = blendValue;
+                        pBlend = &blend;
+                    }
+
+                    var colorTarget = new ColorTargetState
+                    {
+                        Format = fragTargets[0].Format,
+                        WriteMask = fragTargets[0].WriteMask,
+                        Blend = pBlend,
+                    };
+
+                    var fragState = new FragmentState
+                    {
+                        Module = (ShaderModule*)descriptor.Fragment.Module.DangerousGetHandle(),
+                        EntryPoint = (byte*)fragEntryPtr,
+                        TargetCount = (uint)fragTargets.Length,
+                        Targets = &colorTarget,
+                    };
+
+                    var vertState = new VertexState
+                    {
+                        Module = (ShaderModule*)descriptor.Vertex.Module.DangerousGetHandle(),
+                        EntryPoint = (byte*)vertEntryPtr,
+                        BufferCount = (uint)vertBuffers.Length,
+                        Buffers = &vbLayout,
+                    };
+
+                    var nativeDesc = new RenderPipelineDescriptor
+                    {
+                        Layout = (PipelineLayout*)descriptor.Layout.DangerousGetHandle(),
+                        Vertex = vertState,
+                        Primitive = descriptor.Primitive,
+                        Multisample = descriptor.Multisample,
+                        Fragment = &fragState,
+                        DepthStencil = null,
+                    };
+
+                    var handle = (nint)Wgpu.DeviceCreateRenderPipeline(
+                        (Device*)device.DangerousGetHandle(),
+                        in nativeDesc);
+
+                    return new SafeRenderPipelineHandle(this, handle);
+                }
+            }
+        }
+        finally
+        {
+            SilkMarshal.Free(vertEntryPtr);
+            SilkMarshal.Free(fragEntryPtr);
         }
     }
 
@@ -647,8 +765,8 @@ internal sealed class WgpuInvoker : IWgpuInvoker
 
         this.isDisposed = true;
 
-        this.Device?.Dispose();
-        this.Queue?.Dispose();
+        Device.Dispose();
+        Queue.Dispose();
         Wgpu.Dispose();
         GC.SuppressFinalize(this);
     }
