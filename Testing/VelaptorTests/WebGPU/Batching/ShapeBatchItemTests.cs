@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL.Batching;
+namespace VelaptorTests.WebGpu.Batching;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;

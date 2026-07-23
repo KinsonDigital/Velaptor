@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.WebGPU.Renderers;
+namespace VelaptorTests.WebGpu.Renderers;
 
 using System.Numerics;
 using Carbonate.Core.OneWay;

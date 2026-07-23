@@ -126,14 +126,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\line.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\line.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\shape.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\shape.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert" />
     <EmbeddedResource Include="WebGPU\ShaderCode\texture.vert.wgsl" />
     <EmbeddedResource Include="WebGPU\ShaderCode\texture.frag.wgsl" />
     <EmbeddedResource Include="WebGPU\ShaderCode\shape.vert.wgsl" />

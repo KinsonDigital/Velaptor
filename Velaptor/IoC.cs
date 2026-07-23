@@ -141,8 +141,6 @@ internal static class IoC
     /// </summary>
     private static void SetupRendering()
     {
-        IoCContainer.Register<IRenderContext, AvaloniaRenderContext>();
-
         IoCContainer.Register<IFontRenderer>(
             () =>
         {

@@ -77,17 +77,6 @@
         <File Path="Testing/.editorconfig" />
         <File Path="Testing/Velaptor.runsettings" />
 
-        <Project Path="Testing/AvaloniaTesting/AvaloniaTesting.csproj">
-            <BuildType Solution="Debug-Console|*" Project="Debug" />
-            <BuildType Solution="Release-Console|*" Project="Release" />
-            <BuildType Solution="Telemetry-Debug|x64" Project="Debug" />
-            <BuildType Solution="Telemetry-Release|x64" Project="Release" />
-            <Platform Solution="*|arm64" Project="arm64" />
-            <Platform Solution="*|x64" Project="x64" />
-            <Build Solution="Telemetry-Debug|x64" Project="false" />
-            <Build Solution="Telemetry-Release|x64" Project="false" />
-        </Project>
-
         <Project Path="Testing/PlaygroundApp/PlaygroundApp.csproj">
             <BuildType Solution="Debug-Console|*" Project="Debug" />
             <BuildType Solution="Release-Console|*" Project="Release" />
@@ -99,9 +88,7 @@
             <Build Solution="Telemetry-Release|x64" Project="false" />
         </Project>
         <Project Path="Testing/UILib/UILib.csproj">
-            <BuildType Solution="Debug|*" Project="Debug" />
             <BuildType Solution="Debug-Console|*" Project="Debug" />
-            <BuildType Solution="Release|*" Project="Release" />
             <BuildType Solution="Release-Console|*" Project="Release" />
             <BuildType Solution="Telemetry-Debug|x64" Project="Debug" />
             <BuildType Solution="Telemetry-Release|x64" Project="Release" />
