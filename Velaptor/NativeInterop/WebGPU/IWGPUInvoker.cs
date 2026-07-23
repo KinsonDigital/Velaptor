@@ -371,6 +371,29 @@ internal interface IWgpuInvoker : IDisposable
     nint CommandEncoderBeginRenderPass(SafeCommandEncoderHandle encoder, in RenderPassDescriptor descriptor);
 
     /// <summary>
+    /// Begins a render pass with a single color attachment. The pointer
+    /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="encoder">The command encoder to begin the pass on.</param>
+    /// <param name="textureView">The texture view to render into.</param>
+    /// <param name="loadOp">How the attachment is loaded at pass start.</param>
+    /// <param name="storeOp">How the attachment is stored at pass end.</param>
+    /// <param name="r">The red clear-value component (linear-light for sRGB formats).</param>
+    /// <param name="g">The green clear-value component.</param>
+    /// <param name="b">The blue clear-value component.</param>
+    /// <param name="a">The alpha clear-value component.</param>
+    /// <returns>A safe handle to the active render pass encoder.</returns>
+    SafeRenderPassEncoderHandle CommandEncoderBeginRenderPass(
+        SafeCommandEncoderHandle encoder,
+        SafeTextureViewHandle textureView,
+        LoadOp loadOp,
+        StoreOp storeOp,
+        double r,
+        double g,
+        double b,
+        double a);
+
+    /// <summary>
     /// Ends a render pass.
     /// </summary>
     /// <param name="renderPassEncoder">The render pass encoder pointer.</param>

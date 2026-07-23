@@ -14,26 +14,20 @@ using NativeInterop.WebGpu.Handles;
 /// </summary>
 internal sealed class TextureBindGroupRegistry
 {
-    private readonly Dictionary<uint, SafeBindGroupHandle> bindGroups = new();
+    private readonly Dictionary<uint, SafeBindGroupHandle> bindGroups = new ();
 
     /// <summary>
     /// Associates <paramref name="bindGroup"/> with <paramref name="textureId"/>.
     /// </summary>
     /// <param name="textureId">The unique texture identifier.</param>
     /// <param name="bindGroup">The bind group containing the texture view and sampler.</param>
-    public void Register(uint textureId, SafeBindGroupHandle bindGroup)
-    {
-        this.bindGroups[textureId] = bindGroup;
-    }
+    public void Register(uint textureId, SafeBindGroupHandle bindGroup) => this.bindGroups[textureId] = bindGroup;
 
     /// <summary>
     /// Removes the bind group registration for <paramref name="textureId"/>.
     /// </summary>
     /// <param name="textureId">The unique texture identifier.</param>
-    public void Unregister(uint textureId)
-    {
-        this.bindGroups.Remove(textureId);
-    }
+    public void Unregister(uint textureId) => this.bindGroups.Remove(textureId);
 
     /// <summary>
     /// Returns the bind group associated with <paramref name="textureId"/>, or

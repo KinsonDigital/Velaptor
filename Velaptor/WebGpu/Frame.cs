@@ -50,6 +50,7 @@ internal sealed class Frame : IDisposable
     /// <summary>
     /// Gets a value indicating whether the frame is valid and ready for draw calls.
     /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public bool IsValid { get; private set; }
 
     /// <summary>
@@ -105,6 +106,7 @@ internal sealed class Frame : IDisposable
         // handles to the old swap chain remain alive when Configure() is called.
         this.textureViewHandle?.Dispose();
         this.textureViewHandle = null;
+
         // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
         // ensure we don't leak if Begin() is called again without going through
         // the normal Submit() → Begin() cycle.
@@ -133,7 +135,6 @@ internal sealed class Frame : IDisposable
             return false;
         }
 
-
         var viewDesc = new TextureViewDescriptor
         {
             Format = this.surface.Format,
@@ -154,7 +155,6 @@ internal sealed class Frame : IDisposable
             return false;
         }
 
-
         var encoderDesc = default(CommandEncoderDescriptor);
 
         if (this.encoder is null)
@@ -167,31 +167,22 @@ internal sealed class Frame : IDisposable
             this.encoder.UpdateHandle(in encoderDesc);
         }
 
+        var clearValue = ToLinearClearColor(clearColor, this.surface.Format);
+        var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(
+            this.encoder,
+            this.textureViewHandle,
+            LoadOp.Clear,
+            StoreOp.Store,
+            clearValue.R,
+            clearValue.G,
+            clearValue.B,
+            clearValue.A);
 
-        unsafe
-        {
-            var colorAttachment = new RenderPassColorAttachment
-            {
-                View = (TextureView*)this.textureViewHandle.DangerousGetHandle(),
-                LoadOp = LoadOp.Clear,
-                StoreOp = StoreOp.Store,
-                ClearValue = ToLinearClearColor(clearColor, this.surface.Format),
-            };
+        this.renderPassHandle?.Dispose();
+        this.renderPassHandle = passHandle;
+        IsValid = true;
 
-            var passDesc = new RenderPassDescriptor
-            {
-                ColorAttachmentCount = 1,
-                ColorAttachments = &colorAttachment,
-            };
-
-            var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(this.encoder, in passDesc);
-
-            this.renderPassHandle?.Dispose();
-            this.renderPassHandle = new SafeRenderPassEncoderHandle(this.gd.Wgpu, passHandle);
-            IsValid = true;
-
-            return true;
-        }
+        return true;
     }
 
     /// <summary>
@@ -200,29 +191,36 @@ internal sealed class Frame : IDisposable
     /// </summary>
     public void Submit()
     {
+        if (this.renderPassHandle is null)
+        {
+            throw new Exception($"Render pass handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+        }
+
+        if (this.encoder is null)
+        {
+            throw new Exception($"Encoder handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+        }
+
         this.renderPassHandle.End();
         this.renderPassHandle.Dispose();
         this.renderPassHandle = null;
 
-        unsafe
+        var cmdBufDesc = default(CommandBufferDescriptor);
+        var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.encoder, in cmdBufDesc);
+
+        this.encoder.Dispose();
+        this.encoder = null;
+
+        try
         {
-            var cmdBufDesc = default(CommandBufferDescriptor);
-            var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.encoder, in cmdBufDesc);
-
-            this.encoder.Dispose();
-            this.encoder = null;
-
-            try
-            {
-                this.gd.Wgpu.QueueSubmit(this.gd.Queue!, 1, cmdBuf);
-            }
-            finally
-            {
-                this.gd.Wgpu.CommandBufferRelease(cmdBuf);
-            }
-
-            this.gd.Wgpu.SurfacePresent(this.surface.Handle);
+            this.gd.Wgpu.QueueSubmit(this.gd.Queue!, 1, cmdBuf);
         }
+        finally
+        {
+            this.gd.Wgpu.CommandBufferRelease(cmdBuf);
+        }
+
+        this.gd.Wgpu.SurfacePresent(this.surface.Handle);
     }
 
     /// <inheritdoc/>
@@ -249,7 +247,7 @@ internal sealed class Frame : IDisposable
             : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
 
     /// <summary>
-    /// Builds the clear colour value for the render pass.
+    /// Builds the clear color value for the render pass.
     /// When the swap-chain surface is in sRGB format, WebGPU interprets the clear value as
     /// <em>linear</em> and applies sRGB encoding before writing — so we pre-convert from sRGB to linear.
     /// </summary>

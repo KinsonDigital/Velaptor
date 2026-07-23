@@ -686,6 +686,40 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
+    public SafeRenderPassEncoderHandle CommandEncoderBeginRenderPass(
+        SafeCommandEncoderHandle encoder,
+        SafeTextureViewHandle textureView,
+        LoadOp loadOp,
+        StoreOp storeOp,
+        double r,
+        double g,
+        double b,
+        double a)
+    {
+        unsafe
+        {
+            var colorAttachment = new RenderPassColorAttachment
+            {
+                View = (TextureView*)textureView.DangerousGetHandle(),
+                LoadOp = loadOp,
+                StoreOp = storeOp,
+                ClearValue = new Silk.NET.WebGPU.Color(r, g, b, a),
+            };
+
+            var passDesc = new RenderPassDescriptor
+            {
+                ColorAttachmentCount = 1,
+                ColorAttachments = &colorAttachment,
+            };
+
+            var handle = (nint)Wgpu.CommandEncoderBeginRenderPass(
+                (CommandEncoder*)encoder.DangerousGetHandle(),
+                in passDesc);
+
+            return new SafeRenderPassEncoderHandle(this, handle);
+        }
+    }
+
     /// <inheritdoc/>
     public void RenderPassEncoderEnd(nint renderPassEncoder)
     {
