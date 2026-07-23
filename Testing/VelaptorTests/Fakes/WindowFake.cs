@@ -7,7 +7,7 @@ namespace VelaptorTests.Fakes;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.UI;
-using Velaptor.WebGPU.Batching;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used for the purpose of testing the abstract <see cref="Window"/> class.

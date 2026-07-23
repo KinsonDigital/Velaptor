@@ -10,12 +10,12 @@ using System.Threading;
 using Carbonate;
 using Carbonate.OneWay;
 using Graphics;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 using ReactableData;
 using Silk.NET.WebGPU;
 using Velaptor.Factories;
-using WebGPU;
+using WebGpu;
 
 /// <summary>
 /// The texture to render to a screen.
@@ -25,7 +25,7 @@ public sealed class Texture : ITexture
     private const uint BytesPerRowAlignment = 256;
     private static uint nextId = 1;
 
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsDevice gd;
     private readonly TextureBindGroupRegistry? bindGroupRegistry;
     private SafeTextureHandle? gpuTexture;
@@ -46,7 +46,7 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
     internal Texture(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IGraphicsDevice gd,
         SafeBindGroupLayoutHandle bindGroupLayout,
         IReactableFactory reactableFactory,

@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.Graphics;
-using Velaptor.WebGPU.Batching;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Creates batch items instances to ease the process of creating and maintaining unit tests.

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Buffers;
+namespace Velaptor.WebGpu.Buffers;
 
 using System;
 using System.Numerics;

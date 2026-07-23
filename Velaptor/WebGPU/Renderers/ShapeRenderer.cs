@@ -2,18 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Renderers;
+namespace Velaptor.WebGpu.Renderers;
 
 using System;
 using System.Numerics;
 using Batching;
+using Buffers;
 using Carbonate;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
-using NativeInterop.WebGPU;
+using NativeInterop.WebGpu;
 using Velaptor.Batching;
-using Velaptor.WebGPU.Buffers;
 
 /// <summary>
 /// Renders rectangles and circles to the screen using WebGPU.
@@ -21,7 +21,7 @@ using Velaptor.WebGPU.Buffers;
 /// </summary>
 internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly GraphicsShapePipeline pipeline;
     private readonly ShapeGpuBuffer buffer;
     private readonly Frame frame;
@@ -43,7 +43,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
     internal ShapeRenderer(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
         GraphicsShapePipeline pipeline,
         ShapeGpuBuffer buffer,

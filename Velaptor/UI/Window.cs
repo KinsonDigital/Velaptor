@@ -12,7 +12,7 @@ using Batching;
 using Factories;
 using Graphics;
 using Scene;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// A system window where graphics can be rendered.

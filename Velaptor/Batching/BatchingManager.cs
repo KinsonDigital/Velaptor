@@ -10,7 +10,7 @@ using Carbonate;
 using Carbonate.OneWay;
 using Factories;
 using ReactableData;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <inheritdoc/>
 internal sealed class BatchingManager : IBatchingManager

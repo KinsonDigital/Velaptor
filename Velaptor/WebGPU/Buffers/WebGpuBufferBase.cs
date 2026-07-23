@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Buffers;
+namespace Velaptor.WebGpu.Buffers;
 
 using System;
 using System.Numerics;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Base functionality for WebGPU vertex/index buffer management.
@@ -118,7 +118,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     /// <summary>
     /// Gets the graphics device invoker for WebGPU calls.
     /// </summary>
-    private protected IWGPUInvoker Wgpu => this.gd.Wgpu;
+    private protected IWgpuInvoker Wgpu => this.gd.Wgpu;
 
     /// <summary>
     /// Gets the graphics device handle.

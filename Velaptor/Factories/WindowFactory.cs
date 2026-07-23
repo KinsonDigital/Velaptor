@@ -12,7 +12,7 @@ using Services;
 using Telemetry;
 using VelaptorIWindow = UI.IWindow;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
-using Velaptor.WebGPU;
+using WebGpu;
 
 /// <summary>
 /// Velaptor application-specific functionality.

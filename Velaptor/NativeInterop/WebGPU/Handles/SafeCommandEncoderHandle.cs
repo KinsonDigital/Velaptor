@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU.Handles;
+namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using Silk.NET.WebGPU;
@@ -16,14 +16,14 @@ using Silk.NET.WebGPU;
 /// </remarks>
 internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeCommandEncoderHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="handle">The native handle.</param>
-    public SafeCommandEncoderHandle(IWGPUInvoker wgpu, nint handle)
+    public SafeCommandEncoderHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;

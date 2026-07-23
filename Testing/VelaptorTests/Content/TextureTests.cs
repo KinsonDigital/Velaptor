@@ -13,10 +13,10 @@ using Shouldly;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.NativeInterop.WebGPU;
-using Velaptor.NativeInterop.WebGPU.Handles;
+using Velaptor.NativeInterop.WebGpu;
+using Velaptor.NativeInterop.WebGpu.Handles;
 using Velaptor.ReactableData;
-using Velaptor.WebGPU;
+using Velaptor.WebGpu;
 using Xunit;
 using WgpuBindGroupDescriptor = Silk.NET.WebGPU.BindGroupDescriptor;
 using WgpuExtent3D = Silk.NET.WebGPU.Extent3D;
@@ -33,7 +33,7 @@ public class TextureTests
 {
     private const string TextureName = "test-texture";
     private const string TexturePath = @"C:\temp\test-texture.png";
-    private readonly IWGPUInvoker mockWgpu;
+    private readonly IWgpuInvoker mockWgpu;
     private readonly IGraphicsDevice mockGd;
     private readonly IDisposable mockDisposeUnsubscriber;
     private readonly IReactableFactory mockReactableFactory;
@@ -62,7 +62,7 @@ public class TextureTests
             }
         }
 
-        this.mockWgpu = Substitute.For<IWGPUInvoker>();
+        this.mockWgpu = Substitute.For<IWgpuInvoker>();
         this.mockGd = Substitute.For<IGraphicsDevice>();
         this.mockDisposeUnsubscriber = Substitute.For<IDisposable>();
 

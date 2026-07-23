@@ -1,31 +1,28 @@
-// <copyright file="WGPUInvoker.cs" company="KinsonDigital">
+// <copyright file="WgpuInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU;
+namespace Velaptor.NativeInterop.WebGpu;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Handles;
 using Silk.NET.Core;
 using Silk.NET.WebGPU;
-using Velaptor.NativeInterop.WebGPU.Handles;
 using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
 
 /// <summary>
 /// Invokes WebGPU calls.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the Silk.NET library.")]
-internal sealed class WGPUInvoker : IWGPUInvoker
+internal sealed class WgpuInvoker : IWgpuInvoker
 {
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WGPUInvoker"/> class.
+    /// Initializes a new instance of the <see cref="WgpuInvoker"/> class.
     /// </summary>
-    public WGPUInvoker()
-    {
-        Wgpu = WebGPU.GetApi();
-    }
+    public WgpuInvoker() => Wgpu = WebGPU.GetApi();
 
     /// <inheritdoc/>
     public WebGPU Wgpu { get; }

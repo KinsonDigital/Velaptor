@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Renderers;
+namespace Velaptor.WebGpu.Renderers;
 
 using System;
 using System.Drawing;
 using System.Numerics;
 using Batching;
+using Buffers;
 using Carbonate;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
-using NativeInterop.WebGPU;
+using NativeInterop.WebGpu;
 using Velaptor.Batching;
-using Velaptor.WebGPU.Buffers;
 
 /// <summary>
 /// Renders lines to the screen using WebGPU.
@@ -22,7 +22,7 @@ using Velaptor.WebGPU.Buffers;
 /// </summary>
 internal sealed class LineRenderer : IDisposable, ILineRenderer
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly GraphicsLinePipeline pipeline;
     private readonly LineGpuBuffer buffer;
     private readonly Frame frame;
@@ -44,7 +44,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
     internal LineRenderer(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
         GraphicsLinePipeline pipeline,
         LineGpuBuffer buffer,

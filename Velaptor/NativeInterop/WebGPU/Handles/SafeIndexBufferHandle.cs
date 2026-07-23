@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU.Handles;
+namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 
@@ -11,7 +11,7 @@ using Microsoft.Win32.SafeHandles;
 /// </summary>
 internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeIndexBufferHandle"/> class.
@@ -21,7 +21,7 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <param name="deviceHandle">The device handle.</param>
     /// <param name="bufferDescriptor">Description of the buffer to create.</param>
     public SafeIndexBufferHandle(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         SafeDeviceHandle deviceHandle,
         ref readonly Silk.NET.WebGPU.BufferDescriptor bufferDescriptor)
         : base(ownsHandle: true)
@@ -35,7 +35,7 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="handle">The native handle.</param>
-    public SafeIndexBufferHandle(IWGPUInvoker wgpu, nint handle)
+    public SafeIndexBufferHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;

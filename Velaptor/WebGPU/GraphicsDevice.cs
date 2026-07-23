@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
-using Velaptor.NativeInterop.WebGPU;
-using Velaptor.NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Owns the four-object chain that underpins all WebGPU work on this machine:
@@ -48,7 +48,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// Initializes a new instance of the <see cref="GraphicsDevice"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    public GraphicsDevice(IWGPUInvoker wgpu)
+    public GraphicsDevice(IWgpuInvoker wgpu)
     {
         Wgpu = wgpu;
 
@@ -64,7 +64,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// <summary>
     /// Gets the WebGPU invoker that wraps all native WebGPU API calls.
     /// </summary>
-    public IWGPUInvoker Wgpu { get; }
+    public IWgpuInvoker Wgpu { get; }
 
     /// <summary>
     /// Gets the WebGPU instance — the runtime entry point from which adapters are enumerated

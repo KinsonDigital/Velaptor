@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU.Handles;
+namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using System;
 using Microsoft.Win32.SafeHandles;
@@ -14,7 +14,7 @@ using Silk.NET.Windowing;
 /// </summary>
 internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeSurfaceHandle"/> class
@@ -23,7 +23,7 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="window">The window to create the surface from.</param>
     /// <param name="instance">The WebGPU instance.</param>
-    public SafeSurfaceHandle(IWGPUInvoker wgpu, IWindow window, SafeInstanceHandle instance)
+    public SafeSurfaceHandle(IWgpuInvoker wgpu, IWindow window, SafeInstanceHandle instance)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
@@ -58,7 +58,7 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="handle">The native handle.</param>
-    public SafeSurfaceHandle(IWGPUInvoker wgpu, nint handle)
+    public SafeSurfaceHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;

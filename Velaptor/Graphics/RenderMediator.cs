@@ -10,7 +10,7 @@ using Batching;
 using Carbonate;
 using Carbonate.NonDirectional;
 using Factories;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <inheritdoc/>
 internal sealed class RenderMediator : IRenderMediator

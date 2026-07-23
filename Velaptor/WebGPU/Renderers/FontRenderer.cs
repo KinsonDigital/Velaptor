@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Renderers;
+namespace Velaptor.WebGpu.Renderers;
 
 using System;
 using System.Collections.Generic;
@@ -10,15 +10,15 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Batching;
+using Buffers;
 using Carbonate;
 using Content.Fonts;
 using ExtensionMethods;
 using Factories;
 using Graphics;
 using Graphics.Renderers;
-using NativeInterop.WebGPU;
+using NativeInterop.WebGpu;
 using Velaptor.Batching;
-using Velaptor.WebGPU.Buffers;
 
 /// <summary>
 /// Renders text to the screen using WebGPU via a font texture atlas.
@@ -26,7 +26,7 @@ using Velaptor.WebGPU.Buffers;
 /// </summary>
 internal sealed class FontRenderer : IDisposable, IFontRenderer
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly GraphicsTexturePipeline pipeline;
     private readonly FontGpuBuffer buffer;
     private readonly Frame frame;
@@ -50,7 +50,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     /// <param name="bindGroupRegistry">Resolves texture IDs to bind groups.</param>
     /// <param name="batchManager">Manages font glyph batch items.</param>
     internal FontRenderer(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
         GraphicsTexturePipeline pipeline,
         FontGpuBuffer buffer,

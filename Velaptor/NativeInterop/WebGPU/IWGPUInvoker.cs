@@ -1,18 +1,18 @@
-// <copyright file="IWGPUInvoker.cs" company="KinsonDigital">
+// <copyright file="IWgpuInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU;
+namespace Velaptor.NativeInterop.WebGpu;
 
 using System;
+using Handles;
 using Silk.NET.Core;
 using Silk.NET.WebGPU;
-using Velaptor.NativeInterop.WebGPU.Handles;
 
 /// <summary>
 /// Invokes WebGPU functions.
 /// </summary>
-internal interface IWGPUInvoker : IDisposable
+internal interface IWgpuInvoker : IDisposable
 {
     /// <summary>
     /// Gets the WebGPU API instance.

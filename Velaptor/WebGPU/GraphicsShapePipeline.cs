@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// A compiled, immutable render pipeline for drawing rounded rectangles. Unlike the
@@ -30,7 +30,7 @@ internal sealed class GraphicsShapePipeline : IDisposable
     private readonly GraphicsDevice gd;
     private readonly GraphicsSurface surface;
     private readonly GraphicsShader shader;
-    private IWGPUInvoker? wgpu;
+    private IWgpuInvoker? wgpu;
     private SafeDeviceHandle? device;
     private SafeRenderPipelineHandle? handle;
     private bool isDisposed;

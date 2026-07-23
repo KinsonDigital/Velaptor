@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Owns the four-object chain that underpins all WebGPU work: Instance → Adapter → Device → Queue.
@@ -16,7 +16,7 @@ internal interface IGraphicsDevice : IDisposable
     /// <summary>
     /// Gets the WebGPU invoker that wraps all native WebGPU API calls.
     /// </summary>
-    IWGPUInvoker Wgpu { get; }
+    IWgpuInvoker Wgpu { get; }
 
     /// <summary>
     /// Gets the WebGPU instance — the runtime entry point from which adapters are enumerated

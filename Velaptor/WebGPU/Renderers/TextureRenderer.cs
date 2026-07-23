@@ -2,28 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU.Renderers;
+namespace Velaptor.WebGpu.Renderers;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Batching;
+using Buffers;
 using Carbonate;
 using Content;
 using Graphics;
 using Graphics.Renderers;
 using Graphics.Renderers.Exceptions;
-using NativeInterop.WebGPU;
+using NativeInterop.WebGpu;
 using Velaptor.Batching;
 using Velaptor.Factories;
-using Velaptor.WebGPU.Buffers;
 using NETRect = System.Drawing.Rectangle;
 
 /// <inheritdoc cref="ITextureRenderer"/>
 internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly IBatchingManager batchManager;
     private readonly GraphicsTexturePipeline pipeline;
     private readonly TextureGpuBuffer buffer;
@@ -51,7 +51,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         "SA1100:DoNotPrefixCallsWithBaseUnlessLocalImplementationExists",
         Justification = "Reactable subscribe call requires 'this' prefix.")]
     public TextureRenderer(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
         GraphicsTexturePipeline pipeline,
         TextureGpuBuffer buffer,

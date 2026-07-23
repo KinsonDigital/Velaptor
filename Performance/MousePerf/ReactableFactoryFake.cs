@@ -11,7 +11,7 @@ using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.ReactableData;
-using Velaptor.WebGPU.Batching;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used for the purpose of performance testing.

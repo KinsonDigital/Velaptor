@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU.Handles;
+namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using Silk.NET.WebGPU;
@@ -12,7 +12,7 @@ using Silk.NET.WebGPU;
 /// </summary>
 internal sealed class SafeTextureHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeTextureHandle"/> class.
@@ -20,7 +20,7 @@ internal sealed class SafeTextureHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="deviceHandle">The device handle.</param>
     /// <param name="textureDescriptor">The texture creation descriptor.</param>
-    public SafeTextureHandle(IWGPUInvoker wgpu, SafeDeviceHandle deviceHandle, in TextureDescriptor textureDescriptor)
+    public SafeTextureHandle(IWgpuInvoker wgpu, SafeDeviceHandle deviceHandle, in TextureDescriptor textureDescriptor)
         : base(ownsHandle: true)
     {
         this.wgpu = wgpu;

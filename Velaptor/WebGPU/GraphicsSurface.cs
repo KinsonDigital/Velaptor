@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Silk.NET.WebGPU;
 using Silk.NET.Windowing;
-using Velaptor.NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Connects an OS window to the WebGPU rendering system and manages the swap chain

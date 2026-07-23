@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using System.IO.Abstractions;
 using Services;
-using Velaptor.NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Loads separate vertex and fragment WGSL shader sources from embedded resources

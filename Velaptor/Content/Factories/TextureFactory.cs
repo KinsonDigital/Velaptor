@@ -7,10 +7,10 @@ namespace Velaptor.Content.Factories;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Graphics;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 using Velaptor.Factories;
-using WebGPU;
+using WebGpu;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.
@@ -18,7 +18,7 @@ using WebGPU;
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
 internal sealed class TextureFactory : ITextureFactory
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsDevice gd;
     private readonly IReactableFactory reactableFactory;
     private SafeBindGroupLayoutHandle? bindGroupLayout;
@@ -29,7 +29,7 @@ internal sealed class TextureFactory : ITextureFactory
     /// </summary>
     public TextureFactory()
     {
-        this.wgpu = IoC.Container.GetInstance<IWGPUInvoker>();
+        this.wgpu = IoC.Container.GetInstance<IWgpuInvoker>();
         this.gd = IoC.Container.GetInstance<IGraphicsDevice>();
         this.reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
         this.bindGroupRegistry = IoC.Container.GetInstance<TextureBindGroupRegistry>();
@@ -45,7 +45,7 @@ internal sealed class TextureFactory : ITextureFactory
     /// <param name="bindGroupLayout">The bind group layout from the texture pipeline. Optional.</param>
     /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
     internal TextureFactory(
-        IWGPUInvoker wgpu,
+        IWgpuInvoker wgpu,
         IGraphicsDevice gd,
         IReactableFactory reactableFactory,
         SafeBindGroupLayoutHandle? bindGroupLayout = null,

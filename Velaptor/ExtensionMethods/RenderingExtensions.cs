@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Graphics;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Provides extension methods to rendering related types.

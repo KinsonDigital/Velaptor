@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// A compiled, immutable render pipeline for drawing 2-D lines. The vertex shader
@@ -26,7 +26,7 @@ internal sealed class GraphicsLinePipeline : IDisposable
     private readonly GraphicsDevice gd;
     private readonly GraphicsSurface surface;
     private readonly GraphicsShader shader;
-    private IWGPUInvoker? wgpu;
+    private IWgpuInvoker? wgpu;
     private SafeDeviceHandle? device;
     private SafeRenderPipelineHandle? handle;
     private bool isDisposed;

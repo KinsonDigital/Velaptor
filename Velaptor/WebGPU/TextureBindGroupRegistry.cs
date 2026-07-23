@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System.Collections.Generic;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu.Handles;
 
 /// <summary>
 /// Central registry mapping texture IDs to their WebGPU bind groups, so renderers

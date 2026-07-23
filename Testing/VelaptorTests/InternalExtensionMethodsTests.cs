@@ -20,7 +20,7 @@ using Velaptor.Graphics;
 using Velaptor.Input;
 using Xunit;
 using NETColor = System.Drawing.Color;
-using Velaptor.WebGPU.Batching;
+using Velaptor.WebGpu.Batching;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
 

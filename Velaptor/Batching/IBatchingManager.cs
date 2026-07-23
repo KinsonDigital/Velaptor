@@ -5,7 +5,7 @@
 namespace Velaptor.Batching;
 
 using System;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Manages batch items that are used for rendering.

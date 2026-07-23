@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.WebGPU.Handles;
+namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using System;
 using Silk.NET.WebGPU;
@@ -16,7 +16,7 @@ using Silk.NET.WebGPU;
 /// </remarks>
 internal sealed class SafeSurfaceTextureHandle : IDisposable
 {
-    private readonly IWGPUInvoker wgpu;
+    private readonly IWgpuInvoker wgpu;
     private nint handle;
 
     /// <summary>
@@ -25,7 +25,7 @@ internal sealed class SafeSurfaceTextureHandle : IDisposable
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="texturePointer">The native texture pointer.</param>
     /// <param name="surfaceTextureStatus">The status of getting the surface texture.</param>
-    public SafeSurfaceTextureHandle(IWGPUInvoker wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
+    public SafeSurfaceTextureHandle(IWgpuInvoker wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
     {
         this.wgpu = wgpu;
 

@@ -7,7 +7,7 @@ namespace Velaptor.Factories;
 using System.Diagnostics.CodeAnalysis;
 using Batching;
 using Graphics.Renderers;
-using WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Creates renderers for rendering different types of graphics.

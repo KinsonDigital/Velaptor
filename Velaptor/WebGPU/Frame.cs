@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGPU;
+namespace Velaptor.WebGpu;
 
 using System;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGPU.Handles;
+using NativeInterop.WebGpu.Handles;
 using NETColor = System.Drawing.Color;
 using SilkColor = Silk.NET.WebGPU.Color;
 

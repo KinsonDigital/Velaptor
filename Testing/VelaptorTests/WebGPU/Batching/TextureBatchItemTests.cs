@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Shouldly;
 using Velaptor.Graphics;
-using Velaptor.WebGPU.Batching;
+using Velaptor.WebGpu.Batching;
 using Xunit;
 using Xunit.Abstractions;
 

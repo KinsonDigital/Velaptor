@@ -11,7 +11,7 @@ using Carbonate.OneWay;
 using Graphics;
 using ReactableData;
 using Silk.NET.OpenGL;
-using Velaptor.WebGPU.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Creates singleton reactables.

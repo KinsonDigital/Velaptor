@@ -12,10 +12,10 @@ using Shouldly;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.NativeInterop.WebGPU;
-using Velaptor.NativeInterop.WebGPU.Handles;
+using Velaptor.NativeInterop.WebGpu;
+using Velaptor.NativeInterop.WebGpu.Handles;
 using Velaptor.ReactableData;
-using Velaptor.WebGPU;
+using Velaptor.WebGpu;
 using Xunit;
 
 /// <summary>
@@ -23,7 +23,7 @@ using Xunit;
 /// </summary>
 public class TextureFactoryTests
 {
-    private readonly IWGPUInvoker mockWgpu;
+    private readonly IWgpuInvoker mockWgpu;
     private readonly IGraphicsDevice mockGd;
     private readonly IReactableFactory mockReactableFactory;
     private readonly SafeBindGroupLayoutHandle bindGroupLayout;
@@ -33,7 +33,7 @@ public class TextureFactoryTests
     /// </summary>
     public TextureFactoryTests()
     {
-        this.mockWgpu = Substitute.For<IWGPUInvoker>();
+        this.mockWgpu = Substitute.For<IWgpuInvoker>();
         this.mockGd = Substitute.For<IGraphicsDevice>();
 
         var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();

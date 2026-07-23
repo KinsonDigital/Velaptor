@@ -20,8 +20,8 @@ using Xunit;
 /// </summary>
 /// <remarks>
 /// The WebGPU renderers use concrete sealed dependency types
-/// (<see cref="Velaptor.WebGPU.Buffers.TextureGpuBuffer"/>,
-/// <see cref="Velaptor.WebGPU.GraphicsTexturePipeline"/>, etc.) that cannot be mocked
+/// (<see cref="Velaptor.WebGpu.Buffers.TextureGpuBuffer"/>,
+/// <see cref="Velaptor.WebGpu.GraphicsTexturePipeline"/>, etc.) that cannot be mocked
 /// with NSubstitute because they require GPU initialization. Full renderer construction
 /// testing requires extracting interfaces for these types, which is a separate architectural task.
 ///
