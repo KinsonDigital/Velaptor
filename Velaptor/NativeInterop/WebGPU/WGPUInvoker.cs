@@ -517,6 +517,66 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public SafeBindGroupHandle DeviceCreateBindGroup(
+        SafeDeviceHandle device, SafeBindGroupLayoutHandle layout, BindGroupEntry[] entries)
+    {
+        unsafe
+        {
+            fixed (BindGroupEntry* pEntries = entries)
+            {
+                var desc = new BindGroupDescriptor
+                {
+                    Layout = (BindGroupLayout*)layout.DangerousGetHandle(),
+                    EntryCount = (uint)entries.Length,
+                    Entries = pEntries,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreateBindGroup(
+                    (Device*)device.DangerousGetHandle(),
+                    in desc);
+
+                return new SafeBindGroupHandle(this, handle);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafeBindGroupHandle DeviceCreateBindGroup(
+        SafeDeviceHandle device,
+        SafeBindGroupLayoutHandle layout,
+        SafeTextureViewHandle textureView,
+        SafeSamplerHandle sampler)
+    {
+        unsafe
+        {
+            var entries = stackalloc BindGroupEntry[2];
+            entries[0] = new BindGroupEntry
+            {
+                Binding = 0,
+                TextureView = (TextureView*)textureView.DangerousGetHandle(),
+            };
+            entries[1] = new BindGroupEntry
+            {
+                Binding = 1,
+                Sampler = (Sampler*)sampler.DangerousGetHandle(),
+            };
+
+            var desc = new BindGroupDescriptor
+            {
+                Layout = (BindGroupLayout*)layout.DangerousGetHandle(),
+                EntryCount = 2,
+                Entries = entries,
+            };
+
+            var handle = (nint)Wgpu.DeviceCreateBindGroup(
+                (Device*)device.DangerousGetHandle(),
+                in desc);
+
+            return new SafeBindGroupHandle(this, handle);
+        }
+    }
+
+    /// <inheritdoc/>
     public void BindGroupRelease(nint bindGroup)
     {
         unsafe
@@ -640,6 +700,74 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public SafeVertexBufferHandle DeviceCreateVertexBuffer(
+        SafeDeviceHandle device, string? label, ulong size, BufferUsage usage)
+    {
+        var labelPtr = label is not null ? SilkMarshal.StringToPtr(label) : 0;
+
+        try
+        {
+            unsafe
+            {
+                var desc = new BufferDescriptor
+                {
+                    Label = (byte*)labelPtr,
+                    Size = size,
+                    Usage = usage,
+                    MappedAtCreation = false,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreateBuffer(
+                    (Device*)device.DangerousGetHandle(),
+                    in desc);
+
+                return new SafeVertexBufferHandle(this, handle);
+            }
+        }
+        finally
+        {
+            if (labelPtr != 0)
+            {
+                SilkMarshal.Free(labelPtr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafeIndexBufferHandle DeviceCreateIndexBuffer(
+        SafeDeviceHandle device, string? label, ulong size, BufferUsage usage)
+    {
+        var labelPtr = label is not null ? SilkMarshal.StringToPtr(label) : 0;
+
+        try
+        {
+            unsafe
+            {
+                var desc = new BufferDescriptor
+                {
+                    Label = (byte*)labelPtr,
+                    Size = size,
+                    Usage = usage,
+                    MappedAtCreation = false,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreateBuffer(
+                    (Device*)device.DangerousGetHandle(),
+                    in desc);
+
+                return new SafeIndexBufferHandle(this, handle);
+            }
+        }
+        finally
+        {
+            if (labelPtr != 0)
+            {
+                SilkMarshal.Free(labelPtr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public void BufferDestroy(nint buffer)
     {
         unsafe
@@ -686,6 +814,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
+    /// <inheritdoc/>
     public SafeRenderPassEncoderHandle CommandEncoderBeginRenderPass(
         SafeCommandEncoderHandle encoder,
         SafeTextureViewHandle textureView,
@@ -703,7 +832,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                 View = (TextureView*)textureView.DangerousGetHandle(),
                 LoadOp = loadOp,
                 StoreOp = storeOp,
-                ClearValue = new Silk.NET.WebGPU.Color(r, g, b, a),
+                ClearValue = new Color(r, g, b, a),
             };
 
             var passDesc = new RenderPassDescriptor
@@ -870,6 +999,40 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, float[] data)
+    {
+        unsafe
+        {
+            fixed (float* pData = data)
+            {
+                Wgpu.QueueWriteBuffer(
+                    (Queue*)queue.DangerousGetHandle(),
+                    (WebGpuBuffer*)buffer,
+                    bufferOffset,
+                    pData,
+                    (nuint)(data.Length * sizeof(float)));
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, uint[] data)
+    {
+        unsafe
+        {
+            fixed (uint* pData = data)
+            {
+                Wgpu.QueueWriteBuffer(
+                    (Queue*)queue.DangerousGetHandle(),
+                    (WebGpuBuffer*)buffer,
+                    bufferOffset,
+                    pData,
+                    (nuint)(data.Length * sizeof(uint)));
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public void QueueWriteTexture(
         SafeQueueHandle queue,
         in ImageCopyTexture destination,
@@ -890,6 +1053,52 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                     dataSize,
                     layoutPtr,
                     in writeSize);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void QueueWriteTexture(
+        SafeQueueHandle queue,
+        nint texture,
+        uint width,
+        uint height,
+        uint alignedBytesPerRow,
+        byte[] data)
+    {
+        unsafe
+        {
+            fixed (byte* pData = data)
+            {
+                var destination = new ImageCopyTexture
+                {
+                    Texture = (Texture*)texture,
+                    MipLevel = 0,
+                    Origin = new Origin3D { X = 0, Y = 0, Z = 0 },
+                    Aspect = TextureAspect.All,
+                };
+
+                var dataLayout = new TextureDataLayout
+                {
+                    Offset = 0,
+                    BytesPerRow = alignedBytesPerRow,
+                    RowsPerImage = height,
+                };
+
+                var copySize = new Extent3D
+                {
+                    Width = width,
+                    Height = height,
+                    DepthOrArrayLayers = 1,
+                };
+
+                Wgpu.QueueWriteTexture(
+                    (Queue*)queue.DangerousGetHandle(),
+                    &destination,
+                    pData,
+                    (nuint)data.Length,
+                    &dataLayout,
+                    in copySize);
             }
         }
     }

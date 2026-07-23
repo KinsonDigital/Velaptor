@@ -257,6 +257,33 @@ internal interface IWgpuInvoker : IDisposable
     nint DeviceCreateBindGroup(SafeDeviceHandle device, in BindGroupDescriptor descriptor);
 
     /// <summary>
+    /// Creates a bind group from a managed array of entries. Pointer marshaling
+    /// is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="layout">The bind group layout this group is compatible with.</param>
+    /// <param name="entries">The bind group entries describing each binding.</param>
+    /// <returns>A safe handle to the bind group.</returns>
+    SafeBindGroupHandle DeviceCreateBindGroup(
+        SafeDeviceHandle device, SafeBindGroupLayoutHandle layout, BindGroupEntry[] entries);
+
+    /// <summary>
+    /// Creates a bind group with a texture view at binding 0 and a sampler
+    /// at binding 1. All pointer marshaling is handled internally so callers
+    /// avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="layout">The bind group layout this group is compatible with.</param>
+    /// <param name="textureView">The texture view handle for binding 0.</param>
+    /// <param name="sampler">The sampler handle for binding 1.</param>
+    /// <returns>A safe handle to the bind group.</returns>
+    SafeBindGroupHandle DeviceCreateBindGroup(
+        SafeDeviceHandle device,
+        SafeBindGroupLayoutHandle layout,
+        SafeTextureViewHandle textureView,
+        SafeSamplerHandle sampler);
+
+    /// <summary>
     /// Releases a bind group.
     /// </summary>
     /// <param name="bindGroup">The bind group pointer.</param>
@@ -335,6 +362,28 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="descriptor">The buffer descriptor.</param>
     /// <returns>A pointer to the buffer.</returns>
     nint DeviceCreateBuffer(SafeDeviceHandle device, in BufferDescriptor descriptor);
+
+    /// <summary>
+    /// Creates a vertex buffer on the device. The label pointer marshaling is
+    /// handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
+    /// <param name="size">The buffer size in bytes.</param>
+    /// <param name="usage">The allowed usage flags for this buffer.</param>
+    /// <returns>A safe handle to the vertex buffer.</returns>
+    SafeVertexBufferHandle DeviceCreateVertexBuffer(SafeDeviceHandle device, string? label, ulong size, BufferUsage usage);
+
+    /// <summary>
+    /// Creates an index buffer on the device. The label pointer marshaling is
+    /// handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
+    /// <param name="size">The buffer size in bytes.</param>
+    /// <param name="usage">The allowed usage flags for this buffer.</param>
+    /// <returns>A safe handle to the index buffer.</returns>
+    SafeIndexBufferHandle DeviceCreateIndexBuffer(SafeDeviceHandle device, string? label, ulong size, BufferUsage usage);
 
     /// <summary>
     /// Destroys a buffer.
@@ -485,6 +534,26 @@ internal interface IWgpuInvoker : IDisposable
     void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, nint data, nuint size);
 
     /// <summary>
+    /// Writes a managed float array to a GPU buffer. The <c>fixed</c> pinning
+    /// is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="buffer">The destination GPU buffer.</param>
+    /// <param name="bufferOffset">Byte offset into the destination buffer.</param>
+    /// <param name="data">The float data to upload.</param>
+    void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, float[] data);
+
+    /// <summary>
+    /// Writes a managed uint array to a GPU buffer. The <c>fixed</c> pinning
+    /// is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="buffer">The destination GPU buffer.</param>
+    /// <param name="bufferOffset">Byte offset into the destination buffer.</param>
+    /// <param name="data">The uint data to upload.</param>
+    void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, uint[] data);
+
+    /// <summary>
     /// Writes data to a texture.
     /// </summary>
     /// <param name="queue">The queue handle.</param>
@@ -494,4 +563,23 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="dataLayout">The texture data layout.</param>
     /// <param name="writeSize">The size of the region to write.</param>
     void QueueWriteTexture(SafeQueueHandle queue, in ImageCopyTexture destination, nint data, nuint dataSize, in TextureDataLayout dataLayout, in Extent3D writeSize);
+
+    /// <summary>
+    /// Writes a managed byte array of RGBA pixel data to a GPU texture. The
+    /// <c>fixed</c> pinning and descriptor construction are handled internally
+    /// so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="texture">The destination texture handle.</param>
+    /// <param name="width">The texture width in pixels.</param>
+    /// <param name="height">The texture height in pixels.</param>
+    /// <param name="alignedBytesPerRow">The row stride including alignment padding.</param>
+    /// <param name="data">The pixel data in RGBA byte order.</param>
+    void QueueWriteTexture(
+        SafeQueueHandle queue,
+        nint texture,
+        uint width,
+        uint height,
+        uint alignedBytesPerRow,
+        byte[] data);
 }

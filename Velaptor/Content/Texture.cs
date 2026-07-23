@@ -167,7 +167,7 @@ public sealed class Texture : ITexture
     /// </summary>
     /// <param name="bindGroupLayout">The bind group layout for the bind group.</param>
     /// <param name="imageData">The image data of the texture.</param>
-    private unsafe void UploadDataToGpu(SafeBindGroupLayoutHandle bindGroupLayout, ImageData imageData)
+    private void UploadDataToGpu(SafeBindGroupLayoutHandle bindGroupLayout, ImageData imageData)
     {
         var width = imageData.Width;
         var height = imageData.Height;
@@ -206,33 +206,13 @@ public sealed class Texture : ITexture
 
         this.gpuTexture = new SafeTextureHandle(this.wgpu, this.gd.Handle!, in textureDesc);
 
-        fixed (byte* uploadPtr = rawPixels)
-        {
-            var destination = new ImageCopyTexture
-            {
-                Texture = (Silk.NET.WebGPU.Texture*)this.gpuTexture.DangerousGetHandle(),
-                MipLevel = 0,
-                Origin = new Origin3D { X = 0, Y = 0, Z = 0 },
-                Aspect = TextureAspect.All,
-            };
-
-            var dataLayout = new TextureDataLayout
-            {
-                Offset = 0,
-                BytesPerRow = alignedBytesPerRow,
-                RowsPerImage = height,
-            };
-
-            var copySize = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1 };
-
-            this.wgpu.QueueWriteTexture(
-                this.gd.Queue!,
-                in destination,
-                (nint)uploadPtr,
-                (nuint)rawPixels.Length,
-                in dataLayout,
-                in copySize);
-        }
+        this.wgpu.QueueWriteTexture(
+            this.gd.Queue!,
+            this.gpuTexture.DangerousGetHandle(),
+            width,
+            height,
+            alignedBytesPerRow,
+            rawPixels);
 
         // Create a texture view
         var viewDesc = new TextureViewDescriptor
@@ -267,27 +247,11 @@ public sealed class Texture : ITexture
         this.sampler = new SafeSamplerHandle(this.wgpu, this.wgpu.DeviceCreateSampler(this.gd.Handle!, in samplerDesc));
 
         // Create the bind group: binding 0 = texture view, binding 1 = sampler
-        var entries = stackalloc BindGroupEntry[2];
-        entries[0] = new BindGroupEntry
-        {
-            Binding = 0,
-            TextureView = (Silk.NET.WebGPU.TextureView*)this.textureView.DangerousGetHandle(),
-        };
-        entries[1] = new BindGroupEntry
-        {
-            Binding = 1,
-            Sampler = (Silk.NET.WebGPU.Sampler*)this.sampler.DangerousGetHandle(),
-        };
-
-        var bgDesc = new BindGroupDescriptor
-        {
-            Layout = (BindGroupLayout*)bindGroupLayout.DangerousGetHandle(),
-            EntryCount = 2,
-            Entries = entries,
-        };
-
-        var bindGroupHandle = this.wgpu.DeviceCreateBindGroup(this.gd.Handle!, in bgDesc);
-        BindGroup = new SafeBindGroupHandle(this.wgpu, bindGroupHandle);
+        BindGroup = this.wgpu.DeviceCreateBindGroup(
+            this.gd.Handle!,
+            bindGroupLayout,
+            this.textureView,
+            this.sampler);
 
         this.bindGroupRegistry?.Register(Id, BindGroup);
     }
