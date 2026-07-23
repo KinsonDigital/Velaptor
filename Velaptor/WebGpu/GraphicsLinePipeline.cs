@@ -5,7 +5,7 @@
 namespace Velaptor.WebGpu;
 
 using System;
-using Silk.NET.Core.Native;
+using NativeInterop.WebGpu.Structures;
 using Silk.NET.WebGPU;
 using NativeInterop.WebGpu;
 using NativeInterop.WebGpu.Handles;
@@ -53,7 +53,7 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// Gets the compiled GPU pipeline handle.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
-    public SafeRenderPipelineHandle Handle
+    private SafeRenderPipelineHandle Handle
     {
         get
         {
@@ -97,10 +97,7 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// the pass will use this pipeline's line shaders and fixed-function state.
     /// </summary>
     /// <param name="pass">The active render pass encoder to bind to.</param>
-    public void Bind(SafeRenderPassEncoderHandle pass)
-    {
-        this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
-    }
+    public void Bind(SafeRenderPassEncoderHandle pass) => this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
 
     /// <summary>
     /// Releases the GPU pipeline handle.
@@ -119,115 +116,78 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// <summary>
     /// Builds the render pipeline descriptor.
     /// </summary>
-    private unsafe SafeRenderPipelineHandle BuildPipeline(
+    private SafeRenderPipelineHandle BuildPipeline(
         SafeShaderModuleHandle vertModule,
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var vertexEntry = SilkMarshal.StringToPtr("vs_main");
-        var fragmentEntry = SilkMarshal.StringToPtr("fs_main");
-
-        // Empty pipeline layout: no bind groups.
-        SafePipelineLayoutHandle pipelineLayout;
-        ReadOnlySpan<byte> layoutLabel = "Line Pipeline Layout"u8;
-
-        fixed (byte* labelPtr = layoutLabel)
-        {
-            var pipelineLayoutDesc = new PipelineLayoutDescriptor
-            {
-                Label = labelPtr,
-                BindGroupLayoutCount = 0,
-                BindGroupLayouts = null,
-            };
-
-            pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.device!, in pipelineLayoutDesc);
-        }
+        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.device!, "Line Pipeline Layout");
 
         try
         {
-            // stride = 24 bytes (6 × f32):
-            //   location 0: vec2<f32> position  (8 bytes,  offset  0)
-            //   location 1: vec4<f32> color     (16 bytes, offset  8)
-            var attributes = stackalloc VertexAttribute[2];
-            attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 };
-            attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8, ShaderLocation = 1 };
-
-            var vertexBufferLayout = new VertexBufferLayout
+            var desc = new SafeRenderPipelineDescriptor
             {
-                ArrayStride = 24,
-                StepMode = VertexStepMode.Vertex,
-                AttributeCount = 2,
-                Attributes = attributes,
-            };
-
-            // Standard over-compositing blend.
-            var blend = new BlendState
-            {
-                Color = new BlendComponent
+                Layout = pipelineLayout,
+                Vertex = new SafeVertexState
                 {
-                    SrcFactor = BlendFactor.SrcAlpha,
-                    DstFactor = BlendFactor.OneMinusSrcAlpha,
-                    Operation = BlendOperation.Add,
+                    Module = vertModule,
+                    EntryPoint = "vs_main",
+                    Buffers =
+                    [
+                        new SafeVertexBufferLayout
+                        {
+                            ArrayStride = 24,
+                            StepMode = VertexStepMode.Vertex,
+                            Attributes =
+                            [
+                                new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 },
+                                new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 8, ShaderLocation = 1 }
+                            ],
+                        },
+                    ],
                 },
-                Alpha = new BlendComponent
+                Fragment = new SafeFragmentState
                 {
-                    SrcFactor = BlendFactor.One,
-                    DstFactor = BlendFactor.OneMinusSrcAlpha,
-                    Operation = BlendOperation.Add,
+                    Module = fragModule,
+                    EntryPoint = "fs_main",
+                    Targets =
+                    [
+                        new SafeColorTarget
+                        {
+                            Format = format,
+                            WriteMask = ColorWriteMask.All,
+                            Blend = new BlendState
+                            {
+                                Color = new BlendComponent
+                                {
+                                    SrcFactor = BlendFactor.SrcAlpha,
+                                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                                    Operation = BlendOperation.Add,
+                                },
+                                Alpha = new BlendComponent
+                                {
+                                    SrcFactor = BlendFactor.One,
+                                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                                    Operation = BlendOperation.Add,
+                                },
+                            },
+                        },
+                    ],
                 },
-            };
-
-            var colorTarget = new ColorTargetState
-            {
-                Format = format,
-                WriteMask = ColorWriteMask.All,
-                Blend = &blend,
-            };
-
-            var fragmentState = new FragmentState
-            {
-                Module = (ShaderModule*)fragModule.DangerousGetHandle(),
-                EntryPoint = (byte*)fragmentEntry,
-                TargetCount = 1,
-                Targets = &colorTarget,
-            };
-
-            var renderPipelineDesc = new RenderPipelineDescriptor
-            {
-                Layout = (PipelineLayout*)pipelineLayout.DangerousGetHandle(),
-
-                Vertex = new VertexState
-                {
-                    Module = (ShaderModule*)vertModule.DangerousGetHandle(),
-                    EntryPoint = (byte*)vertexEntry,
-                    BufferCount = 1,
-                    Buffers = &vertexBufferLayout,
-                },
-
                 Primitive = new PrimitiveState
                 {
                     Topology = PrimitiveTopology.TriangleList,
                     FrontFace = FrontFace.Ccw,
                     CullMode = CullMode.None,
                 },
-
                 Multisample = new MultisampleState
                 {
                     Count = 1,
                     Mask = uint.MaxValue,
                 },
-
-                Fragment = &fragmentState,
-                DepthStencil = null,
             };
 
-            var pipelineHandle = this.wgpu!.DeviceCreateRenderPipeline(this.device!, in renderPipelineDesc);
-            var pipeline = new SafeRenderPipelineHandle(this.wgpu, pipelineHandle);
-
-            SilkMarshal.Free(vertexEntry);
-            SilkMarshal.Free(fragmentEntry);
-
-            return pipeline;
+            return this.wgpu!.DeviceCreateRenderPipeline(this.device!, in desc);
         }
         finally
         {
