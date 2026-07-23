@@ -15,7 +15,6 @@ using Graphics;
 using Graphics.Renderers;
 using Graphics.Renderers.Exceptions;
 using NativeInterop.WebGPU;
-using OpenGL.Batching;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.WebGPU.Buffers;

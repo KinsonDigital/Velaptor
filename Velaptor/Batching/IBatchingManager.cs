@@ -5,7 +5,6 @@
 namespace Velaptor.Batching;
 
 using System;
-using OpenGL.Batching;
 using WebGPU.Batching;
 
 /// <summary>

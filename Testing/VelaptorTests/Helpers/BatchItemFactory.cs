@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.Graphics;
-using Velaptor.OpenGL.Batching;
 using Velaptor.WebGPU.Batching;
 
 /// <summary>

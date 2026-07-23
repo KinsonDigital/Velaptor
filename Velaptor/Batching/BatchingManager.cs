@@ -9,7 +9,6 @@ using System.ComponentModel;
 using Carbonate;
 using Carbonate.OneWay;
 using Factories;
-using OpenGL.Batching;
 using ReactableData;
 using WebGPU.Batching;
 

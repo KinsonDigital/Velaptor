@@ -10,7 +10,6 @@ using Batching;
 using Carbonate;
 using Carbonate.NonDirectional;
 using Factories;
-using OpenGL.Batching;
 using WebGPU.Batching;
 
 /// <inheritdoc/>

@@ -8,7 +8,6 @@ using System;
 using System.Numerics;
 using Batching;
 using Graphics;
-using OpenGL.Batching;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering font glyph quads.

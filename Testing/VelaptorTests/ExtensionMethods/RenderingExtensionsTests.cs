@@ -12,7 +12,6 @@ using System.Numerics;
 using Shouldly;
 using Velaptor.ExtensionMethods;
 using Velaptor.Graphics;
-using Velaptor.OpenGL.Batching;
 using Velaptor.WebGPU.Batching;
 using Xunit;
 

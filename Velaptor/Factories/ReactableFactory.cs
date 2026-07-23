@@ -9,7 +9,6 @@ using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics;
-using OpenGL.Batching;
 using ReactableData;
 using Silk.NET.OpenGL;
 using Velaptor.WebGPU.Batching;

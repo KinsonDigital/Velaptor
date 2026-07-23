@@ -26,7 +26,6 @@ using NativeInterop.GLFW;
 using NativeInterop.ImGui;
 using NativeInterop.Services;
 using NativeInterop.WebGPU;
-using OpenGL.Batching;
 using ReactableData;
 using Scene;
 using Services;

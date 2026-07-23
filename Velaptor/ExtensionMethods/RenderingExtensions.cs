@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Graphics;
-using OpenGL.Batching;
 using WebGPU.Batching;
 
 /// <summary>

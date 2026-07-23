@@ -10,7 +10,6 @@ using Silk.NET.OpenGL;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
 using Velaptor.WebGPU.Batching;
 

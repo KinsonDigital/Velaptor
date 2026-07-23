@@ -23,13 +23,12 @@ using Velaptor.Graphics.Renderers.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
-using Velaptor.OpenGL.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
 using Velaptor.WebGPU.Batching;
 using TextureRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.WebGPU.Batching.RenderItem<
-            Velaptor.OpenGL.Batching.TextureBatchItem
+            Velaptor.WebGPU.Batching.TextureBatchItem
         >
     >
 >;

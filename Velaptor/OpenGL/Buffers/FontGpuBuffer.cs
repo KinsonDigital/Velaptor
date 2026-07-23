@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Batching;
 using Carbonate;
 using Exceptions;
 using Factories;
