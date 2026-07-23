@@ -122,11 +122,39 @@ internal interface IWgpuInvoker : IDisposable
     void SurfaceConfigure(SafeSurfaceHandle surface, in SurfaceConfiguration config);
 
     /// <summary>
+    /// Configures a surface for presentation. All pointer marshaling is handled
+    /// internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="surface">The surface handle.</param>
+    /// <param name="device">The device handle.</param>
+    /// <param name="format">The pixel format for the swap chain.</param>
+    /// <param name="usage">How the surface textures will be used.</param>
+    /// <param name="width">The framebuffer width in pixels.</param>
+    /// <param name="height">The framebuffer height in pixels.</param>
+    /// <param name="presentMode">The presentation mode (e.g. <see cref="PresentMode.Fifo"/>).</param>
+    void SurfaceConfigure(
+        SafeSurfaceHandle surface,
+        SafeDeviceHandle device,
+        TextureFormat format,
+        TextureUsage usage,
+        uint width,
+        uint height,
+        PresentMode presentMode);
+
+    /// <summary>
     /// Gets the current texture for a surface.
     /// </summary>
     /// <param name="surface">The surface handle.</param>
     /// <param name="surfaceTexture">The surface texture to populate.</param>
     void SurfaceGetCurrentTexture(SafeSurfaceHandle surface, ref SurfaceTexture surfaceTexture);
+
+    /// <summary>
+    /// Gets the current surface texture and wraps it in a safe handle. The caller
+    /// is responsible for disposing the returned handle before requesting the next frame.
+    /// </summary>
+    /// <param name="surface">The surface handle.</param>
+    /// <returns>A safe handle to the current surface texture.</returns>
+    SafeSurfaceTextureHandle SurfaceGetCurrentTexture(SafeSurfaceHandle surface);
 
     /// <summary>
     /// Unconfigures a surface.

@@ -94,10 +94,7 @@ internal sealed class GraphicsSurface : IDisposable
             throw new InvalidOperationException("Device and adapter must be initialized before querying the surface format.");
         }
 
-        unsafe
-        {
-            Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
-        }
+        Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
     }
 
     /// <summary>
@@ -112,24 +109,18 @@ internal sealed class GraphicsSurface : IDisposable
             throw new InvalidOperationException("Device and adapter must be initialized before configuring the surface.");
         }
 
-        unsafe
-        {
-            var size = this.window.FramebufferSize;
+        var size = this.window.FramebufferSize;
 
-            Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
+        Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
 
-            var config = new SurfaceConfiguration
-            {
-                Device = (Device*)this.gd.Handle.DangerousGetHandle(),
-                Format = Format,
-                Usage = TextureUsage.RenderAttachment,
-                Width = (uint)size.X,
-                Height = (uint)size.Y,
-                PresentMode = PresentMode.Fifo,
-            };
-
-            this.gd.Wgpu.SurfaceConfigure(Handle, in config);
-        }
+        this.gd.Wgpu.SurfaceConfigure(
+            Handle,
+            this.gd.Handle,
+            Format,
+            TextureUsage.RenderAttachment,
+            (uint)size.X,
+            (uint)size.Y,
+            PresentMode.Fifo);
     }
 
     /// <summary>
@@ -144,13 +135,7 @@ internal sealed class GraphicsSurface : IDisposable
         this.surfaceTextureHandle?.Dispose();
         this.surfaceTextureHandle = null;
 
-        unsafe
-        {
-            SurfaceTexture st = default;
-            this.gd.Wgpu.SurfaceGetCurrentTexture(Handle, ref st);
-
-            this.surfaceTextureHandle = new SafeSurfaceTextureHandle(this.gd.Wgpu, (nint)st.Texture, st.Status);
-        }
+        this.surfaceTextureHandle = this.gd.Wgpu.SurfaceGetCurrentTexture(Handle);
 
         return this.surfaceTextureHandle;
     }

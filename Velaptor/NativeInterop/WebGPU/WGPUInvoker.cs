@@ -204,6 +204,32 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public void SurfaceConfigure(
+        SafeSurfaceHandle surface,
+        SafeDeviceHandle device,
+        TextureFormat format,
+        TextureUsage usage,
+        uint width,
+        uint height,
+        PresentMode presentMode)
+    {
+        unsafe
+        {
+            var config = new SurfaceConfiguration
+            {
+                Device = (Device*)device.DangerousGetHandle(),
+                Format = format,
+                Usage = usage,
+                Width = width,
+                Height = height,
+                PresentMode = presentMode,
+            };
+
+            Wgpu.SurfaceConfigure((Surface*)surface.DangerousGetHandle(), in config);
+        }
+    }
+
+    /// <inheritdoc/>
     public void SurfaceGetCurrentTexture(SafeSurfaceHandle surface, ref SurfaceTexture surfaceTexture)
     {
         unsafe
@@ -212,6 +238,18 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             {
                 Wgpu.SurfaceGetCurrentTexture((Surface*)surface.DangerousGetHandle(), ptr);
             }
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafeSurfaceTextureHandle SurfaceGetCurrentTexture(SafeSurfaceHandle surface)
+    {
+        unsafe
+        {
+            SurfaceTexture st = default;
+            Wgpu.SurfaceGetCurrentTexture((Surface*)surface.DangerousGetHandle(), &st);
+
+            return new SafeSurfaceTextureHandle(this, (nint)st.Texture, st.Status);
         }
     }
 
