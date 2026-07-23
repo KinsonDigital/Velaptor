@@ -5,7 +5,7 @@
 namespace Velaptor.WebGpu;
 
 using System;
-using Silk.NET.Core.Native;
+using NativeInterop.WebGpu.Structures;
 using Silk.NET.WebGPU;
 using NativeInterop.WebGpu;
 using NativeInterop.WebGpu.Handles;
@@ -63,25 +63,6 @@ internal sealed class GraphicsTexturePipeline : IDisposable
     }
 
     /// <summary>
-    /// Gets the compiled GPU pipeline handle — an opaque, device-side object that
-    /// encapsulates the shader stages and fixed-function state.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
-    public SafeRenderPipelineHandle Handle
-    {
-        get
-        {
-            if (!this.isInitialized)
-            {
-                throw new InvalidOperationException(
-                    "Pipeline has not been initialized. Call Initialize() first.");
-            }
-
-            return this.handle!;
-        }
-    }
-
-    /// <summary>
     /// Gets the bind group layout for <c>@group(0)</c>: binding 0 = a 2-D float texture,
     /// binding 1 = a filtering sampler. Pass this to the texture buffer so it can create a
     /// compatible bind group.
@@ -98,6 +79,25 @@ internal sealed class GraphicsTexturePipeline : IDisposable
             }
 
             return this.bindGroupLayout!;
+        }
+    }
+
+    /// <summary>
+    /// Gets the compiled GPU pipeline handle — an opaque, device-side object that
+    /// encapsulates the shader stages and fixed-function state.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
+    private SafeRenderPipelineHandle Handle
+    {
+        get
+        {
+            if (!this.isInitialized)
+            {
+                throw new InvalidOperationException(
+                    "Pipeline has not been initialized. Call Initialize() first.");
+            }
+
+            return this.handle!;
         }
     }
 
@@ -133,10 +133,7 @@ internal sealed class GraphicsTexturePipeline : IDisposable
     /// pipeline is bound or the pass ends.
     /// </summary>
     /// <param name="pass">The active render pass encoder to bind to.</param>
-    public void Bind(SafeRenderPassEncoderHandle pass)
-    {
-        this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
-    }
+    public void Bind(SafeRenderPassEncoderHandle pass) => this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
 
     /// <summary>
     /// Releases the GPU pipeline handle and the bind group layout.
@@ -157,170 +154,105 @@ internal sealed class GraphicsTexturePipeline : IDisposable
     /// Builds the render pipeline descriptor, creating the pipeline layout and
     /// bind group layout internally.
     /// </summary>
-    private unsafe SafeRenderPipelineHandle BuildPipeline(
+    private SafeRenderPipelineHandle BuildPipeline(
         SafeShaderModuleHandle vertModule,
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var vertexEntry = SilkMarshal.StringToPtr("vs_main");
-        var fragmentEntry = SilkMarshal.StringToPtr("fs_main");
-
-        this.bindGroupLayout = CreateTextureBindGroupLayout();
-
-        var bindGrpLayoutPtr = (BindGroupLayout*)this.bindGroupLayout.DangerousGetHandle();
-
-        ReadOnlySpan<byte> pipelineLayoutLabel = "Texture Pipeline Layout"u8;
-        SafePipelineLayoutHandle pipelineLayout;
-
-        fixed (byte* layoutLabelPtr = pipelineLayoutLabel)
-        {
-            var pipelineDesc = new PipelineLayoutDescriptor
+        var textureBindingLayout = new BindGroupLayoutEntry
             {
-                Label = layoutLabelPtr,
-                BindGroupLayoutCount = 1,
-                BindGroupLayouts = &bindGrpLayoutPtr,
+                Binding = 0,
+                Visibility = ShaderStage.Fragment,
+                Texture = new TextureBindingLayout
+                {
+                    SampleType = TextureSampleType.Float, ViewDimension = TextureViewDimension.Dimension2D, Multisampled = false,
+                },
             };
 
-            pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.device!, in pipelineDesc);
-        }
+        var samplerBindingLayout = new BindGroupLayoutEntry
+        {
+            Binding = 1, Visibility = ShaderStage.Fragment, Sampler = new SamplerBindingLayout { Type = SamplerBindingType.Filtering, },
+        };
+
+        this.bindGroupLayout = this.wgpu!.DeviceCreateBindGroupLayout(
+            this.device!,
+            [textureBindingLayout, samplerBindingLayout]);
+
+        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(
+            this.device!,
+            "Texture Pipeline Layout",
+            [this.bindGroupLayout]);
 
         try
         {
-            // stride = 32 bytes (8 × f32):
-            //   location 0: vec2<f32> position   (8 bytes,  offset  0)
-            //   location 1: vec2<f32> uv         (8 bytes,  offset  8)
-            //   location 2: vec4<f32> tintColor  (16 bytes, offset 16)
-            var attributes = stackalloc VertexAttribute[3];
-            attributes[0] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 };
-            attributes[1] = new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 8, ShaderLocation = 1 };
-            attributes[2] = new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 };
-
-            var vertexBufferLayout = new VertexBufferLayout
+            var desc = new SafeRenderPipelineDescriptor
             {
-                ArrayStride = 32,
-                StepMode = VertexStepMode.Vertex,
-                AttributeCount = 3,
-                Attributes = attributes,
-            };
-
-            // Standard over-compositing blend: new pixels are blended over existing ones
-            // using their alpha value. Result = src × srcα + dst × (1 − srcα).
-            var blend = new BlendState
-            {
-                Color = new BlendComponent
+                Layout = pipelineLayout,
+                Vertex = new SafeVertexState
                 {
-                    SrcFactor = BlendFactor.SrcAlpha,
-                    DstFactor = BlendFactor.OneMinusSrcAlpha,
-                    Operation = BlendOperation.Add,
+                    Module = vertModule,
+                    EntryPoint = "vs_main",
+                    Buffers =
+                    [
+                        new SafeVertexBufferLayout
+                        {
+                            ArrayStride = 32,
+                            StepMode = VertexStepMode.Vertex,
+                            Attributes =
+                            [
+                                new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 },
+                                new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 8, ShaderLocation = 1 },
+                                new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 }
+                            ],
+                        },
+                    ],
                 },
-                Alpha = new BlendComponent
+                Fragment = new SafeFragmentState
                 {
-                    SrcFactor = BlendFactor.One,
-                    DstFactor = BlendFactor.OneMinusSrcAlpha,
-                    Operation = BlendOperation.Add,
+                    Module = fragModule,
+                    EntryPoint = "fs_main",
+                    Targets =
+                    [
+                        new SafeColorTarget
+                        {
+                            Format = format,
+                            WriteMask = ColorWriteMask.All,
+                            Blend = new BlendState
+                            {
+                                Color = new BlendComponent
+                                {
+                                    SrcFactor = BlendFactor.SrcAlpha,
+                                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                                    Operation = BlendOperation.Add,
+                                },
+                                Alpha = new BlendComponent
+                                {
+                                    SrcFactor = BlendFactor.One,
+                                    DstFactor = BlendFactor.OneMinusSrcAlpha,
+                                    Operation = BlendOperation.Add,
+                                },
+                            },
+                        },
+                    ],
                 },
-            };
-
-            var colorTarget = new ColorTargetState
-            {
-                Format = format,
-                WriteMask = ColorWriteMask.All,
-                Blend = &blend,
-            };
-
-            var fragmentState = new FragmentState
-            {
-                Module = (ShaderModule*)fragModule.DangerousGetHandle(),
-                EntryPoint = (byte*)fragmentEntry,
-                TargetCount = 1,
-                Targets = &colorTarget,
-            };
-
-            var renderPipelineDesc = new RenderPipelineDescriptor
-            {
-                Layout = (PipelineLayout*)pipelineLayout.DangerousGetHandle(),
-
-                Vertex = new VertexState
-                {
-                    Module = (ShaderModule*)vertModule.DangerousGetHandle(),
-                    EntryPoint = (byte*)vertexEntry,
-                    BufferCount = 1,
-                    Buffers = &vertexBufferLayout,
-                },
-
                 Primitive = new PrimitiveState
                 {
                     Topology = PrimitiveTopology.TriangleList,
                     FrontFace = FrontFace.Ccw,
                     CullMode = CullMode.None,
                 },
-
                 Multisample = new MultisampleState
                 {
                     Count = 1,
                     Mask = uint.MaxValue,
                 },
-
-                Fragment = &fragmentState,
-                DepthStencil = null,
             };
 
-            var pipelineHandle = this.wgpu!.DeviceCreateRenderPipeline(this.device!, in renderPipelineDesc);
-            var pipeline = new SafeRenderPipelineHandle(this.wgpu, pipelineHandle);
-
-            SilkMarshal.Free(vertexEntry);
-            SilkMarshal.Free(fragmentEntry);
-
-            return pipeline;
+            return this.wgpu!.DeviceCreateRenderPipeline(this.device!, in desc);
         }
         finally
         {
-            // The pipeline holds its own reference to the layout — release ours.
             pipelineLayout.Dispose();
         }
-    }
-
-    /// <summary>
-    /// Creates the bind group layout for <c>@group(0)</c>:
-    ///   binding 0 → 2-D float texture (sampled in the fragment stage)
-    ///   binding 1 → filtering sampler (used alongside the texture).
-    /// </summary>
-    private unsafe SafeBindGroupLayoutHandle CreateTextureBindGroupLayout()
-    {
-        var textureBinding = new BindGroupLayoutEntry
-        {
-            Binding = 0,
-            Visibility = ShaderStage.Fragment,
-            Texture = new TextureBindingLayout
-            {
-                SampleType = TextureSampleType.Float,
-                ViewDimension = TextureViewDimension.Dimension2D,
-                Multisampled = false,
-            },
-        };
-
-        var samplerBinding = new BindGroupLayoutEntry
-        {
-            Binding = 1,
-            Visibility = ShaderStage.Fragment,
-            Sampler = new SamplerBindingLayout
-            {
-                Type = SamplerBindingType.Filtering,
-            },
-        };
-
-        var entries = stackalloc BindGroupLayoutEntry[2];
-        entries[0] = textureBinding;
-        entries[1] = samplerBinding;
-
-        var desc = new BindGroupLayoutDescriptor
-        {
-            EntryCount = 2,
-            Entries = entries,
-        };
-
-        var handle = this.wgpu!.DeviceCreateBindGroupLayout(this.device!, in desc);
-
-        return new SafeBindGroupLayoutHandle(this.wgpu, handle);
     }
 }

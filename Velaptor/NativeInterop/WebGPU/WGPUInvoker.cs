@@ -312,6 +312,50 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public SafePipelineLayoutHandle DeviceCreatePipelineLayout(
+        SafeDeviceHandle device, string? label, SafeBindGroupLayoutHandle[] bindGroupLayouts)
+    {
+        var labelPtr = label is not null ? SilkMarshal.StringToPtr(label) : 0;
+
+        try
+        {
+            unsafe
+            {
+                // Extract native pointers from safe handles into a managed array, then pin it.
+                var nativeLayouts = new BindGroupLayout*[bindGroupLayouts.Length];
+
+                for (var i = 0; i < bindGroupLayouts.Length; i++)
+                {
+                    nativeLayouts[i] = (BindGroupLayout*)bindGroupLayouts[i].DangerousGetHandle();
+                }
+
+                fixed (BindGroupLayout** pLayouts = nativeLayouts)
+                {
+                    var desc = new PipelineLayoutDescriptor
+                    {
+                        Label = (byte*)labelPtr,
+                        BindGroupLayoutCount = (uint)bindGroupLayouts.Length,
+                        BindGroupLayouts = pLayouts,
+                    };
+
+                    var handle = (nint)Wgpu.DeviceCreatePipelineLayout(
+                        (Device*)device.DangerousGetHandle(),
+                        in desc);
+
+                    return new SafePipelineLayoutHandle(this, handle);
+                }
+            }
+        }
+        finally
+        {
+            if (labelPtr != 0)
+            {
+                SilkMarshal.Free(labelPtr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public SafeRenderPipelineHandle DeviceCreateRenderPipeline(
         SafeDeviceHandle device,
         in SafeRenderPipelineDescriptor descriptor)
@@ -451,6 +495,29 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             return (nint)Wgpu.DeviceCreateBindGroupLayout(
                 (Device*)device.DangerousGetHandle(),
                 in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public SafeBindGroupLayoutHandle DeviceCreateBindGroupLayout(
+        SafeDeviceHandle device, BindGroupLayoutEntry[] entries)
+    {
+        unsafe
+        {
+            fixed (BindGroupLayoutEntry* pEntries = entries)
+            {
+                var desc = new BindGroupLayoutDescriptor
+                {
+                    EntryCount = (uint)entries.Length,
+                    Entries = pEntries,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreateBindGroupLayout(
+                    (Device*)device.DangerousGetHandle(),
+                    in desc);
+
+                return new SafeBindGroupLayoutHandle(this, handle);
+            }
         }
     }
 

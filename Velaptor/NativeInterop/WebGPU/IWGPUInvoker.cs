@@ -177,6 +177,17 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
     /// <returns>The pipeline layout handle.</returns>
     SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, string? label);
+
+    /// <summary>
+    /// Creates a pipeline layout with a debug label and one or more bind group
+    /// layouts. All pointer marshaling is handled internally.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
+    /// <param name="bindGroupLayouts">The bind group layout handles to attach.</param>
+    /// <returns>The pipeline layout handle.</returns>
+    SafePipelineLayoutHandle DeviceCreatePipelineLayout(
+        SafeDeviceHandle device, string? label, SafeBindGroupLayoutHandle[] bindGroupLayouts);
     SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, in PipelineLayoutDescriptor descriptor);
 
     /// <summary>
@@ -230,6 +241,16 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="descriptor">The bind group layout descriptor.</param>
     /// <returns>A pointer to the bind group layout.</returns>
     nint DeviceCreateBindGroupLayout(SafeDeviceHandle device, in BindGroupLayoutDescriptor descriptor);
+
+    /// <summary>
+    /// Creates a bind group layout from a managed array of entries.
+    /// The <c>fixed</c> pinning is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="entries">The bind group layout entries describing each binding.</param>
+    /// <returns>A safe handle to the bind group layout.</returns>
+    SafeBindGroupLayoutHandle DeviceCreateBindGroupLayout(
+        SafeDeviceHandle device, BindGroupLayoutEntry[] entries);
 
     /// <summary>
     /// Releases a bind group layout.
