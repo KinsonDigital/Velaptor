@@ -126,12 +126,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="WebGPU\ShaderCode\texture.vert.wgsl" />
-    <EmbeddedResource Include="WebGPU\ShaderCode\texture.frag.wgsl" />
-    <EmbeddedResource Include="WebGPU\ShaderCode\shape.vert.wgsl" />
-    <EmbeddedResource Include="WebGPU\ShaderCode\shape.frag.wgsl" />
-    <EmbeddedResource Include="WebGPU\ShaderCode\line.vert.wgsl" />
-    <EmbeddedResource Include="WebGPU\ShaderCode\line.frag.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\texture.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\texture.frag.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\shape.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\shape.frag.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\line.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\line.frag.wgsl" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
