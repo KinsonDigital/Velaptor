@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Batching;
+using Velaptor.WebGPU.Batching;
 using Carbonate;
 using Exceptions;
 using ExtensionMethods;

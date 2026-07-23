@@ -16,6 +16,7 @@ using OpenGL;
 using OpenGL.Batching;
 using OpenGL.Buffers;
 using OpenGL.Shaders;
+using WebGPU.Batching;
 
 /// <inheritdoc cref="ILineRenderer"/>
 internal sealed class LineRenderer : ILineRenderer

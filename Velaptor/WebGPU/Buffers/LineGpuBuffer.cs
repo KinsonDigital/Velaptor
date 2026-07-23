@@ -6,7 +6,7 @@ namespace Velaptor.WebGPU.Buffers;
 
 using System.Linq;
 using ExtensionMethods;
-using OpenGL.Batching;
+using Batching;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering 2-D lines.

@@ -22,11 +22,12 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.NativeInterop.Services;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Batching;
+using Velaptor.WebGPU.Batching;
 using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Shaders;
 using Xunit;
 using LineRenderItem = Carbonate.Core.OneWay.IReceiveSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<
-            Velaptor.OpenGL.Batching.LineBatchItem
+            Velaptor.WebGPU.Batching.LineBatchItem
         >
     >
 >;

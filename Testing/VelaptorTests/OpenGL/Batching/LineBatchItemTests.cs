@@ -7,7 +7,7 @@ namespace VelaptorTests.OpenGL.Batching;
 using System.Drawing;
 using System.Numerics;
 using Shouldly;
-using Velaptor.OpenGL.Batching;
+using Velaptor.WebGPU.Batching;
 using Xunit;
 using Xunit.Abstractions;
 
