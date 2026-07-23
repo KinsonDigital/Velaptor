@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU render pipeline.
@@ -21,6 +22,8 @@ internal sealed class SafeRenderPipelineHandle : SafeHandleZeroOrMinusOneIsInval
     public SafeRenderPipelineHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(handle);
     }

@@ -4,8 +4,8 @@
 
 namespace VelaptorTests;
 
-using Shouldly;
 using Helpers;
+using Shouldly;
 using Velaptor;
 using Xunit;
 

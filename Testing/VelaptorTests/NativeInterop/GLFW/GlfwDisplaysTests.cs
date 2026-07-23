@@ -8,13 +8,13 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using NSubstitute;
+using Shouldly;
 using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
-using Shouldly;
-using NSubstitute;
 
 /// <summary>
 /// Tests the <see cref="GlfwDisplays"/> class.
@@ -74,7 +74,7 @@ public unsafe class GlfwDisplaysTests
         }
 
         this.mockGlfwInvoker = Substitute.For<IGlfwInvoker>();
-        this.mockGlfwInvoker.GetMonitors().Returns((_) =>
+        this.mockGlfwInvoker.GetMonitors().Returns(_ =>
         {
             return new[] { this.monitorHandleA, this.monitorHandleB };
         });
@@ -179,7 +179,7 @@ public unsafe class GlfwDisplaysTests
         var refreshInvoked = false;
         CreateDisplays();
         this.mockGlfwInvoker.When(x => x.GetMonitors())
-            .Do((_) => refreshInvoked = true);
+            .Do(_ => refreshInvoked = true);
 
         // Act
         this.mockGlfwInvoker.OnDisplayChanged +=

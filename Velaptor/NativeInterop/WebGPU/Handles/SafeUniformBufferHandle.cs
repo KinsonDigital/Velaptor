@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU uniform buffer.
@@ -21,6 +22,8 @@ internal sealed class SafeUniformBufferHandle : SafeHandleZeroOrMinusOneIsInvali
     public SafeUniformBufferHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(handle);
     }
@@ -28,11 +31,13 @@ internal sealed class SafeUniformBufferHandle : SafeHandleZeroOrMinusOneIsInvali
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
+        if (IsInvalid)
         {
-            this.wgpu.BufferDestroy(this.handle);
-            this.wgpu.BufferRelease(this.handle);
+            return true;
         }
+
+        this.wgpu.BufferDestroy(this.handle);
+        this.wgpu.BufferRelease(this.handle);
 
         return true;
     }

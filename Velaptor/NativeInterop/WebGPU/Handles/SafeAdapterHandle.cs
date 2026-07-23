@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU adapter.
@@ -21,6 +22,8 @@ internal sealed class SafeAdapterHandle : SafeHandleZeroOrMinusOneIsInvalid
     public SafeAdapterHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(handle);
     }

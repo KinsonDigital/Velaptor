@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 using Silk.NET.WebGPU;
 
 /// <summary>
@@ -23,6 +24,8 @@ internal sealed class SafeTextureViewHandle : SafeHandleZeroOrMinusOneIsInvalid
     public SafeTextureViewHandle(IWgpuInvoker wgpu, nint texture, in TextureViewDescriptor descriptor = default)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(this.wgpu.TextureCreateView(texture, in descriptor));
     }

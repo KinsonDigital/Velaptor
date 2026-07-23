@@ -54,14 +54,14 @@ public class FontAtlasServiceTests
         }
 
         this.mockFreeTypeService = Substitute.For<IFreeTypeService>();
-        this.mockFreeTypeService.CreateFontFace(FontFilePath).Returns((_) => this.facePtr);
+        this.mockFreeTypeService.CreateFontFace(FontFilePath).Returns(_ => this.facePtr);
 
         this.mockFreeTypeService.GetGlyphIndices(Arg.Any<nint>(), Arg.Any<char[]>())
-            .Returns((_) => this.glyphIndices);
+            .Returns(_ => this.glyphIndices);
 
         this.mockFreeTypeService.CreateGlyphMetrics(
             Arg.Any<nint>(),
-            Arg.Any<Dictionary<char, uint>>()).Returns((_) =>
+            Arg.Any<Dictionary<char, uint>>()).Returns(_ =>
             {
                 var result = new Dictionary<char, GlyphMetrics>();
 
@@ -90,7 +90,7 @@ public class FontAtlasServiceTests
             });
 
         this.mockFreeTypeService.CreateGlyphImage(this.facePtr, Arg.Any<uint>())
-            .Returns<(byte[], uint, uint)>((_) =>
+            .Returns<(byte[], uint, uint)>(_ =>
             {
                 return (new byte[]
                 {
@@ -101,17 +101,17 @@ public class FontAtlasServiceTests
         this.mockImageService = Substitute.For<IImageService>();
 
         this.mockDisplayService = Substitute.For<ISystemDisplayService>();
-        this.mockDisplayService.MainDisplay.Returns((_) => new SystemDisplay(this.mockPlatform)
+        this.mockDisplayService.MainDisplay.Returns(_ => new SystemDisplay(this.mockPlatform)
             {
                 HorizontalScale = 1,
                 VerticalScale = 1,
             });
 
         this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockPlatform.CurrentPlatform.Returns((_) => OSPlatform.Windows);
+        this.mockPlatform.CurrentPlatform.Returns(_ => OSPlatform.Windows);
 
         this.mockFile = Substitute.For<IFile>();
-        this.mockFile.Exists(FontFilePath).Returns((_) => true);
+        this.mockFile.Exists(FontFilePath).Returns(_ => true);
     }
 
     #region Constructor Tests
@@ -235,7 +235,7 @@ public class FontAtlasServiceTests
             });
 
         this.mockImageService.Draw(Arg.Any<ImageData>(), Arg.Any<ImageData>(), Arg.Any<Point>())
-            .Returns((_) => TestHelpers.Draw(src, dest, location));
+            .Returns(_ => TestHelpers.Draw(src, dest, location));
 
         var service = CreateService();
 

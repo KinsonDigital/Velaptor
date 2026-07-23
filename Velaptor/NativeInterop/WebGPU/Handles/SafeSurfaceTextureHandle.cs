@@ -27,6 +27,8 @@ internal sealed class SafeSurfaceTextureHandle : IDisposable
     /// <param name="surfaceTextureStatus">The status of getting the surface texture.</param>
     public SafeSurfaceTextureHandle(IWgpuInvoker wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
 
         this.handle = texturePointer;
@@ -76,6 +78,5 @@ internal sealed class SafeSurfaceTextureHandle : IDisposable
 
         this.wgpu.TextureRelease(this.handle);
         this.handle = IntPtr.Zero;
-        GC.SuppressFinalize(this);
     }
 }

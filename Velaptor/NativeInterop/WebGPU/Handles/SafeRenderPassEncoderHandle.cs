@@ -5,6 +5,8 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// A safe handle for a WebGPU render pass encoder.
@@ -21,17 +23,16 @@ internal sealed class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsIn
     public SafeRenderPassEncoderHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
 
-        unsafe
-        {
-            SetHandle(handle);
-        }
+        SetHandle(handle);
     }
 
     /// <summary>
-    /// Ends the render pass, signalling that all draw commands for this pass
-    /// are complete. Must be called explicitly before <see cref="Dispose()"/>
+    /// Ends the render pass, signaling that all draw commands for this pass
+    /// are complete. Must be called explicitly before <see cref="SafeHandle.Dispose"/>
     /// to properly finalize the pass on the GPU timeline.
     /// </summary>
     public void End()

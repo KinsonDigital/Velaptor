@@ -61,6 +61,8 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     public SafeSurfaceHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(handle);
     }
@@ -68,11 +70,13 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
+        if (IsInvalid)
         {
-            this.wgpu.SurfaceUnconfigure(this.handle);
-            this.wgpu.SurfaceRelease(this.handle);
+            return true;
         }
+
+        this.wgpu.SurfaceUnconfigure(this.handle);
+        this.wgpu.SurfaceRelease(this.handle);
 
         return true;
     }

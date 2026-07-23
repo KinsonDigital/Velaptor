@@ -32,7 +32,7 @@ public class BatchingManagerTests : TestsBase
     private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IDisposable mockBatchSizeUnsubscriber;
-    private IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>? textureBatchPullReactor;
+    private TextureBatchPullSubscription? textureBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>? fontBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>? shapeBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<LineBatchItem>>>? lineBatchPullReactor;

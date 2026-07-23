@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU queue.
@@ -21,6 +22,10 @@ internal sealed class SafeQueueHandle : SafeHandleZeroOrMinusOneIsInvalid
     public SafeQueueHandle(IWgpuInvoker wgpu, SafeDeviceHandle deviceHandle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
+        ArgumentNullException.ThrowIfNull(deviceHandle);
+
         this.wgpu = wgpu;
         SetHandle(this.wgpu.DeviceGetQueue(deviceHandle));
     }

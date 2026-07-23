@@ -19,10 +19,7 @@ using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Xunit;
 using WgpuBindGroupDescriptor = Silk.NET.WebGPU.BindGroupDescriptor;
-using WgpuExtent3D = Silk.NET.WebGPU.Extent3D;
-using WgpuImageCopyTexture = Silk.NET.WebGPU.ImageCopyTexture;
 using WgpuSamplerDescriptor = Silk.NET.WebGPU.SamplerDescriptor;
-using WgpuTextureDataLayout = Silk.NET.WebGPU.TextureDataLayout;
 using WgpuTextureDescriptor = Silk.NET.WebGPU.TextureDescriptor;
 using WgpuTextureViewDescriptor = Silk.NET.WebGPU.TextureViewDescriptor;
 
@@ -87,7 +84,7 @@ public class TextureTests
     public void InternalCtor_WithNullWGPUParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             null,
             this.mockGd,
             this.bindGroupLayout,
@@ -105,7 +102,7 @@ public class TextureTests
     public void InternalCtor_WithNullGraphicsDeviceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             null,
             this.bindGroupLayout,
@@ -123,7 +120,7 @@ public class TextureTests
     public void InternalCtor_WithNullBindGroupLayoutParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             null,
@@ -141,7 +138,7 @@ public class TextureTests
     public void InternalCtor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -159,7 +156,7 @@ public class TextureTests
     public void InternalCtor_WithNullName_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -177,7 +174,7 @@ public class TextureTests
     public void InternalCtor_WithEmptyName_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -195,7 +192,7 @@ public class TextureTests
     public void InternalCtor_WithNullFilePath_ThrowsException()
     {
         // Act & Assert
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -213,7 +210,7 @@ public class TextureTests
     public void InternalCtor_WithEmptyFilePath_ThrowsException()
     {
         // Act & Assert
-        var act = () => new Velaptor.Content.Texture(
+        var act = () => new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -259,7 +256,7 @@ public class TextureTests
             .Returns(new nint(400));
 
         // Act
-        _ = new Velaptor.Content.Texture(
+        _ = new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,
@@ -274,11 +271,11 @@ public class TextureTests
             Arg.Any<WgpuTextureDescriptor>());
         this.mockWgpu.Received(1).QueueWriteTexture(
             Arg.Any<SafeQueueHandle>(),
-            Arg.Any<WgpuImageCopyTexture>(),
             Arg.Any<nint>(),
-            Arg.Any<nuint>(),
-            Arg.Any<WgpuTextureDataLayout>(),
-            Arg.Any<WgpuExtent3D>());
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<byte[]>());
         this.mockWgpu.Received(1).TextureCreateView(
             Arg.Any<nint>(),
             Arg.Any<WgpuTextureViewDescriptor>());
@@ -287,7 +284,9 @@ public class TextureTests
             Arg.Any<WgpuSamplerDescriptor>());
         this.mockWgpu.Received(1).DeviceCreateBindGroup(
             Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<WgpuBindGroupDescriptor>());
+            Arg.Any<SafeBindGroupLayoutHandle>(),
+            Arg.Any<SafeTextureViewHandle>(),
+            Arg.Any<SafeSamplerHandle>());
     }
     #endregion
 
@@ -394,7 +393,7 @@ public class TextureTests
     /// Creates a texture for the purpose of testing.
     /// </summary>
     /// <returns>The texture instance to test.</returns>
-    private Velaptor.Content.Texture CreateSystemUnderTest(bool useEmptyData = false)
+    private Texture CreateSystemUnderTest(bool useEmptyData = false)
     {
         var deviceHandle = new SafeDeviceHandle(this.mockWgpu, new nint(1));
         var queueHandle = new SafeQueueHandle(this.mockWgpu, deviceHandle);
@@ -412,7 +411,7 @@ public class TextureTests
         this.mockWgpu.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuBindGroupDescriptor>())
             .Returns(new nint(400));
 
-        return new Velaptor.Content.Texture(
+        return new Texture(
             this.mockWgpu,
             this.mockGd,
             this.bindGroupLayout,

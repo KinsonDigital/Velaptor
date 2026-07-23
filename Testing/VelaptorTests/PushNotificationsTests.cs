@@ -18,14 +18,14 @@ public class PushNotificationsTests
     public void GLContextCreatedIf_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.GLContextCreatedId.ToString().ToString().ShouldBe("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
+        PushNotifications.GLContextCreatedId.ToString().ShouldBe("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
     }
 
     [Fact]
     public void GLInitializedId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.GLInitializedId.ToString().ToString().ShouldBe("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+        PushNotifications.GLInitializedId.ToString().ShouldBe("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
     }
 
     [Fact]

@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using Silk.NET.WebGPU;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU command encoder.
@@ -26,6 +27,8 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
     public SafeCommandEncoderHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+
         this.wgpu = wgpu;
         SetHandle(handle);
     }
@@ -42,7 +45,7 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
             this.wgpu.CommandEncoderRelease(this.handle);
         }
 
-        var newHandle = this.wgpu.DeviceCreateCommandEncoder(this.wgpu.Device!, in descriptor);
+        var newHandle = this.wgpu.DeviceCreateCommandEncoder(this.wgpu.Device, in descriptor);
         SetHandle(newHandle);
     }
 

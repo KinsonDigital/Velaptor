@@ -1116,6 +1116,5 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         Device.Dispose();
         Queue.Dispose();
         Wgpu.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

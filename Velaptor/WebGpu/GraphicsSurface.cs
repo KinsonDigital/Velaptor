@@ -145,6 +145,5 @@ internal sealed class GraphicsSurface : IDisposable
     {
         this.surfaceTextureHandle?.Dispose();
         this.handle?.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

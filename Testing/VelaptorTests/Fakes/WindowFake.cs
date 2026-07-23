@@ -5,7 +5,6 @@
 namespace VelaptorTests.Fakes;
 
 using Velaptor;
-using Velaptor.Batching;
 using Velaptor.UI;
 using Velaptor.WebGpu.Batching;
 

@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
+using System;
 
 /// <summary>
 /// A safe handle for a WebGPU index buffer allocated on the device.
@@ -26,6 +27,9 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
         ref readonly Silk.NET.WebGPU.BufferDescriptor bufferDescriptor)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
+        ArgumentNullException.ThrowIfNull(deviceHandle);
+
         this.wgpu = wgpu;
         SetHandle(this.wgpu.DeviceCreateBuffer(deviceHandle, in bufferDescriptor));
     }
@@ -38,18 +42,22 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     public SafeIndexBufferHandle(IWgpuInvoker wgpu, nint handle)
         : base(ownsHandle: true)
     {
+        ArgumentNullException.ThrowIfNull(wgpu);
         this.wgpu = wgpu;
+
         SetHandle(handle);
     }
 
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
+        if (IsInvalid)
         {
-            this.wgpu.BufferDestroy(this.handle);
-            this.wgpu.BufferRelease(this.handle);
+            return true;
         }
+
+        this.wgpu.BufferDestroy(this.handle);
+        this.wgpu.BufferRelease(this.handle);
 
         return true;
     }

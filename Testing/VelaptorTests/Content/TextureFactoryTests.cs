@@ -5,10 +5,10 @@
 namespace VelaptorTests.Content;
 
 using System;
-using System.Drawing;
 using Carbonate.OneWay;
 using NSubstitute;
 using Shouldly;
+using Silk.NET.WebGPU;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -17,6 +17,7 @@ using Velaptor.NativeInterop.WebGpu.Handles;
 using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Xunit;
+using Color = System.Drawing.Color;
 
 /// <summary>
 /// Tests the <see cref="TextureFactory"/> class.
@@ -170,14 +171,14 @@ public class TextureFactoryTests
         // NOTE: These are only here to prove that the same injected objects are the ones being used.
         this.mockWgpu.Received(1).DeviceCreateTexture(
             Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<Silk.NET.WebGPU.TextureDescriptor>());
+            Arg.Any<TextureDescriptor>());
         this.mockWgpu.Received(1).QueueWriteTexture(
             Arg.Any<SafeQueueHandle>(),
-            Arg.Any<Silk.NET.WebGPU.ImageCopyTexture>(),
             Arg.Any<nint>(),
-            Arg.Any<nuint>(),
-            Arg.Any<Silk.NET.WebGPU.TextureDataLayout>(),
-            Arg.Any<Silk.NET.WebGPU.Extent3D>());
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<byte[]>());
     }
     #endregion
 
@@ -195,13 +196,13 @@ public class TextureFactoryTests
         this.mockGd.Queue.Returns(queueHandle);
 
         this.mockWgpu.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
-        this.mockWgpu.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<Silk.NET.WebGPU.TextureDescriptor>())
+        this.mockWgpu.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<TextureDescriptor>())
             .Returns(new nint(100));
-        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<Silk.NET.WebGPU.TextureViewDescriptor>())
+        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>())
             .Returns(new nint(200));
-        this.mockWgpu.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<Silk.NET.WebGPU.SamplerDescriptor>())
+        this.mockWgpu.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<SamplerDescriptor>())
             .Returns(new nint(300));
-        this.mockWgpu.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<Silk.NET.WebGPU.BindGroupDescriptor>())
+        this.mockWgpu.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<BindGroupDescriptor>())
             .Returns(new nint(400));
 
         return new TextureFactory(

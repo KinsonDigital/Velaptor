@@ -186,7 +186,6 @@ internal sealed class GraphicsDevice : IGraphicsDevice
         Handle?.Dispose();
         Adapter?.Dispose();
         Instance?.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     /// <summary>

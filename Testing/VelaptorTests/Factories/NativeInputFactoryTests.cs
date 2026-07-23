@@ -5,8 +5,8 @@
 namespace VelaptorTests.Factories;
 
 using System;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Factories;
 using Xunit;
 

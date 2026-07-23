@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Exceptions;
@@ -344,7 +344,7 @@ public class AudioLoaderTests
 
         // Assert
         var exception = act.ShouldThrow<FileNotFoundException>();
-        exception.Message.ShouldBe($"The audio file does not exist.");
+        exception.Message.ShouldBe("The audio file does not exist.");
         exception.FileName.ShouldBe(OggFilePath);
     }
 
