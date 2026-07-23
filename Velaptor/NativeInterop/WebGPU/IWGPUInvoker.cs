@@ -46,9 +46,9 @@ internal interface IWgpuInvoker : IDisposable
     /// Requests a GPU adapter from the instance.
     /// </summary>
     /// <param name="instance">The instance handle.</param>
-    /// <param name="options">The adapter request options.</param>
+    /// <param name="surface">The surface the adapter must support.</param>
     /// <param name="callback">The callback invoked when the request completes.</param>
-    void InstanceRequestAdapter(SafeInstanceHandle instance, in RequestAdapterOptions options, PfnRequestAdapterCallback callback);
+    void InstanceRequestAdapter(SafeInstanceHandle instance, SafeSurfaceHandle surface, SafeRequestAdapterCallback callback);
 
     /// <summary>
     /// Gets the adapter limits.
@@ -64,14 +64,14 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="adapter">The adapter handle.</param>
     /// <param name="descriptor">The device descriptor.</param>
     /// <param name="callback">The callback invoked when the request completes.</param>
-    void AdapterRequestDevice(SafeAdapterHandle adapter, in DeviceDescriptor descriptor, PfnRequestDeviceCallback callback);
+    void AdapterRequestDevice(SafeAdapterHandle adapter, in DeviceDescriptor descriptor, SafeRequestDeviceCallback callback);
 
     /// <summary>
     /// Sets the uncaptured error callback on the device.
     /// </summary>
     /// <param name="device">The device handle.</param>
     /// <param name="callback">The error callback.</param>
-    void DeviceSetUncapturedErrorCallback(SafeDeviceHandle device, PfnErrorCallback callback);
+    void DeviceSetUncapturedErrorCallback(SafeDeviceHandle device, SafeErrorCallback callback);
 
     /// <summary>
     /// Gets the queue from the device.
@@ -93,12 +93,13 @@ internal interface IWgpuInvoker : IDisposable
     void QueueRelease(nint queue);
 
     /// <summary>
-    /// Creates a shader module from WGSL source code.
+    /// Creates a shader module from WGSL source code. The native pointer
+    /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The shader module descriptor.</param>
-    /// <returns>A pointer to the shader module.</returns>
-    nint DeviceCreateShaderModule(SafeDeviceHandle device, in ShaderModuleDescriptor descriptor);
+    /// <param name="wgsl">The WGSL shader source to compile.</param>
+    /// <returns>A safe handle to the compiled shader module.</returns>
+    SafeShaderModuleHandle DeviceCreateShaderModule(SafeDeviceHandle device, string wgsl);
 
     /// <summary>
     /// Releases a shader module.

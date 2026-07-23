@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Handles;
 using Silk.NET.Core;
+using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
 using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
 
@@ -53,18 +54,23 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
-    /// <inheritdoc/>
     public void InstanceRequestAdapter(
         SafeInstanceHandle instance,
-        in RequestAdapterOptions options,
-        PfnRequestAdapterCallback callback)
+        SafeSurfaceHandle surface,
+        SafeRequestAdapterCallback callback)
     {
         unsafe
         {
+            var opts = new RequestAdapterOptions
+            {
+                CompatibleSurface = (Surface*)surface.DangerousGetHandle(),
+            };
+
             Wgpu.InstanceRequestAdapter(
                 (Instance*)instance.DangerousGetHandle(),
-                in options,
-                new PfnRequestAdapterCallback(callback),
+                in opts,
+                new PfnRequestAdapterCallback((status, a, msg, _) =>
+                    callback(status, (nint)a, (nint)msg, nint.Zero)),
                 null);
         }
     }
@@ -85,20 +91,29 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     public void AdapterRequestDevice(
         SafeAdapterHandle adapter,
         in DeviceDescriptor descriptor,
-        PfnRequestDeviceCallback callback)
+        SafeRequestDeviceCallback callback)
     {
         unsafe
         {
-            Wgpu.AdapterRequestDevice((Adapter*)adapter.DangerousGetHandle(), in descriptor, callback, null);
+            Wgpu.AdapterRequestDevice(
+                (Adapter*)adapter.DangerousGetHandle(),
+                in descriptor,
+                new PfnRequestDeviceCallback((status, d, msg, _) =>
+                    callback(status, (nint)d, (nint)msg, nint.Zero)),
+                null);
         }
     }
 
     /// <inheritdoc/>
-    public void DeviceSetUncapturedErrorCallback(SafeDeviceHandle device, PfnErrorCallback callback)
+    public void DeviceSetUncapturedErrorCallback(SafeDeviceHandle device, SafeErrorCallback callback)
     {
         unsafe
         {
-            Wgpu.DeviceSetUncapturedErrorCallback((Device*)device.DangerousGetHandle(), callback, null);
+            Wgpu.DeviceSetUncapturedErrorCallback(
+                (Device*)device.DangerousGetHandle(),
+                new PfnErrorCallback((type, msg, _) =>
+                    callback(type, (nint)msg, nint.Zero)),
+                null);
         }
     }
 
@@ -129,12 +144,32 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
-    /// <inheritdoc/>
-    public nint DeviceCreateShaderModule(SafeDeviceHandle device, in ShaderModuleDescriptor descriptor)
+    public SafeShaderModuleHandle DeviceCreateShaderModule(SafeDeviceHandle device, string wgsl)
     {
+        var wgslPtr = SilkMarshal.StringToPtr(wgsl);
+
         unsafe
         {
-            return (nint)Wgpu.DeviceCreateShaderModule((Device*)device.DangerousGetHandle(), in descriptor);
+            var wgslDesc = new ShaderModuleWGSLDescriptor
+            {
+                Chain = new ChainedStruct { SType = SType.ShaderModuleWgslDescriptor },
+                Code = (byte*)wgslPtr,
+            };
+
+            var moduleDesc = new ShaderModuleDescriptor
+            {
+                NextInChain = (ChainedStruct*)&wgslDesc,
+            };
+
+            var moduleHandle = (nint)Wgpu.DeviceCreateShaderModule(
+                (Device*)device.DangerousGetHandle(),
+                in moduleDesc);
+
+            // DeviceCreateShaderModule copies the source internally, so the
+            // temporary pointer is no longer needed after the module is created.
+            SilkMarshal.Free(wgslPtr);
+
+            return new SafeShaderModuleHandle(this, moduleHandle);
         }
     }
 

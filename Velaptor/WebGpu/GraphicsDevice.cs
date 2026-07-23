@@ -108,32 +108,24 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// <param name="surface">The surface the adapter must support.</param>
     public void InitializeAdapter(SafeSurfaceHandle surface)
     {
-        unsafe
+        // wgpu-native fires this callback synchronously, so Adapter is set
+        // by the time InstanceRequestAdapter returns.
+        Wgpu.InstanceRequestAdapter(Instance, surface, OnAdapterReceived);
+
+        if (Adapter is null)
         {
-            var opts = new RequestAdapterOptions
-            {
-                CompatibleSurface = (Surface*)surface.DangerousGetHandle(),
-            };
+            throw new Exception("Failed to get a WebGPU adapter (no compatible GPU?).");
+        }
 
-            // wgpu-native fires this callback synchronously, so Adapter is set
-            // by the time InstanceRequestAdapter returns.
-            Wgpu.InstanceRequestAdapter(Instance, in opts, new PfnRequestAdapterCallback(OnAdapterReceived));
+        SupportedLimits supportedLimits = default;
+        var success = Wgpu.AdapterGetLimits(Adapter, ref supportedLimits);
 
-            if (Adapter is null)
-            {
-                throw new Exception("Failed to get a WebGPU adapter (no compatible GPU?).");
-            }
-
-            SupportedLimits supportedLimits = default;
-            var success = Wgpu.AdapterGetLimits(Adapter, ref supportedLimits);
-
-            if (success)
-            {
-                var limits = supportedLimits.Limits;
-                var maxWidthOrHeight = limits.MaxTextureDimension2D;
-                MaxWidth = maxWidthOrHeight;
-                MaxHeight = maxWidthOrHeight;
-            }
+        if (success)
+        {
+            var limits = supportedLimits.Limits;
+            var maxWidthOrHeight = limits.MaxTextureDimension2D;
+            MaxWidth = maxWidthOrHeight;
+            MaxHeight = maxWidthOrHeight;
         }
     }
 
@@ -150,10 +142,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
 
         var desc = default(DeviceDescriptor);
 
-        unsafe
-        {
-            Wgpu.AdapterRequestDevice(Adapter, in desc, new PfnRequestDeviceCallback(OnDeviceReceived));
-        }
+        Wgpu.AdapterRequestDevice(Adapter, in desc, OnDeviceReceived);
 
         if (Handle is null)
         {
@@ -161,10 +150,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
         }
 
         // Register an error callback so GPU-side errors surface in the console.
-        unsafe
-        {
-            Wgpu.DeviceSetUncapturedErrorCallback(Handle, new PfnErrorCallback(OnDeviceError));
-        }
+        Wgpu.DeviceSetUncapturedErrorCallback(Handle, OnDeviceError);
 
         Queue = new SafeQueueHandle(Wgpu, Handle);
         Wgpu.Device = Handle;
@@ -183,30 +169,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
             throw new InvalidOperationException("Device must be initialized before creating shader modules.");
         }
 
-        var wgslPtr = SilkMarshal.StringToPtr(wgsl);
-
-        unsafe
-        {
-            var wgslDesc = new ShaderModuleWGSLDescriptor
-            {
-                Chain = new ChainedStruct { SType = SType.ShaderModuleWgslDescriptor },
-                Code = (byte*)wgslPtr,
-            };
-
-            var moduleDesc = new ShaderModuleDescriptor
-            {
-                NextInChain = (ChainedStruct*)&wgslDesc,
-            };
-
-            var moduleHandle = Wgpu.DeviceCreateShaderModule(Handle, in moduleDesc);
-            var module = new SafeShaderModuleHandle(Wgpu, moduleHandle);
-
-            // DeviceCreateShaderModule copies the source internally, so the
-            // temporary pointer is no longer needed after the module is created.
-            SilkMarshal.Free(wgslPtr);
-
-            return module;
-        }
+        return Wgpu.DeviceCreateShaderModule(Handle, wgsl);
     }
 
     /// <inheritdoc/>
@@ -229,44 +192,44 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// <summary>
     /// Fired when a GPU error escapes all active error scopes.
     /// </summary>
-    private static unsafe void OnDeviceError(ErrorType type, byte* message, void* _)
+    private static void OnDeviceError(ErrorType type, nint message, nint _)
     {
-        var msg = SilkMarshal.PtrToString((nint)message);
+        var msg = SilkMarshal.PtrToString(message);
         Console.WriteLine($"[WebGPU Error] {type}: {msg}");
     }
 
     /// <summary>
     /// Fired synchronously by wgpu-native when the adapter request completes.
     /// </summary>
-    private unsafe void OnAdapterReceived(RequestAdapterStatus status, Adapter* a, byte* message, void* _)
+    private void OnAdapterReceived(RequestAdapterStatus status, nint adapter, nint message, nint _)
     {
         if (status == RequestAdapterStatus.Success)
         {
-            Adapter = new SafeAdapterHandle(Wgpu, (nint)a);
+            Adapter = new SafeAdapterHandle(Wgpu, adapter);
         }
         else
         {
-            Console.WriteLine($"Adapter request failed: {SilkMarshal.PtrToString((nint)message)}");
+            Console.WriteLine($"Adapter request failed: {SilkMarshal.PtrToString(message)}");
         }
     }
 
     /// <summary>
     /// Fired synchronously by wgpu-native when the device request completes.
     /// </summary>
-    private unsafe void OnDeviceReceived(RequestDeviceStatus status, Device* d, byte* message, void* _)
+    private void OnDeviceReceived(RequestDeviceStatus status, nint device, nint message, nint _)
     {
         if (status == RequestDeviceStatus.Success)
         {
-            if (d is null)
+            if (device == 0)
             {
                 throw new Exception("Failed to get a WebGPU device.");
             }
 
-            Handle = new SafeDeviceHandle(Wgpu, (nint)d);
+            Handle = new SafeDeviceHandle(Wgpu, device);
         }
         else
         {
-            Console.WriteLine($"Device request failed: {SilkMarshal.PtrToString((nint)message)}");
+            Console.WriteLine($"Device request failed: {SilkMarshal.PtrToString(message)}");
         }
     }
 }
