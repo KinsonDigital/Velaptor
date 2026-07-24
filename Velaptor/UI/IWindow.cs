@@ -7,7 +7,6 @@ namespace Velaptor.UI;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Batching;
 using Scene;
 
 /// <summary>

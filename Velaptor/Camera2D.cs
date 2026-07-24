@@ -8,9 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Carbonate;
-using Carbonate.OneWay;
 using Factories;
-using ReactableData;
 
 /// <summary>
 /// A simple 2-D camera that applies pan and zoom to rendered objects on the CPU.

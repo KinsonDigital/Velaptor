@@ -7,7 +7,6 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Numerics;
-using Batching;
 using Content.Fonts;
 
 /// <summary>

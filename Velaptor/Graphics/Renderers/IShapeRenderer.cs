@@ -5,7 +5,6 @@
 namespace Velaptor.Graphics.Renderers;
 
 using System;
-using Batching;
 
 /// <summary>
 /// Renders rectangles to the screen.

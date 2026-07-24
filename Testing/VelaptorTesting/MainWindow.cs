@@ -13,7 +13,6 @@ using System.Text;
 using Scenes;
 using UILib;
 using Velaptor;
-using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;

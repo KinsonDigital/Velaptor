@@ -4,7 +4,6 @@
 
 namespace Velaptor.NativeInterop.WebGpu;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Handles;
 using Structures;

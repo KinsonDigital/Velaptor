@@ -5,7 +5,6 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Batching;
 using Graphics.Renderers;
 using WebGpu.Batching;
 

@@ -5,7 +5,6 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Graphics;
 
 /// <summary>
 /// Creates camera instances for applying pan and zoom transforms to rendered objects.

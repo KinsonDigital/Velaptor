@@ -2,7 +2,6 @@ namespace UILib;
 
 using System.Drawing;
 using System.Numerics;
-using UILib;
 
 public interface IControl : IRenderable, IUpdatable, ILoadable
 {

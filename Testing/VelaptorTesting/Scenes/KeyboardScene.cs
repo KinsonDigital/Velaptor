@@ -8,10 +8,7 @@ using System.Numerics;
 using System.Text;
 using UILib;
 using Velaptor;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
 using Velaptor.Factories;
-using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 

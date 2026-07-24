@@ -10,7 +10,6 @@ using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;

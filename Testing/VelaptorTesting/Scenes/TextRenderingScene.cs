@@ -8,8 +8,6 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
 using UILib;
 using Velaptor;
 using Velaptor.Content;

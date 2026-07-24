@@ -2,8 +2,6 @@ namespace UILib;
 
 using System.Drawing;
 using System.Numerics;
-using Carbonate.NonDirectional;
-using Carbonate.Fluent;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
