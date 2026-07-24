@@ -16,6 +16,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests out layered rendering with textures.
@@ -120,7 +121,7 @@ public class LayeredTextureRenderingScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         this.lblBoxState.Position = new Vector2(WindowPadding, WindowCenter.Y - this.lblBoxState.HalfHeight);

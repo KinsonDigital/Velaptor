@@ -1,4 +1,4 @@
-// <copyright file="NonAnimatedGraphicsScene.cs" company="KinsonDigital">
+﻿// <copyright file="NonAnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,6 +15,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests that graphics properly render to the screen.
@@ -90,7 +91,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         var currentKeyState = this.keyboard.GetState();

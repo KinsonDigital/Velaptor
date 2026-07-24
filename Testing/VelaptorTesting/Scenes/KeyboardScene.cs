@@ -1,4 +1,4 @@
-// <copyright file="KeyboardScene.cs" company="KinsonDigital">
+﻿// <copyright file="KeyboardScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,6 +11,7 @@ using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.
@@ -72,7 +73,7 @@ public class KeyboardScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>.
+    /// <inheritdoc cref="VelUpdatable.Update"/>.
     public override void Update(FrameTime frameTime)
     {
         var currentKeyState = this.keyboard.GetState();

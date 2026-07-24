@@ -14,6 +14,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.
@@ -25,22 +26,21 @@ public class AnimatedGraphicsScene : SceneBase
     private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
     private readonly IAppInput<KeyboardState> keyboard;
-    private readonly Layout layMain;
     private readonly Container conMain;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
+    private KeyboardState prevKeyState;
+    private Layout layDirection;
+    private Layout laySpeed;
+    private Option? optForward;
+    private Option? optBackward;
+    private Label? lblSpeed;
+    private Slider? sldSpeed;
     private int elapsedTime;
     private int currentFrame;
     private float animSpeed = 32;
     private bool runningForward = true;
-    private KeyboardState prevKeyState;
     private float speed = 60;
-    private Layout layDirection;
-    private Option optForward;
-    private Option optBackward;
-    private Label lblSpeed;
-    private Slider sldSpeed;
-    private Layout laySpeed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
@@ -55,12 +55,12 @@ public class AnimatedGraphicsScene : SceneBase
         CreateOptionCtrls();
         CreateSpeedCtrls();
 
-        this.layMain = new Layout();
-        this.layMain.AddControl(this.layDirection);
-        this.layMain.AddControl(this.laySpeed);
+        var layMain = new Layout();
+        layMain.AddControl(this.layDirection);
+        layMain.AddControl(this.laySpeed);
 
         this.conMain = new Container();
-        this.conMain.AddLayoutControl(this.layMain);
+        this.conMain.AddLayoutControl(layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -98,7 +98,7 @@ public class AnimatedGraphicsScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         if (this.elapsedTime >= this.animSpeed)
@@ -158,14 +158,14 @@ public class AnimatedGraphicsScene : SceneBase
             IsChecked = true,
             GroupNumber = 1,
         };
-        this.optForward.CheckChanged += (sender, args) => this.runningForward = !args.IsChecked;
+        this.optForward.CheckChanged += (_, args) => this.runningForward = !args.IsChecked;
 
         this.optBackward = new Option
         {
             Text = "Backwards",
             GroupNumber = 1,
         };
-        this.optBackward.CheckChanged += (sender, args) => this.runningForward = args.IsChecked;
+        this.optBackward.CheckChanged += (_, args) => this.runningForward = args.IsChecked;
 
         this.layDirection = new Layout();
         this.layDirection.StackDirection = StackDirection.Vertical;
@@ -186,7 +186,7 @@ public class AnimatedGraphicsScene : SceneBase
             Max = 60,
             Value = 60,
         };
-        this.sldSpeed.ValueChanged += (sender, args) => this.speed = args.NewValue;
+        this.sldSpeed.ValueChanged += (_, args) => this.speed = args.NewValue;
 
         this.laySpeed = new Layout();
         this.laySpeed.StackDirection = StackDirection.Horizontal;

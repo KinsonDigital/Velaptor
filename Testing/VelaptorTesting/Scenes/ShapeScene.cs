@@ -42,8 +42,6 @@ public class ShapeScene : SceneBase
     private readonly IContentManager contentManager;
     private readonly IShapeRenderer shapeRenderer;
     private readonly BackgroundManager backgroundManager;
-    private Layout layMain;
-    private Container conMain;
     private string circleInstructionText = string.Empty;
     private string rectInstructionText = string.Empty;
     private IFont? font;
@@ -51,6 +49,8 @@ public class ShapeScene : SceneBase
     private RectShape rectangle;
     private CircleShape circle;
     private ShapeType shapeType;
+    private Layout? layMain;
+    private Container? conMain;
     private CheckBox? chkIsSolid;
     private DropDown? drpShapeType;
     private DropDown? drpSolidClr;
