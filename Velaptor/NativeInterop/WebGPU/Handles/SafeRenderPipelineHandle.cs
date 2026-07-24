@@ -31,10 +31,7 @@ internal sealed class SafeRenderPipelineHandle : SafeHandleZeroOrMinusOneIsInval
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.RenderPipelineRelease(this.handle);
-        }
+        this.wgpu.RenderPipelineRelease(this.handle);
 
         return true;
     }

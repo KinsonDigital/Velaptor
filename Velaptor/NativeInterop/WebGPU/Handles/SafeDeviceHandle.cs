@@ -31,10 +31,7 @@ internal sealed class SafeDeviceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.DeviceRelease(this.handle);
-        }
+        this.wgpu.DeviceRelease(this.handle);
 
         return true;
     }

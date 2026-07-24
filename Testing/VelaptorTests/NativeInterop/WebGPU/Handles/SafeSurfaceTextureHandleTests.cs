@@ -86,58 +86,6 @@ public sealed class SafeSurfaceTextureHandleTests
 
     #region Method Tests
     [Fact]
-    public void UpdateHandleAndStatus_WithValidCurrentHandle_ReleasesOldAndUpdates()
-    {
-        // Arrange
-        var oldHandle = Handle;
-        var newHandle = (nint)0x9999;
-        var oldStatus = SurfaceGetCurrentTextureStatus.Success;
-        var newStatus = SurfaceGetCurrentTextureStatus.Timeout;
-        var sut = CreateSurfaceTextureHandle(oldHandle, oldStatus);
-
-        // Act
-        sut.UpdateHandleAndStatus(newHandle, newStatus);
-
-        // Assert
-        this.mockWgpu.Received(1).TextureRelease(oldHandle);
-        sut.DangerousGetHandle().ShouldBe(newHandle);
-        sut.SurfaceTextureStatus.ShouldBe(newStatus);
-    }
-
-    [Fact]
-    public void UpdateHandleAndStatus_WithInvalidCurrentHandle_SkipsReleaseAndUpdates()
-    {
-        // Arrange
-        var newHandle = (nint)0x9999;
-        var oldStatus = SurfaceGetCurrentTextureStatus.Success;
-        var newStatus = SurfaceGetCurrentTextureStatus.Timeout;
-        var sut = CreateSurfaceTextureHandle(nint.Zero, oldStatus);
-
-        // Act
-        sut.UpdateHandleAndStatus(newHandle, newStatus);
-
-        // Assert
-        this.mockWgpu.DidNotReceive().TextureRelease(Arg.Any<nint>());
-        sut.DangerousGetHandle().ShouldBe(newHandle);
-        sut.SurfaceTextureStatus.ShouldBe(newStatus);
-    }
-
-    [Fact]
-    public void Dispose_WithValidHandle_ReleasesTextureAndZeroesHandle()
-    {
-        // Arrange
-        var handle = Handle;
-        var sut = CreateSurfaceTextureHandle(handle, SurfaceGetCurrentTextureStatus.Success);
-
-        // Act
-        sut.Dispose();
-
-        // Assert
-        this.mockWgpu.Received(1).TextureRelease(handle);
-        sut.DangerousGetHandle().ShouldBe(IntPtr.Zero);
-    }
-
-    [Fact]
     public void Dispose_WithInvalidHandle_DoesNotReleaseTexture()
     {
         // Arrange

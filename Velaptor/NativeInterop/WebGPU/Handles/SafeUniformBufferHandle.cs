@@ -31,11 +31,6 @@ internal sealed class SafeUniformBufferHandle : SafeHandleZeroOrMinusOneIsInvali
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (IsInvalid)
-        {
-            return true;
-        }
-
         this.wgpu.BufferDestroy(this.handle);
         this.wgpu.BufferRelease(this.handle);
 

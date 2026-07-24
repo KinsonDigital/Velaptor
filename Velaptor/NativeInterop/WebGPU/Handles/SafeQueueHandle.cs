@@ -33,10 +33,7 @@ internal sealed class SafeQueueHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.QueueRelease(this.handle);
-        }
+        this.wgpu.QueueRelease(this.handle);
 
         return true;
     }

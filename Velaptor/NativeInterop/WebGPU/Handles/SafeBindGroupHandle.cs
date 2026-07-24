@@ -31,10 +31,7 @@ internal sealed class SafeBindGroupHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.BindGroupRelease(this.handle);
-        }
+        this.wgpu.BindGroupRelease(this.handle);
 
         return true;
     }

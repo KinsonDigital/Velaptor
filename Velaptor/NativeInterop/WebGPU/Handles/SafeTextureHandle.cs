@@ -35,11 +35,6 @@ internal sealed class SafeTextureHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (IsInvalid)
-        {
-            return true;
-        }
-
         this.wgpu.TextureDestroy(this.handle);
         this.wgpu.TextureRelease(this.handle);
 

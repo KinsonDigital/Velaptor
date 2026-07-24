@@ -46,10 +46,7 @@ internal sealed class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsIn
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.RenderPassEncoderRelease(this.handle);
-        }
+        this.wgpu.RenderPassEncoderRelease(this.handle);
 
         return true;
     }

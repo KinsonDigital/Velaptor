@@ -32,10 +32,7 @@ internal sealed class SafeInstanceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.InstanceRelease(this.handle);
-        }
+        this.wgpu.InstanceRelease(this.handle);
 
         return true;
     }

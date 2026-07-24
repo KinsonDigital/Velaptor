@@ -31,10 +31,7 @@ internal sealed class SafeSamplerHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.SamplerRelease(this.handle);
-        }
+        this.wgpu.SamplerRelease(this.handle);
 
         return true;
     }

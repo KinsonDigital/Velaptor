@@ -31,10 +31,7 @@ internal sealed class SafeShaderModuleHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.ShaderModuleRelease(this.handle);
-        }
+        this.wgpu.ShaderModuleRelease(this.handle);
 
         return true;
     }

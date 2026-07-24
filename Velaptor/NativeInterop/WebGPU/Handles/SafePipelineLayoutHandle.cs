@@ -31,10 +31,7 @@ internal sealed class SafePipelineLayoutHandle : SafeHandleZeroOrMinusOneIsInval
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.PipelineLayoutRelease(this.handle);
-        }
+        this.wgpu.PipelineLayoutRelease(this.handle);
 
         return true;
     }

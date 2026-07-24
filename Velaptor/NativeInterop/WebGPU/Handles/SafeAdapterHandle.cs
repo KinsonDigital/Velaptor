@@ -31,10 +31,7 @@ internal sealed class SafeAdapterHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.AdapterRelease(this.handle);
-        }
+        this.wgpu.AdapterRelease(this.handle);
 
         return true;
     }

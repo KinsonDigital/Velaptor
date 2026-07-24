@@ -52,10 +52,7 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.CommandEncoderRelease(this.handle);
-        }
+        this.wgpu.CommandEncoderRelease(this.handle);
 
         return true;
     }

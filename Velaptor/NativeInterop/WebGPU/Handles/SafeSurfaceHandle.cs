@@ -32,20 +32,6 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
 
         this.wgpu = wgpu;
 
-        if (wgpu.Wgpu is null)
-        {
-            throw new InvalidOperationException(
-                "The WebGPU API object is null. Ensure 'WebGPU.GetApi()' has been called and the native " +
-                "'wgpu_native' library is available in the application output directory.");
-        }
-
-        if (window.Native is null)
-        {
-            throw new InvalidOperationException(
-                "The window's native surface source is null. The Silk.NET window must be created before " +
-                "attempting to create a WebGPU surface. Ensure the window has been fully initialized.");
-        }
-
         unsafe
         {
             SetHandle((nint)window.CreateWebGPUSurface(wgpu.Wgpu, (Instance*)instance.DangerousGetHandle()));
@@ -70,11 +56,6 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
-        if (IsInvalid)
-        {
-            return true;
-        }
-
         this.wgpu.SurfaceUnconfigure(this.handle);
         this.wgpu.SurfaceRelease(this.handle);
 
