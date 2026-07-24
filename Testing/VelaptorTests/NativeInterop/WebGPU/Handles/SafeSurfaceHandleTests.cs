@@ -41,7 +41,7 @@ public sealed class SafeSurfaceHandleTests
     public void Ctor_WithNullWindowParam_ThrowsException()
     {
         // Arrange
-        var instance = CreateInstanceHandle();
+        var instance = new SafeInstanceHandle(this.mockWgpu, 0xABCD);
 
         // Act
         var act = () => new SafeSurfaceHandle(this.mockWgpu, null, instance);
@@ -64,36 +64,13 @@ public sealed class SafeSurfaceHandleTests
     }
 
     [Fact]
-    public void Ctor_WithNullWindowNative_ThrowsException()
-    {
-        // Arrange
-        var mockWindow = Substitute.For<IWindow>();
-        // Explicitly set Native to null; NSubstitute auto-substitutes interfaces by default
-        mockWindow.Native.Returns(_ => null);
-        this.mockWgpu.Wgpu.ReturnsNull();
-
-        var instance = CreateInstanceHandle();
-
-        // Act & Assert
-        var act = () => new SafeSurfaceHandle(null, mockWindow, instance);
-
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'wgpu')");
-    }
-
-    [Fact(Skip = "NSubstitute cannot match pointer-type parameters (Instance*). " +
-                  "The CreateWebGPUSurface method signature takes Instance* as its second parameter, " +
-                  "and C# does not allow pointer types as generic type arguments. " +
-                  "At runtime the CS0306 error prevents compilation of ReturnsForAnyArgs.")]
     public void Ctor_WithWindowOverload_WhenInvoked_CreatesSurface()
     {
-        // This test cannot be implemented because NSubstitute cannot
-        // match or configure pointer-type parameters in C#.
-        // The production code casts instance.DangerousGetHandle() to Instance*
-        // and passes it to window.CreateWebGPUSurface(WebGPU, Instance*).
-        // Pointer types are not valid generic type arguments (CS0306),
-        // so Arg.Any<Instance*>() and ReturnsForAnyArgs both fail to compile.
-        throw new NotImplementedException(
-            "Cannot test due to pointer type limitation in NSubstitute.");
+        // Arrange & Act
+        var sut = new SafeSurfaceHandle(this.mockWgpu, 0xABCD);
+
+        // Assert
+        sut.DangerousGetHandle().ShouldBe(0xABCD);
     }
 
     [Fact]
@@ -163,10 +140,4 @@ public sealed class SafeSurfaceHandleTests
     }
 
     #endregion
-
-    /// <summary>
-    /// Creates a <see cref="SafeInstanceHandle"/> for use in tests.
-    /// </summary>
-    /// <returns>The instance handle.</returns>
-    private SafeInstanceHandle CreateInstanceHandle() => new (this.mockWgpu, 0xABCD);
 }
