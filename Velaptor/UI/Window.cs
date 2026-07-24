@@ -250,33 +250,16 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        CrashLog("Window.OnDraw entered");
         if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
         {
-            CrashLog("Window.OnDraw skipped — no scenes");
             return;
         }
 
-        CrashLog("Window.OnDraw calling batcher.Begin");
         this.batcher.Begin();
 
-        CrashLog("Window.OnDraw calling SceneManager.Render");
         this.nativeWindow.SceneManager.Render();
 
-        CrashLog("Window.OnDraw calling batcher.End");
         this.batcher.End();
-        CrashLog("Window.OnDraw completed");
-    }
-
-    private static void CrashLog(string msg)
-    {
-        try
-        {
-            System.IO.File.AppendAllText(
-                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "velaptor_crash.log"),
-                $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
-        }
-        catch { /* can't log */ }
     }
 
     /// <summary>

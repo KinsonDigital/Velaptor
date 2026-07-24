@@ -350,8 +350,6 @@ internal sealed class BatchingManager : IBatchingManager
     /// </summary>
     private void EmptyBatch()
     {
-        CrashLog("BatchingManager.EmptyBatch started");
-
         for (var i = 0; i < this.textureItems.Length; i++)
         {
             if (this.textureItems.Span[i].Item.IsEmpty())
@@ -391,18 +389,5 @@ internal sealed class BatchingManager : IBatchingManager
 
             this.lineItems.Span[i] = default;
         }
-
-        CrashLog("BatchingManager.EmptyBatch completed");
-    }
-
-    private static void CrashLog(string msg)
-    {
-        try
-        {
-            System.IO.File.AppendAllText(
-                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "velaptor_crash.log"),
-                $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
-        }
-        catch { /* can't log */ }
     }
 }
