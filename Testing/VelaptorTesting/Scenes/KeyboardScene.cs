@@ -1,4 +1,4 @@
-﻿// <copyright file="KeyboardScene.cs" company="KinsonDigital">
+// <copyright file="KeyboardScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -111,16 +111,5 @@ public class KeyboardScene : SceneBase
         this.lblDownKeys.Render();
 
         base.Render();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
     }
 }

@@ -286,9 +286,4 @@ public class TextRenderingScene : SceneBase
         this.layFontStyle.AddControl(this.lblStyle);
         this.layFontStyle.AddControl(this.drpStyle);
     }
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
 }

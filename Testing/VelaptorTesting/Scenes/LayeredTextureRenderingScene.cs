@@ -156,17 +156,6 @@ public class LayeredTextureRenderingScene : SceneBase
         base.Render();
     }
 
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
-    }
-
     /// <summary>
     /// Updates the text for the state of the white box.
     /// </summary>

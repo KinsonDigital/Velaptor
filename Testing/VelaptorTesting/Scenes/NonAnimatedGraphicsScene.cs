@@ -1,4 +1,4 @@
-﻿// <copyright file="NonAnimatedGraphicsScene.cs" company="KinsonDigital">
+// <copyright file="NonAnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -160,16 +160,5 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.lblInstructions.Render();
 
         base.Render();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
     }
 }

@@ -150,17 +150,6 @@ public class AnimatedGraphicsScene : SceneBase
         base.Render();
     }
 
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
-    }
-
     private void CreateOptionCtrls()
     {
         this.optForward = new Option
