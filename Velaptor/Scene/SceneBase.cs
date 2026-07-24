@@ -74,11 +74,13 @@ public abstract class SceneBase : IScene
     public virtual void Resize(SizeU size) => WindowSize = size;
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Nothing to test.")]
     public virtual void Update(FrameTime frameTime)
     {
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Nothing to test.")]
     public virtual void Render()
     {
     }
