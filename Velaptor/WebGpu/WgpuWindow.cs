@@ -1,4 +1,4 @@
-// <copyright file="WGPUWindow.cs" company="KinsonDigital">
+// <copyright file="WgpuWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -37,7 +37,7 @@ using VelaptorWindowBorder = WindowBorder;
 /// <summary>
 /// A WebGPU-backed window implementation used inside the <see cref="Velaptor.UI.Window"/> class.
 /// </summary>
-internal sealed class WGPUWindow : VelaptorIWindow
+internal sealed class WgpuWindow : VelaptorIWindow
 {
     private const int WindowPadding = 10;
     private readonly SilkIWindow silkWindow;
@@ -63,7 +63,7 @@ internal sealed class WGPUWindow : VelaptorIWindow
     private Action? afterUnloadAction;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WGPUWindow"/> class.
+    /// Initializes a new instance of the <see cref="WgpuWindow"/> class.
     /// </summary>
     /// <param name="width">The width of the window.</param>
     /// <param name="height">The height of the window.</param>
@@ -79,7 +79,7 @@ internal sealed class WGPUWindow : VelaptorIWindow
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
     /// <param name="timerService">Measures game-loop frame time.</param>
-    public WGPUWindow(
+    public WgpuWindow(
         uint width,
         uint height,
         ITelemetryService telemetryService,
@@ -342,7 +342,7 @@ internal sealed class WGPUWindow : VelaptorIWindow
     {
         if (this.isDisposed)
         {
-            throw new ObjectDisposedException(nameof(WGPUWindow));
+            throw new ObjectDisposedException(nameof(WgpuWindow));
         }
 
         this.silkWindow.UpdatesPerSecond = 60;

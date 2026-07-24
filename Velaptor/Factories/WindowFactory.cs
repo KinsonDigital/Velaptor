@@ -42,7 +42,7 @@ internal static class WindowFactory
     /// <returns>A Velaptor framework window implementation.</returns>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
     public static VelaptorIWindow CreateWindow(uint width, uint height)
-        => new WGPUWindow(
+        => new WgpuWindow(
             width,
             height,
             IoC.Container.GetInstance<ITelemetryService>(),
