@@ -6,7 +6,6 @@ namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using System;
 using Microsoft.Win32.SafeHandles;
-using Silk.NET.WebGPU;
 using Silk.NET.Windowing;
 
 /// <summary>
@@ -32,10 +31,7 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
 
         this.wgpu = wgpu;
 
-        unsafe
-        {
-            SetHandle((nint)window.CreateWebGPUSurface(wgpu.Wgpu, (Instance*)instance.DangerousGetHandle()));
-        }
+        SetHandle(wgpu.CreateWebGpuSurface(wgpu.Wgpu, window, instance));
     }
 
     /// <summary>

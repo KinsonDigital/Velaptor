@@ -10,6 +10,7 @@ using Structures;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
+using Silk.NET.Windowing;
 using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
 
 /// <summary>
@@ -133,6 +134,21 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         unsafe
         {
             Wgpu.DeviceRelease((Device*)device);
+        }
+    }
+
+    /// <summary>
+    /// Creates a WebGPU surface from a window.
+    /// </summary>
+    /// <param name="wgpu">A WebGPU instance.</param>
+    /// <param name="window">The window representation.</param>
+    /// <param name="instance">The handle to the instance.</param>
+    /// <returns>A newly created Surface.</returns>
+    public nint CreateWebGpuSurface(WebGPU wgpu, IWindow window, SafeInstanceHandle instance)
+    {
+        unsafe
+        {
+            return (nint)window.CreateWebGPUSurface(wgpu, (Instance*)instance.DangerousGetHandle());
         }
     }
 
@@ -409,14 +425,14 @@ internal sealed class WgpuInvoker : IWgpuInvoker
 
                 // Pin the vertex attribute arrays, build the buffer layout,
                 // then construct the full descriptor tree on the stack.
-                fixed (VertexAttribute* pAttribs = vertBuffers[0].Attributes)
+                fixed (VertexAttribute* ptrAttributes = vertBuffers[0].Attributes)
                 {
                     var vbLayout = new VertexBufferLayout
                     {
                         ArrayStride = vertBuffers[0].ArrayStride,
                         StepMode = vertBuffers[0].StepMode,
                         AttributeCount = (uint)vertBuffers[0].Attributes.Length,
-                        Attributes = pAttribs,
+                        Attributes = ptrAttributes,
                     };
 
                     BlendState* pBlend = null;

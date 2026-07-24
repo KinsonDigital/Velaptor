@@ -9,6 +9,7 @@ using Handles;
 using Structures;
 using Silk.NET.Core;
 using Silk.NET.WebGPU;
+using Silk.NET.Windowing;
 
 /// <summary>
 /// Invokes WebGPU functions.
@@ -86,6 +87,15 @@ internal interface IWgpuInvoker : IDisposable
     /// </summary>
     /// <param name="device">The device pointer to release.</param>
     void DeviceRelease(nint device);
+
+    /// <summary>
+    /// Creates a WebGPU surface from a window.
+    /// </summary>
+    /// <param name="wgpu">A WebGPU instance.</param>
+    /// <param name="window">The window representation.</param>
+    /// <param name="instance">The handle to the instance.</param>
+    /// <returns>A newly created Surface.</returns>
+    nint CreateWebGpuSurface(WebGPU wgpu, IWindow window, SafeInstanceHandle instance);
 
     /// <summary>
     /// Releases a queue.
