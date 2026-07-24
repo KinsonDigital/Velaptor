@@ -19,6 +19,7 @@ using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 using Container = UILib.Container;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests out rectangle rendering.
@@ -31,6 +32,10 @@ public class ShapeScene : SceneBase
     private const float DefaultBorderThickness = 2;
     private const float DefaultRectWidth = 250;
     private const float DefaultRectHeight = 250;
+    private const float MinRectWidth = 5;
+    private const float MinRectHeight = 5;
+    private const float MaxRectWidth = 500;
+    private const float MaxRectHeight = 500;
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly Dictionary<string, Color> clrList = new ()
@@ -172,7 +177,7 @@ public class ShapeScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         this.currentKeyState = this.keyboard.GetState();
@@ -200,21 +205,25 @@ public class ShapeScene : SceneBase
                 if (this.currentKeyState.IsKeyDown(KeyCode.Right))
                 {
                     this.rectangle.Width += delta;
+                    this.rectangle.Width = this.rectangle.Width > MaxRectWidth ? MaxRectWidth : this.rectangle.Width;
                 }
 
                 if (this.currentKeyState.IsKeyDown(KeyCode.Left))
                 {
                     this.rectangle.Width -= delta;
+                    this.rectangle.Width = this.rectangle.Width < MinRectWidth ? MinRectWidth : this.rectangle.Width;
                 }
 
                 if (this.currentKeyState.IsKeyDown(KeyCode.Up))
                 {
                     this.rectangle.Height += delta;
+                    this.rectangle.Height = this.rectangle.Height > MaxRectHeight ? MaxRectHeight : this.rectangle.Height;
                 }
 
                 if (this.currentKeyState.IsKeyDown(KeyCode.Down))
                 {
                     this.rectangle.Height -= delta;
+                    this.rectangle.Height = this.rectangle.Height < MinRectHeight ? MinRectHeight : this.rectangle.Height;
                 }
             }
         }
@@ -246,8 +255,8 @@ public class ShapeScene : SceneBase
         }
 
         this.backgroundManager.Render();
-        this.lblInstructions.Render();
-        this.conMain.Render();
+        this.lblInstructions.Render(0);
+        this.conMain.Render(0);
 
         base.Render();
     }
@@ -409,9 +418,9 @@ public class ShapeScene : SceneBase
         this.lblRectWidth.Text = "Width:";
 
         this.sldRectWidth = new Slider();
-        this.sldRectWidth.Value = 0;
-        this.sldRectWidth.Min = 50;
-        this.sldRectWidth.Max = 500;
+        this.sldRectWidth.Value = DefaultRectWidth;
+        this.sldRectWidth.Min = MinRectWidth;
+        this.sldRectWidth.Max = MaxRectHeight;
         this.sldRectWidth.ValueChanged += SldRectWidth_ValueChanged;
 
         this.layRectWidth = new Layout();
@@ -426,9 +435,9 @@ public class ShapeScene : SceneBase
 
         // Rectangle height
         this.sldRectHeight = new Slider();
-        this.sldRectHeight.Value = 0;
-        this.sldRectHeight.Min = 50;
-        this.sldRectHeight.Max = 500;
+        this.sldRectHeight.Value = DefaultRectHeight;
+        this.sldRectHeight.Min = MinRectHeight;
+        this.sldRectHeight.Max = MaxRectHeight;
         this.sldRectHeight.ValueChanged += SldRectHeight_ValueChanged;
 
         this.layRectHeight = new Layout();

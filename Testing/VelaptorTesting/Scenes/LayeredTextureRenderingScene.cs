@@ -127,8 +127,8 @@ public class LayeredTextureRenderingScene : SceneBase
         this.lblBoxState.Position = new Vector2(WindowPadding, WindowCenter.Y - this.lblBoxState.HalfHeight);
         this.currentKeyState = this.keyboard.GetState();
 
-        UpdateWhiteBoxLayer();
-        UpdateWhiteBoxStateText();
+        UpdateWhiteTextureLayer();
+        UpdateTextureStateText();
 
         MoveWhiteBox(frameTime);
 
@@ -151,8 +151,8 @@ public class LayeredTextureRenderingScene : SceneBase
         this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, 0, (int)this.whiteLayer);
 
         // The instructions text
-        this.lblInstructions.Render();
-        this.lblBoxState.Render();
+        this.lblInstructions.Render(0);
+        this.lblBoxState.Render(0);
 
         base.Render();
     }
@@ -160,13 +160,13 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <summary>
     /// Updates the text for the state of the white box.
     /// </summary>
-    private void UpdateWhiteBoxStateText()
+    private void UpdateTextureStateText()
     {
         this.boxStateText.Clear();
         this.boxStateText.AppendLine("Texture State");
-        this.boxStateText.AppendLine($"  - White Box Layer: {this.whiteLayer}");
-        this.boxStateText.AppendLine($"  - Orange Box Layer: {OrangeLayer}");
-        this.boxStateText.AppendLine($"  - Blue Box Layer: {BlueLayer}");
+        this.boxStateText.AppendLine($"  - White Texture Layer: {this.whiteLayer}");
+        this.boxStateText.AppendLine($"  - Orange Texture Layer: {OrangeLayer}");
+        this.boxStateText.AppendLine($"  - Blue Texture Layer: {BlueLayer}");
         this.lblBoxState.Text = this.boxStateText.ToString();
     }
 
@@ -176,7 +176,7 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <exception cref="InvalidEnumArgumentException">
     ///     Occurs if the <see cref="RenderLayer"/> is out of range.
     /// </exception>
-    private void UpdateWhiteBoxLayer()
+    private void UpdateWhiteTextureLayer()
     {
         if (this.currentKeyState.IsKeyDown(KeyCode.L) && this.prevKeyState.IsKeyUp(KeyCode.L))
         {

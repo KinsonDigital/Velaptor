@@ -98,7 +98,7 @@ public class LineRenderingScene : SceneBase
         this.backgroundManager.Render();
         this.lineRenderer.Render(this.line);
 
-        this.lblInstructions.Render();
+        this.lblInstructions.Render(0);
 
         base.Render();
     }

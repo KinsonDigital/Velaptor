@@ -145,7 +145,7 @@ public class AnimatedGraphicsScene : SceneBase
             3f,
             this.currentFrame);
 
-        this.conMain.Render();
+        this.conMain.Render(0);
 
         base.Render();
     }

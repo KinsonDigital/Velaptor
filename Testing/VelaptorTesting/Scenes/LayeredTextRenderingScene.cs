@@ -80,14 +80,14 @@ public class LayeredTextRenderingScene : SceneBase
 
         var orangeLines = new[]
         {
-            $"White Box Layer: {this.whiteLayer}",
-            $"Orange Box Layer: {OrangeLayer}",
-            $"Blue Box Layer: {BlueLayer}",
+            $"White Text Layer: {this.whiteLayer}",
+            $"Orange Text Layer: {OrangeLayer}",
+            $"Blue Text Layer: {BlueLayer}",
         };
 
         this.orangeText = string.Join(Environment.NewLine, orangeLines);
 
-        // Set the default white box position
+        // Set the default white  position
         this.orangeTextPos.X = WindowCenter.X;
         this.orangeTextPos.Y = WindowCenter.Y;
 
@@ -177,9 +177,9 @@ public class LayeredTextRenderingScene : SceneBase
         // Render the current enabled box text
         var textLines = new[]
         {
-            $"White Box Layer: {this.whiteLayer}",
-            $"Orange Box Layer: {OrangeLayer}",
-            $"Blue Box Layer: {BlueLayer}",
+            $"White Text Layer: {this.whiteLayer}",
+            $"Orange Text Layer: {OrangeLayer}",
+            $"Blue Text Layer: {BlueLayer}",
         };
         this.orangeText = string.Join(Environment.NewLine, textLines);
     }

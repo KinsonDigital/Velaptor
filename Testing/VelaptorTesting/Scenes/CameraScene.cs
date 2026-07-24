@@ -165,11 +165,11 @@ public class CameraScene : SceneBase
             textureScale,
             -100);
 
-        this.lblHelpText.Render();
+        this.lblHelpText.Render(0);
 
         if (this.renderInstructions)
         {
-            this.lblInstructions.Render();
+            this.lblInstructions.Render(0);
         }
 
         base.Render();

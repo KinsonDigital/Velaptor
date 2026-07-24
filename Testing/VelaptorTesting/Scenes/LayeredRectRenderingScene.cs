@@ -129,8 +129,8 @@ public class LayeredRectRenderingScene : SceneBase
 
         this.backgroundManager.Render();
 
-        this.lblInstructions.Render();
-        this.lblRectState.Render();
+        this.lblInstructions.Render(0);
+        this.lblRectState.Render(0);
 
         base.Render();
     }

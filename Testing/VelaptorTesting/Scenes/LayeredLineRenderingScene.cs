@@ -37,6 +37,7 @@ public class LayeredLineRenderingScene : SceneBase
     private Label? lblInstructions;
     private Label? lblLineState;
     private RenderLayer whiteLayer = RenderLayer.One;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredLineRenderingScene"/> class.
     /// </summary>
@@ -113,8 +114,8 @@ public class LayeredLineRenderingScene : SceneBase
         this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
 
         // Render the background
-        this.lblInstructions.Render();
-        this.lblLineState.Render();
+        this.lblInstructions.Render(0);
+        this.lblLineState.Render(0);
         base.Render();
     }
 

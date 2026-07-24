@@ -79,7 +79,7 @@ public class MouseScene : SceneBase
     public override void Render()
     {
         this.backgroundManager.Render();
-        this.lblMouseState.Render();
+        this.lblMouseState.Render(0);
 
         base.Render();
     }
