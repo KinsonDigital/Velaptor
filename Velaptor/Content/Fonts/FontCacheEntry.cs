@@ -7,8 +7,8 @@
 
 namespace Velaptor.Content.Fonts;
 
-using Velaptor.Content;
-using Velaptor.Graphics;
+using Content;
+using Graphics;
 
 /// <summary>
 /// Holds a cached font atlas entry with a reference count to track how many

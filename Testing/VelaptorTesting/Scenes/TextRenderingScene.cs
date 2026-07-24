@@ -34,32 +34,31 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private readonly Layout layMain;
-    private Slider sldRenderSize;
-    private Layout layRenderSize;
-    private Layout layRotate;
+    private readonly Container mainContainer;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
-    private Container mainContainer;
-    private Label lblRotate;
-    private Slider sldRotate;
+    private Layout layRenderSize;
+    private Layout layRotate;
+    private Layout laySingleLine;
+    private Layout layColor;
+    private Layout layFontSize;
+    private Layout layFontStyle;
+    private Label? lblRotate;
+    private Label? lblRenderSize;
+    private Label? lblFontSize;
+    private Label? lblStyle;
+    private Slider? sldRenderSize;
+    private Slider? sldRotate;
+    private Slider? sldFontSize;
+    private CheckBox? chkSingleLine;
+    private CheckBox? chkColor;
+    private DropDown? drpStyle;
     private string text = SingleLineText;
     private float renderSize = 1;
     private float angle;
     private bool isBlue;
     private bool isFirstRender = true;
     private string currentChosenFontFileName = $"{DefaultFontName}-{nameof(FontStyle.Regular)}.ttf";
-    private Label lblRenderSize;
-    private CheckBox chkSingleLine;
-    private Layout laySingleLine;
-    private CheckBox chkColor;
-    private Layout layColor;
-    private Slider sldFontSize;
-    private Label lblFontSize;
-    private Layout layFontSize;
-    private Label lblStyle;
-    private DropDown drpStyle;
-    private Layout layFontStyle;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
@@ -81,15 +80,15 @@ public class TextRenderingScene : SceneBase
         CreateFontSizeCtrls();
         CreateFontStyleCtrls();
 
-        this.layMain = new Layout();
-        this.layMain.AddControl(this.layRotate);
-        this.layMain.AddControl(this.layRenderSize);
-        this.layMain.AddControl(this.laySingleLine);
-        this.layMain.AddControl(this.layColor);
-        this.layMain.AddControl(this.layFontSize);
-        this.layMain.AddControl(this.layFontStyle);
+        var layMain = new Layout();
+        layMain.AddControl(this.layRotate);
+        layMain.AddControl(this.layRenderSize);
+        layMain.AddControl(this.laySingleLine);
+        layMain.AddControl(this.layColor);
+        layMain.AddControl(this.layFontSize);
+        layMain.AddControl(this.layFontStyle);
 
-        this.mainContainer.AddLayoutControl(this.layMain);
+        this.mainContainer.AddLayoutControl(layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -286,5 +285,10 @@ public class TextRenderingScene : SceneBase
 
         this.layFontStyle.AddControl(this.lblStyle);
         this.layFontStyle.AddControl(this.drpStyle);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
     }
 }

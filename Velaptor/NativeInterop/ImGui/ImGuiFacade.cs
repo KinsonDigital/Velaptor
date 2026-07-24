@@ -5,7 +5,7 @@
 namespace Velaptor.NativeInterop.ImGui;
 
 using System;
-using NativeInterop.Services;
+using Services;
 
 /// <inheritdoc/>
 internal sealed class ImGuiFacade : IImGuiFacade

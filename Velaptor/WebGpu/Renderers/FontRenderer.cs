@@ -462,7 +462,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         catch (Exception ex)
         {
             var crashLog = System.IO.Path.Combine(
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop),
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                 "velaptor_crash.log");
             System.IO.File.AppendAllText(crashLog,
                 $"[CRASH] FontRenderer.RenderBatch: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}\n");

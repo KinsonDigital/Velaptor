@@ -17,7 +17,7 @@ using Graphics.Renderers;
 using Graphics.Renderers.Exceptions;
 using NativeInterop.WebGpu;
 using Velaptor.Batching;
-using Velaptor.Factories;
+using Factories;
 using NETRect = System.Drawing.Rectangle;
 
 /// <inheritdoc cref="ITextureRenderer"/>

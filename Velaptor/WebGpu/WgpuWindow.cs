@@ -26,7 +26,7 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Telemetry;
-using Velaptor.Services;
+using Services;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;

@@ -146,13 +146,13 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<Velaptor.WebGpu.Buffers.FontGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<GraphicsTexturePipeline>();
+            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.FontGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new Velaptor.WebGpu.Renderers.FontRenderer(
+            return new WebGpu.Renderers.FontRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -167,13 +167,13 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<Velaptor.WebGpu.Buffers.TextureGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<GraphicsTexturePipeline>();
+            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.TextureGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new Velaptor.WebGpu.Renderers.TextureRenderer(
+            return new WebGpu.Renderers.TextureRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -188,12 +188,12 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsLinePipeline>();
-            var buffer = IoCContainer.GetInstance<Velaptor.WebGpu.Buffers.LineGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<GraphicsLinePipeline>();
+            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.LineGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new Velaptor.WebGpu.Renderers.LineRenderer(
+            return new WebGpu.Renderers.LineRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -207,12 +207,12 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsShapePipeline>();
-            var buffer = IoCContainer.GetInstance<Velaptor.WebGpu.Buffers.ShapeGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<GraphicsShapePipeline>();
+            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.ShapeGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new Velaptor.WebGpu.Renderers.ShapeRenderer(
+            return new WebGpu.Renderers.ShapeRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -250,23 +250,23 @@ internal static class IoC
     /// </summary>
     private static void SetupWebGpu()
     {
-        IoCContainer.Register<Velaptor.WebGpu.GraphicsDevice>(Lifestyle.Singleton);
-        IoCContainer.Register<IGraphicsDevice>(() => IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>(), Lifestyle.Singleton);
+        IoCContainer.Register<GraphicsDevice>(Lifestyle.Singleton);
+        IoCContainer.Register<IGraphicsDevice>(() => IoCContainer.GetInstance<GraphicsDevice>(), Lifestyle.Singleton);
 
-        IoCContainer.Register<Velaptor.WebGpu.GraphicsSurface>(
+        IoCContainer.Register<GraphicsSurface>(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
             var window = IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow();
 
-            return new Velaptor.WebGpu.GraphicsSurface(gd, window);
+            return new GraphicsSurface(gd, window);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register<WgpuFrame>(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
-            var surface = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsSurface>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var surface = IoCContainer.GetInstance<GraphicsSurface>();
 
             return new WgpuFrame(gd, surface);
         }, Lifestyle.Singleton);
@@ -274,45 +274,45 @@ internal static class IoC
         IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
 
         // Texture pipeline
-        IoCContainer.Register<Velaptor.WebGpu.GraphicsTexturePipeline>(
+        IoCContainer.Register<GraphicsTexturePipeline>(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
-            var surface = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsSurface>();
-            var shader = new Velaptor.WebGpu.GraphicsShader(
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
                 "texture");
 
-            return new Velaptor.WebGpu.GraphicsTexturePipeline(gd, surface, shader);
+            return new GraphicsTexturePipeline(gd, surface, shader);
         }, Lifestyle.Singleton);
 
         // Shape pipeline
-        IoCContainer.Register<Velaptor.WebGpu.GraphicsShapePipeline>(
+        IoCContainer.Register<GraphicsShapePipeline>(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
-            var surface = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsSurface>();
-            var shader = new Velaptor.WebGpu.GraphicsShader(
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
                 "shape");
 
-            return new Velaptor.WebGpu.GraphicsShapePipeline(gd, surface, shader);
+            return new GraphicsShapePipeline(gd, surface, shader);
         }, Lifestyle.Singleton);
 
         // Line pipeline
-        IoCContainer.Register<Velaptor.WebGpu.GraphicsLinePipeline>(
+        IoCContainer.Register<GraphicsLinePipeline>(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
-            var surface = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsSurface>();
-            var shader = new Velaptor.WebGpu.GraphicsShader(
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
                 "line");
 
-            return new Velaptor.WebGpu.GraphicsLinePipeline(gd, surface, shader);
+            return new GraphicsLinePipeline(gd, surface, shader);
         }, Lifestyle.Singleton);
     }
 
@@ -331,33 +331,33 @@ internal static class IoC
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
 
-            return new Velaptor.WebGpu.Buffers.TextureGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new WebGpu.Buffers.TextureGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
 
-            return new Velaptor.WebGpu.Buffers.FontGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new WebGpu.Buffers.FontGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
 
-            return new Velaptor.WebGpu.Buffers.ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new WebGpu.Buffers.ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<Velaptor.WebGpu.GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<GraphicsDevice>();
 
-            return new Velaptor.WebGpu.Buffers.LineGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new WebGpu.Buffers.LineGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
     }
 

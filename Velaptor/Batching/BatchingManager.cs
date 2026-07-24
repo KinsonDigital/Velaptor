@@ -400,7 +400,7 @@ internal sealed class BatchingManager : IBatchingManager
         try
         {
             System.IO.File.AppendAllText(
-                System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop), "velaptor_crash.log"),
+                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "velaptor_crash.log"),
                 $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
         }
         catch { /* can't log */ }
