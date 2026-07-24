@@ -7,6 +7,7 @@ namespace Velaptor.Graphics.Renderers;
 using System;
 using System.Drawing;
 using System.Numerics;
+using WebGpu.Batching;
 
 /// <summary>
 /// Renders lines to the screen.

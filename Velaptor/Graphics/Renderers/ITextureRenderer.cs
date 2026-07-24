@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Content;
+using WebGpu.Batching;
 
 /// <summary>
 /// Renders textures to the screen.

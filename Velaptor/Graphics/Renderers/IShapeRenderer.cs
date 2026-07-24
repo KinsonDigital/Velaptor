@@ -5,6 +5,7 @@
 namespace Velaptor.Graphics.Renderers;
 
 using System;
+using WebGpu.Batching;
 
 /// <summary>
 /// Renders rectangles to the screen.

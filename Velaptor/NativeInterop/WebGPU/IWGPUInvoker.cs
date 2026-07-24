@@ -190,13 +190,6 @@ internal interface IWgpuInvoker : IDisposable
     void RenderPassEncoderSetPipeline(SafeRenderPassEncoderHandle renderPassEncoder, SafeRenderPipelineHandle pipeline);
 
     /// <summary>
-    /// Creates a pipeline layout.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The pipeline layout descriptor.</param>
-    /// <returns>The pipeline layout handle.</returns>
-
-    /// <summary>
     /// Creates a pipeline layout whose only resource is a debug label.
     /// Convenience overload that eliminates the <c>fixed(byte*)</c> ceremony
     /// for the most common case (zero bind groups).
@@ -223,13 +216,6 @@ internal interface IWgpuInvoker : IDisposable
     /// </summary>
     /// <param name="pipelineLayout">The pipeline layout pointer.</param>
     void PipelineLayoutRelease(nint pipelineLayout);
-
-    /// <summary>
-    /// Creates a render pipeline.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The render pipeline descriptor.</param>
-    /// <returns>A pointer to the render pipeline.</returns>
 
     /// <summary>
     /// Creates a render pipeline from a safe descriptor. All pointer marshaling
@@ -537,7 +523,7 @@ internal interface IWgpuInvoker : IDisposable
     /// Writes a managed float array to a GPU buffer. The <c>fixed</c> pinning
     /// is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
-    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="queue">The queue to submit write to.</param>
     /// <param name="buffer">The destination GPU buffer.</param>
     /// <param name="bufferOffset">Byte offset into the destination buffer.</param>
     /// <param name="data">The float data to upload.</param>
@@ -547,7 +533,7 @@ internal interface IWgpuInvoker : IDisposable
     /// Writes a managed uint array to a GPU buffer. The <c>fixed</c> pinning
     /// is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
-    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="queue">The queue to submit write to.</param>
     /// <param name="buffer">The destination GPU buffer.</param>
     /// <param name="bufferOffset">Byte offset into the destination buffer.</param>
     /// <param name="data">The uint data to upload.</param>
@@ -569,7 +555,7 @@ internal interface IWgpuInvoker : IDisposable
     /// <c>fixed</c> pinning and descriptor construction are handled internally
     /// so callers avoid <c>unsafe</c> context.
     /// </summary>
-    /// <param name="queue">The queue to submit the write to.</param>
+    /// <param name="queue">The queue to submit write to.</param>
     /// <param name="texture">The destination texture handle.</param>
     /// <param name="width">The texture width in pixels.</param>
     /// <param name="height">The texture height in pixels.</param>
