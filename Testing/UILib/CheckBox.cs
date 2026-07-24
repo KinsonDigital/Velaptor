@@ -3,7 +3,6 @@ namespace UILib;
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
-using Carbonate.OneWay;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -12,7 +11,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class CheckBox : Control
+public sealed class CheckBox : Control
 {
     private const int BoxTextPadding = 5;
     private const float MarkOffset = 2;
@@ -31,17 +30,16 @@ public class CheckBox : Control
     private Vector2 textPos;
     private MouseState prevMouseState;
     private string text = "Check box";
-    private IFont font;
-    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
+    private IFont? font;
     private bool mouseClickDisabled;
 
     public event EventHandler<CheckChangedEventArgs>? CheckedChanged;
 
     public CheckBox()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        var disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
 
-        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+        this.subscription = disableMouseClickReactable.CreateOneWayReceive(
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
@@ -63,7 +61,7 @@ public class CheckBox : Control
     public string Text
     {
         get => this.text;
-        set => this.text = value ?? string.Empty;
+        set => this.text = value;
     }
 
     public override void Load()
@@ -101,11 +99,11 @@ public class CheckBox : Control
 
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
+        var screenPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
 
         this.mainArea = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Width = BoxWidthHeight,
             Height = BoxWidthHeight,
             Color = Color.FromArgb(255, 32, 49, 72),
@@ -152,11 +150,11 @@ public class CheckBox : Control
         var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
         var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
 
-        // If the mouse if over any part of the checkbox and the left mouse button was just released
+        // If the mouse is over any part of the checkbox and the left mouse button was just released
         if (Enabled && isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
             IsChecked = !IsChecked;
-            CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
+            this.CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
         }
 
         this.prevMouseState = currentMouseState;
@@ -164,7 +162,7 @@ public class CheckBox : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
@@ -181,11 +179,6 @@ public class CheckBox : Control
 
         this.fontRenderer.Render(this.font, Text, this.textPos, Enabled ? Color.White : DisabledColor);
 
-        base.Render();
-    }
-
-    private void LabelOn_Click(object? sender, EventArgs e)
-    {
-        IsChecked = !IsChecked;
+        base.Render(0);
     }
 }

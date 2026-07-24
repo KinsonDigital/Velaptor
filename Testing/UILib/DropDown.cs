@@ -12,7 +12,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class DropDown : Control
+public sealed class DropDown : Control
 {
     private const int ListDividerHeight = 5;
     private const float PaddingRatio = 0.5f;
@@ -83,12 +83,7 @@ public class DropDown : Control
 
     public void AddItem(string text)
     {
-        var newItem = new DropDownItem
-        {
-            Text = text,
-            Width = Width,
-            Height = Height,
-        };
+        var newItem = new DropDownItem { Text = text, Width = Width, Height = Height, };
         this.listItems.Add(newItem);
 
         // If the total number of items is 1, set the first item and only
@@ -102,7 +97,6 @@ public class DropDown : Control
 
     public void RemoveItem(string text)
     {
-
     }
 
     public void SelectItem(string text)
@@ -160,11 +154,11 @@ public class DropDown : Control
 
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToWorld(Width, Height);
+        var screenPos = Position.ToWorld(Width, Height);
 
         this.selectedItemArea = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Width = Width,
             Height = Height,
             Color = this.selectedItemClr,
@@ -173,7 +167,8 @@ public class DropDown : Control
 
         this.arrowFace = new RectShape
         {
-            Position = new Vector2(this.selectedItemArea.Right - ArrowButtonHalfWidthHeight, this.selectedItemArea.Top + ArrowButtonHalfWidthHeight),
+            Position =
+                new Vector2(this.selectedItemArea.Right - ArrowButtonHalfWidthHeight, this.selectedItemArea.Top + ArrowButtonHalfWidthHeight),
             Width = ArrowButtonWidthHeight,
             Height = ArrowButtonWidthHeight,
             Color = this.arrowFaceClr,
@@ -190,17 +185,10 @@ public class DropDown : Control
                 item.Width = Width;
                 item.Height = Height;
                 item.Position = new Vector2(
-                        Position.X,
-                        Position.Y + (Height * (i + 1)) + ListDividerHeight);
+                    Position.X,
+                    Position.Y + (Height * (i + 1)) + ListDividerHeight);
 
-                if (SelectedItem == item.Text)
-                {
-                    item.BackgroundColor = this.selectedItemClr;
-                }
-                else
-                {
-                    item.BackgroundColor = this.listAreaBackgroundClr;
-                }
+                item.BackgroundColor = SelectedItem == item.Text ? this.selectedItemClr : this.listAreaBackgroundClr;
 
                 var itemArea = new RectangleF(item.Position.X, item.Position.Y, item.Width, item.Height);
                 var isMouseOverItem = itemArea.Contains(mousePos.X, mousePos.Y);
@@ -228,11 +216,7 @@ public class DropDown : Control
                 this.isExpanded = !this.isExpanded;
                 this.dropDownReactable.Push(
                     SubscriptionIds.OverDropDownItemId,
-                    new DisableMouseSubscriptionData
-                    {
-                        IsExpanded = this.isExpanded,
-                        ExpandedDropDownId = this.isExpanded ? this.id : 0,
-                    });
+                    new DisableMouseSubscriptionData { IsExpanded = this.isExpanded, ExpandedDropDownId = this.isExpanded ? this.id : 0, });
             }
         }
         else
@@ -245,7 +229,7 @@ public class DropDown : Control
         {
             this.selectedItemTextPos = new Vector2(
                 Position.X + ((Width / 2f) - (this.arrowFace.Width / 2f)),
-                Position.Y + HalfHeight);//(this.selectedItemTextSize.Height / 2f));
+                Position.Y + HalfHeight); //(this.selectedItemTextSize.Height / 2f));
         }
 
         this.prevMouseState = currentMouseState;
@@ -254,7 +238,7 @@ public class DropDown : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
@@ -286,13 +270,13 @@ public class DropDown : Control
     {
         this.shapeRenderer.Render(this.arrowFace, -10);
 
-        var scrnPos = this.arrowFace.Position;//.ToWorld(Width, Height);
+        var screenPos = this.arrowFace.Position; //.ToWorld(Width, Height);
         var halfWidth = this.arrowFace.Width / 2f;
 
         var leftPadding = PaddingRatio <= 0 ? halfWidth : halfWidth * PaddingRatio;
-        var topLeft = new Vector2(scrnPos.X - leftPadding, scrnPos.Y - leftPadding);
-        var topRight = new Vector2(scrnPos.X + leftPadding, scrnPos.Y - leftPadding);
-        var bottomCenter = new Vector2(scrnPos.X, scrnPos.Y + leftPadding);
+        var topLeft = new Vector2(screenPos.X - leftPadding, screenPos.Y - leftPadding);
+        var topRight = new Vector2(screenPos.X + leftPadding, screenPos.Y - leftPadding);
+        var bottomCenter = new Vector2(screenPos.X, screenPos.Y + leftPadding);
 
         var arrowColor = Color.White;
 
@@ -308,7 +292,7 @@ public class DropDown : Control
             var oldItem = SelectedItem;
             SelectedItem = item.Text;
 
-            SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, SelectedItem));
+            this.SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, SelectedItem));
         }
 
         this.isExpanded = false;

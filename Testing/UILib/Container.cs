@@ -3,7 +3,6 @@
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
-using Carbonate.OneWay;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
@@ -36,16 +35,13 @@ public class Container : Control
     private Line bottomLine;
     private bool isDragging;
     private float baseAreaTop;
-    private int verticalSpacing = 10;
-    private int horizontalSpacing = 10;
-    private IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private bool mouseClickDisabled;
 
     public Container()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        var disableMouseClickReactable1 = ReactableFactory.CreateDisableMouseClickReactable();
 
-        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+        this.subscription = disableMouseClickReactable1.CreateOneWayReceive(
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
@@ -132,17 +128,9 @@ public class Container : Control
 
     public uint AreaPadding { get; set; } = 10;
 
-    public int HorizontalSpacing
-    {
-        get => this.horizontalSpacing;
-        set => this.horizontalSpacing = value;
-    }
+    public int HorizontalSpacing { get; set; } = 10;
 
-    public int VerticalSpacing
-    {
-        get => this.verticalSpacing;
-        set => this.verticalSpacing = value;
-    }
+    public int VerticalSpacing { get; set; } = 10;
 
     public LayoutSettings Layout { get; set; } = new LayoutSettings { LayoutGroup = 0, StackDirection = StackDirection.Vertical };
 
@@ -233,7 +221,7 @@ public class Container : Control
         ProcessBorder();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         this.shapeRenderer.Render(this.area, -1000);
 
@@ -255,7 +243,7 @@ public class Container : Control
             }
         }
 
-        // Render all of the controls
+        // Render all the controls
         this.layout.Render();
     }
 

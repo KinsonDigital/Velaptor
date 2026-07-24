@@ -3,16 +3,14 @@ namespace UILib;
 using System.Drawing;
 using System.Numerics;
 using Carbonate;
-using Carbonate.OneWay;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class Button : Control
+public sealed class Button : Control
 {
-    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IAppInput<MouseState> mouse;
@@ -29,18 +27,18 @@ public class Button : Control
 
     public Button()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        var disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
 
-        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+        this.subscription = disableMouseClickReactable.CreateOneWayReceive(
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
             () => this.subscription.Dispose()
         );
-        
+
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.mouse = HardwareFactory.GetMouse();
-        
+
         this.label = new Label();
         this.label.Text = "Button";
 
@@ -52,7 +50,7 @@ public class Button : Control
     }
 
     public string Text
-    { 
+    {
         get => this.label.Text;
         set => this.label.Text = value;
     }
@@ -88,11 +86,11 @@ public class Button : Control
             return;
         }
 
-        var scrnPos = Position.ToWorld(Width, Height);
+        var screenPos = Position.ToWorld(Width, Height);
 
         this.face = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Width = Width,
             Height = Height,
             Color = Enabled ? this.faceClr : DisabledColor,
@@ -104,19 +102,12 @@ public class Button : Control
         var mousePosVector = new Vector2(mousePos.X, mousePos.Y);
         var mouseIsOver = this.face.Contains(mousePosVector);
 
-        // If the mouse position is inside of the slider area
+        // If the mouse position is inside the slider area
         if (Enabled && mouseIsOver)
         {
             var mouseIsDown = currentMouseState.IsButtonDown(MouseButton.LeftButton);
 
-            if (mouseIsDown)
-            {
-                this.face.Color = this.faceMouseDownClr;
-            }
-            else
-            {
-                this.face.Color = this.faceHoverClr;
-            }
+            this.face.Color = mouseIsDown ? this.faceMouseDownClr : this.faceHoverClr;
 
             var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
             var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
@@ -139,7 +130,7 @@ public class Button : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
@@ -151,6 +142,6 @@ public class Button : Control
         this.label.Text = Text;
         this.label.Render();
 
-        base.Render();
+        base.Render(0);
     }
 }

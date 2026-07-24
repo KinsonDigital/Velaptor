@@ -9,7 +9,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class DropDownItem : Control
+public sealed class DropDownItem : Control
 {
     private const int TopLayer = 1000;
     private readonly IShapeRenderer shapeRenderer;
@@ -30,7 +30,7 @@ public class DropDownItem : Control
         this.mouse = HardwareFactory.GetMouse();
     }
 
-    public string Text { get; set; }
+    public string Text { get; init; } = string.Empty;
 
     public Color BackgroundColor { get; set; } = Color.FromArgb(255, 17, 17, 17);
 
@@ -62,11 +62,11 @@ public class DropDownItem : Control
     {
         var currentMouseState = this.mouse.GetState();
 
-        var scrnPos = Position.ToWorld(Width, Height);
+        var screenPos = Position.ToWorld(Width, Height);
 
         this.background = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Color = BackgroundColor,
             Width = Width,
             Height = Height,
@@ -89,7 +89,7 @@ public class DropDownItem : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         this.shapeRenderer.Render(this.background, 999);
 

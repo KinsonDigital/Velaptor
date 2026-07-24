@@ -11,14 +11,13 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 
-public class Label : Control
+public sealed class Label : Control
 {
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly IDisposable subscription;
-    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private RectShape background;
     private MouseState prevMouseState;
     private IFont? font;
@@ -30,9 +29,9 @@ public class Label : Control
 
     public Label()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        var disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
 
-        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+        this.subscription = disableMouseClickReactable.CreateOneWayReceive(
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
@@ -50,7 +49,7 @@ public class Label : Control
         get => this.text;
         set
         {
-            this.text = value ?? string.Empty;
+            this.text = value;
 
             if (this.font is not null)
             {
@@ -94,7 +93,7 @@ public class Label : Control
         {
             if (value)
             {
-                
+
             }
             else
             {
@@ -166,7 +165,7 @@ public class Label : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
@@ -179,16 +178,16 @@ public class Label : Control
             throw new InvalidOperationException($"The {nameof(Label)} must be loaded before it can be rendered.");
         }
 
-        var scrnPos = Position.ToWorld(TextSize.Width, TextSize.Height);
-        scrnPos.Y += 1; // Slightly offset the text to ensure the top of the text is not past the top of the label's rectangle area
+        var screenPos = Position.ToWorld(TextSize.Width, TextSize.Height);
+        screenPos.Y += 1; // Slightly offset the text to ensure the top of the text is not past the top of the label's rectangle area
 
         if (BackgroundColor != Color.Transparent)
         {
             this.shapeRenderer.Render(this.background, -10);
         }
 
-        this.fontRenderer.Render(this.font, Text, scrnPos, Enabled ? TextColor : DisabledColor, layer);
+        this.fontRenderer.Render(this.font, Text, screenPos, Enabled ? TextColor : DisabledColor, layer);
 
-        base.Render();
+        base.Render(0);
     }
 }

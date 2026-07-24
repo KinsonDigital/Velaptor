@@ -8,24 +8,22 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Carbonate;
-using Carbonate.OneWay;
 
-public class Slider : Control
+public sealed class Slider : Control
 {
     private const int HandleWidth = 16;
     private const int HandleHalfWidth = HandleWidth / 2;
-    private readonly IPushReactable<DisableMouseSubscriptionData> disableMouseClickReactable;
     private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label label;
+    private readonly Color sliderAreaClr = Color.FromArgb(255, 35, 48, 70);
+    private readonly Color sliderHandleEnabledClr = Color.FromArgb(255, 45, 74, 117);
+    private readonly Color valueTextDisabledColor = Color.FromArgb(255, 175, 175, 175);
+    private readonly Color sliderDisabledClr;
     private RectShape sliderHandle;
     private RectShape sliderArea;
     private Vector2 handlePos;
-    private Color sliderAreaClr = Color.FromArgb(255, 35, 48, 70);
-    private Color sliderHandleEnabledClr = Color.FromArgb(255, 45, 74, 117);
-    private Color valueTextDisabledColor = Color.FromArgb(255, 175, 175, 175);
-    private Color sliderDisabledClr;
     private bool isDragging;
     private bool mouseClickDisabled;
     private bool wasMouseDownLastFrame;
@@ -36,9 +34,9 @@ public class Slider : Control
 
     public Slider()
     {
-        this.disableMouseClickReactable = ReactableFactory.CreateDisableMouseClickReactable();
+        var disableMouseClickReactable1 = ReactableFactory.CreateDisableMouseClickReactable();
 
-        this.subscription = this.disableMouseClickReactable.CreateOneWayReceive(
+        this.subscription = disableMouseClickReactable1.CreateOneWayReceive(
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
@@ -74,21 +72,21 @@ public class Slider : Control
                 this.value = value;
             }
 
-            if (this.value != oldValue)
+            if (Math.Abs(this.value - oldValue) > 0.00001f)
             {
-                ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, this.value));
+                this.ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, this.value));
             }
         }
     }
 
-    public float Min { get; set; } = 0f;
+    public float Min { get; set; }
 
     public float Max
     {
         get => this.max;
         set
         {
-            var scrnPos = Position.ToWorld(Width, Height);
+            var screenPos = Position.ToWorld(Width, Height);
 
             var minLeft = this.sliderArea.Left + HandleHalfWidth;
             var maxRight = this.sliderArea.Right - HandleHalfWidth;
@@ -96,7 +94,7 @@ public class Slider : Control
             var posX = value.MapValue(Min, value, minLeft, maxRight);
             posX = posX < minLeft ? minLeft : posX;
 
-            this.handlePos = new Vector2(posX, scrnPos.Y);
+            this.handlePos = new Vector2(posX, screenPos.Y);
 
             this.max = value;
         }
@@ -125,11 +123,11 @@ public class Slider : Control
             return;
         }
 
-        var scrnPos = Position.ToWorld(Width, Height);
+        var screenPos = Position.ToWorld(Width, Height);
 
         this.sliderArea = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Width = Width,
             Height = Height,
             Color = Enabled ? this.sliderAreaClr : DisabledColor,
@@ -153,7 +151,7 @@ public class Slider : Control
 
         if (Enabled && mouseIsDown && this.isDragging && isInsideSlider)
         {
-            this.handlePos = new Vector2(mousePos.X, scrnPos.Y);
+            this.handlePos = new Vector2(mousePos.X, screenPos.Y);
 
             this.handlePos.X = this.handlePos.X < this.sliderArea.Left + HandleHalfWidth
                 ? this.sliderArea.Left + HandleHalfWidth
@@ -167,17 +165,17 @@ public class Slider : Control
 
             var newValue = CalcNewValue(this.handlePos.X);
             Value = newValue < Min
-                ? (float)Math.Round((float)Min, 2)
+                ? (float)Math.Round(Min, 2)
                 : newValue > Max
-                    ? (float)Math.Round((float)Max, 2)
-                    : (float)Math.Round((float)newValue, 2);
+                    ? (float)Math.Round(Max, 2)
+                    : (float)Math.Round(newValue, 2);
 
-            ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, Value));
+            this.ValueChanged?.Invoke(this, new ValueChangedEventArgs(oldValue, Value));
         }
         else
         {
             var posX = CalcNewPosX(Value);
-            var posY = scrnPos.Y;
+            var posY = screenPos.Y;
 
             this.handlePos = new Vector2(posX, posY);
         }
@@ -225,20 +223,20 @@ public class Slider : Control
         base.Render(layer);
     }
 
-    private float CalcNewValue(float value)
+    private float CalcNewValue(float oldValue)
     {
         var minLeft = this.sliderArea.Left + HandleHalfWidth;
         var maxRight = this.sliderArea.Right - HandleHalfWidth;
 
-        return value.MapValue(minLeft, maxRight, Min, Max);
+        return oldValue.MapValue(minLeft, maxRight, Min, Max);
     }
 
-    private float CalcNewPosX(float value)
+    private float CalcNewPosX(float oldValueX)
     {
         var minLeft = this.sliderArea.Left + HandleHalfWidth;
         var maxRight = this.sliderArea.Right - HandleHalfWidth;
 
-        var posX = value.MapValue(Min, Max, minLeft, maxRight);
+        var posX = oldValueX.MapValue(Min, Max, minLeft, maxRight);
         posX = posX < minLeft ? minLeft : posX;
 
         return posX;

@@ -6,7 +6,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 
-public class Layout : Control
+public sealed class Layout : Control
 {
     private const float BorderThickness = 3f;
     private readonly IShapeRenderer shapeRenderer;
@@ -37,7 +37,7 @@ public class Layout : Control
         this.baseAreaTop = this.logicalPosition.Y;
     }
 
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
     public override float Width => this.area.Width;
 
@@ -82,7 +82,7 @@ public class Layout : Control
 
     public StackDirection StackDirection { get; set; } = StackDirection.Vertical;
 
-    public bool Centered { get; set; } = false;
+    public bool Centered { get; set; }
 
     public override bool Enabled
     {
@@ -158,7 +158,7 @@ public class Layout : Control
         ProcessBorder();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
@@ -176,7 +176,7 @@ public class Layout : Control
             this.lineRenderer.Render(this.topLine, -100);
         }
 
-        // Render all of the controls
+        // Render all the controls
         foreach (var control in this.controls)
         {
             control.Render();
@@ -187,7 +187,7 @@ public class Layout : Control
     {
         var layoutOrigin = new Vector2(this.area.Left, this.area.Top);
 
-        // Update all of the controls
+        // Update all the controls
         for (var i = 0; i < this.controls.Count; i++)
         {
             var isFirstItem = i == 0;
@@ -199,7 +199,7 @@ public class Layout : Control
             }
 
             var overlapOffset = control is Label ? 1 : 0;
-            var centeredOffset = 0f;
+            float centeredOffset;
 
             switch (StackDirection)
             {
