@@ -228,7 +228,7 @@ public class Container : Control
         if (TitleBarVisible)
         {
             this.shapeRenderer.Render(this.titleBar, -100);
-            this.titleBarText.Render();
+            this.titleBarText.Render(0);
         }
 
         if (BorderVisible)
@@ -244,7 +244,7 @@ public class Container : Control
         }
 
         // Render all the controls
-        this.layout.Render();
+        this.layout.Render(0);
     }
 
     private void ProcessDragState()

@@ -198,8 +198,8 @@ public class MainWindow : Window
 
         SceneManager.Render();
 
-        this.btnPrevScene.Render();
-        this.btnNextScene.Render();
+        this.btnPrevScene.Render(0);
+        this.btnNextScene.Render(0);
 
         this.batcher.End();
     }

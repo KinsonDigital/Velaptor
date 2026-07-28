@@ -140,7 +140,7 @@ public sealed class Button : Control
         this.shapeRenderer.Render(this.face, -10);
 
         this.label.Text = Text;
-        this.label.Render();
+        this.label.Render(0);
 
         base.Render(0);
     }

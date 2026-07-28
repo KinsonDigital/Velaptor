@@ -258,7 +258,7 @@ public sealed class DropDown : Control
             {
                 foreach (var item in this.listItems)
                 {
-                    item.Render();
+                    item.Render(0);
                 }
             }
         }
