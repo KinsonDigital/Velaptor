@@ -343,7 +343,7 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The command encoder descriptor.</param>
     /// <returns>A pointer to the command encoder.</returns>
-    nint DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
+    SafeCommandEncoderHandle DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
 
     /// <summary>
     /// Releases a command encoder.

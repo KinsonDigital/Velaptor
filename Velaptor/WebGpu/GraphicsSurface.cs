@@ -5,7 +5,7 @@
 namespace Velaptor.WebGpu;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
+using NativeInterop.WebGpu;
 using Silk.NET.WebGPU;
 using Silk.NET.Windowing;
 using NativeInterop.WebGpu.Handles;
@@ -33,11 +33,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
         this.window = window;
     }
 
-    /// <summary>
-    /// Gets the raw WebGPU surface handle — the platform-specific binding between the
-    /// OS window and the WebGPU instance. Must be initialized via <see cref="Initialize"/>
-    /// before use.
-    /// </summary>
+    /// <inheritdoc/>
     public SafeSurfaceHandle Handle
     {
         get
@@ -52,17 +48,10 @@ internal sealed class GraphicsSurface : IGraphicsSurface
         }
     }
 
-    /// <summary>
-    /// Gets the pixel format the swap chain textures are allocated in.
-    /// Populated by <see cref="InitializeFormat"/> by querying the adapter for its preference.
-    /// </summary>
+    /// <inheritdoc/>
     public TextureFormat Format { get; private set; }
 
-    /// <summary>
-    /// Initializes the WebGPU surface by creating the platform-specific surface handle.
-    /// This must be called after the window is fully created and shown.
-    /// After calling this, <see cref="Handle"/> will be available.
-    /// </summary>
+    /// <inheritdoc/>
     public void Initialize()
     {
         if (this.isInitialized)
@@ -74,18 +63,13 @@ internal sealed class GraphicsSurface : IGraphicsSurface
 
         if (this.handle.IsInvalid)
         {
-            throw new Exception("Failed to create WebGPU surface.");
+            throw new InvalidOperationException("Failed to create WebGPU surface.");
         }
 
         this.isInitialized = true;
     }
 
-    /// <summary>
-    /// Queries the adapter's preferred pixel format. Call after <see cref="Initialize"/>
-    /// and after the device exists, but before configuring the swap chain — this lets
-    /// pipelines be built with the correct color-target format before the window size
-    /// has been finalized.
-    /// </summary>
+    /// <inheritdoc/>
     public void InitializeFormat()
     {
         if (this.gd.Adapter is null || this.gd.Handle is null)
@@ -96,11 +80,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
         Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
     }
 
-    /// <summary>
-    /// (Re)configures the swap chain to match the current framebuffer size.
-    /// Must be called once after the window reaches its final initial size and
-    /// again after every window resize.
-    /// </summary>
+    /// <inheritdoc/>
     public void Configure()
     {
         if (this.gd.Adapter is null || this.gd.Handle is null)
@@ -122,10 +102,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
             PresentMode.Fifo);
     }
 
-    /// <summary>
-    /// Gets the current surface texture from the swap chain for rendering this frame.
-    /// </summary>
-    /// <returns>The surface texture handle for this frame.</returns>
+    /// <inheritdoc/>
     public SafeSurfaceTextureHandle GetSurfaceTexture()
     {
         // Per WebGPU spec: the previously-obtained surface texture and all texture

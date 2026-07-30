@@ -65,14 +65,14 @@ public sealed class SafeCommandEncoderHandleTests
     public void UpdateHandle_WithValidCurrentHandle_ReleasesOldAndCreatesNew()
     {
         // Arrange
-        var oldHandle = Handle;
-        var newHandle = (nint)0x9999;
-        var sut = CreateCommandEncoderHandle(oldHandle);
+        const IntPtr newHandle = 0x9999;
+        var sut = CreateCommandEncoderHandle(Handle);
 
+        var cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpu, newHandle);
         this.mockWgpu.Device.Returns(new SafeDeviceHandle(this.mockWgpu, 0x5678));
         this.mockWgpu.DeviceCreateCommandEncoder(
             Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>()).Returns(newHandle);
+            Arg.Any<CommandEncoderDescriptor>()).Returns(cmdEncoderHandle);
 
         var descriptor = default(CommandEncoderDescriptor);
 
@@ -80,7 +80,7 @@ public sealed class SafeCommandEncoderHandleTests
         sut.UpdateHandle(in descriptor);
 
         // Assert
-        this.mockWgpu.Received(1).CommandEncoderRelease(oldHandle);
+        this.mockWgpu.Received(1).CommandEncoderRelease(Handle);
         this.mockWgpu.Received(1).DeviceCreateCommandEncoder(
             Arg.Any<SafeDeviceHandle>(),
             Arg.Any<CommandEncoderDescriptor>());
@@ -94,10 +94,11 @@ public sealed class SafeCommandEncoderHandleTests
         var newHandle = (nint)0x9999;
         var sut = CreateCommandEncoderHandle(nint.Zero);
 
+        var cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpu, newHandle);
         this.mockWgpu.Device.Returns(new SafeDeviceHandle(this.mockWgpu, 0x5678));
         this.mockWgpu.DeviceCreateCommandEncoder(
             Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>()).Returns(newHandle);
+            Arg.Any<CommandEncoderDescriptor>()).Returns(cmdEncoderHandle);
 
         var descriptor = default(CommandEncoderDescriptor);
 

@@ -684,13 +684,15 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public nint DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor)
+    public SafeCommandEncoderHandle DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor)
     {
         unsafe
         {
-            return (nint)Wgpu.DeviceCreateCommandEncoder(
+            var handle = (nint)Wgpu.DeviceCreateCommandEncoder(
                 (Device*)device.DangerousGetHandle(),
                 in descriptor);
+
+            return new SafeCommandEncoderHandle(this, handle);
         }
     }
 

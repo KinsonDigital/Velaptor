@@ -19,16 +19,16 @@ internal sealed class SafeSurfaceTextureHandle : SafeHandleZeroOrMinusOneIsInval
     /// Initializes a new instance of the <see cref="SafeSurfaceTextureHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="texturePointer">The native texture pointer.</param>
+    /// <param name="textureHandle">The native texture pointer.</param>
     /// <param name="surfaceTextureStatus">The status of getting the surface texture.</param>
-    public SafeSurfaceTextureHandle(IWgpuInvoker wgpu, nint texturePointer, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
+    public SafeSurfaceTextureHandle(IWgpuInvoker wgpu, nint textureHandle, SurfaceGetCurrentTextureStatus surfaceTextureStatus)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
 
-        this.handle = texturePointer;
+        SetHandle(textureHandle);
         SurfaceTextureStatus = surfaceTextureStatus;
     }
 

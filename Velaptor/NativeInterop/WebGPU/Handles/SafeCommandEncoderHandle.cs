@@ -46,7 +46,7 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
         }
 
         var newHandle = this.wgpu.DeviceCreateCommandEncoder(this.wgpu.Device, in descriptor);
-        SetHandle(newHandle);
+        SetHandle(newHandle.DangerousGetHandle());
     }
 
     /// <inheritdoc/>
