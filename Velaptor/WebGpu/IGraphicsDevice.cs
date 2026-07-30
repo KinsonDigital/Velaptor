@@ -48,4 +48,24 @@ internal interface IGraphicsDevice : IDisposable
     /// Gets the maximum texture height supported by the adapter.
     /// </summary>
     uint MaxHeight { get; }
+
+    /// <summary>
+    /// Asks the WebGPU instance for a physical GPU adapter that can render to
+    /// <paramref name="surface"/>.
+    /// </summary>
+    /// <param name="surface">The surface the adapter must support.</param>
+    void InitializeAdapter(SafeSurfaceHandle surface);
+
+    /// <summary>
+    /// Creates a logical device from the adapter, registers the error callback, and
+    /// retrieves the default command queue. Must be called after <see cref="InitializeAdapter"/>.
+    /// </summary>
+    void InitializeDevice();
+
+    /// <summary>
+    /// Compiles WGSL source into a GPU-side shader module.
+    /// </summary>
+    /// <param name="wgsl">The WGSL shader source to compile.</param>
+    /// <returns>The compiled shader module handle.</returns>
+    SafeShaderModuleHandle CreateShaderModule(string wgsl);
 }

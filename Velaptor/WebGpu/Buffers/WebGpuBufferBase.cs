@@ -18,7 +18,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     where TData : struct
 {
     private const uint DefaultCapacity = 64;
-    private readonly GraphicsDevice gd;
+    private readonly IGraphicsDevice gd;
     private readonly uint pendingInitialCapacity;
     private SafeVertexBufferHandle? vertexBuffer;
     private SafeIndexBufferHandle? indexBuffer;
@@ -31,7 +31,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="initialCapacity">Number of batch items to pre-allocate space for.</param>
-    private protected WebGpuBufferBase(GraphicsDevice gd, uint initialCapacity = DefaultCapacity)
+    private protected WebGpuBufferBase(IGraphicsDevice gd, uint initialCapacity = DefaultCapacity)
     {
         this.gd = gd;
         Capacity = 0;

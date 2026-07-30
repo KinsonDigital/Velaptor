@@ -34,7 +34,7 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="initialCapacity">Number of lines to pre-allocate space for.</param>
-    public LineGpuBuffer(GraphicsDevice gd, uint initialCapacity = 100)
+    public LineGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 100)
         : base(gd, initialCapacity)
     {
     }

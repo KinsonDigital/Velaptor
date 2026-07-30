@@ -23,8 +23,8 @@ using NativeInterop.WebGpu.Handles;
 /// </remarks>
 internal sealed class GraphicsLinePipeline : IDisposable
 {
-    private readonly GraphicsDevice gd;
-    private readonly GraphicsSurface surface;
+    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsSurface surface;
     private readonly GraphicsShader shader;
     private IWgpuInvoker? wgpu;
     private SafeDeviceHandle? device;
@@ -38,7 +38,7 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// <param name="gd">The graphics device.</param>
     /// <param name="surface">The graphics surface (used to obtain the swap-chain pixel format).</param>
     /// <param name="shader">The shader source holder (WGSL modules are compiled during <see cref="Initialize"/>).</param>
-    public GraphicsLinePipeline(GraphicsDevice gd, GraphicsSurface surface, GraphicsShader shader)
+    public GraphicsLinePipeline(IGraphicsDevice gd, IGraphicsSurface surface, GraphicsShader shader)
     {
         ArgumentNullException.ThrowIfNull(gd);
         ArgumentNullException.ThrowIfNull(surface);

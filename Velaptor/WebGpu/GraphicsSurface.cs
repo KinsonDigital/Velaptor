@@ -10,14 +10,10 @@ using Silk.NET.WebGPU;
 using Silk.NET.Windowing;
 using NativeInterop.WebGpu.Handles;
 
-/// <summary>
-/// Connects an OS window to the WebGPU rendering system and manages the swap chain
-/// that controls how rendered frames reach the display.
-/// </summary>
-[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native WebGPU and windowing libraries.")]
-internal sealed class GraphicsSurface : IDisposable
+/// <inheritdoc/>
+internal sealed class GraphicsSurface : IGraphicsSurface
 {
-    private readonly GraphicsDevice gd;
+    private readonly IGraphicsDevice gd;
     private readonly IWindow window;
     private SafeSurfaceTextureHandle? surfaceTextureHandle;
     private SafeSurfaceHandle? handle;
@@ -28,8 +24,11 @@ internal sealed class GraphicsSurface : IDisposable
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="window">The window to create the surface for.</param>
-    public GraphicsSurface(GraphicsDevice gd, IWindow window)
+    public GraphicsSurface(IGraphicsDevice gd, IWindow window)
     {
+        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(window);
+
         this.gd = gd;
         this.window = window;
     }

@@ -27,7 +27,7 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="initialCapacity">Number of quads to pre-allocate space for.</param>
-    public FontGpuBuffer(GraphicsDevice gd, uint initialCapacity = 100)
+    public FontGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 100)
         : base(gd, initialCapacity)
     {
     }

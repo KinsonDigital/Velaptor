@@ -250,22 +250,21 @@ internal static class IoC
     /// </summary>
     private static void SetupWebGpu()
     {
-        IoCContainer.Register<GraphicsDevice>(Lifestyle.Singleton);
-        IoCContainer.Register<IGraphicsDevice>(() => IoCContainer.GetInstance<GraphicsDevice>(), Lifestyle.Singleton);
+        IoCContainer.Register<IGraphicsDevice, GraphicsDevice>(Lifestyle.Singleton);
 
-        IoCContainer.Register<GraphicsSurface>(
+        IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
             var window = IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow();
 
             return new GraphicsSurface(gd, window);
         }, Lifestyle.Singleton);
 
-        IoCContainer.Register<WgpuFrame>(
+        IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
             var surface = IoCContainer.GetInstance<GraphicsSurface>();
 
             return new WgpuFrame(gd, surface);
@@ -274,10 +273,10 @@ internal static class IoC
         IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
 
         // Texture pipeline
-        IoCContainer.Register<GraphicsTexturePipeline>(
+        IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
             var surface = IoCContainer.GetInstance<GraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
@@ -288,10 +287,10 @@ internal static class IoC
         }, Lifestyle.Singleton);
 
         // Shape pipeline
-        IoCContainer.Register<GraphicsShapePipeline>(
+        IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
             var surface = IoCContainer.GetInstance<GraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
@@ -302,10 +301,10 @@ internal static class IoC
         }, Lifestyle.Singleton);
 
         // Line pipeline
-        IoCContainer.Register<GraphicsLinePipeline>(
+        IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
             var surface = IoCContainer.GetInstance<GraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
@@ -331,7 +330,7 @@ internal static class IoC
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
             return new WebGpu.Buffers.TextureGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
@@ -339,7 +338,7 @@ internal static class IoC
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
             return new WebGpu.Buffers.FontGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
@@ -347,7 +346,7 @@ internal static class IoC
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
             return new WebGpu.Buffers.ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
@@ -355,7 +354,7 @@ internal static class IoC
         IoCContainer.Register(
             () =>
         {
-            var gd = IoCContainer.GetInstance<GraphicsDevice>();
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
             return new WebGpu.Buffers.LineGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
@@ -457,5 +456,3 @@ internal static class IoC
         IoCContainer.Register<IRenderBatchReactable<LineBatchItem>, RenderBatchReactable<LineBatchItem>>(Lifestyle.Singleton);
     }
 }
-
-

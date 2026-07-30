@@ -98,7 +98,7 @@ internal sealed class GraphicsShader : IDisposable
     /// </summary>
     /// <param name="gd">The graphics device used to compile the shaders.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="gd"/> is null.</exception>
-    public void Initialize(GraphicsDevice gd)
+    public void Initialize(IGraphicsDevice gd)
     {
         if (this.isInitialized)
         {
