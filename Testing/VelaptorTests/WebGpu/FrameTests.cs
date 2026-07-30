@@ -5,7 +5,6 @@
 namespace VelaptorTests.WebGpu;
 
 using System;
-using Graphics;
 using NSubstitute;
 using Shouldly;
 using Silk.NET.WebGPU;
@@ -14,7 +13,6 @@ using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
 using Velaptor.WebGpu;
 using Xunit;
-using Xunit.Sdk;
 using Color = System.Drawing.Color;
 
 /// <summary>
@@ -23,21 +21,17 @@ using Color = System.Drawing.Color;
 public class FrameTests
 {
     private const nint UnsafeDeviceHandle = 0x11;
-    private const nint UnsafeSurfaceHandle = 0x22;
     private const nint UnsafeInstanceHandle = 0x33;
     private const nint UnsafeTextureHandle = 0x44;
     private const nint UnsafeTextureViewHandle = 0x55;
     private const nint UnsafeCmdEncoderHandle = 0x66;
     private const nint UnsafeRenderPassHandle = 0x67;
     private readonly SafeDeviceHandle deviceHandle;
-    private readonly SafeTextureViewHandle textureViewHandle;
     private readonly SafeSurfaceHandle surfaceHandle;
-    private readonly SafeInstanceHandle instanceHandle;
     private readonly SafeCommandEncoderHandle cmdEncoderHandle;
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockDevice;
     private readonly IGraphicsSurface mockSurface;
-    private readonly IWindow mockWindow;
     private readonly Color testColor = Color.FromArgb(11, 22, 33, 44);
     private SafeSurfaceTextureHandle surfaceTextureHandle;
 
@@ -47,8 +41,6 @@ public class FrameTests
     public FrameTests()
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
-
-        this.textureViewHandle = new SafeTextureViewHandle(this.mockWgpuInvoker, UnsafeTextureHandle);
 
         this.cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpuInvoker, UnsafeCmdEncoderHandle);
         this.mockWgpuInvoker.DeviceCreateCommandEncoder(Arg.Any<SafeDeviceHandle>(), Arg.Any<CommandEncoderDescriptor>())
@@ -62,10 +54,10 @@ public class FrameTests
         this.mockDevice.Wgpu.Returns(this.mockWgpuInvoker);
         this.mockDevice.Handle.Returns(this.deviceHandle);
 
-        this.mockWindow = Substitute.For<IWindow>();
+        var mockWindow = Substitute.For<IWindow>();
 
-        this.instanceHandle = new SafeInstanceHandle(this.mockWgpuInvoker, UnsafeInstanceHandle);
-        this.surfaceHandle = new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, this.instanceHandle);
+        var instanceHandle = new SafeInstanceHandle(this.mockWgpuInvoker, UnsafeInstanceHandle);
+        this.surfaceHandle = new SafeSurfaceHandle(this.mockWgpuInvoker, mockWindow, instanceHandle);
         this.surfaceTextureHandle = new SafeSurfaceTextureHandle(this.mockWgpuInvoker, UnsafeTextureHandle, SurfaceGetCurrentTextureStatus.Success);
 
         this.mockSurface = Substitute.For<IGraphicsSurface>();

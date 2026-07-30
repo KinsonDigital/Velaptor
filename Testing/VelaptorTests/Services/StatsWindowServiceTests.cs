@@ -16,8 +16,8 @@ using Velaptor.NativeInterop.ImGui;
 using Velaptor.Services;
 using Xunit;
 #pragma warning disable SA1008
-using KeyState = (Velaptor.Input.KeyCode key, bool state);
 using KeyboardStates = ((Velaptor.Input.KeyCode key, bool state)[], (Velaptor.Input.KeyCode key, bool state)[]);
+using KeyState = (Velaptor.Input.KeyCode key, bool state);
 #pragma warning restore SA1008
 
 /// <summary>
