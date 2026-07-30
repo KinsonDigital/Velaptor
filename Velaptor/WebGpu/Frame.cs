@@ -28,21 +28,25 @@ using SilkColor = Silk.NET.WebGPU.Color;
 /// </remarks>
 internal sealed class Frame : IDisposable
 {
-    private readonly GraphicsDevice gd;
-    private readonly GraphicsSurface surface;
+    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsSurface surface;
     private SafeSurfaceTextureHandle? surfaceTextureHandle;
     private SafeTextureViewHandle? textureViewHandle;
     private SafeRenderPassEncoderHandle? renderPassHandle;
-    private SafeCommandEncoderHandle? encoder;
+    private SafeCommandEncoderHandle? cmdEncoderHandle;
     private bool surfaceConfigured;
+    private bool initialized = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="surface">The graphics surface.</param>
-    public Frame(GraphicsDevice gd, GraphicsSurface surface)
+    public Frame(IGraphicsDevice gd, IGraphicsSurface surface)
     {
+        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(surface);
+
         this.gd = gd;
         this.surface = surface;
     }
@@ -74,10 +78,17 @@ internal sealed class Frame : IDisposable
     /// </summary>
     public void Initialize()
     {
+        if (this.initialized)
+        {
+            return;
+        }
+
         this.surface.Initialize();
         this.gd.InitializeAdapter(this.surface.Handle);
         this.gd.InitializeDevice();
         this.surface.InitializeFormat();
+
+        this.initialized = true;
     }
 
     /// <summary>
@@ -91,6 +102,11 @@ internal sealed class Frame : IDisposable
     /// </returns>
     public bool Begin(NETColor clearColor)
     {
+        if (!this.initialized)
+        {
+            throw new InvalidOperationException("Cannot begin frame. WebGPU has not been initialized.");
+        }
+
         // If a render pass is already active (nested Begin call via the
         // batcher's frame-depth tracking), reuse the existing pass rather
         // than acquiring a second swap-chain texture.  This keeps all
@@ -98,8 +114,11 @@ internal sealed class Frame : IDisposable
         if (this.renderPassHandle is not null)
         {
             IsValid = true;
+
             return true;
         }
+
+        // TODO: Put all of the handle disposals below into a separate method
 
         // Release all references to the previous frame's swap-chain texture
         // BEFORE reconfiguring the surface.  WebGPU requires that no views or
@@ -115,8 +134,8 @@ internal sealed class Frame : IDisposable
 
         this.renderPassHandle?.Dispose();
         this.renderPassHandle = null;
-        this.encoder?.Dispose();
-        this.encoder = null;
+        this.cmdEncoderHandle?.Dispose();
+        this.cmdEncoderHandle = null;
 
         // Configure the swap chain on first frame, or after a resize.
         // This is deferred from Initialize() because the native window
@@ -132,6 +151,7 @@ internal sealed class Frame : IDisposable
         if (this.surfaceTextureHandle.SurfaceTextureStatus != SurfaceGetCurrentTextureStatus.Success)
         {
             IsValid = false;
+
             return false;
         }
 
@@ -152,24 +172,17 @@ internal sealed class Frame : IDisposable
         if (this.textureViewHandle.IsInvalid)
         {
             IsValid = false;
+
             return false;
         }
 
         var encoderDesc = default(CommandEncoderDescriptor);
 
-        if (this.encoder is null)
-        {
-            var encoderHandle = this.gd.Wgpu.DeviceCreateCommandEncoder(this.gd.Handle!, in encoderDesc);
-            this.encoder = new SafeCommandEncoderHandle(this.gd.Wgpu, encoderHandle);
-        }
-        else
-        {
-            this.encoder.UpdateHandle(in encoderDesc);
-        }
+        this.cmdEncoderHandle = this.gd.Wgpu.DeviceCreateCommandEncoder(this.gd.Handle!, in encoderDesc);
 
         var clearValue = ToLinearClearColor(clearColor, this.surface.Format);
         var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(
-            this.encoder,
+            this.cmdEncoderHandle,
             this.textureViewHandle,
             LoadOp.Clear,
             StoreOp.Store,
@@ -193,12 +206,12 @@ internal sealed class Frame : IDisposable
     {
         if (this.renderPassHandle is null)
         {
-            throw new Exception($"Render pass handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+            throw new InvalidOperationException($"Render pass handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
         }
 
-        if (this.encoder is null)
+        if (this.cmdEncoderHandle is null)
         {
-            throw new Exception($"Encoder handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+            throw new InvalidOperationException($"Encoder handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
         }
 
         this.renderPassHandle.End();
@@ -206,10 +219,10 @@ internal sealed class Frame : IDisposable
         this.renderPassHandle = null;
 
         var cmdBufDesc = default(CommandBufferDescriptor);
-        var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.encoder, in cmdBufDesc);
+        var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.cmdEncoderHandle, in cmdBufDesc);
 
-        this.encoder.Dispose();
-        this.encoder = null;
+        this.cmdEncoderHandle.Dispose();
+        this.cmdEncoderHandle = null;
 
         try
         {
@@ -227,9 +240,10 @@ internal sealed class Frame : IDisposable
     public void Dispose()
     {
         this.renderPassHandle?.Dispose();
-        this.encoder?.Dispose();
+        this.cmdEncoderHandle?.Dispose();
         this.textureViewHandle?.Dispose();
         this.surfaceTextureHandle?.Dispose();
+        this.initialized = false;
     }
 
     /// <summary>
