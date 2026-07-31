@@ -210,15 +210,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public void SurfaceConfigure(SafeSurfaceHandle surface, in SurfaceConfiguration config)
-    {
-        unsafe
-        {
-            Wgpu.SurfaceConfigure((Surface*)surface.DangerousGetHandle(), in config);
-        }
-    }
-
-    /// <inheritdoc/>
     public void SurfaceConfigure(
         SafeSurfaceHandle surface,
         SafeDeviceHandle device,
@@ -241,18 +232,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             };
 
             Wgpu.SurfaceConfigure((Surface*)surface.DangerousGetHandle(), in config);
-        }
-    }
-
-    /// <inheritdoc/>
-    public void SurfaceGetCurrentTexture(SafeSurfaceHandle surface, ref SurfaceTexture surfaceTexture)
-    {
-        unsafe
-        {
-            fixed (SurfaceTexture* ptr = &surfaceTexture)
-            {
-                Wgpu.SurfaceGetCurrentTexture((Surface*)surface.DangerousGetHandle(), ptr);
-            }
         }
     }
 
@@ -316,19 +295,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             Wgpu.RenderPassEncoderSetPipeline(
                 (RenderPassEncoder*)renderPassEncoder.DangerousGetHandle(),
                 (RenderPipeline*)pipeline.DangerousGetHandle());
-        }
-    }
-
-    /// <inheritdoc/>
-    public SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, in PipelineLayoutDescriptor descriptor)
-    {
-        unsafe
-        {
-            var handle = (nint)Wgpu.DeviceCreatePipelineLayout(
-                (Device*)device.DangerousGetHandle(),
-                in descriptor);
-
-            return new SafePipelineLayoutHandle(this, handle);
         }
     }
 
@@ -501,57 +467,11 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public nint DeviceCreateRenderPipeline(SafeDeviceHandle device, in RenderPipelineDescriptor descriptor)
-    {
-        unsafe
-        {
-            return (nint)Wgpu.DeviceCreateRenderPipeline(
-                (Device*)device.DangerousGetHandle(),
-                in descriptor);
-        }
-    }
-
-    /// <inheritdoc/>
     public void RenderPipelineRelease(nint pipeline)
     {
         unsafe
         {
             Wgpu.RenderPipelineRelease((RenderPipeline*)pipeline);
-        }
-    }
-
-    /// <inheritdoc/>
-    public nint DeviceCreateBindGroup(SafeDeviceHandle device, in BindGroupDescriptor descriptor)
-    {
-        unsafe
-        {
-            return (nint)Wgpu.DeviceCreateBindGroup(
-                (Device*)device.DangerousGetHandle(),
-                in descriptor);
-        }
-    }
-
-    /// <inheritdoc/>
-    public SafeBindGroupHandle DeviceCreateBindGroup(
-        SafeDeviceHandle device, SafeBindGroupLayoutHandle layout, BindGroupEntry[] entries)
-    {
-        unsafe
-        {
-            fixed (BindGroupEntry* pEntries = entries)
-            {
-                var desc = new BindGroupDescriptor
-                {
-                    Layout = (BindGroupLayout*)layout.DangerousGetHandle(),
-                    EntryCount = (uint)entries.Length,
-                    Entries = pEntries,
-                };
-
-                var handle = (nint)Wgpu.DeviceCreateBindGroup(
-                    (Device*)device.DangerousGetHandle(),
-                    in desc);
-
-                return new SafeBindGroupHandle(this, handle);
-            }
         }
     }
 
@@ -597,17 +517,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         unsafe
         {
             Wgpu.BindGroupRelease((BindGroup*)bindGroup);
-        }
-    }
-
-    /// <inheritdoc/>
-    public nint DeviceCreateBindGroupLayout(SafeDeviceHandle device, in BindGroupLayoutDescriptor descriptor)
-    {
-        unsafe
-        {
-            return (nint)Wgpu.DeviceCreateBindGroupLayout(
-                (Device*)device.DangerousGetHandle(),
-                in descriptor);
         }
     }
 
@@ -704,17 +613,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         unsafe
         {
             Wgpu.CommandEncoderRelease((CommandEncoder*)encoder);
-        }
-    }
-
-    /// <inheritdoc/>
-    public nint DeviceCreateBuffer(SafeDeviceHandle device, in BufferDescriptor descriptor)
-    {
-        unsafe
-        {
-            return (nint)Wgpu.DeviceCreateBuffer(
-                (Device*)device.DangerousGetHandle(),
-                in descriptor);
         }
     }
 
@@ -828,17 +726,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         unsafe
         {
             Wgpu.TextureViewRelease((TextureView*)textureView);
-        }
-    }
-
-    /// <inheritdoc/>
-    public nint CommandEncoderBeginRenderPass(SafeCommandEncoderHandle encoder, in RenderPassDescriptor descriptor)
-    {
-        unsafe
-        {
-            return (nint)Wgpu.CommandEncoderBeginRenderPass(
-                (CommandEncoder*)encoder.DangerousGetHandle(),
-                in descriptor);
         }
     }
 
@@ -1013,20 +900,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, nint data, nuint size)
-    {
-        unsafe
-        {
-            Wgpu.QueueWriteBuffer(
-                (Queue*)queue.DangerousGetHandle(),
-                (WebGpuBuffer*)buffer,
-                bufferOffset,
-                (void*)data,
-                size);
-        }
-    }
-
-    /// <inheritdoc/>
     public void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, float[] data)
     {
         unsafe
@@ -1056,31 +929,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                     bufferOffset,
                     pData,
                     (nuint)(data.Length * sizeof(uint)));
-            }
-        }
-    }
-
-    /// <inheritdoc/>
-    public void QueueWriteTexture(
-        SafeQueueHandle queue,
-        in ImageCopyTexture destination,
-        nint data,
-        nuint dataSize,
-        in TextureDataLayout dataLayout,
-        in Extent3D writeSize)
-    {
-        unsafe
-        {
-            fixed (ImageCopyTexture* destPtr = &destination)
-            fixed (TextureDataLayout* layoutPtr = &dataLayout)
-            {
-                Wgpu.QueueWriteTexture(
-                    (Queue*)queue.DangerousGetHandle(),
-                    destPtr,
-                    (void*)data,
-                    dataSize,
-                    layoutPtr,
-                    in writeSize);
             }
         }
     }

@@ -157,11 +157,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
         Wgpu.Queue = Queue;
     }
 
-    /// <summary>
-    /// Compiles WGSL source into a GPU-side shader module.
-    /// </summary>
-    /// <param name="wgsl">The WGSL shader source to compile.</param>
-    /// <returns>The compiled shader module handle.</returns>
+    /// <inheritdoc/>
     public SafeShaderModuleHandle CreateShaderModule(string wgsl)
     {
         if (Handle is null)

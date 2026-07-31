@@ -125,13 +125,6 @@ internal interface IWgpuInvoker : IDisposable
     void AdapterRelease(nint adapter);
 
     /// <summary>
-    /// Configures a surface for presentation.
-    /// </summary>
-    /// <param name="surface">The surface handle.</param>
-    /// <param name="config">The surface configuration.</param>
-    void SurfaceConfigure(SafeSurfaceHandle surface, in SurfaceConfiguration config);
-
-    /// <summary>
     /// Configures a surface for presentation. All pointer marshaling is handled
     /// internally so callers avoid <c>unsafe</c> context.
     /// </summary>
@@ -150,13 +143,6 @@ internal interface IWgpuInvoker : IDisposable
         uint width,
         uint height,
         PresentMode presentMode);
-
-    /// <summary>
-    /// Gets the current texture for a surface.
-    /// </summary>
-    /// <param name="surface">The surface handle.</param>
-    /// <param name="surfaceTexture">The surface texture to populate.</param>
-    void SurfaceGetCurrentTexture(SafeSurfaceHandle surface, ref SurfaceTexture surfaceTexture);
 
     /// <summary>
     /// Gets the current surface texture and wraps it in a safe handle. The caller
@@ -235,32 +221,14 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="descriptor">The safe pipeline descriptor.</param>
     /// <returns>A safe handle to the compiled render pipeline.</returns>
     SafeRenderPipelineHandle DeviceCreateRenderPipeline(SafeDeviceHandle device, in SafeRenderPipelineDescriptor descriptor);
-    nint DeviceCreateRenderPipeline(SafeDeviceHandle device, in RenderPipelineDescriptor descriptor);
+
+    // nint DeviceCreateRenderPipeline(SafeDeviceHandle device, in RenderPipelineDescriptor descriptor);
 
     /// <summary>
     /// Releases a render pipeline.
     /// </summary>
     /// <param name="pipeline">The pipeline pointer.</param>
     void RenderPipelineRelease(nint pipeline);
-
-    /// <summary>
-    /// Creates a bind group.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The bind group descriptor.</param>
-    /// <returns>A pointer to the bind group.</returns>
-    nint DeviceCreateBindGroup(SafeDeviceHandle device, in BindGroupDescriptor descriptor);
-
-    /// <summary>
-    /// Creates a bind group from a managed array of entries. Pointer marshaling
-    /// is handled internally so callers avoid <c>unsafe</c> context.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="layout">The bind group layout this group is compatible with.</param>
-    /// <param name="entries">The bind group entries describing each binding.</param>
-    /// <returns>A safe handle to the bind group.</returns>
-    SafeBindGroupHandle DeviceCreateBindGroup(
-        SafeDeviceHandle device, SafeBindGroupLayoutHandle layout, BindGroupEntry[] entries);
 
     /// <summary>
     /// Creates a bind group with a texture view at binding 0 and a sampler
@@ -283,14 +251,6 @@ internal interface IWgpuInvoker : IDisposable
     /// </summary>
     /// <param name="bindGroup">The bind group pointer.</param>
     void BindGroupRelease(nint bindGroup);
-
-    /// <summary>
-    /// Creates a bind group layout.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The bind group layout descriptor.</param>
-    /// <returns>A pointer to the bind group layout.</returns>
-    nint DeviceCreateBindGroupLayout(SafeDeviceHandle device, in BindGroupLayoutDescriptor descriptor);
 
     /// <summary>
     /// Creates a bind group layout from a managed array of entries.
@@ -351,14 +311,6 @@ internal interface IWgpuInvoker : IDisposable
     void CommandEncoderRelease(nint encoder);
 
     /// <summary>
-    /// Creates a GPU buffer.
-    /// </summary>
-    /// <param name="device">The device handle.</param>
-    /// <param name="descriptor">The buffer descriptor.</param>
-    /// <returns>A pointer to the buffer.</returns>
-    nint DeviceCreateBuffer(SafeDeviceHandle device, in BufferDescriptor descriptor);
-
-    /// <summary>
     /// Creates a vertex buffer on the device. The label pointer marshaling is
     /// handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
@@ -413,14 +365,6 @@ internal interface IWgpuInvoker : IDisposable
     /// </summary>
     /// <param name="textureView">The texture view pointer.</param>
     void TextureViewRelease(nint textureView);
-
-    /// <summary>
-    /// Begins a render pass.
-    /// </summary>
-    /// <param name="encoder">The command encoder handle.</param>
-    /// <param name="descriptor">The render pass descriptor.</param>
-    /// <returns>A pointer to the render pass encoder.</returns>
-    nint CommandEncoderBeginRenderPass(SafeCommandEncoderHandle encoder, in RenderPassDescriptor descriptor);
 
     /// <summary>
     /// Begins a render pass with a single color attachment. The pointer
@@ -527,16 +471,6 @@ internal interface IWgpuInvoker : IDisposable
     void RenderPassEncoderSetBindGroup(SafeRenderPassEncoderHandle renderPassEncoder, uint groupIndex, SafeBindGroupHandle bindGroup, nuint dynamicOffsetCount, nint dynamicOffsets);
 
     /// <summary>
-    /// Writes data to a buffer.
-    /// </summary>
-    /// <param name="queue">The queue handle.</param>
-    /// <param name="buffer">The buffer pointer.</param>
-    /// <param name="bufferOffset">The byte offset into the buffer.</param>
-    /// <param name="data">The data pointer.</param>
-    /// <param name="size">The size of data in bytes.</param>
-    void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, nint data, nuint size);
-
-    /// <summary>
     /// Writes a managed float array to a GPU buffer. The <c>fixed</c> pinning
     /// is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
@@ -555,17 +489,6 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="bufferOffset">Byte offset into the destination buffer.</param>
     /// <param name="data">The uint data to upload.</param>
     void QueueWriteBuffer(SafeQueueHandle queue, nint buffer, ulong bufferOffset, uint[] data);
-
-    /// <summary>
-    /// Writes data to a texture.
-    /// </summary>
-    /// <param name="queue">The queue handle.</param>
-    /// <param name="destination">The texture copy destination.</param>
-    /// <param name="data">The data pointer.</param>
-    /// <param name="dataSize">The data size in bytes.</param>
-    /// <param name="dataLayout">The texture data layout.</param>
-    /// <param name="writeSize">The size of the region to write.</param>
-    void QueueWriteTexture(SafeQueueHandle queue, in ImageCopyTexture destination, nint data, nuint dataSize, in TextureDataLayout dataLayout, in Extent3D writeSize);
 
     /// <summary>
     /// Writes a managed byte array of RGBA pixel data to a GPU texture. The

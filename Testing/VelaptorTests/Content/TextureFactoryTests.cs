@@ -25,6 +25,7 @@ using Color = System.Drawing.Color;
 public class TextureFactoryTests
 {
     private const nint UnsafeSamplerHandle = 0x1;
+    private const nint UnsafeBindGroupHandle = 0x2;
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockGd;
     private readonly IReactableFactory mockReactableFactory;
@@ -203,8 +204,12 @@ public class TextureFactoryTests
             .Returns(new nint(200));
         this.mockWgpuInvoker.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<SamplerDescriptor>())
             .Returns(new SafeSamplerHandle(this.mockWgpuInvoker, UnsafeSamplerHandle));
-        this.mockWgpuInvoker.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<BindGroupDescriptor>())
-            .Returns(new nint(400));
+        this.mockWgpuInvoker.DeviceCreateBindGroup(
+                Arg.Any<SafeDeviceHandle>(),
+                Arg.Any<SafeBindGroupLayoutHandle>(),
+                Arg.Any<SafeTextureViewHandle>(),
+                Arg.Any<SafeSamplerHandle>())
+            .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
 
         return new TextureFactory(
             this.mockWgpuInvoker,

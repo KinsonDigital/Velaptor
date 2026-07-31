@@ -18,7 +18,6 @@ using Velaptor.NativeInterop.WebGpu.Handles;
 using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Xunit;
-using WgpuBindGroupDescriptor = Silk.NET.WebGPU.BindGroupDescriptor;
 using WgpuSamplerDescriptor = Silk.NET.WebGPU.SamplerDescriptor;
 using WgpuTextureDescriptor = Silk.NET.WebGPU.TextureDescriptor;
 using WgpuTextureViewDescriptor = Silk.NET.WebGPU.TextureViewDescriptor;
@@ -31,6 +30,7 @@ public class TextureTests
     private const string TextureName = "test-texture";
     private const string TexturePath = @"C:\temp\test-texture.png";
     private const nint UnsafeSamplerHandle = 0x1;
+    private const nint UnsafeBindGroupHandle = 0x2;
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockGd;
     private readonly IDisposable mockDisposeUnsubscriber;
@@ -253,8 +253,12 @@ public class TextureTests
             .Returns(new nint(200));
         this.mockWgpuInvoker.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuSamplerDescriptor>())
             .Returns(new SafeSamplerHandle(this.mockWgpuInvoker, UnsafeSamplerHandle));
-        this.mockWgpuInvoker.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuBindGroupDescriptor>())
-            .Returns(new nint(400));
+        this.mockWgpuInvoker.DeviceCreateBindGroup(
+                Arg.Any<SafeDeviceHandle>(),
+                Arg.Any<SafeBindGroupLayoutHandle>(),
+                Arg.Any<SafeTextureViewHandle>(),
+                Arg.Any<SafeSamplerHandle>())
+            .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
 
         // Act
         _ = new Texture(
@@ -409,8 +413,12 @@ public class TextureTests
             .Returns(new nint(200));
         this.mockWgpuInvoker.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuSamplerDescriptor>())
             .Returns(new SafeSamplerHandle(this.mockWgpuInvoker, UnsafeSamplerHandle));
-        this.mockWgpuInvoker.DeviceCreateBindGroup(Arg.Any<SafeDeviceHandle>(), Arg.Any<WgpuBindGroupDescriptor>())
-            .Returns(new nint(400));
+        this.mockWgpuInvoker.DeviceCreateBindGroup(
+                Arg.Any<SafeDeviceHandle>(),
+                Arg.Any<SafeBindGroupLayoutHandle>(),
+                Arg.Any<SafeTextureViewHandle>(),
+                Arg.Any<SafeSamplerHandle>())
+            .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
 
         return new Texture(
             this.mockWgpuInvoker,
