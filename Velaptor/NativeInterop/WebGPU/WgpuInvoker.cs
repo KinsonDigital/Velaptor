@@ -644,13 +644,15 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public nint DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor)
+    public SafeSamplerHandle DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor)
     {
         unsafe
         {
-            return (nint)Wgpu.DeviceCreateSampler(
+            var handle = (nint)Wgpu.DeviceCreateSampler(
                 (Device*)device.DangerousGetHandle(),
                 in descriptor);
+
+            return new SafeSamplerHandle(this, handle);
         }
     }
 

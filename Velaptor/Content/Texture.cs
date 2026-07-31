@@ -244,7 +244,7 @@ public sealed class Texture : ITexture
             MaxAnisotropy = 1,
         };
 
-        this.sampler = new SafeSamplerHandle(this.wgpu, this.wgpu.DeviceCreateSampler(this.gd.Handle!, in samplerDesc));
+        this.sampler = this.wgpu.DeviceCreateSampler(this.gd.Handle!, in samplerDesc);
 
         // Create the bind group: binding 0 = texture view, binding 1 = sampler
         BindGroup = this.wgpu.DeviceCreateBindGroup(

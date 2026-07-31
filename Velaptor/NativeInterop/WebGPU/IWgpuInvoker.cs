@@ -314,7 +314,7 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The sampler descriptor.</param>
     /// <returns>A pointer to the sampler.</returns>
-    nint DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor);
+    SafeSamplerHandle DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor);
 
     /// <summary>
     /// Releases a sampler.
