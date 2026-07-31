@@ -7,7 +7,6 @@ namespace Velaptor.WebGpu;
 using System;
 using NativeInterop.WebGpu.Structures;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGpu;
 using NativeInterop.WebGpu.Handles;
 
 /// <summary>
@@ -23,11 +22,10 @@ using NativeInterop.WebGpu.Handles;
 /// </remarks>
 internal sealed class GraphicsLinePipeline : IDisposable
 {
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice graphicsDevice;
     private readonly IGraphicsSurface surface;
-    private readonly GraphicsShader shader;
-    private IWgpuInvoker? wgpu;
-    private SafeDeviceHandle? device;
+    private readonly IGraphicsShader shader;
+    private SafeDeviceHandle? deviceHandle;
     private SafeRenderPipelineHandle? handle;
     private bool isDisposed;
     private bool isInitialized;
@@ -35,36 +33,18 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsLinePipeline"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="graphicsDevice">The graphics device.</param>
     /// <param name="surface">The graphics surface (used to obtain the swap-chain pixel format).</param>
     /// <param name="shader">The shader source holder (WGSL modules are compiled during <see cref="Initialize"/>).</param>
-    public GraphicsLinePipeline(IGraphicsDevice gd, IGraphicsSurface surface, GraphicsShader shader)
+    public GraphicsLinePipeline(IGraphicsDevice graphicsDevice, IGraphicsSurface surface, IGraphicsShader shader)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(graphicsDevice);
         ArgumentNullException.ThrowIfNull(surface);
         ArgumentNullException.ThrowIfNull(shader);
 
-        this.gd = gd;
+        this.graphicsDevice = graphicsDevice;
         this.surface = surface;
         this.shader = shader;
-    }
-
-    /// <summary>
-    /// Gets the compiled GPU pipeline handle.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
-    private SafeRenderPipelineHandle Handle
-    {
-        get
-        {
-            if (!this.isInitialized)
-            {
-                throw new InvalidOperationException(
-                    "Pipeline has not been initialized. Call Initialize() first.");
-            }
-
-            return this.handle!;
-        }
     }
 
     /// <summary>
@@ -79,10 +59,9 @@ internal sealed class GraphicsLinePipeline : IDisposable
         }
 
         // Compile shaders first — they need the device.
-        this.shader.Initialize(this.gd);
+        this.shader.Initialize(this.graphicsDevice);
 
-        this.wgpu = this.gd.Wgpu;
-        this.device = this.gd.Handle;
+        this.deviceHandle = this.graphicsDevice.Handle;
 
         this.handle = BuildPipeline(this.shader.VertexHandle, this.shader.FragmentHandle, this.surface.Format);
 
@@ -97,7 +76,16 @@ internal sealed class GraphicsLinePipeline : IDisposable
     /// the pass will use this pipeline's line shaders and fixed-function state.
     /// </summary>
     /// <param name="pass">The active render pass encoder to bind to.</param>
-    public void Bind(SafeRenderPassEncoderHandle pass) => this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
+    public void Bind(SafeRenderPassEncoderHandle pass)
+    {
+        if (!this.isInitialized || this.handle is null)
+        {
+            throw new InvalidOperationException(
+                "Pipeline has not been initialized. Call Initialize() first.");
+        }
+
+        this.graphicsDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+    }
 
     /// <summary>
     /// Releases the GPU pipeline handle.
@@ -121,13 +109,13 @@ internal sealed class GraphicsLinePipeline : IDisposable
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.device!, "Line Pipeline Layout");
+        var pipelineLayoutHandle = this.graphicsDevice.Wgpu.DeviceCreatePipelineLayout(this.deviceHandle!, "Line Pipeline Layout");
 
         try
         {
             var desc = new SafeRenderPipelineDescriptor
             {
-                Layout = pipelineLayout,
+                Layout = pipelineLayoutHandle,
                 Vertex = new SafeVertexState
                 {
                     Module = vertModule,
@@ -187,11 +175,11 @@ internal sealed class GraphicsLinePipeline : IDisposable
                 },
             };
 
-            return this.wgpu!.DeviceCreateRenderPipeline(this.device!, in desc);
+            return this.graphicsDevice.Wgpu.DeviceCreateRenderPipeline(this.deviceHandle!, in desc);
         }
         finally
         {
-            pipelineLayout.Dispose();
+            pipelineLayoutHandle.Dispose();
         }
     }
 }
