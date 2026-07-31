@@ -18,14 +18,14 @@ internal sealed class SafeDeviceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeDeviceHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeDeviceHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="deviceHandle">The native device handle.</param>
+    public SafeDeviceHandle(IWgpuInvoker wgpu, nint deviceHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(deviceHandle);
     }
 
     /// <inheritdoc/>

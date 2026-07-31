@@ -18,14 +18,14 @@ internal sealed class SafeRenderPipelineHandle : SafeHandleZeroOrMinusOneIsInval
     /// Initializes a new instance of the <see cref="SafeRenderPipelineHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeRenderPipelineHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="renderPipelineHandle">The native render pipeline handle.</param>
+    public SafeRenderPipelineHandle(IWgpuInvoker wgpu, nint renderPipelineHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(renderPipelineHandle);
     }
 
     /// <inheritdoc/>

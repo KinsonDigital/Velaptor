@@ -21,17 +21,17 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="window">The window to create the surface from.</param>
-    /// <param name="instance">The WebGPU instance.</param>
-    public SafeSurfaceHandle(IWgpuInvoker wgpu, IWindow window, SafeInstanceHandle instance)
+    /// <param name="instanceHandle">The instance handle.</param>
+    public SafeSurfaceHandle(IWgpuInvoker wgpu, IWindow window, SafeInstanceHandle instanceHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
         ArgumentNullException.ThrowIfNull(window);
-        ArgumentNullException.ThrowIfNull(instance);
+        ArgumentNullException.ThrowIfNull(instanceHandle);
 
         this.wgpu = wgpu;
 
-        SetHandle(wgpu.CreateWebGpuSurface(wgpu.Wgpu, window, instance));
+        SetHandle(wgpu.CreateWebGpuSurface(wgpu.Wgpu, window, instanceHandle));
     }
 
     /// <summary>

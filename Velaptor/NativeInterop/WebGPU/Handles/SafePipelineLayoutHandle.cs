@@ -18,14 +18,14 @@ internal sealed class SafePipelineLayoutHandle : SafeHandleZeroOrMinusOneIsInval
     /// Initializes a new instance of the <see cref="SafePipelineLayoutHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafePipelineLayoutHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="pipelineLayoutHandle">The native pipeline layout handle.</param>
+    public SafePipelineLayoutHandle(IWgpuInvoker wgpu, nint pipelineLayoutHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(pipelineLayoutHandle);
     }
 
     /// <inheritdoc/>

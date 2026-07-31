@@ -18,15 +18,15 @@ internal sealed class SafeInstanceHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeInstanceHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeInstanceHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="instanceHandle">The native instance handle.</param>
+    public SafeInstanceHandle(IWgpuInvoker wgpu, nint instanceHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
 
-        SetHandle(handle);
+        SetHandle(instanceHandle);
     }
 
     /// <inheritdoc/>

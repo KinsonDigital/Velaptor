@@ -18,14 +18,14 @@ internal sealed class SafeShaderModuleHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeShaderModuleHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeShaderModuleHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="shaderModuleHandle">The native shader module handle.</param>
+    public SafeShaderModuleHandle(IWgpuInvoker wgpu, nint shaderModuleHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(shaderModuleHandle);
     }
 
     /// <inheritdoc/>

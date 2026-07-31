@@ -18,14 +18,14 @@ internal sealed class SafeBindGroupHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeBindGroupHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeBindGroupHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="bindGroupHandle">The native bind group handle.</param>
+    public SafeBindGroupHandle(IWgpuInvoker wgpu, nint bindGroupHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(bindGroupHandle);
     }
 
     /// <inheritdoc/>

@@ -40,14 +40,14 @@ internal sealed class SafeVertexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeVertexBufferHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeVertexBufferHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="vertexBufferHandle">The native vertex buffer handle.</param>
+    public SafeVertexBufferHandle(IWgpuInvoker wgpu, nint vertexBufferHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
         this.wgpu = wgpu;
 
-        SetHandle(handle);
+        SetHandle(vertexBufferHandle);
     }
 
     /// <inheritdoc/>

@@ -18,14 +18,14 @@ internal sealed class SafeSamplerHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeSamplerHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeSamplerHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="samplerHandle">The native handle.</param>
+    public SafeSamplerHandle(IWgpuInvoker wgpu, nint samplerHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(samplerHandle);
     }
 
     /// <inheritdoc/>

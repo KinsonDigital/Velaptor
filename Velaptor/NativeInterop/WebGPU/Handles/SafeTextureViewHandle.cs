@@ -19,15 +19,16 @@ internal sealed class SafeTextureViewHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// Initializes a new instance of the <see cref="SafeTextureViewHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="texture">The texture pointer.</param>
+    /// <param name="surfaceTextureHandle">The surface texture handle.</param>
     /// <param name="descriptor">The texture view descriptor.</param>
-    public SafeTextureViewHandle(IWgpuInvoker wgpu, nint texture, in TextureViewDescriptor descriptor = default)
+    // TODO: Look into swapping out the nint surfaceTextureHandle with the type 'SafeTextureHandle' type.
+    public SafeTextureViewHandle(IWgpuInvoker wgpu, nint surfaceTextureHandle, in TextureViewDescriptor descriptor = default)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(this.wgpu.TextureCreateView(texture, in descriptor));
+        SetHandle(this.wgpu.TextureCreateView(surfaceTextureHandle, in descriptor));
     }
 
     /// <inheritdoc/>

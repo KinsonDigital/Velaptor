@@ -19,15 +19,15 @@ internal sealed class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsIn
     /// Initializes a new instance of the <see cref="SafeRenderPassEncoderHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeRenderPassEncoderHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="beginRenderPassHandle">The native being render pass handle.</param>
+    public SafeRenderPassEncoderHandle(IWgpuInvoker wgpu, nint beginRenderPassHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
 
-        SetHandle(handle);
+        SetHandle(beginRenderPassHandle);
     }
 
     /// <summary>

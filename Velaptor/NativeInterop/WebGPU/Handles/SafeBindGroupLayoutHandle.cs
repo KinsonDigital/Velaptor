@@ -18,14 +18,14 @@ internal sealed class SafeBindGroupLayoutHandle : SafeHandleZeroOrMinusOneIsInva
     /// Initializes a new instance of the <see cref="SafeBindGroupLayoutHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeBindGroupLayoutHandle(IWgpuInvoker wgpu, nint handle)
+    /// <param name="bindGroupLayoutHandle">The native bind group layout handle.</param>
+    public SafeBindGroupLayoutHandle(IWgpuInvoker wgpu, nint bindGroupLayoutHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(handle);
+        SetHandle(bindGroupLayoutHandle);
     }
 
     /// <inheritdoc/>
