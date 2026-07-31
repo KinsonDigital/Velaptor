@@ -6,8 +6,8 @@ namespace VelaptorTests.NativeInterop.WebGpu.Handles;
 
 using System;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using Shouldly;
+using Silk.NET.WebGPU;
 using Silk.NET.Windowing;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
@@ -18,79 +18,47 @@ using Xunit;
 /// </summary>
 public sealed class SafeSurfaceHandleTests
 {
-    private const nint Handle = 0x1234;
-    private readonly IWgpuInvoker mockWgpu;
+    private const nint UnsafeInstanceHandle = 0x10;
+    private const nint UnsafeSurfaceHandle = 0x11;
+    private readonly IWgpuInvoker mockWgpuInvoker;
+    private readonly IWindow mockWindow;
+    private readonly SafeInstanceHandle instanceHandle;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeSurfaceHandleTests"/> class.
     /// </summary>
-    public SafeSurfaceHandleTests() => this.mockWgpu = Substitute.For<IWgpuInvoker>();
-
-    #region Constructor Tests
-    [Fact]
-    public void Ctor_WithNullWgpuParam_ThrowsException()
+    public SafeSurfaceHandleTests()
     {
-        // Arrange & Act
-        var act = () => new SafeSurfaceHandle(null, nint.Zero);
+        this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
+        this.mockWgpuInvoker.CreateWebGpuSurface(Arg.Any<WebGPU>(), Arg.Any<IWindow>(), Arg.Any<SafeInstanceHandle>())
+            .Returns(UnsafeSurfaceHandle);
 
-        // Assert
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'wgpu')");
+        this.mockWindow = Substitute.For<IWindow>();
+        this.instanceHandle = new SafeInstanceHandle(this.mockWgpuInvoker, UnsafeInstanceHandle);
     }
 
+    #region Constructor Tests
     [Fact]
     public void Ctor_WithNullWindowParam_ThrowsException()
     {
         // Arrange
-        var instance = new SafeInstanceHandle(this.mockWgpu, 0xABCD);
+        var instance = new SafeInstanceHandle(this.mockWgpuInvoker, 0xABCD);
 
         // Act
-        var act = () => new SafeSurfaceHandle(this.mockWgpu, null, instance);
+        var act = () => new SafeSurfaceHandle(this.mockWgpuInvoker, null, instance);
 
         // Assert
         act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'window')");
     }
 
     [Fact]
-    public void Ctor_WithNullInstanceParam_ThrowsException()
-    {
-        // Arrange
-        var mockWindow = Substitute.For<IWindow>();
-
-        // Act
-        var act = () => new SafeSurfaceHandle(this.mockWgpu, mockWindow, null);
-
-        // Assert
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'instance')");
-    }
-
-    [Fact]
-    public void Ctor_WithWindowOverload_WhenInvoked_CreatesSurface()
+    public void Ctor_WithNullInstanceHandleParam_ThrowsException()
     {
         // Arrange & Act
-        var sut = new SafeSurfaceHandle(this.mockWgpu, 0xABCD);
+        var act = () => new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, null);
 
         // Assert
-        sut.DangerousGetHandle().ShouldBe(0xABCD);
-    }
-
-    [Fact]
-    public void Ctor_WithNintOverload_WithValidHandle_SetsHandle()
-    {
-        // Arrange & Act
-        var sut = new SafeSurfaceHandle(this.mockWgpu, Handle);
-
-        // Assert
-        sut.DangerousGetHandle().ShouldBe(Handle);
-    }
-
-    [Fact]
-    public void Ctor_WithNintOverload_WithInvalidHandle_SetsInvalidHandle()
-    {
-        // Arrange & Act
-        var sut = new SafeSurfaceHandle(this.mockWgpu, nint.Zero);
-
-        // Assert
-        sut.IsInvalid.ShouldBeTrue();
+        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'instanceHandle')");
     }
     #endregion
 
@@ -99,7 +67,7 @@ public sealed class SafeSurfaceHandleTests
     public void Dispose_WithValidHandle_UnconfiguresAndReleasesHandle()
     {
         // Arrange
-        var sut = new SafeSurfaceHandle(this.mockWgpu, Handle);
+        var sut = new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, this.instanceHandle);
 
         // Act
         sut.Dispose();
@@ -107,8 +75,8 @@ public sealed class SafeSurfaceHandleTests
         // Assert
         Received.InOrder(() =>
         {
-            this.mockWgpu.SurfaceUnconfigure(Handle);
-            this.mockWgpu.SurfaceRelease(Handle);
+            this.mockWgpuInvoker.SurfaceUnconfigure(UnsafeSurfaceHandle);
+            this.mockWgpuInvoker.SurfaceRelease(UnsafeSurfaceHandle);
         });
     }
 
@@ -116,28 +84,29 @@ public sealed class SafeSurfaceHandleTests
     public void Dispose_WithInvalidHandle_DoesNotUnconfigureOrReleaseHandle()
     {
         // Arrange
-        var sut = new SafeSurfaceHandle(this.mockWgpu, nint.Zero);
+        this.mockWgpuInvoker.CreateWebGpuSurface(Arg.Any<WebGPU>(), Arg.Any<IWindow>(), Arg.Any<SafeInstanceHandle>())
+            .Returns(0x0);
+        var sut = new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, this.instanceHandle);
 
         // Act
         sut.Dispose();
 
         // Assert
-        this.mockWgpu.DidNotReceive().SurfaceUnconfigure(Arg.Any<nint>());
-        this.mockWgpu.DidNotReceive().SurfaceRelease(Arg.Any<nint>());
+        this.mockWgpuInvoker.DidNotReceive().SurfaceUnconfigure(Arg.Any<nint>());
+        this.mockWgpuInvoker.DidNotReceive().SurfaceRelease(Arg.Any<nint>());
     }
 
     [Fact]
-    public void ReleaseHandle_WithValidHandle_ReturnsTrue()
+    public void ReleaseHandle_WithValidHandle_ReleasesHandle()
     {
         // Arrange
-        var sut = new SafeSurfaceHandle(this.mockWgpu, Handle);
+        var sut = new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, this.instanceHandle);
 
         // Act
         sut.Dispose();
 
         // Assert
-        this.mockWgpu.Received(1).SurfaceUnconfigure(Handle);
+        this.mockWgpuInvoker.Received(1).SurfaceUnconfigure(UnsafeSurfaceHandle);
     }
-
     #endregion
 }
