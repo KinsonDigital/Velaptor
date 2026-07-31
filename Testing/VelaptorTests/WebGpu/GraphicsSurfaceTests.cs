@@ -121,7 +121,7 @@ public class GraphicsSurfaceTests
     public void Initialize_WithInvalidHandle_ThrowsException()
     {
         // Arrange
-        var instanceHandle = new SafeInstanceHandle(this.mockWgpuInvoker, 0x0);
+        var instanceHandle = new SafeInstanceHandle(this.mockWgpuInvoker, nint.Zero);
         this.mockGraphicsDevice.Instance.Returns(instanceHandle);
         var sut = CreateSystemUnderTest();
 

@@ -226,7 +226,7 @@ public sealed class Texture : ITexture
 
         this.textureView = new SafeTextureViewHandle(
             this.wgpu,
-            this.gpuTexture.DangerousGetHandle(),
+            this.gpuTexture,
             in viewDesc);
 
         // Create a linear sampler. ClampToEdge prevents colour bleeding at the texture border.

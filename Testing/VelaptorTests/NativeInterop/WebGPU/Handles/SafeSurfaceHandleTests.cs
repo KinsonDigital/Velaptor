@@ -85,7 +85,7 @@ public sealed class SafeSurfaceHandleTests
     {
         // Arrange
         this.mockWgpuInvoker.CreateWebGpuSurface(Arg.Any<WebGPU>(), Arg.Any<IWindow>(), Arg.Any<SafeInstanceHandle>())
-            .Returns(0x0);
+            .Returns(nint.Zero);
         var sut = new SafeSurfaceHandle(this.mockWgpuInvoker, this.mockWindow, this.instanceHandle);
 
         // Act

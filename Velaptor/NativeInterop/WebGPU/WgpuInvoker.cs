@@ -805,11 +805,20 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public nint TextureCreateView(nint texture, in TextureViewDescriptor descriptor)
+    public nint TextureCreateView(SafeTextureHandle texture, in TextureViewDescriptor descriptor)
     {
         unsafe
         {
-            return (nint)Wgpu.TextureCreateView((Texture*)texture, in descriptor);
+            return (nint)Wgpu.TextureCreateView((Texture*)texture.DangerousGetHandle(), in descriptor);
+        }
+    }
+
+    /// <inheritdoc/>
+    public nint TextureCreateView(SafeSurfaceTextureHandle surfaceTexture, in TextureViewDescriptor descriptor)
+    {
+        unsafe
+        {
+            return (nint)Wgpu.TextureCreateView((Texture*)surfaceTexture.DangerousGetHandle(), in descriptor);
         }
     }
 

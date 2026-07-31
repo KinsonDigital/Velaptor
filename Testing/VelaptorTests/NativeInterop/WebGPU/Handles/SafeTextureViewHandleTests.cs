@@ -17,21 +17,30 @@ using Xunit;
 /// </summary>
 public sealed class SafeTextureViewHandleTests
 {
-    private readonly IWgpuInvoker mockWgpu;
-    private readonly nint texture = 0x7777;
-    private readonly nint validHandle = 0x1234;
+    private const nint UnsafeDeviceHandle = 0x1;
+    private const nint UnsafeTextureHandle = 0x2;
+    private readonly IWgpuInvoker mockWgpuInvoker;
+    private readonly SafeTextureHandle textureHandle;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeTextureViewHandleTests"/> class.
     /// </summary>
-    public SafeTextureViewHandleTests() => this.mockWgpu = Substitute.For<IWgpuInvoker>();
+    public SafeTextureViewHandleTests()
+    {
+        this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
+        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeTextureHandle>(), Arg.Any<TextureViewDescriptor>())
+            .Returns(UnsafeTextureHandle);
+
+        var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        this.textureHandle = new SafeTextureHandle(this.mockWgpuInvoker, deviceHandle, default);
+    }
 
     #region Constructor Tests
     [Fact]
     public void Ctor_WithNullWgpuParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new SafeTextureViewHandle(null, this.texture);
+        var act = () => new SafeTextureViewHandle(null,  this.textureHandle);
 
         // Assert
         act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'wgpu')");
@@ -40,28 +49,12 @@ public sealed class SafeTextureViewHandleTests
     [Fact]
     public void Ctor_WhenInvoked_CallsTextureCreateView()
     {
-        // Arrange
-        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>()).Returns(this.validHandle);
-
-        // Act
-        var sut = new SafeTextureViewHandle(this.mockWgpu, this.texture);
+        // Arrange & Act
+        var sut = new SafeTextureViewHandle(this.mockWgpuInvoker, this.textureHandle);
 
         // Assert
-        this.mockWgpu.Received(1).TextureCreateView(this.texture, Arg.Any<TextureViewDescriptor>());
-        sut.DangerousGetHandle().ShouldBe(this.validHandle);
-    }
-
-    [Fact]
-    public void Ctor_WhenTextureCreateViewReturnsInvalidHandle_SetsInvalidHandle()
-    {
-        // Arrange
-        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>()).Returns(nint.Zero);
-
-        // Act
-        var sut = new SafeTextureViewHandle(this.mockWgpu, this.texture);
-
-        // Assert
-        sut.IsInvalid.ShouldBeTrue();
+        this.mockWgpuInvoker.Received(1).TextureCreateView(this.textureHandle, Arg.Any<TextureViewDescriptor>());
+        sut.DangerousGetHandle().ShouldBe(UnsafeTextureHandle);
     }
     #endregion
 
@@ -70,28 +63,27 @@ public sealed class SafeTextureViewHandleTests
     public void Dispose_WithValidHandle_ReleasesHandle()
     {
         // Arrange
-        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>()).Returns(this.validHandle);
-        var sut = new SafeTextureViewHandle(this.mockWgpu, this.texture);
+        var sut = new SafeTextureViewHandle(this.mockWgpuInvoker, this.textureHandle);
 
         // Act
         sut.Dispose();
 
         // Assert
-        this.mockWgpu.Received(1).TextureViewRelease(this.validHandle);
+        this.mockWgpuInvoker.Received(1).TextureViewRelease(UnsafeTextureHandle);
     }
 
     [Fact]
     public void Dispose_WithInvalidHandle_DoesNotReleaseHandle()
     {
         // Arrange
-        this.mockWgpu.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>()).Returns(nint.Zero);
-        var sut = new SafeTextureViewHandle(this.mockWgpu, this.texture);
+        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeTextureHandle>(), Arg.Any<TextureViewDescriptor>()).Returns(nint.Zero);
+        var sut = new SafeTextureViewHandle(this.mockWgpuInvoker, this.textureHandle);
 
         // Act
         sut.Dispose();
 
         // Assert
-        this.mockWgpu.DidNotReceive().TextureViewRelease(Arg.Any<nint>());
+        this.mockWgpuInvoker.DidNotReceive().TextureViewRelease(Arg.Any<nint>());
     }
     #endregion
 }

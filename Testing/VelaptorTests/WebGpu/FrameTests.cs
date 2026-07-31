@@ -45,7 +45,7 @@ public class FrameTests
         this.cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpuInvoker, UnsafeCmdEncoderHandle);
         this.mockWgpuInvoker.DeviceCreateCommandEncoder(Arg.Any<SafeDeviceHandle>(), Arg.Any<CommandEncoderDescriptor>())
             .Returns(this.cmdEncoderHandle);
-        this.mockWgpuInvoker.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>())
+        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeSurfaceTextureHandle>(), Arg.Any<TextureViewDescriptor>())
             .Returns(UnsafeTextureViewHandle);
 
         this.deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
@@ -336,8 +336,8 @@ public class FrameTests
     public void Begin_WhenTextureViewHandleIsInvalid_ReturnsInvalid()
     {
         // Arrange
-        this.surfaceTextureHandle = CreateSurfaceTextureHandle(0x0, SurfaceGetCurrentTextureStatus.Success);
-        this.mockWgpuInvoker.TextureCreateView(Arg.Any<nint>(), Arg.Any<TextureViewDescriptor>()).Returns(0x0);
+        this.surfaceTextureHandle = CreateSurfaceTextureHandle(nint.Zero, SurfaceGetCurrentTextureStatus.Success);
+        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeSurfaceTextureHandle>(), Arg.Any<TextureViewDescriptor>()).Returns(nint.Zero);
         this.mockSurface.GetSurfaceTexture().Returns(this.surfaceTextureHandle);
         var sut = CreateSystemUnderTest();
 
@@ -370,7 +370,6 @@ public class FrameTests
         var expectedBlue = expectedColorValues[2];
         var expectedAlpha = expectedColorValues[3];
 
-        // var surfaceTextureHandle = new SafeSurfaceTextureHandle(this.mockWgpuInvoker, 0x0, SurfaceGetCurrentTextureStatus.)
         this.mockSurface.Format.Returns(format);
 
         var sut = CreateSystemUnderTest();

@@ -398,7 +398,15 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="texture">The texture pointer.</param>
     /// <param name="descriptor">The texture view descriptor.</param>
     /// <returns>A pointer to the texture view.</returns>
-    nint TextureCreateView(nint texture, in TextureViewDescriptor descriptor);
+    nint TextureCreateView(SafeTextureHandle texture, in TextureViewDescriptor descriptor);
+
+    /// <summary>
+    /// Creates a texture view.
+    /// </summary>
+    /// <param name="surfaceTexture">The texture pointer.</param>
+    /// <param name="descriptor">The texture view descriptor.</param>
+    /// <returns>A pointer to the texture view.</returns>
+    nint TextureCreateView(SafeSurfaceTextureHandle surfaceTexture, in TextureViewDescriptor descriptor);
 
     /// <summary>
     /// Releases a texture view.

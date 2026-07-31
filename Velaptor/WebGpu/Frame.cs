@@ -166,7 +166,7 @@ internal sealed class Frame : IDisposable
 
         this.textureViewHandle = new SafeTextureViewHandle(
             this.gd.Wgpu,
-            this.surfaceTextureHandle.DangerousGetHandle(),
+            this.surfaceTextureHandle,
             in viewDesc);
 
         if (this.textureViewHandle.IsInvalid)
