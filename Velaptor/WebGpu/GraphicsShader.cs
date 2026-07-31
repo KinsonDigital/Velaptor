@@ -9,8 +9,8 @@ using System.IO.Abstractions;
 using Services;
 using NativeInterop.WebGpu.Handles;
 
-internal sealed class GraphicsShader : IDisposable
 /// <inheritdoc/>
+internal sealed class GraphicsShader : IGraphicsShader
 {
     private readonly IEmbeddedResourceLoaderService<string> resourceLoaderService;
     private readonly string shaderName;
