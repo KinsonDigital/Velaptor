@@ -16,26 +16,6 @@ internal sealed class SafeIndexBufferHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SafeIndexBufferHandle"/> class.
-    /// Creates a new buffer on the device.
-    /// </summary>
-    /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="deviceHandle">The device handle.</param>
-    /// <param name="bufferDescriptor">Description of the buffer to create.</param>
-    public SafeIndexBufferHandle(
-        IWgpuInvoker wgpu,
-        SafeDeviceHandle deviceHandle,
-        ref readonly Silk.NET.WebGPU.BufferDescriptor bufferDescriptor)
-        : base(ownsHandle: true)
-    {
-        ArgumentNullException.ThrowIfNull(wgpu);
-        ArgumentNullException.ThrowIfNull(deviceHandle);
-
-        this.wgpu = wgpu;
-        SetHandle(this.wgpu.DeviceCreateBuffer(deviceHandle, in bufferDescriptor));
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SafeIndexBufferHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="handle">The native handle.</param>

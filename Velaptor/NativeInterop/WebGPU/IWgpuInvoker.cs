@@ -219,7 +219,6 @@ internal interface IWgpuInvoker : IDisposable
     /// <returns>The pipeline layout handle.</returns>
     SafePipelineLayoutHandle DeviceCreatePipelineLayout(
         SafeDeviceHandle device, string? label, SafeBindGroupLayoutHandle[] bindGroupLayouts);
-    SafePipelineLayoutHandle DeviceCreatePipelineLayout(SafeDeviceHandle device, in PipelineLayoutDescriptor descriptor);
 
     /// <summary>
     /// Releases a pipeline layout.

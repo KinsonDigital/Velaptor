@@ -27,33 +27,6 @@ public sealed class SafeIndexBufferHandleTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullWgpuParam_ThrowsException()
-    {
-        // Arrange
-        var deviceHandle = CreateDeviceHandle();
-        var descriptor = default(BufferDescriptor);
-
-        // Act
-        var act = () => new SafeIndexBufferHandle(null, deviceHandle, ref descriptor);
-
-        // Assert
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'wgpu')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullDeviceHandleParam_ThrowsException()
-    {
-        // Arrange
-        var descriptor = default(BufferDescriptor);
-
-        // Act
-        var act = () => new SafeIndexBufferHandle(this.mockWgpu, null, ref descriptor);
-
-        // Assert
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'deviceHandle')");
-    }
-
-    [Fact]
     public void Ctor_NintOverload_WithNullWgpuParam_ThrowsException()
     {
         // Arrange & Act
@@ -81,22 +54,6 @@ public sealed class SafeIndexBufferHandleTests
 
         // Assert
         sut.IsInvalid.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Ctor_WithDeviceAndDescriptor_CallsDeviceCreateBuffer()
-    {
-        // Arrange
-        var deviceHandle = CreateDeviceHandle();
-        var descriptor = default(BufferDescriptor);
-        this.mockWgpu.DeviceCreateBuffer(deviceHandle, in descriptor).Returns(Handle);
-
-        // Act
-        var sut = new SafeIndexBufferHandle(this.mockWgpu, deviceHandle, ref descriptor);
-
-        // Assert
-        this.mockWgpu.Received(1).DeviceCreateBuffer(deviceHandle, in descriptor);
-        sut.DangerousGetHandle().ShouldBe(Handle);
     }
     #endregion
 
@@ -133,10 +90,4 @@ public sealed class SafeIndexBufferHandleTests
     }
 
     #endregion
-
-    /// <summary>
-    /// Creates a <see cref="SafeDeviceHandle"/> for use in tests.
-    /// </summary>
-    /// <returns>The device handle.</returns>
-    private SafeDeviceHandle CreateDeviceHandle() => new (this.mockWgpu, 0xABCD);
 }

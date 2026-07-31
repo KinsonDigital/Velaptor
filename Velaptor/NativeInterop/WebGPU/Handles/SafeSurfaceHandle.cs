@@ -34,21 +34,6 @@ internal sealed class SafeSurfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
         SetHandle(wgpu.CreateWebGpuSurface(wgpu.Wgpu, window, instanceHandle));
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SafeSurfaceHandle"/> class
-    /// from a raw native handle.
-    /// </summary>
-    /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="handle">The native handle.</param>
-    public SafeSurfaceHandle(IWgpuInvoker wgpu, nint handle)
-        : base(ownsHandle: true)
-    {
-        ArgumentNullException.ThrowIfNull(wgpu);
-
-        this.wgpu = wgpu;
-        SetHandle(handle);
-    }
-
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
