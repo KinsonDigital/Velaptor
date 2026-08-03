@@ -6,11 +6,14 @@ namespace Velaptor.Hardware.Services;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using NativeInterop.MacOS;
 using HardwareInfo = global::Hardware.Info.HardwareInfo;
 
 /// <inheritdoc/>
+[ExcludeFromCodeCoverage(Justification = "Not worth testing due to library calls.")]
 internal sealed class GpuService : IGpuService
 {
     private readonly HardwareInfo hw = new ();
@@ -49,7 +52,7 @@ internal sealed class GpuService : IGpuService
     /// Gets information about the Windows/Linux-based GPU.
     /// </summary>
     /// <returns>Information about the GPU.</returns>
-    private IReadOnlyCollection<GpuInfo> GetWinLinuxGpuInfo()
+    private ReadOnlyCollection<GpuInfo> GetWinLinuxGpuInfo()
     {
         this.hw.RefreshVideoControllerList();
 
