@@ -1,0 +1,272 @@
+// <copyright file="GraphicsTexturePipelineTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace VelaptorTests.WebGpu;
+
+using System;
+using NSubstitute;
+using Shouldly;
+using Silk.NET.WebGPU;
+using Velaptor.NativeInterop.WebGpu;
+using Velaptor.NativeInterop.WebGpu.Handles;
+using Velaptor.NativeInterop.WebGpu.Structures;
+using Velaptor.WebGpu;
+using Xunit;
+
+/// <summary>
+/// Tests the <see cref="GraphicsTexturePipeline"/>.
+/// </summary>
+public class GraphicsTexturePipelineTests
+{
+    private const nint UnsafeDeviceHandle = 0x11;
+    private const nint UnsafeBindGroupLayoutHandle = 0x22;
+    private readonly SafeBindGroupLayoutHandle bindGroupLayoutHandle;
+    private readonly SafePipelineLayoutHandle pipelineLayoutHandle;
+    private readonly IWgpuInvoker mockWgpuInvoker;
+    private readonly IGraphicsDevice mockDevice;
+    private readonly IGraphicsSurface mockSurface;
+    private readonly IGraphicsShader mockShader;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GraphicsTexturePipelineTests"/> class.
+    /// </summary>
+    public GraphicsTexturePipelineTests()
+    {
+        this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
+
+        this.bindGroupLayoutHandle = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, UnsafeBindGroupLayoutHandle);
+        this.mockWgpuInvoker.DeviceCreateBindGroupLayout(Arg.Any<SafeDeviceHandle>(), Arg.Any<BindGroupLayoutEntry[]>())
+            .Returns(this.bindGroupLayoutHandle);
+
+        this.pipelineLayoutHandle = new SafePipelineLayoutHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        this.mockWgpuInvoker.DeviceCreatePipelineLayout(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<SafeBindGroupLayoutHandle[]>()).Returns(this.pipelineLayoutHandle);
+
+        this.mockDevice = Substitute.For<IGraphicsDevice>();
+        this.mockDevice.Wgpu.Returns(this.mockWgpuInvoker);
+
+        this.mockSurface = Substitute.For<IGraphicsSurface>();
+        this.mockShader = Substitute.For<IGraphicsShader>();
+    }
+
+    #region Ctor Tests
+    [Fact]
+    public void Ctor_WithNullGraphicsDeviceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => { _ = new GraphicsTexturePipeline(null, this.mockSurface, this.mockShader); };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'gd')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullSurfaceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => { _ = new GraphicsTexturePipeline(this.mockDevice, null, this.mockShader); };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'surface')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullShaderParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => { _ = new GraphicsTexturePipeline(this.mockDevice, this.mockSurface, null); };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'shader')");
+    }
+    #endregion
+
+    #region Prop Tests
+    [Fact]
+    public void BindGroupLayout_WhenNotInitialized_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => _ = sut.BindGroupLayout;
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Pipeline has not been initialized. Call Initialize() first.");
+    }
+
+    [Fact]
+    public void BindGroupLayout_WhenInitialized_ReturnsLayout()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize();
+        var actual = sut.BindGroupLayout;
+
+        // Assert
+        actual.ShouldBe(this.bindGroupLayoutHandle);
+    }
+    #endregion
+
+    #region Method Tests
+    [Fact]
+    public void Initialize_WhenInvoked_InitializesPipeline()
+    {
+        // Arrange
+        var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        var vertexShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        var fragmentShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        const TextureFormat textureFormat = TextureFormat.Rgba16Uint;
+        SafeRenderPipelineDescriptor? actualDescriptor = null;
+
+        var expectedBlendState = new BlendState(new BlendComponent
+        {
+            SrcFactor = BlendFactor.SrcAlpha, DstFactor = BlendFactor.OneMinusSrcAlpha, Operation = BlendOperation.Add,
+        }, new BlendComponent
+        {
+            SrcFactor = BlendFactor.One, DstFactor = BlendFactor.OneMinusSrcAlpha, Operation = BlendOperation.Add,
+        });
+
+        var expectedPrimitiveState = new PrimitiveState
+        {
+            Topology = PrimitiveTopology.TriangleList, FrontFace = FrontFace.Ccw, CullMode = CullMode.None,
+        };
+        var expectedMultisampleState = new MultisampleState { Count = 1, Mask = uint.MaxValue, };
+
+        this.mockWgpuInvoker.When(x
+            => x.DeviceCreateRenderPipeline(Arg.Any<SafeDeviceHandle>(), Arg.Any<SafeRenderPipelineDescriptor>()))
+            .Do(callInfo =>
+            {
+                actualDescriptor = callInfo.Arg<SafeRenderPipelineDescriptor>();
+            });
+
+        this.mockDevice.Handle.Returns(deviceHandle);
+        this.mockShader.VertexHandle.Returns(vertexShaderHandle);
+        this.mockShader.FragmentHandle.Returns(fragmentShaderHandle);
+        this.mockSurface.Format.Returns(textureFormat);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize();
+        sut.Initialize();
+
+        // Assert
+        this.mockShader.Received(1).Initialize(this.mockDevice);
+        this.mockWgpuInvoker.Received(1).DeviceCreateBindGroupLayout(deviceHandle, Arg.Any<BindGroupLayoutEntry[]>());
+        this.mockWgpuInvoker.Received(1).DeviceCreatePipelineLayout(
+            deviceHandle,
+            "Texture Pipeline Layout",
+            Arg.Is<SafeBindGroupLayoutHandle[]>(v => v.Length == 1 && v[0] == this.bindGroupLayoutHandle));
+        this.mockWgpuInvoker.Received(1).DeviceCreateRenderPipeline(deviceHandle, Arg.Any<SafeRenderPipelineDescriptor>());
+        actualDescriptor.ShouldNotBeNull();
+        actualDescriptor.Value.Layout.ShouldBe(this.pipelineLayoutHandle);
+
+        // Assert vertex
+        actualDescriptor.Value.Vertex.Module.ShouldBe(vertexShaderHandle);
+        actualDescriptor.Value.Vertex.EntryPoint.ShouldBe("vs_main");
+        actualDescriptor.Value.Vertex.Buffers.ShouldHaveSingleItem();
+        actualDescriptor.Value.Vertex.Buffers[0].ArrayStride.ShouldBe(32u);
+        actualDescriptor.Value.Vertex.Buffers[0].StepMode.ShouldBe(VertexStepMode.Vertex);
+        actualDescriptor.Value.Vertex.Buffers[0].Attributes.Length.ShouldBe(3);
+        actualDescriptor.Value.Vertex.Buffers[0].Attributes[0]
+            .ShouldBe(new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 0, ShaderLocation = 0 });
+        actualDescriptor.Value.Vertex.Buffers[0].Attributes[1]
+            .ShouldBe(new VertexAttribute { Format = VertexFormat.Float32x2, Offset = 8, ShaderLocation = 1 });
+        actualDescriptor.Value.Vertex.Buffers[0].Attributes[2]
+            .ShouldBe(new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 });
+
+        // Assert fragment
+        actualDescriptor.Value.Fragment.Module.ShouldBe(fragmentShaderHandle);
+        actualDescriptor.Value.Fragment.EntryPoint.ShouldBe("fs_main");
+        actualDescriptor.Value.Fragment.Targets.ShouldHaveSingleItem();
+        actualDescriptor.Value.Fragment.Targets[0].Format.ShouldBe(textureFormat);
+        actualDescriptor.Value.Fragment.Targets[0].WriteMask.ShouldBe(ColorWriteMask.All);
+        actualDescriptor.Value.Fragment.Targets[0].Blend.ShouldBe(expectedBlendState);
+
+        // Primitive and multisample
+        actualDescriptor.Value.Primitive.ShouldBe(expectedPrimitiveState);
+        actualDescriptor.Value.Multisample.ShouldBe(expectedMultisampleState);
+
+        this.mockWgpuInvoker.Received(1).PipelineLayoutRelease(UnsafeDeviceHandle);
+        this.mockShader.Received(1).Dispose();
+    }
+
+    [Fact]
+    public void Bind_WhenNotInitialized_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Bind(null);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Pipeline has not been initialized. Call Initialize() first.");
+    }
+
+    [Fact]
+    public void Bind_WhenInvoked_BindsPipeline()
+    {
+        // Arrange
+        var expectedRenderPassEncoderHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x1234);
+        var renderPipelineHandle = new SafeRenderPipelineHandle(this.mockWgpuInvoker, 0x5678);
+        this.mockWgpuInvoker.DeviceCreateRenderPipeline(Arg.Any<SafeDeviceHandle>(), Arg.Any<SafeRenderPipelineDescriptor>())
+            .Returns(renderPipelineHandle);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize();
+        sut.Bind(expectedRenderPassEncoderHandle);
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).RenderPassEncoderSetPipeline(expectedRenderPassEncoderHandle, renderPipelineHandle);
+    }
+
+    [Fact]
+    public void Dispose_WhenInvoked_DisposesOfPipeline()
+    {
+        // Arrange
+        var renderPipelineHandle = new SafeRenderPipelineHandle(this.mockWgpuInvoker, 0x5678);
+        this.mockWgpuInvoker.DeviceCreateRenderPipeline(Arg.Any<SafeDeviceHandle>(), Arg.Any<SafeRenderPipelineDescriptor>())
+            .Returns(renderPipelineHandle);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize();
+        sut.Dispose();
+        sut.Dispose();
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).RenderPipelineRelease(0x5678);
+        this.mockWgpuInvoker.Received(1).BindGroupLayoutRelease(UnsafeBindGroupLayoutHandle);
+    }
+
+    [Fact]
+    public void Dispose_WhenNotInitialized_DoesNotThrowException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Dispose();
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+    #endregion
+
+    /// <summary>
+    /// Creates a new instance of <see cref="GraphicsTexturePipeline"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private GraphicsTexturePipeline CreateSystemUnderTest() => new (this.mockDevice, this.mockSurface, this.mockShader);
+}
