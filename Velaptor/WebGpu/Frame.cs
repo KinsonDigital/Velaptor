@@ -35,7 +35,8 @@ internal sealed class Frame : IDisposable
     private SafeRenderPassEncoderHandle? renderPassHandle;
     private SafeCommandEncoderHandle? cmdEncoderHandle;
     private bool surfaceConfigured;
-    private bool initialized = false;
+    private bool initialized;
+    private bool hasBegun;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> class.
@@ -102,40 +103,17 @@ internal sealed class Frame : IDisposable
     /// </returns>
     public bool Begin(NETColor clearColor)
     {
+        if (this.hasBegun)
+        {
+            throw new InvalidOperationException($"The '{nameof(Frame)}.{nameof(Begin)}()' method has already invoked.");
+        }
+
         if (!this.initialized)
         {
             throw new InvalidOperationException("Cannot begin frame. WebGPU has not been initialized.");
         }
 
-        // If a render pass is already active (nested Begin call via the
-        // batcher's frame-depth tracking), reuse the existing pass rather
-        // than acquiring a second swap-chain texture.  This keeps all
-        // rendering for a logical frame inside a single GPU render pass.
-        if (this.renderPassHandle is not null)
-        {
-            IsValid = true;
-
-            return true;
-        }
-
-        // TODO: Put all of the handle disposals below into a separate method
-
-        // Release all references to the previous frame's swap-chain texture
-        // BEFORE reconfiguring the surface.  WebGPU requires that no views or
-        // handles to the old swap chain remain alive when Configure() is called.
-        this.textureViewHandle?.Dispose();
-        this.textureViewHandle = null;
-
-        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
-        // ensure we don't leak if Begin() is called again without going through
-        // the normal Submit() → Begin() cycle.
-        this.surfaceTextureHandle?.Dispose();
-        this.surfaceTextureHandle = null;
-
-        this.renderPassHandle?.Dispose();
-        this.renderPassHandle = null;
-        this.cmdEncoderHandle?.Dispose();
-        this.cmdEncoderHandle = null;
+        CleanupHandles();
 
         // Configure the swap chain on first frame, or after a resize.
         // This is deferred from Initialize() because the native window
@@ -194,6 +172,7 @@ internal sealed class Frame : IDisposable
         this.renderPassHandle?.Dispose();
         this.renderPassHandle = passHandle;
         IsValid = true;
+        this.hasBegun = true;
 
         return true;
     }
@@ -204,6 +183,11 @@ internal sealed class Frame : IDisposable
     /// </summary>
     public void Submit()
     {
+        if (!this.hasBegun)
+        {
+            throw new InvalidOperationException($"The '{nameof(Frame)}.{nameof(Submit)}()' method was invoked without invoking '{nameof(Frame)}.{nameof(Begin)}()'.");
+        }
+
         if (this.renderPassHandle is null)
         {
             throw new InvalidOperationException($"Render pass handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
@@ -234,6 +218,7 @@ internal sealed class Frame : IDisposable
         }
 
         this.gd.Wgpu.SurfacePresent(this.surface.Handle);
+        this.hasBegun = false;
     }
 
     /// <inheritdoc/>
@@ -244,6 +229,31 @@ internal sealed class Frame : IDisposable
         this.textureViewHandle?.Dispose();
         this.surfaceTextureHandle?.Dispose();
         this.initialized = false;
+    }
+
+    /// <summary>
+    /// Cleans up the handles by disposing of them and setting them to null for the next frame.
+    /// </summary>
+    private void CleanupHandles()
+    {
+        // The WebGPU spec states that when you call configure() on a surface,
+        // the old swap chain is torn down and replaced. If any texture or texture view
+        // from the old swap chain is still alive (i.e., hasn't had its native handle
+        // released), it's a validation error in Dawn (Chromium's implementation) and
+        // undefined behavior in wgpu-native.
+        this.textureViewHandle?.Dispose();
+        this.textureViewHandle = null;
+
+        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
+        // ensure we don't leak if Begin() is called again without going through
+        // the normal Submit() → Begin() cycle.
+        this.surfaceTextureHandle?.Dispose();
+        this.surfaceTextureHandle = null;
+
+        this.renderPassHandle?.Dispose();
+        this.renderPassHandle = null;
+        this.cmdEncoderHandle?.Dispose();
+        this.cmdEncoderHandle = null;
     }
 
     /// <summary>

@@ -154,11 +154,23 @@ public class FrameTests
     public void Reconfigure_WhenInvoked_AllowsReconfiguration()
     {
         // Arrange
+        var renderPassEncoderHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, UnsafeRenderPassHandle);
+        this.mockWgpuInvoker.CommandEncoderBeginRenderPass(
+            Arg.Any<SafeCommandEncoderHandle>(),
+            Arg.Any<SafeTextureViewHandle>(),
+            Arg.Any<LoadOp>(),
+            Arg.Any<StoreOp>(),
+            Arg.Any<double>(),
+            Arg.Any<double>(),
+            Arg.Any<double>(),
+            Arg.Any<double>()).Returns(renderPassEncoderHandle);
+
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.Initialize();
         sut.Begin(this.testColor);
+        sut.Submit();
         sut.Reconfigure();
         sut.Begin(this.testColor);
 
@@ -234,14 +246,9 @@ public class FrameTests
     }
 
     [Fact]
-    public void Begin_WhenInvokedWithSecondExecutionWithoutSubmit_DoesNotBeginSecondFrame()
+    public void Begin_WhenInvokedSecondTimeWithoutCallingSubmitFirst_ThrowsException()
     {
         // Arrange
-        const double expectedRed  = 0.08627451211214066;
-        const double expectedGreen  = 0.12941177189350128;
-        const double expectedBlue  = 0.1725490242242813;
-        const double expectedAlpha  = 0.04313725605607033;
-
         var renderPassEncoderHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, UnsafeRenderPassHandle);
         this.mockWgpuInvoker.CommandEncoderBeginRenderPass(
             Arg.Any<SafeCommandEncoderHandle>(),
@@ -257,40 +264,38 @@ public class FrameTests
         // Act
         sut.Initialize();
         var firstBegin = sut.Begin(this.testColor);
-        var secondBegin = sut.Begin(this.testColor);
+        var act = () =>
+        {
+            sut.Begin(this.testColor);
+        };
 
         // Assert
         firstBegin.ShouldBeTrue();
-        secondBegin.ShouldBeTrue();
-        this.mockSurface.Received(1).Configure();
-        this.mockSurface.Received(1).GetSurfaceTexture();
-        this.mockWgpuInvoker.Received(1).DeviceCreateCommandEncoder(Arg.Any<SafeDeviceHandle>(),  Arg.Any<CommandEncoderDescriptor>());
-        this.mockWgpuInvoker.Received(1).CommandEncoderBeginRenderPass(
-            Arg.Is<SafeCommandEncoderHandle>(value => !value.IsInvalid),
-            Arg.Is<SafeTextureViewHandle>(value => !value.IsInvalid),
-            LoadOp.Clear,
-            StoreOp.Store,
-            expectedRed,
-            expectedGreen,
-            expectedBlue,
-            expectedAlpha);
-
-        this.mockWgpuInvoker.DidNotReceive().TextureRelease(UnsafeTextureHandle);
-        this.mockWgpuInvoker.DidNotReceive().TextureViewRelease(Arg.Any<nint>());
-        this.mockWgpuInvoker.DidNotReceive().TextureRelease(Arg.Any<nint>());
-        this.mockWgpuInvoker.DidNotReceive().CommandEncoderRelease(Arg.Any<nint>());
-        this.mockWgpuInvoker.DidNotReceive().RenderPassEncoderRelease(Arg.Any<nint>());
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(Frame)}.{nameof(Frame.Begin)}()' method has already invoked.");
     }
 
     [Fact]
     public void Begin_WhenSurfaceIsConfigured_DoesNotAttemptToConfigureAgain()
     {
         // Arrange
+        var renderPassEncoderHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, UnsafeRenderPassHandle);
+        this.mockWgpuInvoker.CommandEncoderBeginRenderPass(
+            Arg.Any<SafeCommandEncoderHandle>(),
+            Arg.Any<SafeTextureViewHandle>(),
+            Arg.Any<LoadOp>(),
+            Arg.Any<StoreOp>(),
+            Arg.Any<double>(),
+            Arg.Any<double>(),
+            Arg.Any<double>(),
+            Arg.Any<double>()).Returns(renderPassEncoderHandle);
+
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.Initialize();
         sut.Begin(this.testColor);
+        sut.Submit();
         sut.Begin(this.testColor);
 
         // Assert
@@ -391,12 +396,32 @@ public class FrameTests
     }
 
     [Fact]
+    public void Submit_WhenInvokedWithoutBeginNotBeingInvokedFirst_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Initialize();
+        var act = () =>
+        {
+            sut.Submit();
+        };
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(Frame)}.{nameof(Frame.Submit)}()' method was invoked without invoking '{nameof(Frame)}.{nameof(Frame.Begin)}()'.");
+    }
+
+    [Fact]
     public void Submit_WithNullRenderPassHandle_ThrowsException()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
 
         // Act
+        sut.Initialize();
+        sut.Begin(this.testColor);
         var act = () => sut.Submit();
 
         // Assert
