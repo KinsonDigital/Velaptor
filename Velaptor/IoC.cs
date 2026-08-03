@@ -251,6 +251,7 @@ internal static class IoC
     private static void SetupWebGpu()
     {
         IoCContainer.Register<IGraphicsDevice, GraphicsDevice>(Lifestyle.Singleton);
+        IoCContainer.Register<IGraphicsSurface, GraphicsSurface>(Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>
