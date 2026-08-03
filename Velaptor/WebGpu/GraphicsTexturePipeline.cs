@@ -37,7 +37,7 @@ internal sealed class GraphicsTexturePipeline : IDisposable
 {
     private readonly IGraphicsDevice gd;
     private readonly IGraphicsSurface surface;
-    private readonly GraphicsShader shader;
+    private readonly IGraphicsShader shader;
     private IWgpuInvoker? wgpu;
     private SafeDeviceHandle? device;
     private SafeRenderPipelineHandle? handle;
@@ -51,7 +51,7 @@ internal sealed class GraphicsTexturePipeline : IDisposable
     /// <param name="gd">The graphics device.</param>
     /// <param name="surface">The graphics surface (used to obtain the swap-chain pixel format).</param>
     /// <param name="shader">The shader source holder (WGSL modules are compiled during <see cref="Initialize"/>).</param>
-    public GraphicsTexturePipeline(IGraphicsDevice gd, IGraphicsSurface surface, GraphicsShader shader)
+    public GraphicsTexturePipeline(IGraphicsDevice gd, IGraphicsSurface surface, IGraphicsShader shader)
     {
         ArgumentNullException.ThrowIfNull(gd);
         ArgumentNullException.ThrowIfNull(surface);
