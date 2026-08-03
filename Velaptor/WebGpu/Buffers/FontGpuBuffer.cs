@@ -137,12 +137,30 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
         ];
     }
 
+    /// <summary>
+    /// Sets the given vertex data at the given vertex at the <paramref name="vertexIndex"/>.
+    /// </summary>
+    /// <param name="verts">The vertices.</param>
+    /// <param name="vertexIndex">The index of the vertex in the vertices array.</param>
+    /// <param name="posX">The X position.</param>
+    /// <param name="posY">The Y position.</param>
+    /// <param name="u">The horizontal texture coordinate (0–1) mapping to the glyph region in the font atlas.</param>
+    /// <param name="v">The vertical texture coordinate (0–1) mapping to the glyph region in the font atlas.</param>
+    /// <param name="r">The red color component.</param>
+    /// <param name="g">The green color component.</param>
+    /// <param name="b">The blue color component.</param>
+    /// <param name="a">The alpha color component.</param>
     private static void SetVertex(
         float[] verts,
         uint vertexIndex,
-        float posX, float posY,
-        float u, float v,
-        float r, float g, float b, float a)
+        float posX,
+        float posY,
+        float u,
+        float v,
+        float r,
+        float g,
+        float b,
+        float a)
     {
         var o = vertexIndex * FloatsPerVertex;
         verts[o + 0] = posX;
@@ -155,6 +173,13 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
         verts[o + 7] = a;
     }
 
+    /// <summary>
+    /// Rotates the given <paramref name="point"/> around the given <paramref name="origin"/> by the given <paramref name="angleDegrees"/>.
+    /// </summary>
+    /// <param name="point">The point to rotate.</param>
+    /// <param name="origin">The origin to rotate the <paramref name="point"/> around.</param>
+    /// <param name="angleDegrees">The angle of rotateion.</param>
+    /// <returns>The new rotated point.</returns>
     private static Vector2 RotateAround(Vector2 point, Vector2 origin, float angleDegrees)
     {
         var radians = angleDegrees * MathF.PI / 180f;

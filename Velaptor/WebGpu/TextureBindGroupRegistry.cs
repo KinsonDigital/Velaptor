@@ -5,6 +5,7 @@
 namespace Velaptor.WebGpu;
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NativeInterop.WebGpu.Handles;
 
 /// <summary>
@@ -12,6 +13,7 @@ using NativeInterop.WebGpu.Handles;
 /// can resolve <c>textureId → bindGroup</c> without holding references to
 /// <see cref="Content.ITexture"/> objects.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Nothing worth testing.")]
 internal sealed class TextureBindGroupRegistry
 {
     private readonly Dictionary<uint, SafeBindGroupHandle> bindGroups = new ();
