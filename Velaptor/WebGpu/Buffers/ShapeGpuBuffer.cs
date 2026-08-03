@@ -15,9 +15,9 @@ using Batching;
 /// <para>
 /// Per-vertex layout (stride = 64 bytes = 16 × f32):
 /// <code>
-/// [ 0.. 1] position          vec2   offset  0   (NDC)
-/// [ 2.. 5] shape             vec4   offset  8   (centerX, centerY, width, height in pixels)
-/// [ 6.. 9] color             vec4   offset 24   (R, G, B, A as 0-255 floats)
+/// [ 0..1] position          vec2   offset  0   (NDC)
+/// [ 2..5] shape             vec4   offset  8   (centerX, centerY, width, height in pixels)
+/// [ 6..9] color             vec4   offset 24   (R, G, B, A as 0-255 floats)
 /// [10]     isFilled          f32    offset 40   (0.0 = border, 1.0 = solid)
 /// [11]     borderThickness   f32    offset 44
 /// [12]     topLeftRadius     f32    offset 48
@@ -65,21 +65,21 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     {
         var centerX = item.Position.X;
         var centerY = item.Position.Y;
-        var w = item.Width;
-        var h = item.Height;
+        var width = item.Width;
+        var height = item.Height;
 
-        var tl = item.CornerRadius.TopLeft;
-        var tr = item.CornerRadius.TopRight;
-        var br = item.CornerRadius.BottomRight;
-        var bl = item.CornerRadius.BottomLeft;
+        var topLeft = item.CornerRadius.TopLeft;
+        var topRight = item.CornerRadius.TopRight;
+        var bottomRight = item.CornerRadius.BottomRight;
+        var bottomLeft = item.CornerRadius.BottomLeft;
 
         // Per-vertex colors for gradient support.
         // Vertex layout: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right.
         // The GPU interpolates between per-vertex colors to produce the gradient effect.
-        var (v0r, v0g, v0b, v0a) = GetVertexColor(item, 0);
-        var (v1r, v1g, v1b, v1a) = GetVertexColor(item, 1);
-        var (v2r, v2g, v2b, v2a) = GetVertexColor(item, 2);
-        var (v3r, v3g, v3b, v3a) = GetVertexColor(item, 3);
+        var (vertexRed0, vertexGreen0, vertexBlue0, vertexAlpha0) = GetVertexColor(item, 0);
+        var (vertexRed1, vertexGreen1, vertexBlue1, vertexAlpha1) = GetVertexColor(item, 1);
+        var (vertexRed2, vertexGreen2, vertexBlue2, vertexAlpha2) = GetVertexColor(item, 2);
+        var (vertexRed3, vertexGreen3, vertexBlue3, vertexAlpha3) = GetVertexColor(item, 3);
 
         var isFilled = item.IsSolid ? 1f : 0f;
         var borderThickness = item.BorderThickness;
@@ -94,19 +94,91 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
 
         // Vertex 0: top-left
         var tlNdc = ToNDC(left, top);
-        SetVertex(vertexData, 0, tlNdc.X, tlNdc.Y, centerX, centerY, w, h, v0r, v0g, v0b, v0a, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(
+            vertexData,
+            0,
+            tlNdc.X,
+            tlNdc.Y,
+            centerX,
+            centerY,
+            width,
+            height,
+            vertexRed0,
+            vertexGreen0,
+            vertexBlue0,
+            vertexAlpha0,
+            isFilled,
+            borderThickness,
+            topLeft,
+            topRight,
+            bottomRight,
+            bottomLeft);
 
         // Vertex 1: top-right
         var trNdc = ToNDC(right, top);
-        SetVertex(vertexData, 1, trNdc.X, trNdc.Y, centerX, centerY, w, h, v1r, v1g, v1b, v1a, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(
+            vertexData,
+            1,
+            trNdc.X,
+            trNdc.Y,
+            centerX,
+            centerY,
+            width,
+            height,
+            vertexRed1,
+            vertexGreen1,
+            vertexBlue1,
+            vertexAlpha1,
+            isFilled,
+            borderThickness,
+            topLeft,
+            topRight,
+            bottomRight,
+            bottomLeft);
 
         // Vertex 2: bottom-left
         var blNdc = ToNDC(left, bottom);
-        SetVertex(vertexData, 2, blNdc.X, blNdc.Y, centerX, centerY, w, h, v2r, v2g, v2b, v2a, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(
+            vertexData,
+            2,
+            blNdc.X,
+            blNdc.Y,
+            centerX,
+            centerY,
+            width,
+            height,
+            vertexRed2,
+            vertexGreen2,
+            vertexBlue2,
+            vertexAlpha2,
+            isFilled,
+            borderThickness,
+            topLeft,
+            topRight,
+            bottomRight,
+            bottomLeft);
 
         // Vertex 3: bottom-right
         var brNdc = ToNDC(right, bottom);
-        SetVertex(vertexData, 3, brNdc.X, brNdc.Y, centerX, centerY, w, h, v3r, v3g, v3b, v3a, isFilled, borderThickness, tl, tr, br, bl);
+        SetVertex(
+            vertexData,
+            3,
+            brNdc.X,
+            brNdc.Y,
+            centerX,
+            centerY,
+            width,
+            height,
+            vertexRed3,
+            vertexGreen3,
+            vertexBlue3,
+            vertexAlpha3,
+            isFilled,
+            borderThickness,
+            topLeft,
+            topRight,
+            bottomRight,
+            bottomLeft);
 
         var baseV = itemIndex * VerticesPerRect;
         indexData =
@@ -128,36 +200,46 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     /// The vertex index: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right.
     /// </param>
     /// <returns>A tuple of (R, G, B, A) as 0-255 floats for the vertex.</returns>
-    private static (float R, float G, float B, float A) GetVertexColor(ShapeBatchItem item, int vertexIndex)
-    {
-        return item.GradientType switch
+    private static (float R, float G, float B, float A) GetVertexColor(ShapeBatchItem item, int vertexIndex) =>
+        item.GradientType switch
         {
-            ColorGradient.None => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
+            ColorGradient.None => (item.Color.R, item.Color.G, item.Color.B, item.Color.A),
             ColorGradient.Horizontal => vertexIndex switch
             {
-                0 or 2 => ((float)item.GradientStart.R, (float)item.GradientStart.G, (float)item.GradientStart.B, (float)item.GradientStart.A),
-                1 or 3 => ((float)item.GradientStop.R, (float)item.GradientStop.G, (float)item.GradientStop.B, (float)item.GradientStop.A),
+                0 or 2 => (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
+                1 or 3 => (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
                 _ => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
             },
             ColorGradient.Vertical => vertexIndex switch
             {
-                0 or 1 => ((float)item.GradientStart.R, (float)item.GradientStart.G, (float)item.GradientStart.B, (float)item.GradientStart.A),
-                2 or 3 => ((float)item.GradientStop.R, (float)item.GradientStop.G, (float)item.GradientStop.B, (float)item.GradientStop.A),
+                0 or 1 => (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
+                2 or 3 => (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
                 _ => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
             },
-            _ => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
+            _ => (item.Color.R, item.Color.G, item.Color.B, item.Color.A),
         };
-    }
 
     /// <summary>
     /// Writes one vertex (16 floats) into the flat vertex array.
     /// </summary>
-    private static void SetVertex(float[] verts, uint vertexIndex,
-        float posX, float posY,
-        float centerX, float centerY, float width, float height,
-        float r, float g, float b, float a,
-        float isFilled, float borderThickness,
-        float topLeft, float topRight, float bottomRight, float bottomLeft)
+    private static void SetVertex(float[] verts,
+        uint vertexIndex,
+        float posX,
+        float posY,
+        float centerX,
+        float centerY,
+        float width,
+        float height,
+        float r,
+        float g,
+        float b,
+        float a,
+        float isFilled,
+        float borderThickness,
+        float topLeft,
+        float topRight,
+        float bottomRight,
+        float bottomLeft)
     {
         var o = vertexIndex * 16;
 

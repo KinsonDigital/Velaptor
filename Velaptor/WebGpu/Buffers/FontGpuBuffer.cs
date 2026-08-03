@@ -178,7 +178,7 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
     /// </summary>
     /// <param name="point">The point to rotate.</param>
     /// <param name="origin">The origin to rotate the <paramref name="point"/> around.</param>
-    /// <param name="angleDegrees">The angle of rotateion.</param>
+    /// <param name="angleDegrees">The angle of rotation.</param>
     /// <returns>The new rotated point.</returns>
     private static Vector2 RotateAround(Vector2 point, Vector2 origin, float angleDegrees)
     {
