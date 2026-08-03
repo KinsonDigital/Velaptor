@@ -97,7 +97,7 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
 
         // Source rect → UV [0, 1].
         // V is flipped because ImageService.Load flips every image vertically during load
-        // (matches OpenGL's ToNDCTextureCoordY behaviour).
+        // (matches OpenGL's ToNDCTextureCoordY behavior).
         var uLeft = item.SrcRect.Left / item.DestRect.Width;
         var uRight = item.SrcRect.Right / item.DestRect.Width;
         var vTop = 1.0f - (item.SrcRect.Top / item.DestRect.Height);
@@ -149,12 +149,16 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
     /// <summary>
     /// Writes one vertex (8 floats) into the flat array.
     /// </summary>
-    private static void SetVertex(
-        float[] verts,
+    private static void SetVertex(float[] verts,
         uint vertexIndex,
-        float posX, float posY,
-        float u, float v,
-        float r, float g, float b, float a)
+        float posX,
+        float posY,
+        float u,
+        float v,
+        float r,
+        float g,
+        float b,
+        float a)
     {
         var o = vertexIndex * FloatsPerVertex;
         verts[o + 0] = posX;
