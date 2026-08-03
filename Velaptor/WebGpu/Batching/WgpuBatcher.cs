@@ -32,6 +32,7 @@ internal sealed class WgpuBatcher : IBatcher
     private Color clearColor = Color.FromArgb(255, 16, 29, 36);
     private int frameDepth;
     private bool isInitialized;
+    private readonly IDisposable reconfigureUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WgpuBatcher"/> class.
@@ -115,11 +116,10 @@ internal sealed class WgpuBatcher : IBatcher
         // reallocated. Mark the frame as needing reconfiguration so that the next
         // Begin() call calls surface.Configure() with the new dimensions before
         // acquiring a surface texture.
-        IDisposable reconfigureUnsubscriber = null!;
-        reconfigureUnsubscriber = this.pushReactable.CreateNonReceiveOrRespond(
+        this.reconfigureUnsubscriber = this.pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.SurfaceReconfigureId,
             () => this.frame.Reconfigure(),
-            () => reconfigureUnsubscriber.Dispose());
+            () => this.reconfigureUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>

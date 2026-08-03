@@ -7,7 +7,6 @@ namespace VelaptorTests.NativeInterop.WebGpu.Handles;
 using System;
 using NSubstitute;
 using Shouldly;
-using Silk.NET.WebGPU;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
 using Xunit;
