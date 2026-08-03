@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.WebGpu.Buffers;
 
+using System;
 using System.Numerics;
 using Color = System.Drawing.Color;
 using NSubstitute;
@@ -282,6 +283,72 @@ public class ShapeGpuBufferTests
         this.capturedIndexData[3].ShouldBe(expectedBaseV + 2);
         this.capturedIndexData[4].ShouldBe(expectedBaseV + 1);
         this.capturedIndexData[5].ShouldBe(expectedBaseV + 3);
+    }
+
+    [Fact]
+    public void UploadData_WithNullVertexBuffer_ThrowsException()
+    {
+        // Arrange — override mock so vertex buffer allocation returns null
+        this.mockDevice.Wgpu.DeviceCreateVertexBuffer(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<ulong>(),
+            Arg.Any<BufferUsage>()).Returns((SafeVertexBufferHandle?)null);
+
+        var item = new ShapeBatchItem(
+            position: new Vector2(400, 300),
+            width: 200,
+            height: 150,
+            color: Color.FromArgb(255, 128, 64, 32),
+            isSolid: true,
+            borderThickness: 0,
+            cornerRadius: new CornerRadius(0, 0, 0, 0),
+            gradientType: ColorGradient.None,
+            gradientStart: default,
+            gradientStop: default);
+
+        var sut = CreateSystemUnderTest();
+        sut.WindowSize = new Vector2(800, 600);
+
+        // Act
+        var act = () => sut.UploadData(item, itemIndex: 0);
+
+        // Assert
+        act.ShouldThrow<Exception>()
+            .Message.ShouldBe("The vertex buffer cannot be null.");
+    }
+
+    [Fact]
+    public void UploadData_WithNullIndexBuffer_ThrowsException()
+    {
+        // Arrange — override mock so index buffer allocation returns null
+        this.mockDevice.Wgpu.DeviceCreateIndexBuffer(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<ulong>(),
+            Arg.Any<BufferUsage>()).Returns((SafeIndexBufferHandle?)null);
+
+        var item = new ShapeBatchItem(
+            position: new Vector2(400, 300),
+            width: 200,
+            height: 150,
+            color: Color.FromArgb(255, 128, 64, 32),
+            isSolid: true,
+            borderThickness: 0,
+            cornerRadius: new CornerRadius(0, 0, 0, 0),
+            gradientType: ColorGradient.None,
+            gradientStart: default,
+            gradientStop: default);
+
+        var sut = CreateSystemUnderTest();
+        sut.WindowSize = new Vector2(800, 600);
+
+        // Act
+        var act = () => sut.UploadData(item, itemIndex: 0);
+
+        // Assert
+        act.ShouldThrow<Exception>()
+            .Message.ShouldBe("The vertex index buffer cannot be null.");
     }
     #endregion
 
