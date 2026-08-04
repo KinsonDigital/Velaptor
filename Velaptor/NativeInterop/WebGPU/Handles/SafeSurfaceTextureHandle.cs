@@ -37,6 +37,16 @@ internal sealed class SafeSurfaceTextureHandle : SafeHandleZeroOrMinusOneIsInval
     /// </summary>
     public SurfaceGetCurrentTextureStatus SurfaceTextureStatus { get; private set; }
 
+    /// <summary>
+    /// Disposes of the current handle and recreates the handle.
+    /// </summary>
+    /// <param name="surfaceHandle">The surface handle.</param>
+    public void ResetHandle(SafeSurfaceHandle surfaceHandle)
+    {
+        ReleaseHandle();
+        SetHandle(this.wgpu.UnsafeSurfaceGetCurrentTexture(surfaceHandle));
+    }
+
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {

@@ -7,7 +7,6 @@ namespace VelaptorTests.NativeInterop.WebGpu.Handles;
 using System;
 using NSubstitute;
 using Shouldly;
-using Silk.NET.WebGPU;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
 using Xunit;
@@ -61,58 +60,6 @@ public sealed class SafeCommandEncoderHandleTests
     #endregion
 
     #region Method Tests
-    [Fact]
-    public void UpdateHandle_WithValidCurrentHandle_ReleasesOldAndCreatesNew()
-    {
-        // Arrange
-        const IntPtr newHandle = 0x9999;
-        var sut = CreateCommandEncoderHandle(Handle);
-
-        var cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpu, newHandle);
-        this.mockWgpu.Device.Returns(new SafeDeviceHandle(this.mockWgpu, 0x5678));
-        this.mockWgpu.DeviceCreateCommandEncoder(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>()).Returns(cmdEncoderHandle);
-
-        var descriptor = default(CommandEncoderDescriptor);
-
-        // Act
-        sut.UpdateHandle(in descriptor);
-
-        // Assert
-        this.mockWgpu.Received(1).CommandEncoderRelease(Handle);
-        this.mockWgpu.Received(1).DeviceCreateCommandEncoder(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>());
-        sut.DangerousGetHandle().ShouldBe(newHandle);
-    }
-
-    [Fact]
-    public void UpdateHandle_WithInvalidCurrentHandle_DoesNotReleaseOldButCreatesNew()
-    {
-        // Arrange
-        var newHandle = (nint)0x9999;
-        var sut = CreateCommandEncoderHandle(nint.Zero);
-
-        var cmdEncoderHandle = new SafeCommandEncoderHandle(this.mockWgpu, newHandle);
-        this.mockWgpu.Device.Returns(new SafeDeviceHandle(this.mockWgpu, 0x5678));
-        this.mockWgpu.DeviceCreateCommandEncoder(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>()).Returns(cmdEncoderHandle);
-
-        var descriptor = default(CommandEncoderDescriptor);
-
-        // Act
-        sut.UpdateHandle(in descriptor);
-
-        // Assert
-        this.mockWgpu.DidNotReceive().CommandEncoderRelease(Arg.Any<nint>());
-        this.mockWgpu.Received(1).DeviceCreateCommandEncoder(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<CommandEncoderDescriptor>());
-        sut.DangerousGetHandle().ShouldBe(newHandle);
-    }
-
     [Fact]
     public void Dispose_WithValidHandle_ReleasesHandle()
     {

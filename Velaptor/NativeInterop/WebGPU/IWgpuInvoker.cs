@@ -145,6 +145,14 @@ internal interface IWgpuInvoker : IDisposable
         PresentMode presentMode);
 
     /// <summary>
+    /// Gets the current unsafe surface texture handle. The caller
+    /// is responsible for disposing the returned handle before requesting the next frame.
+    /// </summary>
+    /// <param name="surface">The surface handle.</param>
+    /// <returns>A safe handle to the current surface texture.</returns>
+    nint UnsafeSurfaceGetCurrentTexture(SafeSurfaceHandle surface);
+
+    /// <summary>
     /// Gets the current surface texture and wraps it in a safe handle. The caller
     /// is responsible for disposing the returned handle before requesting the next frame.
     /// </summary>
@@ -302,7 +310,17 @@ internal interface IWgpuInvoker : IDisposable
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The command encoder descriptor.</param>
     /// <returns>A pointer to the command encoder.</returns>
+    nint UnsafeDeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
+
+    /// <summary>
+    /// Creates a command encoder.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="descriptor">The command encoder descriptor.</param>
+    /// <returns>A handle to the command encoder.</returns>
     SafeCommandEncoderHandle DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
+
+    // TODO: Change the word 'pointer' to 'handle' in all of the code docs.
 
     /// <summary>
     /// Releases a command encoder.
@@ -365,6 +383,28 @@ internal interface IWgpuInvoker : IDisposable
     /// </summary>
     /// <param name="textureView">The texture view pointer.</param>
     void TextureViewRelease(nint textureView);
+
+    /// <summary>
+    /// Begins a render pass with a single color attachment. The pointer
+    /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
+    /// </summary>
+    /// <param name="encoder">The command encoder to begin the pass on.</param>
+    /// <param name="textureView">The texture view to render into.</param>
+    /// <param name="loadOp">How the attachment is loaded at pass start.</param>
+    /// <param name="storeOp">How the attachment is stored at pass end.</param>
+    /// <param name="r">The red clear-value component (linear-light for sRGB formats).</param>
+    /// <param name="g">The green clear-value component.</param>
+    /// <param name="b">The blue clear-value component.</param>
+    /// <param name="a">The alpha clear-value component.</param>
+    /// <returns>A safe handle to the active render pass encoder.</returns>
+    nint UnsafeCommandEncoderBeginRenderPass(SafeCommandEncoderHandle encoder,
+        SafeTextureViewHandle textureView,
+        LoadOp loadOp,
+        StoreOp storeOp,
+        double r,
+        double g,
+        double b,
+        double a);
 
     /// <summary>
     /// Begins a render pass with a single color attachment. The pointer

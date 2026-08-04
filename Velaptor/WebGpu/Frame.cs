@@ -113,8 +113,6 @@ internal sealed class Frame : IDisposable
             throw new InvalidOperationException("Cannot begin frame. WebGPU has not been initialized.");
         }
 
-        CleanupHandles();
-
         // Configure the swap chain on first frame, or after a resize.
         // This is deferred from Initialize() because the native window
         // may not have reached its final framebuffer size yet at that point.
@@ -123,7 +121,14 @@ internal sealed class Frame : IDisposable
             this.surfaceConfigured = this.surface.Configure();
         }
 
-        this.surfaceTextureHandle = this.surface.GetSurfaceTexture();
+        if (this.surfaceTextureHandle is null)
+        {
+            this.surfaceTextureHandle = this.surface.GetSurfaceTexture();
+        }
+        else
+        {
+            this.surfaceTextureHandle.ResetHandle(this.surface.Handle);
+        }
 
         if (this.surfaceTextureHandle.SurfaceTextureStatus != SurfaceGetCurrentTextureStatus.Success)
         {
@@ -141,10 +146,17 @@ internal sealed class Frame : IDisposable
             Aspect = TextureAspect.All,
         };
 
-        this.textureViewHandle = new SafeTextureViewHandle(
-            this.gd.Wgpu,
-            this.surfaceTextureHandle,
-            in viewDesc);
+        if (this.textureViewHandle is null)
+        {
+            this.textureViewHandle = new SafeTextureViewHandle(
+                this.gd.Wgpu,
+                this.surfaceTextureHandle,
+                in viewDesc);
+        }
+        else
+        {
+            this.textureViewHandle.ResetHandle(this.surfaceTextureHandle, in viewDesc);
+        }
 
         if (this.textureViewHandle.IsInvalid)
         {
@@ -155,21 +167,36 @@ internal sealed class Frame : IDisposable
 
         var encoderDesc = default(CommandEncoderDescriptor);
 
-        this.cmdEncoderHandle = this.gd.Wgpu.DeviceCreateCommandEncoder(this.gd.Handle!, in encoderDesc);
+        if (this.cmdEncoderHandle is null)
+        {
+            this.cmdEncoderHandle = this.gd.Wgpu.DeviceCreateCommandEncoder(this.gd.Handle!, in encoderDesc);
+        }
+        else
+        {
+            this.cmdEncoderHandle.ResetHandle(encoderDesc);
+        }
 
         var clearValue = ToLinearClearColor(clearColor, this.surface.Format);
-        var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(
-            this.cmdEncoderHandle,
-            this.textureViewHandle,
-            LoadOp.Clear,
-            StoreOp.Store,
-            clearValue.R,
-            clearValue.G,
-            clearValue.B,
-            clearValue.A);
 
-        this.renderPassHandle?.Dispose();
-        this.renderPassHandle = passHandle;
+        if (this.renderPassHandle is null)
+        {
+            var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(
+                this.cmdEncoderHandle,
+                this.textureViewHandle,
+                LoadOp.Clear,
+                StoreOp.Store,
+                clearValue.R,
+                clearValue.G,
+                clearValue.B,
+                clearValue.A);
+
+            this.renderPassHandle = passHandle;
+        }
+        else
+        {
+            this.renderPassHandle.ResetHandle(this.cmdEncoderHandle, this.textureViewHandle, clearValue);
+        }
+
         IsValid = true;
         this.hasBegun = true;
 
@@ -198,14 +225,9 @@ internal sealed class Frame : IDisposable
         }
 
         this.renderPassHandle.End();
-        this.renderPassHandle.Dispose();
-        this.renderPassHandle = null;
 
         var cmdBufDesc = default(CommandBufferDescriptor);
         var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.cmdEncoderHandle, in cmdBufDesc);
-
-        this.cmdEncoderHandle.Dispose();
-        this.cmdEncoderHandle = null;
 
         try
         {
@@ -249,6 +271,7 @@ internal sealed class Frame : IDisposable
     /// When the swap-chain surface is in sRGB format, WebGPU interprets the clear value as
     /// <em>linear</em> and applies sRGB encoding before writing — so we pre-convert from sRGB to linear.
     /// </summary>
+    // TODO: Convert to .NET color
     private static SilkColor ToLinearClearColor(NETColor color, TextureFormat format)
     {
         var r = color.R / 255.0f;
@@ -264,30 +287,5 @@ internal sealed class Frame : IDisposable
         }
 
         return new SilkColor(r, g, b, a);
-    }
-
-    /// <summary>
-    /// Cleans up the handles by disposing of them and setting them to null for the next frame.
-    /// </summary>
-    private void CleanupHandles()
-    {
-        // The WebGPU spec states that when you call configure() on a surface,
-        // the old swap chain is torn down and replaced. If any texture or texture view
-        // from the old swap chain is still alive (i.e., hasn't had its native handle
-        // released), it's a validation error in Dawn (Chromium's implementation) and
-        // undefined behavior in wgpu-native.
-        this.textureViewHandle?.Dispose();
-        this.textureViewHandle = null;
-
-        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
-        // ensure we don't leak if Begin() is called again without going through
-        // the normal Submit() → Begin() cycle.
-        this.surfaceTextureHandle?.Dispose();
-        this.surfaceTextureHandle = null;
-
-        this.renderPassHandle?.Dispose();
-        this.renderPassHandle = null;
-        this.cmdEncoderHandle?.Dispose();
-        this.cmdEncoderHandle = null;
     }
 }

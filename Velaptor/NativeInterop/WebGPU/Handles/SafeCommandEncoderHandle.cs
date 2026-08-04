@@ -34,19 +34,13 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
     }
 
     /// <summary>
-    /// Releases the previous encoder, creates a new one from <paramref name="descriptor"/>,
-    /// and stores the new handle.
+    /// Releases the previous encoder, creates a new one from <paramref name="descriptor"/>, and stores the new handle.
     /// </summary>
     /// <param name="descriptor">The command encoder creation descriptor.</param>
-    public void UpdateHandle(in CommandEncoderDescriptor descriptor)
+    public void ResetHandle(in CommandEncoderDescriptor descriptor)
     {
-        if (!IsInvalid)
-        {
-            this.wgpu.CommandEncoderRelease(this.handle);
-        }
-
-        var newHandle = this.wgpu.DeviceCreateCommandEncoder(this.wgpu.Device, in descriptor);
-        SetHandle(newHandle.DangerousGetHandle());
+        ReleaseHandle();
+        SetHandle(this.wgpu.UnsafeDeviceCreateCommandEncoder(this.wgpu.Device, in descriptor));
     }
 
     /// <inheritdoc/>

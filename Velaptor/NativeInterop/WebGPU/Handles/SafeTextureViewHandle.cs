@@ -45,6 +45,17 @@ internal sealed class SafeTextureViewHandle : SafeHandleZeroOrMinusOneIsInvalid
         SetHandle(this.wgpu.TextureCreateView(surfaceTextureHandle, in descriptor));
     }
 
+    /// <summary>
+    /// Disposes of the current handle and recreates the handle.
+    /// </summary>
+    /// <param name="surfaceTextureHandle">The surface texture handle.</param>
+    /// <param name="descriptor">The texture view descriptor.</param>
+    public void ResetHandle(SafeSurfaceTextureHandle surfaceTextureHandle, in TextureViewDescriptor descriptor = default)
+    {
+        ReleaseHandle();
+        SetHandle(this.wgpu.TextureCreateView(surfaceTextureHandle, in descriptor));
+    }
+
     /// <inheritdoc/>
     protected override bool ReleaseHandle()
     {
