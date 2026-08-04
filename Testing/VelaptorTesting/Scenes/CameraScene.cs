@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -26,6 +28,7 @@ public class CameraScene : SceneBase
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
     private readonly IContentManager contentManager;
+    private readonly BackgroundManager backgroundManager;
     private readonly ICamera2D camera;
     private readonly Label lblHelpText;
     private readonly Label lblInstructions;
@@ -33,7 +36,7 @@ public class CameraScene : SceneBase
     private Vector2 mapWorldPos;
     private ITexture? zeldaMapTexture;
     private IFont? font;
-    private bool renderInstructions = false;
+    private bool renderInstructions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CameraScene"/> class.
@@ -43,6 +46,7 @@ public class CameraScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
 
+        this.backgroundManager = new BackgroundManager();
         this.contentManager = ContentManager.Create();
         this.camera = CameraFactory.CreateCamera();
 
@@ -61,6 +65,7 @@ public class CameraScene : SceneBase
 
     public override void LoadContent()
     {
+        this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.lblHelpText.Load();
         this.lblInstructions.Load();
 
@@ -73,6 +78,7 @@ public class CameraScene : SceneBase
 
     public override void UnloadContent()
     {
+        this.backgroundManager.Unload();
         this.lblHelpText.Unload();
         this.lblInstructions.Unload();
         this.contentManager.Unload(this.zeldaMapTexture);
@@ -154,6 +160,8 @@ public class CameraScene : SceneBase
         {
             throw new InvalidOperationException("Font was not loaded.");
         }
+
+        this.backgroundManager.Render();
 
         var mapPos = this.camera.TransformPosition(this.mapWorldPos);
         var textureScale = this.camera.TransformSize(2f);
