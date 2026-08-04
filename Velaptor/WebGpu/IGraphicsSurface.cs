@@ -1,4 +1,4 @@
-﻿// <copyright file="IGraphicsSurface.cs" company="KinsonDigital">
+﻿﻿// <copyright file="IGraphicsSurface.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -47,7 +47,12 @@ internal interface IGraphicsSurface : IDisposable
     /// Must be called once after the window reaches its final initial size and
     /// again after every window resize.
     /// </summary>
-    void Configure();
+    /// <returns>
+    /// <c>true</c> if the surface was successfully configured; <c>false</c> if the
+    /// framebuffer size is zero (e.g. the window is minimized) and configuration
+    /// was skipped.
+    /// </returns>
+    bool Configure();
 
     /// <summary>
     /// Gets the current surface texture from the swap chain for rendering this frame.

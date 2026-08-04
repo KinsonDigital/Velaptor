@@ -1,4 +1,4 @@
-﻿// <copyright file="GraphicsSurfaceTests.cs" company="KinsonDigital">
+﻿﻿// <copyright file="GraphicsSurfaceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -228,6 +228,32 @@ public class GraphicsSurfaceTests
     }
 
     [Fact]
+    public void Configure_WithZeroFrameBufferSize_ReturnsFalseAndDoesNotConfigure()
+    {
+        // Arrange
+        var expectedSize = new Vector2D<int>(0, 0);
+        this.mockWindow.FramebufferSize.Returns(expectedSize);
+        this.mockGraphicsDevice.Adapter.Returns(new SafeAdapterHandle(this.mockWgpuInvoker, 0x123));
+        this.mockGraphicsDevice.Handle.Returns(new SafeDeviceHandle(this.mockWgpuInvoker, 0x456));
+        var sut = CreateSystemUnderTest();
+        sut.Initialize();
+
+        // Act
+        var result = sut.Configure();
+
+        // Assert
+        result.ShouldBeFalse();
+        this.mockWgpuInvoker.DidNotReceive().SurfaceConfigure(
+            Arg.Any<SafeSurfaceHandle>(),
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<TextureFormat>(),
+            Arg.Any<TextureUsage>(),
+            Arg.Any<uint>(),
+            Arg.Any<uint>(),
+            Arg.Any<PresentMode>());
+    }
+
+    [Fact]
     public void Configure_WithNullAdapter_ThrowsException()
     {
         // Arrange
@@ -237,7 +263,7 @@ public class GraphicsSurfaceTests
         sut.Initialize();
 
         // Act
-        var act = () => sut.Configure();
+        Action act = () => { _ = sut.Configure(); };
 
         // Assert
         var exception = act.ShouldThrow<InvalidOperationException>();
@@ -254,7 +280,7 @@ public class GraphicsSurfaceTests
         sut.Initialize();
 
         // Act
-        var act = () => sut.Configure();
+        Action act = () => { _ = sut.Configure(); };
 
         // Assert
         var exception = act.ShouldThrow<InvalidOperationException>();

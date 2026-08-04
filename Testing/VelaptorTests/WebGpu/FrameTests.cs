@@ -1,4 +1,4 @@
-﻿// <copyright file="FrameTests.cs" company="KinsonDigital">
+﻿﻿// <copyright file="FrameTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -63,6 +63,7 @@ public class FrameTests
         this.mockSurface = Substitute.For<IGraphicsSurface>();
         this.mockSurface.Handle.Returns(this.surfaceHandle);
         this.mockSurface.GetSurfaceTexture().Returns(this.surfaceTextureHandle);
+        this.mockSurface.Configure().Returns(true);
     }
 
     #region Constructor Tests

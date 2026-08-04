@@ -120,8 +120,7 @@ internal sealed class Frame : IDisposable
         // may not have reached its final framebuffer size yet at that point.
         if (!this.surfaceConfigured)
         {
-            this.surface.Configure();
-            this.surfaceConfigured = true;
+            this.surfaceConfigured = this.surface.Configure();
         }
 
         this.surfaceTextureHandle = this.surface.GetSurfaceTexture();

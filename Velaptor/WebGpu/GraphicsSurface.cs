@@ -80,7 +80,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     }
 
     /// <inheritdoc/>
-    public void Configure()
+    public bool Configure()
     {
         if (this.gd.Adapter is null || this.gd.Handle is null)
         {
@@ -88,6 +88,15 @@ internal sealed class GraphicsSurface : IGraphicsSurface
         }
 
         var size = this.window.FramebufferSize;
+
+        // When the window is minimized the framebuffer size is (0, 0).
+        // wgpuSurfaceConfigure panics with a validation error if either
+        // dimension is zero, so skip the call and let the next resize
+        // (when the window is restored) reconfigure the surface.
+        if (size.X == 0 || size.Y == 0)
+        {
+            return false;
+        }
 
         Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
 
@@ -99,6 +108,8 @@ internal sealed class GraphicsSurface : IGraphicsSurface
             (uint)size.X,
             (uint)size.Y,
             PresentMode.Fifo);
+
+        return true;
     }
 
     /// <inheritdoc/>
