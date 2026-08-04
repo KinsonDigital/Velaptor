@@ -181,13 +181,13 @@ internal sealed class GraphicsDevice : IGraphicsDevice
         Queue?.Dispose();
         Handle?.Dispose();
         Adapter?.Dispose();
-        Instance?.Dispose();
+        Instance.Dispose();
     }
 
     /// <summary>
     /// Fired when a GPU error escapes all active error scopes.
     /// </summary>
-    private static void OnDeviceError(ErrorType type, nint message, nint _)
+    private static void OnDeviceError(ErrorType type, nint message, nint userdata)
     {
         var msg = SilkMarshal.PtrToString(message);
         Console.WriteLine($"[WebGPU Error] {type}: {msg}");
@@ -196,7 +196,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// <summary>
     /// Fired synchronously by wgpu-native when the adapter request completes.
     /// </summary>
-    private void OnAdapterReceived(RequestAdapterStatus status, nint adapter, nint message, nint _)
+    private void OnAdapterReceived(RequestAdapterStatus status, nint adapter, nint message, nint userdata)
     {
         if (status == RequestAdapterStatus.Success)
         {
@@ -211,7 +211,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     /// <summary>
     /// Fired synchronously by wgpu-native when the device request completes.
     /// </summary>
-    private void OnDeviceReceived(RequestDeviceStatus status, nint device, nint message, nint _)
+    private void OnDeviceReceived(RequestDeviceStatus status, nint device, nint message, nint userdata)
     {
         if (status == RequestDeviceStatus.Success)
         {

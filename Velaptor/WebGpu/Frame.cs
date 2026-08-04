@@ -231,31 +231,6 @@ internal sealed class Frame : IDisposable
     }
 
     /// <summary>
-    /// Cleans up the handles by disposing of them and setting them to null for the next frame.
-    /// </summary>
-    private void CleanupHandles()
-    {
-        // The WebGPU spec states that when you call configure() on a surface,
-        // the old swap chain is torn down and replaced. If any texture or texture view
-        // from the old swap chain is still alive (i.e., hasn't had its native handle
-        // released), it's a validation error in Dawn (Chromium's implementation) and
-        // undefined behavior in wgpu-native.
-        this.textureViewHandle?.Dispose();
-        this.textureViewHandle = null;
-
-        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
-        // ensure we don't leak if Begin() is called again without going through
-        // the normal Submit() → Begin() cycle.
-        this.surfaceTextureHandle?.Dispose();
-        this.surfaceTextureHandle = null;
-
-        this.renderPassHandle?.Dispose();
-        this.renderPassHandle = null;
-        this.cmdEncoderHandle?.Dispose();
-        this.cmdEncoderHandle = null;
-    }
-
-    /// <summary>
     /// Returns <see langword="true"/> when <paramref name="format"/> uses sRGB encoding.
     /// </summary>
     private static bool IsSrgbFormat(TextureFormat format)
@@ -289,5 +264,30 @@ internal sealed class Frame : IDisposable
         }
 
         return new SilkColor(r, g, b, a);
+    }
+
+    /// <summary>
+    /// Cleans up the handles by disposing of them and setting them to null for the next frame.
+    /// </summary>
+    private void CleanupHandles()
+    {
+        // The WebGPU spec states that when you call configure() on a surface,
+        // the old swap chain is torn down and replaced. If any texture or texture view
+        // from the old swap chain is still alive (i.e., hasn't had its native handle
+        // released), it's a validation error in Dawn (Chromium's implementation) and
+        // undefined behavior in wgpu-native.
+        this.textureViewHandle?.Dispose();
+        this.textureViewHandle = null;
+
+        // surfaceTextureHandle is disposed inside GetSurfaceTexture(), but
+        // ensure we don't leak if Begin() is called again without going through
+        // the normal Submit() → Begin() cycle.
+        this.surfaceTextureHandle?.Dispose();
+        this.surfaceTextureHandle = null;
+
+        this.renderPassHandle?.Dispose();
+        this.renderPassHandle = null;
+        this.cmdEncoderHandle?.Dispose();
+        this.cmdEncoderHandle = null;
     }
 }

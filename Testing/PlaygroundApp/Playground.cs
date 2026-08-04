@@ -47,7 +47,7 @@ public class Playground : Window
     /// </summary>
     protected override void OnUnload()
     {
-        this.contentManager.Unload<IAtlasData>(this.atlas);
+        this.contentManager.Unload(this.atlas);
         base.OnUnload();
     }
 

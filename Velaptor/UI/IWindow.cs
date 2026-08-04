@@ -8,6 +8,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Scene;
+using WebGpu.Batching;
 
 /// <summary>
 /// Provides the core of an application window which facilitates how the
@@ -120,22 +121,22 @@ public interface IWindow : IDisposable
     /// <summary>
     /// Gets or sets a value indicating whether the scenes should be automatically unloaded.
     /// </summary>
-    public bool AutoSceneUnloading { get; set; }
+    bool AutoSceneUnloading { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the scenes should be automatically updated.
     /// </summary>
-    public bool AutoSceneUpdating { get; set; }
+    bool AutoSceneUpdating { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the scenes should be automatically rendered.
     /// </summary>
-    public bool AutoSceneRendering { get; set; }
+    bool AutoSceneRendering { get; set; }
 
     /// <summary>
     /// Gets the frames per second that the main loop is running at.
     /// </summary>
-    public float Fps { get; }
+    float Fps { get; }
 
     /// <summary>
     /// Shows the window.
