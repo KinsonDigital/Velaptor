@@ -53,8 +53,15 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
+    private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new ();
+    private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
+    private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
+    private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new ();
     private readonly ITimerService timerService;
     private readonly IDisposable pullWinSizeUnsubscriber;
+    private CachedValue<StateOfWindow>? cachedWindowState;
+    private CachedValue<VelaptorWindowBorder>? cachedTypeOfBorder;
+    private CachedValue<Vector2>? cachedPosition;
     private MouseStateData mouseStateData;
     private IInputContext? glInputContext;
     private bool isShuttingDown;
@@ -150,29 +157,29 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <inheritdoc/>
     public string Title
     {
-        get => CachedStringProps[nameof(Title)].GetValue();
-        set => CachedStringProps[nameof(Title)].SetValue(value);
+        get => this.cachedStringProps[nameof(Title)].GetValue();
+        set => this.cachedStringProps[nameof(Title)].SetValue(value);
     }
 
     /// <inheritdoc/>
     public Vector2 Position
     {
-        get => CachedPosition.GetValue();
-        set => CachedPosition.SetValue(value);
+        get => this.cachedPosition?.GetValue() ?? Vector2.Zero;
+        set => this.cachedPosition?.SetValue(value);
     }
 
     /// <inheritdoc/>
     public uint Width
     {
-        get => CachedUIntProps[nameof(Width)].GetValue();
-        set => CachedUIntProps[nameof(Width)].SetValue(value);
+        get => this.cachedUIntProps[nameof(Width)].GetValue();
+        set => this.cachedUIntProps[nameof(Width)].SetValue(value);
     }
 
     /// <inheritdoc/>
     public uint Height
     {
-        get => CachedUIntProps[nameof(Height)].GetValue();
-        set => CachedUIntProps[nameof(Height)].SetValue(value);
+        get => this.cachedUIntProps[nameof(Height)].GetValue();
+        set => this.cachedUIntProps[nameof(Height)].SetValue(value);
     }
 
     /// <inheritdoc/>
@@ -181,15 +188,15 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <inheritdoc/>
     public bool MouseCursorVisible
     {
-        get => CachedBoolProps[nameof(MouseCursorVisible)].GetValue();
-        set => CachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
+        get => this.cachedBoolProps[nameof(MouseCursorVisible)].GetValue();
+        set => this.cachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
     }
 
     /// <inheritdoc/>
     public StateOfWindow WindowState
     {
-        get => CachedWindowState.GetValue();
-        set => CachedWindowState.SetValue(value);
+        get => this.cachedWindowState?.GetValue() ?? StateOfWindow.Normal;
+        set => this.cachedWindowState?.SetValue(value);
     }
 
     /// <inheritdoc/>
@@ -210,8 +217,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <inheritdoc/>
     public VelaptorWindowBorder TypeOfBorder
     {
-        get => CachedTypeOfBorder.GetValue();
-        set => CachedTypeOfBorder.SetValue(value);
+        get => this.cachedTypeOfBorder?.GetValue() ?? VelaptorWindowBorder.Resizable;
+        set => this.cachedTypeOfBorder?.SetValue(value);
     }
 
     /// <inheritdoc/>
@@ -235,47 +242,12 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <inheritdoc/>
     public int UpdateFrequency
     {
-        get => CachedIntProps[nameof(UpdateFrequency)].GetValue();
-        set => CachedIntProps[nameof(UpdateFrequency)].SetValue(value);
+        get => this.cachedIntProps[nameof(UpdateFrequency)].GetValue();
+        set => this.cachedIntProps[nameof(UpdateFrequency)].SetValue(value);
     }
 
     /// <inheritdoc/>
     public bool Initialized { get; private set; }
-
-    /// <summary>
-    /// Gets the list of caches for <see langword="string"/> properties.
-    /// </summary>
-    public Dictionary<string, CachedValue<string>> CachedStringProps { get; } = new ();
-
-    /// <summary>
-    /// Gets the list of caches for <see langword="int"/> properties.
-    /// </summary>
-    public Dictionary<string, CachedValue<int>> CachedIntProps { get; } = new ();
-
-    /// <summary>
-    /// Gets the list of caches for <see langword="uint"/> properties.
-    /// </summary>
-    public Dictionary<string, CachedValue<uint>> CachedUIntProps { get; } = new ();
-
-    /// <summary>
-    /// Gets the list of caches for <see langword="bool"/> properties.
-    /// </summary>
-    public Dictionary<string, CachedValue<bool>> CachedBoolProps { get; } = new ();
-
-    /// <summary>
-    /// Gets the cache for the <see cref="WindowState"/> property.
-    /// </summary>
-    public CachedValue<StateOfWindow> CachedWindowState { get; private set; } = null!;
-
-    /// <summary>
-    /// Gets the cache for the <see cref="TypeOfBorder"/> property.
-    /// </summary>
-    public CachedValue<VelaptorWindowBorder> CachedTypeOfBorder { get; private set; } = null!;
-
-    /// <summary>
-    /// Gets the cache for the <see cref="Position"/> property.
-    /// </summary>
-    public CachedValue<Vector2> CachedPosition { get; private set; } = null!;
 
     /// <inheritdoc/>
     public void Show()
@@ -390,13 +362,25 @@ internal sealed class WgpuWindow : VelaptorIWindow
     {
         Init(Width, Height);
 
-        CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
-        CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
-        CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-        CachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-        CachedPosition.IsCaching = false;
-        CachedWindowState.IsCaching = false;
-        CachedTypeOfBorder.IsCaching = false;
+        this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+        if (this.cachedPosition is not null)
+        {
+            this.cachedPosition.IsCaching = false;
+        }
+
+        if (this.cachedWindowState is not null)
+        {
+            this.cachedWindowState.IsCaching = false;
+        }
+
+        if (this.cachedTypeOfBorder is not null)
+        {
+            this.cachedTypeOfBorder.IsCaching = false;
+        }
 
         // Notify all subscribers that the window is ready. For WebGPU this is the signal
         // for WgpuBatcher to initialize the WebGPU surface, adapter, device and pipelines.
@@ -614,9 +598,9 @@ internal sealed class WgpuWindow : VelaptorIWindow
         {
             this.pushReactable.UnsubscribeAll();
 
-            CachedStringProps.Clear();
-            CachedIntProps.Clear();
-            CachedBoolProps.Clear();
+            this.cachedStringProps.Clear();
+            this.cachedIntProps.Clear();
+            this.cachedBoolProps.Clear();
 
             if (this.glInputContext is not null)
             {
@@ -649,14 +633,14 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void SetupWidthHeightPropCaches(uint width, uint height)
     {
-        CachedUIntProps.Add(
+        this.cachedUIntProps.Add(
             nameof(Width),
             new CachedValue<uint>(
                 defaultValue: width,
                 getterWhenNotCaching: () => (uint)this.silkWindow.Size.X,
                 setterWhenNotCaching: value => this.silkWindow.Size = new Vector2D<int>((int)value, this.silkWindow.Size.Y)));
 
-        CachedUIntProps.Add(
+        this.cachedUIntProps.Add(
             nameof(Height),
             new CachedValue<uint>(
                 defaultValue: height,
@@ -669,7 +653,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void SetupOtherPropCaches()
     {
-        CachedStringProps.Add(
+        this.cachedStringProps.Add(
             nameof(Title),
             new CachedValue<string>(
                 defaultValue: "Velaptor Application",
@@ -686,19 +670,19 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
         var defaultPosition = new Vector2(mainDisplay.Center.X - halfWidth, mainDisplay.Center.Y - halfHeight);
 
-        CachedPosition = new CachedValue<Vector2>(
+        this.cachedPosition = new CachedValue<Vector2>(
             defaultValue: defaultPosition,
             getterWhenNotCaching: () => new Vector2(this.silkWindow.Position.X, this.silkWindow.Position.Y),
             setterWhenNotCaching: value => this.silkWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y));
 
-        CachedIntProps.Add(
+        this.cachedIntProps.Add(
             nameof(UpdateFrequency),
             new CachedValue<int>(
                 defaultValue: 60,
                 getterWhenNotCaching: () => (int)this.silkWindow.UpdatesPerSecond,
                 setterWhenNotCaching: value => this.silkWindow.UpdatesPerSecond = value));
 
-        CachedBoolProps.Add(
+        this.cachedBoolProps.Add(
             nameof(MouseCursorVisible),
             new CachedValue<bool>(
                 defaultValue: true,
@@ -717,7 +701,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
                     }
                 }));
 
-        CachedWindowState = new CachedValue<StateOfWindow>(
+        this.cachedWindowState = new CachedValue<StateOfWindow>(
             defaultValue: StateOfWindow.Normal,
             getterWhenNotCaching: () =>
             {
@@ -742,7 +726,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
                 this.silkWindow.WindowState = (WindowState)value;
             });
 
-        CachedTypeOfBorder = new CachedValue<VelaptorWindowBorder>(
+        this.cachedTypeOfBorder = new CachedValue<VelaptorWindowBorder>(
             defaultValue: VelaptorWindowBorder.Resizable,
             getterWhenNotCaching: () =>
             {
