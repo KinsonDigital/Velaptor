@@ -6,11 +6,7 @@ namespace Velaptor.Services;
 
 using System;
 using System.Drawing;
-using System.Globalization;
-using System.Numerics;
-using ImGuiNET;
 using Input;
-using NativeInterop.ImGui;
 
 /// <inheritdoc/>
 internal sealed class StatsWindowService : IStatsWindowService
@@ -18,7 +14,6 @@ internal sealed class StatsWindowService : IStatsWindowService
     private const int PreRenderCount = 5;
     private const int CollapseArrowButtonWidth = 57;
     private const string Title = "Runtime Stats";
-    private readonly IImGuiInvoker imGuiInvoker;
     private readonly IAppInput<KeyboardState> keyboard;
     private KeyboardState prevKeyState;
     private float fps;
@@ -31,14 +26,11 @@ internal sealed class StatsWindowService : IStatsWindowService
     /// <summary>
     /// Initializes a new instance of the <see cref="StatsWindowService"/> class.
     /// </summary>
-    /// <param name="imGuiInvoker">Invokes ImGui functions.</param>
     /// <param name="keyboard">Manages keyboard input.</param>
-    public StatsWindowService(IImGuiInvoker imGuiInvoker, IAppInput<KeyboardState> keyboard)
+    public StatsWindowService(IAppInput<KeyboardState> keyboard)
     {
-        ArgumentNullException.ThrowIfNull(imGuiInvoker);
         ArgumentNullException.ThrowIfNull(keyboard);
 
-        this.imGuiInvoker = imGuiInvoker;
         this.keyboard = keyboard;
     }
 
@@ -92,36 +84,16 @@ internal sealed class StatsWindowService : IStatsWindowService
             return;
         }
 
-        this.imGuiInvoker.Begin(Title, ImGuiWindowFlags.None);
+        // TODO: Add ability to display stats to the user here.
+        // This used to be done with the IMGUI invoker and implementation but that
+        // needed to be removed. This needs to use the UILib project in the Testing folder
+        // to render stats such as 'FPS'. This is used in the WgpuWindow to render the stats
+        // at the highest most layer to prevent any game objects for rendering over it.
 
-        if (Visible || !this.isInitialized)
-        {
-            this.imGuiInvoker.Text($"FPS: {this.fps.ToString(new CultureInfo("en-US"))}");
-        }
+        // var fps = $"FPS: {this.fps.ToString(new CultureInfo("en-US"))}";
 
-        if (this.invokeCount < PreRenderCount)
-        {
-            this.imGuiInvoker.SetWindowSize(Vector2.Zero);
-        }
-
-        if (this.shouldSetPos)
-        {
-            this.imGuiInvoker.SetWindowPos(this.position.ToVector2());
-            this.shouldSetPos = false;
-        }
-
-        if (!this.isInitialized && this.invokeCount >= PreRenderCount)
-        {
-           Init();
-        }
-
-        this.imGuiInvoker.End();
-
-        this.invokeCount += 1;
-        if (this.invokeCount < PreRenderCount)
-        {
-            Render();
-        }
+        // Init();  // Not sure that we need this anymore
+        // Render();
     }
 
     /// <inheritdoc/>
@@ -135,27 +107,5 @@ internal sealed class StatsWindowService : IStatsWindowService
         this.Initialized = null;
 
         this.isDisposed = true;
-    }
-
-    /// <summary>
-    /// Initializes the window.
-    /// </summary>
-    private void Init()
-    {
-        var winSize = this.imGuiInvoker.GetWindowSize();
-        var textSize = this.imGuiInvoker.CalcTextSize(Title);
-
-        var padding = this.imGuiInvoker.GetStyle().WindowPadding;
-        var horizontalPadding = winSize.X < textSize.X + CollapseArrowButtonWidth
-            ? padding.X + CollapseArrowButtonWidth
-            : padding.X;
-        var verticalPadding = padding.Y;
-
-        var size = new Vector2((int)winSize.X + horizontalPadding, (int)winSize.Y + verticalPadding);
-        Size = new Size((int)size.X, (int)size.Y);
-        this.imGuiInvoker.SetWindowSize(size);
-
-        this.Initialized?.Invoke(this, EventArgs.Empty);
-        this.isInitialized = true;
     }
 }

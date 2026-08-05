@@ -23,7 +23,6 @@ using Hardware.Services;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
-using NativeInterop.ImGui;
 using NativeInterop.Services;
 using NativeInterop.WebGpu;
 using ReactableData;
@@ -236,10 +235,6 @@ internal static class IoC
         IoCContainer.Register<IWgpuInvoker, WgpuInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IGlfwInvoker, GlfwInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
-        IoCContainer.Register<IImGuiInvoker, ImGuiInvoker>(Lifestyle.Singleton);
-        IoCContainer.Register<IImGuiManager, ImGuiManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IImGuiService, ImGuiService>(Lifestyle.Singleton);
-        IoCContainer.Register<IImGuiFacade, ImGuiFacade>(Lifestyle.Singleton);
 
         IoCContainer.Register<GlfwDisplays>(Lifestyle.Singleton);
         IoCContainer.Register<IDisplays, GlfwDisplays>(Lifestyle.Singleton);

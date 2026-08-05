@@ -6,7 +6,6 @@ namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
 using NativeInterop.GLFW;
-using NativeInterop.ImGui;
 using Scene;
 using Services;
 using Telemetry;
@@ -53,9 +52,7 @@ internal static class WindowFactory
             IoC.Container.GetInstance<IPlatform>(),
             IoC.Container.GetInstance<ITaskService>(),
             IoC.Container.GetInstance<IStatsWindowService>(),
-            IoC.Container.GetInstance<IImGuiFacade>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
             IoC.Container.GetInstance<ITimerService>());
 }
-

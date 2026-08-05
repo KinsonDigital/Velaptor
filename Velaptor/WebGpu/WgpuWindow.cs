@@ -19,7 +19,6 @@ using Factories;
 using Input;
 using Input.Exceptions;
 using NativeInterop.GLFW;
-using NativeInterop.ImGui;
 using ReactableData;
 using Scene;
 using Silk.NET.Input;
@@ -47,7 +46,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
     private readonly IStatsWindowService statsWindowServiceService;
-    private readonly IImGuiFacade imGuiFacade;
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
@@ -82,7 +80,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="statsWindowServiceService">Manages the ImGui stats window.</param>
-    /// <param name="imGuiFacade">Performs ImGui-related operations.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
     /// <param name="timerService">Measures game-loop frame time.</param>
@@ -97,7 +94,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         IPlatform platform,
         ITaskService taskService,
         IStatsWindowService statsWindowServiceService,
-        IImGuiFacade imGuiFacade,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
         ITimerService timerService)
@@ -110,7 +106,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(platform);
         ArgumentNullException.ThrowIfNull(taskService);
         ArgumentNullException.ThrowIfNull(statsWindowServiceService);
-        ArgumentNullException.ThrowIfNull(imGuiFacade);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(timerService);
@@ -122,7 +117,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         this.statsWindowServiceService = statsWindowServiceService;
-        this.imGuiFacade = imGuiFacade;
         SceneManager = sceneManager;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -490,15 +484,10 @@ internal sealed class WgpuWindow : VelaptorIWindow
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
         };
 
-        this.imGuiFacade.Update(time);
-
         Draw?.Invoke(frameTime);
 
         this.statsWindowServiceService.UpdateFpsStat(Fps);
 
-        // Finalize the ImGui frame (draw data is discarded — no WebGPU ImGui backend yet)
-        // then close the render pass and present the completed frame.
-        this.imGuiFacade.Render();
         this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
 
         this.timerService.Stop();
@@ -620,7 +609,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
             this.statsWindowServiceService.Dispose();
             this.taskService.Dispose();
-            this.imGuiFacade.Dispose();
 
             this.glfw.Dispose();
         }

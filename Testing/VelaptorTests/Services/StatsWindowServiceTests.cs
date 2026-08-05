@@ -12,7 +12,6 @@ using ImGuiNET;
 using NSubstitute;
 using Shouldly;
 using Velaptor.Input;
-using Velaptor.NativeInterop.ImGui;
 using Velaptor.Services;
 using Xunit;
 #pragma warning disable SA1008
@@ -25,7 +24,6 @@ using KeyState = (Velaptor.Input.KeyCode key, bool state);
 /// </summary>
 public class StatsWindowServiceTests
 {
-    private readonly IImGuiInvoker mockImGuiInvoker;
     private readonly IAppInput<KeyboardState> mockKeyboard;
 
     /// <summary>
@@ -33,7 +31,6 @@ public class StatsWindowServiceTests
     /// </summary>
     public StatsWindowServiceTests()
     {
-        this.mockImGuiInvoker = Substitute.For<IImGuiInvoker>();
         this.mockKeyboard = Substitute.For<IAppInput<KeyboardState>>();
     }
 
@@ -187,26 +184,12 @@ public class StatsWindowServiceTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullImGuiInvokerParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new StatsWindowService(null, this.mockKeyboard);
-        };
-
-        // Assert
-        var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'imGuiInvoker')");
-    }
-
-    [Fact]
     public void Ctor_WithNullKeyboardParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
         {
-            _ = new StatsWindowService(this.mockImGuiInvoker, null!);
+            _ = new StatsWindowService(null!);
         };
 
         // Assert
@@ -281,25 +264,6 @@ public class StatsWindowServiceTests
         actual.ShouldBe(expected);
     }
 
-    [Fact]
-    public void Render_WhenInvokedBeforeInitializationIsInvoked_RendersWindow()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.UpdateFpsStat(123.456789f);
-        sut.Visible = true;
-
-        // Act
-        sut.Render();
-
-        // Assert
-        this.mockImGuiInvoker.Received(5).Begin("Runtime Stats", ImGuiWindowFlags.None);
-        this.mockImGuiInvoker.Received(5).Text("FPS: 123.46");
-        this.mockImGuiInvoker.Received(5).SetWindowSize(Vector2.Zero);
-        this.mockImGuiInvoker.Received(1).SetWindowPos(Vector2.Zero);
-        this.mockImGuiInvoker.Received(5).End();
-    }
-
     [Theory]
     [MemberData(nameof(InitData))]
     public void Render_WhenInvokedWithInitialization_InitializesWindow(
@@ -312,8 +276,6 @@ public class StatsWindowServiceTests
         var style = new ImGuiStyle { WindowPadding = new Vector2(5, 10) };
 
         MockStyle(style);
-        this.mockImGuiInvoker.GetWindowSize().Returns(winSize);
-        this.mockImGuiInvoker.CalcTextSize(Arg.Any<string>()).Returns(textSize);
 
         var sut = CreateSystemUnderTest();
         sut.Visible = true;
@@ -328,10 +290,6 @@ public class StatsWindowServiceTests
         sut.Render();
 
         // Assert
-        this.mockImGuiInvoker.Received(1).GetWindowSize();
-        this.mockImGuiInvoker.Received(1).CalcTextSize("Runtime Stats");
-        this.mockImGuiInvoker.Received(1).GetStyle();
-        this.mockImGuiInvoker.Received(1).SetWindowSize(expected);
         eventWasRaised.ShouldBeTrue();
         sut.Size.ShouldBe(new Size((int)expected.X, (int)expected.Y));
     }
@@ -363,7 +321,7 @@ public class StatsWindowServiceTests
     /// Creates a new instance of <see cref="StatsWindowService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private StatsWindowService CreateSystemUnderTest() => new (this.mockImGuiInvoker, this.mockKeyboard);
+    private StatsWindowService CreateSystemUnderTest() => new (this.mockKeyboard);
 
     /// <summary>
     /// Mocks the given <paramref name="style"/>.
@@ -376,7 +334,5 @@ public class StatsWindowServiceTests
         {
             stylePtr = new ImGuiStylePtr(&style);
         }
-
-        this.mockImGuiInvoker.GetStyle().Returns(stylePtr);
     }
 }
