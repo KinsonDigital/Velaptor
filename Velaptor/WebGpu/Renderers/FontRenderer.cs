@@ -20,6 +20,8 @@ using Graphics.Renderers;
 using NativeInterop.WebGpu;
 using Velaptor.Batching;
 
+// TODO: Go through all of the renderers and if the frame has not begun before a render, throw an exception.
+
 /// <summary>
 /// Renders text to the screen using WebGPU via a font texture atlas.
 /// Each glyph in the text is a sub-rectangle of the atlas texture drawn as a textured quad.
@@ -32,6 +34,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     private readonly Frame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
     private readonly IBatchingManager batchManager;
+    private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
@@ -75,13 +78,14 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
+        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.FrameHasBegunId,
+            () => this.batchOffset = 0,
+            () => this.frameBeginUnsubscriber?.Dispose());
+
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () =>
-            {
-                this.hasBegun = true;
-                this.batchOffset = 0;
-            },
+            () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderFontReactable();
@@ -531,6 +535,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         }
 
         this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
         this.viewportUnsubscriber.Dispose();

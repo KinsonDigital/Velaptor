@@ -29,6 +29,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     private readonly TextureGpuBuffer buffer;
     private readonly Frame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
+    private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderTexturesUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
@@ -75,13 +76,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
+        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.FrameHasBegunId,
+            () => this.batchOffset = 0,
+            () => this.frameBeginUnsubscriber?.Dispose());
+
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () =>
-            {
-                this.hasBegun = true;
-                this.batchOffset = 0;
-            },
+            () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderTextureReactable();
@@ -738,6 +740,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         }
 
         this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
         this.batchBeginUnsubscriber.Dispose();
         this.renderTexturesUnsubscriber.Dispose();
         this.viewportUnsubscriber.Dispose();

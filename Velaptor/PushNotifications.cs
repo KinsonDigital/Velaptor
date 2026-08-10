@@ -21,6 +21,8 @@ internal static class PushNotifications
     /// </summary>
     public static Guid GLObjectsCreatedId { get; } = new ("930eb1c3-8071-43bc-9dd8-fb7978f4af83");
 
+    // TODO: Refactor name of this id.  Opengl is not a thing anymore.
+
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when OpenGL has been initialized.
     /// </summary>
@@ -70,6 +72,11 @@ internal static class PushNotifications
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has started.
     /// </summary>
     public static Guid BatchHasBegunId { get; } = new ("845e89b2-5a9d-4091-8689-d56f5c3060f3");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the render frame has started.
+    /// </summary>
+    public static Guid FrameHasBegunId { get; } = new ("64c298b4-1d37-4b59-9fc5-d7a77c0479fa");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has been ended.

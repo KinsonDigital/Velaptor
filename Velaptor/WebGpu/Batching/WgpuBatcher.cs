@@ -17,7 +17,7 @@ using ReactableData;
 /// Manages the batch rendering lifecycle for the WebGPU backend.
 /// Wraps the <see cref="Frame"/> render pass cycle: begin, clear, end, submit.
 /// </summary>
-[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with 'IoC' container.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the 'IoC' container.")]
 internal sealed class WgpuBatcher : IBatcher
 {
     private const string RenderExceptionMsg = "The renderer is not initialized.";
@@ -31,6 +31,7 @@ internal sealed class WgpuBatcher : IBatcher
     private readonly IDisposable submitUnsubscriber;
     private Color clearColor = Color.FromArgb(255, 16, 29, 36);
     private int frameDepth;
+    private bool frameBegun;
     private bool isInitialized;
     private readonly IDisposable reconfigureUnsubscriber;
 
@@ -109,6 +110,7 @@ internal sealed class WgpuBatcher : IBatcher
                 }
 
                 this.frame.Submit();
+                this.frameBegun = false;
             },
             () => this.submitUnsubscriber?.Dispose());
 
@@ -140,12 +142,17 @@ internal sealed class WgpuBatcher : IBatcher
             throw new RendererException(RenderExceptionMsg);
         }
 
-        this.frameDepth++;
-        HasBegun = true;
-
         // Acquire the render pass from the swap chain if one isn't already
         // active (nested Begin calls reuse the existing pass).
-        this.frame.Begin(this.clearColor);
+        if (!this.frameBegun)
+        {
+            this.frame.Begin(this.clearColor);
+            this.pushReactable.Push(PushNotifications.FrameHasBegunId);
+            this.frameBegun = true;
+        }
+
+        this.frameDepth++;
+        HasBegun = true;
 
         this.pushReactable.Push(PushNotifications.BatchHasBegunId);
     }

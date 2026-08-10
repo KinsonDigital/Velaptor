@@ -26,7 +26,7 @@ using SilkColor = Silk.NET.WebGPU.Color;
 /// a <c>using</c> block call <see cref="Dispose"/> to release the per-frame handles.
 /// </para>
 /// </remarks>
-internal sealed class Frame : IDisposable
+internal sealed class Frame : IDisposable // TODO: Create interface abstraction
 {
     private readonly IGraphicsDevice gd;
     private readonly IGraphicsSurface surface;
@@ -55,7 +55,6 @@ internal sealed class Frame : IDisposable
     /// <summary>
     /// Gets a value indicating whether the frame is valid and ready for draw calls.
     /// </summary>
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public bool IsValid { get; private set; }
 
     /// <summary>
@@ -105,7 +104,7 @@ internal sealed class Frame : IDisposable
     {
         if (this.hasBegun)
         {
-            throw new InvalidOperationException($"The '{nameof(Frame)}.{nameof(Begin)}()' method has already invoked.");
+            return IsValid;
         }
 
         if (!this.initialized)

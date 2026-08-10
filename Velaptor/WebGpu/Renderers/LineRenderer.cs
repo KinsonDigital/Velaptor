@@ -27,6 +27,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     private readonly LineGpuBuffer buffer;
     private readonly Frame frame;
     private readonly IBatchingManager batchManager;
+    private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
@@ -66,13 +67,14 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
+        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.FrameHasBegunId,
+            () => this.batchOffset = 0,
+            () => this.frameBeginUnsubscriber?.Dispose());
+
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () =>
-            {
-                this.hasBegun = true;
-                this.batchOffset = 0;
-            },
+            () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderLineReactable();
@@ -191,6 +193,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
         }
 
         this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
         this.viewportUnsubscriber.Dispose();

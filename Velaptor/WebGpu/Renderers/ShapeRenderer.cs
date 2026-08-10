@@ -26,6 +26,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     private readonly ShapeGpuBuffer buffer;
     private readonly Frame frame;
     private readonly IBatchingManager batchManager;
+    private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
@@ -65,13 +66,14 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 
         var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
 
+        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+            PushNotifications.FrameHasBegunId,
+            () => this.batchOffset = 0,
+            () => this.frameBeginUnsubscriber?.Dispose());
+
         this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
-            () =>
-            {
-                this.hasBegun = true;
-                this.batchOffset = 0;
-            },
+            () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
 
         var renderReactable = reactableFactory.CreateRenderShapeReactable();
@@ -170,6 +172,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
         }
 
         this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
         this.batchBeginUnsubscriber.Dispose();
         this.renderUnsubscriber.Dispose();
         this.viewportUnsubscriber.Dispose();
