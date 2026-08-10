@@ -66,7 +66,7 @@ internal sealed class WgpuBatcher : IBatcher
         this.linePipeline = linePipeline;
 
         this.initUnsubscriber = this.pushReactable.CreateNonReceiveOrRespond(
-            PushNotifications.GLInitializedId,
+            PushNotifications.InitializedId,
             () =>
             {
                 if (this.isInitialized)

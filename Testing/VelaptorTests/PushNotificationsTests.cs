@@ -25,7 +25,7 @@ public class PushNotificationsTests
     public void GLInitializedId_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange & Act & Assert
-        PushNotifications.GLInitializedId.ToString().ShouldBe("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+        PushNotifications.InitializedId.ToString().ShouldBe("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
     }
 
     [Fact]

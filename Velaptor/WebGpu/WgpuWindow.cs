@@ -61,7 +61,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private CachedValue<VelaptorWindowBorder>? cachedTypeOfBorder;
     private CachedValue<Vector2>? cachedPosition;
     private MouseStateData mouseStateData;
-    private IInputContext? glInputContext;
+    private IInputContext? inputContext;
     private bool isShuttingDown;
     private bool firstRenderInvoked;
     private bool isDisposed;
@@ -247,7 +247,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     public void Show()
     {
         PreInit();
-        RunGLWindow();
+        RunWindow();
     }
 
     /// <inheritdoc/>
@@ -259,7 +259,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
             () =>
             {
                 PreInit();
-                RunGLWindow();
+                RunWindow();
             });
 
         this.taskService.Start();
@@ -285,7 +285,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Runs the window.
     /// </summary>
-    private void RunGLWindow()
+    private void RunWindow()
     {
         this.silkWindow.Run();
 
@@ -312,11 +312,11 @@ internal sealed class WgpuWindow : VelaptorIWindow
         }
 
         this.silkWindow.UpdatesPerSecond = 60;
-        this.silkWindow.Load += GLWindow_Load;
-        this.silkWindow.Closing += GLWindow_Closing;
-        this.silkWindow.Resize += GLWindow_Resize;
-        this.silkWindow.Update += GLWindow_Update;
-        this.silkWindow.Render += GLWindow_Render;
+        this.silkWindow.Load += Window_Load;
+        this.silkWindow.Closing += Window_Closing;
+        this.silkWindow.Resize += Window_Resize;
+        this.silkWindow.Update += Window_Update;
+        this.silkWindow.Render += Window_Render;
     }
 
     /// <summary>
@@ -325,34 +325,34 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private void Init(uint width, uint height)
     {
         this.silkWindow.Size = new Vector2D<int>((int)width, (int)height);
-        this.glInputContext = this.nativeInputFactory.CreateInput();
+        this.inputContext = this.nativeInputFactory.CreateInput();
 
-        if (this.glInputContext.Keyboards.Count <= 0)
+        if (this.inputContext.Keyboards.Count <= 0)
         {
             throw new NoKeyboardException("Input Exception: No connected keyboards are available.");
         }
 
-        this.glInputContext.Keyboards[0].KeyDown += GLKeyboardInput_KeyDown;
-        this.glInputContext.Keyboards[0].KeyUp += GLKeyboardInput_KeyUp;
+        this.inputContext.Keyboards[0].KeyDown += KeyboardInput_KeyDown;
+        this.inputContext.Keyboards[0].KeyUp += KeyboardInput_KeyUp;
 
-        if (this.glInputContext.Mice.Count <= 0)
+        if (this.inputContext.Mice.Count <= 0)
         {
             throw new NoMouseException("Input Exception: No connected mice are available.");
         }
 
-        this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;
-        this.glInputContext.Mice[0].MouseUp += GLMouseInput_MouseUp;
-        this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
-        this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
+        this.inputContext.Mice[0].MouseDown += MouseInput_MouseDown;
+        this.inputContext.Mice[0].MouseUp += MouseInput_MouseUp;
+        this.inputContext.Mice[0].MouseMove += MouseMove_MouseMove;
+        this.inputContext.Mice[0].Scroll += MouseInput_MouseScroll;
 
         // Manually invoke the resize to update the rest of the system, such as the viewport.
-        GLWindow_Resize(new Vector2D<int>((int)width, (int)height));
+        Window_Resize(new Vector2D<int>((int)width, (int)height));
     }
 
     /// <summary>
     /// Invokes the <see cref="Initialize"/> action property.
     /// </summary>
-    private void GLWindow_Load()
+    private void Window_Load()
     {
         Init(Width, Height);
 
@@ -380,8 +380,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
         // for WgpuBatcher to initialize the WebGPU surface, adapter, device and pipelines.
         // This MUST happen BEFORE Initialize?.Invoke() because content loading may trigger
         // texture creation which needs the WebGPU device to be initialized first.
-        this.pushReactable.Push(PushNotifications.GLInitializedId);
-        this.pushReactable.Unsubscribe(PushNotifications.GLInitializedId);
+        this.pushReactable.Push(PushNotifications.InitializedId);
+        this.pushReactable.Unsubscribe(PushNotifications.InitializedId);
 
         Initialize?.Invoke();
 
@@ -398,13 +398,13 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when the window is closing.
     /// </summary>
-    private void GLWindow_Closing()
+    private void Window_Closing()
     {
         this.isShuttingDown = true;
 
         Uninitialize?.Invoke();
 
-        // Triggers cache clean-up in texture/audio loaders and GPU resource release
+        // Triggers cache cleanup in texture/audio loaders and GPU resource release
         // before the WebGPU device is torn down.
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
@@ -414,7 +414,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked every time the native window size changes.
     /// </summary>
-    private void GLWindow_Resize(Vector2D<int> obj)
+    private void Window_Resize(Vector2D<int> obj)
     {
         var width = (uint)obj.X;
         var height = (uint)obj.Y;
@@ -433,7 +433,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked once per frame for the update step.
     /// </summary>
-    private void GLWindow_Update(double time)
+    private void Window_Update(double time)
     {
         this.timerService.Start();
 
@@ -463,7 +463,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked once per frame for the render step.
     /// </summary>
-    private void GLWindow_Render(double time)
+    private void Window_Render(double time)
     {
         if (!this.firstRenderInvoked)
         {
@@ -497,7 +497,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when a keyboard key transitions to the down position.
     /// </summary>
-    private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
+    private void KeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
 
@@ -507,7 +507,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when a keyboard key transitions to the up position.
     /// </summary>
-    private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
+    private void KeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
     {
         var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
 
@@ -517,7 +517,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when a mouse button is pressed.
     /// </summary>
-    private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
+    private void MouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
         this.mouseStateData = this.mouseStateData with
         {
@@ -531,7 +531,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when a mouse button is released.
     /// </summary>
-    private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
+    private void MouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
         this.mouseStateData = this.mouseStateData with
         {
@@ -545,7 +545,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when the mouse scroll wheel is used.
     /// </summary>
-    private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
+    private void MouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
     {
         this.mouseStateData = this.mouseStateData with
         {
@@ -564,7 +564,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <summary>
     /// Invoked when the mouse moves over the window.
     /// </summary>
-    private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
+    private void MouseMove_MouseMove(IMouse mouse, Vector2 position)
     {
         this.mouseStateData = this.mouseStateData with
         {
@@ -591,21 +591,21 @@ internal sealed class WgpuWindow : VelaptorIWindow
             this.cachedIntProps.Clear();
             this.cachedBoolProps.Clear();
 
-            if (this.glInputContext is not null)
+            if (this.inputContext is not null)
             {
-                this.glInputContext.Keyboards[0].KeyDown -= GLKeyboardInput_KeyDown;
-                this.glInputContext.Keyboards[0].KeyUp -= GLKeyboardInput_KeyUp;
-                this.glInputContext.Mice[0].MouseDown -= GLMouseInput_MouseDown;
-                this.glInputContext.Mice[0].MouseUp -= GLMouseInput_MouseUp;
-                this.glInputContext.Mice[0].MouseMove -= GLMouseMove_MouseMove;
-                this.glInputContext.Mice[0].Scroll -= GLMouseInput_MouseScroll;
+                this.inputContext.Keyboards[0].KeyDown -= KeyboardInput_KeyDown;
+                this.inputContext.Keyboards[0].KeyUp -= KeyboardInput_KeyUp;
+                this.inputContext.Mice[0].MouseDown -= MouseInput_MouseDown;
+                this.inputContext.Mice[0].MouseUp -= MouseInput_MouseUp;
+                this.inputContext.Mice[0].MouseMove -= MouseMove_MouseMove;
+                this.inputContext.Mice[0].Scroll -= MouseInput_MouseScroll;
             }
 
-            this.silkWindow.Load -= GLWindow_Load;
-            this.silkWindow.Update -= GLWindow_Update;
-            this.silkWindow.Render -= GLWindow_Render;
-            this.silkWindow.Resize -= GLWindow_Resize;
-            this.silkWindow.Closing -= GLWindow_Closing;
+            this.silkWindow.Load -= Window_Load;
+            this.silkWindow.Update -= Window_Update;
+            this.silkWindow.Render -= Window_Render;
+            this.silkWindow.Resize -= Window_Resize;
+            this.silkWindow.Closing -= Window_Closing;
 
             this.statsWindowServiceService.Dispose();
             this.taskService.Dispose();
@@ -674,16 +674,16 @@ internal sealed class WgpuWindow : VelaptorIWindow
             nameof(MouseCursorVisible),
             new CachedValue<bool>(
                 defaultValue: true,
-                getterWhenNotCaching: () => this.glInputContext?.Mice.Count > 0 &&
-                                            this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
+                getterWhenNotCaching: () => this.inputContext?.Mice.Count > 0 &&
+                                            this.inputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
                 setterWhenNotCaching: value =>
                 {
-                    if (this.glInputContext is null)
+                    if (this.inputContext is null)
                     {
                         return;
                     }
 
-                    foreach (var mouse in this.glInputContext.Mice)
+                    foreach (var mouse in this.inputContext.Mice)
                     {
                         mouse.Cursor.CursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
                     }

@@ -21,12 +21,10 @@ internal static class PushNotifications
     /// </summary>
     public static Guid GLObjectsCreatedId { get; } = new ("930eb1c3-8071-43bc-9dd8-fb7978f4af83");
 
-    // TODO: Refactor name of this id.  Opengl is not a thing anymore.
-
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when OpenGL has been initialized.
     /// </summary>
-    public static Guid GLInitializedId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+    public static Guid InitializedId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the batch size is set.
