@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
+    <ProjectReference Include="..\Velaptor\Velaptor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
