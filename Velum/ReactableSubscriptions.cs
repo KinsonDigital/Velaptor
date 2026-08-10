@@ -1,4 +1,4 @@
-namespace UILib;
+namespace Velum;
 
 internal static class SubscriptionIds
 {

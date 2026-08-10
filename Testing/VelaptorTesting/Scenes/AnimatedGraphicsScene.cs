@@ -6,7 +6,7 @@ namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Numerics;
-using UILib;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;

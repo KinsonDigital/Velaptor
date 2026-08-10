@@ -1,4 +1,4 @@
-namespace UILib;
+namespace Velum;
 
 using System.Drawing;
 using System.Numerics;

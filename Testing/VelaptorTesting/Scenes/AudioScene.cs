@@ -8,13 +8,13 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
-using UILib;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Scene;
 
 /// <summary>
-/// Tests out audio functionality using the new UILib controls.
+/// Tests out audio functionality using the new Velum controls.
 /// </summary>
 public class AudioScene : SceneBase
 {

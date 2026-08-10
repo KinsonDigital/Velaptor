@@ -7,8 +7,7 @@
     <Nullable>enable</Nullable>
     <OutputType>Library</OutputType>
     <Platforms>x64;arm64</Platforms>
-    <RootNamespace>UILib</RootNamespace>
-    <AssemblyName>UILib</AssemblyName>
+    <PackageId>Velum</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

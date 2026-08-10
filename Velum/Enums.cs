@@ -1,4 +1,4 @@
-namespace UILib;
+namespace Velum;
 
 public enum Alignment {
     Left,

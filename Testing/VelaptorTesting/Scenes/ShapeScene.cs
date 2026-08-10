@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-using UILib;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -18,7 +18,7 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
-using Container = UILib.Container;
+using Container = Velum.Container;
 using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
