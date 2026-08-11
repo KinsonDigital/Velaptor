@@ -45,7 +45,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
-    private readonly IStatsWindowService statsWindowServiceService;
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
@@ -93,7 +92,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ISystemDisplayService systemDisplayService,
         IPlatform platform,
         ITaskService taskService,
-        IStatsWindowService statsWindowServiceService,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
         ITimerService timerService)
@@ -105,7 +103,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(systemDisplayService);
         ArgumentNullException.ThrowIfNull(platform);
         ArgumentNullException.ThrowIfNull(taskService);
-        ArgumentNullException.ThrowIfNull(statsWindowServiceService);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(timerService);
@@ -116,7 +113,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.systemDisplayService = systemDisplayService;
         this.platform = platform;
         this.taskService = taskService;
-        this.statsWindowServiceService = statsWindowServiceService;
         SceneManager = sceneManager;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -131,13 +127,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
         SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
         SetupOtherPropCaches();
-
-        this.statsWindowServiceService.Initialized += (_, _) =>
-        {
-            this.statsWindowServiceService.Position = new Point(
-                WindowPadding,
-                (int)Height - (this.statsWindowServiceService.Size.Height + WindowPadding));
-        };
 
         this.pullWinSizeUnsubscriber = pullWinSizeReactable.CreateOneWayRespond(
             PullNotifications.GetWindowSizeId,
@@ -449,8 +438,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
         Update?.Invoke(frameTime);
 
-        this.statsWindowServiceService.Update(frameTime);
-
         this.mouseStateData = this.mouseStateData with
         {
             ScrollDirection = MouseScrollDirection.None,
@@ -485,8 +472,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         };
 
         Draw?.Invoke(frameTime);
-
-        this.statsWindowServiceService.UpdateFpsStat(Fps);
 
         this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
 
@@ -607,7 +592,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
             this.silkWindow.Resize -= Window_Resize;
             this.silkWindow.Closing -= Window_Closing;
 
-            this.statsWindowServiceService.Dispose();
             this.taskService.Dispose();
 
             this.glfw.Dispose();
