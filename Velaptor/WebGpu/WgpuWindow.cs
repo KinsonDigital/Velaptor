@@ -7,7 +7,6 @@ namespace Velaptor.WebGpu;
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -38,7 +37,6 @@ using VelaptorWindowBorder = WindowBorder;
 /// </summary>
 internal sealed class WgpuWindow : VelaptorIWindow
 {
-    private const int WindowPadding = 10;
     private readonly SilkIWindow silkWindow;
     private readonly INativeInputFactory nativeInputFactory;
     private readonly IGlfwInvoker glfw;
@@ -54,8 +52,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
     private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
     private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new ();
-    private readonly ITimerService timerService;
     private readonly IDisposable pullWinSizeUnsubscriber;
+    private readonly IFrameMetricsTracker frameMetricsTracker;
     private CachedValue<StateOfWindow>? cachedWindowState;
     private CachedValue<VelaptorWindowBorder>? cachedTypeOfBorder;
     private CachedValue<Vector2>? cachedPosition;
@@ -78,10 +76,9 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <param name="systemDisplayService">Provides information about system displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
     /// <param name="taskService">Runs asynchronous tasks.</param>
-    /// <param name="statsWindowServiceService">Manages the ImGui stats window.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
-    /// <param name="timerService">Measures game-loop frame time.</param>
+    /// <param name="frameMetricsTracker">Tracks frame performance metrics.</param>
     public WgpuWindow(
         uint width,
         uint height,
@@ -94,7 +91,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ITaskService taskService,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
-        ITimerService timerService)
+        IFrameMetricsTracker frameMetricsTracker)
     {
         ArgumentNullException.ThrowIfNull(telemetryService);
         ArgumentNullException.ThrowIfNull(silkWindow);
@@ -105,7 +102,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(taskService);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
-        ArgumentNullException.ThrowIfNull(timerService);
+        ArgumentNullException.ThrowIfNull(frameMetricsTracker);
 
         this.silkWindow = silkWindow;
         this.nativeInputFactory = nativeInputFactory;
@@ -114,6 +111,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         SceneManager = sceneManager;
+        this.frameMetricsTracker = frameMetricsTracker;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
@@ -121,7 +119,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
-        this.timerService = timerService;
 
         this.mouseStateData = default;
 
@@ -284,7 +281,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
          * This is because the line of code below will not be executed until the Window.Run() method
          * has finished executing.  This happens once the window is closed.
          *
-         * If you dispose of the window in the Dispose() method before the Run() method is finished
+         * If you dispose of the window in the Dispose() method before the Run() method is finished,
          * then the application will crash.
          */
         this.silkWindow.Dispose();
@@ -424,8 +421,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Update(double time)
     {
-        this.timerService.Start();
-
         if (this.isShuttingDown)
         {
             return;
@@ -475,8 +470,9 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
         this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
 
-        this.timerService.Stop();
-        Fps = 1000f / this.timerService.MillisecondsPassed;
+        this.frameMetricsTracker.RecordFrame(time);
+
+        Fps = (float)this.frameMetricsTracker.CurrentMetrics.AverageFps;
     }
 
     /// <summary>

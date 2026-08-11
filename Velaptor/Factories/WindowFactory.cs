@@ -53,5 +53,5 @@ internal static class WindowFactory
             IoC.Container.GetInstance<ITaskService>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
-            IoC.Container.GetInstance<ITimerService>());
+            IoC.Container.GetInstance<IFrameMetricsTracker>());
 }

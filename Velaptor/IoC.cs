@@ -129,7 +129,8 @@ internal static class IoC
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
-        IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
+        IoCContainer.Register<IFrameMetricsTracker>(() => new FrameMetricsTracker(), Lifestyle.Singleton);
+
         IoCContainer.RegisterSingleton(() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
 
         isInitialized = true;
