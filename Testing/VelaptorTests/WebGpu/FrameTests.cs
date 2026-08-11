@@ -247,10 +247,11 @@ public class FrameTests
     }
 
     [Fact]
-    public void Begin_WhenInvokedSecondTimeWithoutCallingSubmitFirst_ThrowsException()
+    public void Begin_WhenInvokedSecondTimeWithoutCallingSubmitFirst_ReturnsValidAndDoesNotBeginFrame()
     {
         // Arrange
         var renderPassEncoderHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, UnsafeRenderPassHandle);
+
         this.mockWgpuInvoker.CommandEncoderBeginRenderPass(
             Arg.Any<SafeCommandEncoderHandle>(),
             Arg.Any<SafeTextureViewHandle>(),
@@ -265,15 +266,12 @@ public class FrameTests
         // Act
         sut.Initialize();
         var firstBegin = sut.Begin(this.testColor);
-        var act = () =>
-        {
-            sut.Begin(this.testColor);
-        };
+        var secondBegin = sut.Begin(this.testColor);
 
         // Assert
         firstBegin.ShouldBeTrue();
-        act.ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe($"The '{nameof(Frame)}.{nameof(Frame.Begin)}()' method has already invoked.");
+        secondBegin.ShouldBeTrue();
+        this.mockSurface.Received(1).Configure();
     }
 
     [Fact]
@@ -402,7 +400,7 @@ public class FrameTests
         // Act
         sut.Initialize();
         var firstResult = sut.Begin(this.testColor);
-        var secondResult = sut.Begin(this.testColor); // Second attempt - still fails because status not updated
+        var secondResult = sut.Begin(this.testColor); // Second attempt still fails because status not updated
 
         // Assert - First call creates handle via GetSurfaceTexture, second reuses via ResetHandle
         this.mockSurface.Received(1).GetSurfaceTexture();
@@ -531,7 +529,7 @@ public class FrameTests
 
         // Assert
         act.ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Render pass handle null. You must invoke the 'Frame.Begin()' method first before invoking the 'Frame.Submit()'.");
+            .Message.ShouldBe("The render pass handle cannot be null. You must invoke the 'Frame.Begin()' method first before invoking the 'Frame.Submit()'.");
     }
 
     [Fact]
@@ -562,7 +560,7 @@ public class FrameTests
 
         // Assert
         act.ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Encoder handle null. You must invoke the 'Frame.Begin()' method first before invoking the 'Frame.Submit()'.");
+            .Message.ShouldBe("The encoder handle cannot be null. You must invoke the 'Frame.Begin()' method first before invoking the 'Frame.Submit()'.");
     }
 
     [Fact]

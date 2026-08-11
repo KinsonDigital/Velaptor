@@ -13,6 +13,9 @@ using Helpers;
 using NSubstitute;
 using Shouldly;
 using Velaptor;
+using Velaptor.Content;
+using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.Scene;
 using Velaptor.UI;
 using Velaptor.WebGpu.Batching;
@@ -26,6 +29,9 @@ public class WindowTests : TestsBase
     private readonly IWindow mockWindow;
     private readonly ISceneManager mockSceneManager;
     private readonly IBatcher mockBatcher;
+    private readonly IContentManager mockContentManager;
+    private readonly IFontRenderer mockFontRenderer;
+    private readonly IAppInput<KeyboardState> mockKeyboard;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -34,6 +40,9 @@ public class WindowTests : TestsBase
     {
         this.mockSceneManager = Substitute.For<ISceneManager>();
         this.mockBatcher = Substitute.For<IBatcher>();
+        this.mockContentManager = Substitute.For<IContentManager>();
+        this.mockFontRenderer = Substitute.For<IFontRenderer>();
+        this.mockKeyboard = Substitute.For<IAppInput<KeyboardState>>();
 
         this.mockWindow = Substitute.For<IWindow>();
         this.mockWindow.SceneManager.Returns(this.mockSceneManager);
@@ -47,12 +56,97 @@ public class WindowTests : TestsBase
         // Arrange & Act
         var act = () =>
         {
-            _ = new WindowFake(null, this.mockBatcher);
+            _ = new WindowFake(
+                null,
+                this.mockBatcher,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                this.mockKeyboard);
         };
 
         // Assert
-        var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'window')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'window')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithBatcherParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                null,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'batcher')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullContentManagerParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                null,
+                this.mockFontRenderer,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'contentManager')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullFontRendererParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                this.mockContentManager,
+                null,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'fontRenderer')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullKeyboardParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                null);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'keyboard')");
     }
 
     [Fact]
@@ -573,5 +667,10 @@ public class WindowTests : TestsBase
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateSystemUnderTest() => new (this.mockWindow, this.mockBatcher);
+    private WindowFake CreateSystemUnderTest() => new (
+        this.mockWindow,
+        this.mockBatcher,
+        this.mockContentManager,
+        this.mockFontRenderer,
+        this.mockKeyboard);
 }

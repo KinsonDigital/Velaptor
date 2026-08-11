@@ -112,7 +112,7 @@ internal sealed class Frame : IDisposable // TODO: Create interface abstraction
             throw new InvalidOperationException("Cannot begin frame. WebGPU has not been initialized.");
         }
 
-        // Configure the swap chain on first frame, or after a resize.
+        // Configure the swap chain on first-frame, or after a resize.
         // This is deferred from Initialize() because the native window
         // may not have reached its final framebuffer size yet at that point.
         if (!this.surfaceConfigured)
@@ -215,12 +215,12 @@ internal sealed class Frame : IDisposable // TODO: Create interface abstraction
 
         if (this.renderPassHandle is null)
         {
-            throw new InvalidOperationException($"Render pass handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+            throw new InvalidOperationException($"The render pass handle cannot be null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
         }
 
         if (this.cmdEncoderHandle is null)
         {
-            throw new InvalidOperationException($"Encoder handle null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
+            throw new InvalidOperationException($"The encoder handle cannot be null. You must invoke the '{nameof(Frame)}.{nameof(Begin)}()' method first before invoking the '{nameof(Frame)}.{nameof(Submit)}()'.");
         }
 
         this.renderPassHandle.End();
