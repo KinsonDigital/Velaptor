@@ -29,7 +29,7 @@ using Velaptor.Batching;
 internal sealed class FontRenderer : IDisposable, IFontRenderer
 {
     private readonly IWgpuInvoker wgpu;
-    private readonly GraphicsTexturePipeline pipeline;
+    private readonly IGraphicsTexturePipeline pipeline;
     private readonly FontGpuBuffer buffer;
     private readonly Frame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
@@ -55,7 +55,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     internal FontRenderer(
         IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
-        GraphicsTexturePipeline pipeline,
+        IGraphicsTexturePipeline pipeline,
         FontGpuBuffer buffer,
         Frame frame,
         TextureBindGroupRegistry bindGroupRegistry,
@@ -103,15 +103,15 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             () => this.viewportUnsubscriber?.Dispose());
     }
 
-    /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, int layer = 0)
-        => RenderBase(font, text, x, y, 1f, 0f, Color.White, layer);
-
     /// <summary>
     /// Gets the current window size used by the GPU buffer for NDC conversion.
     /// </summary>
     /// <remarks>For testing purposes.</remarks>
     internal Vector2 BufferWindowSize => this.buffer.WindowSize;
+
+    /// <inheritdoc/>
+    public void Render(IFont font, string text, int x, int y, int layer = 0)
+        => RenderBase(font, text, x, y, 1f, 0f, Color.White, layer);
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, Vector2 position, int layer = 0)
@@ -210,6 +210,21 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         {
             this.batchManager.AddFontItem(item, layer, renderStamp);
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
+        this.batchBeginUnsubscriber.Dispose();
+        this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
     }
 
     /// <summary>
@@ -478,6 +493,8 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     {
         var renderPass = this.frame.RenderPass;
 
+        // TODO: Check if renderPass is null. Verify tests
+
         // Ensure the GPU buffer is large enough before any upload to avoid
         // mid-render-pass resizes that invalidate previously recorded draw commands.
         var requiredCapacity = this.batchOffset + (uint)itemsToRender.Length;
@@ -524,20 +541,5 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         }
 
         this.hasBegun = false;
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderUnsubscriber.Dispose();
-        this.viewportUnsubscriber.Dispose();
     }
 }

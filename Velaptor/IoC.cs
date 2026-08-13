@@ -146,7 +146,7 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<GraphicsTexturePipeline>();
+            var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
             var buffer = IoCContainer.GetInstance<WebGpu.Buffers.FontGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
@@ -167,7 +167,7 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<GraphicsTexturePipeline>();
+            var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
             var buffer = IoCContainer.GetInstance<WebGpu.Buffers.TextureGpuBuffer>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
@@ -262,7 +262,7 @@ internal static class IoC
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
 
             return new WgpuFrame(gd, surface);
         }, Lifestyle.Singleton);
@@ -270,11 +270,11 @@ internal static class IoC
         IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
 
         // Texture pipeline
-        IoCContainer.Register(
+        IoCContainer.Register<IGraphicsTexturePipeline>(
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
@@ -288,7 +288,7 @@ internal static class IoC
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
@@ -302,7 +302,7 @@ internal static class IoC
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<GraphicsSurface>();
+            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
             var shader = new GraphicsShader(
                 IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
                 IoCContainer.GetInstance<IPath>(),
@@ -321,7 +321,7 @@ internal static class IoC
         // WebGPU records draw commands (SetVertexBuffer, SetIndexBuffer, DrawIndexed) into
         // the command encoder; QueueWriteBuffer executes immediately.  If the buffer resizes
         // mid-render-pass (Allocate disposes old handles and creates new ones), previously
-        // recorded commands reference disposed handles, causing a native crash on submit.
+        // recorded commands reference disposed handles, causing a native crash on submitting.
         const uint gpuBufferInitialCapacity = 1000;
 
         IoCContainer.Register(

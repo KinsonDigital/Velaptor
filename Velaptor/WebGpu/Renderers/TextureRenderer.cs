@@ -25,7 +25,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 {
     private readonly IWgpuInvoker wgpu;
     private readonly IBatchingManager batchManager;
-    private readonly GraphicsTexturePipeline pipeline;
+    private readonly IGraphicsTexturePipeline pipeline;
     private readonly TextureGpuBuffer buffer;
     private readonly Frame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
@@ -54,7 +54,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     public TextureRenderer(
         IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
-        GraphicsTexturePipeline pipeline,
+        IGraphicsTexturePipeline pipeline,
         TextureGpuBuffer buffer,
         Frame frame,
         TextureBindGroupRegistry bindGroupRegistry,
@@ -682,6 +682,8 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         }
 
         var renderPass = this.frame.RenderPass;
+
+        // TODO: Add null check to renderPass variable.  Verify tests
 
         // Ensure the GPU buffer is large enough before any upload to avoid
         // mid-render-pass resizes that invalidate previously recorded draw commands.

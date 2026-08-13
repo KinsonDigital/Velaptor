@@ -70,7 +70,7 @@ internal sealed class TextureFactory : ITextureFactory
 
         // Resolve bind group layout lazily — the pipeline may not be initialized
         // during DI resolution but will be ready by the time content is loaded.
-        this.bindGroupLayout ??= IoC.Container.GetInstance<GraphicsTexturePipeline>().BindGroupLayout;
+        this.bindGroupLayout ??= IoC.Container.GetInstance<IGraphicsTexturePipeline>().BindGroupLayout;
 
         return new Texture(
             this.wgpu,

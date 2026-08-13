@@ -24,7 +24,7 @@ internal sealed class WgpuBatcher : IBatcher
     private const uint InitialBatchSize = 1000;
     private readonly IPushReactable pushReactable;
     private readonly Frame frame;
-    private readonly GraphicsTexturePipeline texturePipeline;
+    private readonly IGraphicsTexturePipeline texturePipeline;
     private readonly GraphicsShapePipeline shapePipeline;
     private readonly GraphicsLinePipeline linePipeline;
     private readonly IDisposable initUnsubscriber;
@@ -48,7 +48,7 @@ internal sealed class WgpuBatcher : IBatcher
         IPushReactable pushReactable,
         IPushReactable<BatchSizeData> batchSizeReactable,
         Frame frame,
-        GraphicsTexturePipeline texturePipeline,
+        IGraphicsTexturePipeline texturePipeline,
         GraphicsShapePipeline shapePipeline,
         GraphicsLinePipeline linePipeline)
     {
