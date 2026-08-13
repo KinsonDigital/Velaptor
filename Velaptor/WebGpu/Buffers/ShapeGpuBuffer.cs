@@ -39,7 +39,7 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="initialCapacity">Number of rectangles to pre-allocate space for.</param>
-    public ShapeGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 100)
+    public ShapeGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 1000)
         : base(gd, initialCapacity)
     {
     }

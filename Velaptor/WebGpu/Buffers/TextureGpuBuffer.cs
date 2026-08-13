@@ -36,7 +36,7 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
     /// </summary>
     /// <param name="gd">The graphics device.</param>
     /// <param name="initialCapacity">Number of quads to pre-allocate space for.</param>
-    public TextureGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 100)
+    public TextureGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 1000)
         : base(gd, initialCapacity)
     {
     }

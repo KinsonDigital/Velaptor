@@ -148,7 +148,7 @@ internal static class IoC
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<FontGpuBuffer>();
+            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<FontGlyphBatchItem>>();
             var frame = IoCContainer.GetInstance<IFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
@@ -310,19 +310,28 @@ internal static class IoC
     /// </summary>
     private static void SetupBuffers()
     {
-        // GPU buffers must be pre-sized to match the batching manager's initial capacity.
-        // WebGPU records draw commands (SetVertexBuffer, SetIndexBuffer, DrawIndexed) into
-        // the command encoder; QueueWriteBuffer executes immediately.  If the buffer resizes
-        // mid-render-pass (Allocate disposes old handles and creates new ones), previously
-        // recorded commands reference disposed handles, causing a native crash on submitting.
-        const uint gpuBufferInitialCapacity = 1000;
+        /*
+         * NOTE:
+         * GPU buffers must be pre-sized to match the batching manager's initial capacity.
+         * WebGPU records draw commands (SetVertexBuffer, SetIndexBuffer, DrawIndexed) into
+         * the command encoder; QueueWriteBuffer executes immediately.  If the buffer resizes
+         * mid-render-pass (Allocate disposes old handles and creates new ones), previously
+         * recorded commands reference disposed handles, causing a native crash on submitting.
+         */
 
         IoCContainer.Register<IWebGpuBuffer<TextureBatchItem>>(
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new TextureGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new TextureGpuBuffer(gd);
+        }, Lifestyle.Singleton);
+
+        IoCContainer.Register<IWebGpuBuffer<FontGlyphBatchItem>>(() =>
+        {
+            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
+
+            return new FontGpuBuffer(gd);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -330,7 +339,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new FontGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new ShapeGpuBuffer(gd);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -338,15 +347,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-
-            return new LineGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new LineGpuBuffer(gd);
         }, Lifestyle.Singleton);
     }
 
