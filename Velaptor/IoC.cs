@@ -34,6 +34,7 @@ using SimpleInjector.Lifestyles;
 using Telemetry;
 using WebGpu;
 using WebGpu.Batching;
+using WebGpu.Buffers;
 using WgpuFrame = WebGpu.Frame;
 using WgpuTextureBindGroupRegistry = WebGpu.TextureBindGroupRegistry;
 
@@ -168,7 +169,7 @@ internal static class IoC
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.TextureGpuBuffer>();
+            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<TextureBatchItem>>();
             var frame = IoCContainer.GetInstance<WgpuFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
@@ -324,12 +325,12 @@ internal static class IoC
         // recorded commands reference disposed handles, causing a native crash on submitting.
         const uint gpuBufferInitialCapacity = 1000;
 
-        IoCContainer.Register(
+        IoCContainer.Register<IWebGpuBuffer<TextureBatchItem>>(
             () =>
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new WebGpu.Buffers.TextureGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new TextureGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(

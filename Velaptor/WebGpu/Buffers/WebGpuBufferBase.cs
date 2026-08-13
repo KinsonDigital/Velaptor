@@ -14,7 +14,7 @@ using NativeInterop.WebGpu.Handles;
 /// Handles allocation, resize, and draw call dispatch for batched quad rendering.
 /// </summary>
 /// <typeparam name="TData">The batch item struct type.</typeparam>
-internal abstract class WebGpuBufferBase<TData> : IDisposable
+internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     where TData : struct
 {
     private const uint DefaultCapacity = 64;
@@ -38,21 +38,14 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
         this.pendingInitialCapacity = initialCapacity;
     }
 
-    /// <summary>
-    /// Gets a value indicating whether the GPU buffers have been allocated.
-    /// </summary>
-    // ReSharper disable once MemberCanBePrivate.Global
+    /// <inheritdoc/>
     public bool IsInitialized => Capacity > 0;
 
-    /// <summary>
-    /// Gets the number of batch items the current GPU buffers can hold.
-    /// </summary>
+    /// <inheritdoc/>
     // ReSharper disable once MemberCanBePrivate.Global
     public uint Capacity { get; private set; }
 
-    /// <summary>
-    /// Gets or sets the window size in pixels used for NDC conversion.
-    /// </summary>
+    /// <inheritdoc/>
     public Vector2 WindowSize { get; set; } = new (800f, 600f);
 
     /// <summary>
@@ -80,22 +73,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     /// </summary>
     private IWgpuInvoker Wgpu => this.gd.Wgpu;
 
-    /// <summary>
-    /// Gets the graphics device handle.
-    /// </summary>
-    private SafeDeviceHandle Device => this.gd.Handle ?? throw new InvalidOperationException("GraphicsDevice not initialized.");
-
-    /// <summary>
-    /// Gets the device queue handle.
-    /// </summary>
-    private SafeQueueHandle Queue => this.gd.Queue ?? throw new InvalidOperationException("GraphicsDevice queue not initialized.");
-
-    /// <summary>
-    /// Ensures the GPU buffers can hold at least <paramref name="itemCount"/> items,
-    /// re-allocating if necessary. Call this before starting an upload loop to avoid
-    /// mid-loop resizes that would invalidate previously recorded draw commands.
-    /// </summary>
-    /// <param name="itemCount">The minimum number of batch items the buffer must support.</param>
+    /// <inheritdoc/>
     public void EnsureCapacity(uint itemCount)
     {
         EnsureInitialized();
@@ -106,10 +84,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
         }
     }
 
-    /// <summary>
-    /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
-    /// has been initialized.
-    /// </summary>
+    /// <inheritdoc/>
     // ReSharper disable once MemberCanBePrivate.Global
     public void Initialize()
     {
@@ -121,12 +96,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
         Allocate(this.pendingInitialCapacity);
     }
 
-    /// <summary>
-    /// Uploads a single batch item to the GPU at <paramref name="itemIndex"/>.
-    /// Grows the buffer automatically if the index exceeds current capacity.
-    /// </summary>
-    /// <param name="data">The batch item data to upload.</param>
-    /// <param name="itemIndex">Zero-based slot in the GPU buffer to write to.</param>
+    /// <inheritdoc/>
     public void UploadData(TData data, uint itemIndex = 0)
     {
         EnsureInitialized();
@@ -140,12 +110,7 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
         UploadToGpu(vertexData, indexData, itemIndex);
     }
 
-    /// <summary>
-    /// Binds the vertex and index buffers to the active render pass and issues an indexed draw call.
-    /// </summary>
-    /// <param name="pass">The active render pass encoder.</param>
-    /// <param name="itemCount">Number of batch items to draw.</param>
-    /// <param name="firstItem">Index of the first batch item to draw.</param>
+    /// <inheritdoc/>
     public void Draw(SafeRenderPassEncoderHandle pass, uint itemCount = 1, uint firstItem = 0)
     {
         if (this.vertexBuffer is null)
@@ -250,6 +215,8 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
     /// </summary>
     private void Allocate(uint minItemCount)
     {
+        // TODO: Check if the this.gd.Handle is null
+
         var newCapacity = Math.Max(minItemCount, Capacity > 0 ? Capacity * 2 : DefaultCapacity);
         Capacity = newCapacity;
 
@@ -260,13 +227,13 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
         this.indexBuffer?.Dispose();
 
         this.vertexBuffer = Wgpu.DeviceCreateVertexBuffer(
-            Device,
+            this.gd.Handle,
             $"{GetType().Name} Vertex Buffer",
             this.vertexBufferSizeInBytes,
             Silk.NET.WebGPU.BufferUsage.Vertex | Silk.NET.WebGPU.BufferUsage.CopyDst);
 
         this.indexBuffer = Wgpu.DeviceCreateIndexBuffer(
-            Device,
+            this.gd.Handle,
             $"{GetType().Name} Index Buffer",
             this.indexBufferSizeInBytes,
             Silk.NET.WebGPU.BufferUsage.Index | Silk.NET.WebGPU.BufferUsage.CopyDst);
@@ -287,10 +254,12 @@ internal abstract class WebGpuBufferBase<TData> : IDisposable
             throw new Exception("The vertex index buffer cannot be null.");
         }
 
+        // TODO: check if the this.gd.Queue is null
+
         var vbOffset = itemIndex * VerticesPerItem * VertexSizeInBytes;
-        Wgpu.QueueWriteBuffer(Queue, this.vertexBuffer.DangerousGetHandle(), vbOffset, vertexData);
+        Wgpu.QueueWriteBuffer(this.gd.Queue, this.vertexBuffer.DangerousGetHandle(), vbOffset, vertexData);
 
         var ibOffset = itemIndex * IndicesPerItem * IndexItemSizeInBytes;
-        Wgpu.QueueWriteBuffer(Queue, this.indexBuffer.DangerousGetHandle(), ibOffset, indexData);
+        Wgpu.QueueWriteBuffer(this.gd.Queue, this.indexBuffer.DangerousGetHandle(), ibOffset, indexData);
     }
 }
