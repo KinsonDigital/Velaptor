@@ -27,7 +27,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     private readonly IBatchingManager batchManager;
     private readonly IGraphicsTexturePipeline pipeline;
     private readonly IWebGpuBuffer<TextureBatchItem> buffer;
-    private readonly Frame frame;
+    private readonly IFrame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
     private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
@@ -56,7 +56,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         IReactableFactory reactableFactory,
         IGraphicsTexturePipeline pipeline,
         IWebGpuBuffer<TextureBatchItem> buffer,
-        Frame frame,
+        IFrame frame,
         TextureBindGroupRegistry bindGroupRegistry,
         IBatchingManager batchManager)
     {

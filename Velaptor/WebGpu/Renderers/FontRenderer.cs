@@ -31,7 +31,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsTexturePipeline pipeline;
     private readonly FontGpuBuffer buffer;
-    private readonly Frame frame;
+    private readonly IFrame frame;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
     private readonly IBatchingManager batchManager;
     private readonly IDisposable frameBeginUnsubscriber;
@@ -57,7 +57,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         IReactableFactory reactableFactory,
         IGraphicsTexturePipeline pipeline,
         FontGpuBuffer buffer,
-        Frame frame,
+        IFrame frame,
         TextureBindGroupRegistry bindGroupRegistry,
         IBatchingManager batchManager)
     {

@@ -25,7 +25,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     private readonly IWgpuInvoker wgpu;
     private readonly GraphicsLinePipeline pipeline;
     private readonly LineGpuBuffer buffer;
-    private readonly Frame frame;
+    private readonly IFrame frame;
     private readonly IBatchingManager batchManager;
     private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
@@ -49,7 +49,7 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
         IReactableFactory reactableFactory,
         GraphicsLinePipeline pipeline,
         LineGpuBuffer buffer,
-        Frame frame,
+        IFrame frame,
         IBatchingManager batchManager)
     {
         ArgumentNullException.ThrowIfNull(wgpu);

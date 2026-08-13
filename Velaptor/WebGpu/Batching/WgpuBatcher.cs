@@ -23,7 +23,7 @@ internal sealed class WgpuBatcher : IBatcher
     private const string RenderExceptionMsg = "The renderer is not initialized.";
     private const uint InitialBatchSize = 1000;
     private readonly IPushReactable pushReactable;
-    private readonly Frame frame;
+    private readonly IFrame frame;
     private readonly IGraphicsTexturePipeline texturePipeline;
     private readonly GraphicsShapePipeline shapePipeline;
     private readonly GraphicsLinePipeline linePipeline;
@@ -47,7 +47,7 @@ internal sealed class WgpuBatcher : IBatcher
     public WgpuBatcher(
         IPushReactable pushReactable,
         IPushReactable<BatchSizeData> batchSizeReactable,
-        Frame frame,
+        IFrame frame,
         IGraphicsTexturePipeline texturePipeline,
         GraphicsShapePipeline shapePipeline,
         GraphicsLinePipeline linePipeline)

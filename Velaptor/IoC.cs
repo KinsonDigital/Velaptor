@@ -148,8 +148,8 @@ internal static class IoC
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.FontGpuBuffer>();
-            var frame = IoCContainer.GetInstance<WgpuFrame>();
+            var buffer = IoCContainer.GetInstance<FontGpuBuffer>();
+            var frame = IoCContainer.GetInstance<IFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -170,7 +170,7 @@ internal static class IoC
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
             var buffer = IoCContainer.GetInstance<IWebGpuBuffer<TextureBatchItem>>();
-            var frame = IoCContainer.GetInstance<WgpuFrame>();
+            var frame = IoCContainer.GetInstance<IFrame>();
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
@@ -190,8 +190,8 @@ internal static class IoC
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<GraphicsLinePipeline>();
-            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.LineGpuBuffer>();
-            var frame = IoCContainer.GetInstance<WgpuFrame>();
+            var buffer = IoCContainer.GetInstance<LineGpuBuffer>();
+            var frame = IoCContainer.GetInstance<IFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
             return new WebGpu.Renderers.LineRenderer(
@@ -209,8 +209,8 @@ internal static class IoC
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
             var pipeline = IoCContainer.GetInstance<GraphicsShapePipeline>();
-            var buffer = IoCContainer.GetInstance<WebGpu.Buffers.ShapeGpuBuffer>();
-            var frame = IoCContainer.GetInstance<WgpuFrame>();
+            var buffer = IoCContainer.GetInstance<ShapeGpuBuffer>();
+            var frame = IoCContainer.GetInstance<IFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
             return new WebGpu.Renderers.ShapeRenderer(
@@ -247,6 +247,7 @@ internal static class IoC
     /// </summary>
     private static void SetupWebGpu()
     {
+        IoCContainer.Register<IFrame, WgpuFrame>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsDevice, GraphicsDevice>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsSurface, GraphicsSurface>(Lifestyle.Singleton);
 
@@ -257,15 +258,6 @@ internal static class IoC
             var window = IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow();
 
             return new GraphicsSurface(gd, window);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
-
-            return new WgpuFrame(gd, surface);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
@@ -338,7 +330,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new WebGpu.Buffers.FontGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new FontGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -346,7 +338,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new WebGpu.Buffers.ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new ShapeGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
 
         IoCContainer.Register(
@@ -354,7 +346,7 @@ internal static class IoC
         {
             var gd = IoCContainer.GetInstance<IGraphicsDevice>();
 
-            return new WebGpu.Buffers.LineGpuBuffer(gd, gpuBufferInitialCapacity);
+            return new LineGpuBuffer(gd, gpuBufferInitialCapacity);
         }, Lifestyle.Singleton);
     }
 

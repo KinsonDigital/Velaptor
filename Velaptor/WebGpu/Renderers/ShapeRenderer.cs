@@ -24,7 +24,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     private readonly IWgpuInvoker wgpu;
     private readonly GraphicsShapePipeline pipeline;
     private readonly ShapeGpuBuffer buffer;
-    private readonly Frame frame;
+    private readonly IFrame frame;
     private readonly IBatchingManager batchManager;
     private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
@@ -48,7 +48,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
         IReactableFactory reactableFactory,
         GraphicsShapePipeline pipeline,
         ShapeGpuBuffer buffer,
-        Frame frame,
+        IFrame frame,
         IBatchingManager batchManager)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
