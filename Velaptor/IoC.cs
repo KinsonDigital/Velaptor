@@ -398,6 +398,7 @@ internal static class IoC
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
         IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
         IoCContainer.Register<IDotnetService, DotnetService>(Lifestyle.Singleton);
+        IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(
             () => new FontStatsService(
@@ -417,6 +418,12 @@ internal static class IoC
         IoCContainer.Register<IImageLoader, ImageLoader>(Lifestyle.Singleton);
         IoCContainer.Register<AtlasTexturePathResolver>(Lifestyle.Singleton);
         IoCContainer.Register<IContentLoaderFactory, ContentLoaderFactory>(Lifestyle.Singleton);
+        IoCContainer.Register<IContentManager>(() =>
+        {
+            var contentLoaderFactory = IoCContainer.GetInstance<IContentLoaderFactory>();
+
+            return new ContentManager(contentLoaderFactory);
+        }, Lifestyle.Singleton);
     }
 
     /// <summary>

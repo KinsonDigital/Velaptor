@@ -7,6 +7,7 @@ namespace Velaptor.WebGpu;
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -267,6 +268,34 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose() => Dispose(true);
+
+    /// <summary>
+    /// Sets the setting for property caching to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="value">The value to set the property caching to. True = caching is enabled.</param>
+    [ExcludeFromCodeCoverage(Justification = "Only used for testing purposes.")]
+    public void SetPropertyCaching(bool value)
+    {
+        this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = value);
+
+        if (this.cachedWindowState is not null)
+        {
+            this.cachedWindowState.IsCaching = value;
+        }
+
+        if (this.cachedTypeOfBorder is not null)
+        {
+            this.cachedTypeOfBorder.IsCaching = value;
+        }
+
+        if (this.cachedPosition is not null)
+        {
+            this.cachedPosition.IsCaching = value;
+        }
+    }
 
     /// <summary>
     /// Runs the window.
@@ -686,7 +715,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
             },
             setterWhenNotCaching: value =>
             {
-                if (!Enum.IsDefined(typeof(StateOfWindow), value))
+                if (!Enum.IsDefined(value))
                 {
                     throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(StateOfWindow));
                 }
@@ -699,7 +728,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
             getterWhenNotCaching: () =>
             {
                 var silkBorder = this.silkWindow.WindowBorder;
-                if (!Enum.IsDefined(typeof(SilkWindowBorder), silkBorder))
+                if (!Enum.IsDefined(silkBorder))
                 {
                     throw new InvalidEnumArgumentException(
                         $"this.silkWindow.{nameof(WindowBorder)}",
@@ -711,7 +740,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
             },
             setterWhenNotCaching: value =>
             {
-                if (!Enum.IsDefined(typeof(VelaptorWindowBorder), value))
+                if (!Enum.IsDefined(value))
                 {
                     throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(VelaptorWindowBorder));
                 }
