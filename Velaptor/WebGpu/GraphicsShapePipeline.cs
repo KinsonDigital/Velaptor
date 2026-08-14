@@ -25,13 +25,13 @@ using NativeInterop.WebGpu.Handles;
 /// Vertex stride is 64 bytes with 9 attributes.
 /// </para>
 /// </remarks>
-internal sealed class GraphicsShapePipeline : IDisposable
+internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
 {
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
     private IWgpuInvoker? wgpu;
-    private SafeDeviceHandle? device;
+    private SafeDeviceHandle? deviceHandle;
     private SafeRenderPipelineHandle? handle;
     private bool isDisposed;
     private bool isInitialized;
@@ -39,16 +39,16 @@ internal sealed class GraphicsShapePipeline : IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsShapePipeline"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="surface">The graphics surface (used to obtain the swap-chain pixel format).</param>
     /// <param name="shader">The shader source holder (WGSL modules are compiled during <see cref="Initialize"/>).</param>
-    public GraphicsShapePipeline(IGraphicsDevice gd, IGraphicsSurface surface, IGraphicsShader shader)
+    public GraphicsShapePipeline(IGraphicsDevice grfxDevice, IGraphicsSurface surface, IGraphicsShader shader)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
         ArgumentNullException.ThrowIfNull(surface);
         ArgumentNullException.ThrowIfNull(shader);
 
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         this.surface = surface;
         this.shader = shader;
     }
@@ -82,16 +82,15 @@ internal sealed class GraphicsShapePipeline : IDisposable
             return;
         }
 
-        // Compile shaders first — they need the device.
-        this.shader.Initialize(this.gd);
+        this.shader.Initialize(this.grfxDevice,
+            TypeOfShader.Shape,
+            (vertHandle, fragHandle) =>
+            {
+                this.wgpu = this.grfxDevice.Wgpu;
+                this.deviceHandle = this.grfxDevice.Handle;
 
-        this.wgpu = this.gd.Wgpu;
-        this.device = this.gd.Handle;
-
-        this.handle = BuildPipeline(this.shader.VertexHandle, this.shader.FragmentHandle, this.surface.Format);
-
-        // Shader modules can be released after the pipeline is created.
-        this.shader.Dispose();
+                this.handle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
+            });
 
         this.isInitialized = true;
     }
@@ -101,7 +100,16 @@ internal sealed class GraphicsShapePipeline : IDisposable
     /// the pass will use this pipeline's shape shaders and fixed-function state.
     /// </summary>
     /// <param name="pass">The active render pass encoder to bind to.</param>
-    public void Bind(SafeRenderPassEncoderHandle pass) => this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
+    public void Bind(SafeRenderPassEncoderHandle pass)
+    {
+        if (!this.isInitialized || this.handle is null)
+        {
+            throw new InvalidOperationException(
+                "Pipeline has not been initialized. Call Initialize() first.");
+        }
+
+        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+    }
 
     /// <summary>
     /// Releases the GPU pipeline handle.
@@ -125,7 +133,7 @@ internal sealed class GraphicsShapePipeline : IDisposable
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.device!, "Shape Pipeline Layout");
+        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.deviceHandle!, "Shape Pipeline Layout");
 
         try
         {
@@ -198,7 +206,7 @@ internal sealed class GraphicsShapePipeline : IDisposable
                 },
             };
 
-            return this.wgpu!.DeviceCreateRenderPipeline(this.device!, in desc);
+            return this.wgpu!.DeviceCreateRenderPipeline(this.deviceHandle!, in desc);
         }
         finally
         {

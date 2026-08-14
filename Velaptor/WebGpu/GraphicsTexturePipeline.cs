@@ -13,11 +13,11 @@ using NativeInterop.WebGpu.Handles;
 /// <inheritdoc/>
 internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
 {
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
     private IWgpuInvoker? wgpu;
-    private SafeDeviceHandle? device;
+    private SafeDeviceHandle? deviceHandle;
     private SafeRenderPipelineHandle? handle;
     private SafeBindGroupLayoutHandle? bindGroupLayout;
     private bool isDisposed;
@@ -26,16 +26,16 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsTexturePipeline"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="surface">The graphics surface (used to get the swap-chain pixel format).</param>
     /// <param name="shader">The shader source holder (WGSL modules are compiled during <see cref="Initialize"/>).</param>
-    public GraphicsTexturePipeline(IGraphicsDevice gd, IGraphicsSurface surface, IGraphicsShader shader)
+    public GraphicsTexturePipeline(IGraphicsDevice grfxDevice, IGraphicsSurface surface, IGraphicsShader shader)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
         ArgumentNullException.ThrowIfNull(surface);
         ArgumentNullException.ThrowIfNull(shader);
 
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         this.surface = surface;
         this.shader = shader;
     }
@@ -83,15 +83,14 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         }
 
         // Compile shaders first — they need the device.
-        this.shader.Initialize(this.gd);
+        this.shader.Initialize(this.grfxDevice, TypeOfShader.Texture, (vertHandle, fragHandle) =>
+        {
+            // TODO: Possibly move this before the initilize like the grfx line pipeline?
+            this.wgpu = this.grfxDevice.Wgpu;
+            this.deviceHandle = this.grfxDevice.Handle;
 
-        this.wgpu = this.gd.Wgpu;
-        this.device = this.gd.Handle;
-
-        this.handle = BuildPipeline(this.shader.VertexHandle, this.shader.FragmentHandle, this.surface.Format);
-
-        // Shader modules can be released after the pipeline is created.
-        this.shader.Dispose();
+            this.handle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
+        });
 
         this.isInitialized = true;
     }
@@ -102,7 +101,16 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
     /// pipeline is bound or the pass ends.
     /// </summary>
     /// <param name="pass">The active render pass encoder to bind to.</param>
-    public void Bind(SafeRenderPassEncoderHandle pass) => this.wgpu!.RenderPassEncoderSetPipeline(pass, Handle);
+    public void Bind(SafeRenderPassEncoderHandle pass)
+    {
+        if (!this.isInitialized || this.handle is null)
+        {
+            throw new InvalidOperationException(
+                "Pipeline has not been initialized. Call Initialize() first.");
+        }
+
+        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+    }
 
     /// <inheritdoc/>
     public void Dispose()
@@ -142,11 +150,11 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         };
 
         this.bindGroupLayout = this.wgpu!.DeviceCreateBindGroupLayout(
-            this.device!,
+            this.deviceHandle!,
             [textureBindingLayout, samplerBindingLayout]);
 
         var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(
-            this.device!,
+            this.deviceHandle!,
             "Texture Pipeline Layout",
             [this.bindGroupLayout]);
 
@@ -215,7 +223,7 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
                 },
             };
 
-            return this.wgpu!.DeviceCreateRenderPipeline(this.device!, in desc);
+            return this.wgpu.DeviceCreateRenderPipeline(this.deviceHandle, in desc);
         }
         finally
         {
