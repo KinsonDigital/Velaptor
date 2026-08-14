@@ -4,8 +4,12 @@
 
 namespace Velaptor.WebGpu.Buffers;
 
+using System;
 using Graphics;
 using Batching;
+using Carbonate;
+using Carbonate.OneWay;
+using ReactableData;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering rounded rectangles.
@@ -33,16 +37,19 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     private const uint RectIndexItemSize = 4; // uint32
     private const uint VerticesPerRect = 4;
     private const uint IndicesPerRect = 6;
+    private readonly IDisposable resizeBufferSubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="initialCapacity">Number of rectangles to pre-allocate space for.</param>
-    public ShapeGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 1000)
-        : base(gd, initialCapacity)
-    {
-    }
+    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
+    public ShapeGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
+        : base(gd) =>
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
+            PushNotifications.ResizeBufferId,
+            data => EnsureCapacity(data.TotalShapeItmes),
+            () => this.resizeBufferSubscriber?.Dispose());
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => RectVertexSize;

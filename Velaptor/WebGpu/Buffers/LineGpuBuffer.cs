@@ -4,9 +4,13 @@
 
 namespace Velaptor.WebGpu.Buffers;
 
+using System;
 using System.Linq;
 using ExtensionMethods;
 using Batching;
+using Carbonate;
+using Carbonate.OneWay;
+using ReactableData;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering 2-D lines.
@@ -28,16 +32,19 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
     private const uint LineIndexItemSize = 4; // uint32
     private const uint VerticesPerLine = 4;
     private const uint IndicesPerLine = 6;
+    private readonly IDisposable resizeBufferSubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="initialCapacity">Number of lines to pre-allocate space for.</param>
-    public LineGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 1000)
-        : base(gd, initialCapacity)
-    {
-    }
+    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
+    public LineGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
+        : base(gd) =>
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
+            PushNotifications.ResizeBufferId,
+            data => EnsureCapacity(data.TotalLineItmes),
+            () => this.resizeBufferSubscriber?.Dispose());
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => LineVertexSize;
@@ -97,8 +104,12 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
     private static void SetVertex(
         float[] verts,
         uint vertexIndex,
-        float posX, float posY,
-        float r, float g, float b, float a)
+        float posX,
+        float posY,
+        float r,
+        float g,
+        float b,
+        float a)
     {
         var o = vertexIndex * 6;
         verts[o + 0] = posX;

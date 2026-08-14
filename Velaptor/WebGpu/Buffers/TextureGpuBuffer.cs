@@ -7,7 +7,10 @@ namespace Velaptor.WebGpu.Buffers;
 using System;
 using System.Numerics;
 using Batching;
+using Carbonate;
+using Carbonate.OneWay;
 using Graphics;
+using ReactableData;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering textured quads and font glyphs.
@@ -30,16 +33,19 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
     private const uint QuadsPerItem = 4;
     private const uint IndicesPerQuad = 6;
     private const uint FloatsPerVertex = 8;
+    private readonly IDisposable resizeBufferSubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="initialCapacity">Number of quads to pre-allocate space for.</param>
-    public TextureGpuBuffer(IGraphicsDevice gd, uint initialCapacity = 1000)
-        : base(gd, initialCapacity)
-    {
-    }
+    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
+    public TextureGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
+        : base(gd) =>
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
+            PushNotifications.ResizeBufferId,
+            data => EnsureCapacity(data.TotalTextureItems),
+            () => this.resizeBufferSubscriber?.Dispose());
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => QuadVertexSize;

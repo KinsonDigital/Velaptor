@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using Batching;
 using Carbonate;
 using Carbonate.NonDirectional;
+using Carbonate.OneWay;
 using Factories;
+using ReactableData;
 using WebGpu.Batching;
 
 /// <inheritdoc/>
@@ -20,6 +22,7 @@ internal sealed class RenderMediator : IRenderMediator
     private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
     private readonly IBatchPullReactable<ShapeBatchItem> shapePullReactable;
     private readonly IBatchPullReactable<LineBatchItem> linePullReactable;
+    private readonly IPushReactable<RequiredBufferCapacityData> bufferResizeReactable;
     private readonly IRenderBatchReactable<TextureBatchItem> textureRenderBatchReactable;
     private readonly IRenderBatchReactable<FontGlyphBatchItem> fontRenderBatchReactable;
     private readonly IRenderBatchReactable<ShapeBatchItem> shapeRenderBatchReactable;
@@ -66,6 +69,7 @@ internal sealed class RenderMediator : IRenderMediator
         this.shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
         this.linePullReactable = reactableFactory.CreateLinePullBatchReactable();
 
+        this.bufferResizeReactable = reactableFactory.CreateBufferResizeReactable();
         this.textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
         this.fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
         this.shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
@@ -90,6 +94,18 @@ internal sealed class RenderMediator : IRenderMediator
         var shapeItems = this.shapePullReactable.Pull(PullResponses.GetShapeItemsId);
         var lineItems = this.linePullReactable.Pull(PullResponses.GetLineItemsId);
 
+        // Resize the buffers before drawing any calls
+        this.bufferResizeReactable.Push(
+            PushNotifications.ResizeBufferId,
+            new RequiredBufferCapacityData
+            {
+                TotalTextureItems = (uint)textureItems.Length,
+                TotalFontItems = (uint)fontItems.Length,
+                TotalShapeItmes = (uint)shapeItems.Length,
+                TotalLineItmes = (uint)lineItems.Length,
+            });
+
+        // Sort all of the item layers
         textureItems.Span.Sort(this.textureItemComparer);
         fontItems.Span.Sort(this.fontItemComparer);
         shapeItems.Span.Sort(this.shapeItemComparer);
