@@ -8,8 +8,7 @@ using System;
 using Graphics;
 using Batching;
 using Carbonate;
-using Carbonate.OneWay;
-using ReactableData;
+using Factories;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering rounded rectangles.
@@ -38,18 +37,28 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     private const uint VerticesPerRect = 4;
     private const uint IndicesPerRect = 6;
     private readonly IDisposable resizeBufferSubscriber;
+    private readonly IDisposable wgpuReadyUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
-    public ShapeGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
-        : base(gd) =>
-        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
-            PushNotifications.ResizeBufferId,
+    /// <param name="reactableFactory">Creates reactables.</param>
+    public ShapeGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
+        : base(gd)
+    {
+        var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
             data => EnsureCapacity(data.TotalShapeItmes),
             () => this.resizeBufferSubscriber?.Dispose());
+
+        this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
+            PushNotifications.WgpuReady,
+            Initialize,
+            () => this.wgpuReadyUnsubscriber?.Dispose());
+    }
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => RectVertexSize;

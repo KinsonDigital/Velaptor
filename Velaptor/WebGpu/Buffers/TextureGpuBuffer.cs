@@ -9,6 +9,7 @@ using System.Numerics;
 using Batching;
 using Carbonate;
 using Carbonate.OneWay;
+using Factories;
 using Graphics;
 using ReactableData;
 
@@ -34,18 +35,28 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
     private const uint IndicesPerQuad = 6;
     private const uint FloatsPerVertex = 8;
     private readonly IDisposable resizeBufferSubscriber;
+    private readonly IDisposable wgpuReadyUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
-    public TextureGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
-        : base(gd) =>
-        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
-            PushNotifications.ResizeBufferId,
+    /// <param name="reactableFactory">Creates reactables.</param>
+    public TextureGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
+        : base(gd)
+    {
+        var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
             data => EnsureCapacity(data.TotalTextureItems),
             () => this.resizeBufferSubscriber?.Dispose());
+
+        this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
+            PushNotifications.WgpuReady,
+            Initialize,
+            () => this.wgpuReadyUnsubscriber?.Dispose());
+    }
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => QuadVertexSize;

@@ -21,9 +21,8 @@ using Velaptor.Batching;
 /// </summary>
 internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 {
-    private readonly IWgpuInvoker wgpu;
-    private readonly GraphicsShapePipeline pipeline;
-    private readonly ShapeGpuBuffer buffer;
+    private readonly IGraphicsShapePipeline pipeline;
+    private readonly IWebGpuBuffer<ShapeBatchItem> buffer;
     private readonly IFrame frame;
     private readonly IBatchingManager batchManager;
     private readonly IDisposable frameBeginUnsubscriber;
@@ -46,8 +45,8 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     internal ShapeRenderer(
         IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
-        GraphicsShapePipeline pipeline,
-        ShapeGpuBuffer buffer,
+        IGraphicsShapePipeline pipeline,
+        IWebGpuBuffer<ShapeBatchItem> buffer,
         IFrame frame,
         IBatchingManager batchManager)
     {
@@ -58,20 +57,19 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
         ArgumentNullException.ThrowIfNull(frame);
         ArgumentNullException.ThrowIfNull(batchManager);
 
-        this.wgpu = wgpu;
         this.pipeline = pipeline;
         this.buffer = buffer;
         this.frame = frame;
         this.batchManager = batchManager;
 
-        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.frameBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.FrameHasBegunId,
             () => this.batchOffset = 0,
             () => this.frameBeginUnsubscriber?.Dispose());
 
-        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.batchBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
             () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());

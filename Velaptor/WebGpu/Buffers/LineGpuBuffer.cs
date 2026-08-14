@@ -9,8 +9,7 @@ using System.Linq;
 using ExtensionMethods;
 using Batching;
 using Carbonate;
-using Carbonate.OneWay;
-using ReactableData;
+using Factories;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering 2-D lines.
@@ -33,18 +32,28 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
     private const uint VerticesPerLine = 4;
     private const uint IndicesPerLine = 6;
     private readonly IDisposable resizeBufferSubscriber;
+    private readonly IDisposable wgpuReadyUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
-    public LineGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
-        : base(gd) =>
-        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
-            PushNotifications.ResizeBufferId,
+    /// <param name="reactableFactory">Creates reactables.</param>
+    public LineGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
+        : base(gd)
+    {
+        var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
             data => EnsureCapacity(data.TotalLineItmes),
             () => this.resizeBufferSubscriber?.Dispose());
+
+        this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
+            PushNotifications.WgpuReady,
+            Initialize,
+            () => this.wgpuReadyUnsubscriber?.Dispose());
+    }
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => LineVertexSize;

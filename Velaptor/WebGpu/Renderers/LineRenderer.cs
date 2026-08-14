@@ -22,15 +22,15 @@ using Velaptor.Batching;
 /// </summary>
 internal sealed class LineRenderer : IDisposable, ILineRenderer
 {
-    private readonly IWgpuInvoker wgpu;
-    private readonly GraphicsLinePipeline pipeline;
-    private readonly LineGpuBuffer buffer;
+    private readonly IGraphicsLinePipeline pipeline;
+    private readonly IWebGpuBuffer<LineBatchItem> buffer;
     private readonly IFrame frame;
     private readonly IBatchingManager batchManager;
     private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
+    private readonly IDisposable wgpuReadyUnsubscriber;
     private uint batchOffset;
     private bool hasBegun;
     private bool isDisposed;
@@ -40,15 +40,15 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="reactableFactory">Creates reactables.</param>
-    /// <param name="pipeline">The line rendering pipeline.</param>
+    /// <param name="pipeline">The line rendering the pipeline.</param>
     /// <param name="buffer">Buffers line data to the GPU.</param>
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
     internal LineRenderer(
         IWgpuInvoker wgpu,
         IReactableFactory reactableFactory,
-        GraphicsLinePipeline pipeline,
-        LineGpuBuffer buffer,
+        IGraphicsLinePipeline pipeline,
+        IWebGpuBuffer<LineBatchItem> buffer,
         IFrame frame,
         IBatchingManager batchManager)
     {
@@ -59,20 +59,19 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
         ArgumentNullException.ThrowIfNull(frame);
         ArgumentNullException.ThrowIfNull(batchManager);
 
-        this.wgpu = wgpu;
         this.pipeline = pipeline;
         this.buffer = buffer;
         this.frame = frame;
         this.batchManager = batchManager;
 
-        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.frameBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.FrameHasBegunId,
             () => this.batchOffset = 0,
             () => this.frameBeginUnsubscriber?.Dispose());
 
-        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.batchBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
             () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
@@ -92,15 +91,15 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
             () => this.viewportUnsubscriber?.Dispose());
     }
 
-    /// <inheritdoc/>
-    public void Render(Line line, int layer = 0) =>
-        RenderBase(line.P1, line.P2, line.Color, (uint)line.Thickness, layer);
-
     /// <summary>
     /// Gets the current window size used by the GPU buffer for NDC conversion.
     /// </summary>
     /// <remarks>For testing purposes.</remarks>
     internal Vector2 BufferWindowSize => this.buffer.WindowSize;
+
+    /// <inheritdoc/>
+    public void Render(Line line, int layer = 0) =>
+        RenderBase(line.P1, line.P2, line.Color, (uint)line.Thickness, layer);
 
     /// <inheritdoc/>
     public void RenderLine(Vector2 start, Vector2 end, int layer = 0) =>
@@ -117,6 +116,21 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
     /// <inheritdoc/>
     public void RenderLine(Vector2 start, Vector2 end, Color color, uint thickness, int layer = 0) =>
         RenderBase(start, end, color, thickness, layer);
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
+        this.batchBeginUnsubscriber.Dispose();
+        this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
+    }
 
     /// <summary>
     /// The main root method for rendering lines.
@@ -182,20 +196,5 @@ internal sealed class LineRenderer : IDisposable, ILineRenderer
 
         this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
         this.batchOffset += totalItemsToRender;
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderUnsubscriber.Dispose();
-        this.viewportUnsubscriber.Dispose();
     }
 }

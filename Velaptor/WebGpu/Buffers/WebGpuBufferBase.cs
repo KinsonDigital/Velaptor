@@ -17,9 +17,11 @@ using NativeInterop.WebGpu.Handles;
 internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     where TData : struct
 {
+    // TODO: Look into why sometimes it takes longer to close down the window.  the first time I experienced this was with a capacity of 2000.
+    // It happens with a low number too. It might not have anything to do with the capacity.
+
     private const uint DefaultCapacity = 64;
     private readonly IGraphicsDevice gd;
-    private readonly uint pendingInitialCapacity;
     private SafeVertexBufferHandle? vertexBuffer;
     private SafeIndexBufferHandle? indexBuffer;
     private uint vertexBufferSizeInBytes;
@@ -30,12 +32,10 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// Initializes a new instance of the <see cref="WebGpuBufferBase{TData}"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="initialCapacity">Number of batch items to pre-allocate space for.</param>
-    private protected WebGpuBufferBase(IGraphicsDevice gd, uint initialCapacity = DefaultCapacity)
+    private protected WebGpuBufferBase(IGraphicsDevice gd)
     {
         this.gd = gd;
         Capacity = 0;
-        this.pendingInitialCapacity = initialCapacity;
     }
 
     /// <inheritdoc/>
@@ -73,34 +73,38 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// </summary>
     private IWgpuInvoker Wgpu => this.gd.Wgpu;
 
-    /// <inheritdoc/>
-    public void EnsureCapacity(uint itemCount)
-    {
-        EnsureInitialized();
-
-        if (itemCount > Capacity)
-        {
-            Allocate(itemCount);
-        }
-    }
-
-    /// <inheritdoc/>
-    // ReSharper disable once MemberCanBePrivate.Global
-    public void Initialize()
+    /// <summary>
+    /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
+    /// has been initialized.
+    /// </summary>
+    protected void Initialize()
     {
         if (IsInitialized)
         {
             return;
         }
 
-        Allocate(this.pendingInitialCapacity);
+        Allocate(DefaultCapacity);
+    }
+
+    // TODO: Look into make this protected.  This is invoked via a reactable anyway, not executed externally.
+    /// <inheritdoc/>
+    public void EnsureCapacity(uint requiredCapacity)
+    {
+        if (!IsInitialized)
+        {
+            throw new Exception($"The buffer must be initialized before calling {nameof(EnsureCapacity)}().");
+        }
+
+        if (requiredCapacity > Capacity)
+        {
+            Allocate(requiredCapacity);
+        }
     }
 
     /// <inheritdoc/>
     public void UploadData(TData data, uint itemIndex = 0)
     {
-        EnsureInitialized();
-
         if (itemIndex >= Capacity)
         {
             Allocate(itemIndex + 1);
@@ -123,7 +127,6 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
             throw new Exception("The vertex index buffer cannot be null.");
         }
 
-        EnsureInitialized();
         this.gd.Wgpu.RenderPassEncoderSetVertexBuffer(
             pass,
             0,
@@ -199,29 +202,21 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
         => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 
     /// <summary>
-    /// Ensures the GPU buffers have been allocated, initializing them if necessary.
-    /// Called automatically before any upload or draw operation.
-    /// </summary>
-    private void EnsureInitialized()
-    {
-        if (!IsInitialized)
-        {
-            Initialize();
-        }
-    }
-
-    /// <summary>
     /// Allocates (or re-allocates) GPU vertex and index buffers for at least <paramref name="minItemCount"/> items.
     /// </summary>
     private void Allocate(uint minItemCount)
     {
-        // TODO: Check if the this.gd.Handle is null
+        // TODO (14h2y76):  Check if we are currently in a render pass and if we are, throw an exception
+        // We cannot dispose of the buffer handles if we are in a render pass.
 
         var newCapacity = Math.Max(minItemCount, Capacity > 0 ? Capacity * 2 : DefaultCapacity);
         Capacity = newCapacity;
 
         this.vertexBufferSizeInBytes = Capacity * VerticesPerItem * VertexSizeInBytes;
         this.indexBufferSizeInBytes = Capacity * IndicesPerItem * IndexItemSizeInBytes;
+
+        // TODO: Add checks to see if the 'vertexBuffer' and 'indexBuffer' have not been closed.
+        // If so, throw an exception. We cannot have a disposed buffer before we
 
         this.vertexBuffer?.Dispose();
         this.indexBuffer?.Dispose();

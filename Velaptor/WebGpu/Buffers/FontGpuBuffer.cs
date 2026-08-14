@@ -9,6 +9,7 @@ using System.Numerics;
 using Batching;
 using Carbonate;
 using Carbonate.OneWay;
+using Factories;
 using Graphics;
 using ReactableData;
 
@@ -25,18 +26,28 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
     private const uint IndicesPerQuad = 6;
     private const uint FloatsPerVertex = 8;
     private readonly IDisposable resizeBufferSubscriber;
+    private readonly IDisposable wgpuReadyUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGpuBuffer"/> class.
     /// </summary>
     /// <param name="gd">The graphics device.</param>
-    /// <param name="resizeBufferReactable">Used to resize the buffer.</param>
-    public FontGpuBuffer(IGraphicsDevice gd, IPushReactable<RequiredBufferCapacityData> resizeBufferReactable)
-        : base(gd) =>
-        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(
-            PushNotifications.ResizeBufferId,
+    /// <param name="reactableFactory">Creates reactables.</param>
+    public FontGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
+        : base(gd)
+    {
+        var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
+
+        this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
             data => EnsureCapacity(data.TotalFontItems),
             () => this.resizeBufferSubscriber?.Dispose());
+
+        this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
+            PushNotifications.WgpuReady,
+            Initialize,
+            () => this.wgpuReadyUnsubscriber?.Dispose());
+    }
 
     /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => QuadVertexSize;

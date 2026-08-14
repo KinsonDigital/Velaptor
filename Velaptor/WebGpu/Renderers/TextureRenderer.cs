@@ -74,14 +74,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         this.frame = frame;
         this.bindGroupRegistry = bindGroupRegistry;
 
-        var beginBatchReactable = reactableFactory.CreateNoDataPushReactable();
+        var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
-        this.frameBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.frameBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.FrameHasBegunId,
             () => this.batchOffset = 0,
             () => this.frameBeginUnsubscriber?.Dispose());
 
-        this.batchBeginUnsubscriber = beginBatchReactable.CreateNonReceiveOrRespond(
+        this.batchBeginUnsubscriber = pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasBegunId,
             () => this.hasBegun = true,
             () => this.batchBeginUnsubscriber?.Dispose());
