@@ -6,13 +6,16 @@ namespace VelaptorTests.WebGpu.Buffers;
 
 using System.Drawing;
 using System.Numerics;
+using Carbonate.OneWay;
 using Color = System.Drawing.Color;
 using NSubstitute;
 using Shouldly;
 using Silk.NET.WebGPU;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
+using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Velaptor.WebGpu.Batching;
 using Velaptor.WebGpu.Buffers;
@@ -26,9 +29,13 @@ public class TextureGpuBufferTests
     private const uint VertexDataLength = 32;
     private const uint IndexDataLength = 6;
     private readonly IGraphicsDevice mockDevice;
+    private readonly IReactableFactory mockReactableFactory;
     private float[]? capturedVertexData;
     private uint[]? capturedIndexData;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextureGpuBufferTests"/> class.
+    /// </summary>
     public TextureGpuBufferTests()
     {
         const nint unsafeDevice = 0x11;
@@ -75,6 +82,11 @@ public class TextureGpuBufferTests
         this.mockDevice.Wgpu.Returns(mockWgpu);
         this.mockDevice.Handle.Returns(deviceHandle);
         this.mockDevice.Queue.Returns(queueHandle);
+
+        var mockBufferCapReactable = Substitute.For<IPushReactable<RequiredBufferCapacityData>>();
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateResizeBufferReactable().Returns(mockBufferCapReactable);
     }
 
     #region Method Tests
@@ -261,7 +273,6 @@ public class TextureGpuBufferTests
         // TR(500,225)→(475,400)→NDC(0.1875,-0.3333)
         // BL(300,375)→(325,200)→NDC(-0.1875,0.3333)
         // BR(500,375)→(325,400)→NDC(-0.1875,-0.3333)
-
         this.capturedVertexData[0].ShouldBe(0.1875f, tolerance);
         this.capturedVertexData[1].ShouldBe(0.333333f, tolerance);
         this.capturedVertexData[8].ShouldBe(0.1875f, tolerance);
@@ -301,5 +312,9 @@ public class TextureGpuBufferTests
     }
     #endregion
 
-    private TextureGpuBuffer CreateSystemUnderTest() => new (this.mockDevice);
+    /// <summary>
+    /// Creates a new instance of <see cref="TextureGpuBuffer"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private TextureGpuBuffer CreateSystemUnderTest() => new (this.mockDevice, this.mockReactableFactory);
 }

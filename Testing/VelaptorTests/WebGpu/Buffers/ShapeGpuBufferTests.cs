@@ -6,13 +6,16 @@ namespace VelaptorTests.WebGpu.Buffers;
 
 using System;
 using System.Numerics;
+using Carbonate.OneWay;
 using Color = System.Drawing.Color;
 using NSubstitute;
 using Shouldly;
 using Silk.NET.WebGPU;
+using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
+using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Velaptor.WebGpu.Batching;
 using Velaptor.WebGpu.Buffers;
@@ -26,6 +29,7 @@ public class ShapeGpuBufferTests
     private const uint VertexDataLength = 64;
     private const uint IndexDataLength = 6;
     private readonly IGraphicsDevice mockDevice;
+    private readonly IReactableFactory mockReactableFactory;
     private float[]? capturedVertexData;
     private uint[]? capturedIndexData;
 
@@ -78,6 +82,11 @@ public class ShapeGpuBufferTests
         this.mockDevice.Wgpu.Returns(mockWgpu);
         this.mockDevice.Handle.Returns(deviceHandle);
         this.mockDevice.Queue.Returns(queueHandle);
+
+        var mockBufferCapReactable = Substitute.For<IPushReactable<RequiredBufferCapacityData>>();
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateResizeBufferReactable().Returns(mockBufferCapReactable);
     }
 
     #region Method Tests
@@ -356,5 +365,5 @@ public class ShapeGpuBufferTests
     /// Creates a new instance of <see cref="ShapeGpuBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ShapeGpuBuffer CreateSystemUnderTest() => new (this.mockDevice);
+    private ShapeGpuBuffer CreateSystemUnderTest() => new (this.mockDevice, this.mockReactableFactory);
 }

@@ -5,12 +5,15 @@
 namespace VelaptorTests.WebGpu.Buffers;
 
 using System.Numerics;
+using Carbonate.OneWay;
 using Color = System.Drawing.Color;
 using NSubstitute;
 using Shouldly;
 using Silk.NET.WebGPU;
+using Velaptor.Factories;
 using Velaptor.NativeInterop.WebGpu;
 using Velaptor.NativeInterop.WebGpu.Handles;
+using Velaptor.ReactableData;
 using Velaptor.WebGpu;
 using Velaptor.WebGpu.Batching;
 using Velaptor.WebGpu.Buffers;
@@ -24,6 +27,7 @@ public class LineGpuBufferTests
     private const uint VertexDataLength = 24; // 4 vertices × 6 floats
     private const uint IndexDataLength = 6;
     private readonly IGraphicsDevice mockDevice;
+    private readonly IReactableFactory mockReactableFactory;
     private float[]? capturedVertexData;
     private uint[]? capturedIndexData;
 
@@ -76,6 +80,11 @@ public class LineGpuBufferTests
         this.mockDevice.Wgpu.Returns(mockWgpu);
         this.mockDevice.Handle.Returns(deviceHandle);
         this.mockDevice.Queue.Returns(queueHandle);
+
+        var mockBufferCapReactable = Substitute.For<IPushReactable<RequiredBufferCapacityData>>();
+
+        this.mockReactableFactory = Substitute.For<IReactableFactory>();
+        this.mockReactableFactory.CreateResizeBufferReactable().Returns(mockBufferCapReactable);
     }
 
     #region Method Tests
@@ -161,5 +170,5 @@ public class LineGpuBufferTests
     /// Creates a new instance of <see cref="LineGpuBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private LineGpuBuffer CreateSystemUnderTest() => new (this.mockDevice);
+    private LineGpuBuffer CreateSystemUnderTest() => new (this.mockDevice, this.mockReactableFactory);
 }
