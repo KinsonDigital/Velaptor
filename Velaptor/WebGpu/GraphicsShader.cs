@@ -14,7 +14,6 @@ using NativeInterop.WebGpu.Handles;
 internal sealed class GraphicsShader : IGraphicsShader
 {
     private readonly IEmbeddedResourceLoaderService<string> resourceLoaderService;
-    private readonly string[] validShaders = ["texture", "shape", "line"];
     private SafeShaderModuleHandle? vertexHandle;
     private SafeShaderModuleHandle? fragmentHandle;
 
@@ -35,24 +34,20 @@ internal sealed class GraphicsShader : IGraphicsShader
     }
 
     /// <inheritdoc/>
-    public void Initialize(IGraphicsDevice gd, TypeOfShader shaderType, Action<SafeShaderModuleHandle, SafeShaderModuleHandle> onInitialized)
+    public void Initialize(IGraphicsDevice grfxDevice, TypeOfShader shaderType, Action<SafeShaderModuleHandle, SafeShaderModuleHandle> onInitialized)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
 
-        var shader = Enum.GetName(shaderType)?.ToLower() ?? string.Empty;
-
-        // TODO: Test for this
-        // Make sure that the enum value has not changed from what is required
-        if (!this.validShaders.Contains(shader))
+        if (!Enum.GetValues<TypeOfShader>().Contains(shaderType))
         {
-            throw new Exception($"The shader '{shaderType}' does not exist.");
+            throw new ArgumentException($"The '{nameof(TypeOfShader)}.{shaderType}' is invalid. Could not create vertex and fragment shaders.");
         }
 
         var vertSource = this.resourceLoaderService.LoadResource($"{shaderType}.vert.wgsl");
         var fragSource = this.resourceLoaderService.LoadResource($"{shaderType}.frag.wgsl");
 
-        this.vertexHandle = gd.CreateShaderModule(vertSource);
-        this.fragmentHandle = gd.CreateShaderModule(fragSource);
+        this.vertexHandle = grfxDevice.CreateShaderModule(vertSource);
+        this.fragmentHandle = grfxDevice.CreateShaderModule(fragSource);
 
         onInitialized.Invoke(this.vertexHandle, this.fragmentHandle);
 

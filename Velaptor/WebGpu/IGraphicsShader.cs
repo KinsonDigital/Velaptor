@@ -26,9 +26,9 @@ internal interface IGraphicsShader
     /// Compiles the vertex and fragment WGSL shader sources into GPU shader modules.
     /// Must be called after the WebGPU device has been initialized.
     /// </summary>
-    /// <param name="gd">The graphics device used to compile the shaders.</param>
+    /// <param name="grfxDevice">The graphics device used to compile the shaders.</param>
     /// <param name="shaderType">The name of the shader.</param>
     /// <param name="onInitialized">Invoked once the shaders modules have been created.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="gd"/> is null.</exception>
-    void Initialize(IGraphicsDevice gd, TypeOfShader shaderType, Action<SafeShaderModuleHandle, SafeShaderModuleHandle> onInitialized);
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="grfxDevice"/> is null.</exception>
+    void Initialize(IGraphicsDevice grfxDevice, TypeOfShader shaderType, Action<SafeShaderModuleHandle, SafeShaderModuleHandle> onInitialized);
 }
