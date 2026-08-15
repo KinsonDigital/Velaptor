@@ -37,6 +37,19 @@ public class WebGpuBufferBaseTests
 
         this.mockWgpu = Substitute.For<IWgpuInvoker>();
 
+        var vertBufferHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
+        var indexBufferHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
+        this.mockWgpu.DeviceCreateVertexBuffer(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<ulong>(),
+            Arg.Any<BufferUsage>()).Returns(vertBufferHandle);
+        this.mockWgpu.DeviceCreateIndexBuffer(
+            Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<ulong>(),
+            Arg.Any<BufferUsage>()).Returns(indexBufferHandle);
+
         this.deviceHandle = new SafeDeviceHandle(this.mockWgpu, unsafeDevice);
         this.mockWgpu.DeviceGetQueue(this.deviceHandle).Returns(unsafeQueue);
         var queueHandle = new SafeQueueHandle(this.mockWgpu, this.deviceHandle);
@@ -66,18 +79,18 @@ public class WebGpuBufferBaseTests
     public void Initialize_WhenInvoked_AllocatesBuffersAtDefaultCapacity()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
+        var vertBufferHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
+        var indexBufferHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
         this.mockWgpu.DeviceCreateVertexBuffer(
             this.deviceHandle,
             Arg.Any<string>(),
             DefCapacity * VertsPerItem * VtxSize,
-            BufferUsage.Vertex | BufferUsage.CopyDst).Returns(vbHandle);
+            BufferUsage.Vertex | BufferUsage.CopyDst).Returns(vertBufferHandle);
         this.mockWgpu.DeviceCreateIndexBuffer(
             this.deviceHandle,
             Arg.Any<string>(),
             DefCapacity * IndicesPerItem * IdxSize,
-            BufferUsage.Index | BufferUsage.CopyDst).Returns(ibHandle);
+            BufferUsage.Index | BufferUsage.CopyDst).Returns(indexBufferHandle);
 
         var sut = CreateSystemUnderTest();
 
@@ -93,19 +106,6 @@ public class WebGpuBufferBaseTests
     public void Initialize_WhenAlreadyInitialized_DoesNotReallocate()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -126,22 +126,23 @@ public class WebGpuBufferBaseTests
     }
 
     [Fact]
+    public void EnsureCapacity_WhenNotInitialized_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.EnsureCapacity(123);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The buffer must be initialized before calling {nameof(WebGpuBufferBase<int>.EnsureCapacity)}().");
+    }
+
+    [Fact]
     public void EnsureCapacity_WhenItemCountLessThanCapacity_DoesNotReallocate()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var sut = CreateSystemUnderTest();
         sut.Initialize();
 
@@ -161,19 +162,6 @@ public class WebGpuBufferBaseTests
     public void EnsureCapacity_WhenItemCountGreaterThanCapacity_Reallocates()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle, vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle, ibHandle);
-
         var sut = CreateSystemUnderTest();
         sut.Initialize();
 
@@ -185,22 +173,81 @@ public class WebGpuBufferBaseTests
     }
 
     [Fact]
-    public void UploadData_WhenInvoked_UploadsToCorrectGpuOffset()
+    public void UploadData_WithNullDeviceHandle_ThrowsException()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
+        this.mockDevice.Handle.Returns((SafeDeviceHandle?)null);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UploadData(123);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot create vertex and index buffers.");
+    }
+
+    [Fact]
+    public void UploadData_WithNullVertexBufferHandle_ThrowsException()
+    {
+        // Arrange
         this.mockWgpu.DeviceCreateVertexBuffer(
             Arg.Any<SafeDeviceHandle>(),
             Arg.Any<string>(),
             Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
+            Arg.Any<BufferUsage>()).Returns((SafeVertexBufferHandle?)null);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UploadData(123);
+
+        // Assert
+        act.ShouldThrow<Exception>()
+            .Message.ShouldBe($"The '{nameof(SafeVertexBufferHandle)}' cannot be null. Cannot write to buffer.");
+    }
+
+    [Fact]
+    public void UploadData_WithNullIndexBufferHandle_ThrowsException()
+    {
+        // Arrange
         this.mockWgpu.DeviceCreateIndexBuffer(
             Arg.Any<SafeDeviceHandle>(),
             Arg.Any<string>(),
             Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
+            Arg.Any<BufferUsage>()).Returns((SafeIndexBufferHandle?)null);
 
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UploadData(123);
+
+        // Assert
+        act.ShouldThrow<Exception>()
+            .Message.ShouldBe($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
+    }
+
+    [Fact]
+    public void UploadData_WithNullQueueHandle_ThrowsException()
+    {
+        // Arrange
+        this.mockDevice.Queue.Returns((SafeQueueHandle?)null);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UploadData(123);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeQueueHandle)}' cannot be null. Cannot write to buffer.");
+    }
+
+    [Fact]
+    public void UploadData_WhenInvoked_UploadsToCorrectGpuOffset()
+    {
+        // Arrange
         ulong? capturedVbOffset = null;
         ulong? capturedIbOffset = null;
         this.mockWgpu.When(x => x.QueueWriteBuffer(
@@ -230,19 +277,6 @@ public class WebGpuBufferBaseTests
     public void UploadData_WhenItemIndexExceedsCapacity_ReallocatesThenUploads()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var sut = CreateSystemUnderTest();
         sut.Initialize();
 
@@ -257,19 +291,6 @@ public class WebGpuBufferBaseTests
     public void Draw_WhenInvoked_SetsBuffersAndIssuesDraw()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var passHandle = new SafeRenderPassEncoderHandle(this.mockWgpu, 0x55);
         var sut = CreateSystemUnderTest();
         sut.Initialize();
@@ -302,20 +323,14 @@ public class WebGpuBufferBaseTests
         var act = () => sut.Draw(passHandle);
 
         // Assert
-        act.ShouldThrow<Exception>()
-            .Message.ShouldBe("The vertex buffer cannot be null.");
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeVertexBufferHandle)}' cannot be null. Cannot write to buffer.");
     }
 
     [Fact]
     public void Draw_WithNullIndexBuffer_ThrowsException()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
         this.mockWgpu.DeviceCreateIndexBuffer(
             Arg.Any<SafeDeviceHandle>(),
             Arg.Any<string>(),
@@ -330,8 +345,8 @@ public class WebGpuBufferBaseTests
         var act = () => sut.Draw(passHandle);
 
         // Assert
-        act.ShouldThrow<Exception>()
-            .Message.ShouldBe("The vertex index buffer cannot be null.");
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
     }
 
     [Theory]
@@ -365,19 +380,6 @@ public class WebGpuBufferBaseTests
     public void Dispose_WhenInvoked_ReleasesBuffers()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var sut = CreateSystemUnderTest();
         sut.Initialize();
 
@@ -395,19 +397,6 @@ public class WebGpuBufferBaseTests
     public void Dispose_WhenAlreadyDisposed_DoesNotReleaseAgain()
     {
         // Arrange
-        var vbHandle = new SafeVertexBufferHandle(this.mockWgpu, 0x33);
-        var ibHandle = new SafeIndexBufferHandle(this.mockWgpu, 0x44);
-        this.mockWgpu.DeviceCreateVertexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(vbHandle);
-        this.mockWgpu.DeviceCreateIndexBuffer(
-            Arg.Any<SafeDeviceHandle>(),
-            Arg.Any<string>(),
-            Arg.Any<ulong>(),
-            Arg.Any<BufferUsage>()).Returns(ibHandle);
-
         var sut = CreateSystemUnderTest();
         sut.Initialize();
 

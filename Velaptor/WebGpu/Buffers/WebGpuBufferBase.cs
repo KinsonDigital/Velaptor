@@ -8,6 +8,7 @@ using System;
 using System.Numerics;
 using NativeInterop.WebGpu;
 using NativeInterop.WebGpu.Handles;
+using Silk.NET.WebGPU;
 
 /// <summary>
 /// Base functionality for WebGPU vertex/index buffer management.
@@ -93,7 +94,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     {
         if (!IsInitialized)
         {
-            throw new Exception($"The buffer must be initialized before calling {nameof(EnsureCapacity)}().");
+            throw new InvalidOperationException($"The buffer must be initialized before calling {nameof(EnsureCapacity)}().");
         }
 
         if (requiredCapacity > Capacity)
@@ -119,12 +120,12 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     {
         if (this.vertexBuffer is null)
         {
-            throw new Exception("The vertex buffer cannot be null.");
+            throw new InvalidOperationException($"The '{nameof(SafeVertexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
         if (this.indexBuffer is null)
         {
-            throw new Exception("The vertex index buffer cannot be null.");
+            throw new InvalidOperationException($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
         this.gd.Wgpu.RenderPassEncoderSetVertexBuffer(
@@ -137,7 +138,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
         this.gd.Wgpu.RenderPassEncoderSetIndexBuffer(
             pass,
             this.indexBuffer.DangerousGetHandle(),
-            Silk.NET.WebGPU.IndexFormat.Uint32,
+            IndexFormat.Uint32,
             0,
             this.indexBufferSizeInBytes);
 
@@ -206,17 +207,16 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// </summary>
     private void Allocate(uint minItemCount)
     {
-        // TODO (14h2y76):  Check if we are currently in a render pass and if we are, throw an exception
-        // We cannot dispose of the buffer handles if we are in a render pass.
+        if (this.gd.Handle is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot create vertex and index buffers.");
+        }
 
         var newCapacity = Math.Max(minItemCount, Capacity > 0 ? Capacity * 2 : DefaultCapacity);
         Capacity = newCapacity;
 
         this.vertexBufferSizeInBytes = Capacity * VerticesPerItem * VertexSizeInBytes;
         this.indexBufferSizeInBytes = Capacity * IndicesPerItem * IndexItemSizeInBytes;
-
-        // TODO: Add checks to see if the 'vertexBuffer' and 'indexBuffer' have not been closed.
-        // If so, throw an exception. We cannot have a disposed buffer before we
 
         this.vertexBuffer?.Dispose();
         this.indexBuffer?.Dispose();
@@ -225,13 +225,13 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
             this.gd.Handle,
             $"{GetType().Name} Vertex Buffer",
             this.vertexBufferSizeInBytes,
-            Silk.NET.WebGPU.BufferUsage.Vertex | Silk.NET.WebGPU.BufferUsage.CopyDst);
+            BufferUsage.Vertex | BufferUsage.CopyDst);
 
         this.indexBuffer = Wgpu.DeviceCreateIndexBuffer(
             this.gd.Handle,
             $"{GetType().Name} Index Buffer",
             this.indexBufferSizeInBytes,
-            Silk.NET.WebGPU.BufferUsage.Index | Silk.NET.WebGPU.BufferUsage.CopyDst);
+            BufferUsage.Index | BufferUsage.CopyDst);
     }
 
     /// <summary>
@@ -241,15 +241,18 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     {
         if (this.vertexBuffer is null)
         {
-            throw new Exception("The vertex buffer cannot be null.");
+            throw new InvalidOperationException($"The '{nameof(SafeVertexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
         if (this.indexBuffer is null)
         {
-            throw new Exception("The vertex index buffer cannot be null.");
+            throw new InvalidOperationException($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
-        // TODO: check if the this.gd.Queue is null
+        if (this.gd.Queue is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeQueueHandle)}' cannot be null. Cannot write to buffer.");
+        }
 
         var vbOffset = itemIndex * VerticesPerItem * VertexSizeInBytes;
         Wgpu.QueueWriteBuffer(this.gd.Queue, this.vertexBuffer.DangerousGetHandle(), vbOffset, vertexData);
