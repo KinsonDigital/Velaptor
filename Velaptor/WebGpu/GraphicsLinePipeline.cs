@@ -15,8 +15,7 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
     private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
-    private SafeDeviceHandle? deviceHandle;
-    private SafeRenderPipelineHandle? handle;
+    private SafeRenderPipelineHandle? pipelineHandle;
     private bool isDisposed;
     private bool isInitialized;
 
@@ -45,14 +44,12 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
             return;
         }
 
-        this.deviceHandle = this.grfxDevice.Handle;
-
         this.shader.Initialize(
             this.grfxDevice,
             TypeOfShader.Line,
             (vertHandle, fragHandle) =>
             {
-                this.handle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
+                this.pipelineHandle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
             });
 
         this.isInitialized = true;
@@ -61,13 +58,13 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
     /// <inheritdoc/>
     public void Bind(SafeRenderPassEncoderHandle pass)
     {
-        if (!this.isInitialized || this.handle is null)
+        if (!this.isInitialized || this.pipelineHandle is null)
         {
             throw new InvalidOperationException(
                 "Pipeline has not been initialized. Call Initialize() first.");
         }
 
-        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.pipelineHandle);
     }
 
     /// <inheritdoc/>
@@ -79,7 +76,7 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
         }
 
         this.isDisposed = true;
-        this.handle?.Dispose();
+        this.pipelineHandle?.Dispose();
     }
 
     /// <summary>
@@ -90,7 +87,12 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var pipelineLayoutHandle = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(this.deviceHandle!, "Line Pipeline Layout");
+        if (this.grfxDevice.Handle is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot build line pipeline.");
+        }
+
+        var pipelineLayoutHandle = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(this.grfxDevice.Handle, "Line Pipeline Layout");
 
         try
         {
@@ -156,7 +158,7 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
                 },
             };
 
-            return this.grfxDevice.Wgpu.DeviceCreateRenderPipeline(this.deviceHandle!, in desc);
+            return this.grfxDevice.Wgpu.DeviceCreateRenderPipeline(this.grfxDevice.Handle, in desc);
         }
         finally
         {

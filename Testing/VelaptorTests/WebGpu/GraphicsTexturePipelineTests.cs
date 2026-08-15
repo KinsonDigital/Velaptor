@@ -21,12 +21,15 @@ public class GraphicsTexturePipelineTests
 {
     private const nint UnsafeDeviceHandle = 0x11;
     private const nint UnsafeBindGroupLayoutHandle = 0x22;
+    private readonly SafeShaderModuleHandle fragShaderHandle;
+    private readonly SafeShaderModuleHandle vertShaderHandle;
     private readonly SafeBindGroupLayoutHandle bindGroupLayoutHandle;
     private readonly SafePipelineLayoutHandle pipelineLayoutHandle;
     private readonly IWgpuInvoker mockWgpuInvoker;
-    private readonly IGraphicsDevice mockDevice;
+    private readonly IGraphicsDevice mockGrfxDevice;
     private readonly IGraphicsSurface mockSurface;
     private readonly IGraphicsShader mockShader;
+    private Action<SafeShaderModuleHandle, SafeShaderModuleHandle>? shaderInitCallback;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsTexturePipelineTests"/> class.
@@ -39,17 +42,28 @@ public class GraphicsTexturePipelineTests
         this.mockWgpuInvoker.DeviceCreateBindGroupLayout(Arg.Any<SafeDeviceHandle>(), Arg.Any<BindGroupLayoutEntry[]>())
             .Returns(this.bindGroupLayoutHandle);
 
+        this.vertShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+        this.fragShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+
         this.pipelineLayoutHandle = new SafePipelineLayoutHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
         this.mockWgpuInvoker.DeviceCreatePipelineLayout(
             Arg.Any<SafeDeviceHandle>(),
             Arg.Any<string>(),
             Arg.Any<SafeBindGroupLayoutHandle[]>()).Returns(this.pipelineLayoutHandle);
 
-        this.mockDevice = Substitute.For<IGraphicsDevice>();
-        this.mockDevice.Wgpu.Returns(this.mockWgpuInvoker);
+        var grfxDeviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
+
+        this.mockGrfxDevice = Substitute.For<IGraphicsDevice>();
+        this.mockGrfxDevice.Wgpu.Returns(this.mockWgpuInvoker);
+        this.mockGrfxDevice.Handle.Returns(grfxDeviceHandle);
 
         this.mockSurface = Substitute.For<IGraphicsSurface>();
+
         this.mockShader = Substitute.For<IGraphicsShader>();
+        this.mockShader.Initialize(Arg.Any<IGraphicsDevice>(),
+            Arg.Any<TypeOfShader>(),
+            Arg.Do<Action<SafeShaderModuleHandle, SafeShaderModuleHandle>>(
+                cb => this.shaderInitCallback = cb));
     }
 
     #region Ctor Tests
@@ -60,14 +74,14 @@ public class GraphicsTexturePipelineTests
         var act = () => { _ = new GraphicsTexturePipeline(null, this.mockSurface, this.mockShader); };
 
         // Assert
-        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'gd')");
+        act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'grfxDevice')");
     }
 
     [Fact]
     public void Ctor_WithNullSurfaceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => { _ = new GraphicsTexturePipeline(this.mockDevice, null, this.mockShader); };
+        var act = () => { _ = new GraphicsTexturePipeline(this.mockGrfxDevice, null, this.mockShader); };
 
         // Assert
         act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'surface')");
@@ -77,7 +91,7 @@ public class GraphicsTexturePipelineTests
     public void Ctor_WithNullShaderParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => { _ = new GraphicsTexturePipeline(this.mockDevice, this.mockSurface, null); };
+        var act = () => { _ = new GraphicsTexturePipeline(this.mockGrfxDevice, this.mockSurface, null); };
 
         // Assert
         act.ShouldThrow<ArgumentNullException>().Message.ShouldBe("Value cannot be null. (Parameter 'shader')");
@@ -107,6 +121,7 @@ public class GraphicsTexturePipelineTests
 
         // Act
         sut.Initialize();
+        this.shaderInitCallback(this.vertShaderHandle, this.fragShaderHandle);
         var actual = sut.BindGroupLayout;
 
         // Assert
@@ -116,12 +131,27 @@ public class GraphicsTexturePipelineTests
 
     #region Method Tests
     [Fact]
+    public void Initialize_WithNullDeviceHandle_ThrowsException()
+    {
+        // Arrange
+        this.mockGrfxDevice.Handle.Returns((SafeDeviceHandle?)null);
+
+        var sut = CreateSystemUnderTest();
+        sut.Initialize();
+
+        // Act
+        var act = () => this.shaderInitCallback(this.vertShaderHandle, this.fragShaderHandle);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot build texture pipeline.");
+    }
+
+    [Fact]
     public void Initialize_WhenInvoked_InitializesPipeline()
     {
         // Arrange
         var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
-        var vertexShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
-        var fragmentShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
         const TextureFormat textureFormat = TextureFormat.Rgba16Uint;
         SafeRenderPipelineDescriptor? actualDescriptor = null;
 
@@ -146,18 +176,19 @@ public class GraphicsTexturePipelineTests
                 actualDescriptor = callInfo.Arg<SafeRenderPipelineDescriptor>();
             });
 
-        this.mockDevice.Handle.Returns(deviceHandle);
-        this.mockShader.VertexHandle.Returns(vertexShaderHandle);
-        this.mockShader.FragmentHandle.Returns(fragmentShaderHandle);
+        this.mockGrfxDevice.Handle.Returns(deviceHandle);
         this.mockSurface.Format.Returns(textureFormat);
+
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.Initialize();
+        this.shaderInitCallback(this.vertShaderHandle, this.fragShaderHandle);
         sut.Initialize();
 
         // Assert
-        this.mockShader.Received(1).Initialize(this.mockDevice);
+        this.mockShader.Received(1)
+            .Initialize(this.mockGrfxDevice, TypeOfShader.Texture, Arg.Any<Action<SafeShaderModuleHandle, SafeShaderModuleHandle>>());
         this.mockWgpuInvoker.Received(1).DeviceCreateBindGroupLayout(deviceHandle, Arg.Any<BindGroupLayoutEntry[]>());
         this.mockWgpuInvoker.Received(1).DeviceCreatePipelineLayout(
             deviceHandle,
@@ -168,7 +199,7 @@ public class GraphicsTexturePipelineTests
         actualDescriptor.Value.Layout.ShouldBe(this.pipelineLayoutHandle);
 
         // Assert vertex
-        actualDescriptor.Value.Vertex.Module.ShouldBe(vertexShaderHandle);
+        actualDescriptor.Value.Vertex.Module.ShouldBe(this.vertShaderHandle);
         actualDescriptor.Value.Vertex.EntryPoint.ShouldBe("vs_main");
         actualDescriptor.Value.Vertex.Buffers.ShouldHaveSingleItem();
         actualDescriptor.Value.Vertex.Buffers[0].ArrayStride.ShouldBe(32u);
@@ -182,7 +213,7 @@ public class GraphicsTexturePipelineTests
             .ShouldBe(new VertexAttribute { Format = VertexFormat.Float32x4, Offset = 16, ShaderLocation = 2 });
 
         // Assert fragment
-        actualDescriptor.Value.Fragment.Module.ShouldBe(fragmentShaderHandle);
+        actualDescriptor.Value.Fragment.Module.ShouldBe(this.fragShaderHandle);
         actualDescriptor.Value.Fragment.EntryPoint.ShouldBe("fs_main");
         actualDescriptor.Value.Fragment.Targets.ShouldHaveSingleItem();
         actualDescriptor.Value.Fragment.Targets[0].Format.ShouldBe(textureFormat);
@@ -194,7 +225,6 @@ public class GraphicsTexturePipelineTests
         actualDescriptor.Value.Multisample.ShouldBe(expectedMultisampleState);
 
         this.mockWgpuInvoker.Received(1).PipelineLayoutRelease(UnsafeDeviceHandle);
-        this.mockShader.Received(1).Dispose();
     }
 
     [Fact]
@@ -224,6 +254,7 @@ public class GraphicsTexturePipelineTests
 
         // Act
         sut.Initialize();
+        this.shaderInitCallback(this.vertShaderHandle, this.fragShaderHandle);
         sut.Bind(expectedRenderPassEncoderHandle);
 
         // Assert
@@ -242,6 +273,7 @@ public class GraphicsTexturePipelineTests
 
         // Act
         sut.Initialize();
+        this.shaderInitCallback(this.vertShaderHandle, this.fragShaderHandle);
         sut.Dispose();
         sut.Dispose();
 
@@ -268,5 +300,5 @@ public class GraphicsTexturePipelineTests
     /// Creates a new instance of <see cref="GraphicsTexturePipeline"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private GraphicsTexturePipeline CreateSystemUnderTest() => new (this.mockDevice, this.mockSurface, this.mockShader);
+    private GraphicsTexturePipeline CreateSystemUnderTest() => new (this.mockGrfxDevice, this.mockSurface, this.mockShader);
 }

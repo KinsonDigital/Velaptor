@@ -16,9 +16,7 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
     private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
-    private IWgpuInvoker? wgpu;
-    private SafeDeviceHandle? deviceHandle;
-    private SafeRenderPipelineHandle? handle;
+    private SafeRenderPipelineHandle? pipelineHandle;
     private SafeBindGroupLayoutHandle? bindGroupLayout;
     private bool isDisposed;
     private bool isInitialized;
@@ -55,25 +53,6 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         }
     }
 
-    /// <summary>
-    /// Gets the compiled GPU pipeline handle — an opaque, device-side object that
-    /// encapsulates the shader stages and fixed-function state.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
-    private SafeRenderPipelineHandle Handle
-    {
-        get
-        {
-            if (!this.isInitialized)
-            {
-                throw new InvalidOperationException(
-                    "Pipeline has not been initialized. Call Initialize() first.");
-            }
-
-            return this.handle!;
-        }
-    }
-
     /// <inheritdoc/>
     public void Initialize()
     {
@@ -85,11 +64,7 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         // Compile shaders first — they need the device.
         this.shader.Initialize(this.grfxDevice, TypeOfShader.Texture, (vertHandle, fragHandle) =>
         {
-            // TODO: Possibly move this before the initilize like the grfx line pipeline?
-            this.wgpu = this.grfxDevice.Wgpu;
-            this.deviceHandle = this.grfxDevice.Handle;
-
-            this.handle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
+            this.pipelineHandle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
         });
 
         this.isInitialized = true;
@@ -103,13 +78,13 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
     /// <param name="pass">The active render pass encoder to bind to.</param>
     public void Bind(SafeRenderPassEncoderHandle pass)
     {
-        if (!this.isInitialized || this.handle is null)
+        if (!this.isInitialized || this.pipelineHandle is null)
         {
             throw new InvalidOperationException(
                 "Pipeline has not been initialized. Call Initialize() first.");
         }
 
-        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.pipelineHandle);
     }
 
     /// <inheritdoc/>
@@ -121,7 +96,7 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         }
 
         this.isDisposed = true;
-        this.handle?.Dispose();
+        this.pipelineHandle?.Dispose();
         this.bindGroupLayout?.Dispose();
     }
 
@@ -134,6 +109,11 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
+        if (this.grfxDevice.Handle is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot build texture pipeline.");
+        }
+
         var textureBindingLayout = new BindGroupLayoutEntry
             {
                 Binding = 0,
@@ -149,12 +129,12 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
             Binding = 1, Visibility = ShaderStage.Fragment, Sampler = new SamplerBindingLayout { Type = SamplerBindingType.Filtering, },
         };
 
-        this.bindGroupLayout = this.wgpu!.DeviceCreateBindGroupLayout(
-            this.deviceHandle!,
+        this.bindGroupLayout = this.grfxDevice.Wgpu.DeviceCreateBindGroupLayout(
+            this.grfxDevice.Handle,
             [textureBindingLayout, samplerBindingLayout]);
 
-        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(
-            this.deviceHandle!,
+        var pipelineLayout = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(
+            this.grfxDevice.Handle,
             "Texture Pipeline Layout",
             [this.bindGroupLayout]);
 
@@ -223,7 +203,7 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
                 },
             };
 
-            return this.wgpu.DeviceCreateRenderPipeline(this.deviceHandle, in desc);
+            return this.grfxDevice.Wgpu.DeviceCreateRenderPipeline(this.grfxDevice.Handle, in desc);
         }
         finally
         {

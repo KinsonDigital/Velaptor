@@ -30,9 +30,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
     private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
-    private IWgpuInvoker? wgpu;
-    private SafeDeviceHandle? deviceHandle;
-    private SafeRenderPipelineHandle? handle;
+    private SafeRenderPipelineHandle? pipelineHandle;
     private bool isDisposed;
     private bool isInitialized;
 
@@ -54,24 +52,6 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
     }
 
     /// <summary>
-    /// Gets the compiled GPU pipeline handle.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if accessed before <see cref="Initialize"/> is called.</exception>
-    private SafeRenderPipelineHandle Handle
-    {
-        get
-        {
-            if (!this.isInitialized)
-            {
-                throw new InvalidOperationException(
-                    "Pipeline has not been initialized. Call Initialize() first.");
-            }
-
-            return this.handle!;
-        }
-    }
-
-    /// <summary>
     /// Compiles the shader and builds the GPU render pipeline. Must be called after
     /// the WebGPU device has been initialized and the surface has been configured.
     /// </summary>
@@ -86,10 +66,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
             TypeOfShader.Shape,
             (vertHandle, fragHandle) =>
             {
-                this.wgpu = this.grfxDevice.Wgpu;
-                this.deviceHandle = this.grfxDevice.Handle;
-
-                this.handle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
+                this.pipelineHandle = BuildPipeline(vertHandle, fragHandle, this.surface.Format);
             });
 
         this.isInitialized = true;
@@ -102,13 +79,13 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
     /// <param name="pass">The active render pass encoder to bind to.</param>
     public void Bind(SafeRenderPassEncoderHandle pass)
     {
-        if (!this.isInitialized || this.handle is null)
+        if (!this.isInitialized || this.pipelineHandle is null)
         {
             throw new InvalidOperationException(
                 "Pipeline has not been initialized. Call Initialize() first.");
         }
 
-        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.handle);
+        this.grfxDevice.Wgpu.RenderPassEncoderSetPipeline(pass, this.pipelineHandle);
     }
 
     /// <summary>
@@ -122,7 +99,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
         }
 
         this.isDisposed = true;
-        this.handle?.Dispose();
+        this.pipelineHandle?.Dispose();
     }
 
     /// <summary>
@@ -133,7 +110,12 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
         SafeShaderModuleHandle fragModule,
         TextureFormat format)
     {
-        var pipelineLayout = this.wgpu!.DeviceCreatePipelineLayout(this.deviceHandle!, "Shape Pipeline Layout");
+        if (this.grfxDevice.Handle is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot build shape pipeline.");
+        }
+
+        var pipelineLayout = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(this.grfxDevice.Handle, "Shape Pipeline Layout");
 
         try
         {
@@ -206,7 +188,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
                 },
             };
 
-            return this.wgpu!.DeviceCreateRenderPipeline(this.deviceHandle!, in desc);
+            return this.grfxDevice.Wgpu.DeviceCreateRenderPipeline(this.grfxDevice.Handle, in desc);
         }
         finally
         {
