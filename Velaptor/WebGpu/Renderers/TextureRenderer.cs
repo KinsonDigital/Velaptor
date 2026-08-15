@@ -684,12 +684,6 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         var renderPass = this.frame.RenderPass;
 
         // TODO: Add null check to renderPass variable.  Verify tests
-
-        // Ensure the GPU buffer is large enough before any upload to avoid
-        // mid-render-pass resizes that invalidate previously recorded draw commands.
-        var requiredCapacity = this.batchOffset + (uint)itemsToRender.Length;
-        this.buffer.EnsureCapacity(requiredCapacity);
-
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;

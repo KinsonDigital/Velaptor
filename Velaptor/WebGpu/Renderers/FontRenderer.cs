@@ -494,12 +494,6 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         var renderPass = this.frame.RenderPass;
 
         // TODO: Check if renderPass is null. Verify tests
-
-        // Ensure the GPU buffer is large enough before any upload to avoid
-        // mid-render-pass resizes that invalidate previously recorded draw commands.
-        var requiredCapacity = this.batchOffset + (uint)itemsToRender.Length;
-        this.buffer.EnsureCapacity(requiredCapacity);
-
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;
