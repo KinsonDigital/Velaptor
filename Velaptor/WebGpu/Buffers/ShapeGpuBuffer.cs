@@ -92,10 +92,10 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
         // Per-vertex colors for gradient support.
         // Vertex layout: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right.
         // The GPU interpolates between per-vertex colors to produce the gradient effect.
-        var (vertexRed0, vertexGreen0, vertexBlue0, vertexAlpha0) = GetVertexColor(item, 0);
-        var (vertexRed1, vertexGreen1, vertexBlue1, vertexAlpha1) = GetVertexColor(item, 1);
-        var (vertexRed2, vertexGreen2, vertexBlue2, vertexAlpha2) = GetVertexColor(item, 2);
-        var (vertexRed3, vertexGreen3, vertexBlue3, vertexAlpha3) = GetVertexColor(item, 3);
+        var (vertexRed0, vertexGreen0, vertexBlue0, vertexAlpha0) = GetVertexColor(item, VertexPosition.TopLeft);
+        var (vertexRed1, vertexGreen1, vertexBlue1, vertexAlpha1) = GetVertexColor(item, VertexPosition.TopRight);
+        var (vertexRed2, vertexGreen2, vertexBlue2, vertexAlpha2) = GetVertexColor(item, VertexPosition.BottomLeft);
+        var (vertexRed3, vertexGreen3, vertexBlue3, vertexAlpha3) = GetVertexColor(item, VertexPosition.BottomRight);
 
         var isFilled = item.IsSolid ? 1f : 0f;
         var borderThickness = item.BorderThickness;
@@ -216,24 +216,33 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     /// The vertex index: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right.
     /// </param>
     /// <returns>A tuple of (R, G, B, A) as 0-255 floats for the vertex.</returns>
-    private static (float R, float G, float B, float A) GetVertexColor(ShapeBatchItem item, int vertexIndex) =>
+    private static (float R, float G, float B, float A) GetVertexColor(ShapeBatchItem item, VertexPosition vertexIndex) =>
+#pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
         item.GradientType switch
         {
             ColorGradient.None => (item.Color.R, item.Color.G, item.Color.B, item.Color.A),
             ColorGradient.Horizontal => vertexIndex switch
             {
-                0 or 2 => (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
-                1 or 3 => (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
-                _ => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
+                // top left or bottom left
+                VertexPosition.TopLeft or VertexPosition.BottomLeft =>
+                    (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
+
+                // top right or bottom right
+                VertexPosition.TopRight or VertexPosition.BottomRight =>
+                    (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
             },
             ColorGradient.Vertical => vertexIndex switch
             {
-                0 or 1 => (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
-                2 or 3 => (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
-                _ => ((float)item.Color.R, (float)item.Color.G, (float)item.Color.B, (float)item.Color.A),
+                // top left or top right
+                VertexPosition.TopLeft or VertexPosition.TopRight =>
+                    (item.GradientStart.R, item.GradientStart.G, item.GradientStart.B, item.GradientStart.A),
+
+                // bottom left or bottom right
+                VertexPosition.BottomLeft or VertexPosition.BottomRight =>
+                    (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
             },
-            _ => (item.Color.R, item.Color.G, item.Color.B, item.Color.A),
         };
+#pragma warning restore CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
     /// <summary>
     /// Writes one vertex (16 floats) into the flat vertex array.
