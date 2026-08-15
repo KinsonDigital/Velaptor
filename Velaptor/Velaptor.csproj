@@ -49,7 +49,7 @@
 
   <!--
     Opt out of telemetry data when running as a developer.
-    // TODO: Add link to docs about telemetry
+    https://docs.velaptor.io/telemetry/
   -->
   <PropertyGroup>
     <EnableTelemetry>false</EnableTelemetry>

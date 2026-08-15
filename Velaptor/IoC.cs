@@ -35,6 +35,7 @@ using Telemetry;
 using WebGpu;
 using WebGpu.Batching;
 using WebGpu.Buffers;
+using WebGpu.Renderers;
 using WgpuFrame = WebGpu.Frame;
 using WgpuTextureBindGroupRegistry = WebGpu.TextureBindGroupRegistry;
 
@@ -126,7 +127,6 @@ internal static class IoC
         IoCContainer.Register<IComparer<RenderItem<ShapeBatchItem>>, RenderItemComparer<ShapeBatchItem>>(Lifestyle.Singleton);
         IoCContainer.Register<IComparer<RenderItem<LineBatchItem>>, RenderItemComparer<LineBatchItem>>(Lifestyle.Singleton);
 
-        IoCContainer.Register<IBatcher, WgpuBatcher>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
@@ -153,7 +153,7 @@ internal static class IoC
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new WebGpu.Renderers.FontRenderer(
+            return new FontRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -174,7 +174,7 @@ internal static class IoC
             var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new WebGpu.Renderers.TextureRenderer(
+            return new TextureRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -189,12 +189,12 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<GraphicsLinePipeline>();
-            var buffer = IoCContainer.GetInstance<LineGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<IGraphicsLinePipeline>();
+            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<LineBatchItem>>();
             var frame = IoCContainer.GetInstance<IFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new WebGpu.Renderers.LineRenderer(
+            return new LineRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -208,12 +208,12 @@ internal static class IoC
         {
             var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
             var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<GraphicsShapePipeline>();
-            var buffer = IoCContainer.GetInstance<ShapeGpuBuffer>();
+            var pipeline = IoCContainer.GetInstance<IGraphicsShapePipeline>();
+            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<ShapeBatchItem>>();
             var frame = IoCContainer.GetInstance<IFrame>();
             var batchManager = IoCContainer.GetInstance<IBatchingManager>();
 
-            return new WebGpu.Renderers.ShapeRenderer(
+            return new ShapeRenderer(
                 wgpu,
                 reactableFactory,
                 pipeline,
@@ -247,9 +247,12 @@ internal static class IoC
     /// </summary>
     private static void SetupWebGpu()
     {
+        IoCContainer.Register<IGraphicsShader, GraphicsShader>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatcher, WgpuBatcher>(Lifestyle.Singleton);
         IoCContainer.Register<IFrame, WgpuFrame>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsDevice, GraphicsDevice>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsSurface, GraphicsSurface>(Lifestyle.Singleton);
+        IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>
@@ -260,49 +263,10 @@ internal static class IoC
             return new GraphicsSurface(gd, window);
         }, Lifestyle.Singleton);
 
-        IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
-
-        // Texture pipeline
-        IoCContainer.Register<IGraphicsTexturePipeline>(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
-            var shader = new GraphicsShader(
-                IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
-                IoCContainer.GetInstance<IPath>(),
-                "texture");
-
-            return new GraphicsTexturePipeline(gd, surface, shader);
-        }, Lifestyle.Singleton);
-
-        // Shape pipeline
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
-            var shader = new GraphicsShader(
-                IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
-                IoCContainer.GetInstance<IPath>(),
-                "shape");
-
-            return new GraphicsShapePipeline(gd, surface, shader);
-        }, Lifestyle.Singleton);
-
-        // Line pipeline
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var surface = IoCContainer.GetInstance<IGraphicsSurface>();
-            var shader = new GraphicsShader(
-                IoCContainer.GetInstance<IEmbeddedResourceLoaderService<string>>(),
-                IoCContainer.GetInstance<IPath>(),
-                "line");
-
-            return new GraphicsLinePipeline(gd, surface, shader);
-        }, Lifestyle.Singleton);
+        // Pipelines
+        IoCContainer.Register<IGraphicsTexturePipeline, GraphicsTexturePipeline>(Lifestyle.Singleton);
+        IoCContainer.Register<IGraphicsShapePipeline, GraphicsShapePipeline>(Lifestyle.Singleton);
+        IoCContainer.Register<IGraphicsLinePipeline, GraphicsLinePipeline>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -319,36 +283,10 @@ internal static class IoC
          * recorded commands reference disposed handles, causing a native crash on submitting.
          */
 
-        IoCContainer.Register<IWebGpuBuffer<TextureBatchItem>>(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-
-            return new TextureGpuBuffer(gd);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register<IWebGpuBuffer<FontGlyphBatchItem>>(() =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-
-            return new FontGpuBuffer(gd);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-
-            return new ShapeGpuBuffer(gd);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-
-            return new LineGpuBuffer(gd);
-        }, Lifestyle.Singleton);
+        IoCContainer.Register<IWebGpuBuffer<TextureBatchItem>, TextureGpuBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IWebGpuBuffer<FontGlyphBatchItem>, FontGpuBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IWebGpuBuffer<ShapeBatchItem>, ShapeGpuBuffer>(Lifestyle.Singleton);
+        IoCContainer.Register<IWebGpuBuffer<LineBatchItem>, LineGpuBuffer>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -384,10 +322,10 @@ internal static class IoC
         IoCContainer.Register<IAppSettingsService, AppSettingsService>(Lifestyle.Singleton);
         IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
         IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
+        IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
         IoCContainer.Register<ISystemDisplayService, SystemDisplayService>(Lifestyle.Singleton);
         IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         IoCContainer.Register<IJsonService, JSONService>(Lifestyle.Singleton);
-        IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeService, FreeTypeService>(Lifestyle.Singleton);
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
         IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
@@ -432,6 +370,7 @@ internal static class IoC
 
         IoCContainer.Register<IPushReactable<GL>, PushReactable<GL>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<BatchSizeData>, PushReactable<BatchSizeData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<RequiredBufferCapacityData>, PushReactable<RequiredBufferCapacityData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<ViewPortSizeData>, PushReactable<ViewPortSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<WindowSizeData>, PushReactable<WindowSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPullReactable<WindowSizeData>, PullReactable<WindowSizeData>>(Lifestyle.Singleton);

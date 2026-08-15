@@ -25,7 +25,7 @@ internal sealed class ReactableFactoryFake : IReactableFactory
     public IPushReactable<GL> CreateGLReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
-    public IPushReactable<RequiredBufferCapacityData> CreateBufferResizeReactable() => throw new NotImplementedException();
+    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => throw new NotImplementedException();

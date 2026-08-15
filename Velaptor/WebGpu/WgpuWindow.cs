@@ -395,8 +395,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
         // for WgpuBatcher to initialize the WebGPU surface, adapter, device and pipelines.
         // This MUST happen BEFORE Initialize?.Invoke() because content loading may trigger
         // texture creation which needs the WebGPU device to be initialized first.
-        this.pushReactable.Push(PushNotifications.InitializedId);
-        this.pushReactable.Unsubscribe(PushNotifications.InitializedId);
+        this.pushReactable.Push(PushNotifications.WgpuReady);
+        this.pushReactable.Unsubscribe(PushNotifications.WgpuReady);
 
         Initialize?.Invoke();
 
@@ -422,6 +422,10 @@ internal sealed class WgpuWindow : VelaptorIWindow
         // Triggers cache cleanup in texture/audio loaders and GPU resource release
         // before the WebGPU device is torn down.
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
+
+        // TODO (Disposal shutdown research): One thing I noticed is that this point is only reached if I load every single
+        // screen before shutting down the window. So this means that this is not called every single time.  Why?
+        IoC.DisposeOfRegisteredTypes();
 
         this.afterUnloadAction?.Invoke();
     }

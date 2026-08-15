@@ -69,7 +69,7 @@ internal sealed class RenderMediator : IRenderMediator
         this.shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
         this.linePullReactable = reactableFactory.CreateLinePullBatchReactable();
 
-        this.bufferResizeReactable = reactableFactory.CreateBufferResizeReactable();
+        this.bufferResizeReactable = reactableFactory.CreateResizeBufferReactable();
         this.textureRenderBatchReactable = reactableFactory.CreateRenderTextureReactable();
         this.fontRenderBatchReactable = reactableFactory.CreateRenderFontReactable();
         this.shapeRenderBatchReactable = reactableFactory.CreateRenderShapeReactable();
@@ -105,7 +105,7 @@ internal sealed class RenderMediator : IRenderMediator
                 TotalLineItmes = (uint)lineItems.Length,
             });
 
-        // Sort all of the item layers
+        // Sort all the item layers
         textureItems.Span.Sort(this.textureItemComparer);
         fontItems.Span.Sort(this.fontItemComparer);
         shapeItems.Span.Sort(this.shapeItemComparer);

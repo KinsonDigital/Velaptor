@@ -43,6 +43,8 @@ internal sealed class BufferFake : WebGpuBufferBase<int>
     /// <returns>The NDC position vector.</returns>
     public Vector2 CallToNDC(float x, float y) => ToNDC(x, y);
 
+    public void Initialize() => base.Initialize();
+
     /// <summary>
     /// Builds the item data.
     /// </summary>

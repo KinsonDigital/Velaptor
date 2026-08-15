@@ -337,6 +337,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     {
         var vertEntryPtr = SilkMarshal.StringToPtr(descriptor.Vertex.EntryPoint);
         var fragEntryPtr = SilkMarshal.StringToPtr(descriptor.Fragment.EntryPoint);
+
         try
         {
             unsafe
@@ -355,7 +356,9 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                         AttributeCount = (uint)vertBuffers[0].Attributes.Length,
                         Attributes = ptrAttributes,
                     };
+
                     BlendState* pBlend = null;
+
                     if (fragTargets[0].Blend is { } blendValue)
                     {
                         BlendState blend = blendValue;
@@ -366,6 +369,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                     {
                         Format = fragTargets[0].Format, WriteMask = fragTargets[0].WriteMask, Blend = pBlend,
                     };
+
                     var fragState = new FragmentState
                     {
                         Module = (ShaderModule*)descriptor.Fragment.Module.DangerousGetHandle(),
@@ -373,6 +377,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                         TargetCount = (uint)fragTargets.Length,
                         Targets = &colorTarget,
                     };
+
                     var vertState = new VertexState
                     {
                         Module = (ShaderModule*)descriptor.Vertex.Module.DangerousGetHandle(),
@@ -380,6 +385,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                         BufferCount = (uint)vertBuffers.Length,
                         Buffers = &vbLayout,
                     };
+
                     var nativeDesc = new RenderPipelineDescriptor
                     {
                         Layout = (PipelineLayout*)descriptor.Layout.DangerousGetHandle(),
@@ -389,7 +395,9 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                         Fragment = &fragState,
                         DepthStencil = null,
                     };
+
                     var handle = (nint)Wgpu.DeviceCreateRenderPipeline((Device*)device.DangerousGetHandle(), in nativeDesc);
+
                     return new SafeRenderPipelineHandle(this, handle);
                 }
             }
