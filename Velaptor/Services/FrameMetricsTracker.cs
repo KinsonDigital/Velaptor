@@ -77,17 +77,12 @@ internal class FrameMetricsTracker : IFrameMetricsTracker
     /// </summary>
     private void CalculateMetrics()
     {
-        var sampleCount = this.totalRecordedFrames;
-
-        if (sampleCount == 0)
-        {
-            return;
-        }
+        var totalSamples = this.totalRecordedFrames;
 
         // Copy active window slice into scratch buffer to avoid mutating ring buffer order
-        var samples = this.sortScratchBuffer.AsSpan(0, sampleCount);
+        var samples = this.sortScratchBuffer.AsSpan(0, totalSamples);
 
-        this.frameBuffer.AsSpan(0, sampleCount).CopyTo(samples);
+        this.frameBuffer.AsSpan(0, totalSamples).CopyTo(samples);
 
         // Sort frame times in ascending order (fastest frames first, slowest frames last)
         samples.Sort();
@@ -98,13 +93,13 @@ internal class FrameMetricsTracker : IFrameMetricsTracker
 
         // 2. Extreme
         var minFrameTimeMs = samples[0];
-        var maxFrameTimeMs = samples[sampleCount - 1];
+        var maxFrameTimeMs = samples[totalSamples - 1];
 
         // 3. 1% Lows (Average of the worst 1% frame times)
-        var onePercentCount = Math.Max(1, (int)Math.Ceiling(sampleCount * 0.01));
+        var onePercentCount = Math.Max(1, (int)Math.Ceiling(totalSamples * 0.01));
         var onePercentWorstMsSum = 0.0;
 
-        for (var i = sampleCount - onePercentCount; i < sampleCount; i++)
+        for (var i = totalSamples - onePercentCount; i < totalSamples; i++)
         {
             onePercentWorstMsSum += samples[i];
         }
@@ -113,9 +108,9 @@ internal class FrameMetricsTracker : IFrameMetricsTracker
         var onePercentLowFps = 1000.0 / avgOnePercentWorstMs;
 
         // 4. 0.1% Lows (Average of the worst 0.1% frame times, or at least the single worst frame)
-        var pointOnePercentCount = Math.Max(1, (int)Math.Ceiling(sampleCount * 0.001));
+        var pointOnePercentCount = Math.Max(1, (int)Math.Ceiling(totalSamples * 0.001));
         var pointOnePercentWorstMsSum = 0.0;
-        for (var i = sampleCount - pointOnePercentCount; i < sampleCount; i++)
+        for (var i = totalSamples - pointOnePercentCount; i < totalSamples; i++)
         {
             pointOnePercentWorstMsSum += samples[i];
         }
