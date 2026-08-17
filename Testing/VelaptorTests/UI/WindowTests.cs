@@ -6,6 +6,7 @@ namespace VelaptorTests.UI;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 using Fakes;
@@ -14,6 +15,7 @@ using NSubstitute;
 using Shouldly;
 using Velaptor;
 using Velaptor.Content;
+using Velaptor.Content.Fonts;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
@@ -31,6 +33,7 @@ public class WindowTests : TestsBase
     private readonly IBatcher mockBatcher;
     private readonly IContentManager mockContentManager;
     private readonly IFontRenderer mockFontRenderer;
+    private readonly IFont mockFont;
     private readonly IAppInput<KeyboardState> mockKeyboard;
 
     /// <summary>
@@ -40,7 +43,12 @@ public class WindowTests : TestsBase
     {
         this.mockSceneManager = Substitute.For<ISceneManager>();
         this.mockBatcher = Substitute.For<IBatcher>();
+
+        this.mockFont = Substitute.For<IFont>();
+
         this.mockContentManager = Substitute.For<IContentManager>();
+        this.mockContentManager.LoadFont(Arg.Any<string>(), Arg.Any<uint>()).Returns(this.mockFont);
+
         this.mockFontRenderer = Substitute.For<IFontRenderer>();
         this.mockKeyboard = Substitute.For<IAppInput<KeyboardState>>();
 
@@ -561,6 +569,44 @@ public class WindowTests : TestsBase
     }
 
     [Fact]
+    public void Draw_WhenInvoked_RendersStats()
+    {
+        // Arrange
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(16) };
+
+        var firstKeyState = default(KeyboardState);
+        firstKeyState.SetKeyState(KeyCode.LeftControl, true);
+        firstKeyState.SetKeyState(KeyCode.LeftAlt, true);
+        firstKeyState.SetKeyState(KeyCode.LeftShift, true);
+        firstKeyState.SetKeyState(KeyCode.S, true);
+        this.mockKeyboard.GetState().Returns(firstKeyState);
+
+        var sut = CreateSystemUnderTest();
+        sut.FpsDisplayColor = Color.FromArgb(11, 22, 33, 44);
+
+        this.mockWindow.Initialize();
+        this.mockWindow.Update(frameTime);
+
+        var secondKeyState = default(KeyboardState);
+        secondKeyState.SetKeyState(KeyCode.LeftControl, false);
+        secondKeyState.SetKeyState(KeyCode.LeftAlt, false);
+        secondKeyState.SetKeyState(KeyCode.LeftShift, false);
+        secondKeyState.SetKeyState(KeyCode.S, false);
+        this.mockKeyboard.GetState().Returns(secondKeyState);
+
+        this.mockWindow.Update(frameTime);
+
+        // Act
+        sut.Draw(frameTime);
+
+        // Assert
+        this.mockBatcher.Received(1).Begin();
+        this.mockFontRenderer.Received(1)
+            .Render(this.mockFont, "0", new Vector2(10, -10), Color.FromArgb(11, 22, 33, 44));
+        this.mockBatcher.Received(1).End();
+    }
+
+    [Fact]
     [Trait("Category", Method)]
     public void OnDraw_WhenAutoRenderingIsEnabled_RenderScenesAndManipulatesBatch()
     {
@@ -613,6 +659,50 @@ public class WindowTests : TestsBase
         this.mockBatcher.DidNotReceive().Begin();
         this.mockSceneManager.DidNotReceive().Render();
         this.mockBatcher.DidNotReceive().End();
+    }
+
+    [Fact]
+    public void OnDraw_WithFullCache_RendersCorrectStats()
+    {
+        // Arrange
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(16) };
+
+        var firstKeyState = default(KeyboardState);
+        firstKeyState.SetKeyState(KeyCode.LeftControl, true);
+        firstKeyState.SetKeyState(KeyCode.LeftAlt, true);
+        firstKeyState.SetKeyState(KeyCode.LeftShift, true);
+        firstKeyState.SetKeyState(KeyCode.S, true);
+        this.mockKeyboard.GetState().Returns(firstKeyState);
+
+        var sut = CreateSystemUnderTest();
+        sut.FpsDisplayColor = Color.FromArgb(11, 22, 33, 44);
+
+        this.mockWindow.Initialize();
+        this.mockWindow.Update(frameTime);
+
+        var secondKeyState = default(KeyboardState);
+        secondKeyState.SetKeyState(KeyCode.LeftControl, false);
+        secondKeyState.SetKeyState(KeyCode.LeftAlt, false);
+        secondKeyState.SetKeyState(KeyCode.LeftShift, false);
+        secondKeyState.SetKeyState(KeyCode.S, false);
+        this.mockKeyboard.GetState().Returns(secondKeyState);
+
+        this.mockWindow.Update(frameTime);
+
+        for (var i = 0; i < 200; i++)
+        {
+            this.mockWindow.Fps.Returns(i);
+            var drawFrameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(i) };
+            this.mockWindow.Draw(drawFrameTime);
+        }
+
+        this.mockWindow.Fps.Returns(201);
+
+        // Act
+        this.mockWindow.Draw(default);
+
+        // Assert
+        this.mockFontRenderer.Received(1).Render(this.mockFont, "201", Arg.Any<Vector2>(), Arg.Any<Color>());
     }
 
     [Fact]

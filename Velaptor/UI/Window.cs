@@ -292,7 +292,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        RenderFps();
+        RenderStats();
 
         if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
         {
@@ -350,14 +350,14 @@ public abstract class Window : IWindow
         this.isDisposed = true;
 
         // Only when not running unit tests, dispose of all Carbonate types
-        DisposeOfRegisteredTypes();
+        // DisposeOfRegisteredTypes();
     }
 
     /// <summary>
     /// Disposes of all registered types in the IoC container.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
-    private static void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();
+    // [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
+    // private static void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();
 
     /// <summary>
     /// Processes input.
@@ -381,9 +381,9 @@ public abstract class Window : IWindow
     }
 
     /// <summary>
-    /// Renders the FPS.
+    /// Renders various stats to the screen.
     /// </summary>
-    private void RenderFps()
+    private void RenderStats()
     {
         if (!this.vpsVisible || this.font is null)
         {
