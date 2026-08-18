@@ -32,7 +32,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     private readonly IDisposable frameBeginUnsubscriber;
     private readonly IDisposable batchBeginUnsubscriber;
     private readonly IDisposable renderTexturesUnsubscriber;
-    private readonly IDisposable viewportUnsubscriber;
+    private readonly IDisposable viewPortUnsubscriber;
     private uint batchOffset;
     private bool hasBegun;
     private bool isDisposed;
@@ -53,12 +53,12 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         Justification = "Reactable subscribe call requires 'this' prefix.")]
     public TextureRenderer(
         IWgpuInvoker wgpu,
-        IReactableFactory reactableFactory,
         IGraphicsTexturePipeline pipeline,
         IWebGpuBuffer<TextureBatchItem> buffer,
         IFrame frame,
         TextureBindGroupRegistry bindGroupRegistry,
-        IBatchingManager batchManager)
+        IBatchingManager batchManager,
+        IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
         ArgumentNullException.ThrowIfNull(pipeline);
@@ -66,6 +66,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         ArgumentNullException.ThrowIfNull(frame);
         ArgumentNullException.ThrowIfNull(bindGroupRegistry);
         ArgumentNullException.ThrowIfNull(batchManager);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.wgpu = wgpu;
         this.batchManager = batchManager;
@@ -88,17 +89,15 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var renderReactable = reactableFactory.CreateRenderTextureReactable();
 
-        this.renderTexturesUnsubscriber = renderReactable.CreateOneWayReceive(
-            PushNotifications.RenderTexturesId,
+        this.renderTexturesUnsubscriber = renderReactable.CreateOneWayReceive(PushNotifications.RenderTexturesId,
             RenderBatch,
             () => this.renderTexturesUnsubscriber?.Dispose());
 
         var viewportReactable = reactableFactory.CreateViewPortReactable();
 
-        this.viewportUnsubscriber = viewportReactable.CreateOneWayReceive(
-            PushNotifications.ViewPortSizeChangedId,
+        this.viewPortUnsubscriber = viewportReactable.CreateOneWayReceive(PushNotifications.ViewPortSizeChangedId,
             data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
-            () => this.viewportUnsubscriber?.Dispose());
+            () => this.viewPortUnsubscriber?.Dispose());
     }
 
     /// <inheritdoc/>
@@ -109,12 +108,6 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     public void Render(ITexture texture, int x, int y, int layer = 0) =>
         Render(texture, x, y, Color.White, RenderEffects.None, layer);
 
-    /// <summary>
-    /// Gets the current window size used by the GPU buffer for NDC conversion.
-    /// </summary>
-    /// <remarks>For testing purposes.</remarks>
-    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
-
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="texture"/> is null.</exception>
     /// <exception cref="InvalidOperationException">
@@ -122,18 +115,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, int x, int y, float angle, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect(x, y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, 1, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -143,18 +138,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, int x, int y, float angle, float size, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect(x, y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, size, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -164,18 +161,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, int x, int y, float angle, float size, Color color, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect(x, y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -201,18 +200,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect(x, y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
+        RenderBase(texture, srcRect, destRect, 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -230,18 +231,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, float angle, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, 1, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, 1, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -251,18 +254,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, float angle, float size, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, size, Color.White, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, size, Color.White, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -272,18 +277,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, float angle, float size, Color color, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), angle, size, color, RenderEffects.None, layer);
+        RenderBase(texture, srcRect, destRect, angle, size, color, RenderEffects.None, layer);
     }
 
     /// <inheritdoc/>
@@ -309,18 +316,20 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     public void Render(ITexture texture, Vector2 pos, Color color, RenderEffects effects, int layer = 0)
     {
+        var (width, height) = GetTextureSize(texture);
+
         // Render the entire texture
         var srcRect = new NETRect
         {
             X = 0,
             Y = 0,
-            Width = (int)texture.Width,
-            Height = (int)texture.Height,
+            Width = width,
+            Height = height,
         };
 
-        var destRect = new NETRect((int)pos.X, (int)pos.Y, (int)texture.Width, (int)texture.Height);
+        var destRect = new NETRect((int)pos.X, (int)pos.Y, width, height);
 
-        RenderBase(texture, (srcRect, destRect), 0, 1, color, effects, layer);
+        RenderBase(texture, srcRect, destRect, 0, 1, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -341,12 +350,9 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         RenderEffects effects,
         int layer = 0)
     {
-        if (srcRect.Width <= 0 || srcRect.Height <= 0)
-        {
-            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
-        }
+        ArgumentNullException.ThrowIfNull(texture);
 
-        RenderBase(texture, (srcRect, destRect), angle, size, color, effects, layer);
+        RenderBase(texture, srcRect, destRect, angle, size, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -366,19 +372,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             0f,
             1f,
             Color.White,
@@ -403,19 +404,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             0f,
             1f,
             color,
@@ -440,19 +436,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             angle,
             1f,
             Color.White,
@@ -477,19 +468,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             angle,
             size,
             Color.White,
@@ -514,19 +500,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             angle,
             1f,
             color,
@@ -559,19 +540,14 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             angle,
             size,
             color,
@@ -605,24 +581,67 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
 
         var frames = atlas.GetFrames(subTextureName);
 
-        if (frameNumber < 0 || frameNumber >= frames.Length)
-        {
-            var exMsg =
-                $"The frame number '{frameNumber}' is invalid for atlas '{atlas.Name}' and sub-texture '{subTextureName}'." +
-                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
-            throw new RendererException(exMsg);
-        }
+        ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
 
         var subTextureData = frames[frameNumber];
 
         RenderBase(
             atlas.Texture,
-            (subTextureData.Bounds, new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height)),
+            subTextureData.Bounds,
+            new NETRect((int)pos.X, (int)pos.Y, (int)atlas.Texture.Width, (int)atlas.Texture.Height),
             angle,
             size,
             color,
             effects,
             layer);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
+        this.batchBeginUnsubscriber.Dispose();
+        this.renderTexturesUnsubscriber.Dispose();
+        this.viewPortUnsubscriber.Dispose();
+    }
+
+    /// <summary>
+    /// Gets the size of the texture from the given <paramref name="texture"/>.
+    /// </summary>
+    /// <param name="texture">The texture.</param>
+    /// <returns>The size of the texture.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the texture is null.</exception>
+    private static (int width, int height) GetTextureSize(ITexture texture)
+    {
+        ArgumentNullException.ThrowIfNull(texture);
+
+        return ((int)texture.Width, (int)texture.Height);
+    }
+
+    /// <summary>
+    /// Validates the given <paramref name="frameNumber"/> checking if it is within a range. Throws an exception
+    /// if the frame is not within range.
+    /// </summary>
+    /// <param name="frameNumber">The number of the frame.</param>
+    /// <param name="totalFrames">The total number of frames.</param>
+    /// <param name="atlasName">The name of the atlas.</param>
+    /// <param name="subTextureName">the name of the subtexture.</param>
+    /// <exception cref="RendererException">Thrown if the <paramref name="frameNumber"/> is not withing range.</exception>
+    private static void ValidateFrameNumber(int frameNumber, int totalFrames, string atlasName, string subTextureName)
+    {
+        if (frameNumber < 0 || frameNumber >= totalFrames)
+        {
+            var exMsg =
+                $"The frame number '{frameNumber}' is invalid for atlas '{atlasName}' and sub-texture '{subTextureName}'." +
+                "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
+            throw new RendererException(exMsg);
+        }
     }
 
     /// <inheritdoc cref="ITextureRenderer.Render(Velaptor.Content.ITexture,Rectangle,Rectangle,float,float,Color,RenderEffects,int)"/>
@@ -635,28 +654,24 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     /// </exception>
     private void RenderBase(
         ITexture texture,
-        (NETRect srcRect, NETRect destRect) rects,
+        NETRect srcRect,
+        NETRect destRect,
         float angle,
         float size,
         Color color,
         RenderEffects effects,
         int layer = 0)
     {
-        if (texture is null)
-        {
-            throw new ArgumentNullException(nameof(texture), $"Cannot render a null '{nameof(ITexture)}'.");
-        }
+        ArgumentNullException.ThrowIfNull(texture);
 
         if (!this.hasBegun)
         {
             throw new InvalidOperationException($"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
         }
 
-        (NETRect srcRect, NETRect destRect) = rects;
-
         if (srcRect.Width <= 0 || srcRect.Height <= 0)
         {
-            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(rects));
+            throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
         }
 
         var itemToAdd = new TextureBatchItem(
@@ -681,9 +696,13 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
             return;
         }
 
+        if (this.frame.RenderPass is null)
+        {
+            throw new InvalidOperationException($"The `{nameof(IFrame.RenderPass)}` cannot be null.  Cannot render texture.");
+        }
+
         var renderPass = this.frame.RenderPass;
 
-        // TODO: Add null check to renderPass variable.  Verify tests
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;
@@ -725,20 +744,5 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
         }
 
         this.hasBegun = false;
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderTexturesUnsubscriber.Dispose();
-        this.viewportUnsubscriber.Dispose();
     }
 }
