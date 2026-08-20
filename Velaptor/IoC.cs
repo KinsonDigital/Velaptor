@@ -37,7 +37,6 @@ using WebGpu.Batching;
 using WebGpu.Buffers;
 using WebGpu.Renderers;
 using WgpuFrame = WebGpu.Frame;
-using WgpuTextureBindGroupRegistry = WebGpu.TextureBindGroupRegistry;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -247,12 +246,13 @@ internal static class IoC
     /// </summary>
     private static void SetupWebGpu()
     {
+        IoCContainer.Register<ITextureIdGenerator, TextureIdGenerator>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsShader, GraphicsShader>(Lifestyle.Singleton);
         IoCContainer.Register<IBatcher, WgpuBatcher>(Lifestyle.Singleton);
         IoCContainer.Register<IFrame, WgpuFrame>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsDevice, GraphicsDevice>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsSurface, GraphicsSurface>(Lifestyle.Singleton);
-        IoCContainer.Register<WgpuTextureBindGroupRegistry>(Lifestyle.Singleton);
+        IoCContainer.Register<TextureBindGroupRegistry>(Lifestyle.Singleton);
 
         IoCContainer.Register(
             () =>

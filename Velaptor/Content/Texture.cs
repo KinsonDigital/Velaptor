@@ -23,14 +23,14 @@ using WebGpu;
 public sealed class Texture : ITexture
 {
     private const uint BytesPerRowAlignment = 256;
-    private static uint nextId = 1;
-
     private readonly IWgpuInvoker wgpu;
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private readonly TextureBindGroupRegistry? bindGroupRegistry;
+    private readonly ITextureIdGenerator textureIdGenerator;
     private SafeTextureHandle? gpuTexture;
     private SafeTextureViewHandle? textureView;
     private SafeSamplerHandle? sampler;
+    private SafeBindGroupHandle? bindGroup;
     private IDisposable? unsubscriber;
     private int isDisposed;
 
@@ -38,37 +38,43 @@ public sealed class Texture : ITexture
     /// Initializes a new instance of the <see cref="Texture"/> class.
     /// </summary>
     /// <param name="wgpu">Invokes WebGPU functions.</param>
-    /// <param name="gd">The WebGPU graphics device.</param>
+    /// <param name="grfxDevice">The WebGPU graphics device.</param>
     /// <param name="bindGroupLayout">The bind group layout matching the texture pipeline.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="textureIdGenerator">Generates unique, only used once Texture ID values.</param>
     /// <param name="name">The name of the texture.</param>
     /// <param name="filePath">The file path to the image file.</param>
     /// <param name="imageData">The image data of the texture.</param>
     /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
     internal Texture(
         IWgpuInvoker wgpu,
-        IGraphicsDevice gd,
+        IGraphicsDevice grfxDevice,
         SafeBindGroupLayoutHandle bindGroupLayout,
         IReactableFactory reactableFactory,
+        ITextureIdGenerator textureIdGenerator,
         string name,
         string filePath,
         ImageData imageData,
         TextureBindGroupRegistry? bindGroupRegistry = null)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
         ArgumentNullException.ThrowIfNull(bindGroupLayout);
         ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(textureIdGenerator);
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentException.ThrowIfNullOrEmpty(filePath);
 
         this.wgpu = wgpu;
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         this.bindGroupRegistry = bindGroupRegistry;
 
         FilePath = filePath;
 
         var disposeReactable = reactableFactory.CreateDisposeTextureReactable();
+
+        this.textureIdGenerator = textureIdGenerator;
+
         Init(disposeReactable, bindGroupLayout, name, imageData);
     }
 
@@ -102,12 +108,6 @@ public sealed class Texture : ITexture
     public uint Height { get; private set; }
 
     /// <summary>
-    /// Gets the WebGPU bind group that wires the texture view to binding 0 and the
-    /// sampler to binding 1, compatible with the texture pipeline's bind group layout.
-    /// </summary>
-    internal SafeBindGroupHandle? BindGroup { get; private set; }
-
-    /// <summary>
     /// Disposes of the texture if this texture's <see cref="Id"/> matches the texture ID in the given <paramref name="data"/>.
     /// </summary>
     /// <param name="data">The data of the texture to dispose.</param>
@@ -124,7 +124,7 @@ public sealed class Texture : ITexture
         }
 
         this.bindGroupRegistry?.Unregister(Id);
-        BindGroup?.Dispose();
+        this.bindGroup?.Dispose();
         this.sampler?.Dispose();
         this.textureView?.Dispose();
         this.gpuTexture?.Dispose();
@@ -153,7 +153,7 @@ public sealed class Texture : ITexture
             throw new ArgumentException("The image data must not be empty.", nameof(imageData));
         }
 
-        Id = Interlocked.Increment(ref nextId) - 1;
+        Id = this.textureIdGenerator.GenerateNextId();
 
         Width = imageData.Width;
         Height = imageData.Height;
@@ -169,6 +169,11 @@ public sealed class Texture : ITexture
     /// <param name="imageData">The image data of the texture.</param>
     private void UploadDataToGpu(SafeBindGroupLayoutHandle bindGroupLayout, ImageData imageData)
     {
+        if (this.grfxDevice.Handle is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(GraphicsDevice)}.{nameof(GraphicsDevice.Handle)}' cannot be null. Could not upload texture data to GPU.");
+        }
+
         var width = imageData.Width;
         var height = imageData.Height;
 
@@ -184,7 +189,6 @@ public sealed class Texture : ITexture
             for (var x = 0u; x < width; x++)
             {
                 var pixel = pixels[x, y];
-                var srcIdx = (int)((y * width) + x) * 4;
                 var dstIdx = (int)((y * alignedBytesPerRow) + (x * 4));
                 rawPixels[dstIdx] = pixel.R;
                 rawPixels[dstIdx + 1] = pixel.G;
@@ -204,10 +208,10 @@ public sealed class Texture : ITexture
             SampleCount = 1,
         };
 
-        this.gpuTexture = new SafeTextureHandle(this.wgpu, this.gd.Handle!, in textureDesc);
+        this.gpuTexture = new SafeTextureHandle(this.wgpu, this.grfxDevice.Handle, in textureDesc);
 
         this.wgpu.QueueWriteTexture(
-            this.gd.Queue!,
+            this.grfxDevice.Queue!,
             this.gpuTexture.DangerousGetHandle(),
             width,
             height,
@@ -244,15 +248,15 @@ public sealed class Texture : ITexture
             MaxAnisotropy = 1,
         };
 
-        this.sampler = this.wgpu.DeviceCreateSampler(this.gd.Handle!, in samplerDesc);
+        this.sampler = this.wgpu.DeviceCreateSampler(this.grfxDevice.Handle, in samplerDesc);
 
         // Create the bind group: binding 0 = texture view, binding 1 = sampler
-        BindGroup = this.wgpu.DeviceCreateBindGroup(
-            this.gd.Handle!,
+        this.bindGroup = this.wgpu.DeviceCreateBindGroup(
+            this.grfxDevice.Handle,
             bindGroupLayout,
             this.textureView,
             this.sampler);
 
-        this.bindGroupRegistry?.Register(Id, BindGroup);
+        this.bindGroupRegistry?.Register(Id, this.bindGroup);
     }
 }

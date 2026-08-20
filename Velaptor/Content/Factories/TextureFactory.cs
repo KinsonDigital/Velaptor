@@ -21,8 +21,9 @@ internal sealed class TextureFactory : ITextureFactory
     private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsDevice gd;
     private readonly IReactableFactory reactableFactory;
-    private SafeBindGroupLayoutHandle? bindGroupLayout;
+    private readonly ITextureIdGenerator textureIdGenerator;
     private readonly TextureBindGroupRegistry? bindGroupRegistry;
+    private SafeBindGroupLayoutHandle? bindGroupLayout;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureFactory"/> class.
@@ -32,6 +33,7 @@ internal sealed class TextureFactory : ITextureFactory
         this.wgpu = IoC.Container.GetInstance<IWgpuInvoker>();
         this.gd = IoC.Container.GetInstance<IGraphicsDevice>();
         this.reactableFactory = IoC.Container.GetInstance<IReactableFactory>();
+        this.textureIdGenerator = IoC.Container.GetInstance<ITextureIdGenerator>();
         this.bindGroupRegistry = IoC.Container.GetInstance<TextureBindGroupRegistry>();
         this.bindGroupLayout = null; // Deferred until first Create() — pipeline may not be initialized yet.
     }
@@ -42,22 +44,26 @@ internal sealed class TextureFactory : ITextureFactory
     /// <param name="wgpu">Invokes WebGPU functions.</param>
     /// <param name="gd">The WebGPU graphics device.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
+    /// <param name="textureIdGenerator">Generates unique, only used once Texture ID values.</param>
     /// <param name="bindGroupLayout">The bind group layout from the texture pipeline. Optional.</param>
     /// <param name="bindGroupRegistry">The registry for texture bind group lookup by renderers. Optional.</param>
     internal TextureFactory(
         IWgpuInvoker wgpu,
         IGraphicsDevice gd,
         IReactableFactory reactableFactory,
+        ITextureIdGenerator textureIdGenerator,
         SafeBindGroupLayoutHandle? bindGroupLayout = null,
         TextureBindGroupRegistry? bindGroupRegistry = null)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
         ArgumentNullException.ThrowIfNull(gd);
         ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(textureIdGenerator);
 
         this.wgpu = wgpu;
         this.gd = gd;
         this.reactableFactory = reactableFactory;
+        this.textureIdGenerator = textureIdGenerator;
         this.bindGroupLayout = bindGroupLayout;
         this.bindGroupRegistry = bindGroupRegistry;
     }
@@ -77,6 +83,7 @@ internal sealed class TextureFactory : ITextureFactory
             this.gd,
             this.bindGroupLayout,
             this.reactableFactory,
+            this.textureIdGenerator,
             name,
             filePath,
             imageData,

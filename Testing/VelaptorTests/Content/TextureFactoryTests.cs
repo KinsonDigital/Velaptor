@@ -9,6 +9,7 @@ using Carbonate.OneWay;
 using NSubstitute;
 using Shouldly;
 using Silk.NET.WebGPU;
+using Velaptor.Content;
 using Velaptor.Content.Factories;
 using Velaptor.Factories;
 using Velaptor.Graphics;
@@ -29,6 +30,7 @@ public class TextureFactoryTests
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockGd;
     private readonly IReactableFactory mockReactableFactory;
+    private readonly ITextureIdGenerator mockTextureIdGenerator;
     private readonly SafeBindGroupLayoutHandle bindGroupLayout;
 
     /// <summary>
@@ -37,12 +39,35 @@ public class TextureFactoryTests
     public TextureFactoryTests()
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
+
         this.mockGd = Substitute.For<IGraphicsDevice>();
+        // Set up mocks required by the Texture constructor called inside Create()
+        var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, new nint(1));
+        var queueHandle = new SafeQueueHandle(this.mockWgpuInvoker, deviceHandle);
+
+        this.mockGd.Handle.Returns(deviceHandle);
+        this.mockGd.Queue.Returns(queueHandle);
+
+        this.mockWgpuInvoker.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
+        this.mockWgpuInvoker.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<TextureDescriptor>())
+            .Returns(new nint(100));
+        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeTextureHandle>(), Arg.Any<TextureViewDescriptor>())
+            .Returns(new nint(200));
+        this.mockWgpuInvoker.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<SamplerDescriptor>())
+            .Returns(new SafeSamplerHandle(this.mockWgpuInvoker, UnsafeSamplerHandle));
+        this.mockWgpuInvoker.DeviceCreateBindGroup(
+                Arg.Any<SafeDeviceHandle>(),
+                Arg.Any<SafeBindGroupLayoutHandle>(),
+                Arg.Any<SafeTextureViewHandle>(),
+                Arg.Any<SafeSamplerHandle>())
+            .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
 
         var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
 
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory.CreateDisposeTextureReactable().Returns(mockDisposeReactable);
+
+        this.mockTextureIdGenerator = Substitute.For<ITextureIdGenerator>();
 
         this.bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, new nint(100));
     }
@@ -58,6 +83,7 @@ public class TextureFactoryTests
                 null,
                 this.mockGd,
                 this.mockReactableFactory,
+                this.mockTextureIdGenerator,
                 this.bindGroupLayout);
         };
 
@@ -76,6 +102,7 @@ public class TextureFactoryTests
                 this.mockWgpuInvoker,
                 null,
                 this.mockReactableFactory,
+                this.mockTextureIdGenerator,
                 this.bindGroupLayout);
         };
 
@@ -94,12 +121,32 @@ public class TextureFactoryTests
                 this.mockWgpuInvoker,
                 this.mockGd,
                 null,
+                this.mockTextureIdGenerator,
                 this.bindGroupLayout);
         };
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
             .Message.ShouldBe("Value cannot be null. (Parameter 'reactableFactory')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullTextureIdGeneratorParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new TextureFactory(
+                this.mockWgpuInvoker,
+                this.mockGd,
+                this.mockReactableFactory,
+                null,
+                this.bindGroupLayout);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'textureIdGenerator')");
     }
     #endregion
 
@@ -190,31 +237,11 @@ public class TextureFactoryTests
     /// <returns>The instance to test.</returns>
     private TextureFactory CreateSystemUnderTest()
     {
-        // Set up mocks required by the Texture constructor called inside Create()
-        var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, new nint(1));
-        var queueHandle = new SafeQueueHandle(this.mockWgpuInvoker, deviceHandle);
-
-        this.mockGd.Handle.Returns(deviceHandle);
-        this.mockGd.Queue.Returns(queueHandle);
-
-        this.mockWgpuInvoker.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
-        this.mockWgpuInvoker.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<TextureDescriptor>())
-            .Returns(new nint(100));
-        this.mockWgpuInvoker.TextureCreateView(Arg.Any<SafeTextureHandle>(), Arg.Any<TextureViewDescriptor>())
-            .Returns(new nint(200));
-        this.mockWgpuInvoker.DeviceCreateSampler(Arg.Any<SafeDeviceHandle>(), Arg.Any<SamplerDescriptor>())
-            .Returns(new SafeSamplerHandle(this.mockWgpuInvoker, UnsafeSamplerHandle));
-        this.mockWgpuInvoker.DeviceCreateBindGroup(
-                Arg.Any<SafeDeviceHandle>(),
-                Arg.Any<SafeBindGroupLayoutHandle>(),
-                Arg.Any<SafeTextureViewHandle>(),
-                Arg.Any<SafeSamplerHandle>())
-            .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
-
         return new TextureFactory(
             this.mockWgpuInvoker,
             this.mockGd,
             this.mockReactableFactory,
+            this.mockTextureIdGenerator,
             this.bindGroupLayout);
     }
 }
