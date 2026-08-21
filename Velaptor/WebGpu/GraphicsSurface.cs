@@ -12,7 +12,7 @@ using NativeInterop.WebGpu.Handles;
 /// <inheritdoc/>
 internal sealed class GraphicsSurface : IGraphicsSurface
 {
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private readonly IWindow window;
     private SafeSurfaceTextureHandle? surfaceTextureHandle;
     private SafeSurfaceHandle? handle;
@@ -21,14 +21,14 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsSurface"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="window">The window to create the surface for.</param>
-    public GraphicsSurface(IGraphicsDevice gd, IWindow window)
+    public GraphicsSurface(IGraphicsDevice grfxDevice, IWindow window)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
         ArgumentNullException.ThrowIfNull(window);
 
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         this.window = window;
     }
 
@@ -58,7 +58,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
             return;
         }
 
-        this.handle = new SafeSurfaceHandle(this.gd.Wgpu, this.window, this.gd.Instance);
+        this.handle = new SafeSurfaceHandle(this.grfxDevice.Wgpu, this.window, this.grfxDevice.Instance);
 
         if (this.handle.IsInvalid)
         {
@@ -71,18 +71,18 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     /// <inheritdoc/>
     public void InitializeFormat()
     {
-        if (this.gd.Adapter is null || this.gd.Handle is null)
+        if (this.grfxDevice.Adapter is null || this.grfxDevice.Handle is null)
         {
             throw new InvalidOperationException("Device and adapter must be initialized before querying the surface format.");
         }
 
-        Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
+        Format = this.grfxDevice.Wgpu.SurfaceGetPreferredFormat(Handle, this.grfxDevice.Adapter);
     }
 
     /// <inheritdoc/>
     public bool Configure()
     {
-        if (this.gd.Adapter is null || this.gd.Handle is null)
+        if (this.grfxDevice.Adapter is null || this.grfxDevice.Handle is null)
         {
             throw new InvalidOperationException("Device and adapter must be initialized before configuring the surface.");
         }
@@ -98,11 +98,11 @@ internal sealed class GraphicsSurface : IGraphicsSurface
             return false;
         }
 
-        Format = this.gd.Wgpu.SurfaceGetPreferredFormat(Handle, this.gd.Adapter);
+        Format = this.grfxDevice.Wgpu.SurfaceGetPreferredFormat(Handle, this.grfxDevice.Adapter);
 
-        this.gd.Wgpu.SurfaceConfigure(
+        this.grfxDevice.Wgpu.SurfaceConfigure(
             Handle,
-            this.gd.Handle,
+            this.grfxDevice.Handle,
             Format,
             TextureUsage.RenderAttachment,
             (uint)size.X,
@@ -121,7 +121,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
         this.surfaceTextureHandle?.Dispose();
         this.surfaceTextureHandle = null;
 
-        this.surfaceTextureHandle = this.gd.Wgpu.SurfaceGetCurrentTexture(Handle);
+        this.surfaceTextureHandle = this.grfxDevice.Wgpu.SurfaceGetCurrentTexture(Handle);
 
         return this.surfaceTextureHandle;
     }

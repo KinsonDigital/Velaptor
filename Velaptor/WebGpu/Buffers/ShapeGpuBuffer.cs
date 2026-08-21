@@ -42,10 +42,10 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeGpuBuffer"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="reactableFactory">Creates reactables.</param>
-    public ShapeGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
-        : base(gd)
+    public ShapeGpuBuffer(IGraphicsDevice grfxDevice, IReactableFactory reactableFactory)
+        : base(grfxDevice)
     {
         var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
         var pushReactable = reactableFactory.CreateNoDataPushReactable();

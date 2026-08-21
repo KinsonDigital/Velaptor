@@ -22,7 +22,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     // It happens with a low number too. It might not have anything to do with the capacity.
 
     private const uint DefaultCapacity = 64;
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private SafeVertexBufferHandle? vertexBuffer;
     private SafeIndexBufferHandle? indexBuffer;
     private uint vertexBufferSizeInBytes;
@@ -32,10 +32,10 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// <summary>
     /// Initializes a new instance of the <see cref="WebGpuBufferBase{TData}"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
-    private protected WebGpuBufferBase(IGraphicsDevice gd)
+    /// <param name="grfxDevice">The graphics device.</param>
+    private protected WebGpuBufferBase(IGraphicsDevice grfxDevice)
     {
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         Capacity = 0;
     }
 
@@ -72,7 +72,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// <summary>
     /// Gets the graphics device invoker for WebGPU calls.
     /// </summary>
-    private IWgpuInvoker Wgpu => this.gd.Wgpu;
+    private IWgpuInvoker Wgpu => this.grfxDevice.Wgpu;
 
     /// <summary>
     /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
@@ -128,21 +128,21 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
             throw new InvalidOperationException($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
-        this.gd.Wgpu.RenderPassEncoderSetVertexBuffer(
+        this.grfxDevice.Wgpu.RenderPassEncoderSetVertexBuffer(
             pass,
             0,
             this.vertexBuffer.DangerousGetHandle(),
             0,
             this.vertexBufferSizeInBytes);
 
-        this.gd.Wgpu.RenderPassEncoderSetIndexBuffer(
+        this.grfxDevice.Wgpu.RenderPassEncoderSetIndexBuffer(
             pass,
             this.indexBuffer.DangerousGetHandle(),
             IndexFormat.Uint32,
             0,
             this.indexBufferSizeInBytes);
 
-        this.gd.Wgpu.RenderPassEncoderDrawIndexed(
+        this.grfxDevice.Wgpu.RenderPassEncoderDrawIndexed(
             pass,
             indexCount: IndicesPerItem * itemCount,
             instanceCount: 1,
@@ -207,7 +207,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// </summary>
     private void Allocate(uint minItemCount)
     {
-        if (this.gd.Handle is null)
+        if (this.grfxDevice.Handle is null)
         {
             throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot create vertex and index buffers.");
         }
@@ -222,13 +222,13 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
         this.indexBuffer?.Dispose();
 
         this.vertexBuffer = Wgpu.DeviceCreateVertexBuffer(
-            this.gd.Handle,
+            this.grfxDevice.Handle,
             $"{GetType().Name} Vertex Buffer",
             this.vertexBufferSizeInBytes,
             BufferUsage.Vertex | BufferUsage.CopyDst);
 
         this.indexBuffer = Wgpu.DeviceCreateIndexBuffer(
-            this.gd.Handle,
+            this.grfxDevice.Handle,
             $"{GetType().Name} Index Buffer",
             this.indexBufferSizeInBytes,
             BufferUsage.Index | BufferUsage.CopyDst);
@@ -249,15 +249,15 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
             throw new InvalidOperationException($"The '{nameof(SafeIndexBufferHandle)}' cannot be null. Cannot write to buffer.");
         }
 
-        if (this.gd.Queue is null)
+        if (this.grfxDevice.Queue is null)
         {
             throw new InvalidOperationException($"The '{nameof(SafeQueueHandle)}' cannot be null. Cannot write to buffer.");
         }
 
         var vbOffset = itemIndex * VerticesPerItem * VertexSizeInBytes;
-        Wgpu.QueueWriteBuffer(this.gd.Queue, this.vertexBuffer.DangerousGetHandle(), vbOffset, vertexData);
+        Wgpu.QueueWriteBuffer(this.grfxDevice.Queue, this.vertexBuffer.DangerousGetHandle(), vbOffset, vertexData);
 
         var ibOffset = itemIndex * IndicesPerItem * IndexItemSizeInBytes;
-        Wgpu.QueueWriteBuffer(this.gd.Queue, this.indexBuffer.DangerousGetHandle(), ibOffset, indexData);
+        Wgpu.QueueWriteBuffer(this.grfxDevice.Queue, this.indexBuffer.DangerousGetHandle(), ibOffset, indexData);
     }
 }

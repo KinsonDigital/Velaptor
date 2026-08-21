@@ -29,10 +29,10 @@ internal sealed class FontGpuBuffer : WebGpuBufferBase<FontGlyphBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGpuBuffer"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="reactableFactory">Creates reactables.</param>
-    public FontGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
-        : base(gd)
+    public FontGpuBuffer(IGraphicsDevice grfxDevice, IReactableFactory reactableFactory)
+        : base(grfxDevice)
     {
         var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
         var pushReactable = reactableFactory.CreateNoDataPushReactable();

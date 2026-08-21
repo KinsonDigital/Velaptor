@@ -13,7 +13,7 @@ using SilkColor = Silk.NET.WebGPU.Color;
 /// <inheritdoc/>
 internal sealed class Frame : IFrame
 {
-    private readonly IGraphicsDevice gd;
+    private readonly IGraphicsDevice grfxDevice;
     private readonly IGraphicsSurface surface;
     private SafeSurfaceTextureHandle? surfaceTextureHandle;
     private SafeTextureViewHandle? textureViewHandle;
@@ -26,14 +26,14 @@ internal sealed class Frame : IFrame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="surface">The graphics surface.</param>
-    public Frame(IGraphicsDevice gd, IGraphicsSurface surface)
+    public Frame(IGraphicsDevice grfxDevice, IGraphicsSurface surface)
     {
-        ArgumentNullException.ThrowIfNull(gd);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
         ArgumentNullException.ThrowIfNull(surface);
 
-        this.gd = gd;
+        this.grfxDevice = grfxDevice;
         this.surface = surface;
     }
 
@@ -55,8 +55,8 @@ internal sealed class Frame : IFrame
         }
 
         this.surface.Initialize();
-        this.gd.InitializeAdapter(this.surface.Handle);
-        this.gd.InitializeDevice();
+        this.grfxDevice.InitializeAdapter(this.surface.Handle);
+        this.grfxDevice.InitializeDevice();
         this.surface.InitializeFormat();
 
         this.initialized = true;
@@ -111,7 +111,7 @@ internal sealed class Frame : IFrame
         if (this.textureViewHandle is null)
         {
             this.textureViewHandle = new SafeTextureViewHandle(
-                this.gd.Wgpu,
+                this.grfxDevice.Wgpu,
                 this.surfaceTextureHandle,
                 in viewDesc);
         }
@@ -131,7 +131,7 @@ internal sealed class Frame : IFrame
 
         if (this.cmdEncoderHandle is null)
         {
-            this.cmdEncoderHandle = this.gd.Wgpu.DeviceCreateCommandEncoder(this.gd.Handle!, in encoderDesc);
+            this.cmdEncoderHandle = this.grfxDevice.Wgpu.DeviceCreateCommandEncoder(this.grfxDevice.Handle!, in encoderDesc);
         }
         else
         {
@@ -142,7 +142,7 @@ internal sealed class Frame : IFrame
 
         if (this.renderPassHandle is null)
         {
-            var passHandle = this.gd.Wgpu.CommandEncoderBeginRenderPass(
+            var passHandle = this.grfxDevice.Wgpu.CommandEncoderBeginRenderPass(
                 this.cmdEncoderHandle,
                 this.textureViewHandle,
                 LoadOp.Clear,
@@ -186,18 +186,18 @@ internal sealed class Frame : IFrame
         this.renderPassHandle.End();
 
         var cmdBufDesc = default(CommandBufferDescriptor);
-        var cmdBuf = this.gd.Wgpu.CommandEncoderFinish(this.cmdEncoderHandle, in cmdBufDesc);
+        var cmdBuf = this.grfxDevice.Wgpu.CommandEncoderFinish(this.cmdEncoderHandle, in cmdBufDesc);
 
         try
         {
-            this.gd.Wgpu.QueueSubmit(this.gd.Queue!, 1, cmdBuf);
+            this.grfxDevice.Wgpu.QueueSubmit(this.grfxDevice.Queue!, 1, cmdBuf);
         }
         finally
         {
-            this.gd.Wgpu.CommandBufferRelease(cmdBuf);
+            this.grfxDevice.Wgpu.CommandBufferRelease(cmdBuf);
         }
 
-        this.gd.Wgpu.SurfacePresent(this.surface.Handle);
+        this.grfxDevice.Wgpu.SurfacePresent(this.surface.Handle);
         this.hasBegun = false;
     }
 

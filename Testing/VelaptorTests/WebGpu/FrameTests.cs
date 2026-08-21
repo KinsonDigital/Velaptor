@@ -78,7 +78,7 @@ public class FrameTests
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
-            .Message.ShouldBe("Value cannot be null. (Parameter 'gd')");
+            .Message.ShouldBe("Value cannot be null. (Parameter 'grfxDevice')");
     }
 
     [Fact]

@@ -52,7 +52,7 @@ public class GraphicsSurfaceTests
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'gd')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'grfxDevice')");
     }
 
     [Fact]

@@ -28,7 +28,7 @@ public class TextureFactoryTests
     private const nint UnsafeSamplerHandle = 0x1;
     private const nint UnsafeBindGroupHandle = 0x2;
     private readonly IWgpuInvoker mockWgpuInvoker;
-    private readonly IGraphicsDevice mockGd;
+    private readonly IGraphicsDevice mockGrfxDevice;
     private readonly IReactableFactory mockReactableFactory;
     private readonly ITextureIdGenerator mockTextureIdGenerator;
     private readonly SafeBindGroupLayoutHandle bindGroupLayout;
@@ -40,13 +40,13 @@ public class TextureFactoryTests
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
 
-        this.mockGd = Substitute.For<IGraphicsDevice>();
+        this.mockGrfxDevice = Substitute.For<IGraphicsDevice>();
         // Set up mocks required by the Texture constructor called inside Create()
         var deviceHandle = new SafeDeviceHandle(this.mockWgpuInvoker, new nint(1));
         var queueHandle = new SafeQueueHandle(this.mockWgpuInvoker, deviceHandle);
 
-        this.mockGd.Handle.Returns(deviceHandle);
-        this.mockGd.Queue.Returns(queueHandle);
+        this.mockGrfxDevice.Handle.Returns(deviceHandle);
+        this.mockGrfxDevice.Queue.Returns(queueHandle);
 
         this.mockWgpuInvoker.DeviceGetQueue(Arg.Any<SafeDeviceHandle>()).Returns(new nint(50));
         this.mockWgpuInvoker.DeviceCreateTexture(Arg.Any<SafeDeviceHandle>(), Arg.Any<TextureDescriptor>())
@@ -81,7 +81,7 @@ public class TextureFactoryTests
         {
             _ = new TextureFactory(
                 null,
-                this.mockGd,
+                this.mockGrfxDevice,
                 this.mockReactableFactory,
                 this.mockTextureIdGenerator,
                 this.bindGroupLayout);
@@ -119,7 +119,7 @@ public class TextureFactoryTests
         {
             _ = new TextureFactory(
                 this.mockWgpuInvoker,
-                this.mockGd,
+                this.mockGrfxDevice,
                 null,
                 this.mockTextureIdGenerator,
                 this.bindGroupLayout);
@@ -138,7 +138,7 @@ public class TextureFactoryTests
         {
             _ = new TextureFactory(
                 this.mockWgpuInvoker,
-                this.mockGd,
+                this.mockGrfxDevice,
                 this.mockReactableFactory,
                 null,
                 this.bindGroupLayout);
@@ -239,7 +239,7 @@ public class TextureFactoryTests
     {
         return new TextureFactory(
             this.mockWgpuInvoker,
-            this.mockGd,
+            this.mockGrfxDevice,
             this.mockReactableFactory,
             this.mockTextureIdGenerator,
             this.bindGroupLayout);

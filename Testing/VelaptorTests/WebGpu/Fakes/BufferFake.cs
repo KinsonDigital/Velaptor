@@ -21,9 +21,9 @@ internal sealed class BufferFake : WebGpuBufferBase<int>
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferFake"/> class.
     /// </summary>
-    /// <param name="gd">The mocked graphics device.</param>
-    public BufferFake(IGraphicsDevice gd)
-        : base(gd)
+    /// <param name="grfxDevice">The mocked graphics device.</param>
+    public BufferFake(IGraphicsDevice grfxDevice)
+        : base(grfxDevice)
     {
     }
 

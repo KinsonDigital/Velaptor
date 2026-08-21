@@ -37,10 +37,10 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="LineGpuBuffer"/> class.
     /// </summary>
-    /// <param name="gd">The graphics device.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
     /// <param name="reactableFactory">Creates reactables.</param>
-    public LineGpuBuffer(IGraphicsDevice gd, IReactableFactory reactableFactory)
-        : base(gd)
+    public LineGpuBuffer(IGraphicsDevice grfxDevice, IReactableFactory reactableFactory)
+        : base(grfxDevice)
     {
         var resizeBufferReactable = reactableFactory.CreateResizeBufferReactable();
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
