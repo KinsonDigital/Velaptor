@@ -37,18 +37,22 @@ public class ShapeRendererTests : TestsBase
 {
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsShapePipeline mockShapePipeline;
-    private readonly IWebGpuBuffer<ShapeBatchItem> mockBuffer;
+    private readonly IGraphicsLinePipeline mockLinePipeline;
+    private readonly IWebGpuBuffer<ShapeBatchItem> mockShapeBuffer;
+    private readonly IWebGpuBuffer<LineBatchItem> mockLineBuffer;
     private readonly IFrame mockFrame;
     private readonly IBatchingManager mockBatchingManager;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IDisposable mockFrameBeginUnsubscriber;
     private readonly IDisposable mockBatchBeginUnsubscriber;
     private readonly IDisposable mockRenderShapesUnsubscriber;
+    private readonly IDisposable mockRenderLinesUnsubscriber;
     private readonly IDisposable mockViewPortUnsubscriber;
     private IReceiveSubscription? frameBeginSubscription;
     private IReceiveSubscription? batchBeginSubscription;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSubscription;
     private IReceiveSubscription<Memory<RenderItem<ShapeBatchItem>>>? renderBatchSubscription;
+    private IReceiveSubscription<Memory<RenderItem<LineBatchItem>>>? renderLineBatchSubscription;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeRendererTests"/> class.
@@ -57,13 +61,16 @@ public class ShapeRendererTests : TestsBase
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
         this.mockShapePipeline = Substitute.For<IGraphicsShapePipeline>();
-        this.mockBuffer = Substitute.For<IWebGpuBuffer<ShapeBatchItem>>();
+        this.mockLinePipeline = Substitute.For<IGraphicsLinePipeline>();
+        this.mockShapeBuffer = Substitute.For<IWebGpuBuffer<ShapeBatchItem>>();
+        this.mockLineBuffer = Substitute.For<IWebGpuBuffer<LineBatchItem>>();
         this.mockFrame = Substitute.For<IFrame>();
         this.mockBatchingManager = Substitute.For<IBatchingManager>();
 
         this.mockFrameBeginUnsubscriber = Substitute.For<IDisposable>();
         this.mockBatchBeginUnsubscriber = Substitute.For<IDisposable>();
         this.mockRenderShapesUnsubscriber = Substitute.For<IDisposable>();
+        this.mockRenderLinesUnsubscriber = Substitute.For<IDisposable>();
         this.mockViewPortUnsubscriber = Substitute.For<IDisposable>();
 
         var mockPushReactable = Substitute.For<IPushReactable>();
@@ -169,6 +176,37 @@ public class ShapeRendererTests : TestsBase
         this.mockReactableFactory = Substitute.For<IReactableFactory>();
         this.mockReactableFactory.CreateNoDataPushReactable().Returns(mockPushReactable);
         this.mockReactableFactory.CreateRenderShapeReactable().Returns(mockRenderBatchReactable);
+
+        var mockRenderLineReactable = Substitute.For<IRenderBatchReactable<LineBatchItem>>();
+        mockRenderLineReactable
+            .When(x => x.Subscribe(
+                Arg.Any<IReceiveSubscription<Memory<RenderItem<LineBatchItem>>>>()))
+            .Do(callInfo =>
+            {
+                var subscription = callInfo.Arg<IReceiveSubscription<Memory<RenderItem<LineBatchItem>>>>();
+
+                if (subscription.Id == PushNotifications.RenderLinesId)
+                {
+                    this.renderLineBatchSubscription = subscription;
+                }
+                else
+                {
+                    throw new Exception($"The ID '{subscription.Id}' is incorrect or not setup for proper testing.");
+                }
+            });
+
+        mockRenderLineReactable
+            .Subscribe(Arg.Any<IReceiveSubscription<Memory<RenderItem<LineBatchItem>>>>())
+            .Returns(callInfo =>
+            {
+                var subscription = callInfo.Arg<IReceiveSubscription<Memory<RenderItem<LineBatchItem>>>>();
+
+                return subscription.Id == PushNotifications.RenderLinesId
+                    ? this.mockRenderLinesUnsubscriber
+                    : throw new Exception($"The ID '{subscription.Id}' is incorrect or not setup for proper testing.");
+            });
+
+        this.mockReactableFactory.CreateRenderLineReactable().Returns(mockRenderLineReactable);
         this.mockReactableFactory.CreateViewPortReactable().Returns(mockViewPortReactable);
     }
 
@@ -180,7 +218,9 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             null,
             this.mockShapePipeline,
-            this.mockBuffer,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
             this.mockFrame,
             this.mockBatchingManager,
             this.mockReactableFactory);
@@ -197,14 +237,35 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
             null,
-            this.mockBuffer,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
             this.mockFrame,
             this.mockBatchingManager,
             this.mockReactableFactory);
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
-            .Message.ShouldBe("Value cannot be null. (Parameter 'pipeline')");
+            .Message.ShouldBe("Value cannot be null. (Parameter 'shapePipeline')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullLinePipelineParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new ShapeRenderer(
+            this.mockWgpuInvoker,
+            this.mockShapePipeline,
+            null,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
+            this.mockFrame,
+            this.mockBatchingManager,
+            this.mockReactableFactory);
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'linePipeline')");
     }
 
     [Fact]
@@ -214,6 +275,27 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
             this.mockShapePipeline,
+            this.mockLinePipeline,
+            null,
+            this.mockLineBuffer,
+            this.mockFrame,
+            this.mockBatchingManager,
+            this.mockReactableFactory);
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'shapeBuffer')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullLineBufferParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new ShapeRenderer(
+            this.mockWgpuInvoker,
+            this.mockShapePipeline,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
             null,
             this.mockFrame,
             this.mockBatchingManager,
@@ -221,7 +303,7 @@ public class ShapeRendererTests : TestsBase
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
-            .Message.ShouldBe("Value cannot be null. (Parameter 'buffer')");
+            .Message.ShouldBe("Value cannot be null. (Parameter 'lineBuffer')");
     }
 
     [Fact]
@@ -231,7 +313,9 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
             this.mockShapePipeline,
-            this.mockBuffer,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
             null,
             this.mockBatchingManager,
             this.mockReactableFactory);
@@ -248,7 +332,9 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
             this.mockShapePipeline,
-            this.mockBuffer,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
             this.mockFrame,
             null,
             this.mockReactableFactory);
@@ -265,7 +351,9 @@ public class ShapeRendererTests : TestsBase
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
             this.mockShapePipeline,
-            this.mockBuffer,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
             this.mockFrame,
             this.mockBatchingManager,
             null);
@@ -388,6 +476,129 @@ public class ShapeRendererTests : TestsBase
     }
 
     [Fact]
+    public void Render_WithLineAndBatchHasNotBegun_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg =
+            $"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(IShapeRenderer.Render)}()' methods.";
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(new Line(new Vector2(1, 2), new Vector2(3, 4)), 0);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
+    public void RenderLine_WithStartEndOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var start = new Vector2(10, 20);
+        var end = new Vector2(30, 40);
+        var expectedBatchItem = new LineBatchItem(start, end, Color.White, 1u);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.RenderLine(start, end, 3);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddLineItem(expectedBatchItem, 3, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void RenderLine_WithStartEndColorOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var start = new Vector2(10, 20);
+        var end = new Vector2(30, 40);
+        var color = Color.Red;
+        var expectedBatchItem = new LineBatchItem(start, end, color, 1u);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.RenderLine(start, end, color, 4);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddLineItem(expectedBatchItem, 4, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void RenderLine_WithStartEndThicknessOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var start = new Vector2(10, 20);
+        var end = new Vector2(30, 40);
+        var expectedBatchItem = new LineBatchItem(start, end, Color.White, 5u);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.RenderLine(start, end, 5u, 6);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddLineItem(expectedBatchItem, 6, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void RenderLine_WithStartEndColorThicknessOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var start = new Vector2(10, 20);
+        var end = new Vector2(30, 40);
+        var color = Color.Blue;
+        var expectedBatchItem = new LineBatchItem(start, end, color, 7u);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.RenderLine(start, end, color, 7u, 8);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddLineItem(expectedBatchItem, 8, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void RenderLine_WithLineStructOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var line = new Line(new Vector2(10, 20), new Vector2(30, 40), Color.Green, 3f);
+        var expectedBatchItem = new LineBatchItem(line.P1, line.P2, line.Color, (uint)line.Thickness);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.Render(line, 9);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddLineItem(expectedBatchItem, 9, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void RenderLine_WithLineStructOverloadAndBatchHasNotBegun_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg =
+            $"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(IShapeRenderer.Render)}()' methods.";
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(new Line(new Vector2(1, 2), new Vector2(3, 4)), 0);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
     public void Dispose_WhenInvoked_DisposesOfRenderer()
     {
         // Arrange
@@ -401,6 +612,7 @@ public class ShapeRendererTests : TestsBase
         this.mockFrameBeginUnsubscriber.Received(1).Dispose();
         this.mockBatchBeginUnsubscriber.Received(1).Dispose();
         this.mockRenderShapesUnsubscriber.Received(1).Dispose();
+        this.mockRenderLinesUnsubscriber.Received(1).Dispose();
         this.mockViewPortUnsubscriber.Received(1).Dispose();
     }
     #endregion
@@ -422,8 +634,8 @@ public class ShapeRendererTests : TestsBase
         this.renderBatchSubscription.OnReceive(itemsToRender);
 
         // Assert
-        this.mockBuffer.DidNotReceive().UploadData(Arg.Any<ShapeBatchItem>(), Arg.Any<uint>());
-        this.mockBuffer.DidNotReceive().Draw(Arg.Any<SafeRenderPassEncoderHandle>(), Arg.Any<uint>(), Arg.Any<uint>());
+        this.mockShapeBuffer.DidNotReceive().UploadData(Arg.Any<ShapeBatchItem>(), Arg.Any<uint>());
+        this.mockShapeBuffer.DidNotReceive().Draw(Arg.Any<SafeRenderPassEncoderHandle>(), Arg.Any<uint>(), Arg.Any<uint>());
     }
 
     [Fact]
@@ -499,9 +711,9 @@ public class ShapeRendererTests : TestsBase
 
         // Assert
         this.mockShapePipeline.Received(1).Bind(renderPassHandle);
-        this.mockBuffer.Received(1).UploadData(batchItem1, 0);
-        this.mockBuffer.Received(1).UploadData(batchItem2, 1);
-        this.mockBuffer.Received(1).Draw(renderPassHandle, 2, 0);
+        this.mockShapeBuffer.Received(1).UploadData(batchItem1, 0);
+        this.mockShapeBuffer.Received(1).UploadData(batchItem2, 1);
+        this.mockShapeBuffer.Received(1).Draw(renderPassHandle, 2, 0);
     }
 
     [Fact]
@@ -539,9 +751,9 @@ public class ShapeRendererTests : TestsBase
         // Assert
         // First batch: UploadData at indexes 0, 1; Draw with firstItem=0
         // Second batch: UploadData at index 2; Draw with firstItem=2
-        this.mockBuffer.Received(3).UploadData(batchItem, Arg.Any<uint>());
-        this.mockBuffer.Received(1).UploadData(batchItem, 2);
-        this.mockBuffer.Received(1).Draw(renderPassHandle, 1, 2);
+        this.mockShapeBuffer.Received(3).UploadData(batchItem, Arg.Any<uint>());
+        this.mockShapeBuffer.Received(1).UploadData(batchItem, 2);
+        this.mockShapeBuffer.Received(1).Draw(renderPassHandle, 1, 2);
     }
 
     [Fact]
@@ -576,7 +788,150 @@ public class ShapeRendererTests : TestsBase
         this.renderBatchSubscription.OnReceive(batch);
 
         // Assert — after frame begin, offset resets to 0, so Draw is called with firstItem=0 both times
-        this.mockBuffer.Received(2).Draw(renderPassHandle, 1, 0);
+        this.mockShapeBuffer.Received(2).Draw(renderPassHandle, 1, 0);
+    }
+
+    [Fact]
+    public void RenderLineBatch_WithNoItemsToRender_DoesNotRenderBatch()
+    {
+        // Arrange
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var itemsToRender = new Memory<RenderItem<LineBatchItem>>([]);
+
+        // Act
+        this.renderLineBatchSubscription.OnReceive(itemsToRender);
+
+        // Assert
+        this.mockLineBuffer.DidNotReceive().UploadData(Arg.Any<LineBatchItem>(), Arg.Any<uint>());
+        this.mockLineBuffer.DidNotReceive().Draw(Arg.Any<SafeRenderPassEncoderHandle>(), Arg.Any<uint>(), Arg.Any<uint>());
+    }
+
+    [Fact]
+    public void RenderLineBatch_WithNullFrameRenderPass_ThrowsException()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var batchItem = new LineBatchItem(
+            new Vector2(10, 20),
+            new Vector2(30, 40),
+            Color.Red,
+            5u);
+        var renderItem = new RenderItem<LineBatchItem> { Item = batchItem };
+        var itemsToRender = new Memory<RenderItem<LineBatchItem>>([renderItem]);
+
+        // Act
+        var act = () => this.renderLineBatchSubscription.OnReceive(itemsToRender);
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The `{nameof(IFrame.RenderPass)}` cannot be null.  Cannot render texture.");
+    }
+
+    [Fact]
+    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Needed for brevity")]
+    public void RenderLineBatch_WhenInvoked_RendersBatch()
+    {
+        // Arrange
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var batchItem1 = new LineBatchItem(
+            new Vector2(10, 20),
+            new Vector2(30, 40),
+            Color.Red,
+            5u);
+
+        var batchItem2 = new LineBatchItem(
+            new Vector2(50, 60),
+            new Vector2(70, 80),
+            Color.Blue,
+            3u);
+
+        var renderItem1 = new RenderItem<LineBatchItem> { Item = batchItem1 };
+        var renderItem2 = new RenderItem<LineBatchItem> { Item = batchItem2 };
+        var itemsToRender = new Memory<RenderItem<LineBatchItem>>([renderItem1, renderItem2]);
+
+        // Act
+        this.renderLineBatchSubscription.OnReceive(itemsToRender);
+
+        // Assert
+        this.mockLinePipeline.Received(1).Bind(renderPassHandle);
+        this.mockLineBuffer.Received(1).UploadData(batchItem1, 0);
+        this.mockLineBuffer.Received(1).UploadData(batchItem2, 1);
+        this.mockLineBuffer.Received(1).Draw(renderPassHandle, 2, 0);
+    }
+
+    [Fact]
+    public void RenderLineBatch_WhenInvokedAcrossMultipleBatches_OffsetsGpuDataIndex()
+    {
+        // Arrange
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var batchItem = new LineBatchItem(
+            new Vector2(10, 20),
+            new Vector2(30, 40),
+            Color.Red,
+            5u);
+
+        var renderItem = new RenderItem<LineBatchItem> { Item = batchItem };
+
+        // First batch - 2 items
+        var firstBatch = new Memory<RenderItem<LineBatchItem>>([renderItem, renderItem]);
+        this.renderLineBatchSubscription.OnReceive(firstBatch);
+
+        // Act - Second batch with 1 item
+        var secondBatch = new Memory<RenderItem<LineBatchItem>>([renderItem]);
+        this.renderLineBatchSubscription.OnReceive(secondBatch);
+
+        // Assert
+        // First batch: UploadData at indexes 0, 1; Draw with firstItem=0
+        // Second batch: UploadData at index 2; Draw with firstItem=2
+        this.mockLineBuffer.Received(3).UploadData(batchItem, Arg.Any<uint>());
+        this.mockLineBuffer.Received(1).UploadData(batchItem, 2);
+        this.mockLineBuffer.Received(1).Draw(renderPassHandle, 1, 2);
+    }
+
+    [Fact]
+    public void RenderLineBatch_WhenFrameHasBegun_ResetsBatchOffset()
+    {
+        // Arrange
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var batchItem = new LineBatchItem(
+            new Vector2(10, 20),
+            new Vector2(30, 40),
+            Color.Red,
+            5u);
+        var renderItem = new RenderItem<LineBatchItem> { Item = batchItem };
+
+        // Simulate a render to advance the batch offset
+        var batch = new Memory<RenderItem<LineBatchItem>>([renderItem]);
+        this.renderLineBatchSubscription.OnReceive(batch);
+
+        // Act — simulate a new frame begin
+        this.frameBeginSubscription.OnReceive();
+        this.renderLineBatchSubscription.OnReceive(batch);
+
+        // Assert — after frame begin, offset resets to 0, so Draw is called with firstItem=0 both times
+        this.mockLineBuffer.Received(2).Draw(renderPassHandle, 1, 0);
     }
     #endregion
 
@@ -607,6 +962,20 @@ public class ShapeRendererTests : TestsBase
 
         // Assert
         this.mockRenderShapesUnsubscriber.Received(1).Dispose();
+    }
+
+    [Fact]
+    [Trait("Category", Subscription)]
+    public void RenderLinesSubscription_WhenUnsubscribing_DisposesUnsubscriber()
+    {
+        // Arrange
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.renderLineBatchSubscription.OnUnsubscribe();
+
+        // Assert
+        this.mockRenderLinesUnsubscriber.Received(1).Dispose();
     }
 
     [Fact]
@@ -648,32 +1017,23 @@ public class ShapeRendererTests : TestsBase
         this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
 
         // Assert
-        this.mockBuffer.WindowSize.ShouldBe(new Vector2(1920f, 1080f));
+        this.mockShapeBuffer.WindowSize.ShouldBe(new Vector2(1920f, 1080f));
+        this.mockLineBuffer.WindowSize.ShouldBe(new Vector2(1920f, 1080f));
     }
     #endregion
 
     /// <summary>
     /// Creates a new instance of <see cref="ShapeRenderer"/> for the purpose of testing.
     /// </summary>
-    /// <param name="wgpu">The WGPU invoker.</param>
-    /// <param name="pipeline">The graphics shape pipeline.</param>
-    /// <param name="buffer">The WebGPU buffer.</param>
-    /// <param name="frame">The frame.</param>
-    /// <param name="batchManager">The batching manager.</param>
-    /// <param name="reactableFactory">The reactable factory.</param>
     /// <returns>The instance to test.</returns>
-    private ShapeRenderer CreateSystemUnderTest(
-        IWgpuInvoker? wgpu = null,
-        IGraphicsShapePipeline? pipeline = null,
-        IWebGpuBuffer<ShapeBatchItem>? buffer = null,
-        IFrame? frame = null,
-        IBatchingManager? batchManager = null,
-        IReactableFactory? reactableFactory = null)
+    private ShapeRenderer CreateSystemUnderTest()
         => new (
-            wgpu ?? this.mockWgpuInvoker,
-            pipeline ?? this.mockShapePipeline,
-            buffer ?? this.mockBuffer,
-            frame ?? this.mockFrame,
-            batchManager ?? this.mockBatchingManager,
-            reactableFactory ?? this.mockReactableFactory);
+            this.mockWgpuInvoker,
+            this.mockShapePipeline,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
+            this.mockFrame,
+            this.mockBatchingManager,
+            this.mockReactableFactory);
 }

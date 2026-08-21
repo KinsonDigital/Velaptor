@@ -10,7 +10,6 @@ public sealed class Layout : Control
 {
     private const float BorderThickness = 3f;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly ILineRenderer lineRenderer;
     private readonly List<IControl> controls = new();
     private readonly Color borderClr = Color.FromArgb(255, 45, 74, 117);
     private RectShape area;
@@ -24,7 +23,6 @@ public sealed class Layout : Control
     public Layout()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
 
         this.area = new RectShape
         {
@@ -170,10 +168,10 @@ public sealed class Layout : Control
         // TODO: Add debug preprocess directive to only be taken into account internally in this control if in debug mode
         if (DebugBorderVisible)
         {
-            this.lineRenderer.Render(this.leftLine, -100);
-            this.lineRenderer.Render(this.bottomLine, -100);
-            this.lineRenderer.Render(this.rightLine, -100);
-            this.lineRenderer.Render(this.topLine, -100);
+            this.shapeRenderer.Render(this.leftLine, -100);
+            this.shapeRenderer.Render(this.bottomLine, -100);
+            this.shapeRenderer.Render(this.rightLine, -100);
+            this.shapeRenderer.Render(this.topLine, -100);
         }
 
         // Render all the controls

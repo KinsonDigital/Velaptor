@@ -17,7 +17,6 @@ public sealed class CheckBox : Control
     private const float MarkOffset = 2;
     private const float BoxWidthHeight = 20;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly ILineRenderer lineRenderer;
     private readonly IFontRenderer fontRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
@@ -44,11 +43,10 @@ public sealed class CheckBox : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();

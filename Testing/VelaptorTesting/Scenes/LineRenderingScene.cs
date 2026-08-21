@@ -24,9 +24,9 @@ public class LineRenderingScene : SceneBase
     private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
     private readonly BackgroundManager backgroundManager;
-    private IAppInput<MouseState>? mouse;
-    private IAppInput<KeyboardState>? keyboard;
-    private ILineRenderer? lineRenderer;
+    private readonly IShapeRenderer shapeRenderer;
+    private readonly IAppInput<MouseState>? mouse;
+    private readonly IAppInput<KeyboardState>? keyboard;
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
@@ -36,16 +36,18 @@ public class LineRenderingScene : SceneBase
     /// <summary>
     /// Initializes a new instance of the <see cref="LineRenderingScene"/> class.
     /// </summary>
-    public LineRenderingScene() => this.backgroundManager = new BackgroundManager();
+    public LineRenderingScene()
+    {
+        this.backgroundManager = new BackgroundManager();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.mouse = HardwareFactory.GetMouse();
+    }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
-        this.keyboard = HardwareFactory.GetKeyboard();
-        this.mouse = HardwareFactory.GetMouse();
 
         this.line = default;
         this.line.Color = Color.SteelBlue;
@@ -68,7 +70,7 @@ public class LineRenderingScene : SceneBase
         base.LoadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="Velaptor.IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         this.currentKeyState = this.keyboard.GetState();
@@ -96,7 +98,7 @@ public class LineRenderingScene : SceneBase
     public override void Render()
     {
         this.backgroundManager.Render();
-        this.lineRenderer.Render(this.line);
+        this.shapeRenderer.Render(this.line);
 
         this.lblInstructions.Render(0);
 

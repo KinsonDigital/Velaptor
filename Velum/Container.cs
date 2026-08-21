@@ -15,7 +15,6 @@ public class Container : Control
     private const int TitleBarHalfHeight = TitleBarHeight / 2;
     private const float BorderThickness = 3f;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly ILineRenderer lineRenderer;
     private readonly IAppInput<MouseState> mouse;
     private readonly Label titleBarText;
     private Color titleBarClr = Color.FromArgb(255, 45, 74, 117);
@@ -49,7 +48,6 @@ public class Container : Control
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.mouse = HardwareFactory.GetMouse();
         this.titleBarText = new Label();
         this.titleBarText.Text = "Container";
@@ -233,13 +231,13 @@ public class Container : Control
 
         if (BorderVisible)
         {
-            this.lineRenderer.Render(this.leftLine, -100);
-            this.lineRenderer.Render(this.bottomLine, -100);
-            this.lineRenderer.Render(this.rightLine, -100);
+            this.shapeRenderer.Render(this.leftLine, -100);
+            this.shapeRenderer.Render(this.bottomLine, -100);
+            this.shapeRenderer.Render(this.rightLine, -100);
 
             if (!TitleBarVisible)
             {
-                this.lineRenderer.Render(this.topLine, -100);
+                this.shapeRenderer.Render(this.topLine, -100);
             }
         }
 

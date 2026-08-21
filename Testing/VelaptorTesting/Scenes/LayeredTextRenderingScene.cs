@@ -87,7 +87,7 @@ public class LayeredTextRenderingScene : SceneBase
 
         this.orangeText = string.Join(Environment.NewLine, orangeLines);
 
-        // Set the default white  position
+        // Set the default white position
         this.orangeTextPos.X = WindowCenter.X;
         this.orangeTextPos.Y = WindowCenter.Y;
 
@@ -235,25 +235,25 @@ public class LayeredTextRenderingScene : SceneBase
         var halfWidth = this.whiteTextSize.Width / 2f;
         var halfHeight = this.whiteTextSize.Height / 2f;
 
-        // Left edge containment
+        // Left-edge containment
         if (this.whiteTextPos.X < halfWidth)
         {
             this.whiteTextPos.X = halfWidth;
         }
 
-        // Right edge containment
+        // Right-edge containment
         if (this.whiteTextPos.X > WindowSize.Width - halfWidth)
         {
             this.whiteTextPos.X = WindowSize.Width - halfWidth;
         }
 
-        // Top edge containment
+        // Top-edge containment
         if (this.whiteTextPos.Y < halfHeight)
         {
             this.whiteTextPos.Y = halfHeight;
         }
 
-        // Bottom edge containment
+        // Bottom-edge containment
         if (this.whiteTextPos.Y > WindowSize.Height - halfHeight)
         {
             this.whiteTextPos.Y = WindowSize.Height - halfHeight;

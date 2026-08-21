@@ -33,12 +33,6 @@ public static class RendererFactory
     public static IShapeRenderer CreateShapeRenderer() => IoC.Container.GetInstance<IShapeRenderer>();
 
     /// <summary>
-    /// Creates an instance of the <see cref="ILineRenderer"/>.
-    /// </summary>
-    /// <returns>The line renderer.</returns>
-    public static ILineRenderer CreateLineRenderer() => IoC.Container.GetInstance<ILineRenderer>();
-
-    /// <summary>
     /// Creates an instance of <see cref="IBatcher"/> to start and stop batching.
     /// </summary>
     /// <returns>The batcher instance.</returns>

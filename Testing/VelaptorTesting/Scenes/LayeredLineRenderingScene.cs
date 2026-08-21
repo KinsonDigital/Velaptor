@@ -28,7 +28,7 @@ public class LayeredLineRenderingScene : SceneBase
     private const RenderLayer OrangeLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
     private readonly BackgroundManager backgroundManager;
-    private ILineRenderer? lineRenderer;
+    private readonly IShapeRenderer shapeRenderer;
     private Line whiteLine;
     private Line orangeLine;
     private Line blueLine;
@@ -45,13 +45,13 @@ public class LayeredLineRenderingScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
     }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
 
         var textLines = new[]
         {
@@ -109,9 +109,9 @@ public class LayeredLineRenderingScene : SceneBase
     {
         this.backgroundManager.Render();
 
-        this.lineRenderer.Render(this.blueLine, (int)BlueLayer);
-        this.lineRenderer.Render(this.orangeLine, (int)OrangeLayer);
-        this.lineRenderer.Render(this.whiteLine, (int)this.whiteLayer);
+        this.shapeRenderer.Render(this.blueLine, (int)BlueLayer);
+        this.shapeRenderer.Render(this.orangeLine, (int)OrangeLayer);
+        this.shapeRenderer.Render(this.whiteLine, (int)this.whiteLayer);
 
         // Render the background
         this.lblInstructions.Render(0);

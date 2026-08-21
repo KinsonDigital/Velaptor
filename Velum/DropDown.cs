@@ -24,7 +24,6 @@ public sealed class DropDown : Control
     private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
     private readonly IFontRenderer fontRenderer;
-    private readonly ILineRenderer lineRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly List<DropDownItem> listItems = [];
@@ -66,7 +65,6 @@ public sealed class DropDown : Control
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.fontRenderer = RendererFactory.CreateFontRenderer();
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
 
@@ -280,9 +278,9 @@ public sealed class DropDown : Control
 
         var arrowColor = Color.White;
 
-        this.lineRenderer.RenderLine(topLeft, topRight, arrowColor, 2, -9);
-        this.lineRenderer.RenderLine(topRight, bottomCenter, arrowColor, 2, -9);
-        this.lineRenderer.RenderLine(bottomCenter, topLeft, arrowColor, 2, -9);
+        this.shapeRenderer.RenderLine(topLeft, topRight, arrowColor, 2, -9);
+        this.shapeRenderer.RenderLine(topRight, bottomCenter, arrowColor, 2, -9);
+        this.shapeRenderer.RenderLine(bottomCenter, topLeft, arrowColor, 2, -9);
     }
 
     private void ItemOn_Click(object? sender, EventArgs e)
