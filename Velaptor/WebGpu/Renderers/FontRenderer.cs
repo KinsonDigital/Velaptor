@@ -445,7 +445,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             // Convert all the glyphs to batch items to be rendered
             var batchItems = ToFontBatchItems(
                 textLinePos,
-                glyphLines.ToArray()[i],
+                glyphLines[i],
                 font,
                 new Vector2(x, y),
                 renderSize,
