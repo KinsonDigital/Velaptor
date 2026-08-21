@@ -42,20 +42,20 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     /// <param name="buffer">Buffers shape data to the GPU.</param>
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
-    internal ShapeRenderer(
+    public ShapeRenderer(
         IWgpuInvoker wgpu,
-        IReactableFactory reactableFactory,
         IGraphicsShapePipeline pipeline,
         IWebGpuBuffer<ShapeBatchItem> buffer,
         IFrame frame,
-        IBatchingManager batchManager)
+        IBatchingManager batchManager,
+        IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
-        ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(pipeline);
         ArgumentNullException.ThrowIfNull(buffer);
         ArgumentNullException.ThrowIfNull(frame);
         ArgumentNullException.ThrowIfNull(batchManager);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.pipeline = pipeline;
         this.buffer = buffer;
@@ -92,14 +92,23 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     /// <inheritdoc/>
     public void Render(RectShape rect, int layer = 0) => RenderBase(rect.ToBatchItem(), layer);
 
-    /// <summary>
-    /// Gets the current window size used by the GPU buffer for NDC conversion.
-    /// </summary>
-    /// <remarks>For testing purposes.</remarks>
-    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
-
     /// <inheritdoc/>
     public void Render(CircleShape circle, int layer = 0) => RenderBase(circle.ToBatchItem(), layer);
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.frameBeginUnsubscriber.Dispose();
+        this.batchBeginUnsubscriber.Dispose();
+        this.renderUnsubscriber.Dispose();
+        this.viewportUnsubscriber.Dispose();
+    }
 
     /// <summary>
     /// Renders the given <paramref name="batchItem"/> to the screen.
@@ -129,12 +138,12 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
             return;
         }
 
-        var renderPass = this.frame.RenderPass;
-
-        if (renderPass is null)
+        if (this.frame.RenderPass is null)
         {
-            return;
+            throw new InvalidOperationException($"The `{nameof(IFrame.RenderPass)}` cannot be null.  Cannot render texture.");
         }
+
+        var renderPass = this.frame.RenderPass;
 
         this.pipeline.Bind(renderPass);
 
@@ -154,20 +163,5 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 
         this.buffer.Draw(renderPass, totalItemsToRender, this.batchOffset);
         this.batchOffset += totalItemsToRender;
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderUnsubscriber.Dispose();
-        this.viewportUnsubscriber.Dispose();
     }
 }
