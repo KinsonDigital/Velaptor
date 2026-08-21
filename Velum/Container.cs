@@ -44,7 +44,7 @@ public class Container : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();

@@ -46,7 +46,7 @@ internal sealed class LineGpuBuffer : WebGpuBufferBase<LineBatchItem>
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
-            data => EnsureCapacity(data.TotalLineItmes),
+            data => EnsureCapacity(data.TotalLineItems),
             () => this.resizeBufferSubscriber?.Dispose());
 
         this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(

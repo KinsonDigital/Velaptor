@@ -87,6 +87,9 @@ internal sealed class RenderMediator : IRenderMediator
         }
     }
 
+    /// <summary>
+    /// Coordinates the renders between all the different layers of each type of thing to render.
+    /// </summary>
     private void CoordinateRenders()
     {
         var textureItems = this.texturePullReactable.Pull(PullResponses.GetTextureItemsId);
@@ -101,8 +104,8 @@ internal sealed class RenderMediator : IRenderMediator
             {
                 TotalTextureItems = (uint)textureItems.Length,
                 TotalFontItems = (uint)fontItems.Length,
-                TotalShapeItmes = (uint)shapeItems.Length,
-                TotalLineItmes = (uint)lineItems.Length,
+                TotalShapeItems = (uint)shapeItems.Length,
+                TotalLineItems = (uint)lineItems.Length,
             });
 
         // Sort all the item layers

@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.WebGpu.Buffers;
 
-using System;
 using System.Numerics;
 using Carbonate.OneWay;
 using Color = System.Drawing.Color;

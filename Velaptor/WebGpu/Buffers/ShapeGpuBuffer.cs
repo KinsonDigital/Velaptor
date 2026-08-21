@@ -51,7 +51,7 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
         var pushReactable = reactableFactory.CreateNoDataPushReactable();
 
         this.resizeBufferSubscriber = resizeBufferReactable.CreateOneWayReceive(PushNotifications.ResizeBufferId,
-            data => EnsureCapacity(data.TotalShapeItmes),
+            data => EnsureCapacity(data.TotalShapeItems),
             () => this.resizeBufferSubscriber?.Dispose());
 
         this.wgpuReadyUnsubscriber = pushReactable.CreateNonReceiveOrRespond(

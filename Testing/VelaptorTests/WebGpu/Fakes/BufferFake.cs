@@ -27,12 +27,16 @@ internal sealed class BufferFake : WebGpuBufferBase<int>
     {
     }
 
+    /// <inheritdoc/>
     private protected override uint VertexSizeInBytes => VtxSize;
 
+    /// <inheritdoc/>
     private protected override uint IndexItemSizeInBytes => IdxSize;
 
+    /// <inheritdoc/>
     private protected override uint VerticesPerItem => VertsPerItem;
 
+    /// <inheritdoc/>
     private protected override uint IndicesPerItem => IndicesPerItemValue;
 
     /// <summary>
@@ -43,7 +47,8 @@ internal sealed class BufferFake : WebGpuBufferBase<int>
     /// <returns>The NDC position vector.</returns>
     public Vector2 CallToNDC(float x, float y) => ToNDC(x, y);
 
-    public void Initialize() => base.Initialize();
+    /// <inheritdoc cref="WebGpuBufferBase{T}.Initialize"/>
+    public new void Initialize() => base.Initialize();
 
     /// <summary>
     /// Builds the item data.

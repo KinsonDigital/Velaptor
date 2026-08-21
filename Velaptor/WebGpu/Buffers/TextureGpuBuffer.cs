@@ -8,10 +8,8 @@ using System;
 using System.Numerics;
 using Batching;
 using Carbonate;
-using Carbonate.OneWay;
 using Factories;
 using Graphics;
-using ReactableData;
 
 /// <summary>
 /// Manages GPU vertex and index buffers for rendering textured quads and font glyphs.

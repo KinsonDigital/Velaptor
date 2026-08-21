@@ -7,7 +7,6 @@ namespace Velaptor.WebGpu;
 using System;
 using NativeInterop.WebGpu.Structures;
 using Silk.NET.WebGPU;
-using NativeInterop.WebGpu;
 using NativeInterop.WebGpu.Handles;
 
 /// <inheritdoc/>

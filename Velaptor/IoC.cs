@@ -141,85 +141,9 @@ internal static class IoC
     /// </summary>
     private static void SetupRendering()
     {
-        IoCContainer.Register<IFontRenderer>(
-            () =>
-        {
-            var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
-            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<FontGlyphBatchItem>>();
-            var frame = IoCContainer.GetInstance<IFrame>();
-            var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
-            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
-
-            return new FontRenderer(
-                wgpu,
-                reactableFactory,
-                pipeline,
-                buffer,
-                frame,
-                bindGroupRegistry,
-                batchManager);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register<ITextureRenderer>(
-            () =>
-        {
-            var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
-            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<IGraphicsTexturePipeline>();
-            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<TextureBatchItem>>();
-            var frame = IoCContainer.GetInstance<IFrame>();
-            var bindGroupRegistry = IoCContainer.GetInstance<WgpuTextureBindGroupRegistry>();
-            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
-
-            return new TextureRenderer(
-                wgpu,
-                reactableFactory,
-                pipeline,
-                buffer,
-                frame,
-                bindGroupRegistry,
-                batchManager);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register<ILineRenderer>(
-            () =>
-        {
-            var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
-            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<IGraphicsLinePipeline>();
-            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<LineBatchItem>>();
-            var frame = IoCContainer.GetInstance<IFrame>();
-            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
-
-            return new LineRenderer(
-                wgpu,
-                reactableFactory,
-                pipeline,
-                buffer,
-                frame,
-                batchManager);
-        }, Lifestyle.Singleton);
-
-        IoCContainer.Register<IShapeRenderer>(
-            () =>
-        {
-            var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
-            var reactableFactory = IoCContainer.GetInstance<IReactableFactory>();
-            var pipeline = IoCContainer.GetInstance<IGraphicsShapePipeline>();
-            var buffer = IoCContainer.GetInstance<IWebGpuBuffer<ShapeBatchItem>>();
-            var frame = IoCContainer.GetInstance<IFrame>();
-            var batchManager = IoCContainer.GetInstance<IBatchingManager>();
-
-            return new ShapeRenderer(
-                wgpu,
-                reactableFactory,
-                pipeline,
-                buffer,
-                frame,
-                batchManager);
-        }, Lifestyle.Singleton);
+        IoCContainer.Register<ITextureRenderer, TextureRenderer>(Lifestyle.Singleton);
+        IoCContainer.Register<IFontRenderer, FontRenderer>(Lifestyle.Singleton);
+        IoCContainer.Register<IShapeRenderer, ShapeRenderer>(Lifestyle.Singleton);
     }
 
     /// <summary>

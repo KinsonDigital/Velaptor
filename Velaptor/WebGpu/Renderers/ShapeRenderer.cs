@@ -44,7 +44,9 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications.</param>
     /// <param name="shapePipeline">The shape rendering pipeline.</param>
-    /// <param name="shapeBuffer">Buffers shape data to the GPU.</param>
+    /// <param name="linePipeline">The line rendering pipeline.</param>
+    /// <param name="shapeBuffer">Manages shape buffer data in the GPU.</param>
+    /// <param name="lineBuffer">Manages sine buffer data in the GPU.</param>
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="batchManager">Batches items for rendering.</param>
     public ShapeRenderer(
@@ -197,7 +199,6 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
 
         this.batchManager.AddLineItem(batchItem, layer, DateTime.Now);
     }
-
 
     /// <summary>
     /// Invoked every time a batch of shapes is ready to be rendered.

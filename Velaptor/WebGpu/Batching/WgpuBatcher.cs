@@ -25,15 +25,15 @@ internal sealed class WgpuBatcher : IBatcher
     private readonly IPushReactable pushReactable;
     private readonly IFrame frame;
     private readonly IGraphicsTexturePipeline texturePipeline;
-    private readonly GraphicsShapePipeline shapePipeline;
-    private readonly GraphicsLinePipeline linePipeline;
+    private readonly IGraphicsShapePipeline shapePipeline;
+    private readonly IGraphicsLinePipeline linePipeline;
     private readonly IDisposable initUnsubscriber;
     private readonly IDisposable submitUnsubscriber;
+    private readonly IDisposable reconfigureUnsubscriber;
     private Color clearColor = Color.FromArgb(255, 16, 29, 36);
     private int frameDepth;
     private bool frameBegun;
     private bool isInitialized;
-    private readonly IDisposable reconfigureUnsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WgpuBatcher"/> class.
@@ -49,8 +49,8 @@ internal sealed class WgpuBatcher : IBatcher
         IPushReactable<BatchSizeData> batchSizeReactable,
         IFrame frame,
         IGraphicsTexturePipeline texturePipeline,
-        GraphicsShapePipeline shapePipeline,
-        GraphicsLinePipeline linePipeline)
+        IGraphicsShapePipeline shapePipeline,
+        IGraphicsLinePipeline linePipeline)
     {
         ArgumentNullException.ThrowIfNull(pushReactable);
         ArgumentNullException.ThrowIfNull(batchSizeReactable);
@@ -66,7 +66,7 @@ internal sealed class WgpuBatcher : IBatcher
         this.linePipeline = linePipeline;
 
         this.initUnsubscriber = this.pushReactable.CreateNonReceiveOrRespond(
-            PushNotifications.InitializedId,
+            PushNotifications.WgpuReady,
             () =>
             {
                 if (this.isInitialized)

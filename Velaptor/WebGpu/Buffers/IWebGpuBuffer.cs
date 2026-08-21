@@ -8,18 +8,20 @@ using System;
 using System.Numerics;
 using NativeInterop.WebGpu.Handles;
 
-internal interface IWebGpuBuffer<TData> : IDisposable
+/// <summary>
+/// Represents a buffer that can be used to upload data to the GPU.
+/// </summary>
+/// <typeparam name="TData">The type of data to send to the GPU.</typeparam>
+internal interface IWebGpuBuffer<in TData> : IDisposable
 {
     /// <summary>
     /// Gets a value indicating whether the GPU buffers have been allocated.
     /// </summary>
-    // ReSharper disable once MemberCanBePrivate.Global
     bool IsInitialized { get; }
 
     /// <summary>
     /// Gets the number of batch items the current GPU buffers can hold.
     /// </summary>
-    // ReSharper disable once MemberCanBePrivate.Global
     uint Capacity { get; }
 
     /// <summary>

@@ -37,8 +37,8 @@ using Factories;
 /// </remarks>
 public sealed class Camera2D : ICamera2D
 {
+    private readonly IDisposable? unsubscriber;
     private float zoom = 0.1f;
-    private IDisposable? unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Camera2D"/> class.
