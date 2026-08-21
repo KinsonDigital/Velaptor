@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
 namespace VelaptorTests.WebGpu.Renderers;
 
 using System;
@@ -49,7 +50,6 @@ public class FontRendererTests : TestsBase
     private readonly IDisposable mockRenderFontsUnsubscriber;
     private readonly IDisposable mockViewPortUnsubscriber;
     private readonly TextureBindGroupRegistry bindGroupRegistry;
-    private readonly IFont mockFont;
     private IReceiveSubscription? frameBeginSubscription;
     private IReceiveSubscription? batchBeginSubscription;
     private IReceiveSubscription<ViewPortSizeData>? viewPortSubscription;
@@ -177,8 +177,6 @@ public class FontRendererTests : TestsBase
         this.mockReactableFactory.CreateViewPortReactable().Returns(this.mockViewPortReactable);
 
         this.bindGroupRegistry = new TextureBindGroupRegistry();
-
-        this.mockFont = CreateMockFont();
     }
 
     #region Constructor Tests
@@ -314,12 +312,13 @@ public class FontRendererTests : TestsBase
     public void Render_WhenBatchHasNotBegun_ThrowsException()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         const string expectedMsg =
             $"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(IFontRenderer.Render)}()' methods.";
         var sut = CreateSystemUnderTest();
 
         // Act
-        var act = () => sut.Render(this.mockFont, "test", 10, 20, 0);
+        var act = () => sut.Render(mockFont, "test", 10, 20, 0);
 
         // Assert
         act.ShouldThrow<InvalidOperationException>()
@@ -360,11 +359,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithEmptyText_DoesNotAddToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, string.Empty, 10, 20, 0);
+        sut.Render(mockFont, string.Empty, 10, 20, 0);
 
         // Assert
         this.mockBatchingManager.DidNotReceive().AddFontItem(Arg.Any<FontGlyphBatchItem>(), Arg.Any<int>(), Arg.Any<DateTime>());
@@ -374,11 +374,12 @@ public class FontRendererTests : TestsBase
     public void Render_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A\r\nB", 10, 20, 1f, 0f, Color.White, 0);
+        sut.Render(mockFont, "A\r\nB", 10, 20, 1f, 0f, Color.White, 0);
 
         // Assert
         this.mockBatchingManager.Received(2).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -388,11 +389,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithVector2PositionOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", new Vector2(10, 20), 0);
+        sut.Render(mockFont, "A", new Vector2(10, 20), 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -402,11 +404,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithRenderSizeAndAngleOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", 10, 20, 1.5f, 45f, 0);
+        sut.Render(mockFont, "A", 10, 20, 1.5f, 45f, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -416,11 +419,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithVector2PositionAndRenderSizeAndAngleOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", new Vector2(10, 20), 1.5f, 45f, 0);
+        sut.Render(mockFont, "A", new Vector2(10, 20), 1.5f, 45f, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -430,11 +434,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", 10, 20, Color.Red, 0);
+        sut.Render(mockFont, "A", 10, 20, Color.Red, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -444,11 +449,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithVector2PositionAndColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", new Vector2(10, 20), Color.Red, 0);
+        sut.Render(mockFont, "A", new Vector2(10, 20), Color.Red, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -458,11 +464,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithAngleAndColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", 10, 20, 45f, Color.Red, 0);
+        sut.Render(mockFont, "A", 10, 20, 45f, Color.Red, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -472,11 +479,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithVector2PositionAndAngleAndColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", new Vector2(10, 20), 45f, Color.Red, 0);
+        sut.Render(mockFont, "A", new Vector2(10, 20), 45f, Color.Red, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -486,11 +494,12 @@ public class FontRendererTests : TestsBase
     public void Render_WithRenderSizeAndAngleAndColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockFont, "A", 10, 20, 1.5f, 45f, Color.Red, 0);
+        sut.Render(mockFont, "A", 10, 20, 1.5f, 45f, Color.Red, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -500,6 +509,7 @@ public class FontRendererTests : TestsBase
     public void Render_WithGlyphMetricsOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
@@ -509,7 +519,7 @@ public class FontRendererTests : TestsBase
         };
 
         // Act
-        sut.Render(this.mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
+        sut.Render(mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -559,13 +569,14 @@ public class FontRendererTests : TestsBase
     public void Render_WithGlyphMetricsOverload_WithEmptyGlyphs_DoesNotAddToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         var glyphMetrics = Array.Empty<(GlyphMetrics, Color)>();
 
         // Act
-        sut.Render(this.mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
+        sut.Render(mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
 
         // Assert
         this.mockBatchingManager.DidNotReceive().AddFontItem(Arg.Any<FontGlyphBatchItem>(), Arg.Any<int>(), Arg.Any<DateTime>());
@@ -575,6 +586,7 @@ public class FontRendererTests : TestsBase
     public void Render_WithGlyphMetricsOverload_WhenBatchHasNotBegun_ThrowsException()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
 
         var glyphMetrics = new[]
@@ -583,7 +595,7 @@ public class FontRendererTests : TestsBase
         };
 
         // Act
-        var act = () => sut.Render(this.mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
+        var act = () => sut.Render(mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
 
         // Assert
         act.ShouldThrow<InvalidOperationException>()
@@ -594,6 +606,7 @@ public class FontRendererTests : TestsBase
     public void Render_WithNegativeHoriBearingY_AddsItemToBatchManager()
     {
         // Arrange
+        var mockFont = CreateMockFont();
         var sut = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
@@ -603,7 +616,7 @@ public class FontRendererTests : TestsBase
         };
 
         // Act
-        sut.Render(this.mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
+        sut.Render(mockFont, new Span<(GlyphMetrics, Color)>(glyphMetrics), 10, 20, 1f, 0f, 0);
 
         // Assert
         this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
@@ -635,7 +648,7 @@ public class FontRendererTests : TestsBase
         var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
         this.mockFrame.RenderPass.Returns(renderPassHandle);
 
-        var sut = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         var itemsToRender = new Memory<RenderItem<FontGlyphBatchItem>>([]);
@@ -659,7 +672,7 @@ public class FontRendererTests : TestsBase
     public void RenderBatch_WithNullFrameRenderPass_ThrowsException()
     {
         // Arrange
-        var sut = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         var batchItem = new FontGlyphBatchItem(
@@ -695,7 +708,7 @@ public class FontRendererTests : TestsBase
         // Bind the texture ID
         this.bindGroupRegistry.Register(AtlasTextureId, bindGroupHandle);
 
-        var sut = CreateSystemUnderTest();
+        _ = CreateSystemUnderTest();
         this.batchBeginSubscription.OnReceive();
 
         var batchItem1 = new FontGlyphBatchItem(
@@ -876,7 +889,7 @@ public class FontRendererTests : TestsBase
             HorizontalAdvance = 60f,
             GlyphWidth = 50f,
             GlyphHeight = 60f,
-            CharIndex = (uint)glyph,
+            CharIndex = glyph,
         };
     }
 
@@ -887,7 +900,6 @@ public class FontRendererTests : TestsBase
     /// <param name="pipeline">The graphics texture pipeline.</param>
     /// <param name="buffer">The WebGPU buffer.</param>
     /// <param name="frame">The frame.</param>
-    /// <param name="bindGroupRegistry">The bind group registry.</param>
     /// <param name="batchManager">The batching manager.</param>
     /// <param name="reactableFactory">The reactable factory.</param>
     /// <returns>The instance to test.</returns>
@@ -896,7 +908,6 @@ public class FontRendererTests : TestsBase
         IGraphicsTexturePipeline? pipeline = null,
         IWebGpuBuffer<FontGlyphBatchItem>? buffer = null,
         IFrame? frame = null,
-        TextureBindGroupRegistry? bindGroupRegistry = null,
         IBatchingManager? batchManager = null,
         IReactableFactory? reactableFactory = null)
         => new (
@@ -904,7 +915,7 @@ public class FontRendererTests : TestsBase
             pipeline ?? this.mockTexturePipeline,
             buffer ?? this.mockBuffer,
             frame ?? this.mockFrame,
-            bindGroupRegistry ?? this.bindGroupRegistry,
+            this.bindGroupRegistry,
             batchManager ?? this.mockBatchingManager,
             reactableFactory ?? this.mockReactableFactory);
 }
