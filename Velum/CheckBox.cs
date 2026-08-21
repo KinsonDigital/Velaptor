@@ -31,6 +31,7 @@ public sealed class CheckBox : Control
     private MouseState prevMouseState;
     private string text = "Check box";
     private IFont? font;
+    private bool isChecked;
     private bool mouseClickDisabled;
 
     public event EventHandler<CheckChangedEventArgs>? CheckedChanged;
@@ -56,7 +57,15 @@ public sealed class CheckBox : Control
         this.markDisabledClr = DisabledColor.IncreaseBrightness(0.5f);
     }
 
-    public bool IsChecked { get; set; }
+    public bool IsChecked
+    {
+        get => this.isChecked;
+        set
+        {
+            this.isChecked = value;
+            this.CheckedChanged?.Invoke(this, new CheckChangedEventArgs(value));
+        }
+    }
 
     public string Text
     {
@@ -153,8 +162,8 @@ public sealed class CheckBox : Control
         // If the mouse is over any part of the checkbox and the left mouse button was just released
         if (Enabled && isMouseOver && !this.mouseClickDisabled && currentLeftBtnUp && prevLeftBtnDown)
         {
-            IsChecked = !IsChecked;
-            this.CheckedChanged?.Invoke(this, new CheckChangedEventArgs(IsChecked));
+            this.isChecked = !this.isChecked;
+            this.CheckedChanged?.Invoke(this, new CheckChangedEventArgs(this.isChecked));
         }
 
         this.prevMouseState = currentMouseState;
@@ -164,6 +173,11 @@ public sealed class CheckBox : Control
 
     public override void Render(int layer)
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font object cannot be null. Could not render the {nameof(CheckBox)}.");
+        }
+
         if (!Visible)
         {
             return;
@@ -171,10 +185,10 @@ public sealed class CheckBox : Control
 
         this.shapeRenderer.Render(this.mainArea);
 
-        if (IsChecked)
+        if (this.isChecked)
         {
-            this.lineRenderer.Render(this.mark1);
-            this.lineRenderer.Render(this.mark2);
+            this.shapeRenderer.Render(this.mark1);
+            this.shapeRenderer.Render(this.mark2);
         }
 
         this.fontRenderer.Render(this.font, Text, this.textPos, Enabled ? Color.White : DisabledColor);

@@ -601,6 +601,7 @@ public class ShapeScene : SceneBase
         switch (this.shapeType)
         {
             case ShapeType.Circle:
+                this.chkIsSolid.IsChecked = this.circle.IsSolid;
                 this.lblInstructions.Text = this.circleInstructionText;
                 this.chkIsSolid.IsChecked = this.circle.IsSolid;
                 this.drpGradType.SelectItem(this.circle.GradientType.ToString());
@@ -630,6 +631,7 @@ public class ShapeScene : SceneBase
 
                 break;
             case ShapeType.Rectangle:
+                this.chkIsSolid.IsChecked = this.rectangle.IsSolid;
                 this.lblInstructions.Text = this.rectInstructionText;
                 this.sldBorderThickness.Value = this.rectangle.BorderThickness;
                 this.drpGradType.SelectItem(this.rectangle.GradientType.ToString());
@@ -674,6 +676,10 @@ public class ShapeScene : SceneBase
         {
             this.rectangle.IsSolid = e.IsChecked;
         }
+
+        this.layGradType.Enabled = !e.IsChecked;
+        this.layGradStartClr.Enabled = !e.IsChecked;
+        this.layGradStopClr.Enabled = !e.IsChecked;
 
         this.laySolidClr.Enabled = e.IsChecked;
     }
