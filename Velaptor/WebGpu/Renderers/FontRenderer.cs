@@ -52,22 +52,22 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="bindGroupRegistry">Resolves texture IDs to bind groups.</param>
     /// <param name="batchManager">Manages font glyph batch items.</param>
-    internal FontRenderer(
+    public FontRenderer(
         IWgpuInvoker wgpu,
-        IReactableFactory reactableFactory,
         IGraphicsTexturePipeline pipeline,
         IWebGpuBuffer<FontGlyphBatchItem> buffer,
         IFrame frame,
         TextureBindGroupRegistry bindGroupRegistry,
-        IBatchingManager batchManager)
+        IBatchingManager batchManager,
+        IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
-        ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(pipeline);
         ArgumentNullException.ThrowIfNull(buffer);
         ArgumentNullException.ThrowIfNull(frame);
         ArgumentNullException.ThrowIfNull(bindGroupRegistry);
         ArgumentNullException.ThrowIfNull(batchManager);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
 
         this.wgpu = wgpu;
         this.pipeline = pipeline;
@@ -102,12 +102,6 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
             data => this.buffer.WindowSize = new Vector2(data.Width, data.Height),
             () => this.viewportUnsubscriber?.Dispose());
     }
-
-    /// <summary>
-    /// Gets the current window size used by the GPU buffer for NDC conversion.
-    /// </summary>
-    /// <remarks>For testing purposes.</remarks>
-    internal Vector2 BufferWindowSize => this.buffer.WindowSize;
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, int x, int y, int layer = 0)
@@ -283,7 +277,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     /// <param name="atlasWidth">The width of the font texture atlas.</param>
     /// <param name="atlasHeight">The height of the font texture atlas.</param>
     /// <returns>The list of glyphs that make up the string as font batch items.</returns>
-    private static IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
+    private static FontGlyphBatchItem[] ToFontBatchItems(
         Vector2 textPos,
         (GlyphMetrics metric, Color clr)[] charMetrics,
         IFont font,
@@ -474,26 +468,13 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     /// </summary>
     private void RenderBatch(Memory<RenderItem<FontGlyphBatchItem>> itemsToRender)
     {
-        try
+        if (this.frame.RenderPass is null)
         {
-            RenderBatchCore(itemsToRender);
+            throw new InvalidOperationException($"The `{nameof(IFrame.RenderPass)}` cannot be null.  Cannot render texture.");
         }
-        catch (Exception ex)
-        {
-            var crashLog = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                "velaptor_crash.log");
-            System.IO.File.AppendAllText(crashLog,
-                $"[CRASH] FontRenderer.RenderBatch: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}\n");
-            throw;
-        }
-    }
 
-    private void RenderBatchCore(Memory<RenderItem<FontGlyphBatchItem>> itemsToRender)
-    {
         var renderPass = this.frame.RenderPass;
 
-        // TODO: Check if renderPass is null. Verify tests
         this.pipeline.Bind(renderPass);
 
         var totalItemsToRender = 0u;
