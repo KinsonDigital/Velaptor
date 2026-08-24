@@ -21,7 +21,6 @@ public sealed class Label : Control
     private MouseState prevMouseState;
     private IFont? font;
     private string text = string.Empty;
-    private bool isLoaded;
     private bool mouseClickDisabled;
 
     public EventHandler<LabelClickEventArgs>? Click;
@@ -104,7 +103,7 @@ public sealed class Label : Control
 
     public override void Load()
     {
-        if (this.isLoaded)
+        if (IsLoaded)
         {
             return;
         }
@@ -114,15 +113,17 @@ public sealed class Label : Control
         Width = (int)TextSize.Width;
         Height = (int)TextSize.Height;
 
-        this.isLoaded = true;
-
         base.Load();
     }
 
     public override void Unload()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.contentManager.Unload(this.font);
-        this.isLoaded = false;
 
         base.Unload();
     }
@@ -172,7 +173,7 @@ public sealed class Label : Control
         }
 
         // TODO: Add this if block with exception to all control render calls
-        if (!this.isLoaded)
+        if (!IsLoaded)
         {
             throw new InvalidOperationException($"The {nameof(Label)} must be loaded before it can be rendered.");
         }
