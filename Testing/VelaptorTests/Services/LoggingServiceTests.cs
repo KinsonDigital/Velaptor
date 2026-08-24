@@ -5,6 +5,10 @@
 namespace VelaptorTests.Services;
 
 using System;
+using System.Diagnostics;
+using System.IO.Abstractions;
+using System.Runtime.ExceptionServices;
+using Fakes;
 using NSubstitute;
 using Serilog;
 using Shouldly;
@@ -21,6 +25,7 @@ public class LoggingServiceTests
     private readonly IConsoleLoggerService mockConsoleLoggerService;
     private readonly IFileLoggerService mockFileLoggerService;
     private readonly IEventLoggerService mockEventLoggerService;
+    private readonly IPath mockPath;
     private readonly ILogger mockConsoleLogger;
     private readonly ILogger mockFileLogger;
 
@@ -42,6 +47,7 @@ public class LoggingServiceTests
         this.mockFileLoggerService.Logger.Returns(this.mockFileLogger);
 
         this.mockEventLoggerService = Substitute.For<IEventLoggerService>();
+        this.mockPath = Substitute.For<IPath>();
     }
 
     #region Constructor Tests
@@ -55,7 +61,8 @@ public class LoggingServiceTests
                 null,
                 this.mockConsoleLoggerService,
                 this.mockFileLoggerService,
-                this.mockEventLoggerService);
+                this.mockEventLoggerService,
+                this.mockPath);
         };
 
         // Assert
@@ -73,7 +80,8 @@ public class LoggingServiceTests
                 this.mockAppSettingsService,
                 null,
                 this.mockFileLoggerService,
-                this.mockEventLoggerService);
+                this.mockEventLoggerService,
+                this.mockPath);
         };
 
         // Assert
@@ -91,7 +99,8 @@ public class LoggingServiceTests
                 this.mockAppSettingsService,
                 this.mockConsoleLoggerService,
                 null,
-                this.mockEventLoggerService);
+                this.mockEventLoggerService,
+                this.mockPath);
         };
 
         // Assert
@@ -109,12 +118,32 @@ public class LoggingServiceTests
                 this.mockAppSettingsService,
                 this.mockConsoleLoggerService,
                 this.mockFileLoggerService,
-                null);
+                null,
+                this.mockPath);
         };
 
         // Assert
         var exception = act.ShouldThrow<ArgumentNullException>();
         exception.Message.ShouldBe("Value cannot be null. (Parameter 'eventLoggerService')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullPathParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new LoggingService(
+                this.mockAppSettingsService,
+                this.mockConsoleLoggerService,
+                this.mockFileLoggerService,
+                this.mockEventLoggerService,
+                null);
+        };
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'path')");
     }
     #endregion
 
@@ -403,7 +432,7 @@ public class LoggingServiceTests
     }
 
     [Fact]
-    public void Error_WithFileAndConsoleLoggingEnabled_LogsBothToConsoleAndFile()
+    public void Error_WithMsgParamAndFileAndConsoleLoggingEnabled_LogsBothToConsoleAndFile()
     {
         // Arrange
         var appSettings = new AppSettings
@@ -432,6 +461,56 @@ public class LoggingServiceTests
     }
 
     [Fact]
+    public void Error_WithExceptionParamAndFileAndConsoleLoggingEnabled_LogsError()
+    {
+        // Arrange
+        var appSettings = new AppSettings
+        {
+            LoggingEnabled = true,
+            ConsoleLoggingEnabled = true,
+            FileLoggingEnabled = true,
+        };
+
+        var exception = new Exception("test-exception");
+
+        this.mockAppSettingsService.Settings.Returns(appSettings);
+        this.mockConsoleLogger.When(x => x.Error(Arg.Any<string>()))
+            .Do(callInfo =>
+            {
+                var errorMsg = callInfo.Arg<string>();
+
+                // NOTE: The line number could change if we change the code in this test file.
+                // Due to this, only assert the text around the line number.
+                errorMsg.ShouldStartWith("LoggingServiceTests.cs#");
+                errorMsg.ShouldEndWith(" - test-exception");
+            });
+        this.mockPath.GetFileName(Arg.Any<string>()).Returns($"{nameof(LoggingServiceTests)}.cs");
+
+        var sut = CreateService();
+
+        // Act
+        try
+        {
+            // Throw an exception so we can get a stack trace.
+            throw exception;
+        }
+        catch (Exception e)
+        {
+            sut.Error(e);
+        }
+
+        // Assert
+        this.mockConsoleLogger.Received(1).Error(Arg.Any<string>());
+        this.mockFileLogger.Received(1).Error(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockConsoleLogger.DidNotReceive().Fatal(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Information(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Warning(Arg.Any<string>());
+        this.mockFileLogger.DidNotReceive().Fatal(Arg.Any<string>());
+    }
+
+    [Fact]
     public void Event_WhenInvoked_LogsEvent()
     {
         // Arrange
@@ -453,7 +532,8 @@ public class LoggingServiceTests
         => new (this.mockAppSettingsService,
             this.mockConsoleLoggerService,
             this.mockFileLoggerService,
-            this.mockEventLoggerService);
+            this.mockEventLoggerService,
+            this.mockPath);
 
     /// <summary>
     /// Verifies that logging methods for the file logger were not invoked.
