@@ -46,6 +46,7 @@ public class WgpuWindowTests
     private readonly ITaskService mockTaskService;
     private readonly ISceneManager mockSceneManager;
     private readonly IReactableFactory mockReactableFactory;
+    private readonly ILoggingService mockLoggingService;
     private readonly IFrameMetricsTracker mockMetricsTracker;
     private readonly IPushReactable mockPushReactable;
     private readonly IPushReactable<MouseStateData> mockMouseReactable;
@@ -82,6 +83,8 @@ public class WgpuWindowTests
         this.mockReactableFactory.CreatePushWindowSizeReactable().Returns(this.mockPushWinSizeReactable);
         this.mockReactableFactory.CreatePullWindowSizeReactable().Returns(mockPullWinSizeReactable);
 
+        this.mockLoggingService = Substitute.For<ILoggingService>();
+
         this.mockMetricsTracker = Substitute.For<IFrameMetricsTracker>();
     }
 
@@ -104,6 +107,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -130,6 +134,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -156,6 +161,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -182,6 +188,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -208,6 +215,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -234,6 +242,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -260,6 +269,7 @@ public class WgpuWindowTests
                 null,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -286,12 +296,40 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 null,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
             .Message.ShouldBe("Value cannot be null. (Parameter 'sceneManager')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullLoggingServiceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WgpuWindow(
+                100,
+                200,
+                this.mockTelemetryService,
+                this.mockSilkWindow,
+                this.mockNativeInputFactory,
+                this.mockGlfwInvoker,
+                this.mockSystemDisplayService,
+                this.mockPlatform,
+                this.mockTaskService,
+                this.mockSceneManager,
+                this.mockReactableFactory,
+                null,
+                this.mockMetricsTracker);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'loggingService')");
     }
 
     [Fact]
@@ -312,6 +350,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 null,
+                this.mockLoggingService,
                 this.mockMetricsTracker);
         };
 
@@ -338,6 +377,7 @@ public class WgpuWindowTests
                 this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
+                this.mockLoggingService,
                 null);
         };
 
@@ -935,6 +975,23 @@ public class WgpuWindowTests
     }
 
     [Fact]
+    public async Task InternalClosing_WhenUninitializingThrowsAnException_LogsError()
+    {
+        // Arrange
+        var exception = new Exception("test-exception");
+        var sut = CreateSystemUnderTest();
+        sut.Uninitialize += () => throw exception;
+
+        sut.Show();
+
+        // Act
+        this.mockSilkWindow.Closing += Raise.Event<Action>();
+
+        // Assert
+        this.mockLoggingService.Received(1).Error(exception);
+    }
+
+    [Fact]
     public void InternalUpdate_WhenInvoked_ProcessesUpdate()
     {
         // Arrange
@@ -1213,6 +1270,7 @@ public class WgpuWindowTests
             this.mockTaskService,
             this.mockSceneManager,
             this.mockReactableFactory,
+            this.mockLoggingService,
             this.mockMetricsTracker);
     }
 }

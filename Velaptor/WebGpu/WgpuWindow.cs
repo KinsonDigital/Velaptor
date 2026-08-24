@@ -7,6 +7,7 @@ namespace Velaptor.WebGpu;
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -44,6 +45,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
     private readonly ITaskService taskService;
+    private readonly ILoggingService loggingService;
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
@@ -79,6 +81,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
+    /// <param name="loggingService">Provides different types of logging services.</param>
     /// <param name="frameMetricsTracker">Tracks frame performance metrics.</param>
     public WgpuWindow(
         uint width,
@@ -92,6 +95,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ITaskService taskService,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
+        ILoggingService loggingService,
         IFrameMetricsTracker frameMetricsTracker)
     {
         ArgumentNullException.ThrowIfNull(telemetryService);
@@ -103,6 +107,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(taskService);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(loggingService);
         ArgumentNullException.ThrowIfNull(frameMetricsTracker);
 
         this.silkWindow = silkWindow;
@@ -112,6 +117,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.platform = platform;
         this.taskService = taskService;
         SceneManager = sceneManager;
+        this.loggingService = loggingService;
         this.frameMetricsTracker = frameMetricsTracker;
 
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
@@ -417,13 +423,20 @@ internal sealed class WgpuWindow : VelaptorIWindow
     {
         this.isShuttingDown = true;
 
-        Uninitialize?.Invoke();
+        // Capture any exceptions and log them
+        try
+        {
+            Uninitialize?.Invoke();
+        }
+        catch (Exception e)
+        {
+            this.loggingService.Error(e);
+        }
 
         // Triggers cache cleanup in texture/audio loaders and GPU resource release
         // before the WebGPU device is torn down.
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
-        // TODO (Disposal shutdown research): One thing I noticed is that this point is only reached if I load every single
         // screen before shutting down the window. So this means that this is not called every single time.  Why?
         IoC.DisposeOfRegisteredTypes();
 
