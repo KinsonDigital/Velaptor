@@ -78,20 +78,6 @@ public sealed class Texture : ITexture
         Init(disposeReactable, bindGroupLayout, name, imageData);
     }
 
-    /// <summary>
-    /// Finalizes an instance of the <see cref="Texture"/> class.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Finalizers cannot be unit tested.")]
-    ~Texture()
-    {
-        if (UnitTestDetector.IsRunningFromUnitTest)
-        {
-            return;
-        }
-
-        Unload(new DisposeTextureData { TextureId = Id });
-    }
-
     /// <inheritdoc/>
     public uint Id { get; private set; }
 

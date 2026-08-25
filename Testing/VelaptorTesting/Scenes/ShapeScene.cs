@@ -154,6 +154,11 @@ public class ShapeScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.drpShapeType.SelectedItemChanged -= DrpShapeType_SelectedItemChanged;
         this.chkIsSolid.CheckedChanged -= ChkShapeIsSolid_CheckedChanged;
         this.drpSolidClr.SelectedItemChanged -= DrpSolidClr_SelectedItemChanged;

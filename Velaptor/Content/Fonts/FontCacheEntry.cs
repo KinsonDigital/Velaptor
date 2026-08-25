@@ -7,6 +7,7 @@
 
 namespace Velaptor.Content.Fonts;
 
+using System.Diagnostics.CodeAnalysis;
 using Content;
 using Graphics;
 
@@ -25,10 +26,18 @@ internal record FontCacheEntry
     /// <summary>
     /// Gets the font atlas texture containing bitmap data for all glyphs.
     /// </summary>
-    required public ITexture FontTextureAtlas { get; init; }
+    [SuppressMessage(
+        "StyleCop.CSharp.OrderingRules",
+        "SA1206:Declaration keywords should follow order",
+        Justification = "Prefer current order")]
+    public required ITexture FontTextureAtlas { get; init; }
 
     /// <summary>
     /// Gets the glyph metrics for all characters in the atlas.
     /// </summary>
-    required public GlyphMetrics[] Metrics { get; init; }
+    [SuppressMessage(
+        "StyleCop.CSharp.OrderingRules",
+        "SA1206:Declaration keywords should follow order",
+        Justification = "Prefer current order")]
+    public required GlyphMetrics[] Metrics { get; init; }
 }
