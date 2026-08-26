@@ -14,7 +14,7 @@ using WebGpu.Batching;
 /// <summary>
 /// Renders textures to the screen.
 /// </summary>
-public interface ITextureRenderer
+public interface ITextureRenderer : IDisposable
 {
     /// <summary>
     /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.

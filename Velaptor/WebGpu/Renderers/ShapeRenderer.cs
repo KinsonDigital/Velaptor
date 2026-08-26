@@ -143,19 +143,26 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
         RenderLineBase(start, end, color, thickness, layer);
 
     /// <inheritdoc/>
-    public void Dispose()
+    public void Dispose() => Dispose(true);
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
     {
         if (this.isDisposed)
         {
             return;
         }
 
+        if (disposing)
+        {
+            this.frameBeginUnsubscriber.Dispose();
+            this.batchBeginUnsubscriber.Dispose();
+            this.renderShapesUnsubscriber.Dispose();
+            this.renderLinesUnsubscriber.Dispose(); // TODO: ensure this is being checked in tests
+            this.viewportUnsubscriber.Dispose();
+        }
+
         this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderShapesUnsubscriber.Dispose();
-        this.renderLinesUnsubscriber.Dispose(); // TODO: ensure this is being checked in tests
-        this.viewportUnsubscriber.Dispose();
     }
 
     /// <summary>

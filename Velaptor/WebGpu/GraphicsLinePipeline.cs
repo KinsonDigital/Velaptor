@@ -68,15 +68,22 @@ internal sealed class GraphicsLinePipeline : IGraphicsLinePipeline
     }
 
     /// <inheritdoc/>
-    public void Dispose()
+    public void Dispose() => Dispose(true);
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
     {
         if (this.isDisposed)
         {
             return;
         }
 
+        if (disposing)
+        {
+            this.pipelineHandle?.Dispose();
+        }
+
         this.isDisposed = true;
-        this.pipelineHandle?.Dispose();
     }
 
     /// <summary>

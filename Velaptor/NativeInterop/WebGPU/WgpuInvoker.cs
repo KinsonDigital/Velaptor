@@ -19,8 +19,6 @@ using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
 [ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the Silk.NET library.")]
 internal sealed class WgpuInvoker : IWgpuInvoker
 {
-    private bool isDisposed;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="WgpuInvoker"/> class.
     /// </summary>
@@ -217,6 +215,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         }
     }
 
+    /// <inheritdoc/>
     public SafeSurfaceTextureHandle SurfaceGetCurrentTexture(SafeSurfaceHandle surface)
     {
         unsafe
@@ -857,19 +856,5 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                 Wgpu.QueueWriteTexture((Queue*)queue.DangerousGetHandle(), &destination, pData, (nuint)data.Length, &dataLayout, in copySize);
             }
         }
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        Device.Dispose();
-        Queue.Dispose();
-        Wgpu.Dispose();
     }
 }

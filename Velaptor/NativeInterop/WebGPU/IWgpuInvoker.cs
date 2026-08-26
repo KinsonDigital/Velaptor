@@ -14,7 +14,7 @@ using Silk.NET.Windowing;
 /// <summary>
 /// Invokes WebGPU functions.
 /// </summary>
-internal interface IWgpuInvoker : IDisposable
+internal interface IWgpuInvoker
 {
     /// <summary>
     /// Gets the WebGPU API instance.

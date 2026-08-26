@@ -634,8 +634,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
             this.silkWindow.Resize -= Window_Resize;
             this.silkWindow.Closing -= Window_Closing;
 
-            this.taskService.Dispose();
-
             this.glfw.Dispose();
         }
 

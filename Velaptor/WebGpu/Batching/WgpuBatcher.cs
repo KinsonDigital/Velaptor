@@ -24,9 +24,6 @@ internal sealed class WgpuBatcher : IBatcher
     private const uint InitialBatchSize = 1000;
     private readonly IPushReactable pushReactable;
     private readonly IFrame frame;
-    private readonly IGraphicsTexturePipeline texturePipeline;
-    private readonly IGraphicsShapePipeline shapePipeline;
-    private readonly IGraphicsLinePipeline linePipeline;
     private readonly IDisposable initUnsubscriber;
     private readonly IDisposable submitUnsubscriber;
     private readonly IDisposable reconfigureUnsubscriber;
@@ -61,9 +58,6 @@ internal sealed class WgpuBatcher : IBatcher
 
         this.pushReactable = pushReactable;
         this.frame = frame;
-        this.texturePipeline = texturePipeline;
-        this.shapePipeline = shapePipeline;
-        this.linePipeline = linePipeline;
 
         this.initUnsubscriber = this.pushReactable.CreateNonReceiveOrRespond(
             PushNotifications.WgpuReady,
@@ -80,9 +74,9 @@ internal sealed class WgpuBatcher : IBatcher
                 this.frame.Initialize();
 
                 // Initialize all GPU pipelines now that the device is ready.
-                this.texturePipeline.Initialize();
-                this.shapePipeline.Initialize();
-                this.linePipeline.Initialize();
+                texturePipeline.Initialize();
+                shapePipeline.Initialize();
+                linePipeline.Initialize();
 
                 foreach (var batchType in Enum.GetValues<BatchType>())
                 {

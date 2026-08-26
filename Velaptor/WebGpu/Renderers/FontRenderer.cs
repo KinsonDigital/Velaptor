@@ -207,19 +207,7 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderUnsubscriber.Dispose();
-        this.viewportUnsubscriber.Dispose();
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Constructs a list of batch items from the given
@@ -348,6 +336,25 @@ internal sealed class FontRenderer : IDisposable, IFontRenderer
         }
 
         return result.ToArray();
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.frameBeginUnsubscriber.Dispose();
+            this.batchBeginUnsubscriber.Dispose();
+            this.renderUnsubscriber.Dispose();
+            this.viewportUnsubscriber.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 
     /// <summary>

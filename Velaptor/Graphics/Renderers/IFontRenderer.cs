@@ -13,7 +13,7 @@ using WebGpu.Batching;
 /// <summary>
 /// Renders text to the screen using a particular font.
 /// </summary>
-public interface IFontRenderer
+public interface IFontRenderer : IDisposable
 {
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>

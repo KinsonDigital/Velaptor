@@ -12,7 +12,7 @@ using WebGpu.Batching;
 /// <summary>
 /// Renders rectangles to the screen.
 /// </summary>
-public interface IShapeRenderer
+public interface IShapeRenderer : IDisposable
 {
     /// <summary>
     /// Renders the given <paramref name="rect"/>.

@@ -597,19 +597,7 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.frameBeginUnsubscriber.Dispose();
-        this.batchBeginUnsubscriber.Dispose();
-        this.renderTexturesUnsubscriber.Dispose();
-        this.viewPortUnsubscriber.Dispose();
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Gets the size of the texture from the given <paramref name="texture"/>.
@@ -642,6 +630,25 @@ internal sealed class TextureRenderer : ITextureRenderer, IDisposable
                 "\nThe frame number must be greater than or equal to 0 and less than or equal to the total number of frames.";
             throw new RendererException(exMsg);
         }
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.frameBeginUnsubscriber.Dispose();
+            this.batchBeginUnsubscriber.Dispose();
+            this.renderTexturesUnsubscriber.Dispose();
+            this.viewPortUnsubscriber.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 
     /// <inheritdoc cref="ITextureRenderer.Render(Velaptor.Content.ITexture,Rectangle,Rectangle,float,float,Color,RenderEffects,int)"/>

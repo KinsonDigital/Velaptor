@@ -86,6 +86,8 @@ internal static class IoC
             return;
         }
 
+        var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
+
         // Get all the registered types that are capable of being disposed
         var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
 
@@ -93,6 +95,9 @@ internal static class IoC
         {
             IoCContainer.DisposeOfType(regType);
         }
+
+        // NOTE: It is very important to dispose of wgpu last
+        wgpu.Wgpu.Dispose();
     }
 
     /// <summary>

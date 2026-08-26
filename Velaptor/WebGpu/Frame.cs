@@ -22,6 +22,7 @@ internal sealed class Frame : IFrame
     private bool surfaceConfigured;
     private bool initialized;
     private bool hasBegun;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> class.
@@ -202,14 +203,7 @@ internal sealed class Frame : IFrame
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        this.renderPassHandle?.Dispose();
-        this.cmdEncoderHandle?.Dispose();
-        this.textureViewHandle?.Dispose();
-        this.surfaceTextureHandle?.Dispose();
-        this.initialized = false;
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Returns <see langword="true"/> when <paramref name="format"/> uses sRGB encoding.
@@ -245,5 +239,26 @@ internal sealed class Frame : IFrame
         }
 
         return new SilkColor(r, g, b, a);
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// <param name="disposing">True to dispose of managed resources.</param>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.renderPassHandle?.Dispose();
+            this.cmdEncoderHandle?.Dispose();
+            this.textureViewHandle?.Dispose();
+            this.surfaceTextureHandle?.Dispose();
+            this.initialized = false;
+        }
+
+        this.isDisposed = true;
     }
 }

@@ -169,20 +169,7 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-
-        Queue?.Dispose();
-        Handle?.Dispose();
-        Adapter?.Dispose();
-        Instance.Dispose();
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Fired when a GPU error escapes all active error scopes.
@@ -191,6 +178,25 @@ internal sealed class GraphicsDevice : IGraphicsDevice
     {
         var msg = SilkMarshal.PtrToString(message);
         Console.WriteLine($"[WebGPU Error] {type}: {msg}");
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            Queue?.Dispose();
+            Handle?.Dispose();
+            Adapter?.Dispose();
+            Instance.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 
     /// <summary>

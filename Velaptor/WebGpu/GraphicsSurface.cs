@@ -17,6 +17,7 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     private SafeSurfaceTextureHandle? surfaceTextureHandle;
     private SafeSurfaceHandle? handle;
     private bool isInitialized;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsSurface"/> class.
@@ -127,9 +128,23 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     }
 
     /// <inheritdoc/>
-    public void Dispose()
+    public void Dispose() => Dispose(true);
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// <param name="disposing">True to dispose of managed resources.</param>
+    private void Dispose(bool disposing)
     {
-        this.surfaceTextureHandle?.Dispose();
-        this.handle?.Dispose();
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.surfaceTextureHandle?.Dispose();
+            this.handle?.Dispose();
+        }
+
+        this.isDisposed = true;
     }
 }

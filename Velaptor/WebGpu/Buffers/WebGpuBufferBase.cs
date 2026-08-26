@@ -152,18 +152,7 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        this.isDisposed = true;
-        this.vertexBuffer?.Dispose();
-        this.indexBuffer?.Dispose();
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Converts screen pixel coordinates to WebGPU NDC.
@@ -201,6 +190,23 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// </summary>
     private static float MapValue(float value, float fromStart, float fromStop, float toStart, float toStop)
         => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.vertexBuffer?.Dispose();
+            this.indexBuffer?.Dispose();
+        }
+
+        this.isDisposed = true;
+    }
 
     /// <summary>
     /// Allocates (or re-allocates) GPU vertex and index buffers for at least <paramref name="minItemCount"/> items.

@@ -87,16 +87,23 @@ internal sealed class GraphicsTexturePipeline : IGraphicsTexturePipeline
     }
 
     /// <inheritdoc/>
-    public void Dispose()
+    public void Dispose() => Dispose(true);
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    private void Dispose(bool disposing)
     {
         if (this.isDisposed)
         {
             return;
         }
 
+        if (disposing)
+        {
+            this.pipelineHandle?.Dispose();
+            this.bindGroupLayout?.Dispose();
+        }
+
         this.isDisposed = true;
-        this.pipelineHandle?.Dispose();
-        this.bindGroupLayout?.Dispose();
     }
 
     /// <summary>

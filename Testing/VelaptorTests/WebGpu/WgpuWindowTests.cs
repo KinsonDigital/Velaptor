@@ -853,7 +853,6 @@ public class WgpuWindowTests
         this.mockSilkWindow.Received(1).Resize -= Arg.Any<Action<Vector2D<int>>>();
         this.mockSilkWindow.Received(1).Closing -= Arg.Any<Action>();
 
-        this.mockTaskService.Received(1).Dispose();
         this.mockGlfwInvoker.Received(1).Dispose();
     }
     #endregion
