@@ -257,7 +257,6 @@ internal static class IoC
         IoCContainer.Register<IJsonService, JSONService>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeService, FreeTypeService>(Lifestyle.Singleton);
         IoCContainer.Register<IStopWatchWrapper, StopWatchWrapper>(Lifestyle.Singleton);
-        IoCContainer.Register<ITimerService, TimerService>(Lifestyle.Singleton);
         IoCContainer.Register<IDotnetService, DotnetService>(Lifestyle.Singleton);
         IoCContainer.Register<IKeyboardDataService, KeyboardDataService>(Lifestyle.Singleton);
 
