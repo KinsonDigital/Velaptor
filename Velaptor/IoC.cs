@@ -29,6 +29,7 @@ using ReactableData;
 using Scene;
 using Services;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Telemetry;
@@ -123,6 +124,15 @@ internal static class IoC
 
         SetupReactables();
 
+        // SILK dotnet window
+        IoCContainer.Register(() =>
+        {
+            var windowOptions = WindowOptions.Default;
+            windowOptions.ShouldSwapAutomatically = false;
+            windowOptions.API = GraphicsAPI.None;
+
+            return Window.Create(windowOptions);
+        }, Lifestyle.Singleton);
         IoCContainer.Register<ITelemetryClient, TelemetryClient>(Lifestyle.Singleton);
         IoCContainer.Register<ICamera2D, Camera2D>(Lifestyle.Singleton);
         IoCContainer.Register<ISceneManager, SceneManager>(Lifestyle.Singleton);
@@ -183,15 +193,6 @@ internal static class IoC
         IoCContainer.Register<IGraphicsSurface, GraphicsSurface>(Lifestyle.Singleton);
         IoCContainer.Register<TextureBindGroupRegistry>(Lifestyle.Singleton);
 
-        IoCContainer.Register(
-            () =>
-        {
-            var gd = IoCContainer.GetInstance<IGraphicsDevice>();
-            var window = IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow();
-
-            return new GraphicsSurface(gd, window);
-        }, Lifestyle.Singleton);
-
         // Pipelines
         IoCContainer.Register<IGraphicsTexturePipeline, GraphicsTexturePipeline>(Lifestyle.Singleton);
         IoCContainer.Register<IGraphicsShapePipeline, GraphicsShapePipeline>(Lifestyle.Singleton);
@@ -223,7 +224,6 @@ internal static class IoC
     /// </summary>
     private static void SetupFactories()
     {
-        IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
         IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
         IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
         IoCContainer.Register<IAudioFactory, AudioFactory>(Lifestyle.Singleton);
@@ -307,7 +307,6 @@ internal static class IoC
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeAudioData>, PushReactable<DisposeAudioData>>(Lifestyle.Singleton);
-        IoCContainer.Register(() => IoCContainer.GetInstance<IWindowFactory>().CreateSilkWindow(), Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<GLObjectsData>, PushReactable<GLObjectsData>>(Lifestyle.Singleton);
 
         IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);
