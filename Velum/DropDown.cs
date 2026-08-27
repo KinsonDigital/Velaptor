@@ -238,6 +238,11 @@ public sealed class DropDown : Control
 
     public override void Render(int layer)
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font object cannot be null. Could not render the '{nameof(DropDown)}'.");
+        }
+
         if (!Visible)
         {
             return;

@@ -163,9 +163,14 @@ public sealed class Layout : Control
             return;
         }
 
+        if (!IsLoaded)
+        {
+            throw new InvalidOperationException($"The '{nameof(Layout)}' must be loaded before it can be rendered.");
+        }
+
         this.shapeRenderer.Render(this.area, -100);
 
-        // TODO: Add debug preprocess directive to only be taken into account internally in this control if in debug mode
+#if DEBUG
         if (DebugBorderVisible)
         {
             this.shapeRenderer.Render(this.leftLine, -100);
@@ -173,6 +178,7 @@ public sealed class Layout : Control
             this.shapeRenderer.Render(this.rightLine, -100);
             this.shapeRenderer.Render(this.topLine, -100);
         }
+#endif
 
         // Render all the controls
         foreach (var control in this.controls)
@@ -295,22 +301,27 @@ public sealed class Layout : Control
 
     private void ProcessBorder()
     {
+#if DEBUG
         if (!DebugBorderVisible)
         {
             return;
         }
+#else
+        return;
+#endif
 
         // TODO: Instead of having the border render internally, render it externally from the internal area.
         // This means that the width and height will have to be calculated by adding the half thickness of
         // the border as long as the border is set to visible.  This is to prevent half of the border being rendered
         // internally and overlapping any of the edges of controls when rendering
+        // Example:
+        //    P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
+        //    P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom),
 
         const float halfBorderThickness = BorderThickness / 2f;
 
         this.leftLine = new Line
         {
-            // P1 = new Vector2(this.area.Left - halfBorderThickness, this.area.Top),
-            // P2 = new Vector2(this.area.Left - halfBorderThickness, this.area.Bottom),
             P1 = new Vector2(this.area.Left, this.area.Top),
             P2 = new Vector2(this.area.Left, this.area.Bottom),
             Color = this.borderClr,

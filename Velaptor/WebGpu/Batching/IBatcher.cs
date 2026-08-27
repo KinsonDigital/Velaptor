@@ -27,15 +27,6 @@ public interface IBatcher
     void Begin();
 
     /// <summary>
-    /// Clears the buffers.
-    /// </summary>
-    /// <remarks>
-    ///     It is best to clear the buffer before rendering all the textures.
-    ///     This is to make sure smearing does not occur during texture movement or animation.
-    /// </remarks>
-    void Clear();
-
-    /// <summary>
     /// Ends the batch process.  Calling this will perform the actual GPU render process.
     /// </summary>
     void End();

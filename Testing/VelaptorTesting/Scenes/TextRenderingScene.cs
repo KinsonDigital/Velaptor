@@ -163,6 +163,7 @@ public class TextRenderingScene : SceneBase
         this.lblRotate.Text = "Rotate:";
 
         this.sldRotate = new Slider();
+        this.sldRotate.Value = 0;
         this.sldRotate.Max = 360f;
         this.sldRotate.ValueChanged += (_, e) => this.angle = e.NewValue;
 

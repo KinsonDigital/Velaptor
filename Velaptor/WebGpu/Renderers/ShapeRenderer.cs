@@ -20,7 +20,7 @@ using Velaptor.Batching;
 /// Renders rectangles and circles to the screen using WebGPU.
 /// No texture binding is required — shapes are rendered procedurally via fragment shader.
 /// </summary>
-internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
+internal sealed class ShapeRenderer : IShapeRenderer
 {
     private readonly IGraphicsShapePipeline shapePipeline;
     private readonly IGraphicsLinePipeline linePipeline;
@@ -158,7 +158,7 @@ internal sealed class ShapeRenderer : IDisposable, IShapeRenderer
             this.frameBeginUnsubscriber.Dispose();
             this.batchBeginUnsubscriber.Dispose();
             this.renderShapesUnsubscriber.Dispose();
-            this.renderLinesUnsubscriber.Dispose(); // TODO: ensure this is being checked in tests
+            this.renderLinesUnsubscriber.Dispose();
             this.viewportUnsubscriber.Dispose();
         }
 

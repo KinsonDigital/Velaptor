@@ -136,7 +136,7 @@ internal sealed class Frame : IFrame
         }
         else
         {
-            this.cmdEncoderHandle.ResetHandle(encoderDesc);
+            this.cmdEncoderHandle.ResetHandle(encoderDesc, this.grfxDevice.Handle);
         }
 
         var clearValue = ToLinearClearColor(clearColor, this.surface.Format);

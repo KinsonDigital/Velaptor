@@ -29,6 +29,8 @@ public sealed class Slider : Control
     private bool wasMouseDownLastFrame;
     private float max = 100;
     private float value;
+    private float previousValue;
+    private bool isFirstValueUpdate = true;
 
     public event EventHandler<ValueChangedEventArgs>? ValueChanged;
 
@@ -40,7 +42,7 @@ public sealed class Slider : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -58,6 +60,7 @@ public sealed class Slider : Control
         set
         {
             var oldValue = this.value;
+            this.previousValue = this.value;
 
             if (value < Min)
             {
@@ -203,21 +206,32 @@ public sealed class Slider : Control
         base.Update();
     }
 
-    public override void Render(int layer = 0)
+    public override void Render(int layer)
     {
         if (!Visible)
         {
             return;
         }
 
-        this.shapeRenderer.Render(this.sliderArea, -10);
+        if (!IsLoaded)
+        {
+            throw new InvalidOperationException($"The '{nameof(Slider)}' must be loaded before it can be rendered.");
+        }
 
+        this.shapeRenderer.Render(this.sliderArea, -10);
         this.shapeRenderer.Render(this.sliderHandle);
 
         this.label.TextColor = Enabled ? TextColor : this.valueTextDisabledColor;
 
-        // TODO: Only update the text property if the value has changed since the last frame
-        this.label.Text = $"{Value:0.00}";
+        // Only update if the value has changed.  This is a performance improvement
+        // to reduce allocations of the string value for the label.
+        if (Math.Abs(this.value - this.previousValue) > 0.001 || this.isFirstValueUpdate)
+        {
+            this.label.Text = $"{Value:0.00}";
+            this.previousValue = Value;
+            this.isFirstValueUpdate = false;
+        }
+
         this.label.Render(10);
 
         base.Render(layer);

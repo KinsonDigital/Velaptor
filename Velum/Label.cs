@@ -167,15 +167,19 @@ public sealed class Label : Control
 
     public override void Render(int layer)
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(this.font)}' cannot be null. Could not render the '{nameof(Label)}' control.");
+        }
+
         if (!Visible)
         {
             return;
         }
 
-        // TODO: Add this if block with exception to all control render calls
         if (!IsLoaded)
         {
-            throw new InvalidOperationException($"The {nameof(Label)} must be loaded before it can be rendered.");
+            throw new InvalidOperationException($"The '{nameof(Label)}' must be loaded before it can be rendered.");
         }
 
         var screenPos = Position.ToWorld(TextSize.Width, TextSize.Height);

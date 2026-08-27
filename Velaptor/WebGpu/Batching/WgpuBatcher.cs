@@ -152,13 +152,6 @@ internal sealed class WgpuBatcher : IBatcher
     }
 
     /// <inheritdoc/>
-    public void Clear()
-    {
-        // The clear is handled during Frame.Begin via the render pass clear operation.
-        // WebGPU does not support ad-hoc clearing once the render pass is active.
-    }
-
-    /// <inheritdoc/>
     public void End()
     {
         if (!this.isInitialized)

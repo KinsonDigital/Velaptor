@@ -28,12 +28,6 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     public WebGPU Wgpu { get; }
 
     /// <inheritdoc/>
-    public SafeDeviceHandle Device { get; set; } = null!;
-
-    /// <inheritdoc/>
-    public SafeQueueHandle Queue { get; set; } = null!;
-
-    /// <inheritdoc/>
     public SafeInstanceHandle CreateInstance(in InstanceDescriptor descriptor)
     {
         unsafe

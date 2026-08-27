@@ -173,12 +173,17 @@ public sealed class CheckBox : Control
     {
         if (this.font is null)
         {
-            throw new InvalidOperationException($"The font object cannot be null. Could not render the {nameof(CheckBox)}.");
+            throw new InvalidOperationException($"The font object cannot be null. Could not render the '{nameof(CheckBox)}'.");
         }
 
         if (!Visible)
         {
             return;
+        }
+
+        if (!IsLoaded)
+        {
+            throw new InvalidOperationException($"The '{nameof(CheckBox)}' must be loaded before it can be rendered.");
         }
 
         this.shapeRenderer.Render(this.mainArea);

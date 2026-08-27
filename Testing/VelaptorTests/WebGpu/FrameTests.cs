@@ -1,4 +1,4 @@
-﻿﻿// <copyright file="FrameTests.cs" company="KinsonDigital">
+﻿// <copyright file="FrameTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

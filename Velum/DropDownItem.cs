@@ -91,6 +91,11 @@ public sealed class DropDownItem : Control
 
     public override void Render(int layer)
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font object cannot be null. Could not render the '{nameof(DropDownItem)}'.");
+        }
+
         this.shapeRenderer.Render(this.background, 999);
 
         var renderPos = new Vector2(

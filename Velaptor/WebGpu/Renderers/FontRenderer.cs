@@ -20,13 +20,11 @@ using Graphics.Renderers;
 using NativeInterop.WebGpu;
 using Velaptor.Batching;
 
-// TODO: Go through all of the renderers and if the frame has not begun before a render, throw an exception.
-
 /// <summary>
 /// Renders text to the screen using WebGPU via a font texture atlas.
 /// Each glyph in the text is a sub-rectangle of the atlas texture drawn as a textured quad.
 /// </summary>
-internal sealed class FontRenderer : IDisposable, IFontRenderer
+internal sealed class FontRenderer : IFontRenderer
 {
     private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsTexturePipeline pipeline;

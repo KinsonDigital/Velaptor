@@ -30,14 +30,6 @@ internal interface IWebGpuBuffer<in TData> : IDisposable
     Vector2 WindowSize { get; set; }
 
     /// <summary>
-    /// Ensures the GPU buffers can hold at least <paramref name="requiredCapacity"/> items,
-    /// re-allocating if necessary. Call this before starting an upload loop to avoid
-    /// mid-loop resizes that would invalidate previously recorded draw commands.
-    /// </summary>
-    /// <param name="requiredCapacity">The minimum number of batch items the buffer must support.</param>
-    void EnsureCapacity(uint requiredCapacity);
-
-    /// <summary>
     /// Uploads a single batch item to the GPU at <paramref name="itemIndex"/>.
     /// Grows the buffer automatically if the index exceeds current capacity.
     /// </summary>

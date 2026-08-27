@@ -22,16 +22,6 @@ internal interface IWgpuInvoker
     WebGPU Wgpu { get; }
 
     /// <summary>
-    /// Gets or sets the GPU device handle.
-    /// </summary>
-    SafeDeviceHandle Device { get; set; }
-
-    /// <summary>
-    /// Gets or sets the GPU queue handle.
-    /// </summary>
-    SafeQueueHandle Queue { get; set; }
-
-    /// <summary>
     /// Creates a WebGPU instance.
     /// </summary>
     /// <param name="descriptor">The instance descriptor.</param>
@@ -41,7 +31,7 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a WebGPU instance.
     /// </summary>
-    /// <param name="instance">The instance pointer to release.</param>
+    /// <param name="instance">The instance handle to release.</param>
     void InstanceRelease(nint instance);
 
     /// <summary>
@@ -79,13 +69,13 @@ internal interface IWgpuInvoker
     /// Gets the queue from the device.
     /// </summary>
     /// <param name="device">The device handle.</param>
-    /// <returns>A pointer to the queue.</returns>
+    /// <returns>A handle to the queue.</returns>
     nint DeviceGetQueue(SafeDeviceHandle device);
 
     /// <summary>
     /// Releases a device.
     /// </summary>
-    /// <param name="device">The device pointer to release.</param>
+    /// <param name="device">The device handle to release.</param>
     void DeviceRelease(nint device);
 
     /// <summary>
@@ -100,11 +90,11 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a queue.
     /// </summary>
-    /// <param name="queue">The queue pointer to release.</param>
+    /// <param name="queue">The queue handle to release.</param>
     void QueueRelease(nint queue);
 
     /// <summary>
-    /// Creates a shader module from WGSL source code. The native pointer
+    /// Creates a shader module from WGSL source code. The native handle
     /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="device">The device handle.</param>
@@ -115,17 +105,17 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a shader module.
     /// </summary>
-    /// <param name="handle">The shader module pointer.</param>
+    /// <param name="handle">The shader module handle.</param>
     void ShaderModuleRelease(nint handle);
 
     /// <summary>
     /// Releases an adapter.
     /// </summary>
-    /// <param name="adapter">The adapter pointer to release.</param>
+    /// <param name="adapter">The adapter handle to release.</param>
     void AdapterRelease(nint adapter);
 
     /// <summary>
-    /// Configures a surface for presentation. All pointer marshaling is handled
+    /// Configures a surface for presentation. All handle marshaling is handled
     /// internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="surface">The surface handle.</param>
@@ -163,13 +153,13 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Unconfigures a surface.
     /// </summary>
-    /// <param name="surface">The surface pointer.</param>
+    /// <param name="surface">The surface handle.</param>
     void SurfaceUnconfigure(nint surface);
 
     /// <summary>
     /// Releases a surface.
     /// </summary>
-    /// <param name="surface">The surface pointer to release.</param>
+    /// <param name="surface">The surface handle to release.</param>
     void SurfaceRelease(nint surface);
 
     /// <summary>
@@ -183,7 +173,7 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a texture.
     /// </summary>
-    /// <param name="texture">The texture pointer to release.</param>
+    /// <param name="texture">The texture handle to release.</param>
     void TextureRelease(nint texture);
 
     /// <summary>
@@ -205,7 +195,7 @@ internal interface IWgpuInvoker
 
     /// <summary>
     /// Creates a pipeline layout with a debug label and one or more bind group
-    /// layouts. All pointer marshaling is handled internally.
+    /// layouts. All handle marshaling is handled internally.
     /// </summary>
     /// <param name="device">The device handle.</param>
     /// <param name="label">An optional UTF-8 debug label, or <see langword="null"/>.</param>
@@ -217,11 +207,11 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a pipeline layout.
     /// </summary>
-    /// <param name="pipelineLayout">The pipeline layout pointer.</param>
+    /// <param name="pipelineLayout">The pipeline layout handle.</param>
     void PipelineLayoutRelease(nint pipelineLayout);
 
     /// <summary>
-    /// Creates a render pipeline from a safe descriptor. All pointer marshaling
+    /// Creates a render pipeline from a safe descriptor. All handle marshaling
     /// (entry-point strings, handle casts, address-of for nested structs) is
     /// performed inside the implementation so callers avoid <c>unsafe</c> context.
     /// </summary>
@@ -235,12 +225,12 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a render pipeline.
     /// </summary>
-    /// <param name="pipeline">The pipeline pointer.</param>
+    /// <param name="pipeline">The pipeline handle.</param>
     void RenderPipelineRelease(nint pipeline);
 
     /// <summary>
     /// Creates a bind group with a texture view at binding 0 and a sampler
-    /// at binding 1. All pointer marshaling is handled internally so callers
+    /// at binding 1. All handle marshaling is handled internally so callers
     /// avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="device">The device handle.</param>
@@ -257,7 +247,7 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a bind group.
     /// </summary>
-    /// <param name="bindGroup">The bind group pointer.</param>
+    /// <param name="bindGroup">The bind group handle.</param>
     void BindGroupRelease(nint bindGroup);
 
     /// <summary>
@@ -273,7 +263,7 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Releases a bind group layout.
     /// </summary>
-    /// <param name="bindGroupLayout">The bind group layout pointer.</param>
+    /// <param name="bindGroupLayout">The bind group layout handle.</param>
     void BindGroupLayoutRelease(nint bindGroupLayout);
 
     /// <summary>
@@ -281,13 +271,13 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The sampler descriptor.</param>
-    /// <returns>A pointer to the sampler.</returns>
+    /// <returns>A handle to the sampler.</returns>
     SafeSamplerHandle DeviceCreateSampler(SafeDeviceHandle device, in SamplerDescriptor descriptor);
 
     /// <summary>
     /// Releases a sampler.
     /// </summary>
-    /// <param name="sampler">The sampler pointer.</param>
+    /// <param name="sampler">The sampler handle.</param>
     void SamplerRelease(nint sampler);
 
     /// <summary>
@@ -295,13 +285,13 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The texture descriptor.</param>
-    /// <returns>A pointer to the texture.</returns>
+    /// <returns>A handle to the texture.</returns>
     nint DeviceCreateTexture(SafeDeviceHandle device, in TextureDescriptor descriptor);
 
     /// <summary>
     /// Destroys a texture.
     /// </summary>
-    /// <param name="texture">The texture pointer.</param>
+    /// <param name="texture">The texture handle.</param>
     void TextureDestroy(nint texture);
 
     /// <summary>
@@ -309,7 +299,7 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="device">The device handle.</param>
     /// <param name="descriptor">The command encoder descriptor.</param>
-    /// <returns>A pointer to the command encoder.</returns>
+    /// <returns>A handle to the command encoder.</returns>
     nint UnsafeDeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
 
     /// <summary>
@@ -320,16 +310,14 @@ internal interface IWgpuInvoker
     /// <returns>A handle to the command encoder.</returns>
     SafeCommandEncoderHandle DeviceCreateCommandEncoder(SafeDeviceHandle device, in CommandEncoderDescriptor descriptor);
 
-    // TODO: Change the word 'pointer' to 'handle' in all of the code docs.
-
     /// <summary>
     /// Releases a command encoder.
     /// </summary>
-    /// <param name="encoder">The encoder pointer.</param>
+    /// <param name="encoder">The encoder handle.</param>
     void CommandEncoderRelease(nint encoder);
 
     /// <summary>
-    /// Creates a vertex buffer on the device. The label pointer marshaling is
+    /// Creates a vertex buffer on the device. The label handle marshaling is
     /// handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="device">The device handle.</param>
@@ -340,7 +328,7 @@ internal interface IWgpuInvoker
     SafeVertexBufferHandle DeviceCreateVertexBuffer(SafeDeviceHandle device, string? label, ulong size, BufferUsage usage);
 
     /// <summary>
-    /// Creates an index buffer on the device. The label pointer marshaling is
+    /// Creates an index buffer on the device. The label handle marshaling is
     /// handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="device">The device handle.</param>
@@ -353,39 +341,39 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Destroys a buffer.
     /// </summary>
-    /// <param name="buffer">The buffer pointer.</param>
+    /// <param name="buffer">The buffer handle.</param>
     void BufferDestroy(nint buffer);
 
     /// <summary>
     /// Releases a buffer.
     /// </summary>
-    /// <param name="buffer">The buffer pointer.</param>
+    /// <param name="buffer">The buffer handle.</param>
     void BufferRelease(nint buffer);
 
     /// <summary>
     /// Creates a texture view.
     /// </summary>
-    /// <param name="texture">The texture pointer.</param>
+    /// <param name="texture">The texture handle.</param>
     /// <param name="descriptor">The texture view descriptor.</param>
-    /// <returns>A pointer to the texture view.</returns>
+    /// <returns>A handle to the texture view.</returns>
     nint TextureCreateView(SafeTextureHandle texture, in TextureViewDescriptor descriptor);
 
     /// <summary>
     /// Creates a texture view.
     /// </summary>
-    /// <param name="surfaceTexture">The texture pointer.</param>
+    /// <param name="surfaceTexture">The texture handle.</param>
     /// <param name="descriptor">The texture view descriptor.</param>
-    /// <returns>A pointer to the texture view.</returns>
+    /// <returns>A handle to the texture view.</returns>
     nint TextureCreateView(SafeSurfaceTextureHandle surfaceTexture, in TextureViewDescriptor descriptor);
 
     /// <summary>
     /// Releases a texture view.
     /// </summary>
-    /// <param name="textureView">The texture view pointer.</param>
+    /// <param name="textureView">The texture view handle.</param>
     void TextureViewRelease(nint textureView);
 
     /// <summary>
-    /// Begins a render pass with a single color attachment. The pointer
+    /// Begins a render pass with a single color attachment. The handle
     /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="encoder">The command encoder to begin the pass on.</param>
@@ -407,7 +395,7 @@ internal interface IWgpuInvoker
         double a);
 
     /// <summary>
-    /// Begins a render pass with a single color attachment. The pointer
+    /// Begins a render pass with a single color attachment. The handle
     /// marshaling is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="encoder">The command encoder to begin the pass on.</param>
@@ -432,13 +420,13 @@ internal interface IWgpuInvoker
     /// <summary>
     /// Ends a render pass.
     /// </summary>
-    /// <param name="renderPassEncoder">The render pass encoder pointer.</param>
+    /// <param name="renderPassEncoder">The render pass encoder handle.</param>
     void RenderPassEncoderEnd(nint renderPassEncoder);
 
     /// <summary>
     /// Releases a render pass encoder.
     /// </summary>
-    /// <param name="renderPassEncoder">The render pass encoder pointer.</param>
+    /// <param name="renderPassEncoder">The render pass encoder handle.</param>
     void RenderPassEncoderRelease(nint renderPassEncoder);
 
     /// <summary>
@@ -446,13 +434,13 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="encoder">The command encoder handle.</param>
     /// <param name="descriptor">The command buffer descriptor.</param>
-    /// <returns>A pointer to the command buffer.</returns>
+    /// <returns>A handle to the command buffer.</returns>
     nint CommandEncoderFinish(SafeCommandEncoderHandle encoder, in CommandBufferDescriptor descriptor);
 
     /// <summary>
     /// Releases a command buffer.
     /// </summary>
-    /// <param name="commandBuffer">The command buffer pointer.</param>
+    /// <param name="commandBuffer">The command buffer handle.</param>
     void CommandBufferRelease(nint commandBuffer);
 
     /// <summary>
@@ -460,7 +448,7 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="queue">The queue handle.</param>
     /// <param name="commandCount">The number of command buffers.</param>
-    /// <param name="commands">Pointer to the command buffer array.</param>
+    /// <param name="commands">Handle to the command buffer array.</param>
     void QueueSubmit(SafeQueueHandle queue, uint commandCount, nint commands);
 
     /// <summary>
@@ -474,7 +462,7 @@ internal interface IWgpuInvoker
     /// </summary>
     /// <param name="renderPassEncoder">The render pass encoder handle.</param>
     /// <param name="slot">The vertex buffer slot.</param>
-    /// <param name="buffer">The buffer pointer.</param>
+    /// <param name="buffer">The buffer handle.</param>
     /// <param name="offset">The byte offset into the buffer.</param>
     /// <param name="size">The size of the vertex buffer data in bytes.</param>
     void RenderPassEncoderSetVertexBuffer(SafeRenderPassEncoderHandle renderPassEncoder, uint slot, nint buffer, ulong offset, ulong size);
@@ -483,7 +471,7 @@ internal interface IWgpuInvoker
     /// Sets the index buffer on a render pass encoder.
     /// </summary>
     /// <param name="renderPassEncoder">The render pass encoder handle.</param>
-    /// <param name="buffer">The buffer pointer.</param>
+    /// <param name="buffer">The buffer handle.</param>
     /// <param name="format">The index format.</param>
     /// <param name="offset">The byte offset into the buffer.</param>
     /// <param name="size">The size of the index buffer data in bytes.</param>
@@ -507,7 +495,7 @@ internal interface IWgpuInvoker
     /// <param name="groupIndex">The bind group index.</param>
     /// <param name="bindGroup">The bind group handle.</param>
     /// <param name="dynamicOffsetCount">The number of dynamic offsets.</param>
-    /// <param name="dynamicOffsets">Pointer to the dynamic offsets.</param>
+    /// <param name="dynamicOffsets">Handle to the dynamic offsets.</param>
     void RenderPassEncoderSetBindGroup(SafeRenderPassEncoderHandle renderPassEncoder, uint groupIndex, SafeBindGroupHandle bindGroup, nuint dynamicOffsetCount, nint dynamicOffsets);
 
     /// <summary>

@@ -51,6 +51,12 @@ internal sealed class BufferFake : WebGpuBufferBase<int>
     public new void Initialize() => base.Initialize();
 
     /// <summary>
+    /// Exposes the protected <see cref="WebGpuBufferBase{TData}.EnsureCapacity"/> method for testing.
+    /// </summary>
+    /// <param name="requiredCapacity">The required capacity.</param>
+    public new void EnsureCapacity(uint requiredCapacity) => base.EnsureCapacity(requiredCapacity);
+
+    /// <summary>
     /// Builds the item data.
     /// </summary>
     /// <param name="data">The data.</param>

@@ -108,8 +108,13 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
     public override void UnloadContent()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.backgroundManager.Unload();
-        this.lblInstructions.Unload();
+        this.lblInstructions?.Unload();
 
         base.UnloadContent();
     }

@@ -21,7 +21,7 @@ using Factories;
 using NETRect = System.Drawing.Rectangle;
 
 /// <inheritdoc cref="ITextureRenderer"/>
-internal sealed class TextureRenderer : ITextureRenderer, IDisposable
+internal sealed class TextureRenderer : ITextureRenderer
 {
     private readonly IWgpuInvoker wgpu;
     private readonly IBatchingManager batchManager;

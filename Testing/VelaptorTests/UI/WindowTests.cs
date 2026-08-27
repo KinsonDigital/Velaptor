@@ -637,7 +637,6 @@ public class WindowTests : TestsBase
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.DidNotReceive().Clear();
         this.mockBatcher.DidNotReceive().Begin();
         this.mockSceneManager.DidNotReceive().Render();
         this.mockBatcher.DidNotReceive().End();
@@ -655,7 +654,6 @@ public class WindowTests : TestsBase
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.DidNotReceive().Clear();
         this.mockBatcher.DidNotReceive().Begin();
         this.mockSceneManager.DidNotReceive().Render();
         this.mockBatcher.DidNotReceive().End();

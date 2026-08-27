@@ -127,6 +127,11 @@ public sealed class Button : Control
             return;
         }
 
+        if (!IsLoaded)
+        {
+            throw new InvalidOperationException($"The '{nameof(Button)}' must be loaded before it can be rendered.");
+        }
+
         this.shapeRenderer.Render(this.face, -10);
 
         this.label.Text = Text;

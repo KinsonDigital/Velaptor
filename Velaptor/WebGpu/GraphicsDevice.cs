@@ -153,8 +153,6 @@ internal sealed class GraphicsDevice : IGraphicsDevice
         Wgpu.DeviceSetUncapturedErrorCallback(Handle, OnDeviceError);
 
         Queue = new SafeQueueHandle(Wgpu, Handle);
-        Wgpu.Device = Handle;
-        Wgpu.Queue = Queue;
     }
 
     /// <inheritdoc/>

@@ -160,9 +160,19 @@ public sealed class Option : Control
 
     public override void Render(int layer)
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(this.font)}' cannot be null. Could not render the '{nameof(Option)}' control.");
+        }
+
         if (!Visible)
         {
             return;
+        }
+
+        if (!IsLoaded)
+        {
+            throw new InvalidOperationException($"The '{nameof(Option)}' must be loaded before it can be rendered.");
         }
 
         this.shapeRenderer.Render(this.circle);

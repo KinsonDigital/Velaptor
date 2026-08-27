@@ -38,6 +38,7 @@ public class LayeredRectRenderingScene : SceneBase
     private Label? lblInstructions;
     private Label? lblRectState;
     private RenderLayer whiteLayer = RenderLayer.One;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredRectRenderingScene"/> class.
     /// </summary>
@@ -104,7 +105,7 @@ public class LayeredRectRenderingScene : SceneBase
         base.LoadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="Velaptor.IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         this.currentKeyState = this.keyboard.GetState();
@@ -138,9 +139,14 @@ public class LayeredRectRenderingScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         this.backgroundManager.Unload();
-        this.lblInstructions.Unload();
-        this.lblRectState.Unload();
+        this.lblInstructions?.Unload();
+        this.lblRectState?.Unload();
 
         base.UnloadContent();
     }

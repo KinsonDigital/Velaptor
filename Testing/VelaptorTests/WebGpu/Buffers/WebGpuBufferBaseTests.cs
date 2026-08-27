@@ -136,7 +136,7 @@ public class WebGpuBufferBaseTests
 
         // Assert
         act.ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe($"The buffer must be initialized before calling {nameof(WebGpuBufferBase<int>.EnsureCapacity)}().");
+            .Message.ShouldBe($"The buffer must be initialized before calling EnsureCapacity().");
     }
 
     [Fact]

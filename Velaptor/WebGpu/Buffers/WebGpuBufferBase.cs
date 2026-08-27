@@ -18,9 +18,6 @@ using Silk.NET.WebGPU;
 internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     where TData : struct
 {
-    // TODO: Look into why sometimes it takes longer to close down the window.  the first time I experienced this was with a capacity of 2000.
-    // It happens with a low number too. It might not have anything to do with the capacity.
-
     private const uint DefaultCapacity = 64;
     private readonly IGraphicsDevice grfxDevice;
     private SafeVertexBufferHandle? vertexBuffer;
@@ -74,35 +71,6 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
     /// </summary>
     private IWgpuInvoker Wgpu => this.grfxDevice.Wgpu;
 
-    /// <summary>
-    /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
-    /// has been initialized.
-    /// </summary>
-    protected void Initialize()
-    {
-        if (IsInitialized)
-        {
-            return;
-        }
-
-        Allocate(DefaultCapacity);
-    }
-
-    // TODO: Look into make this protected.  This is invoked via a reactable anyway, not executed externally.
-    /// <inheritdoc/>
-    public void EnsureCapacity(uint requiredCapacity)
-    {
-        if (!IsInitialized)
-        {
-            throw new InvalidOperationException($"The buffer must be initialized before calling {nameof(EnsureCapacity)}().");
-        }
-
-        if (requiredCapacity > Capacity)
-        {
-            Allocate(requiredCapacity);
-        }
-    }
-
     /// <inheritdoc/>
     public void UploadData(TData data, uint itemIndex = 0)
     {
@@ -153,6 +121,39 @@ internal abstract class WebGpuBufferBase<TData> : IWebGpuBuffer<TData>
 
     /// <inheritdoc/>
     public void Dispose() => Dispose(true);
+
+    /// <summary>
+    /// Allocates GPU vertex and index buffers. Must be called after the WebGPU device
+    /// has been initialized.
+    /// </summary>
+    protected void Initialize()
+    {
+        if (IsInitialized)
+        {
+            return;
+        }
+
+        Allocate(DefaultCapacity);
+    }
+
+    /// <summary>
+    /// Ensures the GPU buffers can hold at least <paramref name="requiredCapacity"/> items,
+    /// re-allocating if necessary. Call this before starting an upload loop to avoid
+    /// mid-loop resizes that would invalidate previously recorded draw commands.
+    /// </summary>
+    /// <param name="requiredCapacity">The minimum number of batch items the buffer must support.</param>
+    protected void EnsureCapacity(uint requiredCapacity)
+    {
+        if (!IsInitialized)
+        {
+            throw new InvalidOperationException($"The buffer must be initialized before calling {nameof(EnsureCapacity)}().");
+        }
+
+        if (requiredCapacity > Capacity)
+        {
+            Allocate(requiredCapacity);
+        }
+    }
 
     /// <summary>
     /// Converts screen pixel coordinates to WebGPU NDC.

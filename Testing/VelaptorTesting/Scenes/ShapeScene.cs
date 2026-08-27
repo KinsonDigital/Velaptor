@@ -784,7 +784,11 @@ public class ShapeScene : SceneBase
     /// </summary>
     private void SldRectWidth_ValueChanged(object? sender, ValueChangedEventArgs e)
     {
-        // TODO: Only run this if the shape type is set to rectangle
+        if (this.shapeType != ShapeType.Rectangle)
+        {
+            return;
+        }
+
         this.rectangle.Height = e.NewValue;
         var newMaxValue = (this.rectangle.Height < this.rectangle.Width
             ? this.rectangle.Height

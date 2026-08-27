@@ -23,24 +23,25 @@ internal sealed class SafeCommandEncoderHandle : SafeHandleZeroOrMinusOneIsInval
     /// Initializes a new instance of the <see cref="SafeCommandEncoderHandle"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
-    /// <param name="cmdEncoderHandle">The native command encoder handle.</param>
-    public SafeCommandEncoderHandle(IWgpuInvoker wgpu, nint cmdEncoderHandle)
+    /// <param name="deviceHandle">The graphics device handle.</param>
+    public SafeCommandEncoderHandle(IWgpuInvoker wgpu, nint deviceHandle)
         : base(ownsHandle: true)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
 
         this.wgpu = wgpu;
-        SetHandle(cmdEncoderHandle);
+        SetHandle(deviceHandle);
     }
 
     /// <summary>
     /// Releases the previous encoder, creates a new one from <paramref name="descriptor"/>, and stores the new handle.
     /// </summary>
     /// <param name="descriptor">The command encoder creation descriptor.</param>
-    public void ResetHandle(in CommandEncoderDescriptor descriptor)
+    /// <param name="deviceHandle">The graphics device handle.</param>
+    public void ResetHandle(in CommandEncoderDescriptor descriptor, SafeDeviceHandle deviceHandle)
     {
         ReleaseHandle();
-        SetHandle(this.wgpu.UnsafeDeviceCreateCommandEncoder(this.wgpu.Device, in descriptor));
+        SetHandle(this.wgpu.UnsafeDeviceCreateCommandEncoder(deviceHandle, in descriptor));
     }
 
     /// <inheritdoc/>

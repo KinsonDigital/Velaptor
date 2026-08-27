@@ -21,7 +21,9 @@ public class WindowFake : Window
     /// </summary>
     /// <param name="window">Mocked window.</param>
     /// <param name="batcher">Mocked batcher.</param>
-    //TODO: add docs
+    /// <param name="contentManager">Mocked content manager.</param>
+    /// <param name="fontRenderer">Mocked font renderer.</param>
+    /// <param name="keyboard">Mocked keyboard.</param>
     /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
     internal WindowFake(
         IWindow window,

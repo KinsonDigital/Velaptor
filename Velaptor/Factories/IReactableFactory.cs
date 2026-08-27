@@ -24,12 +24,6 @@ internal interface IReactableFactory
     IPushReactable CreateNoDataPushReactable();
 
     /// <summary>
-    /// Creates an OpenGL reactable.
-    /// </summary>
-    /// <returns>The reactable.</returns>
-    IPushReactable<GL> CreateGLReactable(); // TODO: Look into the use of this and remove it not used
-
-    /// <summary>
     /// Creates a buffer capacity reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
