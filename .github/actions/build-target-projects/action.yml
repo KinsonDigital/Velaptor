@@ -36,7 +36,7 @@ runs:
       run: Write-Host "`e[36m -----Checkout Target Repository------ `e[0m" -ForegroundColor Cyan;
 
     - name: Checkout Target Repository (${{ inputs.target-owner-name }}/${{ inputs.target-repo-name }})
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         repository: "${{ inputs.target-owner-name }}/${{ inputs.target-repo-name }}"
         ref: "${{ inputs.target-ref }}"
@@ -47,7 +47,7 @@ runs:
       run: Write-Host "`e[36m ----- Checkout Velaptor Repository ------ `e[0m" -ForegroundColor Cyan;
 
     - name: Checkout Velaptor Repository
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         repository: KinsonDigital/Velaptor
         ref: "${{ inputs.velaptor-branch }}"
