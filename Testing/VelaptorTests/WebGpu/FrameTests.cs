@@ -214,6 +214,29 @@ public class FrameTests
     }
 
     [Fact]
+    public void Begin_WithNullGrfxDeviceHandle_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = "The graphics device handle cannot be null when invoking " +
+                                   $"'{nameof(Frame)}.{nameof(Frame.Begin)}()'. Could not begin frame.";
+
+        this.mockDevice.Handle.Returns((SafeDeviceHandle?)null);
+
+        var sut = CreateSystemUnderTest();
+        sut.Initialize();
+
+        // Act
+        var act = () =>
+        {
+            sut.Begin(this.testColor);
+        };
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
     public void Begin_WhenRenderPassHasNotAlreadyBegun_BeginsFrame()
     {
         // Arrange

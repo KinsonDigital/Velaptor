@@ -76,6 +76,13 @@ internal sealed class Frame : IFrame
             throw new InvalidOperationException("Cannot begin frame. WebGPU has not been initialized.");
         }
 
+        if (this.grfxDevice.Handle is null)
+        {
+            const string errorMsg = "The graphics device handle cannot be null when invoking " +
+                                    $"'{nameof(Frame)}.{nameof(Begin)}()'. Could not begin frame.";
+            throw new InvalidOperationException(errorMsg);
+        }
+
         // Configure the swap chain on first-frame, or after a resize.
         // This is deferred from Initialize() because the native window
         // may not have reached its final framebuffer size yet at that point.
@@ -132,7 +139,7 @@ internal sealed class Frame : IFrame
 
         if (this.cmdEncoderHandle is null)
         {
-            this.cmdEncoderHandle = this.grfxDevice.Wgpu.DeviceCreateCommandEncoder(this.grfxDevice.Handle!, in encoderDesc);
+            this.cmdEncoderHandle = this.grfxDevice.Wgpu.DeviceCreateCommandEncoder(this.grfxDevice.Handle, in encoderDesc);
         }
         else
         {
