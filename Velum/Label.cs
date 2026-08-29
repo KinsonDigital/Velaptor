@@ -33,7 +33,7 @@ public sealed class Label : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -49,12 +49,14 @@ public sealed class Label : Control
         {
             this.text = value;
 
-            if (this.font is not null)
+            if (this.font is null)
             {
-                TextSize = this.font.Measure(this.text);
-                Width = (int)TextSize.Width;
-                Height = (int)TextSize.Height;
+                return;
             }
+
+            TextSize = this.font.Measure(this.text);
+            Width = (int)TextSize.Width;
+            Height = (int)TextSize.Height;
         }
     }
 
@@ -135,13 +137,13 @@ public sealed class Label : Control
             return;
         }
 
-        var scrnPos = Position.ToWorld(Width, Height);
+        var screenPos = Position.ToWorld(Width, Height);
 
         var currentMouseState = this.mouse.GetState();
 
         this.background = new RectShape
         {
-            Position = scrnPos,
+            Position = screenPos,
             Width = Width,
             Height = Height,
             Color = BackgroundColor,
@@ -150,7 +152,7 @@ public sealed class Label : Control
 
         var mousePos = currentMouseState.GetPosition().ToVector2();
 
-        var labelRect = new Rectangle((int)scrnPos.X, (int)scrnPos.Y, (int)TextSize.Width, (int)TextSize.Height);
+        var labelRect = new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)TextSize.Width, (int)TextSize.Height);
         IsMouseOver = labelRect.Contains((int)mousePos.X, (int)mousePos.Y);
         var currentLeftBtnUp = currentMouseState.IsButtonUp(MouseButton.LeftButton);
         var prevLeftBtnDown = this.prevMouseState.IsButtonDown(MouseButton.LeftButton);
