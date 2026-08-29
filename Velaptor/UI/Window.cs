@@ -292,16 +292,17 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        RenderStats();
-
         if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
         {
+            RenderStats();
             return;
         }
 
         this.batcher.Begin();
 
         this.nativeWindow.SceneManager.Render();
+
+        RenderStats();
 
         this.batcher.End();
     }
@@ -354,12 +355,6 @@ public abstract class Window : IWindow
     }
 
     /// <summary>
-    /// Disposes of all registered types in the IoC container.
-    /// </summary>
-    // [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
-    // private static void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();
-
-    /// <summary>
     /// Processes input.
     /// </summary>
     private void ProcessInput()
@@ -390,8 +385,6 @@ public abstract class Window : IWindow
             return;
         }
 
-        this.batcher.Begin();
-
         // NOTE: Case the Fps value to a decimal to ensure 2 decimal places due to IEEE 754 binary floating-point representation
         var roundedFps = Math.Round((decimal)Fps, 2);
 
@@ -417,8 +410,6 @@ public abstract class Window : IWindow
         var halfHeight = fpsData.size.Height / 2f;
 
         this.fontRenderer.Render(this.font, fpsData.text, new Vector2(halfWidth + 10, Height - (halfHeight + 10)), FpsDisplayColor);
-
-        this.batcher.End();
     }
 
     /// <summary>
