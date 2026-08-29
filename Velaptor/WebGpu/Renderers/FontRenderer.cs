@@ -221,7 +221,7 @@ internal sealed class FontRenderer : IFontRenderer
     /// <param name="atlasWidth">The width of the font texture atlas.</param>
     /// <param name="atlasHeight">The height of the font texture atlas.</param>
     /// <returns>The list of glyphs that make up the string as font batch items.</returns>
-    private static IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
+    private static FontGlyphBatchItem[] ToFontBatchItems(
         Vector2 textPos,
         GlyphMetrics[] charMetrics,
         IFont font,
@@ -241,7 +241,7 @@ internal sealed class FontRenderer : IFontRenderer
 
         return ToFontBatchItems(
             textPos,
-            metricsWithClr.ToArray(),
+            [.. metricsWithClr],
             font,
             origin,
             renderSize,
