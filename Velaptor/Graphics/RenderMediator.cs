@@ -1,4 +1,4 @@
-﻿// <copyright file="RenderMediator.cs" company="KinsonDigital">
+﻿﻿// <copyright file="RenderMediator.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ using WebGpu.Batching;
 /// <inheritdoc/>
 internal sealed class RenderMediator : IRenderMediator
 {
-    private readonly IPushReactable endBatchReactable;
+    private readonly IPushReactable coordinateReactable;
     private readonly IBatchPullReactable<TextureBatchItem> texturePullReactable;
     private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
     private readonly IBatchPullReactable<ShapeBatchItem> shapePullReactable;
@@ -34,7 +34,13 @@ internal sealed class RenderMediator : IRenderMediator
 
     // The total amount of layers supported
     private readonly Memory<int> allLayers = new (new int[1000]);
+
+    // Holds all the layers used for the current frame for quick lookups to stay performant
+    // during the layer processing and sorting phase
+    private readonly HashSet<int> usedLayers = [];
+
     private readonly IDisposable endBatchUnsubscriber;
+    private RequiredBufferCapacityData bufferCapacityData;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderMediator"/> class.
@@ -57,9 +63,9 @@ internal sealed class RenderMediator : IRenderMediator
         ArgumentNullException.ThrowIfNull(shapeItemComparer);
         ArgumentNullException.ThrowIfNull(lineItemComparer);
 
-        this.endBatchReactable = reactableFactory.CreateNoDataPushReactable();
+        this.coordinateReactable = reactableFactory.CreateNoDataPushReactable();
 
-        this.endBatchUnsubscriber = this.endBatchReactable.CreateNonReceiveOrRespond(
+        this.endBatchUnsubscriber = this.coordinateReactable.CreateNonReceiveOrRespond(
             PushNotifications.BatchHasEndedId,
             CoordinateRenders,
             () => this.endBatchUnsubscriber?.Dispose());
@@ -97,16 +103,13 @@ internal sealed class RenderMediator : IRenderMediator
         var shapeItems = this.shapePullReactable.Pull(PullResponses.GetShapeItemsId);
         var lineItems = this.linePullReactable.Pull(PullResponses.GetLineItemsId);
 
+        this.bufferCapacityData.TotalTextureItems = (uint)textureItems.Length;
+        this.bufferCapacityData.TotalFontItems = (uint)fontItems.Length;
+        this.bufferCapacityData.TotalShapeItems = (uint)shapeItems.Length;
+        this.bufferCapacityData.TotalLineItems = (uint)lineItems.Length;
+
         // Resize the buffers before drawing any calls
-        this.bufferResizeReactable.Push(
-            PushNotifications.ResizeBufferId,
-            new RequiredBufferCapacityData
-            {
-                TotalTextureItems = (uint)textureItems.Length,
-                TotalFontItems = (uint)fontItems.Length,
-                TotalShapeItems = (uint)shapeItems.Length,
-                TotalLineItems = (uint)lineItems.Length,
-            });
+        this.bufferResizeReactable.Push(PushNotifications.ResizeBufferId, this.bufferCapacityData);
 
         // Sort all the item layers
         textureItems.Span.Sort(this.textureItemComparer);
@@ -115,12 +118,15 @@ internal sealed class RenderMediator : IRenderMediator
         lineItems.Span.Sort(this.lineItemComparer);
 
         var layerIndex = 0;
+        this.usedLayers.Clear();
+
+        var textureItemsSpan = textureItems.Span;
 
         // Collect all existing layers that exist before sorting them from the farthest back to the front
         for (var i = 0; i < textureItems.Length; i++)
         {
-            var textureLayer = textureItems.Span[i].Layer;
-            if (this.allLayers.Span.Contains(textureLayer))
+            var textureLayer = textureItemsSpan[i].Layer;
+            if (!this.usedLayers.Add(textureLayer))
             {
                 continue;
             }
@@ -129,10 +135,12 @@ internal sealed class RenderMediator : IRenderMediator
             layerIndex++;
         }
 
+        var fontItemsSpan = fontItems.Span;
+
         for (var i = 0; i < fontItems.Length; i++)
         {
-            var fontLayer = fontItems.Span[i].Layer;
-            if (this.allLayers.Span.Contains(fontLayer))
+            var fontLayer = fontItemsSpan[i].Layer;
+            if (!this.usedLayers.Add(fontLayer))
             {
                 continue;
             }
@@ -141,10 +149,12 @@ internal sealed class RenderMediator : IRenderMediator
             layerIndex++;
         }
 
+        var shapeItemsSpan = shapeItems.Span;
+
         for (var i = 0; i < shapeItems.Length; i++)
         {
-            var shapeLayer = shapeItems.Span[i].Layer;
-            if (this.allLayers.Span.Contains(shapeLayer))
+            var shapeLayer = shapeItemsSpan[i].Layer;
+            if (!this.usedLayers.Add(shapeLayer))
             {
                 continue;
             }
@@ -153,10 +163,12 @@ internal sealed class RenderMediator : IRenderMediator
             layerIndex++;
         }
 
+        var lineItemsSpan = lineItems.Span;
+
         for (var i = 0; i < lineItems.Length; i++)
         {
-            var lineLayer = lineItems.Span[i].Layer;
-            if (this.allLayers.Span.Contains(lineLayer))
+            var lineLayer = lineItemsSpan[i].Layer;
+            if (!this.usedLayers.Add(lineLayer))
             {
                 continue;
             }
@@ -166,17 +178,16 @@ internal sealed class RenderMediator : IRenderMediator
         }
 
         // Sort all the existing layers from the farthest back to the front.
-        this.allLayers.Span.Sort();
+        // this.allLayers.Span.Sort();
+        var actualLayerCount = layerIndex;
+        this.allLayers.Span[..actualLayerCount].Sort();
+
+        var allLayersSpan = this.allLayers.Span;
 
         // Renders all the items in a coordinated fashion
-        for (var i = 0; i < this.allLayers.Length; i++)
+        for (var i = 0; i < actualLayerCount; i++)
         {
-            if (this.allLayers.Span[i] == int.MaxValue)
-            {
-                break;
-            }
-
-            var currentLayer = this.allLayers.Span[i];
+            var currentLayer = allLayersSpan[i];
 
             var totalTexturesOnCurrentLayer = textureItems.TotalOnLayer(currentLayer);
             var totalFontOnCurrentLayer = fontItems.TotalOnLayer(currentLayer);
@@ -223,6 +234,6 @@ internal sealed class RenderMediator : IRenderMediator
             this.allLayers.Span[i] = int.MaxValue;
         }
 
-        this.endBatchReactable.Push(PushNotifications.EmptyBatchId);
+        this.coordinateReactable.Push(PushNotifications.EmptyBatchId);
     }
 }

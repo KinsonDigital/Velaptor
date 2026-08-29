@@ -7,25 +7,25 @@ namespace Velaptor.ReactableData;
 /// <summary>
 /// Holds the data for the buffer capacities for all buffer types.
 /// </summary>
-internal readonly record struct RequiredBufferCapacityData
+internal record struct RequiredBufferCapacityData
 {
     /// <summary>
-    /// Gets the total number of texture items to render during a single frame.
+    /// Gets or sets the total number of texture items to render during a single frame.
     /// </summary>
-    public uint TotalTextureItems { get; init; }
+    public uint TotalTextureItems { get; set; }
 
     /// <summary>
-    /// Gets the total number of font items to render during a single frame.
+    /// Gets or sets the total number of font items to render during a single frame.
     /// </summary>
-    public uint TotalFontItems { get; init; }
+    public uint TotalFontItems { get; set; }
 
     /// <summary>
-    /// Gets the total number of shape items to render during a single frame.
+    /// Gets or sets the total number of shape items to render during a single frame.
     /// </summary>
-    public uint TotalShapeItems { get; init; }
+    public uint TotalShapeItems { get; set; }
 
     /// <summary>
-    /// Gets the total number of line items to render during a single frame.
+    /// Gets or sets the total number of line items to render during a single frame.
     /// </summary>
-    public uint TotalLineItems { get; init; }
+    public uint TotalLineItems { get; set; }
 }
