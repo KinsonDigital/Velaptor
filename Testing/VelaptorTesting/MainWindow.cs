@@ -122,6 +122,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
         };
 
+        var batchPerfScene = new BatchPerfScene
+        {
+            Name = SplitByUpperCase(nameof(BatchPerfScene)),
+        };
+
         var audioScene = new AudioScene
         {
             Name = SplitByUpperCase(nameof(AudioScene)),
@@ -139,6 +144,7 @@ public class MainWindow : Window
         SceneManager.AddScene(layeredRectScene);
         SceneManager.AddScene(lineScene);
         SceneManager.AddScene(layeredLineScene);
+        SceneManager.AddScene(batchPerfScene);
         SceneManager.AddScene(audioScene);
     }
 
@@ -201,6 +207,8 @@ public class MainWindow : Window
 
         this.btnPrevScene.Render(0);
         this.btnNextScene.Render(0);
+
+        base.OnDraw(frameTime);
 
         this.batcher.End();
     }
