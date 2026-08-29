@@ -43,6 +43,12 @@
             <Build Solution="Telemetry-Debug|x64" Project="false" />
             <Build Solution="Telemetry-Release|x64" Project="false" />
         </Project>
+        <Project Path="Performance/RenderMediatorPerf/RenderMediatorPerf.csproj">
+            <BuildType Solution="Debug-Console|*" Project="Debug" />
+            <BuildType Solution="Release-Console|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Debug|*" Project="Debug" />
+            <BuildType Solution="Telemetry-Release|*" Project="Debug" />
+        </Project>
     </Folder>
 
     <Folder Name="/SolutionItems/">
