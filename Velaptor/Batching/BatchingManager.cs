@@ -6,6 +6,7 @@ namespace Velaptor.Batching;
 
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Carbonate;
 using Carbonate.OneWay;
 using Factories;
@@ -16,6 +17,7 @@ using WebGpu.Batching;
 internal sealed class BatchingManager : IBatchingManager
 {
     private const float BatchIncreasePercentage = 0.5f;
+    private const int BytesPerKilobyte = 1024;
     private readonly IDisposable batchSizeUnsubscriber;
     private readonly IDisposable requestTexturesUnsubscriber;
     private readonly IDisposable requestFontsUnsubscriber;
@@ -32,6 +34,10 @@ internal sealed class BatchingManager : IBatchingManager
     private uint fontBatchSize;
     private uint shapeBatchSize;
     private uint lineBatchSize;
+    private int textureItemsSizeKb;
+    private int fontItemsItemSizeKb;
+    private int shapeItemsSizeKb;
+    private int lineItemsSizeKb;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchingManager"/> class.
@@ -149,6 +155,9 @@ internal sealed class BatchingManager : IBatchingManager
     /// </summary>
     /// <remarks>USED FOR UNIT TESTING.</remarks>
     public Span<RenderItem<LineBatchItem>> LineItems => this.lineItems.Span;
+
+    /// <inheritdoc/>
+    public int TotalBatchSizeKb { get; private set; }
 
     /// <inheritdoc/>
     public void AddTextureItem(TextureBatchItem item, int layer, DateTime renderStamp)
@@ -282,6 +291,8 @@ internal sealed class BatchingManager : IBatchingManager
         }
 
         this.firstTimeSettingBatchSize = false;
+
+        CalcDataSizes();
     }
 
     /// <summary>
@@ -342,6 +353,8 @@ internal sealed class BatchingManager : IBatchingManager
                 break;
         }
 
+        CalcDataSizes();
+
 // ReSharper restore SwitchStatementHandlesSomeKnownEnumValuesWithDefault
     }
 
@@ -389,5 +402,17 @@ internal sealed class BatchingManager : IBatchingManager
 
             this.lineItems.Span[i] = default;
         }
+    }
+
+    /// <summary>
+    /// Calculates the memory size of each type of batch data.
+    /// </summary>
+    private void CalcDataSizes()
+    {
+        this.textureItemsSizeKb = Unsafe.SizeOf<TextureBatchItem>() * this.textureItems.Length / BytesPerKilobyte;
+        this.fontItemsItemSizeKb = Unsafe.SizeOf<FontGlyphBatchItem>() * this.fontItems.Length / BytesPerKilobyte;
+        this.shapeItemsSizeKb = Unsafe.SizeOf<ShapeBatchItem>() * this.shapeItems.Length / BytesPerKilobyte;
+        this.lineItemsSizeKb = Unsafe.SizeOf<LineBatchItem>() * this.lineItems.Length / BytesPerKilobyte;
+        TotalBatchSizeKb = this.textureItemsSizeKb + this.fontItemsItemSizeKb + this.shapeItemsSizeKb + this.lineItemsSizeKb;
     }
 }
