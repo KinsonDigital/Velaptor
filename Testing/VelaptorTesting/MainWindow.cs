@@ -205,8 +205,8 @@ public class MainWindow : Window
 
         SceneManager.Render();
 
-        this.btnPrevScene.Render(0);
-        this.btnNextScene.Render(0);
+        this.btnPrevScene.Render(int.MaxValue - 100);
+        this.btnNextScene.Render(int.MaxValue - 100);
 
         base.OnDraw(frameTime);
 
