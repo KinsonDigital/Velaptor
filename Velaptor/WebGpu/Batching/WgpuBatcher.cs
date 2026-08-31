@@ -21,7 +21,7 @@ using ReactableData;
 internal sealed class WgpuBatcher : IBatcher
 {
     private const string RenderExceptionMsg = "The renderer is not initialized.";
-    private const uint InitialBatchSize = 1000;
+    private const uint InitialBatchSize = 100;
     private readonly IPushReactable pushReactable;
     private readonly IFrame frame;
     private readonly IDisposable initUnsubscriber;
