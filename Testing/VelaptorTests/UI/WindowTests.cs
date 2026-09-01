@@ -732,22 +732,6 @@ public class WindowTests : TestsBase
         // Assert
         this.mockSceneManager.Received(1).UnloadContent();
     }
-
-    [Fact]
-    [Trait("Category", Method)]
-    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
-    public void Dispose_WhenInvoked_DisposesOfMangedResources()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Dispose();
-        sut.Dispose();
-
-        // Assert
-        this.mockWindow.Received(1).Dispose();
-    }
     #endregion
 
     /// <summary>

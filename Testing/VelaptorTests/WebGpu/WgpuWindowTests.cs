@@ -824,37 +824,6 @@ public class WgpuWindowTests
         // Assert
         this.mockSilkWindow.Received(1).Close();
     }
-
-    [Fact]
-    public void Dispose_WhenInvoked_DisposesOfWindow()
-    {
-        // Arrange
-        (IInputContext _, IKeyboard mockKeyboard, IMouse mockMouse) = MockInputContext();
-        var sut = CreateSystemUnderTest();
-        sut.Show();
-        this.mockSilkWindow.Load += Raise.Event<Action>();
-
-        // Act
-        sut.Dispose();
-        sut.Dispose();
-
-        // Assert
-        this.mockPushReactable.Received(1).UnsubscribeAll();
-        mockKeyboard.Received(1).KeyDown -= Arg.Any<Action<IKeyboard, Key, int>>();
-        mockKeyboard.Received(1).KeyUp -= Arg.Any<Action<IKeyboard, Key, int>>();
-        mockMouse.Received(1).MouseDown -= Arg.Any<Action<IMouse, SilkMouseButton>>();
-        mockMouse.Received(1).MouseUp -= Arg.Any<Action<IMouse, SilkMouseButton>>();
-        mockMouse.Received(1).MouseMove -= Arg.Any<Action<IMouse, Vector2>>();
-        mockMouse.Received(1).Scroll -= Arg.Any<Action<IMouse, ScrollWheel>>();
-
-        this.mockSilkWindow.Received(1).Load -= Arg.Any<Action>();
-        this.mockSilkWindow.Received(1).Update -= Arg.Any<Action<double>>();
-        this.mockSilkWindow.Received(1).Render -= Arg.Any<Action<double>>();
-        this.mockSilkWindow.Received(1).Resize -= Arg.Any<Action<Vector2D<int>>>();
-        this.mockSilkWindow.Received(1).Closing -= Arg.Any<Action>();
-
-        this.mockGlfwInvoker.Received(1).Dispose();
-    }
     #endregion
 
     #region Internal Tests

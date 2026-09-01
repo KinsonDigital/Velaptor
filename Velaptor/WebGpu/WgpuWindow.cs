@@ -64,7 +64,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private IInputContext? inputContext;
     private bool isShuttingDown;
     private bool firstRenderInvoked;
-    private bool isDisposed;
     private Action? afterUnloadAction;
 
     /// <summary>
@@ -272,9 +271,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <inheritdoc/>
     public void Close() => this.silkWindow.Close();
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(true);
-
     /// <summary>
     /// Sets the setting for property caching to the given <paramref name="value"/>.
     /// </summary>
@@ -327,11 +323,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void PreInit()
     {
-        if (this.isDisposed)
-        {
-            throw new ObjectDisposedException(nameof(WgpuWindow));
-        }
-
         this.silkWindow.UpdatesPerSecond = 60;
         this.silkWindow.Load += Window_Load;
         this.silkWindow.Closing += Window_Closing;
@@ -432,6 +423,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
         {
             this.loggingService.Error(e);
         }
+
+        Cleanup();
 
         // Triggers cache cleanup in texture/audio loaders and GPU resource release
         // before the WebGPU device is torn down.
@@ -602,42 +595,34 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    private void Dispose(bool disposing)
+    /// <summary>
+    /// Cleans up internal setup.
+    /// </summary>
+    private void Cleanup()
     {
-        if (this.isDisposed)
+        this.pushReactable.UnsubscribeAll();
+
+        this.cachedStringProps.Clear();
+        this.cachedIntProps.Clear();
+        this.cachedBoolProps.Clear();
+
+        if (this.inputContext is not null)
         {
-            return;
+            this.inputContext.Keyboards[0].KeyDown -= KeyboardInput_KeyDown;
+            this.inputContext.Keyboards[0].KeyUp -= KeyboardInput_KeyUp;
+            this.inputContext.Mice[0].MouseDown -= MouseInput_MouseDown;
+            this.inputContext.Mice[0].MouseUp -= MouseInput_MouseUp;
+            this.inputContext.Mice[0].MouseMove -= MouseMove_MouseMove;
+            this.inputContext.Mice[0].Scroll -= MouseInput_MouseScroll;
         }
 
-        if (disposing)
-        {
-            this.pushReactable.UnsubscribeAll();
+        this.silkWindow.Load -= Window_Load;
+        this.silkWindow.Update -= Window_Update;
+        this.silkWindow.Render -= Window_Render;
+        this.silkWindow.Resize -= Window_Resize;
+        this.silkWindow.Closing -= Window_Closing;
 
-            this.cachedStringProps.Clear();
-            this.cachedIntProps.Clear();
-            this.cachedBoolProps.Clear();
-
-            if (this.inputContext is not null)
-            {
-                this.inputContext.Keyboards[0].KeyDown -= KeyboardInput_KeyDown;
-                this.inputContext.Keyboards[0].KeyUp -= KeyboardInput_KeyUp;
-                this.inputContext.Mice[0].MouseDown -= MouseInput_MouseDown;
-                this.inputContext.Mice[0].MouseUp -= MouseInput_MouseUp;
-                this.inputContext.Mice[0].MouseMove -= MouseMove_MouseMove;
-                this.inputContext.Mice[0].Scroll -= MouseInput_MouseScroll;
-            }
-
-            this.silkWindow.Load -= Window_Load;
-            this.silkWindow.Update -= Window_Update;
-            this.silkWindow.Render -= Window_Render;
-            this.silkWindow.Resize -= Window_Resize;
-            this.silkWindow.Closing -= Window_Closing;
-
-            this.glfw.Dispose();
-        }
-
-        this.isDisposed = true;
+        this.glfw.Dispose();
     }
 
     /// <summary>

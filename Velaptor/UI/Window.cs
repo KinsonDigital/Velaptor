@@ -33,7 +33,6 @@ public abstract class Window : IWindow
     private readonly IFontRenderer fontRenderer;
     private readonly Dictionary<decimal, (string text, SizeF size)> fpsCache = new ();
     private readonly Queue<decimal> cacheInsertionOrder = new ();
-    private bool isDisposed;
     private KeyboardState prevKeyState;
     private IFont? font;
     private bool vpsVisible;
@@ -244,15 +243,6 @@ public abstract class Window : IWindow
     public void Close() => this.nativeWindow.Close();
 
     /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
     /// Invoked when the window is loaded.
     /// </summary>
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
@@ -327,32 +317,6 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Public API for users.")]
     protected virtual void OnResize(SizeU size) => this.nativeWindow.SceneManager.Resize(size);
-
-    /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    [SuppressMessage(
-        "ReSharper",
-        "VirtualMemberNeverOverridden.Global",
-        Justification = "Left for library users to override if needed.")]
-    protected virtual void Dispose(bool disposing)
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            this.nativeWindow.Dispose();
-        }
-
-        this.isDisposed = true;
-
-        // Only when not running unit tests, dispose of all Carbonate types
-        // DisposeOfRegisteredTypes();
-    }
 
     /// <summary>
     /// Processes input.

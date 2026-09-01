@@ -15,7 +15,7 @@ using WebGpu.Batching;
 /// window behaves, its state and the ability to be used in various types
 /// of applications.
 /// </summary>
-public interface IWindow : IDisposable
+public interface IWindow
 {
     /// <summary>
     /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
