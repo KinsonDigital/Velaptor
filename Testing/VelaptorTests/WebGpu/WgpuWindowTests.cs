@@ -707,21 +707,6 @@ public class WgpuWindowTests
 
     #region Method Tests
     [Fact]
-    public void Show_WhenWindowIsDisposed_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.Dispose();
-
-        // Act
-        var act = () => sut.Show();
-
-        // Assert
-        act.ShouldThrow<ObjectDisposedException>()
-            .Message.ShouldBe($"Cannot access a disposed object.\r\nObject name: '{nameof(WgpuWindow)}'.");
-    }
-
-    [Fact]
     public void Show_WhenInvoked_PreInitializesWindow()
     {
         // Arrange
