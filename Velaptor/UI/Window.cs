@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Numerics;
-using System.Threading.Tasks;
 using Batching;
 using Content;
 using Content.Fonts;
@@ -226,18 +225,6 @@ public abstract class Window : IWindow
     /// Shows the window.
     /// </summary>
     public void Show() => this.nativeWindow.Show();
-
-    /// <summary>
-    /// Shows the window asynchronously.
-    /// </summary>
-    /// <param name="afterStart">Executed after the application starts asynchronously.</param>
-    /// <param name="afterUnload">Executed after the window has been unloaded.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    /// <remarks>
-    ///     This runs the window on another thread.
-    /// </remarks>
-    public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null) =>
-        await this.nativeWindow.ShowAsync(afterStart, afterUnload).ConfigureAwait(true);
 
     /// <inheritdoc/>
     public void Close() => this.nativeWindow.Close();

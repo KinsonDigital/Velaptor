@@ -50,7 +50,6 @@ internal static class WindowFactory
             IoC.Container.GetInstance<IGlfwInvoker>(),
             IoC.Container.GetInstance<ISystemDisplayService>(),
             IoC.Container.GetInstance<IPlatform>(),
-            IoC.Container.GetInstance<ITaskService>(),
             IoC.Container.GetInstance<ISceneManager>(),
             IoC.Container.GetInstance<IReactableFactory>(),
             IoC.Container.GetInstance<ILoggingService>(),

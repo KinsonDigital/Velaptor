@@ -80,12 +80,10 @@ public interface IWindow
     ///     Set to the value of <c>false</c> if you want more control when
     ///     the back buffers will be cleared.
     /// </para>
-    /// <para>
-    ///     WARNING!! - To prevent performance issues, do not manually clear the
-    ///     buffer with the <see cref="IBatcher.Clear"/>() method
-    ///     and set this property to true.  That would be a waste of resources.
-    /// </para>
     /// </remarks>
+    // TODO: This might not be a thing anymore. If I remember right, clearing in webgpu is
+    // automatic and we do not have control over that. Do some research to see if that is the case,
+    // and if it is, remove this.  If we can still control it, set it up.
     bool AutoClearBuffer { get; set; }
 
     /// <summary>
@@ -142,14 +140,6 @@ public interface IWindow
     /// Shows the window.
     /// </summary>
     void Show();
-
-    /// <summary>
-    /// Shows the window asynchronously.
-    /// </summary>
-    /// <param name="afterStart">Executed after the application starts asynchronously.</param>
-    /// <param name="afterUnload">Executed after the window has been unloaded.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    Task ShowAsync(Action? afterStart = null, Action? afterUnload = null);
 
     /// <summary>
     /// Closes the window.

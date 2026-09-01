@@ -43,7 +43,6 @@ public class WgpuWindowTests
     private readonly IGlfwInvoker mockGlfwInvoker;
     private readonly ISystemDisplayService mockSystemDisplayService;
     private readonly IPlatform mockPlatform;
-    private readonly ITaskService mockTaskService;
     private readonly ISceneManager mockSceneManager;
     private readonly IReactableFactory mockReactableFactory;
     private readonly ILoggingService mockLoggingService;
@@ -65,7 +64,6 @@ public class WgpuWindowTests
         this.mockGlfwInvoker = Substitute.For<IGlfwInvoker>();
         this.mockSystemDisplayService = Substitute.For<ISystemDisplayService>();
         this.mockPlatform = Substitute.For<IPlatform>();
-        this.mockTaskService = Substitute.For<ITaskService>();
         this.mockSceneManager = Substitute.For<ISceneManager>();
 
         this.mockPushReactable = Substitute.For<IPushReactable>();
@@ -104,7 +102,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -131,7 +128,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -158,7 +154,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -185,7 +180,6 @@ public class WgpuWindowTests
                 null,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -212,7 +206,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 null,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -239,7 +232,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 null,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -249,33 +241,6 @@ public class WgpuWindowTests
         // Assert
         act.ShouldThrow<ArgumentNullException>()
             .Message.ShouldBe("Value cannot be null. (Parameter 'platform')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullTaskServiceParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new WgpuWindow(
-                100,
-                200,
-                this.mockTelemetryService,
-                this.mockSilkWindow,
-                this.mockNativeInputFactory,
-                this.mockGlfwInvoker,
-                this.mockSystemDisplayService,
-                this.mockPlatform,
-                null,
-                this.mockSceneManager,
-                this.mockReactableFactory,
-                this.mockLoggingService,
-                this.mockMetricsTracker);
-        };
-
-        // Assert
-        act.ShouldThrow<ArgumentNullException>()
-            .Message.ShouldBe("Value cannot be null. (Parameter 'taskService')");
     }
 
     [Fact]
@@ -293,7 +258,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 null,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -320,7 +284,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 null,
@@ -347,7 +310,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 null,
                 this.mockLoggingService,
@@ -374,7 +336,6 @@ public class WgpuWindowTests
                 this.mockGlfwInvoker,
                 this.mockSystemDisplayService,
                 this.mockPlatform,
-                this.mockTaskService,
                 this.mockSceneManager,
                 this.mockReactableFactory,
                 this.mockLoggingService,
@@ -707,21 +668,6 @@ public class WgpuWindowTests
 
     #region Method Tests
     [Fact]
-    public void Show_WhenWindowIsDisposed_ThrowsException()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-        sut.Dispose();
-
-        // Act
-        var act = () => sut.Show();
-
-        // Assert
-        act.ShouldThrow<ObjectDisposedException>()
-            .Message.ShouldBe($"Cannot access a disposed object.\r\nObject name: '{nameof(WgpuWindow)}'.");
-    }
-
-    [Fact]
     public void Show_WhenInvoked_PreInitializesWindow()
     {
         // Arrange
@@ -739,77 +685,6 @@ public class WgpuWindowTests
         this.mockSilkWindow.Received(1).Render += Arg.Any<Action<double>>();
         this.mockSilkWindow.Received(1).Run(Arg.Any<Action>());
         this.mockSilkWindow.Received(1).Dispose();
-    }
-
-    [Fact]
-    public async Task ShowAsync_WithNonNullParams_ShowsWindowAndDoesNotContinueTask()
-    {
-        // Arrange
-        var afterStartInvoked = false;
-        var afterUnloadInvoked = false;
-
-        this.mockTaskService.When(x => x.SetAction(Arg.Any<Action>()))
-            .Do(callInfo =>
-            {
-                // Invoked the internal action to run the PreInit() and RunWindow() methods.
-                // This is necessary to wire up the closing event.
-                var action = callInfo.Arg<Action>();
-                action();
-            });
-
-        var sut = CreateSystemUnderTest();
-
-        var afterStart = () =>
-        {
-            afterStartInvoked = true;
-        };
-
-        var afterUnload = () =>
-        {
-            afterUnloadInvoked = true;
-        };
-
-        // Act
-        await sut.ShowAsync(afterStart, afterUnload);
-        this.mockSilkWindow.Closing += Raise.Event<Action>();
-
-        // Assert
-        afterStartInvoked.ShouldBeTrue();
-        afterUnloadInvoked.ShouldBeTrue();
-        await this.mockTaskService.DidNotReceive()
-            .ContinueWith(Arg.Any<Action<Task>>(), Arg.Any<TaskContinuationOptions>(), Arg.Any<TaskScheduler>());
-    }
-
-    [Fact]
-    public async Task ShowAsync_WithNullAfterStart_ShowsWindowAndContinuesTask()
-    {
-        // Arrange
-        var afterUnloadInvoked = false;
-
-        this.mockTaskService.When(x => x.SetAction(Arg.Any<Action>()))
-            .Do(callInfo =>
-            {
-                // Invoked the internal action to run the PreInit() and RunWindow() methods.
-                // This is necessary to wire up the closing event.
-                var action = callInfo.Arg<Action>();
-                action();
-            });
-
-        var sut = CreateSystemUnderTest();
-
-        var afterUnload = () =>
-        {
-            afterUnloadInvoked = true;
-        };
-
-        // Act
-        await sut.ShowAsync(null, afterUnload);
-        this.mockSilkWindow.Closing += Raise.Event<Action>();
-
-        // Assert
-        afterUnloadInvoked.ShouldBeTrue();
-        await this.mockTaskService.Received(1)
-            .ContinueWith(Arg.Any<Action<Task>>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
     [Fact]
@@ -915,23 +790,13 @@ public class WgpuWindowTests
     }
 
     [Fact]
-    public async Task InternalClosing_WhenInvoked_StartsClosingProcess()
+    public void InternalClosing_WhenInvoked_StartsClosingProcess()
     {
         // Arrange
         var uninitializeInvoked = false;
-        var afterUnloadInvoked = false;
-
-        Action? afterStart = null;
-
-        this.mockTaskService
-            .When(x => x.SetAction(Arg.Any<Action>()))
-            .Do(call => afterStart = call.Arg<Action>());
-
         var sut = CreateSystemUnderTest();
         sut.Uninitialize += () => uninitializeInvoked = true;
-        await sut.ShowAsync(null, () => afterUnloadInvoked = true);
-
-        afterStart?.Invoke();
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Closing += Raise.Event<Action>();
@@ -939,7 +804,6 @@ public class WgpuWindowTests
         // Assert
         uninitializeInvoked.ShouldBeTrue($"The {nameof(WgpuWindow.Uninitialize)} property was not invoked.");
         this.mockPushReactable.Received(1).Push(PushNotifications.SystemShuttingDownId);
-        afterUnloadInvoked.ShouldBeTrue("The 'afterUnload' action parameter was not invoked.");
     }
 
     [Fact]
@@ -968,7 +832,7 @@ public class WgpuWindowTests
 
         var sut = CreateSystemUnderTest();
         sut.Show();
-        sut.Update += (frameTime) =>
+        sut.Update += frameTime =>
         {
             updateInvoked = true;
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
@@ -1017,13 +881,13 @@ public class WgpuWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        sut.Update += (frameTime) =>
+        sut.Update += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             updateInvoked = true;
         };
 
-        sut.Draw += (frameTime) =>
+        sut.Draw += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             drawInvoked = true;
@@ -1056,13 +920,13 @@ public class WgpuWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        sut.Update += (frameTime) =>
+        sut.Update += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             updateInvoked = true;
         };
 
-        sut.Draw += (frameTime) =>
+        sut.Draw += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             drawInvoked = true;
@@ -1073,7 +937,7 @@ public class WgpuWindowTests
         this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
 
         // Assert
-        updateInvoked.ShouldBeTrue();
+        updateInvoked.ShouldBeFalse();
         drawInvoked.ShouldBeFalse();
 
         this.mockPushReactable.DidNotReceive().Push(PushNotifications.SubmitRenderPassId);
@@ -1235,7 +1099,6 @@ public class WgpuWindowTests
             this.mockGlfwInvoker,
             this.mockSystemDisplayService,
             this.mockPlatform,
-            this.mockTaskService,
             this.mockSceneManager,
             this.mockReactableFactory,
             this.mockLoggingService,

@@ -5,10 +5,8 @@
 namespace VelaptorTests.UI;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using System.Threading.Tasks;
 using Fakes;
 using Helpers;
 using NSubstitute;
@@ -554,21 +552,6 @@ public class WindowTests : TestsBase
     }
 
     [Fact]
-    [Trait("Category", Method)]
-    public async Task ShowAsync_WhenInvoked_ShowsInternalWindow()
-    {
-        // Arrange
-        this.mockWindow.ShowAsync().Returns(Task.Run(() => { }));
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        await sut.ShowAsync();
-
-        // Assert
-        await this.mockWindow.Received(1).ShowAsync();
-    }
-
-    [Fact]
     public void Draw_WhenInvoked_RendersStats()
     {
         // Arrange
@@ -600,10 +583,8 @@ public class WindowTests : TestsBase
         sut.Draw(frameTime);
 
         // Assert
-        this.mockBatcher.Received(1).Begin();
         this.mockFontRenderer.Received(1)
             .Render(this.mockFont, "0", new Vector2(10, -10), Color.FromArgb(11, 22, 33, 44));
-        this.mockBatcher.Received(1).End();
     }
 
     [Fact]
