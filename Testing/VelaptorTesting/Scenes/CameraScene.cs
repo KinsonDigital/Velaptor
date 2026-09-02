@@ -30,13 +30,10 @@ public class CameraScene : SceneBase
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
     private readonly ICamera2D camera;
-    private readonly Label lblHelpText;
     private readonly Label lblInstructions;
-    private readonly Color fontClr = Color.CornflowerBlue;
     private Vector2 mapWorldPos;
     private ITexture? zeldaMapTexture;
     private IFont? font;
-    private bool renderInstructions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CameraScene"/> class.
@@ -50,23 +47,17 @@ public class CameraScene : SceneBase
         this.contentManager = ContentManager.Create();
         this.camera = CameraFactory.CreateCamera();
 
-        this.lblHelpText = new Label();
-        this.lblHelpText.Text = "Ctrl = ?";
-        this.lblHelpText.TextColor = this.fontClr;
-        this.lblHelpText.Position = new Vector2(WindowPadding, WindowPadding);
-
         this.lblInstructions = new Label();
         this.lblInstructions.Text = "Camera Controls:\n" +
             "- Arrow Keys: Pan the camera\n" +
             "- Shift + Up Arrow: Zoom in\n" +
             "- Shift + Down Arrow: Zoom out";
-        this.lblInstructions.TextColor = this.fontClr;
+        this.lblInstructions.TextColor = Color.White;
     }
 
     public override void LoadContent()
     {
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-        this.lblHelpText.Load();
         this.lblInstructions.Load();
 
         this.mapWorldPos = new Vector2(WindowCenter.X, WindowCenter.Y);
@@ -79,7 +70,6 @@ public class CameraScene : SceneBase
     public override void UnloadContent()
     {
         this.backgroundManager.Unload();
-        this.lblHelpText.Unload();
         this.lblInstructions.Unload();
         this.contentManager.Unload(this.zeldaMapTexture);
         this.contentManager.Unload(this.font);
@@ -89,7 +79,6 @@ public class CameraScene : SceneBase
 
     public override void Update(FrameTime frameTime)
     {
-        this.lblHelpText.Update();
         this.lblInstructions.Update();
         this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
 
@@ -99,16 +88,6 @@ public class CameraScene : SceneBase
         var camZoomVelocityOut = (float)frameTime.ElapsedTime.TotalSeconds * CamZoomSpeed;
 
         var currentKeyState = this.keyboard.GetState();
-
-        // Toggle instructions on/off
-        if (currentKeyState.IsKeyDown(KeyCode.LeftControl))
-        {
-            this.renderInstructions = true;
-        }
-        else
-        {
-            this.renderInstructions = false;
-        }
 
         var isShiftDown = currentKeyState.IsKeyDown(KeyCode.LeftShift) ||
             currentKeyState.IsKeyDown(KeyCode.RightShift);
@@ -173,12 +152,7 @@ public class CameraScene : SceneBase
             textureScale,
             -100);
 
-        this.lblHelpText.Render(0);
-
-        if (this.renderInstructions)
-        {
-            this.lblInstructions.Render(0);
-        }
+        this.lblInstructions.Render();
 
         base.Render();
     }

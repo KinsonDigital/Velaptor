@@ -23,6 +23,7 @@ public class BatchPerfScene : SceneBase
     private readonly Random random = new ();
     private readonly List<Line> lines = new ();
     private readonly Label lblTotal;
+    private readonly Label lblInstructions;
 
     public BatchPerfScene()
     {
@@ -30,15 +31,16 @@ public class BatchPerfScene : SceneBase
         this.keyboard = HardwareFactory.GetKeyboard();
 
         this.lblTotal = new Label();
-        this.lblTotal.Position = new Vector2(25, 25);
         this.lblTotal.BackgroundColor = Color.White;
         this.lblTotal.TextColor = Color.Black;
+
+        this.lblInstructions = new Label();
+        this.lblInstructions.BackgroundColor = Color.White;
+        this.lblInstructions.TextColor = Color.Black;
     }
 
     public override void LoadContent()
     {
-        this.lblTotal.Load();
-
         for (var i = 0; i < 10; i++)
         {
             var newLine = CreateLine();
@@ -46,7 +48,22 @@ public class BatchPerfScene : SceneBase
             this.lines.Add(newLine);
         }
 
+        var instructions = new[]
+        {
+            "Up Arrow: Increase total lines by 1",
+            "Down Arrow: Decrease total lines by 1",
+            "Any Shift + Up/Down Arrow: Increase or decrease lines by 5",
+        };
+
+        var instructionsText = string.Join(Environment.NewLine, instructions);
+
+        this.lblInstructions.Load();
+        this.lblInstructions.Text = instructionsText;
+        this.lblInstructions.Position = new Vector2((WindowSize.Width / 2f) - (this.lblInstructions.Width / 2f), 25);
+
+        this.lblTotal.Load();
         this.lblTotal.Text = $"Total Lines: {this.lines.Count}";
+        this.lblTotal.Position = new Vector2(25, WindowSize.Height - (this.lblTotal.Height + 25));
 
         base.LoadContent();
     }
@@ -54,6 +71,7 @@ public class BatchPerfScene : SceneBase
     public override void UnloadContent()
     {
         this.lblTotal.Unload();
+        this.lblInstructions.Unload();
 
         base.UnloadContent();
     }
@@ -94,6 +112,7 @@ public class BatchPerfScene : SceneBase
         }
 
         this.lblTotal.Update();
+        this.lblInstructions.Update();
 
         base.Update(frameTime);
     }
@@ -108,7 +127,9 @@ public class BatchPerfScene : SceneBase
             this.shapeRenderer.Render(line, layer);
         }
 
-        this.lblTotal.Render(0);
+        // TODO: for some reason, the lines are still being rendered on top of the text
+        this.lblTotal.Render(this.lines.Count + 10);
+        this.lblInstructions.Render(this.lines.Count + 10);
 
         base.Render();
     }
