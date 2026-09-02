@@ -28,6 +28,13 @@ internal interface IGraphicsSurface : IDisposable
     TextureFormat Format { get; }
 
     /// <summary>
+    /// Gets the physical framebuffer size in pixels.
+    /// On macOS HiDPI displays, this is 2× the logical window size.
+    /// On Windows, this typically matches the logical window size (1:1).
+    /// </summary>
+    (int X, int Y) FramebufferSize { get; }
+
+    /// <summary>
     /// Initializes the WebGPU surface by creating the platform-specific surface handle.
     /// This must be called after the window is fully created and shown.
     /// After calling this, <see cref="Handle"/> will be available.

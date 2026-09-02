@@ -23,6 +23,7 @@ public class GraphicsShapePipelineTests
     private readonly SafeShaderModuleHandle fragShaderHandle;
     private readonly SafeShaderModuleHandle vertShaderHandle;
     private readonly SafePipelineLayoutHandle pipelineLayoutHandle;
+    private readonly SafeBindGroupLayoutHandle bindGroupLayoutHandle;
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockGrfxDevice;
     private readonly IGraphicsSurface mockSurface;
@@ -36,8 +37,13 @@ public class GraphicsShapePipelineTests
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
         this.pipelineLayoutHandle = new SafePipelineLayoutHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
-        this.mockWgpuInvoker.DeviceCreatePipelineLayout(Arg.Any<SafeDeviceHandle>(), Arg.Any<string>())
+        this.bindGroupLayoutHandle = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, 0x22);
+        this.mockWgpuInvoker.DeviceCreatePipelineLayout(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<SafeBindGroupLayoutHandle[]>())
             .Returns(this.pipelineLayoutHandle);
+        this.mockWgpuInvoker.DeviceCreateBindGroupLayout(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<BindGroupLayoutEntry[]>())
+            .Returns(this.bindGroupLayoutHandle);
 
         this.vertShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
         this.fragShaderHandle = new SafeShaderModuleHandle(this.mockWgpuInvoker, UnsafeDeviceHandle);
@@ -147,7 +153,18 @@ public class GraphicsShapePipelineTests
         // Assert
         this.mockShader.Received(1)
             .Initialize(this.mockGrfxDevice, TypeOfShader.Shape, Arg.Any<Action<SafeShaderModuleHandle, SafeShaderModuleHandle>>());
-        this.mockWgpuInvoker.Received(1).DeviceCreatePipelineLayout(deviceHandle, "Shape Pipeline Layout");
+        this.mockWgpuInvoker.Received(1).DeviceCreateBindGroupLayout(
+            deviceHandle,
+            Arg.Is<BindGroupLayoutEntry[]>(entries =>
+                entries.Length == 1 &&
+                entries[0].Binding == 0 &&
+                entries[0].Visibility == ShaderStage.Fragment &&
+                entries[0].Buffer.Type == BufferBindingType.Uniform &&
+                entries[0].Buffer.MinBindingSize == 8));
+        this.mockWgpuInvoker.Received(1).DeviceCreatePipelineLayout(
+            deviceHandle,
+            "Shape Pipeline Layout",
+            Arg.Is<SafeBindGroupLayoutHandle[]>(layouts => layouts.Length == 1 && layouts[0] == this.bindGroupLayoutHandle));
         this.mockWgpuInvoker.Received(1).DeviceCreateRenderPipeline(deviceHandle, Arg.Any<SafeRenderPipelineDescriptor>());
         actualDescriptor.ShouldNotBeNull();
         actualDescriptor.Value.Layout.ShouldBe(this.pipelineLayoutHandle);

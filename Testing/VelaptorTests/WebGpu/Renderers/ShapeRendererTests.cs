@@ -3,6 +3,7 @@
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable CompareOfFloatsByEqualityOperator
 namespace VelaptorTests.WebGpu.Renderers;
 
 using System;
@@ -16,6 +17,7 @@ using Carbonate.OneWay;
 using Helpers;
 using NSubstitute;
 using Shouldly;
+using BufferUsage = Silk.NET.WebGPU.BufferUsage;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
@@ -36,6 +38,8 @@ using Xunit;
 public class ShapeRendererTests : TestsBase
 {
     private readonly IWgpuInvoker mockWgpuInvoker;
+    private readonly IGraphicsDevice mockGraphicsDevice;
+    private readonly IGraphicsSurface mockGraphicsSurface;
     private readonly IGraphicsShapePipeline mockShapePipeline;
     private readonly IGraphicsLinePipeline mockLinePipeline;
     private readonly IWebGpuBuffer<ShapeBatchItem> mockShapeBuffer;
@@ -60,6 +64,8 @@ public class ShapeRendererTests : TestsBase
     public ShapeRendererTests()
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
+        this.mockGraphicsDevice = Substitute.For<IGraphicsDevice>();
+        this.mockGraphicsSurface = Substitute.For<IGraphicsSurface>();
         this.mockShapePipeline = Substitute.For<IGraphicsShapePipeline>();
         this.mockLinePipeline = Substitute.For<IGraphicsLinePipeline>();
         this.mockShapeBuffer = Substitute.For<IWebGpuBuffer<ShapeBatchItem>>();
@@ -217,6 +223,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             null,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -231,11 +239,55 @@ public class ShapeRendererTests : TestsBase
     }
 
     [Fact]
+    public void Ctor_WithNullGraphicsDeviceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new ShapeRenderer(
+            this.mockWgpuInvoker,
+            null,
+            this.mockGraphicsSurface,
+            this.mockShapePipeline,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
+            this.mockFrame,
+            this.mockBatchingManager,
+            this.mockReactableFactory);
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'grfxDevice')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullSurfaceParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () => new ShapeRenderer(
+            this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            null,
+            this.mockShapePipeline,
+            this.mockLinePipeline,
+            this.mockShapeBuffer,
+            this.mockLineBuffer,
+            this.mockFrame,
+            this.mockBatchingManager,
+            this.mockReactableFactory);
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'surface')");
+    }
+
+    [Fact]
     public void Ctor_WithNullPipelineParam_ThrowsException()
     {
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             null,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -255,6 +307,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             null,
             this.mockShapeBuffer,
@@ -274,6 +328,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             null,
@@ -293,6 +349,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -312,6 +370,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -331,6 +391,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -350,6 +412,8 @@ public class ShapeRendererTests : TestsBase
         // Arrange & Act
         var act = () => new ShapeRenderer(
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -1022,6 +1086,168 @@ public class ShapeRendererTests : TestsBase
     }
     #endregion
 
+    #region DPI Scale Uniform Tests
+    [Fact]
+    public void ViewportSubscription_WhenViewportChanges_CreatesDpiScaleUniformBuffer()
+    {
+        // Arrange
+        var device = SetupGraphicsDevice();
+        var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
+        this.mockWgpuInvoker.DeviceCreateVertexBuffer(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
+            .Returns(vertexBuffer);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).DeviceCreateVertexBuffer(
+            device,
+            "Shape DPI Scale Uniform Buffer",
+            8,
+            BufferUsage.Uniform | BufferUsage.CopyDst);
+    }
+
+    [Fact]
+    public void ViewportSubscription_WhenViewportChanges_UploadsDpiScaleData()
+    {
+        // Arrange
+        _ = SetupGraphicsDevice();
+        var queue = this.mockGraphicsDevice.Queue;
+        var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
+        this.mockWgpuInvoker.DeviceCreateVertexBuffer(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
+            .Returns(vertexBuffer);
+        this.mockGraphicsSurface.FramebufferSize.Returns((3840, 2160));
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).QueueWriteBuffer(
+            queue,
+            vertexBuffer.DangerousGetHandle(),
+            0,
+            Arg.Is<float[]>(data => data.Length == 2 && data[0] == 2f && data[1] == 2f));
+    }
+
+    [Fact]
+    public void ViewportSubscription_WhenViewportChanges_CreatesDpiScaleBindGroup()
+    {
+        // Arrange
+        var device = SetupGraphicsDevice();
+        var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
+        var bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, 0x9ABC);
+        this.mockWgpuInvoker.DeviceCreateVertexBuffer(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
+            .Returns(vertexBuffer);
+        this.mockShapePipeline.BindGroupLayout.Returns(bindGroupLayout);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).DeviceCreateBufferBindGroupHandle(
+            device,
+            "Shape DPI Scale Bind Group",
+            bindGroupLayout,
+            vertexBuffer,
+            0,
+            8);
+    }
+
+    [Fact]
+    public void RenderBatch_WhenDpiScaleBindGroupExists_SetsBindGroup()
+    {
+        // Arrange
+        _ = SetupGraphicsDevice();
+        var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
+        var bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, 0x9ABC);
+        var bindGroup = new SafeBindGroupHandle(this.mockWgpuInvoker, 0xBEEF);
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+
+        this.mockWgpuInvoker.DeviceCreateVertexBuffer(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
+            .Returns(vertexBuffer);
+        this.mockShapePipeline.BindGroupLayout.Returns(bindGroupLayout);
+        this.mockWgpuInvoker.DeviceCreateBufferBindGroupHandle(
+                Arg.Any<SafeDeviceHandle>(),
+                Arg.Any<string>(),
+                Arg.Any<SafeBindGroupLayoutHandle>(),
+                Arg.Any<SafeVertexBufferHandle>(),
+                Arg.Any<ulong>(),
+                Arg.Any<ulong>())
+            .Returns(bindGroup);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+        this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        var batchItem = new ShapeBatchItem(
+            new Vector2(10, 20),
+            100f,
+            200f,
+            Color.Red,
+            true,
+            5f,
+            new CornerRadius(10f),
+            ColorGradient.None,
+            Color.White,
+            Color.White);
+        var renderItem = new RenderItem<ShapeBatchItem> { Item = batchItem };
+        var itemsToRender = new Memory<RenderItem<ShapeBatchItem>>([renderItem]);
+
+        // Act
+        this.renderBatchSubscription.OnReceive(itemsToRender);
+
+        // Assert
+        this.mockWgpuInvoker.Received(1).RenderPassEncoderSetBindGroup(renderPassHandle, 0, bindGroup, 0, 0);
+    }
+
+    [Fact]
+    public void RenderBatch_WhenDpiScaleBindGroupDoesNotExist_DoesNotSetBindGroup()
+    {
+        // Arrange
+        var renderPassHandle = new SafeRenderPassEncoderHandle(this.mockWgpuInvoker, 0x123);
+        this.mockFrame.RenderPass.Returns(renderPassHandle);
+
+        _ = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        var batchItem = new ShapeBatchItem(
+            new Vector2(10, 20),
+            100f,
+            200f,
+            Color.Red,
+            true,
+            5f,
+            new CornerRadius(10f),
+            ColorGradient.None,
+            Color.White,
+            Color.White);
+        var renderItem = new RenderItem<ShapeBatchItem> { Item = batchItem };
+        var itemsToRender = new Memory<RenderItem<ShapeBatchItem>>([renderItem]);
+
+        // Act
+        this.renderBatchSubscription.OnReceive(itemsToRender);
+
+        // Assert
+        this.mockWgpuInvoker.DidNotReceive().RenderPassEncoderSetBindGroup(
+            Arg.Any<SafeRenderPassEncoderHandle>(),
+            Arg.Any<uint>(),
+            Arg.Any<SafeBindGroupHandle>(),
+            Arg.Any<nuint>(),
+            Arg.Any<nint>());
+    }
+    #endregion
+
     /// <summary>
     /// Creates a new instance of <see cref="ShapeRenderer"/> for the purpose of testing.
     /// </summary>
@@ -1029,6 +1255,8 @@ public class ShapeRendererTests : TestsBase
     private ShapeRenderer CreateSystemUnderTest()
         => new (
             this.mockWgpuInvoker,
+            this.mockGraphicsDevice,
+            this.mockGraphicsSurface,
             this.mockShapePipeline,
             this.mockLinePipeline,
             this.mockShapeBuffer,
@@ -1036,4 +1264,20 @@ public class ShapeRendererTests : TestsBase
             this.mockFrame,
             this.mockBatchingManager,
             this.mockReactableFactory);
+
+    /// <summary>
+    /// Configures the mock graphics device so that <see cref="ShapeRenderer"/> treats it as initialized,
+    /// enabling the DPI scale uniform buffer and bind group to be created.
+    /// </summary>
+    /// <returns>The configured device handle.</returns>
+    private SafeDeviceHandle SetupGraphicsDevice()
+    {
+        var device = new SafeDeviceHandle(this.mockWgpuInvoker, 0x1234);
+        var queue = new SafeQueueHandle(this.mockWgpuInvoker, device);
+
+        this.mockGraphicsDevice.Handle.Returns(device);
+        this.mockGraphicsDevice.Queue.Returns(queue);
+
+        return device;
+    }
 }

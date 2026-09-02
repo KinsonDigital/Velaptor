@@ -3,6 +3,14 @@
 // PIXEL SPACE: origin at window top-left, Y increases downward
 //              (matches @builtin(position) in the fragment shader)
 
+struct ShapeUniforms {
+    dpiScaleX: f32,
+    dpiScaleY: f32,
+};
+
+@group(0) @binding(0)
+var<uniform> uniforms: ShapeUniforms;
+
 struct VertexOutput {
     @builtin(position) position:          vec4<f32>,
     @location(0)       shape:             vec4<f32>,
@@ -201,7 +209,9 @@ fn fs_main(fin: VertexOutput) -> @location(0) vec4<f32> {
     // Pack the four radii into a vec4 for convenient passing.
     let radii = vec4<f32>(fin.topLeftRadius, fin.topRightRadius, fin.bottomRightRadius, fin.bottomLeftRadius);
 
-    let fragPos = fin.position.xy;
+    // Scale fragment position from physical pixels to logical pixels
+    // On macOS HiDPI, framebuffer is 2× logical; on Windows it's 1:1
+    let fragPos = fin.position.xy / vec2<f32>(uniforms.dpiScaleX, uniforms.dpiScaleY);
 
     let inOuterRect = containedByRect(outerRect, radii, fragPos);
 

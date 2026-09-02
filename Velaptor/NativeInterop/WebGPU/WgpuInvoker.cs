@@ -447,6 +447,52 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
+    public SafeBindGroupHandle DeviceCreateBufferBindGroupHandle(
+        SafeDeviceHandle device,
+        string? label,
+        SafeBindGroupLayoutHandle layout,
+        SafeVertexBufferHandle buffer,
+        ulong offset,
+        ulong size)
+    {
+        var labelPtr = label is not null ? SilkMarshal.StringToPtr(label) : 0;
+
+        try
+        {
+            unsafe
+            {
+                var entries = stackalloc BindGroupEntry[1];
+                entries[0] = new BindGroupEntry
+                {
+                    Binding = 0,
+                    Buffer = (WebGpuBuffer*)buffer.DangerousGetHandle(),
+                    Offset = offset,
+                    Size = size,
+                };
+
+                var desc = new BindGroupDescriptor
+                {
+                    Label = (byte*)labelPtr,
+                    Layout = (BindGroupLayout*)layout.DangerousGetHandle(),
+                    EntryCount = 1,
+                    Entries = entries,
+                };
+
+                var handle = (nint)Wgpu.DeviceCreateBindGroup((Device*)device.DangerousGetHandle(), in desc);
+
+                return new SafeBindGroupHandle(this, handle);
+            }
+        }
+        finally
+        {
+            if (labelPtr != 0)
+            {
+                SilkMarshal.Free(labelPtr);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public SafeBindGroupLayoutHandle DeviceCreateBindGroupLayout(SafeDeviceHandle device, BindGroupLayoutEntry[] entries)
     {
         unsafe
@@ -455,6 +501,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             {
                 var desc = new BindGroupLayoutDescriptor { EntryCount = (uint)entries.Length, Entries = pEntries, };
                 var handle = (nint)Wgpu.DeviceCreateBindGroupLayout((Device*)device.DangerousGetHandle(), in desc);
+
                 return new SafeBindGroupLayoutHandle(this, handle);
             }
         }

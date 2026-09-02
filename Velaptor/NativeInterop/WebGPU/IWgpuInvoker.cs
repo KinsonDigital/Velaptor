@@ -250,6 +250,24 @@ internal interface IWgpuInvoker
     void BindGroupRelease(nint bindGroup);
 
     /// <summary>
+    /// Creates a bind group with a uniform buffer binding.
+    /// </summary>
+    /// <param name="device">The device handle.</param>
+    /// <param name="label">An optional label for debugging.</param>
+    /// <param name="layout">The bind group layout.</param>
+    /// <param name="buffer">The vertex buffer handle to bind.</param>
+    /// <param name="offset">The byte offset into the buffer.</param>
+    /// <param name="size">The size of the binding in bytes.</param>
+    /// <returns>A safe handle to the bind group.</returns>
+    SafeBindGroupHandle DeviceCreateBufferBindGroupHandle(
+        SafeDeviceHandle device,
+        string? label,
+        SafeBindGroupLayoutHandle layout,
+        SafeVertexBufferHandle buffer,
+        ulong offset,
+        ulong size);
+
+    /// <summary>
     /// Creates a bind group layout from a managed array of entries.
     /// The <c>fixed</c> pinning is handled internally so callers avoid <c>unsafe</c> context.
     /// </summary>

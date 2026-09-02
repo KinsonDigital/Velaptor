@@ -52,6 +52,16 @@ internal sealed class GraphicsSurface : IGraphicsSurface
     public TextureFormat Format { get; private set; }
 
     /// <inheritdoc/>
+    public (int X, int Y) FramebufferSize
+    {
+        get
+        {
+            var size = this.window.FramebufferSize;
+            return (size.X, size.Y);
+        }
+    }
+
+    /// <inheritdoc/>
     public void Initialize()
     {
         if (this.isInitialized)

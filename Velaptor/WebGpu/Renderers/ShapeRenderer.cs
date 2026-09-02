@@ -14,6 +14,8 @@ using Factories;
 using Graphics;
 using Graphics.Renderers;
 using NativeInterop.WebGpu;
+using NativeInterop.WebGpu.Handles;
+using WebGpuBufferUsage = Silk.NET.WebGPU.BufferUsage;
 using Velaptor.Batching;
 
 /// <summary>
@@ -22,6 +24,9 @@ using Velaptor.Batching;
 /// </summary>
 internal sealed class ShapeRenderer : IShapeRenderer
 {
+    private readonly IWgpuInvoker wgpu;
+    private readonly IGraphicsDevice grfxDevice;
+    private readonly IGraphicsSurface surface;
     private readonly IGraphicsShapePipeline shapePipeline;
     private readonly IGraphicsLinePipeline linePipeline;
     private readonly IWebGpuBuffer<ShapeBatchItem> shapeBuffer;
@@ -33,6 +38,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
     private readonly IDisposable renderShapesUnsubscriber;
     private readonly IDisposable renderLinesUnsubscriber;
     private readonly IDisposable viewportUnsubscriber;
+    private SafeVertexBufferHandle? dpiScaleUniformBuffer;
+    private SafeBindGroupHandle? dpiScaleBindGroup;
     private uint shapeBatchOffset;
     private uint lineBatchOffset;
     private bool hasBegun;
@@ -42,6 +49,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
     /// Initializes a new instance of the <see cref="ShapeRenderer"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
+    /// <param name="grfxDevice">The graphics device.</param>
+    /// <param name="surface">The graphics surface.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications.</param>
     /// <param name="shapePipeline">The shape rendering pipeline.</param>
     /// <param name="linePipeline">The line rendering pipeline.</param>
@@ -51,6 +60,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
     /// <param name="batchManager">Batches items for rendering.</param>
     public ShapeRenderer(
         IWgpuInvoker wgpu,
+        IGraphicsDevice grfxDevice,
+        IGraphicsSurface surface,
         IGraphicsShapePipeline shapePipeline,
         IGraphicsLinePipeline linePipeline,
         IWebGpuBuffer<ShapeBatchItem> shapeBuffer,
@@ -60,6 +71,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
         IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(wgpu);
+        ArgumentNullException.ThrowIfNull(grfxDevice);
+        ArgumentNullException.ThrowIfNull(surface);
         ArgumentNullException.ThrowIfNull(shapePipeline);
         ArgumentNullException.ThrowIfNull(linePipeline);
         ArgumentNullException.ThrowIfNull(shapeBuffer);
@@ -68,6 +81,9 @@ internal sealed class ShapeRenderer : IShapeRenderer
         ArgumentNullException.ThrowIfNull(batchManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
 
+        this.wgpu = wgpu;
+        this.grfxDevice = grfxDevice;
+        this.surface = surface;
         this.shapePipeline = shapePipeline;
         this.linePipeline = linePipeline;
         this.shapeBuffer = shapeBuffer;
@@ -112,6 +128,7 @@ internal sealed class ShapeRenderer : IShapeRenderer
             {
                 this.shapeBuffer.WindowSize = new Vector2(data.Width, data.Height);
                 this.lineBuffer.WindowSize = new Vector2(data.Width, data.Height);
+                UpdateDpiScaleUniform(data.Width, data.Height);
             },
             () => this.viewportUnsubscriber?.Dispose());
     }
@@ -160,6 +177,8 @@ internal sealed class ShapeRenderer : IShapeRenderer
             this.renderShapesUnsubscriber.Dispose();
             this.renderLinesUnsubscriber.Dispose();
             this.viewportUnsubscriber.Dispose();
+            this.dpiScaleUniformBuffer?.Dispose();
+            this.dpiScaleBindGroup?.Dispose();
         }
 
         this.isDisposed = true;
@@ -226,6 +245,12 @@ internal sealed class ShapeRenderer : IShapeRenderer
 
         this.shapePipeline.Bind(renderPass);
 
+        // Bind the DPI scale uniform buffer
+        if (this.dpiScaleBindGroup is not null)
+        {
+            this.wgpu.RenderPassEncoderSetBindGroup(renderPass, 0, this.dpiScaleBindGroup, 0, 0);
+        }
+
         var totalItemsToRender = 0u;
         var gpuDataIndex = (int)this.shapeBatchOffset - 1;
 
@@ -279,5 +304,60 @@ internal sealed class ShapeRenderer : IShapeRenderer
 
         this.lineBuffer.Draw(renderPass, totalItemsToRender, this.lineBatchOffset);
         this.lineBatchOffset += totalItemsToRender;
+    }
+
+    /// <summary>
+    /// Updates the DPI scale uniform buffer based on logical vs. physical framebuffer dimensions.
+    /// On macOS HiDPI, the framebuffer is 2× the logical size; on Windows it's typically 1:1.
+    /// </summary>
+    /// <param name="logicalWidth">The logical window width (in app-visible units).</param>
+    /// <param name="logicalHeight">The logical window height (in app-visible units).</param>
+    private void UpdateDpiScaleUniform(uint logicalWidth, uint logicalHeight)
+    {
+        // Lazily create the uniform buffer on first update (device must be initialized)
+        // TODO: Check into not doing this in a lazy manner
+        if (this.dpiScaleUniformBuffer is null)
+        {
+            if (this.grfxDevice.Handle is null)
+            {
+                // TODO: Throw an exception?
+                return; // Device not initialized yet
+            }
+
+            // TODO: Throw an exception if the 'this.grfxDevice.Queue' is null?
+
+            this.dpiScaleUniformBuffer = this.wgpu.DeviceCreateVertexBuffer(
+                this.grfxDevice.Handle,
+                "Shape DPI Scale Uniform Buffer",
+                8,
+                WebGpuBufferUsage.Uniform | WebGpuBufferUsage.CopyDst);
+        }
+
+        // Get the physical framebuffer dimensions from the surface
+        var framebufferSize = this.surface.FramebufferSize;
+        var physicalWidth = (float)framebufferSize.X;
+        var physicalHeight = (float)framebufferSize.Y;
+        var logicalWidthF = (float)logicalWidth;
+        var logicalHeightF = (float)logicalHeight;
+
+        // Calculate scale factors: physical / logical
+        var scaleX = logicalWidthF > 0 ? physicalWidth / logicalWidthF : 1.0f;
+        var scaleY = logicalHeightF > 0 ? physicalHeight / logicalHeightF : 1.0f;
+
+        // Create and upload the scale factor data
+        float[] scaleData = [scaleX, scaleY];
+        this.wgpu.QueueWriteBuffer(this.grfxDevice.Queue, this.dpiScaleUniformBuffer.DangerousGetHandle(), 0, scaleData);
+
+        // Lazily create the bind group on first update
+        if (this.dpiScaleBindGroup is null)
+        {
+            this.dpiScaleBindGroup = this.wgpu.DeviceCreateBufferBindGroupHandle(
+                this.grfxDevice.Handle,
+                "Shape DPI Scale Bind Group",
+                this.shapePipeline.BindGroupLayout,
+                this.dpiScaleUniformBuffer,
+                0,
+                8);
+        }
     }
 }

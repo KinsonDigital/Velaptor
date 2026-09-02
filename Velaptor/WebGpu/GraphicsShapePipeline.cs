@@ -10,15 +10,14 @@ using Silk.NET.WebGPU;
 using NativeInterop.WebGpu.Handles;
 
 /// <summary>
-/// A compiled, immutable render pipeline for drawing rounded rectangles. Unlike the
-/// texture pipeline, this pipeline uses a per-vertex shape attribute layout
-/// (position, bounding box, color, corner radii, etc.) with no bind groups.
+/// A compiled, immutable render pipeline for drawing rounded rectangles.
+/// This pipeline uses a per-vertex shape attribute layout (position, bounding box, color, corner radii, etc.)
+/// and a uniform buffer for DPI scale factors (to handle HiDPI displays on macOS).
 /// </summary>
 /// <remarks>
 /// <para>
-/// Pipeline layout is <b>empty</b> — no bind groups (no textures, no camera uniform).
-/// The fragment shader uses <c>@builtin(position)</c> directly for pixel-space
-/// coordinates.
+/// Pipeline layout includes one bind group: a uniform buffer containing DPI scale factors.
+/// This is needed to convert physical framebuffer pixels to logical window pixels on HiDPI displays.
 /// </para>
 /// <para>
 /// Vertex stride is 64 bytes with 9 attributes.
@@ -30,6 +29,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
     private readonly IGraphicsSurface surface;
     private readonly IGraphicsShader shader;
     private SafeRenderPipelineHandle? pipelineHandle;
+    private SafeBindGroupLayoutHandle? bindGroupLayout;
     private bool isDisposed;
     private bool isInitialized;
 
@@ -48,6 +48,23 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
         this.grfxDevice = grfxDevice;
         this.surface = surface;
         this.shader = shader;
+    }
+
+    /// <summary>
+    /// Gets the bind group layout for the DPI scale factor uniform buffer.
+    /// </summary>
+    public SafeBindGroupLayoutHandle BindGroupLayout
+    {
+        get
+        {
+            if (this.bindGroupLayout is null)
+            {
+                throw new InvalidOperationException(
+                    "The bind group layout has not been initialized. Call Initialize() first.");
+            }
+
+            return this.bindGroupLayout;
+        }
     }
 
     /// <summary>
@@ -98,6 +115,7 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
         }
 
         this.isDisposed = true;
+        this.bindGroupLayout?.Dispose();
         this.pipelineHandle?.Dispose();
     }
 
@@ -114,7 +132,26 @@ internal sealed class GraphicsShapePipeline : IGraphicsShapePipeline
             throw new InvalidOperationException($"The '{nameof(SafeDeviceHandle)}' cannot be null. Cannot build shape pipeline.");
         }
 
-        var pipelineLayout = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(this.grfxDevice.Handle, "Shape Pipeline Layout");
+        // Create the bind group layout for the DPI scale factor uniform buffer
+        var uniformBufferBinding = new BindGroupLayoutEntry
+        {
+            Binding = 0,
+            Visibility = ShaderStage.Fragment,
+            Buffer = new BufferBindingLayout
+            {
+                Type = BufferBindingType.Uniform,
+                MinBindingSize = 8, // 2x float32
+            },
+        };
+
+        this.bindGroupLayout = this.grfxDevice.Wgpu.DeviceCreateBindGroupLayout(
+            this.grfxDevice.Handle,
+            [uniformBufferBinding]);
+
+        var pipelineLayout = this.grfxDevice.Wgpu.DeviceCreatePipelineLayout(
+            this.grfxDevice.Handle,
+            "Shape Pipeline Layout",
+            [this.bindGroupLayout]);
 
         try
         {
