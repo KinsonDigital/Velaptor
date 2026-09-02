@@ -5,10 +5,7 @@
 namespace VelaptorTests.Services;
 
 using System;
-using System.Diagnostics;
 using System.IO.Abstractions;
-using System.Runtime.ExceptionServices;
-using Fakes;
 using NSubstitute;
 using Serilog;
 using Shouldly;

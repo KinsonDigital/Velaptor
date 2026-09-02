@@ -4,7 +4,6 @@
 
 namespace Velaptor.NativeInterop.WebGpu;
 
-using System;
 using Handles;
 using Structures;
 using Silk.NET.Core;

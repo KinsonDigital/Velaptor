@@ -832,7 +832,7 @@ public class WgpuWindowTests
 
         var sut = CreateSystemUnderTest();
         sut.Show();
-        sut.Update += (frameTime) =>
+        sut.Update += frameTime =>
         {
             updateInvoked = true;
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
@@ -912,13 +912,13 @@ public class WgpuWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        sut.Update += (frameTime) =>
+        sut.Update += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             updateInvoked = true;
         };
 
-        sut.Draw += (frameTime) =>
+        sut.Draw += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             drawInvoked = true;
