@@ -342,22 +342,6 @@ public class WindowTests : TestsBase
 
     [Fact]
     [Trait("Category", Prop)]
-    public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.AutoClearBuffer = true;
-        _ = sut.AutoClearBuffer;
-
-        // Assert
-        this.mockWindow.Received(1).AutoClearBuffer = true;
-        _ = this.mockWindow.Received(1).AutoClearBuffer;
-    }
-
-    [Fact]
-    [Trait("Category", Prop)]
     public void AutoSceneLoading_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange

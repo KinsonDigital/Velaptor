@@ -601,19 +601,6 @@ public class WgpuWindowTests
     }
 
     [Fact]
-    public void AutoClearBuffer_WhenInvoked_DefaultsToTrue()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var actual = sut.AutoClearBuffer;
-
-        // Assert
-        actual.ShouldBeTrue();
-    }
-
-    [Fact]
     public void AutoSceneLoading_WhenInvoked_DefaultsToTrue()
     {
         // Arrange

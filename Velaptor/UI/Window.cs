@@ -164,13 +164,6 @@ public abstract class Window : IWindow
     }
 
     /// <inheritdoc/>
-    public bool AutoClearBuffer
-    {
-        get => this.nativeWindow.AutoClearBuffer;
-        set => this.nativeWindow.AutoClearBuffer = value;
-    }
-
-    /// <inheritdoc/>
     public bool MouseCursorVisible
     {
         get => this.nativeWindow.MouseCursorVisible;

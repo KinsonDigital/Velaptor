@@ -159,9 +159,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     }
 
     /// <inheritdoc/>
-    public bool AutoClearBuffer { get; set; } = true;
-
-    /// <inheritdoc/>
     public bool MouseCursorVisible
     {
         get => this.cachedBoolProps[nameof(MouseCursorVisible)].GetValue();

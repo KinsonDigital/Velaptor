@@ -67,27 +67,6 @@ public interface IWindow
     int UpdateFrequency { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the buffers should
-    /// be automatically cleared before rendering any textures.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    ///     If this is set to true, it means you do not have to
-    ///     use or invoke the <see cref="IBatcher.Clear"/>() method.
-    /// </para>
-    /// <para>
-    ///     Set to the value of <c>false</c> if you want more control when
-    ///     the back buffers will be cleared.
-    /// </para>
-    /// <para>
-    ///     WARNING!! - To prevent performance issues, do not manually clear the
-    ///     buffer with the <see cref="IBatcher.Clear"/>() method
-    ///     and set this property to true.  That would be a waste of resources.
-    /// </para>
-    /// </remarks>
-    bool AutoClearBuffer { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether the mouse cursor is visible.
     /// </summary>
     bool MouseCursorVisible { get; set; }
