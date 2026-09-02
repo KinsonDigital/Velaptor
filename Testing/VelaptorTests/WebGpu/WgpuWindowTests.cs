@@ -869,7 +869,6 @@ public class WgpuWindowTests
     public void InternalRender_WithSingleRender_ProcessesRender()
     {
         // Arrange
-        var updateInvoked = false;
         var drawInvoked = false;
         var expectedMetrics = new FrameMetrics
         {
@@ -881,13 +880,7 @@ public class WgpuWindowTests
         var sut = CreateSystemUnderTest();
         sut.Show();
 
-        sut.Update += (frameTime) =>
-        {
-            frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
-            updateInvoked = true;
-        };
-
-        sut.Draw += (frameTime) =>
+        sut.Draw += frameTime =>
         {
             frameTime.ElapsedTime.Milliseconds.ShouldBe(16);
             drawInvoked = true;
@@ -897,7 +890,6 @@ public class WgpuWindowTests
         this.mockSilkWindow.Render += Raise.Event<Action<double>>(0.016);
 
         // Assert
-        updateInvoked.ShouldBeTrue();
         drawInvoked.ShouldBeTrue();
         this.mockPushReactable.Received(1).Push(PushNotifications.SubmitRenderPassId);
         this.mockMetricsTracker.Received(1).RecordFrame(0.016);

@@ -59,7 +59,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private CachedValue<Vector2>? cachedPosition;
     private MouseStateData mouseStateData;
     private IInputContext? inputContext;
-    private bool firstRenderInvoked;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WgpuWindow"/> class.
@@ -442,15 +441,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Render(double time)
     {
-        if (!this.firstRenderInvoked)
-        {
-            Update?.Invoke(new FrameTime
-            {
-                ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
-            });
-            this.firstRenderInvoked = true;
-        }
-
         var frameTime = new FrameTime
         {
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
