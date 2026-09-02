@@ -59,7 +59,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private CachedValue<Vector2>? cachedPosition;
     private MouseStateData mouseStateData;
     private IInputContext? inputContext;
-    private bool isShuttingDown;
     private bool firstRenderInvoked;
 
     /// <summary>
@@ -378,8 +377,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Closing()
     {
-        this.isShuttingDown = true;
-
         // Capture any exceptions and log them
         try
         {
@@ -424,11 +421,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Update(double time)
     {
-        if (this.isShuttingDown)
-        {
-            return;
-        }
-
         var frameTime = new FrameTime
         {
             ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
@@ -457,11 +449,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
                 ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
             });
             this.firstRenderInvoked = true;
-        }
-
-        if (this.isShuttingDown)
-        {
-            return;
         }
 
         var frameTime = new FrameTime
