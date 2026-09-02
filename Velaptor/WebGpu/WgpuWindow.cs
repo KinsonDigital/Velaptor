@@ -7,12 +7,10 @@ namespace Velaptor.WebGpu;
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Carbonate;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
@@ -44,7 +42,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly IGlfwInvoker glfw;
     private readonly ISystemDisplayService systemDisplayService;
     private readonly IPlatform platform;
-    private readonly ITaskService taskService;
     private readonly ILoggingService loggingService;
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
@@ -64,7 +61,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private IInputContext? inputContext;
     private bool isShuttingDown;
     private bool firstRenderInvoked;
-    private Action? afterUnloadAction;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WgpuWindow"/> class.
@@ -77,7 +73,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
     /// <param name="systemDisplayService">Provides information about system displays.</param>
     /// <param name="platform">Provides information about the current platform.</param>
-    /// <param name="taskService">Runs asynchronous tasks.</param>
     /// <param name="sceneManager">Manages scenes.</param>
     /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
     /// <param name="loggingService">Provides different types of logging services.</param>
@@ -91,7 +86,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         IGlfwInvoker glfwInvoker,
         ISystemDisplayService systemDisplayService,
         IPlatform platform,
-        ITaskService taskService,
         ISceneManager sceneManager,
         IReactableFactory reactableFactory,
         ILoggingService loggingService,
@@ -103,7 +97,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         ArgumentNullException.ThrowIfNull(glfwInvoker);
         ArgumentNullException.ThrowIfNull(systemDisplayService);
         ArgumentNullException.ThrowIfNull(platform);
-        ArgumentNullException.ThrowIfNull(taskService);
         ArgumentNullException.ThrowIfNull(sceneManager);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(loggingService);
@@ -114,7 +107,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.glfw = glfwInvoker;
         this.systemDisplayService = systemDisplayService;
         this.platform = platform;
-        this.taskService = taskService;
         SceneManager = sceneManager;
         this.loggingService = loggingService;
         this.frameMetricsTracker = frameMetricsTracker;
@@ -240,32 +232,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
     {
         PreInit();
         RunWindow();
-    }
-
-    /// <inheritdoc/>
-    public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null)
-    {
-        this.afterUnloadAction = afterUnload;
-
-        this.taskService.SetAction(
-            () =>
-            {
-                PreInit();
-                RunWindow();
-            });
-
-        this.taskService.Start();
-
-        if (afterStart is not null)
-        {
-            afterStart();
-            return;
-        }
-
-        await this.taskService.ContinueWith(
-            _ => { },
-            TaskContinuationOptions.ExecuteSynchronously,
-            TaskScheduler.Default);
     }
 
     /// <inheritdoc/>
@@ -432,8 +398,6 @@ internal sealed class WgpuWindow : VelaptorIWindow
 
         // screen before shutting down the window. So this means that this is not called every single time.  Why?
         IoC.DisposeOfRegisteredTypes();
-
-        this.afterUnloadAction?.Invoke();
     }
 
     /// <summary>

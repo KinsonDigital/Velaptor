@@ -144,14 +144,6 @@ public interface IWindow
     void Show();
 
     /// <summary>
-    /// Shows the window asynchronously.
-    /// </summary>
-    /// <param name="afterStart">Executed after the application starts asynchronously.</param>
-    /// <param name="afterUnload">Executed after the window has been unloaded.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    Task ShowAsync(Action? afterStart = null, Action? afterUnload = null);
-
-    /// <summary>
     /// Closes the window.
     /// </summary>
     void Close();
