@@ -33,7 +33,7 @@ public sealed class Button : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -120,7 +120,7 @@ public sealed class Button : Control
         base.Update();
     }
 
-    public override void Render(int layer)
+    public override void Render(int layer = 0)
     {
         if (!Visible)
         {

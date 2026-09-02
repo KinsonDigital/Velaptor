@@ -152,7 +152,7 @@ public class TextRenderingScene : SceneBase
             this.angle,
             this.isBlue ? Color.CornflowerBlue : Color.White);
 
-        this.mainContainer.Render(0);
+        this.mainContainer.Render();
 
         base.Render();
     }

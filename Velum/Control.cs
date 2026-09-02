@@ -39,7 +39,7 @@ public class Control : IControl
 
     public virtual void Unload() => IsLoaded = false;
 
-    public virtual void Render(int layer)
+    public virtual void Render(int layer = 0)
     {
     }
 

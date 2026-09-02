@@ -114,8 +114,8 @@ public class LayeredLineRenderingScene : SceneBase
         this.shapeRenderer.Render(this.whiteLine, (int)this.whiteLayer);
 
         // Render the background
-        this.lblInstructions.Render(0);
-        this.lblLineState.Render(0);
+        this.lblInstructions.Render();
+        this.lblLineState.Render();
         base.Render();
     }
 

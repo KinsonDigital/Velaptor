@@ -260,8 +260,8 @@ public class ShapeScene : SceneBase
         }
 
         this.backgroundManager.Render();
-        this.lblInstructions.Render(0);
-        this.conMain.Render(0);
+        this.lblInstructions.Render();
+        this.conMain.Render();
 
         base.Render();
     }

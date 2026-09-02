@@ -169,7 +169,7 @@ public sealed class CheckBox : Control
         base.Update();
     }
 
-    public override void Render(int layer)
+    public override void Render(int layer = 0)
     {
         if (this.font is null)
         {

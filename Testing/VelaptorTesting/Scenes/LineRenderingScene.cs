@@ -100,7 +100,7 @@ public class LineRenderingScene : SceneBase
         this.backgroundManager.Render();
         this.shapeRenderer.Render(this.line);
 
-        this.lblInstructions.Render(0);
+        this.lblInstructions.Render();
 
         base.Render();
     }

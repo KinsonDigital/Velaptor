@@ -151,8 +151,8 @@ public class LayeredTextureRenderingScene : SceneBase
         this.textureRenderer.Render(this.atlas, "white-box", this.whiteBoxPos, 0, (int)this.whiteLayer);
 
         // The instructions text
-        this.lblInstructions.Render(0);
-        this.lblBoxState.Render(0);
+        this.lblInstructions.Render();
+        this.lblBoxState.Render();
 
         base.Render();
     }

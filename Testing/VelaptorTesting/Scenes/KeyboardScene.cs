@@ -108,8 +108,8 @@ public class KeyboardScene : SceneBase
     {
         this.backgroundManager.Render();
 
-        this.lblInstructions.Render(0);
-        this.lblDownKeys.Render(0);
+        this.lblInstructions.Render();
+        this.lblDownKeys.Render();
 
         base.Render();
     }

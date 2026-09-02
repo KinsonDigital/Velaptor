@@ -219,7 +219,7 @@ public class Container : Control
         ProcessBorder();
     }
 
-    public override void Render(int layer)
+    public override void Render(int layer = 0)
     {
         this.shapeRenderer.Render(this.area, -1000);
 

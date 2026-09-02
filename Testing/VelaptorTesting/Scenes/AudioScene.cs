@@ -135,8 +135,8 @@ public class AudioScene : SceneBase
     {
         this.backgroundManager?.Render();
 
-        this.lblInfo.Render(0);
-        this.conAudio.Render(0);
+        this.lblInfo.Render();
+        this.conAudio.Render();
 
         base.Render();
     }

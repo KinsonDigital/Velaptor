@@ -156,7 +156,7 @@ public sealed class Layout : Control
         ProcessBorder();
     }
 
-    public override void Render(int layer)
+    public override void Render(int layer = 0)
     {
         if (!Visible)
         {

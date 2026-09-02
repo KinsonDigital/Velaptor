@@ -158,7 +158,7 @@ public class NonAnimatedGraphicsScene : SceneBase
             Color.White,
             this.renderEffects);
 
-        this.lblInstructions.Render(0);
+        this.lblInstructions.Render();
 
         base.Render();
     }
