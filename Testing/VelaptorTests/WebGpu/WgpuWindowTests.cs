@@ -790,7 +790,15 @@ public class WgpuWindowTests
 
         // Assert
         uninitializeInvoked.ShouldBeTrue($"The {nameof(WgpuWindow.Uninitialize)} property was not invoked.");
-        this.mockPushReactable.Received(1).Push(PushNotifications.SystemShuttingDownId);
+
+        // The shutdown signal must be pushed before the window unsubscribes its handlers,
+        // otherwise the texture/audio/atlas loaders never release their cached GPU resources
+        // and the process crashes when the WebGPU device and native library are disposed.
+        Received.InOrder(() =>
+        {
+            this.mockPushReactable.Push(PushNotifications.SystemShuttingDownId);
+            this.mockPushReactable.UnsubscribeAll();
+        });
     }
 
     [Fact]

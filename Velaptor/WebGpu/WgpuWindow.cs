@@ -277,6 +277,13 @@ internal sealed class WgpuWindow : VelaptorIWindow
          * then the application will crash.
          */
         this.silkWindow.Dispose();
+
+        // Dispose of all registered types AFTER the render loop has ended. Disposing the
+        // Silk.NET window from inside the loop — e.g. from the Window_Closing callback that
+        // GLFW invokes during DoEvents — makes Silk.NET's Reset() throw
+        // 'You cannot call Reset inside of the render loop!', which escapes the native
+        // close callback and aborts the process.
+        IoC.DisposeOfRegisteredTypes();
     }
 
     /// <summary>
@@ -383,14 +390,14 @@ internal sealed class WgpuWindow : VelaptorIWindow
             this.loggingService.Error(e);
         }
 
-        Cleanup();
-
         // Triggers cache cleanup in texture/audio loaders and GPU resource release
-        // before the WebGPU device is torn down.
+        // before the WebGPU device is torn down. This MUST be pushed before Cleanup()
+        // unsubscribes the loaders' SystemShuttingDownId handlers, otherwise the cached
+        // GPU resources are never released and the process crashes when the device and
+        // native WebGPU library are disposed.
         this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
 
-        // screen before shutting down the window. So this means that this is not called every single time.  Why?
-        IoC.DisposeOfRegisteredTypes();
+        Cleanup();
     }
 
     /// <summary>
