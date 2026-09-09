@@ -12,19 +12,9 @@ using System;
 internal static class PushNotifications
 {
     /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications of when the OpenGL context is created.
+    /// Gets the unique <see cref="Guid"/> for push notifications for when WebGPU has been initialized.
     /// </summary>
-    public static Guid GLContextCreatedId { get; } = new ("c44ff8ef-d7fe-4ede-8f72-f4d0d57a721c");
-
-    /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications of various OpenGL objects.
-    /// </summary>
-    public static Guid GLObjectsCreatedId { get; } = new ("930eb1c3-8071-43bc-9dd8-fb7978f4af83");
-
-    /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications for when OpenGL has been initialized.
-    /// </summary>
-    public static Guid GLInitializedId { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
+    public static Guid WgpuReady { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the batch size is set.
@@ -47,7 +37,7 @@ internal static class PushNotifications
     public static Guid TextureDisposedId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");
 
     /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications for when the audio is disposed.
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the audio is disposed of.
     /// </summary>
     public static Guid AudioDisposedId { get; } = new ("863983d2-6657-4c8e-8e9a-f3cbd688abe1");
 
@@ -67,9 +57,19 @@ internal static class PushNotifications
     public static Guid ViewPortSizeChangedId { get; } = new ("430e7d43-ffd5-4f81-90b9-039e05ed490e");
 
     /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the system needs to size buffers.
+    /// </summary>
+    public static Guid ResizeBufferId { get; } = new ("83d1c79b-af73-40ed-81f3-c317b73be9e4");
+
+    /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has started.
     /// </summary>
     public static Guid BatchHasBegunId { get; } = new ("845e89b2-5a9d-4091-8689-d56f5c3060f3");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the render frame has started.
+    /// </summary>
+    public static Guid FrameHasBegunId { get; } = new ("64c298b4-1d37-4b59-9fc5-d7a77c0479fa");
 
     /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the render batch has been ended.
@@ -102,7 +102,16 @@ internal static class PushNotifications
     public static Guid RenderLinesId { get; } = new ("3fb13cdb-db24-4d28-b117-b9604722277f");
 
     /// <summary>
-    /// Gets the unique <see cref="Guid"/> for push notifications when the state of a text box changes.
+    /// Gets the unique <see cref="Guid"/> for push notifications to submit the WebGPU render pass
+    /// and present the frame to the display. This is pushed once per logical frame after all
+    /// draw calls have been recorded, keeping the render pass open across sequential Begin/End cycles.
     /// </summary>
-    public static Guid TextBoxStateId { get; } = new ("71931561-826b-431b-bce6-b139034a1ff4");
+    public static Guid SubmitRenderPassId { get; } = new ("d4e5f6a7-b8c9-4d01-a2b3-c4d5e6f7a8b9");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications to reconfigure the WebGPU
+    /// swap chain surface. Pushed when the window framebuffer size changes so that the
+    /// swap chain textures match the new dimensions.
+    /// </summary>
+    public static Guid SurfaceReconfigureId { get; } = new ("e5f6a7b8-c9d0-4e12-b3c4-d5e6f7a8b9c0");
 }

@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.MacOS;
 
 using static IOKit;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Hardware;
 using Hardware.Services;
@@ -13,6 +14,7 @@ using Hardware.Services;
 /// <summary>
 /// Represents a GPU on Apple Silicon Macs.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native macOS interop.")]
 internal static class MacGpu
 {
     /// <summary>

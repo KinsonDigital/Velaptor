@@ -6,6 +6,7 @@ namespace Velaptor.Content;
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
@@ -121,8 +122,18 @@ internal sealed class TextureLoader : ITextureLoader
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
     public void Unload(ITexture texture)
     {
-        this.textureCache.TryRemove(texture.FilePath, out _);
+        if (texture.FilePath.Contains("layered-rendering-background.png"))
+        {
+            Debugger.Break();
+        }
+
+        this.textureCache.TryRemove(texture.FilePath, out ITexture cachedTexture);
+
         this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+        if (cachedTexture != null)
+        {
+            // this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+        }
     }
 
     /// <summary>

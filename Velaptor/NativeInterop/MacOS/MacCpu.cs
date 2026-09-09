@@ -5,12 +5,14 @@
 namespace Velaptor.NativeInterop.MacOS;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Hardware;
 
 /// <summary>
 /// Provides macOS-specific CPU detection and information retrieval via <c>sysctl</c> system calls.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native macOS interop.")]
 internal static class MacCpu
 {
     /// <summary>

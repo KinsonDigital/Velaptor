@@ -7,7 +7,7 @@ namespace Velaptor.Batching;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.OneWay;
-using OpenGL.Batching;
+using WebGpu.Batching;
 
 /// <inheritdoc cref="IBatchPullReactable{TBatchItem}"/>
 [SuppressMessage("ReSharper", "RedundantTypeDeclarationBody", Justification = "Intentional")]

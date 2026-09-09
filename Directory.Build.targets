@@ -1,0 +1,39 @@
+<Project>
+
+  <!--
+    Silk.NET (WebGPU/GLFW/ImGui) and FreeTypeSharp load their native libraries at
+    runtime through NativeLibrary.TryLoad. Their resolver probes the app base
+    directory plus a RID-fallback chain that breaks on Linux distros whose runtime
+    RID is distro-specific (e.g. ubuntu.24.04-x64) rather than linux-x64. The native
+    libraries the .NET SDK copies under `runtimes/<rid>/native` are therefore never
+    located, and loading throws "Could not load from any of the possible library
+    names!".
+
+    Workaround: copy the native runtime libraries for the current OS/architecture
+    directly into the output root, where the loaders' base-directory probe finds them.
+  -->
+
+  <PropertyGroup>
+    <_VelaptorNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">linux</_VelaptorNativeOS>
+    <_VelaptorNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">win</_VelaptorNativeOS>
+    <_VelaptorNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">osx</_VelaptorNativeOS>
+
+    <_VelaptorNativeArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</_VelaptorNativeArch>
+
+    <_VelaptorNativeRuntime Condition="'$(_VelaptorNativeOS)' != '' and '$(_VelaptorNativeArch)' != ''">$(_VelaptorNativeOS)-$(_VelaptorNativeArch)</_VelaptorNativeRuntime>
+  </PropertyGroup>
+
+  <Target Name="CopyVelaptorNativeLibsToOutputRoot"
+          AfterTargets="Build"
+          Condition="'$(_VelaptorNativeRuntime)' != '' and Exists('$(OutDir)runtimes/$(_VelaptorNativeRuntime)/native')">
+
+    <ItemGroup>
+      <_VelaptorNativeLibToCopy Include="$(OutDir)runtimes/$(_VelaptorNativeRuntime)/native/*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_VelaptorNativeLibToCopy)"
+          DestinationFolder="$(OutDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

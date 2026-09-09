@@ -4,25 +4,26 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System.Drawing;
 using System.Numerics;
 using System.Text;
-using KdGui;
-using KdGui.Factories;
+using Velum;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.
 /// </summary>
 public class KeyboardScene : SceneBase
 {
+    private const string Instructions = "Hit a key on the keyboard to see if it is correct.";
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly BackgroundManager backgroundManager;
-    private IControlGroup? grpControls;
-    private string? downKeysName;
+    private readonly Label lblInstructions;
+    private readonly Label lblDownKeys;
+    private readonly StringBuilder downKeyText = new (Instructions);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
@@ -31,6 +32,13 @@ public class KeyboardScene : SceneBase
     {
         this.keyboard = HardwareFactory.GetKeyboard();
         this.backgroundManager = new BackgroundManager();
+
+        this.lblInstructions = new Label
+        {
+            Text = Instructions,
+        };
+
+        this.lblDownKeys = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>.
@@ -42,24 +50,10 @@ public class KeyboardScene : SceneBase
         }
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+        this.lblInstructions.Load();
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowCenter.Y - this.lblInstructions.HalfHeight);
 
-        var ctrlFactory = new ControlFactory();
-        var instructions = ctrlFactory.CreateLabel();
-        instructions.Name = nameof(instructions);
-
-        instructions.Text = "Hit a key on the keyboard to see if it is correct.";
-
-        var downKeys = ctrlFactory.CreateLabel();
-        downKeys.Name = nameof(downKeys);
-        this.downKeysName = nameof(downKeys);
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Keyboard Info";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(instructions);
-        this.grpControls.Add(downKeys);
+        this.lblDownKeys.Load();
 
         base.LoadContent();
     }
@@ -72,38 +66,39 @@ public class KeyboardScene : SceneBase
             return;
         }
 
+        this.lblInstructions.Unload();
+        this.lblDownKeys.Unload();
         this.backgroundManager.Unload();
-        this.grpControls.Dispose();
-        this.grpControls = null;
 
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>.
+    /// <inheritdoc cref="VelUpdatable.Update"/>.
     public override void Update(FrameTime frameTime)
     {
         var currentKeyState = this.keyboard.GetState();
 
-        var downKeysCtrl = this.grpControls.GetControl<ILabel>(this.downKeysName);
-
         if (currentKeyState.GetDownKeys().Length > 0)
         {
-            var downKeyText = new StringBuilder();
+            this.downKeyText.Clear();
 
-            foreach (var key in currentKeyState.GetDownKeys())
+            var keys = currentKeyState.GetDownKeys();
+            for (var i = 0; i < keys.Length; i++)
             {
-                downKeyText.Append(key);
-                downKeyText.Append(", ");
+                this.downKeyText.Append(keys[i]);
+                this.downKeyText.Append(i == keys.Length - 1 ? string.Empty : ", ");
             }
-
-            downKeysCtrl.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
         }
         else
         {
-            downKeysCtrl.Text = "No Keys Pressed";
+            this.downKeyText.Clear();
+            this.downKeyText.Append("No Keys Pressed");
         }
 
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowCenter.Y - this.grpControls.HalfHeight);
+        this.lblDownKeys.Text = this.downKeyText.ToString();
+        this.lblDownKeys.Position = new Vector2(WindowCenter.X - this.lblDownKeys.HalfWidth, WindowCenter.Y - this.lblDownKeys.HalfHeight + 50);
+        this.lblDownKeys.Update();
+        this.lblInstructions.Update();
 
         base.Update(frameTime);
     }
@@ -113,18 +108,9 @@ public class KeyboardScene : SceneBase
     {
         this.backgroundManager.Render();
 
-        this.grpControls.Render();
+        this.lblInstructions.Render();
+        this.lblDownKeys.Render();
+
         base.Render();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
     }
 }

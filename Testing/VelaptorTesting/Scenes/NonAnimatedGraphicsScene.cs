@@ -5,11 +5,9 @@
 namespace VelaptorTesting.Scenes;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -17,19 +15,20 @@ using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests that graphics properly render to the screen.
 /// </summary>
 public class NonAnimatedGraphicsScene : SceneBase
 {
-    private const int WindowPadding = 10;
+    private const int WindowPadding = 100;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
+    private readonly Label lblInstructions;
     private IAtlasData? mainAtlas;
-    private IControlGroup? grpControls;
     private KeyboardState prevKeyState;
     private RenderEffects renderEffects = RenderEffects.None;
 
@@ -42,6 +41,8 @@ public class NonAnimatedGraphicsScene : SceneBase
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
+
+        this.lblInstructions = new Label();
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -53,10 +54,10 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
-
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
+        this.lblInstructions.Load();
 
-        var textLines = new List<string>
+        var textLines = new string[]
         {
             "Use arrow keys to flip the texture horizontally and vertically.",
             "1. Left to flip horizontally",
@@ -65,20 +66,8 @@ public class NonAnimatedGraphicsScene : SceneBase
             "4. Down to flip vertically",
         };
 
-        var instructions = string.Join(Environment.NewLine, textLines);
-
-        var ctrlFactory = new ControlFactory();
-
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Text = instructions;
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Instructions";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(lblInstructions);
+        this.lblInstructions.Text = string.Join(Environment.NewLine, textLines);
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
 
         base.LoadContent();
     }
@@ -92,6 +81,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         }
 
         this.backgroundManager.Unload();
+        this.lblInstructions.Unload();
 
         this.renderEffects = RenderEffects.None;
 
@@ -101,7 +91,7 @@ public class NonAnimatedGraphicsScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         var currentKeyState = this.keyboard.GetState();
@@ -146,8 +136,6 @@ public class NonAnimatedGraphicsScene : SceneBase
             };
         }
 
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
-
         this.prevKeyState = currentKeyState;
     }
 
@@ -170,19 +158,8 @@ public class NonAnimatedGraphicsScene : SceneBase
             Color.White,
             this.renderEffects);
 
-        this.grpControls.Render();
+        this.lblInstructions.Render();
 
         base.Render();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
     }
 }

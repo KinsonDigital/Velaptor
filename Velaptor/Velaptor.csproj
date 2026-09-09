@@ -49,7 +49,7 @@
 
   <!--
     Opt out of telemetry data when running as a developer.
-    // TODO: Add link to docs about telemetry
+    https://docs.velaptor.io/telemetry/
   -->
   <PropertyGroup>
     <EnableTelemetry>false</EnableTelemetry>
@@ -109,6 +109,7 @@
     <InternalsVisibleTo Include="MeasureTextPerf" />
     <InternalsVisibleTo Include="KeyboardPerf" />
     <InternalsVisibleTo Include="MousePerf" />
+    <InternalsVisibleTo Include="RenderMediatorPerf" />
     <InternalsVisibleTo Include="VelaptorAseprite" />
     <InternalsVisibleTo Include="VelaptorAsepriteTests" />
   </ItemGroup>
@@ -126,14 +127,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\line.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\line.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\shape.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\shape.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\texture.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\texture.frag.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\shape.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\shape.frag.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\line.vert.wgsl" />
+    <EmbeddedResource Include="WebGpu\ShaderCode\line.frag.wgsl" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
@@ -144,8 +143,8 @@
     <PackageReference Include="FreeTypeSharp" Version="3.1.0" />
     <PackageReference Include="Hardware.Info" Version="110.0.0.1" />
     <PackageReference Include="KinsonDigital.Carbonate" Version="1.0.0-preview.18" />
-    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.22" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.301">
+    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.24" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.400">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -155,14 +154,17 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.23.0" />
+    <PackageReference Include="Silk.NET.WebGPU" Version="2.23.0" />
+    <PackageReference Include="Silk.NET.WebGPU.Native.WGPU" Version="2.23.0" />
+    <PackageReference Include="Silk.NET.Windowing" Version="2.23.0" />
     <PackageReference Include="Silk.NET" Version="2.23.0" />
-    <PackageReference Include="SimpleInjector" Version="5.5.2" />
+    <PackageReference Include="SimpleInjector" Version="5.6.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="22.1.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="22.2.0" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@
 	"cSpell.words": [
 		"Analyers",
 		"andymckay",
+		"Argb",
 		"Aseprite",
 		"Avalonia",
 		"backticks",
@@ -22,9 +23,13 @@
 		"codecov",
 		"CODEOWNERS",
 		"communitytoolkit",
+		"cref",
+		"Ctrls",
+		"deepseek",
 		"deno",
 		"denoland",
 		"dodgerblue",
+		"Draygon",
 		"editorconfig",
 		"ERWN",
 		"ethomson",
@@ -65,7 +70,9 @@
 		"reactables",
 		"releasetype",
 		"releasetypes",
+		"Renderable",
 		"REPONAME",
+		"ridleys",
 		"runsettings",
 		"samus",
 		"Sawaid",
@@ -91,6 +98,7 @@
 		"Unsubscriber",
 		"Velaptor",
 		"Vorbis",
+		"Wgpu",
 		"xunit"
 	],
 	"files.exclude": {
@@ -101,7 +109,10 @@
 		"**/Thumbs.db": true,
 		"**/.idea": true,
 		"*.sln.DotSettings.user": true,
-		"**/*.lscache": true
+		"**/*.lscache": true,
+		"**/bin": true,
+		"**/obj": true,
+		"**/.vs/": true,
 	},
 	"files.eol": "\n",
 	"window.title": "🦖Velaptor",
@@ -114,7 +125,7 @@
 		"tab.activeBorderTop": "#e0bb98"
 	},
 	"workbench.editor.customLabels.patterns": {
-		"**/Testing/**/*.cs": "${filename}🧪",
+		"**/Testing/**/*Tests.cs": "${filename}🧪",
 		"**/Velaptor/**/*.cs": "${filename}👾",
 		"**/DevTools/**/*.ts": "${filename}🔧",
 		"**/.github/workflows/**/*.yml": "${filename}⚙️",
@@ -122,7 +133,7 @@
 	},
 	"workbench.editor.titleScrollbarSizing": "large",
 	"workbench.editor.wrapTabs": true,
-	"dotnet.defaultSolution": "Velaptor.sln",
+	"dotnet.defaultSolution": "Velaptor.slnx",
 	"[csharp]": {
 		"editor.insertSpaces": true,
 		"editor.indentSize": 4,

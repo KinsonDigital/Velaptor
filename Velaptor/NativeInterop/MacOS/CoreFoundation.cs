@@ -27,6 +27,7 @@
 namespace Velaptor.NativeInterop.MacOS;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 /// <summary>
@@ -48,6 +49,7 @@ using System.Runtime.InteropServices;
 /// be released.
 /// See https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/Concepts/Ownership.html.
 /// </remarks>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native macOS interop.")]
 internal static partial class CoreFoundation
 {
     /// <summary>

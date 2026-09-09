@@ -5,7 +5,7 @@
 namespace Velaptor.Batching;
 
 using System;
-using OpenGL.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Manages batch items that are used for rendering.
@@ -43,4 +43,9 @@ internal interface IBatchingManager
     /// <param name="layer">The layer to add the item.</param>
     /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
     void AddLineItem(LineBatchItem item, int layer, DateTime renderStamp);
+
+    /// <summary>
+    /// Gets the total amount of batch data in kilobytes.
+    /// </summary>
+    int TotalBatchSizeKb { get; }
 }

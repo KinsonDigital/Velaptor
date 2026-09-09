@@ -5,17 +5,20 @@
 namespace VelaptorTests.UI;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Numerics;
-using System.Threading.Tasks;
 using Fakes;
-using Shouldly;
 using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
-using Velaptor.Batching;
+using Velaptor.Content;
+using Velaptor.Content.Fonts;
+using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.Scene;
 using Velaptor.UI;
+using Velaptor.WebGpu.Batching;
 using Xunit;
 
 /// <summary>
@@ -26,6 +29,10 @@ public class WindowTests : TestsBase
     private readonly IWindow mockWindow;
     private readonly ISceneManager mockSceneManager;
     private readonly IBatcher mockBatcher;
+    private readonly IContentManager mockContentManager;
+    private readonly IFontRenderer mockFontRenderer;
+    private readonly IFont mockFont;
+    private readonly IAppInput<KeyboardState> mockKeyboard;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -34,6 +41,14 @@ public class WindowTests : TestsBase
     {
         this.mockSceneManager = Substitute.For<ISceneManager>();
         this.mockBatcher = Substitute.For<IBatcher>();
+
+        this.mockFont = Substitute.For<IFont>();
+
+        this.mockContentManager = Substitute.For<IContentManager>();
+        this.mockContentManager.LoadFont(Arg.Any<string>(), Arg.Any<uint>()).Returns(this.mockFont);
+
+        this.mockFontRenderer = Substitute.For<IFontRenderer>();
+        this.mockKeyboard = Substitute.For<IAppInput<KeyboardState>>();
 
         this.mockWindow = Substitute.For<IWindow>();
         this.mockWindow.SceneManager.Returns(this.mockSceneManager);
@@ -47,12 +62,97 @@ public class WindowTests : TestsBase
         // Arrange & Act
         var act = () =>
         {
-            _ = new WindowFake(null, this.mockBatcher);
+            _ = new WindowFake(
+                null,
+                this.mockBatcher,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                this.mockKeyboard);
         };
 
         // Assert
-        var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'window')");
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'window')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithBatcherParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                null,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'batcher')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullContentManagerParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                null,
+                this.mockFontRenderer,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'contentManager')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullFontRendererParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                this.mockContentManager,
+                null,
+                this.mockKeyboard);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'fontRenderer')");
+    }
+
+    [Fact]
+    [Trait("Category", Ctor)]
+    public void Ctor_WithNullKeyboardParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new WindowFake(
+                this.mockWindow,
+                this.mockBatcher,
+                this.mockContentManager,
+                this.mockFontRenderer,
+                null);
+        };
+
+        // Assert
+        act.ShouldThrow<ArgumentNullException>()
+            .Message.ShouldBe("Value cannot be null. (Parameter 'keyboard')");
     }
 
     [Fact]
@@ -238,22 +338,6 @@ public class WindowTests : TestsBase
         // Assert
         this.mockWindow.Received(1).Height = 1234;
         this.mockWindow.Received(1).Height = 1234;
-    }
-
-    [Fact]
-    [Trait("Category", Prop)]
-    public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.AutoClearBuffer = true;
-        _ = sut.AutoClearBuffer;
-
-        // Assert
-        this.mockWindow.Received(1).AutoClearBuffer = true;
-        _ = this.mockWindow.Received(1).AutoClearBuffer;
     }
 
     [Fact]
@@ -452,18 +536,39 @@ public class WindowTests : TestsBase
     }
 
     [Fact]
-    [Trait("Category", Method)]
-    public async Task ShowAsync_WhenInvoked_ShowsInternalWindow()
+    public void Draw_WhenInvoked_RendersStats()
     {
         // Arrange
-        this.mockWindow.ShowAsync().Returns(Task.Run(() => { }));
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(16) };
+
+        var firstKeyState = default(KeyboardState);
+        firstKeyState.SetKeyState(KeyCode.LeftControl, true);
+        firstKeyState.SetKeyState(KeyCode.LeftAlt, true);
+        firstKeyState.SetKeyState(KeyCode.LeftShift, true);
+        firstKeyState.SetKeyState(KeyCode.S, true);
+        this.mockKeyboard.GetState().Returns(firstKeyState);
+
         var sut = CreateSystemUnderTest();
+        sut.FpsDisplayColor = Color.FromArgb(11, 22, 33, 44);
+
+        this.mockWindow.Initialize();
+        this.mockWindow.Update(frameTime);
+
+        var secondKeyState = default(KeyboardState);
+        secondKeyState.SetKeyState(KeyCode.LeftControl, false);
+        secondKeyState.SetKeyState(KeyCode.LeftAlt, false);
+        secondKeyState.SetKeyState(KeyCode.LeftShift, false);
+        secondKeyState.SetKeyState(KeyCode.S, false);
+        this.mockKeyboard.GetState().Returns(secondKeyState);
+
+        this.mockWindow.Update(frameTime);
 
         // Act
-        await sut.ShowAsync();
+        sut.Draw(frameTime);
 
         // Assert
-        await this.mockWindow.Received(1).ShowAsync();
+        this.mockFontRenderer.Received(1)
+            .Render(this.mockFont, "0", new Vector2(10, -10), Color.FromArgb(11, 22, 33, 44));
     }
 
     [Fact]
@@ -497,7 +602,6 @@ public class WindowTests : TestsBase
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.DidNotReceive().Clear();
         this.mockBatcher.DidNotReceive().Begin();
         this.mockSceneManager.DidNotReceive().Render();
         this.mockBatcher.DidNotReceive().End();
@@ -515,10 +619,53 @@ public class WindowTests : TestsBase
         sut.OnDraw(default);
 
         // Assert
-        this.mockBatcher.DidNotReceive().Clear();
         this.mockBatcher.DidNotReceive().Begin();
         this.mockSceneManager.DidNotReceive().Render();
         this.mockBatcher.DidNotReceive().End();
+    }
+
+    [Fact]
+    public void OnDraw_WithFullCache_RendersCorrectStats()
+    {
+        // Arrange
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(16) };
+
+        var firstKeyState = default(KeyboardState);
+        firstKeyState.SetKeyState(KeyCode.LeftControl, true);
+        firstKeyState.SetKeyState(KeyCode.LeftAlt, true);
+        firstKeyState.SetKeyState(KeyCode.LeftShift, true);
+        firstKeyState.SetKeyState(KeyCode.S, true);
+        this.mockKeyboard.GetState().Returns(firstKeyState);
+
+        var sut = CreateSystemUnderTest();
+        sut.FpsDisplayColor = Color.FromArgb(11, 22, 33, 44);
+
+        this.mockWindow.Initialize();
+        this.mockWindow.Update(frameTime);
+
+        var secondKeyState = default(KeyboardState);
+        secondKeyState.SetKeyState(KeyCode.LeftControl, false);
+        secondKeyState.SetKeyState(KeyCode.LeftAlt, false);
+        secondKeyState.SetKeyState(KeyCode.LeftShift, false);
+        secondKeyState.SetKeyState(KeyCode.S, false);
+        this.mockKeyboard.GetState().Returns(secondKeyState);
+
+        this.mockWindow.Update(frameTime);
+
+        for (var i = 0; i < 200; i++)
+        {
+            this.mockWindow.Fps.Returns(i);
+            var drawFrameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(i) };
+            this.mockWindow.Draw(drawFrameTime);
+        }
+
+        this.mockWindow.Fps.Returns(201);
+
+        // Act
+        this.mockWindow.Draw(default);
+
+        // Assert
+        this.mockFontRenderer.Received(1).Render(this.mockFont, "201", Arg.Any<Vector2>(), Arg.Any<Color>());
     }
 
     [Fact]
@@ -550,22 +697,6 @@ public class WindowTests : TestsBase
         // Assert
         this.mockSceneManager.Received(1).UnloadContent();
     }
-
-    [Fact]
-    [Trait("Category", Method)]
-    [SuppressMessage("csharpsquid", "S3966", Justification = "Disposing twice is required for testing.")]
-    public void Dispose_WhenInvoked_DisposesOfMangedResources()
-    {
-        // Arrange
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        sut.Dispose();
-        sut.Dispose();
-
-        // Assert
-        this.mockWindow.Received(1).Dispose();
-    }
     #endregion
 
     /// <summary>
@@ -573,5 +704,10 @@ public class WindowTests : TestsBase
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateSystemUnderTest() => new (this.mockWindow, this.mockBatcher);
+    private WindowFake CreateSystemUnderTest() => new (
+        this.mockWindow,
+        this.mockBatcher,
+        this.mockContentManager,
+        this.mockFontRenderer,
+        this.mockKeyboard);
 }

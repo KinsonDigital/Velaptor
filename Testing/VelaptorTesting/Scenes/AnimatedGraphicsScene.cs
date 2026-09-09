@@ -4,34 +4,43 @@
 
 namespace VelaptorTesting.Scenes;
 
-using System.Drawing;
+using System;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.Scene;
+using VelUpdatable = Velaptor.IUpdatable;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.
 /// </summary>
 public class AnimatedGraphicsScene : SceneBase
 {
-    private const int WindowPadding = 10;
+    private const int WindowPadding = 25;
     private readonly ITextureRenderer textureRenderer;
     private readonly BackgroundManager backgroundManager;
     private readonly IContentManager contentManager;
+    private readonly IAppInput<KeyboardState> keyboard;
+    private readonly Container conMain;
     private IAtlasData? mainAtlas;
     private AtlasSubTextureData[]? frames;
-    private IControlGroup? grpInstructions;
-    private IControlGroup? grpAnimation;
+    private KeyboardState prevKeyState;
+    private Layout layDirection;
+    private Layout laySpeed;
+    private Option? optForward;
+    private Option? optBackward;
+    private Label? lblSpeed;
+    private Slider? sldSpeed;
     private int elapsedTime;
     private int currentFrame;
     private float animSpeed = 32;
     private bool runningForward = true;
+    private float speed = 60;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
@@ -41,6 +50,17 @@ public class AnimatedGraphicsScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.textureRenderer = RendererFactory.CreateTextureRenderer();
         this.contentManager = ContentManager.Create();
+        this.keyboard = HardwareFactory.GetKeyboard();
+
+        CreateOptionCtrls();
+        CreateSpeedCtrls();
+
+        var layMain = new Layout();
+        layMain.AddControl(this.layDirection);
+        layMain.AddControl(this.laySpeed);
+
+        this.conMain = new Container();
+        this.conMain.AddLayoutControl(layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -56,59 +76,8 @@ public class AnimatedGraphicsScene : SceneBase
         this.mainAtlas = this.contentManager.Load<IAtlasData>("Main-Atlas");
         this.frames = this.mainAtlas.GetFrames("samus");
 
-        var ctrlFactory = new ControlFactory();
-        var instructions = ctrlFactory.CreateLabel();
-        instructions.Text = "Verify that the Samus is running.";
-
-        this.grpInstructions = ctrlFactory.CreateControlGroup();
-        this.grpInstructions.Title = "Instructions";
-        this.grpInstructions.AutoSizeToFitContent = true;
-        this.grpInstructions.TitleBarVisible = false;
-        this.grpInstructions.Add(instructions);
-
-        var optForward = ctrlFactory.CreateRadioButton();
-        optForward.Name = "optForward";
-        optForward.Text = "Forwards";
-        optForward.IsSelected = true;
-
-        var optBackward = ctrlFactory.CreateRadioButton();
-        optBackward.Name = "optBackward";
-        optBackward.Text = "Backwards";
-        optBackward.IsSelected = false;
-
-        var sldSpeed = ctrlFactory.CreateSlider();
-        sldSpeed.Name = "sldSpeed";
-        sldSpeed.Text = "Speed(fps):";
-        sldSpeed.Min = 0;
-        sldSpeed.Max = 60;
-        sldSpeed.Value = 60;
-        sldSpeed.ValueChanged += (_, speed) =>
-        {
-            this.animSpeed = 1000f / speed;
-        };
-
-        optForward.Selected += (_, _) =>
-        {
-            optBackward.IsSelected = false;
-            this.runningForward = !this.runningForward;
-        };
-
-        optBackward.Selected += (_, _) =>
-        {
-            optForward.IsSelected = false;
-            this.runningForward = !this.runningForward;
-        };
-
-        this.grpAnimation = ctrlFactory.CreateControlGroup();
-        this.grpAnimation.Title = "Animation";
-        this.grpAnimation.AutoSizeToFitContent = true;
-        this.grpAnimation.Initialized += (_, _) =>
-        {
-            this.grpAnimation.Position = new Point(WindowPadding, WindowCenter.Y + WindowPadding);
-        };
-        this.grpAnimation.Add(optForward);
-        this.grpAnimation.Add(optBackward);
-        this.grpAnimation.Add(sldSpeed);
+        this.conMain.Load();
+        this.conMain.Position = new Vector2(WindowPadding, WindowCenter.Y - this.conMain.HalfHeight);
 
         base.LoadContent();
     }
@@ -123,17 +92,13 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.contentManager.Unload(this.mainAtlas);
         this.mainAtlas = null;
-
         this.backgroundManager.Unload();
-        this.grpInstructions.Dispose();
-        this.grpInstructions = null;
-        this.grpAnimation.Dispose();
-        this.grpAnimation = null;
+        this.conMain.Unload();
 
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="VelUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         if (this.elapsedTime >= this.animSpeed)
@@ -158,7 +123,13 @@ public class AnimatedGraphicsScene : SceneBase
             this.elapsedTime += frameTime.ElapsedTime.Milliseconds;
         }
 
-        this.grpInstructions.Position = new Point(WindowCenter.X - this.grpInstructions.HalfWidth, WindowPadding);
+        this.conMain.Update();
+
+        this.animSpeed = 1000f / this.speed;
+
+        this.sldSpeed.Value = (float)Math.Round(this.speed, 2);
+
+        ProcessInput();
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
@@ -174,20 +145,82 @@ public class AnimatedGraphicsScene : SceneBase
             3f,
             this.currentFrame);
 
-        this.grpInstructions.Render();
-        this.grpAnimation.Render();
+        this.conMain.Render();
 
         base.Render();
     }
 
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
+    private void CreateOptionCtrls()
     {
-        if (IsDisposed || !IsLoaded)
+        this.optForward = new Option
         {
-            return;
+            Text = "Forwards",
+            IsChecked = true,
+            GroupNumber = 1,
+        };
+        this.optForward.CheckChanged += (_, args) => this.runningForward = !args.IsChecked;
+
+        this.optBackward = new Option
+        {
+            Text = "Backwards",
+            GroupNumber = 1,
+        };
+        this.optBackward.CheckChanged += (_, args) => this.runningForward = args.IsChecked;
+
+        this.layDirection = new Layout();
+        this.layDirection.StackDirection = StackDirection.Vertical;
+
+        this.layDirection.AddControl(this.optForward);
+        this.layDirection.AddControl(this.optBackward);
+    }
+
+    private void CreateSpeedCtrls()
+    {
+        this.lblSpeed = new Label
+        {
+            Text = "Speed(fps):",
+        };
+
+        this.sldSpeed = new Slider
+        {
+            Max = 60,
+            Value = 60,
+        };
+        this.sldSpeed.ValueChanged += (_, args) => this.speed = args.NewValue;
+
+        this.laySpeed = new Layout();
+        this.laySpeed.StackDirection = StackDirection.Horizontal;
+        this.laySpeed.AddControl(this.lblSpeed);
+        this.laySpeed.AddControl(this.sldSpeed);
+    }
+
+    private void ProcessInput()
+    {
+        var currentKeyState = this.keyboard.GetState();
+
+        if (currentKeyState.IsKeyUp(KeyCode.Right) && this.prevKeyState.IsKeyDown(KeyCode.Right))
+        {
+            this.runningForward = true;
         }
 
-        base.Dispose(disposing);
+        if (currentKeyState.IsKeyUp(KeyCode.Left) && this.prevKeyState.IsKeyDown(KeyCode.Left))
+        {
+            this.runningForward = false;
+        }
+
+        if (currentKeyState.IsKeyDown(KeyCode.Up))
+        {
+            this.speed += 0.5f;
+        }
+
+        if (currentKeyState.IsKeyDown(KeyCode.Down))
+        {
+            this.speed -= 0.5f;
+        }
+
+        this.speed = this.speed < 0 ? 0 : this.speed;
+        this.speed = this.speed > 60 ? 60 : this.speed;
+
+        this.prevKeyState = currentKeyState;
     }
 }

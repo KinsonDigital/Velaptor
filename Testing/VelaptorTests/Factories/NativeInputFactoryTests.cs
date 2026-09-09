@@ -2,11 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ConvertToLocalFunction
 namespace VelaptorTests.Factories;
 
 using System;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
+using Silk.NET.Windowing;
 using Velaptor.Factories;
 using Xunit;
 
@@ -27,14 +29,14 @@ public class NativeInputFactoryTests
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'windowFactory')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'window')");
     }
 
     [Fact]
     public void Ctor_WithNonNullWindowFactoryParam_DoesNotThrowException()
     {
         // Arrange & Act
-        var act = () => _ = new NativeInputFactory(Substitute.For<IWindowFactory>());
+        var act = () => _ = new NativeInputFactory(Substitute.For<IWindow>());
 
         // Assert
         Should.NotThrow(act);

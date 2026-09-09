@@ -38,7 +38,7 @@ public class AudioTests : TestsBase
         this.mockDisposeReactable = Substitute.For<IPushReactable<DisposeAudioData>>();
         this.mockDisposeReactable
             .When(x => x.Subscribe(Arg.Any<IReceiveSubscription<DisposeAudioData>>()))
-            .Do((callInfo) =>
+            .Do(callInfo =>
             {
                 var subscription = callInfo.Arg<IReceiveSubscription<DisposeAudioData>>();
 

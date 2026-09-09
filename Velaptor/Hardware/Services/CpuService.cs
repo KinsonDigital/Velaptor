@@ -5,11 +5,13 @@
 namespace Velaptor.Hardware.Services;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using NativeInterop.MacOS;
 using HardwareInfo = global::Hardware.Info.HardwareInfo;
 
 /// <inheritdoc/>
+[ExcludeFromCodeCoverage(Justification = "Not worth testing due to library calls.")]
 internal class CpuService : ICpuService
 {
     private readonly HardwareInfo hw = new ();
@@ -38,6 +40,10 @@ internal class CpuService : ICpuService
         return GetWinLinuxCpuInfo();
     }
 
+    /// <summary>
+    /// Gets CPU information for Windows and Linux.
+    /// </summary>
+    /// <returns>The CPU information.</returns>
     private CpuInfo GetWinLinuxCpuInfo()
     {
         this.hw.RefreshCPUList(includePercentProcessorTime: false);

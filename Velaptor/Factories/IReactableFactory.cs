@@ -8,9 +8,8 @@ using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics;
-using OpenGL.Batching;
 using ReactableData;
-using Silk.NET.OpenGL;
+using WebGpu.Batching;
 
 /// <summary>
 /// Generates reactable instances.
@@ -24,16 +23,10 @@ internal interface IReactableFactory
     IPushReactable CreateNoDataPushReactable();
 
     /// <summary>
-    /// Creates an OpenGL reactable.
+    /// Creates a buffer capacity reactable.
     /// </summary>
     /// <returns>The reactable.</returns>
-    IPushReactable<GL> CreateGLReactable();
-
-    /// <summary>
-    /// Creates an OpenGL objects reactable.
-    /// </summary>
-    /// <returns>The reactable.</returns>
-    IPushReactable<GLObjectsData> CreateGLObjectsReactable();
+    IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable();
 
     /// <summary>
     /// Creates a batch size reactable.

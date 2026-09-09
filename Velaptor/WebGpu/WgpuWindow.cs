@@ -1,0 +1,701 @@
+// <copyright file="WgpuWindow.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.WebGpu;
+
+using System;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using Carbonate;
+using Carbonate.NonDirectional;
+using Carbonate.OneWay;
+using Factories;
+using Input;
+using Input.Exceptions;
+using NativeInterop.GLFW;
+using ReactableData;
+using Scene;
+using Silk.NET.Input;
+using Silk.NET.Maths;
+using Silk.NET.Windowing;
+using Telemetry;
+using Services;
+using SilkIWindow = Silk.NET.Windowing.IWindow;
+using SilkMouseButton = Silk.NET.Input.MouseButton;
+using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
+using VelaptorIWindow = UI.IWindow;
+using VelaptorMouseButton = Input.MouseButton;
+using VelaptorWindowBorder = WindowBorder;
+
+/// <summary>
+/// A WebGPU-backed window implementation used inside the <see cref="Velaptor.UI.Window"/> class.
+/// </summary>
+internal sealed class WgpuWindow : VelaptorIWindow
+{
+    private readonly SilkIWindow silkWindow;
+    private readonly INativeInputFactory nativeInputFactory;
+    private readonly IGlfwInvoker glfw;
+    private readonly ISystemDisplayService systemDisplayService;
+    private readonly IPlatform platform;
+    private readonly ILoggingService loggingService;
+    private readonly IPushReactable pushReactable;
+    private readonly IPushReactable<MouseStateData> mouseReactable;
+    private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
+    private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
+    private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
+    private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new ();
+    private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
+    private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
+    private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new ();
+    private readonly IDisposable pullWinSizeUnsubscriber;
+    private readonly IFrameMetricsTracker frameMetricsTracker;
+    private CachedValue<StateOfWindow>? cachedWindowState;
+    private CachedValue<VelaptorWindowBorder>? cachedTypeOfBorder;
+    private CachedValue<Vector2>? cachedPosition;
+    private MouseStateData mouseStateData;
+    private IInputContext? inputContext;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WgpuWindow"/> class.
+    /// </summary>
+    /// <param name="width">The width of the window.</param>
+    /// <param name="height">The height of the window.</param>
+    /// <param name="telemetryService">Provides telemetry services.</param>
+    /// <param name="silkWindow">The Silk.NET window object.</param>
+    /// <param name="nativeInputFactory">Creates native input objects.</param>
+    /// <param name="glfwInvoker">Invokes GLFW functions.</param>
+    /// <param name="systemDisplayService">Provides information about system displays.</param>
+    /// <param name="platform">Provides information about the current platform.</param>
+    /// <param name="sceneManager">Manages scenes.</param>
+    /// <param name="reactableFactory">Creates reactables for push/pull notifications.</param>
+    /// <param name="loggingService">Provides different types of logging services.</param>
+    /// <param name="frameMetricsTracker">Tracks frame performance metrics.</param>
+    public WgpuWindow(
+        uint width,
+        uint height,
+        ITelemetryService telemetryService,
+        SilkIWindow silkWindow,
+        INativeInputFactory nativeInputFactory,
+        IGlfwInvoker glfwInvoker,
+        ISystemDisplayService systemDisplayService,
+        IPlatform platform,
+        ISceneManager sceneManager,
+        IReactableFactory reactableFactory,
+        ILoggingService loggingService,
+        IFrameMetricsTracker frameMetricsTracker)
+    {
+        ArgumentNullException.ThrowIfNull(telemetryService);
+        ArgumentNullException.ThrowIfNull(silkWindow);
+        ArgumentNullException.ThrowIfNull(nativeInputFactory);
+        ArgumentNullException.ThrowIfNull(glfwInvoker);
+        ArgumentNullException.ThrowIfNull(systemDisplayService);
+        ArgumentNullException.ThrowIfNull(platform);
+        ArgumentNullException.ThrowIfNull(sceneManager);
+        ArgumentNullException.ThrowIfNull(reactableFactory);
+        ArgumentNullException.ThrowIfNull(loggingService);
+        ArgumentNullException.ThrowIfNull(frameMetricsTracker);
+
+        this.silkWindow = silkWindow;
+        this.nativeInputFactory = nativeInputFactory;
+        this.glfw = glfwInvoker;
+        this.systemDisplayService = systemDisplayService;
+        this.platform = platform;
+        SceneManager = sceneManager;
+        this.loggingService = loggingService;
+        this.frameMetricsTracker = frameMetricsTracker;
+
+        this.pushReactable = reactableFactory.CreateNoDataPushReactable();
+        this.mouseReactable = reactableFactory.CreateMouseReactable();
+        this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
+        this.viewPortReactable = reactableFactory.CreateViewPortReactable();
+        this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
+        var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
+
+        this.mouseStateData = default;
+
+        SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
+        SetupOtherPropCaches();
+
+        this.pullWinSizeUnsubscriber = pullWinSizeReactable.CreateOneWayRespond(
+            PullNotifications.GetWindowSizeId,
+            () => new WindowSizeData { Width = Width, Height = Height },
+            () => this.pullWinSizeUnsubscriber?.Dispose());
+
+        telemetryService.TrackAppStart();
+        telemetryService.TrackHardware();
+    }
+
+    /// <inheritdoc/>
+    public string Title
+    {
+        get => this.cachedStringProps[nameof(Title)].GetValue();
+        set => this.cachedStringProps[nameof(Title)].SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public Vector2 Position
+    {
+        get => this.cachedPosition?.GetValue() ?? Vector2.Zero;
+        set => this.cachedPosition?.SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public uint Width
+    {
+        get => this.cachedUIntProps[nameof(Width)].GetValue();
+        set => this.cachedUIntProps[nameof(Width)].SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public uint Height
+    {
+        get => this.cachedUIntProps[nameof(Height)].GetValue();
+        set => this.cachedUIntProps[nameof(Height)].SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public bool MouseCursorVisible
+    {
+        get => this.cachedBoolProps[nameof(MouseCursorVisible)].GetValue();
+        set => this.cachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public StateOfWindow WindowState
+    {
+        get => this.cachedWindowState?.GetValue() ?? StateOfWindow.Normal;
+        set => this.cachedWindowState?.SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public Action? Initialize { get; set; }
+
+    /// <inheritdoc/>
+    public Action<FrameTime>? Update { get; set; }
+
+    /// <inheritdoc/>
+    public Action<FrameTime>? Draw { get; set; }
+
+    /// <inheritdoc/>
+    public Action? Uninitialize { get; set; }
+
+    /// <inheritdoc/>
+    public Action<SizeU>? WinResize { get; set; }
+
+    /// <inheritdoc/>
+    public VelaptorWindowBorder TypeOfBorder
+    {
+        get => this.cachedTypeOfBorder?.GetValue() ?? VelaptorWindowBorder.Resizable;
+        set => this.cachedTypeOfBorder?.SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public ISceneManager SceneManager { get; }
+
+    /// <inheritdoc/>
+    public bool AutoSceneLoading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUnloading { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneUpdating { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool AutoSceneRendering { get; set; } = true;
+
+    /// <inheritdoc/>
+    public float Fps { get; private set; }
+
+    /// <inheritdoc/>
+    public int UpdateFrequency
+    {
+        get => this.cachedIntProps[nameof(UpdateFrequency)].GetValue();
+        set => this.cachedIntProps[nameof(UpdateFrequency)].SetValue(value);
+    }
+
+    /// <inheritdoc/>
+    public bool Initialized { get; private set; }
+
+    /// <inheritdoc/>
+    public void Show()
+    {
+        PreInit();
+        RunWindow();
+    }
+
+    /// <inheritdoc/>
+    public void Close() => this.silkWindow.Close();
+
+    /// <summary>
+    /// Sets the setting for property caching to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="value">The value to set the property caching to. True = caching is enabled.</param>
+    [ExcludeFromCodeCoverage(Justification = "Only used for testing purposes.")]
+    public void SetPropertyCaching(bool value)
+    {
+        this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = value);
+        this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = value);
+
+        if (this.cachedWindowState is not null)
+        {
+            this.cachedWindowState.IsCaching = value;
+        }
+
+        if (this.cachedTypeOfBorder is not null)
+        {
+            this.cachedTypeOfBorder.IsCaching = value;
+        }
+
+        if (this.cachedPosition is not null)
+        {
+            this.cachedPosition.IsCaching = value;
+        }
+    }
+
+    /// <summary>
+    /// Runs the window.
+    /// </summary>
+    private void RunWindow()
+    {
+        this.silkWindow.Run();
+
+        /*NOTE:
+         * Only dispose of the window here and not in the Dispose() method!!
+         *
+         * This is because the line of code below will not be executed until the Window.Run() method
+         * has finished executing.  This happens once the window is closed.
+         *
+         * If you dispose of the window in the Dispose() method before the Run() method is finished,
+         * then the application will crash.
+         */
+        this.silkWindow.Dispose();
+
+        // Dispose of all registered types AFTER the render loop has ended. Disposing the
+        // Silk.NET window from inside the loop — e.g. from the Window_Closing callback that
+        // GLFW invokes during DoEvents — makes Silk.NET's Reset() throw
+        // 'You cannot call Reset inside of the render loop!', which escapes the native
+        // close callback and aborts the process.
+
+        // TODO: This ends up calling dispose on the scene manager which in turn tries to unload all of the scenes.
+        // Probably the best thing is to check if the cached item is null, and don't do anything unless it is not null.
+        // this way we do not have to worry about win, linux, and macos subtlyies with disposale and shutting down
+        // the window that has to be on the main thread with macos.  Check all of the loaders.
+        IoC.DisposeOfRegisteredTypes();
+    }
+
+    /// <summary>
+    /// Initializes window-related setup before the Silk.NET window Load event fires.
+    /// </summary>
+    private void PreInit()
+    {
+        this.silkWindow.UpdatesPerSecond = 60;
+        this.silkWindow.Load += Window_Load;
+        this.silkWindow.Closing += Window_Closing;
+        this.silkWindow.Resize += Window_Resize;
+        this.silkWindow.Update += Window_Update;
+        this.silkWindow.Render += Window_Render;
+    }
+
+    /// <summary>
+    /// Sets up input and fires the initial viewport resize after the Silk.NET window has loaded.
+    /// </summary>
+    private void Init(uint width, uint height)
+    {
+        this.silkWindow.Size = new Vector2D<int>((int)width, (int)height);
+        this.inputContext = this.nativeInputFactory.CreateInput();
+
+        if (this.inputContext.Keyboards.Count <= 0)
+        {
+            throw new NoKeyboardException("Input Exception: No connected keyboards are available.");
+        }
+
+        this.inputContext.Keyboards[0].KeyDown += KeyboardInput_KeyDown;
+        this.inputContext.Keyboards[0].KeyUp += KeyboardInput_KeyUp;
+
+        if (this.inputContext.Mice.Count <= 0)
+        {
+            throw new NoMouseException("Input Exception: No connected mice are available.");
+        }
+
+        this.inputContext.Mice[0].MouseDown += MouseInput_MouseDown;
+        this.inputContext.Mice[0].MouseUp += MouseInput_MouseUp;
+        this.inputContext.Mice[0].MouseMove += MouseMove_MouseMove;
+        this.inputContext.Mice[0].Scroll += MouseInput_MouseScroll;
+
+        // Manually invoke the resize to update the rest of the system, such as the viewport.
+        Window_Resize(new Vector2D<int>((int)width, (int)height));
+    }
+
+    /// <summary>
+    /// Invokes the <see cref="Initialize"/> action property.
+    /// </summary>
+    private void Window_Load()
+    {
+        Init(Width, Height);
+
+        this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+        this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+        if (this.cachedPosition is not null)
+        {
+            this.cachedPosition.IsCaching = false;
+        }
+
+        if (this.cachedWindowState is not null)
+        {
+            this.cachedWindowState.IsCaching = false;
+        }
+
+        if (this.cachedTypeOfBorder is not null)
+        {
+            this.cachedTypeOfBorder.IsCaching = false;
+        }
+
+        // Notify all subscribers that the window is ready. For WebGPU this is the signal
+        // for WgpuBatcher to initialize the WebGPU surface, adapter, device and pipelines.
+        // This MUST happen BEFORE Initialize?.Invoke() because content loading may trigger
+        // texture creation which needs the WebGPU device to be initialized first.
+        this.pushReactable.Push(PushNotifications.WgpuReady);
+        this.pushReactable.Unsubscribe(PushNotifications.WgpuReady);
+
+        Initialize?.Invoke();
+
+        // Re-push the viewport size so any GPU buffers created during Initialize?.Invoke()
+        // receive the correct window dimensions (the earlier push in Init() fires before
+        // content is loaded so those renderers miss it).
+        this.viewPortReactable.Push(
+            PushNotifications.ViewPortSizeChangedId,
+            new ViewPortSizeData { Width = Width, Height = Height });
+
+        Initialized = true;
+    }
+
+    /// <summary>
+    /// Invoked when the window is closing.
+    /// </summary>
+    private void Window_Closing()
+    {
+        // Capture any exceptions and log them
+        try
+        {
+            Uninitialize?.Invoke();
+        }
+        catch (Exception e)
+        {
+            this.loggingService.Error(e);
+        }
+
+        // Triggers cache cleanup in texture/audio loaders and GPU resource release
+        // before the WebGPU device is torn down. This MUST be pushed before Cleanup()
+        // unsubscribes the loaders' SystemShuttingDownId handlers, otherwise the cached
+        // GPU resources are never released and the process crashes when the device and
+        // native WebGPU library are disposed.
+        this.pushReactable.Push(PushNotifications.SystemShuttingDownId);
+
+        Cleanup();
+    }
+
+    /// <summary>
+    /// Invoked every time the native window size changes.
+    /// </summary>
+    private void Window_Resize(Vector2D<int> obj)
+    {
+        var width = (uint)obj.X;
+        var height = (uint)obj.Y;
+
+        // Signal the WebGPU batcher to reconfigure the swap chain so its textures
+        // match the new framebuffer dimensions before the next render pass opens.
+        this.pushReactable.Push(PushNotifications.SurfaceReconfigureId);
+
+        var size = new SizeU { Width = width, Height = height };
+        WinResize?.Invoke(size);
+
+        this.viewPortReactable.Push(PushNotifications.ViewPortSizeChangedId, new ViewPortSizeData { Width = width, Height = height });
+        this.pushWinSizeReactable.Push(PushNotifications.WindowSizeChangedId, new WindowSizeData { Width = width, Height = height });
+    }
+
+    /// <summary>
+    /// Invoked once per frame for the update step.
+    /// </summary>
+    private void Window_Update(double time)
+    {
+        var frameTime = new FrameTime
+        {
+            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
+        };
+
+        Update?.Invoke(frameTime);
+
+        this.mouseStateData = this.mouseStateData with
+        {
+            ScrollDirection = MouseScrollDirection.None,
+            ScrollWheelValue = 0,
+        };
+
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Invoked once per frame for the render step.
+    /// </summary>
+    private void Window_Render(double time)
+    {
+        var frameTime = new FrameTime
+        {
+            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
+        };
+
+        Draw?.Invoke(frameTime);
+
+        this.pushReactable.Push(PushNotifications.SubmitRenderPassId);
+
+        this.frameMetricsTracker.RecordFrame(time);
+
+        Fps = (float)this.frameMetricsTracker.CurrentMetrics.AverageFps;
+    }
+
+    /// <summary>
+    /// Invoked when a keyboard key transitions to the down position.
+    /// </summary>
+    private void KeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
+    {
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = true };
+
+        this.keyboardReactable.Push(PushNotifications.KeyboardStateChangedId, keyStateData);
+    }
+
+    /// <summary>
+    /// Invoked when a keyboard key transitions to the up position.
+    /// </summary>
+    private void KeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
+    {
+        var keyStateData = new KeyboardKeyStateData { Key = (KeyCode)key, IsDown = false };
+
+        this.keyboardReactable.Push(PushNotifications.KeyboardStateChangedId, keyStateData);
+    }
+
+    /// <summary>
+    /// Invoked when a mouse button is pressed.
+    /// </summary>
+    private void MouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
+    {
+        this.mouseStateData = this.mouseStateData with
+        {
+            Button = (VelaptorMouseButton)button,
+            ButtonIsDown = true,
+        };
+
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Invoked when a mouse button is released.
+    /// </summary>
+    private void MouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
+    {
+        this.mouseStateData = this.mouseStateData with
+        {
+            Button = (VelaptorMouseButton)button,
+            ButtonIsDown = false,
+        };
+
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Invoked when the mouse scroll wheel is used.
+    /// </summary>
+    private void MouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
+    {
+        this.mouseStateData = this.mouseStateData with
+        {
+            ScrollWheelValue = (int)wheelData.Y,
+            ScrollDirection = wheelData.Y switch
+            {
+                > 0 => MouseScrollDirection.ScrollUp,
+                < 0 => MouseScrollDirection.ScrollDown,
+                _ => MouseScrollDirection.None
+            },
+        };
+
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Invoked when the mouse moves over the window.
+    /// </summary>
+    private void MouseMove_MouseMove(IMouse mouse, Vector2 position)
+    {
+        this.mouseStateData = this.mouseStateData with
+        {
+            X = (int)position.X,
+            Y = (int)position.Y,
+        };
+
+        this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Cleans up internal setup.
+    /// </summary>
+    private void Cleanup()
+    {
+        this.pushReactable.UnsubscribeAll();
+
+        this.cachedStringProps.Clear();
+        this.cachedIntProps.Clear();
+        this.cachedBoolProps.Clear();
+
+        if (this.inputContext is not null)
+        {
+            this.inputContext.Keyboards[0].KeyDown -= KeyboardInput_KeyDown;
+            this.inputContext.Keyboards[0].KeyUp -= KeyboardInput_KeyUp;
+            this.inputContext.Mice[0].MouseDown -= MouseInput_MouseDown;
+            this.inputContext.Mice[0].MouseUp -= MouseInput_MouseUp;
+            this.inputContext.Mice[0].MouseMove -= MouseMove_MouseMove;
+            this.inputContext.Mice[0].Scroll -= MouseInput_MouseScroll;
+        }
+
+        this.silkWindow.Load -= Window_Load;
+        this.silkWindow.Update -= Window_Update;
+        this.silkWindow.Render -= Window_Render;
+        this.silkWindow.Resize -= Window_Resize;
+        this.silkWindow.Closing -= Window_Closing;
+
+        this.glfw.Dispose();
+    }
+
+    /// <summary>
+    /// Sets up caching for the <see cref="Width"/> and <see cref="Height"/> properties.
+    /// </summary>
+    private void SetupWidthHeightPropCaches(uint width, uint height)
+    {
+        this.cachedUIntProps.Add(
+            nameof(Width),
+            new CachedValue<uint>(
+                defaultValue: width,
+                getterWhenNotCaching: () => (uint)this.silkWindow.Size.X,
+                setterWhenNotCaching: value => this.silkWindow.Size = new Vector2D<int>((int)value, this.silkWindow.Size.Y)));
+
+        this.cachedUIntProps.Add(
+            nameof(Height),
+            new CachedValue<uint>(
+                defaultValue: height,
+                getterWhenNotCaching: () => (uint)this.silkWindow.Size.Y,
+                setterWhenNotCaching: value => this.silkWindow.Size = new Vector2D<int>(this.silkWindow.Size.X, (int)value)));
+    }
+
+    /// <summary>
+    /// Sets up caching for all remaining window properties.
+    /// </summary>
+    private void SetupOtherPropCaches()
+    {
+        this.cachedStringProps.Add(
+            nameof(Title),
+            new CachedValue<string>(
+                defaultValue: "Velaptor Application",
+                getterWhenNotCaching: () => this.silkWindow.Title,
+                setterWhenNotCaching: value => this.silkWindow.Title = value));
+
+        var mainDisplay = this.systemDisplayService.MainDisplay;
+
+        float ToDisplayScale(float value) => value * mainDisplay.HorizontalDPI /
+                   (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
+
+        var halfWidth = ToDisplayScale(Width / 2f);
+        var halfHeight = ToDisplayScale(Height / 2f);
+
+        var defaultPosition = new Vector2(mainDisplay.Center.X - halfWidth, mainDisplay.Center.Y - halfHeight);
+
+        this.cachedPosition = new CachedValue<Vector2>(
+            defaultValue: defaultPosition,
+            getterWhenNotCaching: () => new Vector2(this.silkWindow.Position.X, this.silkWindow.Position.Y),
+            setterWhenNotCaching: value => this.silkWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y));
+
+        this.cachedIntProps.Add(
+            nameof(UpdateFrequency),
+            new CachedValue<int>(
+                defaultValue: 60,
+                getterWhenNotCaching: () => (int)this.silkWindow.UpdatesPerSecond,
+                setterWhenNotCaching: value => this.silkWindow.UpdatesPerSecond = value));
+
+        this.cachedBoolProps.Add(
+            nameof(MouseCursorVisible),
+            new CachedValue<bool>(
+                defaultValue: true,
+                getterWhenNotCaching: () => this.inputContext?.Mice.Count > 0 &&
+                                            this.inputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
+                setterWhenNotCaching: value =>
+                {
+                    if (this.inputContext is null)
+                    {
+                        return;
+                    }
+
+                    foreach (var mouse in this.inputContext.Mice)
+                    {
+                        mouse.Cursor.CursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
+                    }
+                }));
+
+        this.cachedWindowState = new CachedValue<StateOfWindow>(
+            defaultValue: StateOfWindow.Normal,
+            getterWhenNotCaching: () =>
+            {
+                var silkState = this.silkWindow.WindowState;
+                if (!Enum.IsDefined(typeof(WindowState), silkState))
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"this.silkWindow.{nameof(WindowState)}",
+                        (int)silkState,
+                        typeof(WindowState));
+                }
+
+                return (StateOfWindow)silkState;
+            },
+            setterWhenNotCaching: value =>
+            {
+                if (!Enum.IsDefined(value))
+                {
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(StateOfWindow));
+                }
+
+                this.silkWindow.WindowState = (WindowState)value;
+            });
+
+        this.cachedTypeOfBorder = new CachedValue<VelaptorWindowBorder>(
+            defaultValue: VelaptorWindowBorder.Resizable,
+            getterWhenNotCaching: () =>
+            {
+                var silkBorder = this.silkWindow.WindowBorder;
+                if (!Enum.IsDefined(silkBorder))
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"this.silkWindow.{nameof(WindowBorder)}",
+                        (int)silkBorder,
+                        typeof(SilkWindowBorder));
+                }
+
+                return (VelaptorWindowBorder)silkBorder;
+            },
+            setterWhenNotCaching: value =>
+            {
+                if (!Enum.IsDefined(value))
+                {
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(VelaptorWindowBorder));
+                }
+
+                this.silkWindow.WindowBorder = (SilkWindowBorder)value;
+            });
+    }
+}

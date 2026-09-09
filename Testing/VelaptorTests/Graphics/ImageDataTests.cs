@@ -7,8 +7,8 @@ namespace VelaptorTests.Graphics;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Shouldly;
 using Helpers;
+using Shouldly;
 using Velaptor.Graphics;
 using Xunit;
 

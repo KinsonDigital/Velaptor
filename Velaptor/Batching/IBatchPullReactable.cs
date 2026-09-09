@@ -7,7 +7,7 @@ namespace Velaptor.Batching;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Carbonate.OneWay;
-using OpenGL.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Pulls data from batch managers for the use of sorting for layered rendering.

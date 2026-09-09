@@ -58,22 +58,6 @@ jobs:
         run: dotnet build "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Testing/${{ vars.PROJECT_NAME }}Testing.csproj" -c Debug;
 
 
-  build_avalonia_testing:
-    name: Build Avalonia Testing Status Check
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          dotnet-version: ${{ vars.NET_SDK_VERSION }}
-
-      - name: Run Build
-        run: dotnet build "${{ github.workspace }}/Testing/AvaloniaTesting/AvaloniaTesting.csproj" -c Debug;
-
-
   build_playground:
     name: Build Playground Status Check
     runs-on: ubuntu-24.04

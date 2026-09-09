@@ -113,8 +113,14 @@ internal sealed class EventLoggerService : IEventLoggerService
         var date = dateAndTime.ToString("yyyyMMdd");
         var baseDirPath = this.directory.GetCurrentDirectory().ToCrossPlatPath();
         var fileName = $"{LogFilePrefix}{date}";
-        var filePath = $"{baseDirPath}/{LogsDirName}/{fileName}.txt";
+        var fullDirPath = $"{baseDirPath}/{LogsDirName}";
+        var filePath = $"{fullDirPath}/{fileName}.txt";
         var isFirstEntry = false;
+
+        if (!this.directory.Exists(fullDirPath))
+        {
+            this.directory.CreateDirectory(fullDirPath);
+        }
 
         if (!this.file.Exists(filePath))
         {

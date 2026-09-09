@@ -5,12 +5,20 @@
 namespace Velaptor.UI;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Globalization;
 using System.Numerics;
-using System.Threading.Tasks;
 using Batching;
+using Content;
+using Content.Fonts;
 using Factories;
+using Graphics;
+using Graphics.Renderers;
+using Input;
 using Scene;
+using WebGpu.Batching;
 
 /// <summary>
 /// A system window where graphics can be rendered.
@@ -19,7 +27,14 @@ public abstract class Window : IWindow
 {
     private readonly IWindow nativeWindow;
     private readonly IBatcher batcher;
-    private bool isDisposed;
+    private readonly IAppInput<KeyboardState> keyboard;
+    private readonly IContentManager contentManager;
+    private readonly IFontRenderer fontRenderer;
+    private readonly Dictionary<decimal, (string text, SizeF size)> fpsCache = new ();
+    private readonly Queue<decimal> cacheInsertionOrder = new ();
+    private KeyboardState prevKeyState;
+    private IFont? font;
+    private bool vpsVisible;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Window"/> class.
@@ -29,6 +44,21 @@ public abstract class Window : IWindow
     {
         this.nativeWindow = WindowFactory.CreateWindow();
         this.batcher = IoC.Container.GetInstance<IBatcher>();
+        this.contentManager = IoC.Container.GetInstance<IContentManager>();
+        this.fontRenderer = IoC.Container.GetInstance<IFontRenderer>();
+        this.keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+
+        // Eagerly create the render coordinator and batch manager so they subscribe
+        // to their reactables BEFORE the window fires GLInitializedId.
+        // Without this:
+        //   • RenderMediator is never created (IRenderMediator has no explicit consumer),
+        //     so BatchHasEndedId goes unhandled, and no render-batch notifications are ever
+        //     pushed to the individual renderers.
+        //   • BatchingManager misses the BatchSizeChangedId notification that WgpuBatcher
+        //     pushes inside its GLInitializedId handler, leaving all batch arrays at
+        //     length-zero and causing IndexOutOfRangeException on the first AddXxxItem call.
+        IoC.Container.GetInstance<IRenderMediator>();
+        IoC.Container.GetInstance<IBatchingManager>();
 
         Init();
     }
@@ -38,13 +68,28 @@ public abstract class Window : IWindow
     /// </summary>
     /// <param name="window">The window implementation that contains the window functionality.</param>
     /// <param name="batcher">Controls the batching start and end process.</param>
-    private protected Window(IWindow window, IBatcher batcher)
+    /// <param name="contentManager">Manages content.</param>
+    /// <param name="fontRenderer">Renders fonts.</param>
+    /// <param name="keyboard">Provides keyboard input.</param>
+    private protected Window(
+        IWindow window,
+        IBatcher batcher,
+        IContentManager contentManager,
+        IFontRenderer fontRenderer,
+        IAppInput<KeyboardState> keyboard)
     {
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(batcher);
+        ArgumentNullException.ThrowIfNull(contentManager);
+        ArgumentNullException.ThrowIfNull(fontRenderer);
+        ArgumentNullException.ThrowIfNull(keyboard);
 
         this.nativeWindow = window;
         this.batcher = batcher;
+        this.keyboard = keyboard;
+        this.contentManager = contentManager;
+        this.fontRenderer = fontRenderer;
+
         Init();
     }
 
@@ -119,13 +164,6 @@ public abstract class Window : IWindow
     }
 
     /// <inheritdoc/>
-    public bool AutoClearBuffer
-    {
-        get => this.nativeWindow.AutoClearBuffer;
-        set => this.nativeWindow.AutoClearBuffer = value;
-    }
-
-    /// <inheritdoc/>
     public bool MouseCursorVisible
     {
         get => this.nativeWindow.MouseCursorVisible;
@@ -145,6 +183,11 @@ public abstract class Window : IWindow
         get => this.nativeWindow.TypeOfBorder;
         set => this.nativeWindow.TypeOfBorder = value;
     }
+
+    /// <summary>
+    /// Gets or sets the color of the FPS display.
+    /// </summary>
+    public Color FpsDisplayColor { get; set; } = Color.White;
 
     /// <inheritdoc/>
     public ISceneManager SceneManager => this.nativeWindow.SceneManager;
@@ -176,29 +219,8 @@ public abstract class Window : IWindow
     /// </summary>
     public void Show() => this.nativeWindow.Show();
 
-    /// <summary>
-    /// Shows the window asynchronously.
-    /// </summary>
-    /// <param name="afterStart">Executed after the application starts asynchronously.</param>
-    /// <param name="afterUnload">Executed after the window has been unloaded.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    /// <remarks>
-    ///     This runs the window on another thread.
-    /// </remarks>
-    public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null) =>
-        await this.nativeWindow.ShowAsync(afterStart, afterUnload).ConfigureAwait(true);
-
     /// <inheritdoc/>
     public void Close() => this.nativeWindow.Close();
-
-    /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 
     /// <summary>
     /// Invoked when the window is loaded.
@@ -206,6 +228,8 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnLoad()
     {
+        this.font = this.contentManager.LoadFont("TimesNewRoman-Regular.ttf", 14);
+
         if (!AutoSceneLoading)
         {
             return;
@@ -221,6 +245,8 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnUpdate(FrameTime frameTime)
     {
+        ProcessInput();
+
         if (!AutoSceneUpdating)
         {
             return;
@@ -238,12 +264,15 @@ public abstract class Window : IWindow
     {
         if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
         {
+            RenderStats();
             return;
         }
 
         this.batcher.Begin();
 
         this.nativeWindow.SceneManager.Render();
+
+        RenderStats();
 
         this.batcher.End();
     }
@@ -270,36 +299,62 @@ public abstract class Window : IWindow
     protected virtual void OnResize(SizeU size) => this.nativeWindow.SceneManager.Resize(size);
 
     /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
+    /// Processes input.
     /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    [SuppressMessage(
-        "ReSharper",
-        "VirtualMemberNeverOverridden.Global",
-        Justification = "Left for library users to override if needed.")]
-    protected virtual void Dispose(bool disposing)
+    private void ProcessInput()
     {
-        if (this.isDisposed)
+        var currentKeyState = this.keyboard.GetState();
+
+        var currentKeysUp = !currentKeyState.AnyCtrlKeysDown() || !currentKeyState.AnyAltKeysDown() ||
+                            !currentKeyState.AnyShiftKeysDown() || currentKeyState.IsKeyUp(KeyCode.S);
+
+        var prevKeysDown = this.prevKeyState.AnyCtrlKeysDown() && this.prevKeyState.AnyAltKeysDown() &&
+                           this.prevKeyState.AnyShiftKeysDown() && this.prevKeyState.IsKeyDown(KeyCode.S);
+
+        if (currentKeysUp && prevKeysDown)
+        {
+            this.vpsVisible = !this.vpsVisible;
+        }
+
+        this.prevKeyState = currentKeyState;
+    }
+
+    /// <summary>
+    /// Renders various stats to the screen.
+    /// </summary>
+    private void RenderStats()
+    {
+        if (!this.vpsVisible || this.font is null)
         {
             return;
         }
 
-        if (disposing)
+        // NOTE: Case the Fps value to a decimal to ensure 2 decimal places due to IEEE 754 binary floating-point representation
+        var roundedFps = Math.Round((decimal)Fps, 2);
+
+        // If the value has not been cached, cache it
+        if (!this.fpsCache.TryGetValue(roundedFps, out var fpsData))
         {
-            this.nativeWindow.Dispose();
+            // Remove the oldest item if at capacity
+            if (this.fpsCache.Count >= 200)
+            {
+                var oldestKey = this.cacheInsertionOrder.Dequeue();
+                this.fpsCache.Remove(oldestKey);
+            }
+
+            fpsData.text = roundedFps.ToString(CultureInfo.CurrentCulture);
+            var size = this.font.Measure(fpsData.text);
+            fpsData.size = size;
+
+            this.fpsCache[roundedFps] = fpsData;
+            this.cacheInsertionOrder.Enqueue(roundedFps);
         }
 
-        this.isDisposed = true;
+        var halfWidth = fpsData.size.Width / 2f;
+        var halfHeight = fpsData.size.Height / 2f;
 
-        // Only when not running unit tests, dispose of all Carbonate types
-        DisposeOfRegisteredTypes();
+        this.fontRenderer.Render(this.font, fpsData.text, new Vector2(halfWidth + 10, Height - (halfHeight + 10)), FpsDisplayColor);
     }
-
-    /// <summary>
-    /// Disposes of all registered types in the IoC container.
-    /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Coverage does not matter for IoC disposal.")]
-    private void DisposeOfRegisteredTypes() => IoC.DisposeOfRegisteredTypes();
 
     /// <summary>
     /// Initializes the window.

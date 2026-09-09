@@ -18,7 +18,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.Input;
-using Velaptor.OpenGL.Batching;
+using Velaptor.WebGpu.Batching;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;

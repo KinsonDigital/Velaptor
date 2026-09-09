@@ -19,10 +19,10 @@ using Shouldly;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
-using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
+using Velaptor.WebGpu.Batching;
 using Xunit;
-using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.OpenGL.Batching.RenderItem<Velaptor.OpenGL.Batching.TextureBatchItem>>>;
+using TextureBatchPullSubscription = Carbonate.Core.OneWay.IRespondSubscription<System.Memory<Velaptor.WebGpu.Batching.RenderItem<Velaptor.WebGpu.Batching.TextureBatchItem>>>;
 
 /// <summary>
 /// Tests the <see cref="BatchingManager"/> class.
@@ -32,7 +32,7 @@ public class BatchingManagerTests : TestsBase
     private readonly IPushReactable<BatchSizeData> mockBatchSizeReactable;
     private readonly IReactableFactory mockReactableFactory;
     private readonly IDisposable mockBatchSizeUnsubscriber;
-    private IRespondSubscription<Memory<RenderItem<TextureBatchItem>>>? textureBatchPullReactor;
+    private TextureBatchPullSubscription? textureBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<FontGlyphBatchItem>>>? fontBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<ShapeBatchItem>>>? shapeBatchPullReactor;
     private IRespondSubscription<Memory<RenderItem<LineBatchItem>>>? lineBatchPullReactor;

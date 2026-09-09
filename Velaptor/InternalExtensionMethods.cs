@@ -11,11 +11,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Graphics;
 using Input;
-using OpenGL.Batching;
+using WebGpu.Batching;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;
@@ -214,17 +213,12 @@ internal static class InternalExtensionMethods
     /// <param name="container">The container that holds the registrations.</param>
     /// <returns>The list of disposable registration types.</returns>
     [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-    public static ImmutableArray<Type> GetDisposableRegistrations(this Container container)
-    {
-        TypeFilter disposableFilter = (type, _) => type.GetInterface(nameof(IDisposable)) is not null;
-
-        return
-        [
-            ..container.GetCurrentRegistrations()
-                .Where(r => r.ServiceType.FindInterfaces(disposableFilter, null).Length > 0)
-                .Select(r => r.ServiceType)
-        ];
-    }
+    public static ImmutableArray<Type> GetDisposableRegistrations(this Container container) =>
+    [
+        ..container.GetCurrentRegistrations()
+            .Where(r => typeof(IDisposable).IsAssignableFrom(r.ServiceType))
+            .Select(r => r.ServiceType)
+    ];
 
     /// <summary>
     /// Disposes of the given <paramref name="type"/> in the <see cref="SimpleInjector"/>/<see cref="Container"/>.

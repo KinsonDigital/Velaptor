@@ -4,6 +4,8 @@
 
 namespace Velaptor.Services;
 
+using System;
+
 /// <summary>
 /// Provides logging services to the console and/or a file.
 /// </summary>
@@ -26,6 +28,12 @@ internal interface ILoggingService
     /// </summary>
     /// <param name="msg">The message to log.</param>
     void Error(string msg);
+
+    /// <summary>
+    /// Logs the error information from the given <paramref name="exception"/> as an error type log.
+    /// </summary>
+    /// <param name="exception">The exception to log.</param>
+    void Error(Exception exception);
 
     /// <summary>
     /// Logs the given <paramref name="msg"/> as an event type log.

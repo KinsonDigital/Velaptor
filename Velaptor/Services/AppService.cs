@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 /// <inheritdoc/>
@@ -103,7 +102,6 @@ internal class AppService : IAppService
             var processPath = Environment.ProcessPath ?? string.Empty;
             var sep = Path.DirectorySeparatorChar;
 
-            // todo: add anycpu paths as well
             var processPaths = new[]
             {
                 $"{sep}bin{sep}Debug{sep}",
