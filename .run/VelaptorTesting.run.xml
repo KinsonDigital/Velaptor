@@ -22,13 +22,12 @@
     </method>
   </configuration>
   <configuration default="false" name="VelaptorTesting" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/Testing/VelaptorTesting/bin/x64/Debug/net9.0/VelaptorTesting.exe" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/Testing/VelaptorTesting/bin/arm64/Debug/net9.0/VelaptorTesting" />
     <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Testing/VelaptorTesting/bin/x64/Debug/net9.0" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Testing/VelaptorTesting/bin/arm64/Debug/net9.0" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="ENV_FILE_PATHS" value="" />
     <option name="REDIRECT_INPUT_PATH" value="" />
-    <option name="TERMINAL_MODE" value="ExternalConsole" />
     <option name="MIXED_MODE_DEBUG" value="0" />
     <option name="USE_MONO" value="0" />
     <option name="RUNTIME_ARGUMENTS" value="" />
