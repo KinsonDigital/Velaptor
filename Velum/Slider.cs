@@ -60,7 +60,6 @@ public sealed class Slider : Control
         set
         {
             var oldValue = this.value;
-            this.previousValue = this.value;
 
             if (value < Min)
             {

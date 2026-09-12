@@ -127,8 +127,6 @@ public class AnimatedGraphicsScene : SceneBase
 
         this.animSpeed = 1000f / this.speed;
 
-        this.sldSpeed.Value = (float)Math.Round(this.speed, 2);
-
         ProcessInput();
     }
 
@@ -186,10 +184,12 @@ public class AnimatedGraphicsScene : SceneBase
             Max = 60,
             Value = 60,
         };
-        this.sldSpeed.ValueChanged += (_, args) => this.speed = args.NewValue;
+        this.sldSpeed.ValueChanged += (_, args) =>
+        {
+            this.speed = args.NewValue;
+        };
 
-        this.laySpeed = new Layout();
-        this.laySpeed.StackDirection = StackDirection.Horizontal;
+        this.laySpeed = new Layout { StackDirection = StackDirection.Horizontal };
         this.laySpeed.AddControl(this.lblSpeed);
         this.laySpeed.AddControl(this.sldSpeed);
     }
@@ -208,18 +208,27 @@ public class AnimatedGraphicsScene : SceneBase
             this.runningForward = false;
         }
 
+        var speedChanged = false;
+
         if (currentKeyState.IsKeyDown(KeyCode.Up))
         {
             this.speed += 0.5f;
+            speedChanged = true;
         }
 
         if (currentKeyState.IsKeyDown(KeyCode.Down))
         {
             this.speed -= 0.5f;
+            speedChanged = true;
         }
 
         this.speed = this.speed < 0 ? 0 : this.speed;
         this.speed = this.speed > 60 ? 60 : this.speed;
+
+        if (speedChanged)
+        {
+            this.sldSpeed.Value = (float)Math.Round(this.speed, 2);
+        }
 
         this.prevKeyState = currentKeyState;
     }
