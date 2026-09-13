@@ -208,8 +208,7 @@ internal sealed class FontLoader : IFontLoader
             return;
         }
 
-        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = font.Atlas.Id });
-
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = entry.FontTextureAtlas.Id });
         this.fontCache.TryRemove(cacheKey, out _);
     }
 
