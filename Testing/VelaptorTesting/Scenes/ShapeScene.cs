@@ -720,10 +720,6 @@ public class ShapeScene : SceneBase
             this.rectangle.IsSolid = e.IsChecked;
         }
 
-        this.layGradType.Enabled = !e.IsChecked;
-        this.layGradStartClr.Enabled = !e.IsChecked;
-        this.layGradStopClr.Enabled = !e.IsChecked;
-
         this.laySolidClr.Enabled = e.IsChecked;
     }
 
