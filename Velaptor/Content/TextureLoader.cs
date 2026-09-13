@@ -6,7 +6,6 @@ namespace Velaptor.Content;
 
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
@@ -24,7 +23,7 @@ using Services;
 internal sealed class TextureLoader : ITextureLoader
 {
     private readonly IImageService imageService;
-    private readonly ConcurrentDictionary<string, ITexture> textureCache = new ();
+    private readonly ConcurrentDictionary<string, ITexture?> textureCache = new ();
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IDisposable unsubscriber;
     private readonly ITextureFactory textureFactory;
@@ -110,29 +109,25 @@ internal sealed class TextureLoader : ITextureLoader
 
         var textureFilePath = this.texturePathResolver.ResolveFilePath(pathOrName);
 
-        return this.textureCache.GetOrAdd(textureFilePath, (filePath) =>
+        var texture = this.textureCache.GetOrAdd(textureFilePath, filePath =>
         {
             var imageData = this.imageService.Load(filePath);
             var name = this.path.GetFileNameWithoutExtension(textureFilePath);
 
             return this.textureFactory.Create(name, filePath, imageData);
         });
+
+        return texture ?? throw new FileNotFoundException($"The texture '{pathOrName}' was not found.");
     }
 
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
     public void Unload(ITexture texture)
     {
-        if (texture.FilePath.Contains("layered-rendering-background.png"))
-        {
-            Debugger.Break();
-        }
+        this.textureCache.TryRemove(texture.FilePath, out var cachedTexture);
 
-        this.textureCache.TryRemove(texture.FilePath, out ITexture cachedTexture);
-
-        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
         if (cachedTexture != null)
         {
-            // this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = cachedTexture.Id });
         }
     }
 
@@ -148,6 +143,11 @@ internal sealed class TextureLoader : ITextureLoader
 
         foreach (var textureDataItem in this.textureCache)
         {
+            if (textureDataItem.Value is null)
+            {
+                continue;
+            }
+
             this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = textureDataItem.Value.Id });
         }
 
