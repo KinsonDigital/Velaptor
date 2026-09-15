@@ -119,6 +119,7 @@
     <None Include="..\Images\velaptor-logo.png" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="buildTransitive\KinsonDigital.Velaptor.targets" Pack="true" PackagePath="buildTransitive\KinsonDigital.Velaptor.targets" />
     <None Remove="Velaptor.csproj.lscache" />
   </ItemGroup>
 
