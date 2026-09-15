@@ -238,7 +238,13 @@ internal sealed class SceneManager : ISceneManager
     public void Update(FrameTime frameTime) => CurrentScene?.Update(frameTime);
 
     /// <inheritdoc cref="IDrawable.Render"/>
-    public void Render() => CurrentScene?.Render();
+    public void Render()
+    {
+        if (this.scenes.Count > 0)
+        {
+            CurrentScene?.Render();
+        }
+    }
 
     /// <summary>
     /// Returns a value indicating whether a scene with the given ID already exists.
