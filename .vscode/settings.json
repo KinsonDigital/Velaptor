@@ -15,6 +15,7 @@
 		"behaviour",
 		"benchmarkdotnet",
 		"Bonda",
+		"buildtransitive",
 		"CASL",
 		"cicd",
 		"cobertura",
@@ -23,6 +24,7 @@
 		"codecov",
 		"CODEOWNERS",
 		"communitytoolkit",
+		"contentfiles",
 		"cref",
 		"Ctrls",
 		"deepseek",
@@ -52,6 +54,7 @@
 		"Kofi",
 		"kselena",
 		"LINQ",
+		"lscache",
 		"mediumseagreen",
 		"minimise",
 		"msbuild",
@@ -99,6 +102,7 @@
 		"Velaptor",
 		"Vorbis",
 		"Wgpu",
+		"wgsl",
 		"xunit"
 	],
 	"files.exclude": {
