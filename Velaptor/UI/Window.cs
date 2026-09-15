@@ -262,7 +262,7 @@ public abstract class Window : IWindow
     [ExcludeFromCodeCoverage(Justification = "Not originally intended to have a method body.")]
     protected virtual void OnDraw(FrameTime frameTime)
     {
-        if (!AutoSceneRendering || this.nativeWindow.SceneManager.TotalScenes <= 0)
+        if (!AutoSceneRendering)
         {
             RenderStats();
             return;
