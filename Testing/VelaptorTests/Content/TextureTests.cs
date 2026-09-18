@@ -38,7 +38,6 @@ public class TextureTests
     private const uint TextureId = 123;
     private readonly IWgpuInvoker mockWgpuInvoker;
     private readonly IGraphicsDevice mockGrfxDevice;
-    private readonly IDisposable mockDisposeUnsubscriber;
     private readonly IReactableFactory mockReactableFactory;
     private readonly ITextureIdGenerator mockTextureIdGenerator;
     private readonly SafeBindGroupLayoutHandle bindGroupLayout;
@@ -89,11 +88,11 @@ public class TextureTests
                 Arg.Any<SafeSamplerHandle>())
             .Returns(new SafeBindGroupHandle(this.mockWgpuInvoker, UnsafeBindGroupHandle));
 
-        this.mockDisposeUnsubscriber = Substitute.For<IDisposable>();
+        var mockDisposeUnsubscriber = Substitute.For<IDisposable>();
 
         var mockDisposeReactable = Substitute.For<IPushReactable<DisposeTextureData>>();
         mockDisposeReactable.Subscribe(Arg.Any<IReceiveSubscription<DisposeTextureData>>())
-            .Returns(this.mockDisposeUnsubscriber)
+            .Returns(mockDisposeUnsubscriber)
             .AndDoes(callInfo =>
             {
                 var reactor = callInfo.Arg<IReceiveSubscription<DisposeTextureData>>();
