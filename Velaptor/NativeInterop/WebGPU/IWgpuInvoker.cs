@@ -541,14 +541,14 @@ internal interface IWgpuInvoker
     /// so callers avoid <c>unsafe</c> context.
     /// </summary>
     /// <param name="queue">The queue to submit write to.</param>
-    /// <param name="texture">The destination texture handle.</param>
+    /// <param name="textureHandle">The destination texture handle.</param>
     /// <param name="width">The texture width in pixels.</param>
     /// <param name="height">The texture height in pixels.</param>
     /// <param name="alignedBytesPerRow">The row stride including alignment padding.</param>
     /// <param name="data">The pixel data in RGBA byte order.</param>
     void QueueWriteTexture(
         SafeQueueHandle queue,
-        nint texture,
+        SafeTextureHandle textureHandle,
         uint width,
         uint height,
         uint alignedBytesPerRow,

@@ -882,7 +882,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public void QueueWriteTexture(SafeQueueHandle queue, nint texture, uint width, uint height, uint alignedBytesPerRow, byte[] data)
+    public void QueueWriteTexture(SafeQueueHandle queue, SafeTextureHandle textureHandle, uint width, uint height, uint alignedBytesPerRow, byte[] data)
     {
         unsafe
         {
@@ -890,7 +890,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             {
                 var destination = new ImageCopyTexture
                 {
-                    Texture = (Texture*)texture, MipLevel = 0, Origin = new Origin3D { X = 0, Y = 0, Z = 0 }, Aspect = TextureAspect.All,
+                    Texture = (Texture*)textureHandle.DangerousGetHandle(), MipLevel = 0, Origin = new Origin3D { X = 0, Y = 0, Z = 0 }, Aspect = TextureAspect.All,
                 };
                 var dataLayout = new TextureDataLayout { Offset = 0, BytesPerRow = alignedBytesPerRow, RowsPerImage = height, };
                 var copySize = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1, };

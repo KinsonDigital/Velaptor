@@ -197,7 +197,7 @@ public sealed class Texture : ITexture
 
         this.wgpu.QueueWriteTexture(
             this.grfxDevice.Queue!,
-            this.gpuTexture.DangerousGetHandle(),
+            this.gpuTexture,
             width,
             height,
             alignedBytesPerRow,

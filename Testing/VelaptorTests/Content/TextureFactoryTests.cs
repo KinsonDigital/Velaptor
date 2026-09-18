@@ -223,7 +223,7 @@ public class TextureFactoryTests
             Arg.Any<TextureDescriptor>());
         this.mockWgpuInvoker.Received(1).QueueWriteTexture(
             Arg.Any<SafeQueueHandle>(),
-            Arg.Any<nint>(),
+            Arg.Any<SafeTextureHandle>(),
             Arg.Any<uint>(),
             Arg.Any<uint>(),
             Arg.Any<uint>(),
