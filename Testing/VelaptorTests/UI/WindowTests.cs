@@ -609,11 +609,11 @@ public class WindowTests : TestsBase
 
     [Fact]
     [Trait("Category", Method)]
-    public void OnDraw_WhenAutoRenderingIsNotDisabledWithNoScenes_ShouldNotRenderScenesOrManipulateBatches()
+    public void OnDraw_WhenAutoRenderingIsDisabled_ShouldNotRenderScenesOrManipulateBatches()
     {
         // Arrange
         var sut = CreateSystemUnderTest();
-        sut.AutoSceneRendering = true;
+        sut.AutoSceneRendering = false;
 
         // Act
         sut.OnDraw(default);
