@@ -74,34 +74,15 @@ public abstract class SceneBase : IScene
     public virtual void Resize(SizeU size) => WindowSize = size;
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Nothing to test.")]
     public virtual void Update(FrameTime frameTime)
     {
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage(Justification = "Nothing to test.")]
     public virtual void Render()
     {
-    }
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        IsDisposed = true;
     }
 
     /// <summary>

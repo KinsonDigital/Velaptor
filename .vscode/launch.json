@@ -4,6 +4,16 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+		{ // VELAPTOR TESTING
+			"name": "VelaptorTesting",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build",
+			"program": "${workspaceFolder}/Testing/VelaptorTesting/bin/Debug/net9.0/VelaptorTesting.dll",
+			"cwd": "${workspaceFolder}/Testing/VelaptorTesting",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
 		{ // PLAYGROUND
 			"request": "launch",
 			"name": "Playground",

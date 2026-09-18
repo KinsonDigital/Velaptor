@@ -110,7 +110,7 @@ public class FontPathResolverTests
         string expected)
     {
         // Arrange
-        this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns(path => Path.HasExtension(path.Arg<string>()));
         var sut = CreateSystemUnderTest();
 
         // Act

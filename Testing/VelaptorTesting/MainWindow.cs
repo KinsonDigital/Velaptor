@@ -4,18 +4,19 @@
 
 namespace VelaptorTesting;
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
-using KdGui;
-using KdGui.Factories;
 using Scenes;
+using Velum;
 using Velaptor;
-using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// The main window to the testing application.
@@ -31,7 +32,8 @@ public class MainWindow : Window
     ];
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
-    private readonly IControlGroup grpSceneCtrls;
+    private readonly Button btnPrevScene;
+    private readonly Button btnNextScene;
     private KeyboardState prevKeyState;
 
     /// <summary>
@@ -41,30 +43,24 @@ public class MainWindow : Window
     {
         Width = 1920;
         Height = 1080;
+        TypeOfBorder = WindowBorder.Fixed;
+
+        AutoSceneRendering = false;
 
         this.batcher = RendererFactory.CreateBatcher();
         this.keyboard = HardwareFactory.GetKeyboard();
 
         this.batcher.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        var ctrlFactory = new ControlFactory();
+        this.btnPrevScene = new Button();
+        this.btnPrevScene.Text = "<=";
+        this.btnPrevScene.Width = 50;
+        this.btnPrevScene.Click += PrevScene_OnClick;
 
-        this.grpSceneCtrls = ctrlFactory.CreateControlGroup();
-        this.grpSceneCtrls.Title = "Scene Group";
-        this.grpSceneCtrls.TitleBarVisible = false;
-        this.grpSceneCtrls.AutoSizeToFitContent = true;
-        this.grpSceneCtrls.Initialized += (_, _) =>
-        {
-            this.grpSceneCtrls.Position = new Point(
-                (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
-                (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
-        };
-
-        var nextPrevious = ctrlFactory.CreateNextPrevious();
-        nextPrevious.Next += (_, _) => SceneManager.NextScene();
-        nextPrevious.Previous += (_, _) => SceneManager.PreviousScene();
-
-        this.grpSceneCtrls.Add(nextPrevious);
+        this.btnNextScene = new Button();
+        this.btnNextScene.Text = "=>";
+        this.btnNextScene.Width = 50;
+        this.btnNextScene.Click += NextScene_OnClick;
 
         var textRenderingScene = new TextRenderingScene
         {
@@ -74,6 +70,11 @@ public class MainWindow : Window
         var layeredTextRenderingScene = new LayeredTextRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        };
+
+        var cameraScene = new CameraScene
+        {
+            Name = SplitByUpperCase(nameof(CameraScene)),
         };
 
         var keyboardScene = new KeyboardScene
@@ -86,7 +87,7 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
-        var layeredRenderingScene = new LayeredTextureRenderingScene
+        var layeredTextureRenderingScene = new LayeredTextureRenderingScene
         {
             Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         };
@@ -121,6 +122,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
         };
 
+        var batchPerfScene = new BatchPerfScene
+        {
+            Name = SplitByUpperCase(nameof(BatchPerfScene)),
+        };
+
         var audioScene = new AudioScene
         {
             Name = SplitByUpperCase(nameof(AudioScene)),
@@ -128,16 +134,37 @@ public class MainWindow : Window
 
         SceneManager.AddScene(textRenderingScene, true);
         SceneManager.AddScene(layeredTextRenderingScene);
+        SceneManager.AddScene(cameraScene);
         SceneManager.AddScene(keyboardScene);
         SceneManager.AddScene(mouseScene);
-        SceneManager.AddScene(layeredRenderingScene);
+        SceneManager.AddScene(layeredTextureRenderingScene);
         SceneManager.AddScene(renderNonAnimatedGraphicsScene);
         SceneManager.AddScene(renderAnimatedGraphicsScene);
         SceneManager.AddScene(shapeScene);
         SceneManager.AddScene(layeredRectScene);
         SceneManager.AddScene(lineScene);
         SceneManager.AddScene(layeredLineScene);
+        SceneManager.AddScene(batchPerfScene);
         SceneManager.AddScene(audioScene);
+    }
+
+    protected override void OnLoad()
+    {
+        this.btnPrevScene.Load();
+        this.btnNextScene.Load();
+
+        base.OnLoad();
+    }
+
+    protected override void OnUnload()
+    {
+        this.btnPrevScene.Click -= PrevScene_OnClick;
+        this.btnNextScene.Click -= NextScene_OnClick;
+
+        this.btnPrevScene.Unload();
+        this.btnNextScene.Unload();
+
+        base.OnUnload();
     }
 
     /// <inheritdoc cref="Window.OnUpdate"/>
@@ -157,9 +184,14 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        this.grpSceneCtrls.Position = new Point(
-            (int)Width - (this.grpSceneCtrls.Width + WindowPadding),
-            (int)Height - (this.grpSceneCtrls.Height + WindowPadding));
+        this.btnNextScene.Position = new Vector2(
+            Width - (this.btnNextScene.Width + WindowPadding),
+            Height - (this.btnNextScene.Height + WindowPadding));
+
+        this.btnPrevScene.Position = new Vector2(this.btnNextScene.Left - this.btnNextScene.Width - WindowPadding, this.btnNextScene.Top);
+
+        this.btnPrevScene.Update();
+        this.btnNextScene.Update();
 
         this.prevKeyState = currentKeyState;
 
@@ -169,14 +201,14 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnDraw"/>
     protected override void OnDraw(FrameTime frameTime)
     {
-        base.OnDraw(frameTime);
-
-        // Render the buttons after the 'base.OnDraw()'.  With the rendering being set to auto,
-        // additional drawings have to be done after the base.OnDraw() call with the use of
-        // the 'Begin()' and 'End()` methods.
         this.batcher.Begin();
 
-        this.grpSceneCtrls.Render();
+        SceneManager.Render();
+
+        this.btnPrevScene.Render(int.MaxValue - 100);
+        this.btnNextScene.Render(int.MaxValue - 100);
+
+        base.OnDraw(frameTime);
 
         this.batcher.End();
     }
@@ -214,5 +246,15 @@ public class MainWindow : Window
         var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
 
         return result.TrimEnd(' ');
+    }
+
+    private void PrevScene_OnClick(object? sender, EventArgs e)
+    {
+        SceneManager.PreviousScene();
+    }
+
+    private void NextScene_OnClick(object? sender, EventArgs e)
+    {
+        SceneManager.NextScene();
     }
 }

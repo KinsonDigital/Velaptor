@@ -9,9 +9,8 @@ using Batching;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics;
-using OpenGL.Batching;
 using ReactableData;
-using Silk.NET.OpenGL;
+using WebGpu.Batching;
 
 /// <summary>
 /// Creates singleton reactables.
@@ -23,11 +22,7 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable CreateNoDataPushReactable() => IoC.Container.GetInstance<IPushReactable>();
 
     /// <inheritdoc/>
-    public IPushReactable<GL> CreateGLReactable() => IoC.Container.GetInstance<IPushReactable<GL>>();
-
-    /// <inheritdoc/>
-    public IPushReactable<GLObjectsData> CreateGLObjectsReactable()
-        => IoC.Container.GetInstance<IPushReactable<GLObjectsData>>();
+    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() => IoC.Container.GetInstance<IPushReactable<RequiredBufferCapacityData>>();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();

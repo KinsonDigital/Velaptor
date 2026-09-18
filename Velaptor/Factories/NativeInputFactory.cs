@@ -7,28 +7,24 @@ namespace Velaptor.Factories;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Silk.NET.Input;
+using Silk.NET.Windowing;
 
 /// <inheritdoc/>
 internal sealed class NativeInputFactory : INativeInputFactory
 {
-    private readonly IWindowFactory windowFactory;
+    private readonly IWindow window;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NativeInputFactory"/> class.
     /// </summary>
-    /// <param name="windowFactory">Creates a window object.</param>
-    public NativeInputFactory(IWindowFactory windowFactory)
+    /// <param name="window">The silk window object.</param>
+    public NativeInputFactory(IWindow window)
     {
-        ArgumentNullException.ThrowIfNull(windowFactory);
-        this.windowFactory = windowFactory;
+        ArgumentNullException.ThrowIfNull(window);
+        this.window = window;
     }
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage(Justification = "Too complicated to mock SILK static method 'IWindow.CreateInput()'")]
-    public IInputContext CreateInput()
-    {
-        var window = this.windowFactory.CreateSilkWindow();
-
-        return window.CreateInput();
-    }
+    public IInputContext CreateInput() => this.window.CreateInput();
 }

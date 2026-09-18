@@ -80,14 +80,14 @@ public class LayeredTextRenderingScene : SceneBase
 
         var orangeLines = new[]
         {
-            $"White Box Layer: {this.whiteLayer}",
-            $"Orange Box Layer: {OrangeLayer}",
-            $"Blue Box Layer: {BlueLayer}",
+            $"White Text Layer: {this.whiteLayer}",
+            $"Orange Text Layer: {OrangeLayer}",
+            $"Blue Text Layer: {BlueLayer}",
         };
 
         this.orangeText = string.Join(Environment.NewLine, orangeLines);
 
-        // Set the default white box position
+        // Set the default white position
         this.orangeTextPos.X = WindowCenter.X;
         this.orangeTextPos.Y = WindowCenter.Y;
 
@@ -169,17 +169,6 @@ public class LayeredTextRenderingScene : SceneBase
         base.UnloadContent();
     }
 
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.Dispose(disposing);
-    }
-
     /// <summary>
     /// Updates the text for the state of the white box.
     /// </summary>
@@ -188,9 +177,9 @@ public class LayeredTextRenderingScene : SceneBase
         // Render the current enabled box text
         var textLines = new[]
         {
-            $"White Box Layer: {this.whiteLayer}",
-            $"Orange Box Layer: {OrangeLayer}",
-            $"Blue Box Layer: {BlueLayer}",
+            $"White Text Layer: {this.whiteLayer}",
+            $"Orange Text Layer: {OrangeLayer}",
+            $"Blue Text Layer: {BlueLayer}",
         };
         this.orangeText = string.Join(Environment.NewLine, textLines);
     }
@@ -246,25 +235,25 @@ public class LayeredTextRenderingScene : SceneBase
         var halfWidth = this.whiteTextSize.Width / 2f;
         var halfHeight = this.whiteTextSize.Height / 2f;
 
-        // Left edge containment
+        // Left-edge containment
         if (this.whiteTextPos.X < halfWidth)
         {
             this.whiteTextPos.X = halfWidth;
         }
 
-        // Right edge containment
+        // Right-edge containment
         if (this.whiteTextPos.X > WindowSize.Width - halfWidth)
         {
             this.whiteTextPos.X = WindowSize.Width - halfWidth;
         }
 
-        // Top edge containment
+        // Top-edge containment
         if (this.whiteTextPos.Y < halfHeight)
         {
             this.whiteTextPos.Y = halfHeight;
         }
 
-        // Bottom edge containment
+        // Bottom-edge containment
         if (this.whiteTextPos.Y > WindowSize.Height - halfHeight)
         {
             this.whiteTextPos.Y = WindowSize.Height - halfHeight;

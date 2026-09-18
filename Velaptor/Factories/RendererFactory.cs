@@ -5,8 +5,8 @@
 namespace Velaptor.Factories;
 
 using System.Diagnostics.CodeAnalysis;
-using Batching;
 using Graphics.Renderers;
+using WebGpu.Batching;
 
 /// <summary>
 /// Creates renderers for rendering different types of graphics.
@@ -31,12 +31,6 @@ public static class RendererFactory
     /// </summary>
     /// <returns>The rectangle renderer.</returns>
     public static IShapeRenderer CreateShapeRenderer() => IoC.Container.GetInstance<IShapeRenderer>();
-
-    /// <summary>
-    /// Creates an instance of the <see cref="ILineRenderer"/>.
-    /// </summary>
-    /// <returns>The line renderer.</returns>
-    public static ILineRenderer CreateLineRenderer() => IoC.Container.GetInstance<ILineRenderer>();
 
     /// <summary>
     /// Creates an instance of <see cref="IBatcher"/> to start and stop batching.

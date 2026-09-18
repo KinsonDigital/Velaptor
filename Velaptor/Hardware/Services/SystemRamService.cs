@@ -5,6 +5,7 @@
 namespace Velaptor.Hardware.Services;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using NativeInterop.MacOS;
 using HardwareInfo = global::Hardware.Info.HardwareInfo;
@@ -12,6 +13,7 @@ using HardwareInfo = global::Hardware.Info.HardwareInfo;
 /// <summary>
 /// Provides services to get information about the system memory.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Not worth testing due to library calls.")]
 internal class SystemRamService
 {
     private readonly HardwareInfo hw = new ();

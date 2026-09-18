@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Creates a new task for asynchronous operations to be performed.
 /// </summary>
-internal interface ITaskService : IDisposable
+internal interface ITaskService
 {
     /// <summary>
     /// Sets the delegate of type <see cref="Action"/> to be executed on another thread

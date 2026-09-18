@@ -10,8 +10,8 @@ using Silk.NET.OpenGL;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.OpenGL.Batching;
 using Velaptor.ReactableData;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used for the purpose of performance testing.
@@ -25,7 +25,7 @@ internal sealed class ReactableFactoryFake : IReactableFactory
     public IPushReactable<GL> CreateGLReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
-    public IPushReactable<GLObjectsData> CreateGLObjectsReactable() => throw new NotImplementedException();
+    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => throw new NotImplementedException();

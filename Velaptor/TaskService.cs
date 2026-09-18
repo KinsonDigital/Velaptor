@@ -69,40 +69,4 @@ internal sealed class TaskService : ITaskService
             this.tokenSrc.Token.WaitHandle.WaitOne();
         }
     }
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public void Dispose() => Dispose(true);
-
-    /// <summary>
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    /// </summary>
-    /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-    private void Dispose(bool disposing)
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            if (this.internalTask is not null)
-            {
-                // If the task is still running, stop it first then dispose
-                if (this.internalTask.Status == TaskStatus.Running)
-                {
-                    Cancel();
-                }
-
-                if (this.internalTask.Status == TaskStatus.RanToCompletion ||
-                    this.internalTask.Status == TaskStatus.Faulted ||
-                    this.internalTask.Status == TaskStatus.Canceled)
-                {
-                    this.internalTask.Dispose();
-                }
-            }
-        }
-
-        this.isDisposed = true;
-    }
 }

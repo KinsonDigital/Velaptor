@@ -5,8 +5,8 @@
 namespace VelaptorTests.Content;
 
 using System.IO.Abstractions;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;

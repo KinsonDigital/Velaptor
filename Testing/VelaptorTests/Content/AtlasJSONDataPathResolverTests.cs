@@ -7,8 +7,8 @@ namespace VelaptorTests.Content;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Content;
 using Velaptor.Services;
 using Xunit;
@@ -110,7 +110,7 @@ public class AtlasJSONDataPathResolverTests
         string expected)
     {
         // Arrange
-        this.mockPath.HasExtension(Arg.Any<string>()).Returns((path) => Path.HasExtension(path.Arg<string>()));
+        this.mockPath.HasExtension(Arg.Any<string>()).Returns(path => Path.HasExtension(path.Arg<string>()));
         var sut = CreateSystemUnderTest();
 
         // Act

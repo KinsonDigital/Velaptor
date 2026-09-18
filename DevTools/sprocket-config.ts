@@ -1,6 +1,7 @@
-// deno-lint-ignore-file no-import-prefix
-
-import type { ScriptTask, SprocketConfig } from "jsr:@kinsondigital/sprocket@2.1.0/configuration";
+import type {
+	ScriptTask,
+	SprocketConfig,
+} from "jsr:@kinsondigital/sprocket@3.0.0/configuration";
 
 const config: SprocketConfig = {
 	jobs: [{

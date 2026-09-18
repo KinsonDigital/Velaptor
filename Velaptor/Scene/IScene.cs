@@ -11,7 +11,7 @@ using System.Drawing;
 /// <summary>
 /// Represents a single scene that can be rendered to the screen.
 /// </summary>
-public interface IScene : IUpdatable, IDrawable, IDisposable
+public interface IScene : IUpdatable, IDrawable
 {
     /// <summary>
     /// Gets the name of the scene.
