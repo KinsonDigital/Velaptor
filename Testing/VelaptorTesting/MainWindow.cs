@@ -43,7 +43,7 @@ public class MainWindow : Window
     {
         Width = 1920;
         Height = 1080;
-        TypeOfBorder = WindowBorder.Fixed;
+        TypeOfBorder = WindowBorder.Resizable;
 
         AutoSceneRendering = false;
 
