@@ -314,24 +314,17 @@ internal sealed class ShapeRenderer : IShapeRenderer
     /// <param name="logicalHeight">The logical window height (in app-visible units).</param>
     private void UpdateDpiScaleUniform(uint logicalWidth, uint logicalHeight)
     {
-        // Lazily create the uniform buffer on first update (device must be initialized)
-        // TODO: Check into not doing this in a lazy manner
-        if (this.dpiScaleUniformBuffer is null)
+        if (this.grfxDevice.Handle is null)
         {
-            if (this.grfxDevice.Handle is null)
-            {
-                // TODO: Throw an exception?
-                return; // Device not initialized yet
-            }
-
-            // TODO: Throw an exception if the 'this.grfxDevice.Queue' is null?
-
-            this.dpiScaleUniformBuffer = this.wgpu.DeviceCreateVertexBuffer(
-                this.grfxDevice.Handle,
-                "Shape DPI Scale Uniform Buffer",
-                8,
-                WebGpuBufferUsage.Uniform | WebGpuBufferUsage.CopyDst);
+            return;
         }
+
+        // Lazily create the uniform buffer on first update (device must be initialized)
+        this.dpiScaleUniformBuffer ??= this.wgpu.DeviceCreateVertexBuffer(
+            this.grfxDevice.Handle,
+            "Shape DPI Scale Uniform Buffer",
+            8,
+            WebGpuBufferUsage.Uniform | WebGpuBufferUsage.CopyDst);
 
         // Get the physical framebuffer dimensions from the surface
         var framebufferSize = this.surface.FramebufferSize;
@@ -344,20 +337,22 @@ internal sealed class ShapeRenderer : IShapeRenderer
         var scaleX = logicalWidthF > 0 ? physicalWidth / logicalWidthF : 1.0f;
         var scaleY = logicalHeightF > 0 ? physicalHeight / logicalHeightF : 1.0f;
 
+        if (this.grfxDevice.Queue is null)
+        {
+            throw new InvalidOperationException($"The '{nameof(SafeQueueHandle)}' is null. Cannot upload scale factor data.");
+        }
+
         // Create and upload the scale factor data
         float[] scaleData = [scaleX, scaleY];
         this.wgpu.QueueWriteBuffer(this.grfxDevice.Queue, this.dpiScaleUniformBuffer.DangerousGetHandle(), 0, scaleData);
 
         // Lazily create the bind group on first update
-        if (this.dpiScaleBindGroup is null)
-        {
-            this.dpiScaleBindGroup = this.wgpu.DeviceCreateBufferBindGroupHandle(
-                this.grfxDevice.Handle,
-                "Shape DPI Scale Bind Group",
-                this.shapePipeline.BindGroupLayout,
-                this.dpiScaleUniformBuffer,
-                0,
-                8);
-        }
+        this.dpiScaleBindGroup ??= this.wgpu.DeviceCreateBufferBindGroupHandle(
+            this.grfxDevice.Handle,
+            "Shape DPI Scale Bind Group",
+            this.shapePipeline.BindGroupLayout,
+            this.dpiScaleUniformBuffer,
+            0,
+            8);
     }
 }

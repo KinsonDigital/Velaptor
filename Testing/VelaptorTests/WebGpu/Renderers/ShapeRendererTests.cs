@@ -1075,6 +1075,11 @@ public class ShapeRendererTests : TestsBase
     public void ViewportSubscription_WhenViewportChanges_ReceivesCorrectNotification()
     {
         // Arrange
+        SetupGraphicsDevice(true);
+        var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
+        this.mockWgpuInvoker.DeviceCreateVertexBuffer(
+                Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
+            .Returns(vertexBuffer);
         _ = CreateSystemUnderTest();
 
         // Act
@@ -1088,10 +1093,52 @@ public class ShapeRendererTests : TestsBase
 
     #region DPI Scale Uniform Tests
     [Fact]
+    public void ViewportSubscription_WithNullGrfxDeviceHandle_DoesNotUpdateScaleUniform()
+    {
+        // Arrange
+        _ =  CreateSystemUnderTest();
+
+        // Act
+        this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        // Assert
+        this.mockWgpuInvoker.DidNotReceive().DeviceCreateVertexBuffer(Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<ulong>(),
+            Arg.Any<BufferUsage>());
+        this.mockWgpuInvoker.DidNotReceive().QueueWriteBuffer(
+            Arg.Any<SafeQueueHandle>(),
+            Arg.Any<nint>(),
+            Arg.Any<ulong>(),
+            Arg.Any<float[]>());
+        this.mockWgpuInvoker.DidNotReceive().DeviceCreateBufferBindGroupHandle(Arg.Any<SafeDeviceHandle>(),
+            Arg.Any<string>(),
+            Arg.Any<SafeBindGroupLayoutHandle>(),
+            Arg.Any<SafeVertexBufferHandle>(),
+            Arg.Any<ulong>(),
+            Arg.Any<ulong>());
+    }
+
+    [Fact]
+    public void ViewportSubscription_WithNullQueueHandle_ThrowsException()
+    {
+        // Arrange
+        SetupGraphicsDevice(false);
+        _ =  CreateSystemUnderTest();
+
+        // Act
+        var act = () => this.viewPortSubscription.OnReceive(new ViewPortSizeData { Width = 1920, Height = 1080 });
+
+        // Assert
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe($"The '{nameof(SafeQueueHandle)}' is null. Cannot upload scale factor data.");
+    }
+
+    [Fact]
     public void ViewportSubscription_WhenViewportChanges_CreatesDpiScaleUniformBuffer()
     {
         // Arrange
-        var device = SetupGraphicsDevice();
+        var device = SetupGraphicsDevice(true);
         var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
         this.mockWgpuInvoker.DeviceCreateVertexBuffer(
                 Arg.Any<SafeDeviceHandle>(), Arg.Any<string>(), Arg.Any<ulong>(), Arg.Any<BufferUsage>())
@@ -1114,7 +1161,7 @@ public class ShapeRendererTests : TestsBase
     public void ViewportSubscription_WhenViewportChanges_UploadsDpiScaleData()
     {
         // Arrange
-        _ = SetupGraphicsDevice();
+        _ = SetupGraphicsDevice(true);
         var queue = this.mockGraphicsDevice.Queue;
         var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
         this.mockWgpuInvoker.DeviceCreateVertexBuffer(
@@ -1139,7 +1186,7 @@ public class ShapeRendererTests : TestsBase
     public void ViewportSubscription_WhenViewportChanges_CreatesDpiScaleBindGroup()
     {
         // Arrange
-        var device = SetupGraphicsDevice();
+        var device = SetupGraphicsDevice(true);
         var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
         var bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, 0x9ABC);
         this.mockWgpuInvoker.DeviceCreateVertexBuffer(
@@ -1166,7 +1213,7 @@ public class ShapeRendererTests : TestsBase
     public void RenderBatch_WhenDpiScaleBindGroupExists_SetsBindGroup()
     {
         // Arrange
-        _ = SetupGraphicsDevice();
+        _ = SetupGraphicsDevice(true);
         var vertexBuffer = new SafeVertexBufferHandle(this.mockWgpuInvoker, 0x5678);
         var bindGroupLayout = new SafeBindGroupLayoutHandle(this.mockWgpuInvoker, 0x9ABC);
         var bindGroup = new SafeBindGroupHandle(this.mockWgpuInvoker, 0xBEEF);
@@ -1269,14 +1316,19 @@ public class ShapeRendererTests : TestsBase
     /// Configures the mock graphics device so that <see cref="ShapeRenderer"/> treats it as initialized,
     /// enabling the DPI scale uniform buffer and bind group to be created.
     /// </summary>
+    /// <param name="setupQueue">True to set up the queue.</param>
     /// <returns>The configured device handle.</returns>
-    private SafeDeviceHandle SetupGraphicsDevice()
+    private SafeDeviceHandle SetupGraphicsDevice(bool setupQueue)
     {
         var device = new SafeDeviceHandle(this.mockWgpuInvoker, 0x1234);
-        var queue = new SafeQueueHandle(this.mockWgpuInvoker, device);
+
+        if (setupQueue)
+        {
+            var queue = new SafeQueueHandle(this.mockWgpuInvoker, device);
+            this.mockGraphicsDevice.Queue.Returns(queue);
+        }
 
         this.mockGraphicsDevice.Handle.Returns(device);
-        this.mockGraphicsDevice.Queue.Returns(queue);
 
         return device;
     }
