@@ -68,8 +68,7 @@ public class TextRenderingScene : SceneBase
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
 
-        this.mainContainer = new Container();
-        this.mainContainer.Position = new Vector2(50, 50);
+        this.mainContainer = new Container { Position = new Vector2(50, 50) };
         this.mainContainer.Position = new Vector2(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
         this.mainContainer.Draggable = true;
 
@@ -159,18 +158,12 @@ public class TextRenderingScene : SceneBase
 
     private void CreateRotateCtrls()
     {
-        this.lblRotate = new Label();
-        this.lblRotate.Text = "Rotate:";
+        this.lblRotate = new Label { Text = "Rotate:" };
 
-        this.sldRotate = new Slider();
-        this.sldRotate.Value = 0;
-        this.sldRotate.Max = 360f;
+        this.sldRotate = new Slider { Value = 0, Max = 360f };
         this.sldRotate.ValueChanged += (_, e) => this.angle = e.NewValue;
 
-        this.layRotate = new Layout();
-        this.layRotate.StackDirection = StackDirection.Horizontal;
-        this.layRotate.Centered = true;
-        this.layRotate.HorizontalSpacing = 5;
+        this.layRotate = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.layRotate.AddControl(this.lblRotate);
         this.layRotate.AddControl(this.sldRotate);
@@ -178,19 +171,12 @@ public class TextRenderingScene : SceneBase
 
     private void CreateRenderSizeCtrls()
     {
-        this.lblRenderSize = new Label();
-        this.lblRenderSize.Text = "Render Size:";
+        this.lblRenderSize = new Label { Text = "Render Size:" };
 
-        this.sldRenderSize = new Slider();
-        this.sldRenderSize.Value = 1;
-        this.sldRenderSize.Min = 0.1f;
-        this.sldRenderSize.Max = 4;
+        this.sldRenderSize = new Slider { Value = 1, Min = 0.1f, Max = 4 };
         this.sldRenderSize.ValueChanged += (_, e) => this.renderSize = e.NewValue;
 
-        this.layRenderSize = new Layout();
-        this.layRenderSize.StackDirection = StackDirection.Horizontal;
-        this.layRenderSize.Centered = true;
-        this.layRenderSize.HorizontalSpacing = 5;
+        this.layRenderSize = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.layRenderSize.AddControl(this.lblRenderSize);
         this.layRenderSize.AddControl(this.sldRenderSize);
@@ -198,50 +184,37 @@ public class TextRenderingScene : SceneBase
 
     private void CreateSingleLineCtrls()
     {
-        this.chkSingleLine = new CheckBox();
-        this.chkSingleLine.Text = "Single-Line";
-        this.chkSingleLine.IsChecked = true;
+        this.chkSingleLine = new CheckBox { Text = "Single-Line", IsChecked = true };
         this.chkSingleLine.CheckedChanged += (_, e) =>
         {
             this.text = e.IsChecked ? SingleLineText : this.multiLineText;
             this.chkSingleLine.Text = e.IsChecked ? "Single-Line" : "Multi-Line";
         };
 
-        this.laySingleLine = new Layout();
-        this.laySingleLine.StackDirection = StackDirection.Horizontal;
-        this.laySingleLine.Centered = true;
-        this.laySingleLine.HorizontalSpacing = 5;
+        this.laySingleLine = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.laySingleLine.AddControl(this.chkSingleLine);
     }
 
     private void CreateColorCtrls()
     {
-        this.chkColor = new CheckBox();
-        this.chkColor.Text = "Color Off";
+        this.chkColor = new CheckBox { Text = "Color Off" };
         this.chkColor.CheckedChanged += (_, e) =>
         {
             this.isBlue = e.IsChecked;
             this.chkColor.Text = e.IsChecked ? "Color On" : "Color Off";
         };
 
-        this.layColor = new Layout();
-        this.layColor.StackDirection = StackDirection.Horizontal;
-        this.layColor.Centered = true;
-        this.layColor.HorizontalSpacing = 5;
+        this.layColor = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.layColor.AddControl(this.chkColor);
     }
 
     private void CreateFontSizeCtrls()
     {
-        this.lblFontSize = new Label();
-        this.lblFontSize.Text = "Font Size:";
+        this.lblFontSize = new Label { Text = "Font Size:" };
 
-        this.sldFontSize = new Slider();
-        this.sldFontSize.Value = 12;
-        this.sldFontSize.Min = 1;
-        this.sldFontSize.Max = 50;
+        this.sldFontSize = new Slider { Value = 12, Min = 1, Max = 50 };
         this.sldFontSize.ValueChanged += (_, e) =>
         {
             var value = e.NewValue;
@@ -251,10 +224,7 @@ public class TextRenderingScene : SceneBase
             this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
         };
 
-        this.layFontSize = new Layout();
-        this.layFontSize.StackDirection = StackDirection.Horizontal;
-        this.layFontSize.Centered = true;
-        this.layFontSize.HorizontalSpacing = 5;
+        this.layFontSize = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.layFontSize.AddControl(this.lblFontSize);
         this.layFontSize.AddControl(this.sldFontSize);
@@ -262,8 +232,7 @@ public class TextRenderingScene : SceneBase
 
     private void CreateFontStyleCtrls()
     {
-        this.lblStyle = new Label();
-        this.lblStyle.Text = "Style:";
+        this.lblStyle = new Label { Text = "Style:" };
 
         this.drpStyle = new DropDown();
         var items = this.fontFileNames.Select(i => i.DisplayName);
@@ -279,10 +248,7 @@ public class TextRenderingScene : SceneBase
             this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
         };
 
-        this.layFontStyle = new Layout();
-        this.layFontStyle.StackDirection = StackDirection.Horizontal;
-        this.layFontStyle.Centered = true;
-        this.layFontStyle.HorizontalSpacing = 5;
+        this.layFontStyle = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
 
         this.layFontStyle.AddControl(this.lblStyle);
         this.layFontStyle.AddControl(this.drpStyle);

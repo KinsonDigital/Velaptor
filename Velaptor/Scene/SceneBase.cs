@@ -54,7 +54,7 @@ public abstract class SceneBase : IScene
     /// <summary>
     /// Gets a value indicating whether the scene has been disposed.
     /// </summary>
-    protected bool IsDisposed { get; private set; }
+    protected bool IsDisposed => false;
 
     /// <inheritdoc/>
     public virtual void LoadContent() => IsLoaded = true;

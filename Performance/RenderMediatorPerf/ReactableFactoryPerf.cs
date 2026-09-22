@@ -18,7 +18,7 @@ using Velaptor.WebGpu.Batching;
 /// Creates singleton reactables.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = $"Cannot test due to interaction with '{nameof(IoC)}' container.")]
-internal class ReactableFactoryPerf : IReactableFactory
+internal sealed class ReactableFactoryPerf : IReactableFactory
 {
     /// <summary>
     /// Gets the shared no-data push reactable used to coordinate batch events.

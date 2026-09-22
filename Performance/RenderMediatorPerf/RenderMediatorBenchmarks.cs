@@ -10,38 +10,39 @@ using BenchmarkDotNet.Attributes;
 using Carbonate;
 using Carbonate.NonDirectional;
 using Velaptor;
-using Velaptor.Batching;
 using Velaptor.Graphics;
 using Velaptor.WebGpu.Batching;
 
+/// <summary>
+/// Runs performance benchmarks against the <see cref="RenderMediator"/> class.
+/// </summary>
 [MemoryDiagnoser]
 public class RenderMediatorBenchmarks
 {
+    // ReSharper disable once NotAccessedField.Local
     private readonly RenderMediator renderMediator;
-    private Memory<RenderItem<TextureBatchItem>> textureItems;
-    private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
-    private Memory<RenderItem<ShapeBatchItem>> shapeItems;
-    private Memory<RenderItem<LineBatchItem>> lineItems;
-    private readonly ReactableFactoryPerf reactableFactory;
-    private readonly IBatchPullReactable<TextureBatchItem> texturePullReactable;
-    private readonly IBatchPullReactable<FontGlyphBatchItem> fontPullReactable;
-    private readonly IBatchPullReactable<ShapeBatchItem> shapePullReactable;
-    private readonly IBatchPullReactable<LineBatchItem> linePullReactable;
     private readonly IDisposable requestTexturesUnsubscriber;
     private readonly IDisposable requestFontsUnsubscriber;
     private readonly IDisposable requestShapesUnsubscriber;
     private readonly IDisposable requestLinesUnsubscriber;
     private readonly IPushReactable coordinateReactable;
+    private Memory<RenderItem<TextureBatchItem>> textureItems;
+    private Memory<RenderItem<FontGlyphBatchItem>> fontItems;
+    private Memory<RenderItem<ShapeBatchItem>> shapeItems;
+    private Memory<RenderItem<LineBatchItem>> lineItems;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RenderMediatorBenchmarks"/> class.
+    /// </summary>
     public RenderMediatorBenchmarks()
     {
-        this.reactableFactory = new ReactableFactoryPerf();
-        this.coordinateReactable = this.reactableFactory.CoordinateReactable;
+        var reactableFactory = new ReactableFactoryPerf();
+        this.coordinateReactable = reactableFactory.CoordinateReactable;
 
         // Subscribe to texture batch requests
-        this.texturePullReactable = this.reactableFactory.CreateTexturePullBatchReactable();
+        var texturePullReactable = reactableFactory.CreateTexturePullBatchReactable();
 
-        this.requestTexturesUnsubscriber = this.texturePullReactable.CreateOneWayRespond(
+        this.requestTexturesUnsubscriber = texturePullReactable.CreateOneWayRespond(
             PullResponses.GetTextureItemsId,
             () =>
             {
@@ -54,9 +55,9 @@ public class RenderMediatorBenchmarks
             () => this.requestTexturesUnsubscriber?.Dispose());
 
         // Subscribe to font batch requests
-        this.fontPullReactable = this.reactableFactory.CreateFontPullBatchReactable();
+        var fontPullReactable = reactableFactory.CreateFontPullBatchReactable();
 
-        this.requestFontsUnsubscriber = this.fontPullReactable.CreateOneWayRespond(
+        this.requestFontsUnsubscriber = fontPullReactable.CreateOneWayRespond(
             PullResponses.GetFontItemsId,
             () =>
             {
@@ -69,9 +70,9 @@ public class RenderMediatorBenchmarks
             () => this.requestFontsUnsubscriber?.Dispose());
 
         // Subscribe to shape batch requests
-        this.shapePullReactable = this.reactableFactory.CreateShapePullBatchReactable();
+        var shapePullReactable = reactableFactory.CreateShapePullBatchReactable();
 
-        this.requestShapesUnsubscriber = this.shapePullReactable.CreateOneWayRespond(
+        this.requestShapesUnsubscriber = shapePullReactable.CreateOneWayRespond(
             PullResponses.GetShapeItemsId,
             () =>
             {
@@ -84,9 +85,9 @@ public class RenderMediatorBenchmarks
             () => this.requestShapesUnsubscriber?.Dispose());
 
         // Subscribe to line batch requests
-        this.linePullReactable = this.reactableFactory.CreateLinePullBatchReactable();
+        var linePullReactable = reactableFactory.CreateLinePullBatchReactable();
 
-        this.requestLinesUnsubscriber = this.linePullReactable.CreateOneWayRespond(
+        this.requestLinesUnsubscriber = linePullReactable.CreateOneWayRespond(
             PullResponses.GetLineItemsId,
             () =>
             {
@@ -103,12 +104,15 @@ public class RenderMediatorBenchmarks
         var shapeItemComparer = new RenderItemComparer<ShapeBatchItem>();
         var lineItemComparer = new RenderItemComparer<LineBatchItem>();
 
-        this.renderMediator = new RenderMediator(this.reactableFactory, textureItemComparer, fontItemComparer, shapeItemComparer, lineItemComparer);
+        this.renderMediator = new RenderMediator(reactableFactory, textureItemComparer, fontItemComparer, shapeItemComparer, lineItemComparer);
     }
 
     [Params(500_000)]
     public int BatchSize { get; set; }
 
+    /// <summary>
+    /// Sets up the test for each iteration.
+    /// </summary>
     [IterationSetup]
     public void IterationSetup()
     {
@@ -176,6 +180,9 @@ public class RenderMediatorBenchmarks
         }
     }
 
+    /// <summary>
+    /// Cleans up the test for each iteration.
+    /// </summary>
     [IterationCleanup]
     public void IterationCleanup()
     {
@@ -185,9 +192,9 @@ public class RenderMediatorBenchmarks
         this.lineItems = null;
     }
 
+    /// <summary>
+    /// Runs the performance check.
+    /// </summary>
     [Benchmark(Description = "Coordinate Renders")]
-    public void CoordinateRenders()
-    {
-        this.coordinateReactable.Push(PushNotifications.BatchHasEndedId);
-    }
+    public void CoordinateRenders() => this.coordinateReactable.Push(PushNotifications.BatchHasEndedId);
 }

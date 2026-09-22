@@ -25,7 +25,7 @@ using System.Numerics;
 /// <para>
 /// <b>Zoom:</b> 1.0 = one world pixel maps to exactly one screen pixel. Values above
 /// 1.0 magnify the scene; values below 1.0 shrink it. Zoom is applied relative to the
-/// screen centre so the centre of the window stays fixed while zooming.
+/// screen center so the center of the window stays fixed while zooming.
 /// </para>
 /// </remarks>
 [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API for users.")]
@@ -55,7 +55,7 @@ public interface ICamera2D
     float ZoomMax { get; set; }
 
     /// <summary>
-    /// Gets the current window size in pixels. Used to locate the screen centre for
+    /// Gets the current window size in pixels. Used to locate the screen center for
     /// zoom calculations. Updated automatically on window resize.
     /// </summary>
     SizeU WindowSize { get; }

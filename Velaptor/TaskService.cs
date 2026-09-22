@@ -19,7 +19,6 @@ internal sealed class TaskService : ITaskService
 {
     private readonly CancellationTokenSource tokenSrc = new ();
     private Task? internalTask;
-    private bool isDisposed;
 
     /// <inheritdoc/>
     public CancellationTokenSource SetAction(Action action)

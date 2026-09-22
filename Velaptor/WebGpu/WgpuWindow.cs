@@ -281,13 +281,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
         // Dispose of all registered types AFTER the render loop has ended. Disposing the
         // Silk.NET window from inside the loop — e.g. from the Window_Closing callback that
         // GLFW invokes during DoEvents — makes Silk.NET's Reset() throw
-        // 'You cannot call Reset inside of the render loop!', which escapes the native
+        // 'You cannot call Reset inside the render loop!', which escapes the native
         // close callback and aborts the process.
-
-        // TODO: This ends up calling dispose on the scene manager which in turn tries to unload all of the scenes.
-        // Probably the best thing is to check if the cached item is null, and don't do anything unless it is not null.
-        // this way we do not have to worry about win, linux, and macos subtlyies with disposale and shutting down
-        // the window that has to be on the main thread with macos.  Check all of the loaders.
         IoC.DisposeOfRegisteredTypes();
     }
 

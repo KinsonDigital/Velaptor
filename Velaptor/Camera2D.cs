@@ -28,7 +28,7 @@ using Factories;
 /// <para>
 /// <b>Zoom:</b> 1.0 = one world pixel maps to exactly one screen pixel. Values above
 /// 1.0 magnify the scene; values below 1.0 shrink it. Zoom is applied relative to the
-/// screen centre so the centre of the window stays fixed while zooming.
+/// screen center so the center of the window stays fixed while zooming.
 /// </para>
 /// <para>
 /// The <see cref="WindowSize"/> is automatically kept in sync with the window

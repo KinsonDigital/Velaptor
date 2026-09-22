@@ -70,7 +70,7 @@ internal interface ITaskService
     /// Cancels the task.
     /// </summary>
     /// <remarks>
-    ///     This method will only return once the task has been cancelled.
+    ///     This method will only return once the task has been canceled.
     /// </remarks>
     void Cancel();
 }

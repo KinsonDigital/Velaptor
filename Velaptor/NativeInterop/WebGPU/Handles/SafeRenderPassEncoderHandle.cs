@@ -6,7 +6,6 @@ namespace Velaptor.NativeInterop.WebGpu.Handles;
 
 using Microsoft.Win32.SafeHandles;
 using System;
-using System.Runtime.InteropServices;
 using Silk.NET.WebGPU;
 
 /// <summary>
@@ -33,7 +32,7 @@ internal sealed class SafeRenderPassEncoderHandle : SafeHandleZeroOrMinusOneIsIn
 
     /// <summary>
     /// Ends the render pass, signaling that all draw commands for this pass
-    /// are complete. Must be called explicitly before <see cref="SafeHandle.Dispose"/>
+    /// are complete. Must be called explicitly before <see cref="IDisposable.Dispose"/>
     /// to properly finalize the pass on the GPU timeline.
     /// </summary>
     public void End()

@@ -13,6 +13,12 @@ using WebGpu.Batching;
 internal interface IBatchingManager
 {
     /// <summary>
+    /// Gets the total amount of batch data in kilobytes.
+    /// </summary>
+    // ReSharper disable once UnusedMemberInSuper.Global
+    int TotalBatchSizeKb { get; }
+
+    /// <summary>
     /// Adds a texture item to the batch.
     /// </summary>
     /// <param name="item">The item to add.</param>
@@ -25,7 +31,7 @@ internal interface IBatchingManager
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item.</param>
-    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    /// <param name="renderStamp">The date and time of when the item was rendered.</param>
     void AddFontItem(FontGlyphBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
@@ -33,7 +39,7 @@ internal interface IBatchingManager
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item.</param>
-    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    /// <param name="renderStamp">The date and time of when the item was rendered.</param>
     void AddShapeItem(ShapeBatchItem item, int layer, DateTime renderStamp);
 
     /// <summary>
@@ -41,11 +47,6 @@ internal interface IBatchingManager
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <param name="layer">The layer to add the item.</param>
-    /// <param name="renderStamp">The date and time of the when the item was rendered.</param>
+    /// <param name="renderStamp">The date and time of when the item was rendered.</param>
     void AddLineItem(LineBatchItem item, int layer, DateTime renderStamp);
-
-    /// <summary>
-    /// Gets the total amount of batch data in kilobytes.
-    /// </summary>
-    int TotalBatchSizeKb { get; }
 }

@@ -14,5 +14,5 @@ internal interface IConsoleLoggerService
     /// <summary>
     /// Gets the logger that logs to the console.
     /// </summary>
-    public ILogger Logger { get; }
+    ILogger Logger { get; }
 }

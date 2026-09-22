@@ -7,7 +7,6 @@ namespace Velaptor.UI;
 using System;
 using System.Numerics;
 using Scene;
-using WebGpu.Batching;
 
 /// <summary>
 /// Provides the core of an application window which facilitates how the

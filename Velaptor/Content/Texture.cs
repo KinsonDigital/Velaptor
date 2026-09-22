@@ -218,7 +218,7 @@ public sealed class Texture : ITexture
             this.gpuTexture,
             in viewDesc);
 
-        // Create a linear sampler. ClampToEdge prevents colour bleeding at the texture border.
+        // Create a linear sampler. ClampToEdge prevents color bleeding at the texture border.
         var samplerDesc = new SamplerDescriptor
         {
             AddressModeU = AddressMode.ClampToEdge,
