@@ -347,6 +347,9 @@ public class FrameTests
         sut.Submit();
         sut.Begin(this.testColor);
 
+        // Assert - the surface texture handle is disposed
+        this.mockWgpuInvoker.Received(1).TextureRelease(UnsafeTextureHandle);
+
         // Assert - surfaceTextureHandle is reused via ResetHandle (not recreated)
         this.mockSurface.Received(1).GetSurfaceTexture(); // Only called once - second frame uses ResetHandle
         this.mockWgpuInvoker.Received(1).UnsafeSurfaceGetCurrentTexture(Arg.Any<SafeSurfaceHandle>()); // ResetHandle called once

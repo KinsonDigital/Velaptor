@@ -88,6 +88,15 @@ internal sealed class Frame : IFrame
         // may not have reached its final framebuffer size yet at that point.
         if (!this.surfaceConfigured)
         {
+            // Release the previous frame's surface texture BEFORE reconfiguring the swap
+            // chain. wgpu-native tracks whether the currently-held surface texture has been
+            // presented via a flag that wgpuSurfaceConfigure resets to 'not presented'. If
+            // the old (already-presented) texture is released after that reset, wgpu-native
+            // mistakes it for an un-presented texture, calls discard, and panics with
+            // "Surface image is already acquired".
+            this.surfaceTextureHandle?.Dispose();
+            this.surfaceTextureHandle = null;
+
             this.surfaceConfigured = this.surface.Configure();
         }
 
