@@ -116,7 +116,9 @@ Prefer a different platform? You can also support via [Open Collective](https://
 Special thanks to the amazing individuals and organizations keeping Velaptor alive:
 
 <!-- github-sponsors-start -->
-> *Be the first to sponsor Velaptor and see your avatar here!*
+
+[![GitHub Avatar](https://github.com/imgrammy.png?size=50)](https://github.com/imgrammy)
+
 <!-- github-sponsors-end -->
 
 <h2 style="font-weight:bold;" align="center">Licensing And Governance</h2>
