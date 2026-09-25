@@ -78,6 +78,7 @@
 		"ridleys",
 		"runsettings",
 		"samus",
+		"sarif",
 		"Sawaid",
 		"SDLC",
 		"serilog",
@@ -117,6 +118,7 @@
 		"**/bin": true,
 		"**/obj": true,
 		"**/.vs/": true,
+		"**/*.sarif": true
 	},
 	"files.eol": "\n",
 	"window.title": "🦖Velaptor",
