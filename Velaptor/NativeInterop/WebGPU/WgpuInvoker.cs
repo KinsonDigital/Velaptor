@@ -17,6 +17,7 @@ using WebGpuBuffer = Silk.NET.WebGPU.Buffer;
 /// Invokes WebGPU calls.
 /// </summary>
 [ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the Silk.NET library.")]
+[SuppressMessage("csharpsquid|Unsafe code blocks should not be used", "S6640", Justification = "Intentional")]
 internal sealed class WgpuInvoker : IWgpuInvoker
 {
     /// <summary>
