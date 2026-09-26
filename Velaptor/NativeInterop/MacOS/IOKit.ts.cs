@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.MacOS;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 /// <summary>
@@ -45,6 +46,7 @@ using System.Runtime.InteropServices;
 /// Framework reference: https://developer.apple.com/documentation/iokit<br/>
 /// Header source: https://opensource.apple.com/source/IOKitUser/ → IOKitLib.h.
 /// </remarks>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native macOS interop.")]
 internal static partial class IOKit
 {
     private const string IOKitFramework = "/System/Library/Frameworks/IOKit.framework/IOKit";

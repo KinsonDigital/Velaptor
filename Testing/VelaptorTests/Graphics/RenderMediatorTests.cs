@@ -8,14 +8,14 @@ using System;
 using System.Collections.Generic;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
-using Shouldly;
 using Helpers;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Batching;
 using Velaptor.Factories;
 using Velaptor.Graphics;
-using Velaptor.OpenGL.Batching;
+using Velaptor.WebGpu.Batching;
 using Xunit;
 
 /// <summary>

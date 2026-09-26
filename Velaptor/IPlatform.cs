@@ -24,5 +24,5 @@ public interface IPlatform
     /// <summary>
     /// Gets a value indicating whether the system is a 32 bit process.
     /// </summary>
-    public bool Is32BitProcess { get; }
+    bool Is32BitProcess { get; }
 }

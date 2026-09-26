@@ -86,28 +86,6 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    public FT_Error FT_Load_Char(nint face, uint char_code, FT_LOAD load_flags)
-    {
-        EnsureThat.PointerIsNotNull(face);
-
-        unsafe
-        {
-            return FT.FT_Load_Char((FT_FaceRec_*)face, char_code, load_flags);
-        }
-    }
-
-    /// <inheritdoc/>
-    public FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode_ render_mode)
-    {
-        EnsureThat.PointerIsNotNull(slot);
-
-        unsafe
-        {
-            return FT.FT_Render_Glyph((FT_GlyphSlotRec_*)slot, render_mode);
-        }
-    }
-
-    /// <inheritdoc/>
     public nint FT_New_Face(string filepathname, int face_index)
     {
         unsafe

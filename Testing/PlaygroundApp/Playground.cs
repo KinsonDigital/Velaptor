@@ -6,12 +6,12 @@ namespace PlaygroundApp;
 
 using System.Drawing;
 using Velaptor;
-using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.UI;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used to prototype, test, debug, and play around with Velaptor.
@@ -47,7 +47,7 @@ public class Playground : Window
     /// </summary>
     protected override void OnUnload()
     {
-        this.contentManager.Unload<IAtlasData>(this.atlas);
+        this.contentManager.Unload(this.atlas);
         base.OnUnload();
     }
 

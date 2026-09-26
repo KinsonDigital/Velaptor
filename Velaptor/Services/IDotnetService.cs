@@ -13,11 +13,11 @@ using System.Runtime.InteropServices;
 internal interface IDotnetService
 {
     /// <inheritdoc cref="GC.KeepAlive"/>
-    public void GcKeepAlive(object? obj);
+    void GcKeepAlive(object? obj);
 
     /// <inheritdoc cref="Marshal.StringToHGlobalAnsi"/>
-    public nint MarshalStringToHGlobalAnsi(string? s);
+    nint MarshalStringToHGlobalAnsi(string? s);
 
     /// <inheritdoc cref="Marshal.PtrToStringAnsi(System.IntPtr)"/>
-    public string? MarshalPtrToStringAnsi(nint ptr);
+    string? MarshalPtrToStringAnsi(nint ptr);
 }

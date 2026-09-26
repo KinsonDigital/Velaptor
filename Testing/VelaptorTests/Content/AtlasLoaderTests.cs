@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Exceptions;
@@ -505,6 +505,16 @@ public class AtlasLoaderTests
     public void Unload_WhenInvoked_UnloadsAtlas()
     {
         // Arrange
+        this.mockAtlasData.Texture.Returns(_ => this.mockAtlasTexture);
+        this.mockAtlasData.FilePath.Returns(AtlasImageFilePath);
+
+        this.mockAtlasTexture.FilePath.Returns(AtlasImageFilePath);
+        this.mockAtlasDataFactory.Create(Arg.Any<ITexture>(),
+            Arg.Any<IList<AtlasSubTextureData>>(),
+            Arg.Any<string>(),
+            Arg.Any<string>())
+            .Returns(this.mockAtlasData);
+
         var sut = CreateSystemUnderTest();
         var atlas = sut.Load(AtlasContentName);
 
@@ -512,7 +522,7 @@ public class AtlasLoaderTests
         sut.Unload(atlas);
 
         // Assert
-        sut.TotalCachedItems.ShouldBe(1);
+        sut.TotalCachedItems.ShouldBe(0);
     }
     #endregion
 

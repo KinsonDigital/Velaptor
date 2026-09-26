@@ -95,7 +95,7 @@ public static class TestHelpers
 
         var imageResultPath = $"{TestResultDirPath}{unitTestName}.png";
 
-        ToSixLaborImage(image).SaveAsPng(imageResultPath);
+        image.ToSixLaborImage().SaveAsPng(imageResultPath);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static class TestHelpers
 
         srcImage.Dispose();
 
-        return ToImgData(destImage);
+        return destImage.ToImgData();
     }
 
     /// <summary>

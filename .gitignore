@@ -363,3 +363,6 @@ coverage.xml
 
 # Files created by VSCode C# Dev Kit Extension
 *.lscache
+
+# Ignore sarif files
+*.sarif

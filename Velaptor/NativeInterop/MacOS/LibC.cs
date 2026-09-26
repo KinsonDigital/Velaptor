@@ -5,9 +5,11 @@
 namespace Velaptor.NativeInterop.MacOS;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-// ReSharper disable once CommentTypo
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 
 /// <summary>
 /// P/Invoke bindings for <c>libc</c> (Apple's <c>libSystem.B.dylib</c>), exposing the BSD
@@ -41,6 +43,7 @@ using System.Runtime.InteropServices;
 /// BSD man page: https://man.freebsd.org/cgi/man.cgi?sysctl(3)<br/>
 /// macOS XNU sysctl key definitions: https://opensource.apple.com/source/xnu/xnu-7195.141.2/bsd/sys/sysctl.h.auto.html.
 /// </remarks>
+[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with native macOS interop.")]
 internal static partial class LibC
 {
     // ReSharper disable GrammarMistakeInComment
