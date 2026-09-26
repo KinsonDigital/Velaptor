@@ -51,11 +51,6 @@ public abstract class SceneBase : IScene
     /// <inheritdoc/>
     public Point WindowCenter => new ((int)WindowSize.Width / 2, (int)WindowSize.Height / 2);
 
-    /// <summary>
-    /// Gets a value indicating whether the scene has been disposed.
-    /// </summary>
-    protected bool IsDisposed => false;
-
     /// <inheritdoc/>
     public virtual void LoadContent() => IsLoaded = true;
 

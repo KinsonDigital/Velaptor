@@ -69,7 +69,7 @@ public class AudioScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
-        if (!IsLoaded || IsDisposed)
+        if (!IsLoaded)
         {
             return;
         }

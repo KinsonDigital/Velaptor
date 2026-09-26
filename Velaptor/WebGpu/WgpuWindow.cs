@@ -648,7 +648,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
             getterWhenNotCaching: () =>
             {
                 var silkState = this.silkWindow.WindowState;
-                if (!Enum.IsDefined(typeof(WindowState), silkState))
+                if (!Enum.IsDefined(silkState))
                 {
                     throw new InvalidEnumArgumentException(
                         $"this.silkWindow.{nameof(WindowState)}",

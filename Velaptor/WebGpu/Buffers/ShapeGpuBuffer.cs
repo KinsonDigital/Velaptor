@@ -241,6 +241,7 @@ internal sealed class ShapeGpuBuffer : WebGpuBufferBase<ShapeBatchItem>
                 VertexPosition.BottomLeft or VertexPosition.BottomRight =>
                     (item.GradientStop.R, item.GradientStop.G, item.GradientStop.B, item.GradientStop.A),
             },
+            _ => throw new InvalidOperationException($"The '{nameof(ColorGradient)}' enumeration value is invalid.")
         };
 #pragma warning restore CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
