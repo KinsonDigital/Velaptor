@@ -107,7 +107,7 @@ internal interface IReactableFactory
     IRenderBatchReactable<TextureBatchItem> CreateRenderTextureReactable();
 
     /// <summary>
-    /// Creates a reactable for pushing font batch data to the font renderer.
+    /// Creates a reactable for pushing font batch data to the text renderer.
     /// </summary>
     /// <returns>The reactable.</returns>
     IRenderBatchReactable<FontGlyphBatchItem> CreateRenderFontReactable();

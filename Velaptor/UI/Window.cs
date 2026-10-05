@@ -29,7 +29,7 @@ public abstract class Window : IWindow
     private readonly IBatcher batcher;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IContentManager contentManager;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly Dictionary<decimal, (string text, SizeF size)> fpsCache = new ();
     private readonly Queue<decimal> cacheInsertionOrder = new ();
     private KeyboardState prevKeyState;
@@ -45,7 +45,7 @@ public abstract class Window : IWindow
         this.nativeWindow = WindowFactory.CreateWindow();
         this.batcher = IoC.Container.GetInstance<IBatcher>();
         this.contentManager = IoC.Container.GetInstance<IContentManager>();
-        this.fontRenderer = IoC.Container.GetInstance<IFontRenderer>();
+        this.textRenderer = IoC.Container.GetInstance<ITextRenderer>();
         this.keyboard = IoC.Container.GetInstance<IAppInput<KeyboardState>>();
 
         // Eagerly create the render coordinator and batch manager so they subscribe
@@ -69,26 +69,26 @@ public abstract class Window : IWindow
     /// <param name="window">The window implementation that contains the window functionality.</param>
     /// <param name="batcher">Controls the batching start and end process.</param>
     /// <param name="contentManager">Manages content.</param>
-    /// <param name="fontRenderer">Renders fonts.</param>
+    /// <param name="textRenderer">Renders text.</param>
     /// <param name="keyboard">Provides keyboard input.</param>
     private protected Window(
         IWindow window,
         IBatcher batcher,
         IContentManager contentManager,
-        IFontRenderer fontRenderer,
+        ITextRenderer textRenderer,
         IAppInput<KeyboardState> keyboard)
     {
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(batcher);
         ArgumentNullException.ThrowIfNull(contentManager);
-        ArgumentNullException.ThrowIfNull(fontRenderer);
+        ArgumentNullException.ThrowIfNull(textRenderer);
         ArgumentNullException.ThrowIfNull(keyboard);
 
         this.nativeWindow = window;
         this.batcher = batcher;
         this.keyboard = keyboard;
         this.contentManager = contentManager;
-        this.fontRenderer = fontRenderer;
+        this.textRenderer = textRenderer;
 
         Init();
     }
@@ -353,7 +353,7 @@ public abstract class Window : IWindow
         var halfWidth = fpsData.size.Width / 2f;
         var halfHeight = fpsData.size.Height / 2f;
 
-        this.fontRenderer.Render(this.font, fpsData.text, new Vector2(halfWidth + 10, Height - (halfHeight + 10)), FpsDisplayColor);
+        this.textRenderer.Render(this.font, fpsData.text, new Vector2(halfWidth + 10, Height - (halfHeight + 10)), FpsDisplayColor);
     }
 
     /// <summary>

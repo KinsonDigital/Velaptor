@@ -17,7 +17,7 @@ public sealed class Option : Control
     private static readonly List<(int, Guid, bool)> CheckStates = new ();
     private readonly Guid id;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly Color optionColor = Color.FromArgb(255, 89, 149, 224);
@@ -43,7 +43,7 @@ public sealed class Option : Control
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
 
@@ -176,7 +176,7 @@ public sealed class Option : Control
         }
 
         this.shapeRenderer.Render(this.circle);
-        this.fontRenderer.Render(this.font, Text, this.textPos, Color.White);
+        this.textRenderer.Render(this.font, Text, this.textPos, Color.White);
 
         base.Render(0);
     }

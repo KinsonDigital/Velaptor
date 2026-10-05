@@ -13,7 +13,7 @@ public sealed class DropDownItem : Control
 {
     private const int TopLayer = 1000;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private IFont? font;
@@ -25,7 +25,7 @@ public sealed class DropDownItem : Control
     public DropDownItem()
     {
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
     }
@@ -102,7 +102,7 @@ public sealed class DropDownItem : Control
             Position.X + (Width / 2f),
             Position.Y + HalfHeight);
 
-        this.fontRenderer.Render(this.font, Text, renderPos, Color.White, TopLayer);
+        this.textRenderer.Render(this.font, Text, renderPos, Color.White, TopLayer);
 
         base.Render(layer);
     }
