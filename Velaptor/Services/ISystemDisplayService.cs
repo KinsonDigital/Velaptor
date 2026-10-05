@@ -21,7 +21,7 @@ internal interface ISystemDisplayService
     /// Gets the primary display in the system.
     /// </summary>
     /// <remarks>Will return null if no displays are hooked up to the system.</remarks>
-    public SystemDisplay MainDisplay { get; }
+    SystemDisplay MainDisplay { get; }
 
     /// <summary>
     /// Refreshes the display information.

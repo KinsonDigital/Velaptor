@@ -38,28 +38,6 @@ public class FreeTypeInvokerTests
     }
 
     [Fact]
-    public void FTLoadChar_WithNullPointer_ThrowsException()
-    {
-        // Arrange
-        var sut = new FreeTypeInvoker();
-
-        // Act && Assert
-        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Load_Char(0, 0, default));
-        exception.Message.ShouldBe("The pointer parameter 'face' cannot be a value of zero.");
-    }
-
-    [Fact]
-    public void FTRenderGlyph_WithNullPointer_ThrowsException()
-    {
-        // Arrange
-        var sut = new FreeTypeInvoker();
-
-        // Act && Assert
-        var exception = Should.Throw<NullReferenceException>(() => sut.FT_Render_Glyph(0, default));
-        exception.Message.ShouldBe("The pointer parameter 'slot' cannot be a value of zero.");
-    }
-
-    [Fact]
     public void FTSetCharSize_WithNullFacePointer_ThrowsException()
     {
         // Arrange

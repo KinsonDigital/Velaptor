@@ -47,6 +47,9 @@
     <None Update="Content\Graphics\layered-rendering-background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Graphics\zelda-light-world.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Atlas\Main-Atlas.pdn">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -84,11 +87,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
+    <ProjectReference Include="..\..\Velum\Velum.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="KinsonDigital.KdGui" Version="1.0.0-preview.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.301">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.400">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -170,5 +170,5 @@ internal static class KeyCodeExtensions
     /// </summary>
     /// <param name="key">The key to check.</param>
     /// <returns><c>true</c> if not a deletion key.</returns>
-    public static bool IsNotDeletionKey(this KeyCode key) => !IsDeletionKey(key);
+    public static bool IsNotDeletionKey(this KeyCode key) => !key.IsDeletionKey();
 }

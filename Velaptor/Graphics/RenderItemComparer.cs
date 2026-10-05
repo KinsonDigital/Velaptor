@@ -5,7 +5,7 @@
 namespace Velaptor.Graphics;
 
 using System.Collections.Generic;
-using OpenGL.Batching;
+using WebGpu.Batching;
 
 /// <summary>
 /// Uses a binary search type of comparison between 2 <see cref="RenderItem{T}"/> objects

@@ -12,14 +12,6 @@
 [![Build PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/build-status-check.yml?label=%E2%9A%99%EF%B8%8FBuild)](https://github.com/KinsonDigital/Velaptor/actions/workflows/build-status-check.yml)
 [![Unit Test PR Status Check](https://img.shields.io/github/actions/workflow/status/KinsonDigital/Velaptor/unit-test-status-check.yml?label=%F0%9F%A7%AATests)](https://github.com/KinsonDigital/Velaptor/actions/workflows/unit-test-status-check.yml)
 
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=KinsonDigital_Velaptor&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=KinsonDigital_Velaptor)
-
 [![Codecov](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor?label=Code%20Coverage&logo=codecov)](https://app.codecov.io/gh/KinsonDigital/Velaptor/tree/preview)
 
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
@@ -33,17 +25,18 @@
 
 This library is still under development and is not at v1.0.0 yet! However, all major features are available, so we encourage you to use **Velaptor** and provide feedback. That is what open source is all about. 
 
-<br/>
-
 <h2 style="font-weight:bold;" align="center">About Velaptor</h2>
 
-**Velaptor** is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult, which is one reason why **Velaptor** was developed. It takes care of all of the lower-level, more complicated things for creating a game, like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way, you can concentrate on developing your game or multi-media application.
+**Velaptor** is a 2D game development framework written in modern C# that strives to be simple and easy to use. Game development can be difficult, which is one reason why **Velaptor** was developed. It takes care of all the lower-level, more complicated things for creating a game, like playing sound, loading graphics, managing content, multi-platform, and dealing with input, just to name a few. This way, you can concentrate on developing your game or multi-media application.
 
 <h2 style="font-weight:bold;" align="center">Features</h2>
 
 ### **Cross-Platform**
 
 Our architecture prioritizes cross-platform dependencies to deliver a consistent environment across all operating systems. In cases where unified libraries do not exist, Velaptor leverages native, platform-specific implementations without compromising the core API.
+
+> [!NOTE]  
+> Velaptor currently supports Windows, Linux, and macOS.  There are plans to get support for Android and iOS in the future.
 
 ### **Easy To Use**
 
@@ -71,20 +64,31 @@ Assets like images and sounds are cached in memory for optimal performance, prev
 
 Complete API documentation, tutorials, and blogs can be found at the [Velaptor docs](https://docs.velaptor.io) website. **Velaptor** is powered by [CASL](https://github.com/KinsonDigital/CASL) and [Silk.NET](https://github.com/dotnet/Silk.NET).
 
-<br/>
-
 <h2 style="font-weight:bold;" align="center">Contributing</h2>
 
-These projects are fueled by personal passion and are actively maintained with regular updates, improvements as well as a commitment to code quality. As the ecosystem grows, I am looking to transition from a solo effort to a community-backed model. Whether you are interested in [contributing code](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to help build new features or providing monetary support to help cover infrastructure and development time, your involvement makes a positive impact.
+These projects are fueled by personal passion and are actively maintained with regular updates, improvements as well as a commitment to code quality. As the ecosystem grows, I am looking to transition from a solo effort to a community-backed model. Whether you are interested in [contributing code](https://github.com/KinsonDigital/.github/blob/main/docs/CONTRIBUTING.md) to help build new features or reporting issues and sharing feedback, your involvement makes a positive impact.
 
 We encourage and use early pull requests. Please do not wait until you are finished with your work before creating a PR!  Click [here](https://carlosperez.medium.com/pull-request-first-f6bb667a9b6) to learn how to create an early pull request.
 
-<h2 style="font-weight:bold;" align="center">Financial Support</h2>
+<h2 style="font-weight:bold;" align="center">💖 Support Velaptor Development</h2>
 
-Maintaining these projects takes a significant amount of time and resources. **Velaptor** is open source and, but the work behind it isn't. Contributing toward development is the most direct way to keep it moving forward: faster bug fixes, new features, and continued cross-platform support.
-- [Github Sponsors](https://github.com/sponsors/KinsonDigital) 
-- [Open Collective - Kinson Digital](https://opencollective.com/search?q=kinson+digital) 
-- [Kofi](https://ko-fi.com/kinsondigital)
+Velaptor is a 100% free, open-source 2D game development framework built for modern .NET. It is independently developed and maintained to bring high-performance, developer-friendly 2D game architecture to the C# community.
+
+If Velaptor helps you build your games, saves you development time, or empowers your studio, consider supporting its ongoing maintenance and roadmap!
+
+<p align="center">
+  <a href="https://github.com/sponsors/KinsonDigital">
+    <img src="https://img.shields.io/badge/Sponsor%20on%20GitHub-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub" />
+  </a>
+</p>
+
+### 🎯 Current Funding Goals
+
+- [ ] **Goal 1: $100 / mo** — **Infrastructure & Testing Hardware** *(Covers domain registration, CI/CD automated test runners, and multi-platform testing devices).*
+- [ ] **Goal 2: $250 / mo** — **Sustained Maintenance** *(Guarantees dedicated weekly hours for issue triage, bug fixes, and core framework updates).*
+- [ ] **Goal 3: $500 / mo** — **Advanced Features & Ecosystem Expansion** *(Funds major roadmap pushes like advanced shader pipelines, mobile/WASM support, and extended tooling).*
+
+Prefer a different platform? You can also support via [Open Collective](https://opencollective.com/kinsondigital) or [Ko-fi](https://ko-fi.com/kinsondigital) — one-time or recurring.
 
 <h2 style="font-weight:bold;" align="center">Maintainers</h2>
 
@@ -96,6 +100,18 @@ Maintaining these projects takes a significant amount of time and resources. **V
 [Calvin Wilkinson](https://bsky.app/profile/kdcoder.bsky.social) (KinsonDigital GitHub Organization - Owner)
 
 <br/>
+
+---
+
+### 🏆 Current Sponsors
+
+Special thanks to the amazing individuals and organizations keeping Velaptor alive:
+
+<!-- github-sponsors-start -->
+
+[![GitHub Avatar](https://github.com/imgrammy.png?size=50)](https://github.com/imgrammy)
+
+<!-- github-sponsors-end -->
 
 <h2 style="font-weight:bold;" align="center">Licensing And Governance</h2>
 

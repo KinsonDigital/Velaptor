@@ -153,8 +153,12 @@ internal sealed class AudioLoader : IAudioLoader
     public void Unload(IAudio audio)
     {
         var cacheKey = BuildCacheKey(audio.FilePath, audio.BufferType);
-        this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = audio.Id });
-        this.audioCache.TryRemove(cacheKey, out _);
+        this.audioCache.TryRemove(cacheKey, out IAudio? cachedAudio);
+
+        if (cachedAudio is not null)
+        {
+            this.disposeReactable.Push(PushNotifications.AudioDisposedId, new DisposeAudioData { AudioId = cachedAudio.Id });
+        }
     }
 
     /// <summary>

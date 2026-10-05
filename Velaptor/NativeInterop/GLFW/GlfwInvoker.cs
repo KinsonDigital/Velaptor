@@ -13,7 +13,7 @@ using Silk.NET.GLFW;
 /// <summary>
 /// Invokes GLFW calls.
 /// </summary>
-[ExcludeFromCodeCoverage(Justification = "Cannot test due to direct interaction with the GLFW library.")]
+[ExcludeFromCodeCoverage(Justification = "Cannot test it due to direct interaction with the GLFW library.")]
 internal sealed class GlfwInvoker : IGlfwInvoker
 {
     private readonly Glfw glfw;
@@ -120,7 +120,7 @@ internal sealed class GlfwInvoker : IGlfwInvoker
         => this.OnError?.Invoke(this, new GlfwErrorEventArgs((GlfwErrorCode)errorCode, description));
 
     /// <summary>
-    /// Invoked when GLFW detects that something has changed with the monitors,
+    /// Invoked when GLFW detects that something has changed with the monitors
     /// and then invokes the <see cref="OnDisplayChanged"/> event.
     /// </summary>
     /// <param name="monitor">The monitor that has changed.</param>

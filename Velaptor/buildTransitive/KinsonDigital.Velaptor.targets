@@ -1,0 +1,43 @@
+<Project>
+
+  <!--
+    Silk.NET (WebGPU/GLFW/ImGui) and FreeTypeSharp load their native libraries at
+    runtime through NativeLibrary.TryLoad. Their resolver probes the app base
+    directory plus a RID-fallback chain that breaks on Linux distros whose runtime
+    RID is distro-specific (e.g. ubuntu.26.04-x64) rather than linux-x64. The native
+    libraries the .NET SDK copies under `runtimes/<rid>/native` are therefore never
+    located, and loading throws "Could not load from any of the possible library
+    names!".
+
+    This file ships in the KinsonDigital.Velaptor NuGet package (buildTransitive) so
+    every downstream consumer gets the same native-library copy workaround that the
+    Velaptor repo's Directory.Build.targets applies to in-repo projects.
+
+    Workaround: copy the native runtime libraries for the current OS/architecture
+    directly into the output root, where the loaders' base-directory probe finds them.
+  -->
+
+  <PropertyGroup>
+    <_VelaptorNuGetNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">linux</_VelaptorNuGetNativeOS>
+    <_VelaptorNuGetNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">win</_VelaptorNuGetNativeOS>
+    <_VelaptorNuGetNativeOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">osx</_VelaptorNuGetNativeOS>
+
+    <_VelaptorNuGetNativeArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</_VelaptorNuGetNativeArch>
+
+    <_VelaptorNuGetNativeRuntime Condition="'$(_VelaptorNuGetNativeOS)' != '' and '$(_VelaptorNuGetNativeArch)' != ''">$(_VelaptorNuGetNativeOS)-$(_VelaptorNuGetNativeArch)</_VelaptorNuGetNativeRuntime>
+  </PropertyGroup>
+
+  <Target Name="CopyVelaptorNuGetNativeLibsToOutputRoot"
+          AfterTargets="Build"
+          Condition="'$(_VelaptorNuGetNativeRuntime)' != '' and Exists('$(OutDir)runtimes/$(_VelaptorNuGetNativeRuntime)/native')">
+
+    <ItemGroup>
+      <_VelaptorNuGetNativeLibToCopy Include="$(OutDir)runtimes/$(_VelaptorNuGetNativeRuntime)/native/*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_VelaptorNuGetNativeLibToCopy)"
+          DestinationFolder="$(OutDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

@@ -66,7 +66,7 @@ try {
 
 	const urlMatchText = urlMatch[0];
 	let url = urlMatchText.split("=")[1].trim();
-	const githubUrlRegex = /https:\/\/github\.com\/(.+\/)(.+)\.git/;
+	const githubUrlRegex = /https:\/\/github\.com\/([^\/\s]+\/)([\w.-]+?)(?:\.git)?(?=[\s"'`]|$)/;
 
 	if (!githubUrlRegex.test(url)) {
 		printIndianRed("The remote 'origin' URL is not a valid GitHub URL.");

@@ -14,5 +14,5 @@ internal interface IFileLoggerService
     /// <summary>
     /// Gets the logger that logs to a file.
     /// </summary>
-    public ILogger Logger { get; }
+    ILogger Logger { get; }
 }

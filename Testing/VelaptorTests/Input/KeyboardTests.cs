@@ -6,8 +6,8 @@ namespace VelaptorTests.Input;
 
 using System;
 using System.Collections.Generic;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor.Input;
 using Velaptor.Services;
 using Xunit;

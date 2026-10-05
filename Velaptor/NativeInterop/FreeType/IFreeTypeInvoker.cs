@@ -66,20 +66,8 @@ internal interface IFreeTypeInvoker
     ///     or not, whether to hint the outline, etc.).
     /// </param>
     /// <returns><c>FreeType</c> error code. 0 means success.</returns>
+    // ReSharper disable once UnusedMethodReturnValue.Global
     FT_Error FT_Load_Glyph(nint face, uint glyph_index, FT_LOAD load_flags);
-
-    /// <summary>
-    /// Load a glyph into the glyph slot of a face object, accessed by its character code.
-    /// </summary>
-    /// <param name="face">A handle to a target face object where the glyph is loaded.</param>
-    /// <param name="char_code">The glyph's character code, according to the current character map used in the face.</param>
-    /// <param name="load_flags">
-    ///     A flag indicating what to load for this glyph. The FT_LOAD_XXX constants can be used to control
-    ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
-    ///     or not, whether to hint the outline, etc.).
-    /// </param>
-    /// <returns><c>FreeType</c> error code. 0 means success.</returns>
-    FT_Error FT_Load_Char(nint face, uint char_code, FT_LOAD load_flags);
 
     /// <summary>
     /// Call <see cref="FT.FT_Open_Face"/> to open a font by its pathname.
@@ -90,24 +78,6 @@ internal interface IFreeTypeInvoker
     ///     A handle to a new face object. If face_index is greater than or equal to zero, it must not be NULL.
     /// </returns>
     nint FT_New_Face(string filepathname, int face_index);
-
-    /// <summary>
-    /// Convert a given glyph image to a bitmap. It does so by inspecting the glyph image format, finding the relevant renderer, and invoking it.
-    /// </summary>
-    /// <param name="slot">A handle to the glyph slot containing the image to convert.</param>
-    /// <param name="render_mode">
-    ///     The render mode used to render the glyph image into a bitmap. See FT_Render_Mode
-    ///     for a list of possible values.
-    ///
-    /// <para>
-    ///     If FT_RENDER_MODE_NORMAL is used, a previous call of FT_Load_Glyph with flag FT_LOAD_COLOR
-    ///     makes FT_Render_Glyph provide a default blending of colored glyph layers associated with the current
-    ///     glyph slot(provided the font contains such layers) instead of rendering the glyph slot's outline.
-    ///     This is an experimental feature; see FT_LOAD_COLOR for more information.
-    /// </para>
-    /// </param>
-    /// <returns><c>FreeType</c> error code. 0 means success.</returns>
-    FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode_ render_mode);
 
     /// <summary>
     /// Call <see cref="FT.FT_Request_Size"/> to request the nominal size (in points).

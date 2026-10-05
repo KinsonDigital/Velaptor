@@ -44,7 +44,7 @@ public enum FontStyle
 public enum FontSource
 {
     /// <summary>
-    /// Loaded from another location other then the system or application's font content directory.
+    /// Loaded from another location other than the system or application's font content directory.
     /// </summary>
     Unknown,
 

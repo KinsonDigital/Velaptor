@@ -7,8 +7,7 @@ namespace VelaptorTesting.Scenes;
 using System;
 using System.Drawing;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Factories;
@@ -25,28 +24,30 @@ public class LineRenderingScene : SceneBase
     private const int WindowPadding = 10;
     private const float LineMoveSpeed = 200f;
     private readonly BackgroundManager backgroundManager;
-    private IAppInput<MouseState>? mouse;
-    private IAppInput<KeyboardState>? keyboard;
-    private ILineRenderer? lineRenderer;
+    private readonly IShapeRenderer shapeRenderer;
+    private readonly IAppInput<MouseState>? mouse;
+    private readonly IAppInput<KeyboardState>? keyboard;
     private Line line;
     private MouseState currentMouseState;
     private KeyboardState currentKeyState;
-    private IControlGroup? grpControls;
+    private Label? lblInstructions;
     private bool mouseEnteredAtLeastOnce;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LineRenderingScene"/> class.
     /// </summary>
-    public LineRenderingScene() => this.backgroundManager = new BackgroundManager();
+    public LineRenderingScene()
+    {
+        this.backgroundManager = new BackgroundManager();
+        this.shapeRenderer = RendererFactory.CreateShapeRenderer();
+        this.keyboard = HardwareFactory.GetKeyboard();
+        this.mouse = HardwareFactory.GetMouse();
+    }
 
     /// <inheritdoc cref="IContentLoadable.LoadContent"/>
     public override void LoadContent()
     {
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
-
-        this.lineRenderer = RendererFactory.CreateLineRenderer();
-        this.keyboard = HardwareFactory.GetKeyboard();
-        this.mouse = HardwareFactory.GetMouse();
 
         this.line = default;
         this.line.Color = Color.SteelBlue;
@@ -63,23 +64,13 @@ public class LineRenderingScene : SceneBase
 
         var instructions = string.Join(Environment.NewLine, instructionLines);
 
-        var ctrlFactory = new ControlFactory();
-
-        var lblInstructions = ctrlFactory.CreateLabel();
-        lblInstructions.Name = nameof(lblInstructions);
-        lblInstructions.Text = instructions;
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Instructions";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.TitleBarVisible = false;
-
-        this.grpControls.Add(lblInstructions);
+        this.lblInstructions = new Label { Text = instructions };
+        this.lblInstructions.Load();
 
         base.LoadContent();
     }
 
-    /// <inheritdoc cref="IUpdatable.Update"/>
+    /// <inheritdoc cref="Velaptor.IUpdatable.Update"/>
     public override void Update(FrameTime frameTime)
     {
         this.currentKeyState = this.keyboard.GetState();
@@ -98,7 +89,7 @@ public class LineRenderingScene : SceneBase
         UpdateLine(frameTime);
         MoveLine(frameTime);
 
-        this.grpControls.Position = new Point(WindowCenter.X - this.grpControls.HalfWidth, WindowPadding);
+        this.lblInstructions.Position = new Vector2(WindowCenter.X - this.lblInstructions.HalfWidth, WindowPadding);
 
         base.Update(frameTime);
     }
@@ -107,9 +98,9 @@ public class LineRenderingScene : SceneBase
     public override void Render()
     {
         this.backgroundManager.Render();
-        this.lineRenderer.Render(this.line);
+        this.shapeRenderer.Render(this.line);
 
-        this.grpControls.Render();
+        this.lblInstructions.Render();
 
         base.Render();
     }
@@ -117,32 +108,15 @@ public class LineRenderingScene : SceneBase
     /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
     public override void UnloadContent()
     {
-        if (!IsLoaded || IsDisposed)
+        if (!IsLoaded)
         {
             return;
         }
 
         this.backgroundManager.Unload();
-        this.grpControls.Dispose();
-        this.grpControls = null;
+        this.lblInstructions?.Unload();
 
         base.UnloadContent();
-    }
-
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            UnloadContent();
-        }
-
-        base.Dispose(disposing);
     }
 
     private void UpdateLine(FrameTime frameTime)

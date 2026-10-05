@@ -23,7 +23,7 @@ using Services;
 internal sealed class TextureLoader : ITextureLoader
 {
     private readonly IImageService imageService;
-    private readonly ConcurrentDictionary<string, ITexture> textureCache = new ();
+    private readonly ConcurrentDictionary<string, ITexture?> textureCache = new ();
     private readonly IPushReactable<DisposeTextureData> disposeReactable;
     private readonly IDisposable unsubscriber;
     private readonly ITextureFactory textureFactory;
@@ -109,20 +109,26 @@ internal sealed class TextureLoader : ITextureLoader
 
         var textureFilePath = this.texturePathResolver.ResolveFilePath(pathOrName);
 
-        return this.textureCache.GetOrAdd(textureFilePath, (filePath) =>
+        var texture = this.textureCache.GetOrAdd(textureFilePath, filePath =>
         {
             var imageData = this.imageService.Load(filePath);
             var name = this.path.GetFileNameWithoutExtension(textureFilePath);
 
             return this.textureFactory.Create(name, filePath, imageData);
         });
+
+        return texture ?? throw new FileNotFoundException($"The texture '{pathOrName}' was not found.");
     }
 
     /// <inheritdoc cref="IUnloader{T}.Unload"/>
     public void Unload(ITexture texture)
     {
-        this.textureCache.TryRemove(texture.FilePath, out _);
-        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = texture.Id });
+        this.textureCache.TryRemove(texture.FilePath, out var cachedTexture);
+
+        if (cachedTexture != null)
+        {
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = cachedTexture.Id });
+        }
     }
 
     /// <summary>
@@ -137,6 +143,11 @@ internal sealed class TextureLoader : ITextureLoader
 
         foreach (var textureDataItem in this.textureCache)
         {
+            if (textureDataItem.Value is null)
+            {
+                continue;
+            }
+
             this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = textureDataItem.Value.Id });
         }
 

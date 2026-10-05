@@ -4,8 +4,8 @@
 
 namespace VelaptorTests.ExtensionMethods;
 
-using Shouldly;
 using Helpers;
+using Shouldly;
 using Velaptor.ExtensionMethods;
 using Xunit;
 
@@ -364,7 +364,7 @@ public class StringExtensionsTests
         var actual = values.TrimAllEnds();
 
         // Assert
-        actual.ShouldAllBe((item) => item == "item");
+        actual.ShouldAllBe(item => item == "item");
     }
 
     [Fact]
@@ -377,7 +377,7 @@ public class StringExtensionsTests
         var actual = values.TrimAllEnds('~');
 
         // Assert
-        actual.ShouldAllBe((item) => item == "item");
+        actual.ShouldAllBe(item => item == "item");
     }
 
     [Fact]

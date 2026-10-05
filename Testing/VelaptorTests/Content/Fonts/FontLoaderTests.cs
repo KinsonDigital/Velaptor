@@ -8,12 +8,13 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Fakes;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Factories;
@@ -23,7 +24,6 @@ using Velaptor.Graphics;
 using Velaptor.ReactableData;
 using Velaptor.Services;
 using Xunit;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// Tests the <see cref="FontLoader"/> class.
@@ -109,6 +109,7 @@ public class FontLoaderTests
         mockFont.Name.Returns(FontContentName);
         mockFont.FilePath.Returns(this.defaultFontFilePath);
         mockFont.Atlas.Returns(mockAtlasTexture);
+        mockFont.Size.Returns((uint)FontSize);
 
         this.mockFontFactory = Substitute.For<IFontFactory>();
         this.mockFontFactory.Create(
@@ -558,9 +559,8 @@ public class FontLoaderTests
         // Act
         sut.Unload(font);
 
-        // Assert
         this.mockDisposeTextureReactable.Received(1).Push(PushNotifications.TextureDisposedId, expectedDisposeTextureData);
-        sut.TotalCachedItems.ShouldBe(1);
+        sut.TotalCachedItems.ShouldBe(0);
     }
     #endregion
 

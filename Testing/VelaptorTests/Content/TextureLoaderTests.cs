@@ -5,13 +5,14 @@
 namespace VelaptorTests.Content;
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using Carbonate.Core.NonDirectional;
 using Carbonate.NonDirectional;
 using Carbonate.OneWay;
-using Shouldly;
 using NSubstitute;
+using Shouldly;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Factories;
@@ -197,6 +198,23 @@ public class TextureLoaderTests
     }
 
     [Fact]
+    public void Load_WithNullTextureFromCache_ThrowsException()
+    {
+        // Arrange
+        this.mockTextureFactory.Create(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImageData>())
+            .Returns((ITexture?)null);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Load("test-texture");
+
+        // Assert
+        act.ShouldThrow<FileNotFoundException>()
+            .Message.ShouldBe("The texture 'test-texture' was not found.");
+    }
+
+    [Fact]
     public void Load_WithEmptyPathOrNameParam_ThrowsException()
     {
         // Arrange
@@ -275,6 +293,8 @@ public class TextureLoaderTests
     public void Unload_WhenInvoked_UnloadsCachedTextures()
     {
         // Arrange
+        this.mockTexture.FilePath.Returns(TextureFilePath);
+
         var sut = CreateSystemUnderTest();
         var actual = sut.Load(TextureFileName);
 
@@ -282,7 +302,7 @@ public class TextureLoaderTests
         sut.Unload(actual);
 
         // Assert
-        sut.TotalCachedItems.ShouldBe(1);
+        sut.TotalCachedItems.ShouldBe(0);
         this.mockDisposeTextureReactable.Received(1).Push(
             PushNotifications.TextureDisposedId,
             Arg.Is<DisposeTextureData>(data => data.TextureId == TextureId));

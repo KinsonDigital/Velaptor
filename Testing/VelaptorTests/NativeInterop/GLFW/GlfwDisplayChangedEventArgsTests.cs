@@ -4,9 +4,9 @@
 
 namespace VelaptorTests.NativeInterop.GLFW;
 
+using Shouldly;
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
-using Shouldly;
 
 public class GlfwDisplayChangedEventArgsTests
 {

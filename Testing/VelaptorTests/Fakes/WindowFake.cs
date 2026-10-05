@@ -5,8 +5,11 @@
 namespace VelaptorTests.Fakes;
 
 using Velaptor;
-using Velaptor.Batching;
+using Velaptor.Content;
+using Velaptor.Graphics.Renderers;
+using Velaptor.Input;
 using Velaptor.UI;
+using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used for the purpose of testing the abstract <see cref="Window"/> class.
@@ -18,9 +21,17 @@ public class WindowFake : Window
     /// </summary>
     /// <param name="window">Mocked window.</param>
     /// <param name="batcher">Mocked batcher.</param>
+    /// <param name="contentManager">Mocked content manager.</param>
+    /// <param name="fontRenderer">Mocked font renderer.</param>
+    /// <param name="keyboard">Mocked keyboard.</param>
     /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-    internal WindowFake(IWindow window, IBatcher batcher)
-        : base(window, batcher)
+    internal WindowFake(
+        IWindow window,
+        IBatcher batcher,
+        IContentManager contentManager,
+        IFontRenderer fontRenderer,
+        IAppInput<KeyboardState> keyboard)
+        : base(window, batcher, contentManager, fontRenderer, keyboard)
     {
     }
 

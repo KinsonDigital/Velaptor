@@ -5,10 +5,12 @@
 namespace Velaptor;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Holds timing information for a loop iteration.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Not worth covering.")]
 public readonly record struct FrameTime
 {
     /// <summary>

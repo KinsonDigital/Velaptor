@@ -186,7 +186,7 @@ internal sealed class AtlasLoader : IAtlasLoader
             ? name
             : atlasPathOrName;
 
-        (ITexture atlasTexture, AtlasSubTextureData[] subTextureData) = this.atlasCache.GetOrAdd(atlasImageFilePath, (_) =>
+        (ITexture atlasTexture, AtlasSubTextureData[] subTextureData) = this.atlasCache.GetOrAdd(atlasImageFilePath, _ =>
         {
             var rawData = this.file.ReadAllText(atlasDataFilePath);
             var subTextureData = this.jsonService.Deserialize<AtlasSubTextureData[]>(rawData)
@@ -203,9 +203,10 @@ internal sealed class AtlasLoader : IAtlasLoader
     /// <inheritdoc/>
     public void Unload(IAtlasData atlasData)
     {
-        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = atlasData.Texture.Id });
         var cacheKey = atlasData.FilePath;
-        this.atlasCache.TryRemove(cacheKey, out _);
+        this.atlasCache.TryRemove(cacheKey, out var cachedAtlasData);
+
+        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = cachedAtlasData.atlasTexture.Id });
     }
 
     /// <summary>

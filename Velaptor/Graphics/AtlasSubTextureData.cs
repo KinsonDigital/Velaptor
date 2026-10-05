@@ -9,7 +9,7 @@ using System.Drawing;
 /// <summary>
 /// Holds data about a texture atlas sub texture.
 /// </summary>
-public readonly struct AtlasSubTextureData
+public readonly record struct AtlasSubTextureData
 {
     /// <summary>
     /// Gets the bounds of the sub texture data.

@@ -19,6 +19,8 @@ on:
 jobs:
   build_velaptor:
     name: Build Velaptor Status Check
+    permissions:
+      security-events: write
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +37,13 @@ jobs:
           dotnet-version: ${{ vars.NET_SDK_VERSION }}
 
       - name: Run Build
-        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }};
+        run: dotnet build "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/${{ vars.PROJECT_NAME }}.csproj" -c ${{ matrix.build_config }} -p:ErrorLog="analysis.sarif%2Cversion=2.1";
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() # Upload results even if compilation warnings/errors caused the build step to fail
+        with:
+          sarif_file: "${{ github.workspace }}/${{ vars.PROJECT_NAME }}/analysis.sarif"
 
 
   build_velaptor_testing:
@@ -56,22 +64,6 @@ jobs:
 
       - name: Run Build
         run: dotnet build "${{ github.workspace }}/Testing/${{ vars.PROJECT_NAME }}Testing/${{ vars.PROJECT_NAME }}Testing.csproj" -c Debug;
-
-
-  build_avalonia_testing:
-    name: Build Avalonia Testing Status Check
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          dotnet-version: ${{ vars.NET_SDK_VERSION }}
-
-      - name: Run Build
-        run: dotnet build "${{ github.workspace }}/Testing/AvaloniaTesting/AvaloniaTesting.csproj" -c Debug;
 
 
   build_playground:

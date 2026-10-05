@@ -5,6 +5,8 @@
 namespace Velaptor.Services;
 
 using System;
+using System.Diagnostics;
+using System.IO.Abstractions;
 
 /// <inheritdoc/>
 internal sealed class LoggingService : ILoggingService
@@ -13,6 +15,7 @@ internal sealed class LoggingService : ILoggingService
     private readonly IConsoleLoggerService consoleLoggerService;
     private readonly IFileLoggerService fileLoggerService;
     private readonly IEventLoggerService eventLoggerService;
+    private readonly IPath path;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingService"/> class.
@@ -21,21 +24,25 @@ internal sealed class LoggingService : ILoggingService
     /// <param name="consoleLoggerService">Logs messages to the console.</param>
     /// <param name="fileLoggerService">Logs messages to a file.</param>
     /// <param name="eventLoggerService">Logs events to the console or a file.</param>
+    /// <param name="path">Processes directory and file paths.</param>
     public LoggingService(
         IAppSettingsService appSettingsService,
         IConsoleLoggerService consoleLoggerService,
         IFileLoggerService fileLoggerService,
-        IEventLoggerService eventLoggerService)
+        IEventLoggerService eventLoggerService,
+        IPath path)
     {
         ArgumentNullException.ThrowIfNull(appSettingsService);
         ArgumentNullException.ThrowIfNull(consoleLoggerService);
         ArgumentNullException.ThrowIfNull(fileLoggerService);
         ArgumentNullException.ThrowIfNull(eventLoggerService);
+        ArgumentNullException.ThrowIfNull(path);
 
         this.appSettingsService = appSettingsService;
         this.consoleLoggerService = consoleLoggerService;
         this.fileLoggerService = fileLoggerService;
         this.eventLoggerService = eventLoggerService;
+        this.path = path;
     }
 
     /// <inheritdoc/>
@@ -93,6 +100,27 @@ internal sealed class LoggingService : ILoggingService
         {
             this.fileLoggerService.Logger.Error(msg);
         }
+    }
+
+    /// <inheritdoc/>
+    public void Error(Exception exception)
+    {
+        var fileAndLineNumber = string.Empty;
+
+        if (!string.IsNullOrEmpty(exception.StackTrace))
+        {
+            var stackTrace = new StackTrace(exception, true);
+
+            var frame = stackTrace.GetFrame(0);
+
+            if (frame is not null)
+            {
+                var fileName = this.path.GetFileName(frame.GetFileName());
+                fileAndLineNumber = $"{fileName}#{frame.GetFileLineNumber()} - ";
+            }
+        }
+
+        Error($"{fileAndLineNumber}{exception.Message}");
     }
 
     /// <inheritdoc/>

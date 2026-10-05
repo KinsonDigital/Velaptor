@@ -8,8 +8,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using KdGui;
-using KdGui.Factories;
+using Velum;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -35,9 +34,25 @@ public class TextRenderingScene : SceneBase
     ];
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private IControlGroup? grpControls;
+    private readonly Container mainContainer;
     private IFontRenderer? fontRenderer;
     private IFont? textFont;
+    private Layout layRenderSize;
+    private Layout layRotate;
+    private Layout laySingleLine;
+    private Layout layColor;
+    private Layout layFontSize;
+    private Layout layFontStyle;
+    private Label? lblRotate;
+    private Label? lblRenderSize;
+    private Label? lblFontSize;
+    private Label? lblStyle;
+    private Slider? sldRenderSize;
+    private Slider? sldRotate;
+    private Slider? sldFontSize;
+    private CheckBox? chkSingleLine;
+    private CheckBox? chkColor;
+    private DropDown? drpStyle;
     private string text = SingleLineText;
     private float renderSize = 1;
     private float angle;
@@ -52,6 +67,27 @@ public class TextRenderingScene : SceneBase
     {
         this.contentManager = ContentManager.Create();
         this.backgroundManager = new BackgroundManager();
+
+        this.mainContainer = new Container { Position = new Vector2(50, 50) };
+        this.mainContainer.Position = new Vector2(WindowPadding, WindowCenter.Y - this.mainContainer.HalfHeight);
+        this.mainContainer.Draggable = true;
+
+        CreateRotateCtrls();
+        CreateRenderSizeCtrls();
+        CreateSingleLineCtrls();
+        CreateColorCtrls();
+        CreateFontSizeCtrls();
+        CreateFontStyleCtrls();
+
+        var layMain = new Layout();
+        layMain.AddControl(this.layRotate);
+        layMain.AddControl(this.layRenderSize);
+        layMain.AddControl(this.laySingleLine);
+        layMain.AddControl(this.layColor);
+        layMain.AddControl(this.layFontSize);
+        layMain.AddControl(this.layFontStyle);
+
+        this.mainContainer.AddLayoutControl(layMain);
     }
 
     /// <inheritdoc cref="IScene.LoadContent"/>
@@ -66,81 +102,7 @@ public class TextRenderingScene : SceneBase
 
         this.fontRenderer = RendererFactory.CreateFontRenderer();
         this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, 12);
-
-        var ctrlFactory = new ControlFactory();
-
-        // Rotate Button
-        var sldRotate = ctrlFactory.CreateSlider();
-        sldRotate.Name = nameof(sldRotate);
-        sldRotate.Text = "Rotate:";
-        sldRotate.Value = 0;
-        sldRotate.Min = 0;
-        sldRotate.Max = 360;
-        sldRotate.ValueChanged += (_, newValue) => this.angle = newValue;
-
-        // Increase Render Size Button
-        var sldRenderSize = ctrlFactory.CreateSlider();
-        sldRenderSize.Name = nameof(sldRenderSize);
-        sldRenderSize.Text = "Render Size:";
-        sldRenderSize.Value = 1;
-        sldRenderSize.Min = 0.1f;
-        sldRenderSize.Max = 4;
-        sldRenderSize.ValueChanged += (_, newValue) => this.renderSize = newValue;
-
-        // Set Multi-Line
-        var chkSetMultiLine = ctrlFactory.CreateCheckbox();
-        chkSetMultiLine.Name = nameof(chkSetMultiLine);
-        chkSetMultiLine.LabelWhenChecked = "Multi-Line";
-        chkSetMultiLine.LabelWhenUnchecked = "Single-Line";
-        chkSetMultiLine.CheckedChanged += (_, isChecked) => this.text = isChecked ? this.multiLineText : SingleLineText;
-
-        // Set Color
-        var chkSetColor = ctrlFactory.CreateCheckbox();
-        chkSetColor.Name = nameof(chkSetColor);
-        chkSetColor.LabelWhenChecked = "Color On";
-        chkSetColor.LabelWhenUnchecked = "Color Off";
-        chkSetColor.CheckedChanged += (_, isChecked) => this.isBlue = isChecked;
-
-        // Font size
-        var sldFontSize = ctrlFactory.CreateSlider();
-        sldFontSize.Name = nameof(sldFontSize);
-        sldFontSize.Text = "Font Size:";
-        sldFontSize.Value = 12;
-        sldFontSize.Min = 1;
-        sldFontSize.Max = 50;
-        sldFontSize.ValueChanged += (_, value) =>
-        {
-            value = value > 100 ? 100 : value;
-            value = value < 0 ? 0 : value;
-
-            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
-        };
-
-        // Set the font style to bold
-        var cmbSetStyle = ctrlFactory.CreateComboBox();
-        cmbSetStyle.Name = nameof(cmbSetStyle);
-        cmbSetStyle.Label = "Style:";
-        cmbSetStyle.Width = 150;
-        cmbSetStyle.Items = this.fontFileNames.Select(i => i.DisplayName).ToList();
-        cmbSetStyle.SelectedItemIndexChanged += (_, selectedIndex) =>
-        {
-            this.currentChosenFontFileName = this.fontFileNames[selectedIndex].FileName;
-            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
-        };
-
-        this.grpControls = ctrlFactory.CreateControlGroup();
-        this.grpControls.Title = "Font Properties";
-        this.grpControls.AutoSizeToFitContent = true;
-        this.grpControls.Initialized += (_, _) =>
-        {
-            this.grpControls.Position = new Point(WindowPadding, WindowCenter.Y - this.grpControls.HalfHeight);
-        };
-        this.grpControls.Add(sldRotate);
-        this.grpControls.Add(sldRenderSize);
-        this.grpControls.Add(chkSetMultiLine);
-        this.grpControls.Add(chkSetColor);
-        this.grpControls.Add(sldFontSize);
-        this.grpControls.Add(cmbSetStyle);
+        this.mainContainer.Load();
 
         base.LoadContent();
     }
@@ -148,17 +110,24 @@ public class TextRenderingScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
-        if (!IsLoaded || IsDisposed)
+        if (!IsLoaded)
         {
             return;
         }
 
         this.backgroundManager.Unload();
         this.contentManager.Unload(this.textFont);
-        this.grpControls.Dispose();
-        this.grpControls = null;
+        this.mainContainer.Unload();
 
         base.UnloadContent();
+    }
+
+    public override void Update(FrameTime frameTime)
+    {
+        this.mainContainer.AreaPadding = 10;
+        this.mainContainer.Update();
+
+        base.Update(frameTime);
     }
 
     /// <inheritdoc cref="IDrawable.Render"/>
@@ -169,7 +138,6 @@ public class TextRenderingScene : SceneBase
 
         if (this.isFirstRender)
         {
-            this.grpControls.Position = new Point(WindowPadding, ((int)WindowSize.Height / 2) - this.grpControls.HalfHeight);
             this.isFirstRender = false;
         }
 
@@ -183,8 +151,106 @@ public class TextRenderingScene : SceneBase
             this.angle,
             this.isBlue ? Color.CornflowerBlue : Color.White);
 
-        this.grpControls.Render();
+        this.mainContainer.Render();
 
         base.Render();
+    }
+
+    private void CreateRotateCtrls()
+    {
+        this.lblRotate = new Label { Text = "Rotate:" };
+
+        this.sldRotate = new Slider { Value = 0, Max = 360f };
+        this.sldRotate.ValueChanged += (_, e) => this.angle = e.NewValue;
+
+        this.layRotate = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.layRotate.AddControl(this.lblRotate);
+        this.layRotate.AddControl(this.sldRotate);
+    }
+
+    private void CreateRenderSizeCtrls()
+    {
+        this.lblRenderSize = new Label { Text = "Render Size:" };
+
+        this.sldRenderSize = new Slider { Value = 1, Min = 0.1f, Max = 4 };
+        this.sldRenderSize.ValueChanged += (_, e) => this.renderSize = e.NewValue;
+
+        this.layRenderSize = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.layRenderSize.AddControl(this.lblRenderSize);
+        this.layRenderSize.AddControl(this.sldRenderSize);
+    }
+
+    private void CreateSingleLineCtrls()
+    {
+        this.chkSingleLine = new CheckBox { Text = "Single-Line", IsChecked = true };
+        this.chkSingleLine.CheckedChanged += (_, e) =>
+        {
+            this.text = e.IsChecked ? SingleLineText : this.multiLineText;
+            this.chkSingleLine.Text = e.IsChecked ? "Single-Line" : "Multi-Line";
+        };
+
+        this.laySingleLine = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.laySingleLine.AddControl(this.chkSingleLine);
+    }
+
+    private void CreateColorCtrls()
+    {
+        this.chkColor = new CheckBox { Text = "Color Off" };
+        this.chkColor.CheckedChanged += (_, e) =>
+        {
+            this.isBlue = e.IsChecked;
+            this.chkColor.Text = e.IsChecked ? "Color On" : "Color Off";
+        };
+
+        this.layColor = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.layColor.AddControl(this.chkColor);
+    }
+
+    private void CreateFontSizeCtrls()
+    {
+        this.lblFontSize = new Label { Text = "Font Size:" };
+
+        this.sldFontSize = new Slider { Value = 12, Min = 1, Max = 50 };
+        this.sldFontSize.ValueChanged += (_, e) =>
+        {
+            var value = e.NewValue;
+            value = value > 100 ? 100 : value;
+            value = value < 0 ? 0 : value;
+
+            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, (uint)value);
+        };
+
+        this.layFontSize = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.layFontSize.AddControl(this.lblFontSize);
+        this.layFontSize.AddControl(this.sldFontSize);
+    }
+
+    private void CreateFontStyleCtrls()
+    {
+        this.lblStyle = new Label { Text = "Style:" };
+
+        this.drpStyle = new DropDown();
+        var items = this.fontFileNames.Select(i => i.DisplayName);
+
+        foreach (var item in items)
+        {
+            this.drpStyle.AddItem(item);
+        }
+
+        this.drpStyle.SelectedItemChanged += (_, e) =>
+        {
+            this.currentChosenFontFileName = this.fontFileNames.First(f => f.DisplayName == e.NewValue).FileName;
+            this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, this.textFont.Size);
+        };
+
+        this.layFontStyle = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, HorizontalSpacing = 5 };
+
+        this.layFontStyle.AddControl(this.lblStyle);
+        this.layFontStyle.AddControl(this.drpStyle);
     }
 }
