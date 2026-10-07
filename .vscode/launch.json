@@ -4,6 +4,17 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+		{
+			"name": "Create Local Nuget Pkg",
+			"type": "bashdb",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"program": "${workspaceFolder}/DevTools/test.sh",
+			"args": [
+				"build-config=Debug",
+				"enable-telemetry=true"
+			]
+		},
 		{ // VELAPTOR TESTING
 			"name": "VelaptorTesting",
 			"type": "coreclr",
