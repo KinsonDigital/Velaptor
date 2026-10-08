@@ -1,4 +1,4 @@
-// <copyright file="IFontRenderer.cs" company="KinsonDigital">
+// <copyright file="ITextRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ using WebGpu.Batching;
 /// <summary>
 /// Renders text to the screen using a particular font.
 /// </summary>
-public interface IFontRenderer : IDisposable
+public interface ITextRenderer : IDisposable
 {
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>

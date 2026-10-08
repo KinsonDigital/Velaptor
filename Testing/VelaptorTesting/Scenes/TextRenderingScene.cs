@@ -35,7 +35,7 @@ public class TextRenderingScene : SceneBase
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
     private readonly Container mainContainer;
-    private IFontRenderer? fontRenderer;
+    private ITextRenderer? textRenderer;
     private IFont? textFont;
     private Layout layRenderSize;
     private Layout layRotate;
@@ -100,7 +100,7 @@ public class TextRenderingScene : SceneBase
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.textFont = this.contentManager.LoadFont(this.currentChosenFontFileName, 12);
         this.mainContainer.Load();
 
@@ -142,7 +142,7 @@ public class TextRenderingScene : SceneBase
         }
 
         this.backgroundManager.Render();
-        this.fontRenderer.Render(
+        this.textRenderer.Render(
             this.textFont,
             this.text,
             xPos,

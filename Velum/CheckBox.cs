@@ -17,7 +17,7 @@ public sealed class CheckBox : Control
     private const float MarkOffset = 2;
     private const float BoxWidthHeight = 20;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly IDisposable subscription;
@@ -47,7 +47,7 @@ public sealed class CheckBox : Control
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
 
@@ -194,7 +194,7 @@ public sealed class CheckBox : Control
             this.shapeRenderer.Render(this.mark2);
         }
 
-        this.fontRenderer.Render(this.font, Text, this.textPos, Enabled ? Color.White : DisabledColor);
+        this.textRenderer.Render(this.font, Text, this.textPos, Enabled ? Color.White : DisabledColor);
 
         base.Render(0);
     }

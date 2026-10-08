@@ -22,16 +22,16 @@ public class WindowFake : Window
     /// <param name="window">Mocked window.</param>
     /// <param name="batcher">Mocked batcher.</param>
     /// <param name="contentManager">Mocked content manager.</param>
-    /// <param name="fontRenderer">Mocked font renderer.</param>
+    /// <param name="textRenderer">Mocked text renderer.</param>
     /// <param name="keyboard">Mocked keyboard.</param>
     /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
     internal WindowFake(
         IWindow window,
         IBatcher batcher,
         IContentManager contentManager,
-        IFontRenderer fontRenderer,
+        ITextRenderer textRenderer,
         IAppInput<KeyboardState> keyboard)
-        : base(window, batcher, contentManager, fontRenderer, keyboard)
+        : base(window, batcher, contentManager, textRenderer, keyboard)
     {
     }
 

@@ -30,7 +30,7 @@ public class WindowTests : TestsBase
     private readonly ISceneManager mockSceneManager;
     private readonly IBatcher mockBatcher;
     private readonly IContentManager mockContentManager;
-    private readonly IFontRenderer mockFontRenderer;
+    private readonly ITextRenderer mockTextRenderer;
     private readonly IFont mockFont;
     private readonly IAppInput<KeyboardState> mockKeyboard;
 
@@ -47,7 +47,7 @@ public class WindowTests : TestsBase
         this.mockContentManager = Substitute.For<IContentManager>();
         this.mockContentManager.LoadFont(Arg.Any<string>(), Arg.Any<uint>()).Returns(this.mockFont);
 
-        this.mockFontRenderer = Substitute.For<IFontRenderer>();
+        this.mockTextRenderer = Substitute.For<ITextRenderer>();
         this.mockKeyboard = Substitute.For<IAppInput<KeyboardState>>();
 
         this.mockWindow = Substitute.For<IWindow>();
@@ -66,7 +66,7 @@ public class WindowTests : TestsBase
                 null,
                 this.mockBatcher,
                 this.mockContentManager,
-                this.mockFontRenderer,
+                this.mockTextRenderer,
                 this.mockKeyboard);
         };
 
@@ -86,7 +86,7 @@ public class WindowTests : TestsBase
                 this.mockWindow,
                 null,
                 this.mockContentManager,
-                this.mockFontRenderer,
+                this.mockTextRenderer,
                 this.mockKeyboard);
         };
 
@@ -106,7 +106,7 @@ public class WindowTests : TestsBase
                 this.mockWindow,
                 this.mockBatcher,
                 null,
-                this.mockFontRenderer,
+                this.mockTextRenderer,
                 this.mockKeyboard);
         };
 
@@ -117,7 +117,7 @@ public class WindowTests : TestsBase
 
     [Fact]
     [Trait("Category", Ctor)]
-    public void Ctor_WithNullFontRendererParam_ThrowsException()
+    public void Ctor_WithNullTextRendererParam_ThrowsException()
     {
         // Arrange & Act
         var act = () =>
@@ -132,7 +132,7 @@ public class WindowTests : TestsBase
 
         // Assert
         act.ShouldThrow<ArgumentNullException>()
-            .Message.ShouldBe("Value cannot be null. (Parameter 'fontRenderer')");
+            .Message.ShouldBe("Value cannot be null. (Parameter 'textRenderer')");
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class WindowTests : TestsBase
                 this.mockWindow,
                 this.mockBatcher,
                 this.mockContentManager,
-                this.mockFontRenderer,
+                this.mockTextRenderer,
                 null);
         };
 
@@ -567,7 +567,7 @@ public class WindowTests : TestsBase
         sut.Draw(frameTime);
 
         // Assert
-        this.mockFontRenderer.Received(1)
+        this.mockTextRenderer.Received(1)
             .Render(this.mockFont, "0", new Vector2(10, -10), Color.FromArgb(11, 22, 33, 44));
     }
 
@@ -665,7 +665,7 @@ public class WindowTests : TestsBase
         this.mockWindow.Draw(default);
 
         // Assert
-        this.mockFontRenderer.Received(1).Render(this.mockFont, "201", Arg.Any<Vector2>(), Arg.Any<Color>());
+        this.mockTextRenderer.Received(1).Render(this.mockFont, "201", Arg.Any<Vector2>(), Arg.Any<Color>());
     }
 
     [Fact]
@@ -708,6 +708,6 @@ public class WindowTests : TestsBase
         this.mockWindow,
         this.mockBatcher,
         this.mockContentManager,
-        this.mockFontRenderer,
+        this.mockTextRenderer,
         this.mockKeyboard);
 }

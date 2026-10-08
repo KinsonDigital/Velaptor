@@ -13,7 +13,7 @@ using Velaptor.Input;
 public sealed class Label : Control
 {
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly IDisposable subscription;
@@ -37,7 +37,7 @@ public sealed class Label : Control
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
     }
@@ -192,7 +192,7 @@ public sealed class Label : Control
             this.shapeRenderer.Render(this.background, -10);
         }
 
-        this.fontRenderer.Render(this.font, Text, screenPos, Enabled ? TextColor : DisabledColor, layer);
+        this.textRenderer.Render(this.font, Text, screenPos, Enabled ? TextColor : DisabledColor, layer);
 
         base.Render(0);
     }

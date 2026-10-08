@@ -1,4 +1,4 @@
-// <copyright file="FontRenderer.cs" company="KinsonDigital">
+// <copyright file="TextRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,7 +24,7 @@ using Velaptor.Batching;
 /// Renders text to the screen using WebGPU via a font texture atlas.
 /// Each glyph in the text is a sub-rectangle of the atlas texture drawn as a textured quad.
 /// </summary>
-internal sealed class FontRenderer : IFontRenderer
+internal sealed class TextRenderer : ITextRenderer
 {
     private readonly IWgpuInvoker wgpu;
     private readonly IGraphicsTexturePipeline pipeline;
@@ -41,7 +41,7 @@ internal sealed class FontRenderer : IFontRenderer
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontRenderer"/> class.
+    /// Initializes a new instance of the <see cref="TextRenderer"/> class.
     /// </summary>
     /// <param name="wgpu">The WebGPU invoker.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications.</param>
@@ -50,7 +50,7 @@ internal sealed class FontRenderer : IFontRenderer
     /// <param name="frame">The per-frame render pass manager.</param>
     /// <param name="bindGroupRegistry">Resolves texture IDs to bind groups.</param>
     /// <param name="batchManager">Manages font glyph batch items.</param>
-    public FontRenderer(
+    public TextRenderer(
         IWgpuInvoker wgpu,
         IGraphicsTexturePipeline pipeline,
         IWebGpuBuffer<FontGlyphBatchItem> buffer,

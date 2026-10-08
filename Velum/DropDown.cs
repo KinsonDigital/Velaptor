@@ -23,7 +23,7 @@ public sealed class DropDown : Control
     private readonly IPushReactable<DisableMouseSubscriptionData> dropDownReactable;
     private readonly IDisposable subscription;
     private readonly IShapeRenderer shapeRenderer;
-    private readonly IFontRenderer fontRenderer;
+    private readonly ITextRenderer textRenderer;
     private readonly IContentManager contentManager;
     private readonly IAppInput<MouseState> mouse;
     private readonly List<DropDownItem> listItems = [];
@@ -64,7 +64,7 @@ public sealed class DropDown : Control
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
         this.contentManager = ContentManager.Create();
         this.mouse = HardwareFactory.GetMouse();
 
@@ -255,7 +255,7 @@ public sealed class DropDown : Control
 
         if (Items.Count >= 1)
         {
-            this.fontRenderer.Render(this.font, SelectedItem, this.selectedItemTextPos, Enabled ? Color.White : this.itemTextDisabledClr);
+            this.textRenderer.Render(this.font, SelectedItem, this.selectedItemTextPos, Enabled ? Color.White : this.itemTextDisabledClr);
 
             if (this.isExpanded)
             {

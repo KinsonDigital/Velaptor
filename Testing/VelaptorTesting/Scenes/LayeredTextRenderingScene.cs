@@ -28,7 +28,7 @@ public class LayeredTextRenderingScene : SceneBase
     private readonly IAppInput<KeyboardState>? keyboard;
     private readonly IContentManager contentManager;
     private readonly BackgroundManager backgroundManager;
-    private IFontRenderer? fontRenderer;
+    private ITextRenderer? textRenderer;
     private IFont? font;
     private Vector2 whiteTextPos;
     private Vector2 orangeTextPos;
@@ -59,7 +59,7 @@ public class LayeredTextRenderingScene : SceneBase
             return;
         }
 
-        this.fontRenderer = RendererFactory.CreateFontRenderer();
+        this.textRenderer = RendererFactory.CreateTextRenderer();
 
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
@@ -123,7 +123,7 @@ public class LayeredTextRenderingScene : SceneBase
     public override void Render()
     {
         // BLUE
-        this.fontRenderer.Render(
+        this.textRenderer.Render(
             this.font,
             this.blueText,
             (int)this.blueTextPos.X,
@@ -132,7 +132,7 @@ public class LayeredTextRenderingScene : SceneBase
             (int)BlueLayer);
 
         // ORANGE
-        this.fontRenderer.Render(
+        this.textRenderer.Render(
             this.font,
             this.orangeText,
             (int)this.orangeTextPos.X,
@@ -141,7 +141,7 @@ public class LayeredTextRenderingScene : SceneBase
             (int)OrangeLayer);
 
         // WHITE
-        this.fontRenderer.Render(
+        this.textRenderer.Render(
             this.font,
             this.whiteText,
             (int)this.whiteTextPos.X,

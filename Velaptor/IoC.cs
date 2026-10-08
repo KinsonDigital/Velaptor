@@ -157,7 +157,7 @@ internal static class IoC
     private static void SetupRendering()
     {
         IoCContainer.Register<ITextureRenderer, TextureRenderer>(Lifestyle.Singleton);
-        IoCContainer.Register<IFontRenderer, FontRenderer>(Lifestyle.Singleton);
+        IoCContainer.Register<ITextRenderer, TextRenderer>(Lifestyle.Singleton);
         IoCContainer.Register<IShapeRenderer, ShapeRenderer>(Lifestyle.Singleton);
     }
 

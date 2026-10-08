@@ -69,7 +69,7 @@ Velaptor/                        # Main library
 │       ├── TextureRenderer.cs   # Texture pipeline → bind group registry → draw
 │       ├── ShapeRenderer.cs     # Shape pipeline → uniform buffer → draw
 │       ├── LineRenderer.cs      # Line pipeline → uniform buffer → draw
-│       └── FontRenderer.cs      # Texture pipeline + font atlas → draw
+│       └── TextRenderer.cs      # Texture pipeline + font atlas → draw
 ├── Graphics/                    # Shape types, RenderMediator, render contracts
 │   ├── CircleShape.cs, RectShape.cs, Line.cs
 │   ├── RenderMediator.cs        # Orchestrates batch → sort → dispatch to renderers
@@ -283,7 +283,7 @@ and throws `InvalidOperationException` if accessed during unit tests (guard: `Un
 
 **`SetupBuffers()`**: `IWebGpuBuffer<TextureBatchItem>`, `IWebGpuBuffer<FontGlyphBatchItem>`, `IWebGpuBuffer<ShapeBatchItem>`, `IWebGpuBuffer<LineBatchItem>`
 
-**`SetupRendering()`**: `ITextureRenderer`, `IFontRenderer`, `ILineRenderer`, `IShapeRenderer`
+**`SetupRendering()`**: `ITextureRenderer`, `ITextRenderer`, `ILineRenderer`, `IShapeRenderer`
 
 **`SetupFactories()`**: `IWindowFactory`, `INativeInputFactory`, `ITextureFactory`, `IAudioFactory`, `IFontFactory`, `IAtlasDataFactory`, `IRenderMediator`, `IPathResolverFactory`, `IReactableFactory`
 

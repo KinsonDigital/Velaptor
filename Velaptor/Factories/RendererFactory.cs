@@ -21,10 +21,10 @@ public static class RendererFactory
     public static ITextureRenderer CreateTextureRenderer() => IoC.Container.GetInstance<ITextureRenderer>();
 
     /// <summary>
-    /// Creates an instance of the <see cref="IFontRenderer"/>.
+    /// Creates an instance of the <see cref="ITextRenderer"/>.
     /// </summary>
-    /// <returns>The font renderer.</returns>
-    public static IFontRenderer CreateFontRenderer() => IoC.Container.GetInstance<IFontRenderer>();
+    /// <returns>The text renderer.</returns>
+    public static ITextRenderer CreateTextRenderer() => IoC.Container.GetInstance<ITextRenderer>();
 
     /// <summary>
     /// Creates an instance of the <see cref="IShapeRenderer"/>.

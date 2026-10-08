@@ -1,4 +1,4 @@
-﻿// <copyright file="FontRendererTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextRendererTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -33,9 +33,9 @@ using Velaptor.WebGpu.Renderers;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="FontRenderer"/> class.
+/// Tests the <see cref="TextRenderer"/> class.
 /// </summary>
-public class FontRendererTests : TestsBase
+public class TextRendererTests : TestsBase
 {
     private const uint AtlasTextureId = 789u;
     private readonly IWgpuInvoker mockWgpuInvoker;
@@ -56,9 +56,9 @@ public class FontRendererTests : TestsBase
     private IReceiveSubscription<Memory<RenderItem<FontGlyphBatchItem>>>? renderBatchSubscription;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FontRendererTests"/> class.
+    /// Initializes a new instance of the <see cref="TextRendererTests"/> class.
     /// </summary>
-    public FontRendererTests()
+    public TextRendererTests()
     {
         this.mockWgpuInvoker = Substitute.For<IWgpuInvoker>();
         this.mockTexturePipeline = Substitute.For<IGraphicsTexturePipeline>();
@@ -184,7 +184,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullWgpuParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             null,
             this.mockTexturePipeline,
             this.mockBuffer,
@@ -202,7 +202,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullPipelineParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             null,
             this.mockBuffer,
@@ -220,7 +220,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullBufferParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
             null,
@@ -238,7 +238,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullFrameParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
             this.mockBuffer,
@@ -256,7 +256,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullBindGroupRegistryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
             this.mockBuffer,
@@ -274,7 +274,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullBatchManagerParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
             this.mockBuffer,
@@ -292,7 +292,7 @@ public class FontRendererTests : TestsBase
     public void Ctor_WithNullReactableFactoryParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () => new FontRenderer(
+        var act = () => new TextRenderer(
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
             this.mockBuffer,
@@ -314,7 +314,7 @@ public class FontRendererTests : TestsBase
         // Arrange
         var mockFont = CreateMockFont();
         const string expectedMsg =
-            $"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(IFontRenderer.Render)}()' methods.";
+            $"The '{nameof(IBatcher.Begin)}()' method must be invoked first before any '{nameof(ITextRenderer.Render)}()' methods.";
         var sut = CreateSystemUnderTest();
 
         // Act
@@ -777,10 +777,10 @@ public class FontRendererTests : TestsBase
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="FontRenderer"/> for the purpose of testing.
+    /// Creates a new instance of <see cref="TextRenderer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontRenderer CreateSystemUnderTest()
+    private TextRenderer CreateSystemUnderTest()
         => new (
             this.mockWgpuInvoker,
             this.mockTexturePipeline,
