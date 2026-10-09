@@ -84,7 +84,11 @@ public sealed class AtlasData : IAtlasData
     {
         get
         {
-            var result = new List<string>();
+            var result = new List<string>
+            {
+                Capacity = 0,
+            };
+
             var allNames = this.subTexturesData.Select(item => item.Name).ToArray();
 
             foreach (var name in allNames)
