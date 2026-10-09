@@ -84,7 +84,11 @@ public sealed class AtlasData : IAtlasData
     {
         get
         {
-            var result = new List<string>();
+            var result = new List<string>
+            {
+                Capacity = 0,
+            };
+
             var allNames = this.subTexturesData.Select(item => item.Name).ToArray();
 
             foreach (var name in allNames)
@@ -113,7 +117,7 @@ public sealed class AtlasData : IAtlasData
     public string AtlasDataFilePath { get; }
 
     /// <inheritdoc/>
-    public ITexture Texture { get; }
+    public ITexture? Texture { get; }
 
     /// <inheritdoc/>
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];

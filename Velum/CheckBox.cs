@@ -1,3 +1,7 @@
+// <copyright file="CheckBox.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace Velum;
 
 using System.Drawing;
@@ -99,6 +103,11 @@ public sealed class CheckBox : Control
 
     public override void Update()
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font in the '{nameof(CheckBox)}' control is null.");
+        }
+
         if (!Visible)
         {
             return;

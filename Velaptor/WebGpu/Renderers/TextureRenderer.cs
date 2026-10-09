@@ -370,6 +370,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     {
         ArgumentNullException.ThrowIfNull(atlas);
 
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
+
         var frames = atlas.GetFrames(subTextureName);
 
         ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
@@ -401,6 +407,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, Color color, int frameNumber = 0, int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
+
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
 
         var frames = atlas.GetFrames(subTextureName);
 
@@ -434,6 +446,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     {
         ArgumentNullException.ThrowIfNull(atlas);
 
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
+
         var frames = atlas.GetFrames(subTextureName);
 
         ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
@@ -466,6 +484,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     {
         ArgumentNullException.ThrowIfNull(atlas);
 
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
+
         var frames = atlas.GetFrames(subTextureName);
 
         ValidateFrameNumber(frameNumber, frames.Length, atlas.Name, subTextureName);
@@ -497,6 +521,12 @@ internal sealed class TextureRenderer : ITextureRenderer
     public void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, Color color, int frameNumber = 0, int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
+
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
 
         var frames = atlas.GetFrames(subTextureName);
 
@@ -537,6 +567,12 @@ internal sealed class TextureRenderer : ITextureRenderer
         int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
+
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
 
         var frames = atlas.GetFrames(subTextureName);
 
@@ -578,6 +614,12 @@ internal sealed class TextureRenderer : ITextureRenderer
         int layer = 0)
     {
         ArgumentNullException.ThrowIfNull(atlas);
+
+        if (atlas.Texture is null)
+        {
+            throw new RendererException(
+                $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the '{nameof(atlas)}' parameter must not be null.");
+        }
 
         var frames = atlas.GetFrames(subTextureName);
 

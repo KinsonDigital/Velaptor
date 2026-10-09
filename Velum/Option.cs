@@ -39,7 +39,7 @@ public sealed class Option : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
@@ -93,6 +93,11 @@ public sealed class Option : Control
 
     public override void Update()
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font in the '{nameof(CheckBox)}' control is null.");
+        }
+
         if (!Visible)
         {
             return;
@@ -102,11 +107,7 @@ public sealed class Option : Control
 
         var screenPos = Position.ToWorld(BoxWidthHeight, BoxWidthHeight);
 
-        this.circle = new CircleShape
-        {
-            Position = screenPos,
-            Diameter = BoxWidthHeight,
-        };
+        this.circle = new CircleShape { Position = screenPos, Diameter = BoxWidthHeight, };
 
         var textSize = this.font.Measure(this.text);
         this.textPos = new Vector2(
