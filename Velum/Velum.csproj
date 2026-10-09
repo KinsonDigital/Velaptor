@@ -29,4 +29,8 @@
   <ItemGroup>
     <InternalsVisibleTo Include="VelaptorTesting" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
 </Project>

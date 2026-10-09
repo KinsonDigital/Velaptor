@@ -44,8 +44,9 @@ public sealed class DropDown : Control
     private bool mouseClickDisabled;
     private bool clickConsumedThisFrame;
 
-    public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DropDown"/> class.
+    /// </summary>
     public DropDown()
     {
         this.id = nextId++;
@@ -74,6 +75,8 @@ public sealed class DropDown : Control
         this.arrowFaceHoverClr = this.arrowFaceClr.IncreaseBrightness(0.4f);
         this.arrowFaceDisabledClr = DisabledColor.IncreaseBrightness(0.4f);
     }
+
+    public event EventHandler<SelectedItemChangedEventArgs>? SelectedItemChanged;
 
     public List<string> Items => [.. this.listItems.Select(x => x.Text)];
 
