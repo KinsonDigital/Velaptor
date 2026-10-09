@@ -4,17 +4,21 @@
     "jsr:@cliffy/ansi@1.0.0": "1.0.0",
     "jsr:@cliffy/ansi@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/ansi@1.0.1": "1.0.1",
+    "jsr:@cliffy/ansi@^1.3.1": "1.3.1",
     "jsr:@cliffy/command@1.0.0": "1.0.0",
     "jsr:@cliffy/flags@1.0.0": "1.0.0",
     "jsr:@cliffy/internal@1.0.0": "1.0.0",
     "jsr:@cliffy/internal@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/internal@1.0.1": "1.0.1",
+    "jsr:@cliffy/internal@^1.3.1": "1.3.1",
     "jsr:@cliffy/keycode@1.0.0": "1.0.0",
     "jsr:@cliffy/keycode@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/keycode@1.0.1": "1.0.1",
+    "jsr:@cliffy/keycode@^1.3.1": "1.3.1",
     "jsr:@cliffy/prompt@1.0.0": "1.0.0",
     "jsr:@cliffy/prompt@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/prompt@1.0.1": "1.0.1",
+    "jsr:@cliffy/prompt@1.3.1": "1.3.1",
     "jsr:@cliffy/table@1.0.0": "1.0.0",
     "jsr:@kinsondigital/kd-clients@1.0.0-preview.15": "1.0.0-preview.15",
     "jsr:@kinsondigital/kd-clients@1.0.0-preview.16": "1.0.0-preview.16",
@@ -30,8 +34,10 @@
     "jsr:@std/encoding@1.0.10": "1.0.10",
     "jsr:@std/encoding@1.0.5": "1.0.5",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
+    "jsr:@std/encoding@^1.0.11": "1.0.11",
     "jsr:@std/encoding@~0.219.1": "0.219.1",
     "jsr:@std/encoding@~1.0.5": "1.0.10",
+    "jsr:@std/fmt@^1.0.10": "1.0.10",
     "jsr:@std/fmt@^1.0.9": "1.0.10",
     "jsr:@std/fmt@~1.0.2": "1.0.10",
     "jsr:@std/fs@1.0.19": "1.0.19",
@@ -49,8 +55,10 @@
     "jsr:@std/path@^1.1.1": "1.1.6",
     "jsr:@std/path@^1.1.4": "1.1.6",
     "jsr:@std/path@^1.1.5": "1.1.6",
+    "jsr:@std/path@^1.1.6": "1.1.6",
     "jsr:@std/path@~1.0.6": "1.0.9",
     "jsr:@std/text@^1.0.17": "1.0.19",
+    "jsr:@std/text@^1.0.19": "1.0.19",
     "jsr:@std/text@~1.0.7": "1.0.16",
     "npm:zod@4.1.12": "4.1.12",
     "npm:zod@^4.3.6": "4.6.5"
@@ -76,6 +84,14 @@
       "dependencies": [
         "jsr:@cliffy/internal@1.0.1",
         "jsr:@std/encoding@^1.0.10",
+        "jsr:@std/io@~0.225.3"
+      ]
+    },
+    "@cliffy/ansi@1.3.1": {
+      "integrity": "b6ffd9c79a42cd68fc412d4e520c6bbbdde3c74dba182d017c46790596e003d7",
+      "dependencies": [
+        "jsr:@cliffy/internal@^1.3.1",
+        "jsr:@std/encoding@^1.0.11",
         "jsr:@std/io@~0.225.3"
       ]
     },
@@ -105,6 +121,9 @@
     "@cliffy/internal@1.0.1": {
       "integrity": "9e2bba59ad559b790f09c57219c727a69f0179ebabc07f1bf9db25232b606760"
     },
+    "@cliffy/internal@1.3.1": {
+      "integrity": "b309718fbfb8a226e74bc06f151d4459c2bdfa7ce68482decca75106bbf28816"
+    },
     "@cliffy/keycode@1.0.0-rc.8": {
       "integrity": "76dbf85a67ec0aea2e29ca049b8507b6b3f62a2a971bd744d8d3fc447c177cd9"
     },
@@ -113,6 +132,9 @@
     },
     "@cliffy/keycode@1.0.1": {
       "integrity": "b01053b39bce5536e36aff9b262d84a7b289bcff03d904f3cf60f9dc1605ce9f"
+    },
+    "@cliffy/keycode@1.3.1": {
+      "integrity": "6e1b1e5f5ef2091d8228dc78dda3afd53187aa25c07a3395467ba6e1ab86cea2"
     },
     "@cliffy/prompt@1.0.0-rc.8": {
       "integrity": "eba403ea1d47b9971bf2210fa35f4dc7ebd2aba87beec9540ae47552806e2f25",
@@ -150,6 +172,19 @@
         "jsr:@std/io@~0.225.3",
         "jsr:@std/path@^1.1.4",
         "jsr:@std/text@^1.0.17"
+      ]
+    },
+    "@cliffy/prompt@1.3.1": {
+      "integrity": "00802daf9735808373b285c003085121053e7acd6d111c1df04812253b2d363f",
+      "dependencies": [
+        "jsr:@cliffy/ansi@^1.3.1",
+        "jsr:@cliffy/internal@^1.3.1",
+        "jsr:@cliffy/keycode@^1.3.1",
+        "jsr:@std/assert@^1.0.19",
+        "jsr:@std/fmt@^1.0.10",
+        "jsr:@std/io@~0.225.3",
+        "jsr:@std/path@^1.1.6",
+        "jsr:@std/text@^1.0.19"
       ]
     },
     "@cliffy/table@1.0.0": {
@@ -229,6 +264,9 @@
     },
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
+    },
+    "@std/encoding@1.0.11": {
+      "integrity": "e7cef2f0b3153bccc17431e7c864a1de03a4b6d9647389c43e08aaa775d37385"
     },
     "@std/fmt@1.0.8": {
       "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
@@ -310,7 +348,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@cliffy/prompt@1.2.1",
+      "jsr:@cliffy/prompt@1.3.1",
       "jsr:@kinsondigital/kd-clients@1.0.0-preview.16",
       "jsr:@std/fs@^1.0.24"
     ]
