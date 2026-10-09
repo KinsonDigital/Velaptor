@@ -524,6 +524,33 @@ public class AtlasLoaderTests
         // Assert
         sut.TotalCachedItems.ShouldBe(0);
     }
+
+    [Fact]
+    public void Unload_WhenInvokedWithNonNullAtlasTexture_UnloadsAtlas()
+    {
+        // Arrange
+        this.mockAtlasData.Texture.Returns(_ => this.mockAtlasTexture);
+        this.mockAtlasData.FilePath.Returns(AtlasImageFilePath);
+
+        this.mockAtlasTexture.FilePath.Returns(AtlasImageFilePath);
+        this.mockAtlasDataFactory.Create(Arg.Any<ITexture>(),
+                Arg.Any<IList<AtlasSubTextureData>>(),
+                Arg.Any<string>(),
+                Arg.Any<string>())
+            .Returns(this.mockAtlasData);
+
+        var mockAtlas = Substitute.For<IAtlasData>();
+        mockAtlas.Texture.Returns((ITexture)null!);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Unload(mockAtlas);
+
+        // Assert
+        this.mockDisposeTextureReactable.DidNotReceive().Push(Arg.Any<Guid>(), Arg.Any<DisposeTextureData>());
+    }
+
     #endregion
 
     #region Indirect Tests
