@@ -22,7 +22,7 @@ public interface IAtlasData : IContent
     /// <summary>
     /// Gets the texture of the atlas.
     /// </summary>
-    ITexture Texture { get; }
+    ITexture? Texture { get; }
 
     /// <summary>
     /// Gets the file path to the atlas data.

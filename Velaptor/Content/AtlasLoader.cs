@@ -206,7 +206,10 @@ internal sealed class AtlasLoader : IAtlasLoader
         var cacheKey = atlasData.FilePath;
         this.atlasCache.TryRemove(cacheKey, out var cachedAtlasData);
 
-        this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = cachedAtlasData.atlasTexture.Id });
+        if (cachedAtlasData.atlasTexture is not null)
+        {
+            this.disposeReactable.Push(PushNotifications.TextureDisposedId, new DisposeTextureData { TextureId = cachedAtlasData.atlasTexture.Id });
+        }
     }
 
     /// <summary>

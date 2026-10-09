@@ -113,7 +113,7 @@ public sealed class AtlasData : IAtlasData
     public string AtlasDataFilePath { get; }
 
     /// <inheritdoc/>
-    public ITexture Texture { get; }
+    public ITexture? Texture { get; }
 
     /// <inheritdoc/>
     public AtlasSubTextureData this[int index] => this.subTexturesData[index];
