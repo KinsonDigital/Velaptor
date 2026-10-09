@@ -327,6 +327,35 @@ public class TextureRendererTests : TestsBase
     }
 
     [Fact]
+    public void Render_WhenInvokingRectsOverloadWithInvalidFrameNumberWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.Render(mockAtlas,
+            "test-texture",
+            new Vector2(1,
+                2),
+            3f,
+            4f,
+            Color.FromArgb(5,
+                6,
+                7,
+                8),
+            RenderEffects.None,
+            1,
+            9);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
     public void Render_WhenInvokingRectsOverload_AddsItemToBatchManager()
     {
         // Arrange
@@ -853,7 +882,15 @@ public class TextureRendererTests : TestsBase
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        sut.Render(this.mockTexture, new Rectangle(11, 22, 33, 44), new Rectangle(55, 66, 77, 88), 44f, 33f, Color.FromArgb(55, 66, 77, 88), RenderEffects.FlipHorizontally, 99);
+        sut.Render(
+            this.mockTexture,
+            new Rectangle(11, 22, 33, 44),
+            new Rectangle(55, 66, 77, 88),
+            44f,
+            33f,
+            Color.FromArgb(55, 66, 77, 88),
+            RenderEffects.FlipHorizontally,
+            99);
 
         // Assert
         this.mockBatchingManager.Received(1).AddTextureItem(expectedBatchItem, 99, Arg.Any<DateTime>());
@@ -874,6 +911,24 @@ public class TextureRendererTests : TestsBase
 
         // Act
         var act = () => sut.Render(mockAtlas, "test-texture", new Vector2(1, 2), frameNumber, 7);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
+    public void Render_WhenInvokingAtlasOverloadWithWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas, "test-texture", new Vector2(1, 2), 1, 7);
 
         // Assert
         act.ShouldThrow<RendererException>()
@@ -902,6 +957,33 @@ public class TextureRendererTests : TestsBase
 
         // Assert
         this.mockBatchingManager.Received(1).AddTextureItem(expectedBatchItem, 77, Arg.Any<DateTime>());
+    }
+
+    [Fact]
+    public void Render_WhenInvokingAtlasOverloadWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas,
+            "test-texture",
+            new Vector2(1,
+                2),
+            Color.FromArgb(5,
+                6,
+                7,
+                8),
+            9,
+            10);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
     }
 
     [Fact]
@@ -998,6 +1080,24 @@ public class TextureRendererTests : TestsBase
             .Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
+    [Fact]
+    public void Render_WhenInvokingAtlasAndAngleOverloadWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas, "test-texture", new Vector2(1, 2), 3, 4, 5);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
     [Theory]
     [InlineData(-1)]
     [InlineData(4)]
@@ -1064,6 +1164,24 @@ public class TextureRendererTests : TestsBase
             .Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
     }
 
+    [Fact]
+    public void Render_WhenInvokingAtlasAndAngleAndSizeOverloadWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas, "test-texture", new Vector2(1, 2), 3, 4, 5, 6);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
     [Theory]
     [InlineData(-1)]
     [InlineData(4)]
@@ -1125,7 +1243,7 @@ public class TextureRendererTests : TestsBase
         this.batchBeginSubscription.OnReceive();
 
         // Act
-        var act = () =>  sut.Render(null,
+        var act = () => sut.Render(null,
             "test-texture",
             new Vector2(1,
                 2),
@@ -1167,6 +1285,34 @@ public class TextureRendererTests : TestsBase
                 6,
                 7),
             frameNumber,
+            8);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
+    }
+
+    [Fact]
+    public void Render_WhenInvokingAtlasAndAngleAndColorOverloadWithInvalidFrameNumberWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas,
+            "test-texture",
+            new Vector2(1,
+                2),
+            3f,
+            Color.FromArgb(4,
+                5,
+                6,
+                7),
+            1,
             8);
 
         // Assert
@@ -1222,6 +1368,35 @@ public class TextureRendererTests : TestsBase
         // Assert
         act.ShouldThrow<ArgumentNullException>()
             .Message.ShouldBe("Value cannot be null. (Parameter 'atlas')");
+    }
+
+    [Fact]
+    public void Render_WhenInvokingAtlasAndAngleAndSizeAndColorOverloadWithNullAtlasTexture_ThrowsException()
+    {
+        // Arrange
+        const string expectedMsg = $"The '{nameof(IAtlasData)}.{nameof(IAtlasData.Texture)}' of the 'atlas' parameter must not be null.";
+        var mockAtlas = CreateMockAtlasData(true);
+
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        var act = () => sut.Render(mockAtlas,
+            "test-texture",
+            new Vector2(1,
+                2),
+            3f,
+            4f,
+            Color.FromArgb(5,
+                6,
+                7,
+                8),
+            9,
+            10);
+
+        // Assert
+        act.ShouldThrow<RendererException>()
+            .Message.ShouldBe(expectedMsg);
     }
 
     [Theory]
@@ -1599,23 +1774,20 @@ public class TextureRendererTests : TestsBase
     /// <summary>
     /// Creates a mock <see cref="IAtlasData"/> with a single frame for the sub-texture "test-texture".
     /// </summary>
+    /// <param name="useNullTexture">True to use a null texture.</param>
     /// <returns>The mock atlas data.</returns>
-    private static IAtlasData CreateMockAtlasData()
+    private static IAtlasData CreateMockAtlasData(bool useNullTexture = false)
     {
-        var mockAtlasTexture = Substitute.For<ITexture>();
-        mockAtlasTexture.Id.Returns(AtlasTextureId);
-        mockAtlasTexture.Width.Returns(100u);
-        mockAtlasTexture.Height.Returns(200u);
+        var mockAtlasTexture = useNullTexture ? null : Substitute.For<ITexture>();
 
-        var frames = new[]
+        if (mockAtlasTexture is not null)
         {
-            new AtlasSubTextureData
-            {
-                Bounds = new Rectangle(5, 6, 50, 60),
-                Name = "test-texture",
-                FrameIndex = 0,
-            },
-        };
+            mockAtlasTexture.Id.Returns(AtlasTextureId);
+            mockAtlasTexture.Width.Returns(100u);
+            mockAtlasTexture.Height.Returns(200u);
+        }
+
+        var frames = new[] { new AtlasSubTextureData { Bounds = new Rectangle(5, 6, 50, 60), Name = "test-texture", FrameIndex = 0, }, };
 
         var mockAtlas = Substitute.For<IAtlasData>();
         mockAtlas.Name.Returns("test-atlas");
